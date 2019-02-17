@@ -28,6 +28,10 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
@@ -75,8 +79,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             }
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
-                
+                insertValuesToken.getColumnNames().add(shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName());
             }
+            insertValuesToken.getColumnValues().get(i).getValues().add()
             
             
             
@@ -100,6 +105,17 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<Object> result = new ArrayList<>(increment + 1);
         result.addAll(parameters.subList(beginCount, beginCount + increment));
         return result;
+    }
+    
+    private void fillInsertValuesTokenWithColumnValue(final InsertValuesToken insertValuesToken, final int currentIndex, final Comparable<?> currentGeneratedKey) {
+        if (!parameters.isEmpty()) {
+            insertValuesToken.getColumnValues().get(currentIndex).getValues().add(new SQLPlaceholderExpression(parameters.size() - 1));
+            insertValuesToken.getColumnValues().get(currentIndex).getParameters().add(currentGeneratedKey);
+        } else if (currentGeneratedKey.getClass() == String.class) {
+            insertValuesToken.getColumnValues().get(currentIndex).getValues().add(new SQLTextExpression(currentGeneratedKey.toString()));
+        } else {
+            insertValuesToken.getColumnValues().get(currentIndex).getValues().add(new SQLNumberExpression((Number) currentGeneratedKey));
+        }
     }
     
     private InsertShardingCondition getInsertShardingCondition(final Comparable<?> currentGeneratedKey, final InsertValue insertValue, final List<Object> currentParameters) {
