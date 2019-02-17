@@ -40,7 +40,6 @@ public final class InsertValuesToken extends SQLToken {
     
     private final List<InsertColumnValue> columnValues = new LinkedList<>();
     
-    
     public InsertValuesToken(final int startIndex, final DefaultKeyword type) {
         super(startIndex);
         this.type = type;
