@@ -22,6 +22,7 @@ import com.google.common.collect.Collections2;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -96,6 +97,17 @@ public final class InsertValuesToken extends SQLToken {
                 }
             }));
             return sqlPlaceholderExpressions.indexOf(sqlExpression);
+        }
+        
+        public String getColumnValue(final int columnValueIndex) {
+            SQLExpression sqlExpression = values.get(columnValueIndex);
+            if (sqlExpression instanceof SQLPlaceholderExpression) {
+                return parameters.get(columnValueIndex).toString();
+            } else if (sqlExpression instanceof SQLTextExpression) {
+                return ((SQLTextExpression) sqlExpression).getText();
+            } else {
+                return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
+            }
         }
     }
 }
