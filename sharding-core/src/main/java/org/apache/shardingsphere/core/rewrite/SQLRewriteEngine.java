@@ -243,7 +243,7 @@ public final class SQLRewriteEngine {
     }
     
     private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count) {
-        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(insertValuesToken.getTableName().toLowerCase(), shardingConditions));
+        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertValuesToken.getType(), insertValuesToken.getColumnNames(), insertValuesToken.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
     }
     
