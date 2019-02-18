@@ -222,8 +222,8 @@ public final class InsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(0));
-        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("(12,'a', 1)"));
+        assertThat(insertStatementWithValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(insertStatementWithValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(12,'a', 1)"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 12);
         assertTrue(insertStatementWithValuesWithoutPlaceHolder.isContainGenerateKey());
