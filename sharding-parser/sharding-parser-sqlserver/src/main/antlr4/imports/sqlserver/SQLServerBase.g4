@@ -74,7 +74,7 @@ windowFrameFollowing
     : UNBOUNDED FOLLOWING | NUMBER_ FOLLOWING | CURRENT ROW
     ;
 
-columnList
+columnNames
     : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
 

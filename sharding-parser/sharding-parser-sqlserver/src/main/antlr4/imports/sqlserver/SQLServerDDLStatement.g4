@@ -3,7 +3,7 @@ grammar SQLServerDDLStatement;
 import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
 
 createIndex
-    : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnList
+    : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnNames
     ;
 
 alterIndex
@@ -61,9 +61,9 @@ periodClause
 tableIndex
     : INDEX indexName
     (
-        (CLUSTERED | NONCLUSTERED)? columnList
+        (CLUSTERED | NONCLUSTERED)? columnNames
         | CLUSTERED COLUMNSTORE
-        | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
+        | NONCLUSTERED? (COLUMNSTORE columnNames | hashWithBucket) 
         | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER_ MINUTES?) RP_)?
     )
     (WHERE expr)?
@@ -154,7 +154,7 @@ memoryTablePrimaryKeyConstraintOption
     ;
 
 hashWithBucket
-    : HASH columnList withBucket
+    : HASH columnNames withBucket
     ;
 
 withBucket
@@ -210,15 +210,15 @@ primaryKeyUnique
     ;
 
 diskTablePrimaryConstraintOption
-    : (CLUSTERED | NONCLUSTERED)? columnList primaryKeyWithClause? primaryKeyOnClause?
+    : (CLUSTERED | NONCLUSTERED)? columnNames primaryKeyWithClause? primaryKeyOnClause?
     ;
 
 memoryTablePrimaryConstraintOption
-    : NONCLUSTERED (columnList | hashWithBucket)
+    : NONCLUSTERED (columnNames | hashWithBucket)
     ;
 
 tableForeignKeyConstraint
-    : (FOREIGN KEY)? columnList REFERENCES tableName columnList foreignKeyOnAction*
+    : (FOREIGN KEY)? columnNames REFERENCES tableName columnNames foreignKeyOnAction*
     ;
 
 computedColumnDefinition

@@ -50,7 +50,7 @@ tableNames
     : tableName (COMMA_ tableName)*
     ;
 
-columnList
+columnNames
     : LP_ columnName (COMMA_ columnName)* RP_
     ;
 

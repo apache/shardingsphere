@@ -163,7 +163,7 @@ constraintOption
     ;
 
 constraintPrimaryOrUnique
-    : primaryKey | UNIQUE columnList
+    : primaryKey | UNIQUE columnNames
     ;
 
 renameConstraintClause
@@ -213,7 +213,7 @@ inlineConstraint
     ;
 
 referencesClause
-    : REFERENCES tableName columnList? (ON DELETE (CASCADE | SET NULL))?
+    : REFERENCES tableName columnNames? (ON DELETE (CASCADE | SET NULL))?
     ;
 
 constraintState
@@ -252,9 +252,9 @@ inlineRefConstraint
 outOfLineConstraint
     : (CONSTRAINT ignoredIdentifier_)?
     (
-    	UNIQUE columnList
-        | primaryKey columnList 
-        | FOREIGN KEY columnList referencesClause
+    	UNIQUE columnNames
+        | primaryKey columnNames 
+        | FOREIGN KEY columnNames referencesClause
         | CHECK LP_ expr RP_
     ) 
     constraintState*

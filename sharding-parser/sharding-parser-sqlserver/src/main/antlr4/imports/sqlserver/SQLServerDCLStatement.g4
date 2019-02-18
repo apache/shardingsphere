@@ -19,7 +19,7 @@ classPrivilegesClause_
     ;
 
 classPrivileges_
-    : (ALL PRIVILEGES? | (privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*))
+    : (ALL PRIVILEGES? | (privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*))
     ;
 
 onClassClause_

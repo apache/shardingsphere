@@ -11,7 +11,7 @@ revoke
     ;
 
 privileges_
-    : privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*
+    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
 
 privilegeType_

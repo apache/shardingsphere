@@ -88,7 +88,7 @@ constraintDefinition
     ;
 
 primaryKeyOption_
-    : primaryKey indexType? columnList indexOption*
+    : primaryKey indexType? columnNames indexOption*
     ;
 
 uniqueOption_
@@ -96,7 +96,7 @@ uniqueOption_
     ;
 
 foreignKeyOption_
-    : FOREIGN KEY indexName? columnList referenceDefinition_
+    : FOREIGN KEY indexName? columnNames referenceDefinition_
     ;
 
 indexDefinition
@@ -258,7 +258,7 @@ partitionOptions_
     ;
 
 linearPartition_
-    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnList)
+    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNames)
     ;
 
 yearFunctionExpr_
@@ -266,7 +266,7 @@ yearFunctionExpr_
     ;
 
 rangeOrListPartition_
-    : (RANGE | LIST) (expr | COLUMNS columnList)
+    : (RANGE | LIST) (expr | COLUMNS columnNames)
     ;
 
 partitionDefinitions_

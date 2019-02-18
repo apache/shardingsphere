@@ -190,9 +190,9 @@ tableConstraint
 
 tableConstraintOption
     : checkOption
-    | UNIQUE columnList indexParameters
-    | primaryKey columnList indexParameters
-    | FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
+    | UNIQUE columnNames indexParameters
+    | primaryKey columnNames indexParameters
+    | FOREIGN KEY columnNames REFERENCES tableName columnNames (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
     ;
 
 excludeElement

@@ -7,7 +7,7 @@ insert
     ;
 
 columnClause
-    : columnList? (valueClause | select)
+    : columnNames? (valueClause | select)
     ;
 
 valueClause

@@ -127,5 +127,5 @@ limitClause
     ;
 
 partitionClause 
-    : PARTITION columnList
+    : PARTITION columnNames
     ;
