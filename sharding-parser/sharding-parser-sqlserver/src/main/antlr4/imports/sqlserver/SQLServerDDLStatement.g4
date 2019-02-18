@@ -75,9 +75,9 @@ tableOption
     : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
     | FILETABLE_DIRECTORY EQ_ ignoredIdentifier_ 
     | FILETABLE_COLLATE_FILENAME EQ_ (collationName | DATABASE_DEAULT)
-    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ constraintName
-    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
-    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
+    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ ignoredIdentifier_
+    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
+    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
     | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
     | REMOTE_DATA_ARCHIVE EQ_ (ON (LP_ tableStretchOptions (COMMA_ tableStretchOptions)* RP_)? | OFF LP_ MIGRATION_STATE EQ_ PAUSED RP_)
     | tableOptOption
@@ -114,7 +114,7 @@ columnDefinitionOption
     | COLLATE collationName
     | SPARSE
     | MASKED WITH LP_ FUNCTION EQ_ STRING_ RP_
-    | (CONSTRAINT constraintName)? DEFAULT expr
+    | (CONSTRAINT ignoredIdentifier_)? DEFAULT expr
     | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
@@ -126,7 +126,7 @@ columnDefinitionOption
     ;
 
 columnConstraint
-    : (CONSTRAINT constraintName)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT ignoredIdentifier_)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
     ;
 
 primaryKeyConstraint
@@ -198,7 +198,7 @@ onDefault
     ;
 
 tableConstraint 
-    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT ignoredIdentifier_)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
     ;
 
 tablePrimaryConstraint
@@ -259,7 +259,7 @@ alterColumnAddOption
     ;
 
 constraintForColumn
-    : (CONSTRAINT constraintName)? DEFAULT simpleExpr FOR columnName
+    : (CONSTRAINT ignoredIdentifier_)? DEFAULT simpleExpr FOR columnName
     ;
 
 columnNameWithSortsWithParen
@@ -275,11 +275,11 @@ columnNameGeneratedClause
     ;
 
 columnNameGenerated
-    : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
+    : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
     ;
 
 alterDrop
-    : DROP 
+    : DROP
     (
         alterTableDropConstraint
         | dropColumn
@@ -293,7 +293,7 @@ alterTableDropConstraint
     ;
 
 dropConstraintName
-    : constraintName dropConstraintWithClause?
+    : ignoredIdentifier_ dropConstraintWithClause?
     ;
 
 dropConstraintWithClause
@@ -313,7 +313,7 @@ dropIndexDef
     ;
 
 alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (constraintName (COMMA_ constraintName)*))
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
     ;
 
 alterTrigger 

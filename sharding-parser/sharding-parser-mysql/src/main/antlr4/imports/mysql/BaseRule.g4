@@ -26,24 +26,16 @@ alias
     : ID
     ;
 
-constraintName
-    : ID
+dataTypeLength
+    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
 primaryKey
     : PRIMARY? KEY
     ;
 
-matchNone
-    : 'Default does not match anything'
-    ;
-
-ids
-    : ID (COMMA_ ID)*
-    ;
-
-idList
-    : LP_ ids RP_
+identifiers
+    : LP_ ID (COMMA_ ID)* RP_
     ;
 
 rangeClause
@@ -259,4 +251,8 @@ ignoredIdentifier_
 
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+    ;
+
+matchNone
+    : 'Default does not match anything'
     ;

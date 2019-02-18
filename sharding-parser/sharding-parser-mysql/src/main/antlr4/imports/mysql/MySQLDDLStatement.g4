@@ -27,15 +27,11 @@ columnDefinition
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength_? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
 dataTypeName_
     : ID ID | ID
-    ;
-
-dataTypeLength_
-    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
 characterSet_
@@ -68,7 +64,7 @@ defaultValue_
     ;
 
 currentTimestampType_
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength_?
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength?
     ;
 
 referenceDefinition_

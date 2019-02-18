@@ -87,9 +87,9 @@ alterTableAction
     | dropColumn
     | modifyColumn
     | addConstraint
-    | ALTER CONSTRAINT constraintName constraintOptionalParam
-    | VALIDATE CONSTRAINT constraintName
-    | DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?
+    | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
+    | VALIDATE CONSTRAINT ignoredIdentifier_
+    | DROP CONSTRAINT (IF EXISTS)? ignoredIdentifier_ (RESTRICT | CASCADE)?
     | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
     | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
     | (DISABLE | ENABLE) RULE ignoredIdentifier_
@@ -111,7 +111,7 @@ alterTableAction
     ;
 
 tableConstraintUsingIndex
-    : (CONSTRAINT constraintName)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
+    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
 addColumn
@@ -161,7 +161,7 @@ renameColumn
     ;
 
 renameConstraint
-    : RENAME CONSTRAINT constraintName TO constraintName
+    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
     ;
 
 storageParameterWithValue

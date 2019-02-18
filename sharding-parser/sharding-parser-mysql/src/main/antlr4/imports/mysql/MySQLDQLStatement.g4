@@ -15,7 +15,7 @@ unionSelect
     ;
 
 cteClause
-    : ignoredIdentifier_ idList? AS subquery
+    : ignoredIdentifier_ identifiers? AS subquery
     ;
 
 selectExpression
@@ -71,7 +71,7 @@ caseResult
     ;
 
 idListWithEmpty
-    : LP_ RP_ | idList
+    : LP_ RP_ | identifiers
     ;
 
 tableReferences
@@ -83,7 +83,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (PARTITION idList)? (AS? alias)? indexHintList? | subquery AS? alias | LP_ tableReferences RP_
+    : tableName (PARTITION identifiers)? (AS? alias)? indexHintList? | subquery AS? alias | LP_ tableReferences RP_
     ;
 
 joinTable
@@ -95,7 +95,7 @@ joinTable
     ;
 
 joinCondition
-    : ON expr | USING idList
+    : ON expr | USING identifiers
     ;
 
 indexHintList

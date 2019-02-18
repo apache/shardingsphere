@@ -15,7 +15,7 @@ columnConstraint
     ;
 
 constraintClause
-    : CONSTRAINT constraintName
+    : CONSTRAINT ignoredIdentifier_
     ;
 
 columnConstraintOption
