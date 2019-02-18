@@ -7,7 +7,7 @@ ID
     ;
 
 dataType
-    : typeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RP_)?
+    : typeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
     ;
 
 privateExprOfDb

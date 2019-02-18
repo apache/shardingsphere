@@ -47,7 +47,7 @@ tablespaceClauseWithParen
     ;
 
 tablespaceClause
-    : TABLESPACE tablespaceName
+    : TABLESPACE ignoredIdentifier_
     ;
 
 domainIndexClause

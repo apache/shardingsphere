@@ -3,11 +3,11 @@ grammar PostgreSQLDCLStatement;
 import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, BaseRule, DataType;
 
 grant
-    : GRANT (privileges_ ON onObjectClause_ | roleNames)
+    : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 revoke
-    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | roleNames)
+    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 privileges_

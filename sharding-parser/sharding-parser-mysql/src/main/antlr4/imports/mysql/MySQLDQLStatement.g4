@@ -15,7 +15,7 @@ unionSelect
     ;
 
 cteClause
-    : cteName idList? AS subquery
+    : ignoredIdentifier_ idList? AS subquery
     ;
 
 selectExpression

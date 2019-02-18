@@ -18,10 +18,6 @@ columnName
     : ID
     ;
 
-tablespaceName
-    : ID
-    ;
-
 collationName
     : STRING_ | ID
     ;
@@ -34,75 +30,11 @@ alias
     : ID
     ;
 
-cteName
-    : ID
-    ;
-
-parserName
-    : ID
-    ;
-
-extensionName
-    : ID
-    ;
-
-rowName
-    : ID
-    ;
-
-opclass
-    : ID
-    ;
-
-fileGroup
-    : ID
-    ;
-
-groupName
-    : ID
-    ;
-
 constraintName
     : ID
     ;
 
-keyName
-    : ID
-    ;
-
 typeName
-    : ID
-    ;
-
-xmlSchemaCollection
-    : ID
-    ;
-
-columnSetName
-    : ID
-    ;
-
-directoryName
-    : ID
-    ;
-
-triggerName
-    : ID
-    ;
-
-roleName
-    : STRING_ | ID
-    ;
-
-partitionName
-    : ID
-    ;
-
-rewriteRuleName
-    : ID
-    ;
-
-ownerName
     : ID
     ;
 
@@ -160,14 +92,6 @@ indexNames
 
 indexList
     : LP_ indexNames RP_
-    ;
-
-rowNames
-    : rowName (COMMA_ rowName)*
-    ;
-
-roleNames
-    : roleName (COMMA_ roleName)*
     ;
 
 exprs
@@ -339,4 +263,12 @@ selectExprs
 
 selectExpr
     : (columnName | expr) AS? alias? | columnName DOT_ASTERISK_
+    ;
+
+ignoredIdentifier_
+    : ID
+    ;
+
+ignoredIdentifiers_
+    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
     ;

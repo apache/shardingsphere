@@ -92,7 +92,7 @@ dataTypeGenerated_
     ;
 
 constraintDefinition
-    : (CONSTRAINT symbol?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
 primaryKeyOption_
@@ -151,18 +151,18 @@ alterSpecification_
     | renameTable
     | (WITHOUT | WITH) VALIDATION
     | ADD PARTITION partitionDefinitions_
-    | DROP PARTITION partitionNames
-    | DISCARD PARTITION (partitionNames | ALL) TABLESPACE
-    | IMPORT_ PARTITION (partitionNames | ALL) TABLESPACE
-    | TRUNCATE PARTITION (partitionNames | ALL)
+    | DROP PARTITION ignoredIdentifiers_
+    | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | IMPORT_ PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | TRUNCATE PARTITION (ignoredIdentifiers_ | ALL)
     | COALESCE PARTITION NUMBER_
-    | REORGANIZE PARTITION partitionNames INTO partitionDefinitions_
-    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
-    | ANALYZE PARTITION (partitionNames | ALL)
-    | CHECK PARTITION (partitionNames | ALL)
-    | OPTIMIZE PARTITION (partitionNames | ALL)
-    | REBUILD PARTITION (partitionNames | ALL)
-    | REPAIR PARTITION (partitionNames | ALL)
+    | REORGANIZE PARTITION ignoredIdentifiers_ INTO partitionDefinitions_
+    | EXCHANGE PARTITION ignoredIdentifier_ WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
+    | ANALYZE PARTITION (ignoredIdentifiers_ | ALL)
+    | CHECK PARTITION (ignoredIdentifiers_ | ALL)
+    | OPTIMIZE PARTITION (ignoredIdentifiers_ | ALL)
+    | REBUILD PARTITION (ignoredIdentifiers_ | ALL)
+    | REPAIR PARTITION (ignoredIdentifiers_ | ALL)
     | REMOVE PARTITIONING
     | UPGRADE PARTITIONING
     ;
@@ -253,7 +253,7 @@ tableOption_
     | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
     | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
     | STATS_SAMPLE_PAGES EQ_? NUMBER_
-    | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
+    | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
     | UNION EQ_? tableList
     ;
 
@@ -282,7 +282,7 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION partitionName (VALUES (lessThanPartition_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    : PARTITION ignoredIdentifier_ (VALUES (lessThanPartition_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
     ;
 
 partitionDefinitionOption_
@@ -292,7 +292,7 @@ partitionDefinitionOption_
     | INDEX DIRECTORY EQ_? STRING_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
-    | TABLESPACE EQ_? tablespaceName
+    | TABLESPACE EQ_? ignoredIdentifier_
     ;
 
 lessThanPartition_
@@ -300,11 +300,7 @@ lessThanPartition_
     ;
 
 subpartitionDefinition_
-    : SUBPARTITION partitionName partitionDefinitionOption_*
-    ;
-
-partitionNames
-    : partitionName (COMMA_ partitionName)*
+    : SUBPARTITION ignoredIdentifier_ partitionDefinitionOption_*
     ;
 
 dropTable

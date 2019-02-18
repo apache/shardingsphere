@@ -14,10 +14,6 @@ columnName
     : ID | ROW
     ;
 
-symbol
-    : ID
-    ;
-
 indexType
     : USING (BTREE | HASH)
     ;
@@ -27,7 +23,7 @@ indexAndKey
     ;
 
 indexOption
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING_
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
     ;
 
 assignmentValueList

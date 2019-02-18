@@ -39,11 +39,11 @@ renameIndex
     ;
 
 alterIndexDependsOnExtension
-    : ALTER INDEX indexName DEPENDS ON EXTENSION extensionName
+    : ALTER INDEX indexName DEPENDS ON EXTENSION ignoredIdentifier_
     ;
 
 alterIndexSetTableSpace
-    : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY rowNames)?
+    : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY ignoredIdentifiers_)?
     ;
 
 tableNameParts
@@ -90,15 +90,15 @@ alterTableAction
     | ALTER CONSTRAINT constraintName constraintOptionalParam
     | VALIDATE CONSTRAINT constraintName
     | DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?
-    | (DISABLE | ENABLE) TRIGGER (triggerName | ALL | USER)?
-    | ENABLE (REPLICA | ALWAYS) TRIGGER triggerName
-    | (DISABLE | ENABLE) RULE rewriteRuleName
-    | ENABLE (REPLICA | ALWAYS) RULE rewriteRuleName
+    | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
+    | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
+    | (DISABLE | ENABLE) RULE ignoredIdentifier_
+    | ENABLE (REPLICA | ALWAYS) RULE ignoredIdentifier_
     | (DISABLE | ENABLE | (NO? FORCE)) ROW LEVEL SECURITY
     | CLUSTER ON indexName
     | SET WITHOUT CLUSTER
     | SET (WITH | WITHOUT) OIDS
-    | SET TABLESPACE tablespaceName
+    | SET TABLESPACE ignoredIdentifier_
     | SET (LOGGED | UNLOGGED)
     | SET LP_ storageParameterWithValue (COMMA_ storageParameterWithValue)* RP_
     | RESET LP_ storageParameter (COMMA_ storageParameter)* RP_
@@ -106,7 +106,7 @@ alterTableAction
     | NO INHERIT tableName
     | OF typeName
     | NOT OF
-    | OWNER TO (ownerName | CURRENT_USER | SESSION_USER)
+    | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
     ;
 
@@ -196,5 +196,5 @@ tableConstraintOption
     ;
 
 excludeElement
-    : (columnName | expr) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
+    : (columnName | expr) ignoredIdentifier_? (ASC | DESC)? (NULLS (FIRST | LAST))?
     ;

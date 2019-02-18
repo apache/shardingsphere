@@ -53,7 +53,7 @@ sequenceOption
     ;
 
 indexParameters
-    : (USING INDEX TABLESPACE tablespaceName)?
+    : (USING INDEX TABLESPACE ignoredIdentifier_)?
     ;
 
 action

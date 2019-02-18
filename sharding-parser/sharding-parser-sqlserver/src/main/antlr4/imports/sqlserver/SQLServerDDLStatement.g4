@@ -46,8 +46,8 @@ createTableHeader
     ;
 
 createTableBody
-    : (AS FILETABLE)? LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_(ON (schemaName LP_ columnName RP_ | fileGroup | STRING_))?
-    (TEXTIMAGE_ON (fileGroup | STRING_))? ((FILESTREAM_ON (schemaName) | fileGroup STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
+    : (AS FILETABLE)? LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_(ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
+    (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
     ;
 
 createTableDefinition
@@ -68,12 +68,12 @@ tableIndex
     )
     (WHERE expr)?
     (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause?
-    (FILESTREAM_ON (groupName | schemaName | STRING_))?
+    (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
     ;
 
 tableOption
     : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
-    | FILETABLE_DIRECTORY EQ_ directoryName 
+    | FILETABLE_DIRECTORY EQ_ ignoredIdentifier_ 
     | FILETABLE_COLLATE_FILENAME EQ_ (collationName | DATABASE_DEAULT)
     | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ constraintName
     | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
@@ -120,7 +120,7 @@ columnDefinitionOption
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
-    | ENCRYPTED WITH LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
+    | ENCRYPTED WITH LP_ COLUMN_ENCRYPTION_KEY EQ_ ignoredIdentifier_ COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
     | columnConstraint (COMMA_ columnConstraint)*
     | columnIndex
     ;
@@ -174,7 +174,7 @@ onSchemaColumn
     ;
 
 onFileGroup
-    : ON fileGroup
+    : ON ignoredIdentifier_
     ;
 
 onString
@@ -186,7 +186,7 @@ checkConstraint
     ;
 
 columnIndex
-    : INDEX indexName (CLUSTERED | NONCLUSTERED)? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (fileGroup | schemaName | STRING_))?
+    : INDEX indexName (CLUSTERED | NONCLUSTERED)? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
     ;
 
 indexOnClause
@@ -226,7 +226,7 @@ computedColumnDefinition
     ;
 
 columnSetDefinition 
-    : columnSetName ID COLUMN_SET FOR ALL_SPARSE_COLUMNS
+    : ignoredIdentifier_ ID COLUMN_SET FOR ALL_SPARSE_COLUMNS
     ;
 
 alterTableOp
@@ -301,7 +301,7 @@ dropConstraintWithClause
     ;
 
 dropConstraintOption
-    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ (ON | OFF) | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING_))
+    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ (ON | OFF) | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))
     ;
 
 dropColumn
@@ -317,7 +317,7 @@ alterCheckConstraint
     ;
 
 alterTrigger 
-    : (ENABLE| DISABLE) TRIGGER (ALL | (triggerName (COMMA_ triggerName)*))
+    : (ENABLE| DISABLE) TRIGGER (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
     ;
 
 alterSwitch
@@ -329,7 +329,7 @@ alterSet
     ;
 
 setFileStreamClause
-    : FILESTREAM_ON EQ_ (schemaName | fileGroup | STRING_)
+    : FILESTREAM_ON EQ_ (schemaName | ignoredIdentifier_ | STRING_)
     ;
 
 setSystemVersionClause
@@ -359,7 +359,7 @@ indexNonClusterClause
     ;
 
 alterTableIndexOnClause
-    : ON groupName | DEFAULT
+    : ON ignoredIdentifier_ | DEFAULT
     ;
 
 indexClusterClause
