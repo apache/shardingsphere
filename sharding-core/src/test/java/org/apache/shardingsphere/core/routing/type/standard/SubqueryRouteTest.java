@@ -65,7 +65,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     public void assertBindingTableWithDifferentValue() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
-        parameters.add(1);
+        parameters.add(2);
         parameters.add(3);
         assertRoute(sql, parameters);
     }
@@ -74,7 +74,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     public void assertTwoTableWithDifferentOperator() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        parameters.add(3);
+        parameters.add(2);
         parameters.add(1);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
         assertRoute(sql, parameters);
@@ -84,7 +84,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     public void assertTwoTableWithIn() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        parameters.add(3);
+        parameters.add(2);
         parameters.add(1);
         parameters.add(3);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
@@ -95,7 +95,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     public void assertSubqueryInSubqueryError() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(11);
-        parameters.add(1);
+        parameters.add(2);
         parameters.add(1);
         parameters.add(1);
         String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
@@ -153,7 +153,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     public void assertSubqueryWithoutHint() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        parameters.add(3);
+        parameters.add(2);
         parameters.add(5);
         String sql = "select count(*) from t_hint_test where user_id = (select t_hint_test from t_hint_test where user_id in (?,?,?)) ";
         assertRoute(sql, parameters);
