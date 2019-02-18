@@ -164,14 +164,13 @@ public final class SQLBuilder {
                                                final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
             appendInsertColumnValue(tableUnit, each, insertParameters, stringBuilder);
-            stringBuilder.append(", ");
         }
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
     }
     
     private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         if (insertColumnValue.getDataNodes().isEmpty() || isToAppendInsertColumnValue(tableUnit, insertColumnValue)) {
-            stringBuilder.append(insertColumnValue);
+            stringBuilder.append(insertColumnValue).append(", ");
             insertParameters.addAll(insertColumnValue.getParameters());
         }
     }
