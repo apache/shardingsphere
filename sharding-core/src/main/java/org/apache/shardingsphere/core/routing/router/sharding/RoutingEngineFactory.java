@@ -89,7 +89,7 @@ public final class RoutingEngineFactory {
             return new StandardRoutingEngine(sqlStatement, shardingRule, shardingTableNames.iterator().next(), shardingConditions);
         }
         // TODO config for cartesian set
-        return new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
+        return new ComplexRoutingEngine(sqlStatement, shardingRule, tableNames, shardingConditions);
     }
     
     private static RoutingEngine getDALRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
