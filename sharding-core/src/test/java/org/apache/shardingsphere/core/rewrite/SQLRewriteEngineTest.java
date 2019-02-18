@@ -255,8 +255,11 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(itemsToken);
         insertStatement.addSQLToken(new InsertColumnToken(21, ")"));
         insertStatement.addSQLToken(new InsertValuesToken(29, DefaultKeyword.VALUES));
-        InsertShardingCondition shardingCondition = new InsertShardingCondition("(10, 1)", parameters);
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLNumberExpression(10));
+        sqlExpressions.add(new SQLNumberExpression(1));
+        insertStatement.getInsertValuesToken().addInsertColumnValue(sqlExpressions, new LinkedList<>());
+        insertStatement.getInsertValuesToken().getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
