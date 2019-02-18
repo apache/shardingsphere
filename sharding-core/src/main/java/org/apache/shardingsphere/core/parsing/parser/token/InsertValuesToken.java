@@ -66,6 +66,10 @@ public final class InsertValuesToken extends SQLToken {
         this.columnValues.add(result);
     }
     
+    public String getColumnName(final int index) {
+        return new ArrayList<>(columnNames).get(index);
+    }
+    
     @Getter
     public final class InsertColumnValue {
     
