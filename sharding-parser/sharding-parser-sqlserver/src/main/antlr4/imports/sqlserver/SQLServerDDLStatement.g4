@@ -38,7 +38,7 @@ truncateTable
     ;
 
 dropTable
-    : DROP TABLE (IF EXISTS)? tableNames
+    : DROP TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
     ;
 
 createTableHeader

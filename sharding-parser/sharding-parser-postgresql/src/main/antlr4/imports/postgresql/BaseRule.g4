@@ -46,14 +46,6 @@ rangeItem
     : number | question
     ;
 
-tableList
-    : LP_ tableNames RP_
-    ;
-
-tableNames
-    : tableName (COMMA_ tableName)*
-    ;
-
 columnNames
     : LP_ columnName (COMMA_ columnName)* RP_
     ;

@@ -134,7 +134,7 @@ alterSpecification_
     | dropColumn
     | dropIndexDef
     | dropPrimaryKey
-    | DROP FOREIGN KEY fkSymbol
+    | DROP FOREIGN KEY ignoredIdentifier_
     | FORCE
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumn
@@ -203,10 +203,6 @@ dropPrimaryKey
     : DROP primaryKey
     ;
 
-fkSymbol
-    : ID
-    ;
-
 modifyColumn
     : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
@@ -234,7 +230,7 @@ tableOption_
     | (DATA | INDEX) DIRECTORY EQ_? STRING_
     | DELAY_KEY_WRITE EQ_? NUMBER_
     | ENCRYPTION EQ_? STRING_
-    | ENGINE EQ_? engineName_
+    | ENGINE EQ_? ignoredIdentifier_
     | INSERT_METHOD EQ_? (NO | FIRST | LAST)
     | KEY_BLOCK_SIZE EQ_? NUMBER_
     | MAX_ROWS EQ_? NUMBER_
@@ -246,11 +242,11 @@ tableOption_
     | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
     | STATS_SAMPLE_PAGES EQ_? NUMBER_
     | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_? tableList
+    | UNION EQ_? tableNames_
     ;
 
-engineName_
-    : ID | MEMORY
+tableNames_
+    : LP_ tableName (COMMA_ tableName)* RP_
     ;
 
 partitionOptions_
@@ -278,7 +274,7 @@ partitionDefinition_
     ;
 
 partitionDefinitionOption_
-    : STORAGE? ENGINE EQ_? engineName_
+    : STORAGE? ENGINE EQ_? ignoredIdentifier_
     | COMMENT EQ_? STRING_
     | DATA DIRECTORY EQ_? STRING_
     | INDEX DIRECTORY EQ_? STRING_
@@ -296,7 +292,7 @@ subpartitionDefinition_
     ;
 
 dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableNames
+    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
     ;
 
 truncateTable

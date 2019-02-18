@@ -45,7 +45,7 @@ onObjectClause_
     | SCHEMA
     | TABLESPACE
     | TYPE
-    | TABLE? tableNames
+    | TABLE? tableName (COMMA_ tableName)*
     ;
 
 createUser
