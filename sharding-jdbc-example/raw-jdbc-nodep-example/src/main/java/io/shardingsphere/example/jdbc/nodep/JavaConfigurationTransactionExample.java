@@ -20,6 +20,7 @@ package io.shardingsphere.example.jdbc.nodep;
 import io.shardingsphere.example.jdbc.nodep.factory.CommonTransactionServiceFactory;
 import io.shardingsphere.example.repository.api.senario.Scenario;
 import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
+import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.type.ShardingType;
 
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class JavaConfigurationTransactionExample {
 //    private static boolean isRangeSharding = true;
     
     public static void main(final String[] args) throws SQLException {
-        Scenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(type));
+        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(type));
         scenario.executeShardingCRUDSuccess();
         scenario.executeShardingCRUDFailure();
     }

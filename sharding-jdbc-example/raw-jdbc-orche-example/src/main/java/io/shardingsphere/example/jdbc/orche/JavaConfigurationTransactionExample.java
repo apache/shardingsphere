@@ -20,6 +20,7 @@ package io.shardingsphere.example.jdbc.orche;
 import io.shardingsphere.example.jdbc.orche.factory.CommonTransactionServiceFactory;
 import io.shardingsphere.example.repository.api.senario.Scenario;
 import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
+import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
 
@@ -43,7 +44,8 @@ public class JavaConfigurationTransactionExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
-        Scenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter));
+        TransactionService transactionService = CommonTransactionServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(transactionService);
         scenario.executeShardingCRUDSuccess();
         scenario.executeShardingCRUDFailure();
     }

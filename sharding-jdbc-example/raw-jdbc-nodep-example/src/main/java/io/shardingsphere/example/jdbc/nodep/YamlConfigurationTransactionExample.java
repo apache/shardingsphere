@@ -37,7 +37,7 @@ public class YamlConfigurationTransactionExample {
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) throws SQLException, IOException {
-        Scenario scenario = new TransactionServiceScenario(YamlCommonTransactionServiceFactory.newInstance(type));
+        TransactionServiceScenario scenario = new TransactionServiceScenario(YamlCommonTransactionServiceFactory.newInstance(type));
         scenario.executeShardingCRUDSuccess();
         scenario.executeShardingCRUDFailure();
     }
