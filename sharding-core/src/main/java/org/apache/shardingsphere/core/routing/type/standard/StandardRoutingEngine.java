@@ -208,9 +208,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
-            ListRouteValue listRouteValue = (ListRouteValue) shardingCondition.getShardingValues().get(0);
-    
-            fillInsertColumnValue(dataNodes, listRouteValue);
+            for (RouteValue each : shardingCondition.getShardingValues()) {
+                fillInsertColumnValue(dataNodes, (ListRouteValue) each);
+            }
         }
     }
     
