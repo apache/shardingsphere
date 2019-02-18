@@ -160,7 +160,8 @@ public final class SQLBuilder {
         }
     }
     
-    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, 
+                                               final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
             appendInsertColumnValue(tableUnit, each, insertParameters, stringBuilder);
             stringBuilder.append(", ");
