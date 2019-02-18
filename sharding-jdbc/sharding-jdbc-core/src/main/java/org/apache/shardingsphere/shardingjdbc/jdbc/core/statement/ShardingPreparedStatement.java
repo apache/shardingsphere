@@ -214,8 +214,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             sqlRoute();
             batchPreparedStatementExecutor.addBatchForRouteUnits(routeResult);
+            System.err.println(routeResult.getRouteUnits());
         } finally {
             currentResultSet = null;
+            routingEngine.clearBatchInsertColumnValues();
             clearParameters();
         }
     }
