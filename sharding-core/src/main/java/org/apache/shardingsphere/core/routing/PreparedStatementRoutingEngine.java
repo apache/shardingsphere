@@ -65,6 +65,10 @@ public final class PreparedStatementRoutingEngine {
         return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, sqlStatement));
     }
     
+    /**
+     * Clear batch insert column values.
+     * 
+     */
     public void clearBatchInsertColumnValues() {
         if (sqlStatement instanceof InsertStatement) {
             ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues().clear();
