@@ -290,6 +290,9 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteColumnWithoutColumnsWithParameter() {
+        insertStatement.getColumns().add(new Column("name", "table_x"));
+        insertStatement.getColumns().add(new Column("id", "table_x"));
+        insertStatement.getTables().add(new Table("table_x", Optional.<String>absent()));
         List<Object> parameters = new ArrayList<>(2);
         parameters.add("x");
         parameters.add(1);
@@ -304,6 +307,8 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(itemsToken);
         insertStatement.addSQLToken(new InsertColumnToken(21, ")"));
         insertStatement.addSQLToken(new InsertValuesToken(29, DefaultKeyword.VALUES));
+        insertStatement.getInsertValuesToken().getColumnNames().add("name");
+        insertStatement.getInsertValuesToken().getColumnNames().add("id");
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLPlaceholderExpression(0));
         sqlExpressions.add(new SQLPlaceholderExpression(1));
