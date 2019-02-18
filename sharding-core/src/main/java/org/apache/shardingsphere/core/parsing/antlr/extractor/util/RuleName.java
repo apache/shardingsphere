@@ -149,7 +149,7 @@ public enum RuleName {
     
     ASSIGNMENT("Assignment"),
     
-    ON_DUPLICATE_CLAUSE("OnDuplicateClause");
+    ON_DUPLICATE_KEY_CLAUSE("OnDuplicateKeyClause");
     
     private final String name;
     

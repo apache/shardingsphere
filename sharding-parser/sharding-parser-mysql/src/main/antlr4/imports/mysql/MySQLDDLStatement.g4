@@ -11,15 +11,7 @@ createDefinitions_
     ;
 
 createDefinition_
-    : columnDefinition | constraintDefinition | indexDefinition | checkExpr_
-    ;
-
-checkExpr_
-    : CHECK expr
-    ;
-
-createLike_
-    : LIKE tableName | LP_ LIKE tableName RP_
+    : columnDefinition | constraintDefinition | indexDefinition_ | checkExpr_
     ;
 
 columnDefinition
@@ -31,7 +23,7 @@ dataType
     ;
 
 dataTypeName_
-    : ID ID | ID
+    : ID ID?
     ;
 
 characterSet_
@@ -39,11 +31,7 @@ characterSet_
     ;
 
 collateClause_
-    : COLLATE EQ_? collationName_
-    ;
-
-collationName_
-    : STRING_ | ignoredIdentifier_
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
 
 dataTypeOption_
@@ -68,7 +56,7 @@ currentTimestampType_
     ;
 
 referenceDefinition_
-    : REFERENCES tableName LP_ keyParts_ RP_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType_*
+    : REFERENCES tableName keyParts_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType_*
     ;
 
 referenceType_
@@ -92,23 +80,31 @@ primaryKeyOption_
     ;
 
 uniqueOption_
-    : UNIQUE (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
+    : UNIQUE (INDEX | KEY)? indexName? indexType? keyParts_ indexOption*
     ;
 
 foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
     ;
 
-indexDefinition
-    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
+indexDefinition_
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType? keyParts_ indexOption*
     ;
 
 keyParts_
-    : keyPart_ (COMMA_ keyPart_)*
+    : LP_ keyPart_ (COMMA_ keyPart_)* RP_
     ;
 
 keyPart_
     : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
+    ;
+
+checkExpr_
+    : CHECK expr
+    ;
+
+createLike_
+    : LIKE tableName | LP_ LIKE tableName RP_
     ;
 
 alterTable
@@ -176,7 +172,7 @@ addConstraint
     ;
 
 addIndex
-    : ADD indexDefinition
+    : ADD indexDefinition_
     ;
 
 addColumn

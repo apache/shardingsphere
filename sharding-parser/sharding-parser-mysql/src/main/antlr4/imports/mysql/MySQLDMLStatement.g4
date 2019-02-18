@@ -3,7 +3,7 @@ grammar MySQLDMLStatement;
 import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, MySQLBase, BaseRule, DataType;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName (PARTITION columnNames)? (setClause | columnClause) onDuplicateClause?
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause) onDuplicateKeyClause?
     ;
 
 columnClause
@@ -18,7 +18,7 @@ setClause
     : SET assignmentList
     ;
 
-onDuplicateClause
+onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignmentList
     ;
 

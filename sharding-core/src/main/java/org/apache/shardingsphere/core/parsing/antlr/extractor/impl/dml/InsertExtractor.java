@@ -123,7 +123,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private void extractDuplicateKeys(final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
-        Optional<ParserRuleContext> onDuplicateClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ON_DUPLICATE_CLAUSE);
+        Optional<ParserRuleContext> onDuplicateClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ON_DUPLICATE_KEY_CLAUSE);
         if (!onDuplicateClauseNode.isPresent()) {
             return;
         }
