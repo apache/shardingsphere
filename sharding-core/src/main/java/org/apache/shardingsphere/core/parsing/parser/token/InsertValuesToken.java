@@ -159,7 +159,7 @@ public final class InsertValuesToken extends SQLToken {
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 return "?";
             } else if (sqlExpression instanceof SQLTextExpression) {
-                return String.format("\"%s\"", ((SQLTextExpression) sqlExpression).getText());
+                return String.format("'%s'", ((SQLTextExpression) sqlExpression).getText());
             } else {
                 return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
             }
