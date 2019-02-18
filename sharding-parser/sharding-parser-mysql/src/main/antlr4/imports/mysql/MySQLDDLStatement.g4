@@ -96,7 +96,7 @@ uniqueOption_
     ;
 
 foreignKeyOption_
-    : FOREIGN KEY indexName? columnNamesWithParen referenceDefinition_
+    : FOREIGN KEY indexName? columnList referenceDefinition_
     ;
 
 indexDefinition
@@ -258,7 +258,7 @@ partitionOptions_
     ;
 
 linearPartition_
-    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNamesWithParen)
+    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnList)
     ;
 
 yearFunctionExpr_
@@ -266,7 +266,7 @@ yearFunctionExpr_
     ;
 
 rangeOrListPartition_
-    : (RANGE | LIST) (expr | COLUMNS columnNamesWithParen)
+    : (RANGE | LIST) (expr | COLUMNS columnList)
     ;
 
 partitionDefinitions_

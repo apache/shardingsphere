@@ -54,16 +54,8 @@ tableNames
     : tableName (COMMA_ tableName)*
     ;
 
-columnNamesWithParen
-    : LP_ columnNames RP_
-    ;
-
-columnNames
-    : columnName (COMMA_ columnName)*
-    ;
-
 columnList
-    : LP_ columnNames RP_
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 indexNames

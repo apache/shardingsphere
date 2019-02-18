@@ -305,7 +305,7 @@ dropConstraintOption
     ;
 
 dropColumn
-    : COLUMN (IF EXISTS)? columnNames
+    : COLUMN (IF EXISTS)? columnName (COMMA_ columnName)*
     ;
 
 dropIndexDef
