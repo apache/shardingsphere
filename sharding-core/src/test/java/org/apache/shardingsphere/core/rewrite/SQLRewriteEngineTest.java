@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -174,7 +175,7 @@ public final class SQLRewriteEngineTest {
         ItemsToken itemsToken = new ItemsToken(30);
         itemsToken.getItems().add("id");
         insertStatement.addSQLToken(itemsToken);
-        insertStatement.addSQLToken(new InsertValuesToken(39, "table_x"));
+        insertStatement.addSQLToken(new InsertValuesToken(39, DefaultKeyword.VALUES));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(?, ?, ?)", parameters);
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
