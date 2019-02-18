@@ -140,7 +140,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             initStatementExecutor();
             return statementExecutor.executeUpdate();
         } finally {
-            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
+            if(null != routeResult) {
+                refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
+            }
             currentResultSet = null;
         }
     }
@@ -194,7 +196,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             initStatementExecutor();
             return statementExecutor.execute();
         } finally {
-            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
+            if(null != routeResult) {
+                refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
+            }
             currentResultSet = null;
         }
     }
