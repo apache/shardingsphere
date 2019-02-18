@@ -50,14 +50,6 @@ columnNames
     : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
-indexNames
-    : indexName (COMMA_ indexName)*
-    ;
-
-indexList
-    : LP_ indexNames RP_
-    ;
-
 exprs
     : expr (COMMA_ expr)*
     ;

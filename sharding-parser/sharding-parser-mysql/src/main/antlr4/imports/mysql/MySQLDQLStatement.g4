@@ -99,7 +99,7 @@ indexHintList
     ;
 
 indexHint
-    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* indexList
+    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* LP_ indexName (COMMA_ indexName)* RP_
     ;
 
 intervalExpr

@@ -7,7 +7,7 @@ createIndex
     ;
 
 dropIndex
-    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexNames
+    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
     ;
 
 alterIndex
