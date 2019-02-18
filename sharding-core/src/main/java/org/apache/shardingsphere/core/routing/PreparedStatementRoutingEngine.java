@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.routing;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.routing.router.masterslave.ShardingMasterSlaveRouter;
 import org.apache.shardingsphere.core.routing.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.routing.router.sharding.ShardingRouterFactory;
@@ -62,5 +63,11 @@ public final class PreparedStatementRoutingEngine {
             sqlStatement = shardingRouter.parse(logicSQL, true);
         }
         return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, sqlStatement));
+    }
+    
+    public void clearBatchInsertColumnValues() {
+        if (sqlStatement instanceof InsertStatement) {
+            ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues().clear();
+        }
     }
 }
