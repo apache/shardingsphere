@@ -64,7 +64,7 @@ public final class TableUnits {
      */
     public Optional<RoutingTable> findRoutingTable(final String dataSourceName, final String actualTableName) {
         for (TableUnit each : tableUnits) {
-            Optional<RoutingTable> result = each.findRoutingTable(dataSourceName, actualTableName);
+            Optional<RoutingTable> result = each.getRoutingTable(dataSourceName, actualTableName);
             if (result.isPresent()) {
                 return result;
             }
