@@ -125,7 +125,3 @@ rangeClause
 rangeItem_
     : number | question
     ;
-
-partitionClause 
-    : PARTITION columnNames
-    ;
