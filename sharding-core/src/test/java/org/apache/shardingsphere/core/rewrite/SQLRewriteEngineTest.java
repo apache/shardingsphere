@@ -247,13 +247,13 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().add("id");
         insertStatement.addSQLToken(itemsToken);
         insertStatement.addSQLToken(new InsertColumnToken(21, ")"));
-        insertStatement.addSQLToken(new InsertValuesToken(29, "table_x"));
+        insertStatement.addSQLToken(new InsertValuesToken(29, DefaultKeyword.VALUES));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(10, 1)", parameters);
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
+                "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, insertStatement, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO `table_1`(name, id) VALUES (10, 1)"));
     }
     
@@ -272,13 +272,13 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().add("id");
         insertStatement.addSQLToken(itemsToken);
         insertStatement.addSQLToken(new InsertColumnToken(21, ")"));
-        insertStatement.addSQLToken(new InsertValuesToken(29, "table_x"));
+        insertStatement.addSQLToken(new InsertValuesToken(29, DefaultKeyword.VALUES));
         InsertShardingCondition shardingCondition = new InsertShardingCondition("(?, ?)", parameters);
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, insertStatement, new ShardingConditions(Collections.<ShardingCondition>singletonList(shardingCondition)), parameters);
+                "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, insertStatement, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO `table_1`(name, id) VALUES (?, ?)"));
     }
     
