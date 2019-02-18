@@ -157,9 +157,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             initPreparedStatementExecutor();
             return preparedStatementExecutor.executeUpdate();
         } finally {
-            if(null != routeResult) {
-                refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
-            }
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             clearBatch();
         }
     }
@@ -172,9 +170,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             initPreparedStatementExecutor();
             return preparedStatementExecutor.execute();
         } finally {
-            if(null != routeResult) {
-                refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
-            }
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             clearBatch();
         }
     }
