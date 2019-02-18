@@ -34,10 +34,6 @@ primaryKey
     : PRIMARY? KEY
     ;
 
-identifiers
-    : LP_ ID (COMMA_ ID)* RP_
-    ;
-
 rangeClause
     : rangeItem (COMMA_ rangeItem)* | rangeItem OFFSET rangeItem
     ;
