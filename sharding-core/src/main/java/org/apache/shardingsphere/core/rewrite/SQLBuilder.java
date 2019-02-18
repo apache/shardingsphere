@@ -19,9 +19,6 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
@@ -170,18 +167,19 @@ public final class SQLBuilder {
     }
     
     private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        for (DataNode each : insertColumnValue.getDataNodes()) {
-            
+        if (insertColumnValue.getDataNodes().isEmpty()) {
+            stringBuilder.append(insertColumnValue);
+        } else {
+            appendInsertColumnValueByDataNode(tableUnit, insertColumnValue, stringBuilder);
         }
-        
-        for (DataNode each : shardingCondition.getDataNodes()) {
-            if (each.getDataSourceName().equals(tableUnit.getDataSourceName()) && each.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
+    }
+    
+    private void appendInsertColumnValueByDataNode(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final StringBuilder stringBuilder) {
+        for (DataNode each : insertColumnValue.getDataNodes()) {
+            if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
+                stringBuilder.append(insertColumnValue);
                 return;
             }
-        }
-        if (shardingCondition.getDataNodes().isEmpty()) {
-            expressions.add(shardingCondition.getInsertValueExpression());
-            parameters.addAll(shardingCondition.getParameters());
         }
     }
 }
