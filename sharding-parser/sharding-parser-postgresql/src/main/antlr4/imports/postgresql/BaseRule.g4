@@ -38,14 +38,6 @@ primaryKey
     : PRIMARY? KEY
     ;
 
-rangeClause
-    : rangeItem (COMMA_ rangeItem)* | rangeItem OFFSET rangeItem
-    ;
-
-rangeItem
-    : number | question
-    ;
-
 columnNames
     : LP_ columnName (COMMA_ columnName)* RP_
     ;

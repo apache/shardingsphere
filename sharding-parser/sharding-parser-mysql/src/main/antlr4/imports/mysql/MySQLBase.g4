@@ -118,6 +118,14 @@ limitClause
     : LIMIT rangeClause
     ;
 
+rangeClause
+    : rangeItem_ (COMMA_ rangeItem_)* | rangeItem_ OFFSET rangeItem_
+    ;
+
+rangeItem_
+    : number | question
+    ;
+
 partitionClause 
     : PARTITION columnNames
     ;
