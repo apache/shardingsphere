@@ -45,14 +45,10 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         if (!limitNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> rangeNode = ExtractorUtils.findFirstChildNode(limitNode.get(), RuleName.RANGE_CLAUSE);
-        if (!rangeNode.isPresent()) {
-            return Optional.absent();
-        }
         Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap = getPlaceholderAndNodeIndexMap(ancestorNode);
-        LimitValueSegment firstLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(0));
-        if (rangeNode.get().getChildCount() >= 3) {
-            LimitValueSegment rowCountLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(2));
+        LimitValueSegment firstLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) limitNode.get().getChild(1));
+        if (limitNode.get().getChildCount() >= 4) {
+            LimitValueSegment rowCountLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) limitNode.get().getChild(3));
             return Optional.of(new LimitSegment(rowCountLimitValue, firstLimitValue));
         }
         return Optional.of(new LimitSegment(firstLimitValue));

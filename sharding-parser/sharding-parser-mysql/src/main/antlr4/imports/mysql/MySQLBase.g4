@@ -115,11 +115,7 @@ havingClause
     ;
 
 limitClause
-    : LIMIT rangeClause
-    ;
-
-rangeClause
-    : rangeItem_ (COMMA_ rangeItem_)* | rangeItem_ OFFSET rangeItem_
+    : LIMIT (rangeItem_ (COMMA_ rangeItem_)? | rangeItem_ OFFSET rangeItem_)
     ;
 
 rangeItem_
