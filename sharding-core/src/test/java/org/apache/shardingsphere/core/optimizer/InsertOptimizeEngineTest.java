@@ -189,10 +189,10 @@ public final class InsertOptimizeEngineTest {
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
         assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
         assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(2));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 10);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 2);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 11);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 2);
         assertTrue(insertStatementWithValuesWithPlaceHolder.isContainGenerateKey());
     }
     
