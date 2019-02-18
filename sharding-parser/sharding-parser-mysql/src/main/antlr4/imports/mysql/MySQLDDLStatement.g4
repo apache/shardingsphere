@@ -27,23 +27,15 @@ columnDefinition
     ;
 
 dataType
-    : typeName_ dataTypeLength_? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | typeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-typeName_
-    : DOUBLE PRECISION | ID
-    ;
-
-dataTypeLength_
-    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
+dataTypeName_
+    : ID ID | ID
     ;
 
 characterSet_
-    : (CHARACTER | CHAR) SET EQ_? charsetName_ | CHARSET EQ_? charsetName_
-    ;
-
-charsetName_
-    : ID | BINARY
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
     ;
 
 collateClause_
@@ -51,7 +43,7 @@ collateClause_
     ;
 
 collationName_
-    : STRING_ | ID
+    : STRING_ | ignoredIdentifier_
     ;
 
 dataTypeOption_
@@ -72,7 +64,7 @@ defaultValue_
     ;
 
 currentTimestampType_
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength_?
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength?
     ;
 
 referenceDefinition_
@@ -92,23 +84,23 @@ dataTypeGenerated_
     ;
 
 constraintDefinition
-    : (CONSTRAINT symbol?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
 primaryKeyOption_
-    : primaryKey indexType? columnList indexOption*
+    : primaryKey indexType? columnNames indexOption*
     ;
 
 uniqueOption_
-    : UNIQUE indexAndKey? indexName? indexType? LP_ keyParts_ RP_ indexOption*
+    : UNIQUE (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
     ;
 
 foreignKeyOption_
-    : FOREIGN KEY indexName? columnNamesWithParen referenceDefinition_
+    : FOREIGN KEY indexName? columnNames referenceDefinition_
     ;
 
 indexDefinition
-    : (FULLTEXT | SPATIAL)? indexAndKey? indexName? indexType? LP_ keyParts_ RP_ indexOption*
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
     ;
 
 keyParts_
@@ -142,7 +134,7 @@ alterSpecification_
     | dropColumn
     | dropIndexDef
     | dropPrimaryKey
-    | DROP FOREIGN KEY fkSymbol
+    | DROP FOREIGN KEY ignoredIdentifier_
     | FORCE
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumn
@@ -151,18 +143,18 @@ alterSpecification_
     | renameTable
     | (WITHOUT | WITH) VALIDATION
     | ADD PARTITION partitionDefinitions_
-    | DROP PARTITION partitionNames
-    | DISCARD PARTITION (partitionNames | ALL) TABLESPACE
-    | IMPORT_ PARTITION (partitionNames | ALL) TABLESPACE
-    | TRUNCATE PARTITION (partitionNames | ALL)
+    | DROP PARTITION ignoredIdentifiers_
+    | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | IMPORT_ PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | TRUNCATE PARTITION (ignoredIdentifiers_ | ALL)
     | COALESCE PARTITION NUMBER_
-    | REORGANIZE PARTITION partitionNames INTO partitionDefinitions_
-    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
-    | ANALYZE PARTITION (partitionNames | ALL)
-    | CHECK PARTITION (partitionNames | ALL)
-    | OPTIMIZE PARTITION (partitionNames | ALL)
-    | REBUILD PARTITION (partitionNames | ALL)
-    | REPAIR PARTITION (partitionNames | ALL)
+    | REORGANIZE PARTITION ignoredIdentifiers_ INTO partitionDefinitions_
+    | EXCHANGE PARTITION ignoredIdentifier_ WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
+    | ANALYZE PARTITION (ignoredIdentifiers_ | ALL)
+    | CHECK PARTITION (ignoredIdentifiers_ | ALL)
+    | OPTIMIZE PARTITION (ignoredIdentifiers_ | ALL)
+    | REBUILD PARTITION (ignoredIdentifiers_ | ALL)
+    | REPAIR PARTITION (ignoredIdentifiers_ | ALL)
     | REMOVE PARTITIONING
     | UPGRADE PARTITIONING
     ;
@@ -204,15 +196,11 @@ dropColumn
     ;
 
 dropIndexDef
-    : DROP indexAndKey indexName
+    : DROP (INDEX | KEY) indexName
     ;
 
 dropPrimaryKey
     : DROP primaryKey
-    ;
-
-fkSymbol
-    : ID
     ;
 
 modifyColumn
@@ -220,7 +208,7 @@ modifyColumn
     ;
 
 renameIndex
-    : RENAME indexAndKey indexName TO indexName
+    : RENAME (INDEX | KEY) indexName TO indexName
     ;
 
 renameTable
@@ -242,7 +230,7 @@ tableOption_
     | (DATA | INDEX) DIRECTORY EQ_? STRING_
     | DELAY_KEY_WRITE EQ_? NUMBER_
     | ENCRYPTION EQ_? STRING_
-    | ENGINE EQ_? engineName_
+    | ENGINE EQ_? ignoredIdentifier_
     | INSERT_METHOD EQ_? (NO | FIRST | LAST)
     | KEY_BLOCK_SIZE EQ_? NUMBER_
     | MAX_ROWS EQ_? NUMBER_
@@ -253,12 +241,12 @@ tableOption_
     | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
     | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
     | STATS_SAMPLE_PAGES EQ_? NUMBER_
-    | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_? tableList
+    | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
+    | UNION EQ_? tableNames_
     ;
 
-engineName_
-    : ID | MEMORY
+tableNames_
+    : LP_ tableName (COMMA_ tableName)* RP_
     ;
 
 partitionOptions_
@@ -266,7 +254,7 @@ partitionOptions_
     ;
 
 linearPartition_
-    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNamesWithParen)
+    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNames)
     ;
 
 yearFunctionExpr_
@@ -274,7 +262,7 @@ yearFunctionExpr_
     ;
 
 rangeOrListPartition_
-    : (RANGE | LIST) (expr | COLUMNS columnNamesWithParen)
+    : (RANGE | LIST) (expr | COLUMNS columnNames)
     ;
 
 partitionDefinitions_
@@ -282,17 +270,17 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION partitionName (VALUES (lessThanPartition_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    : PARTITION ignoredIdentifier_ (VALUES (lessThanPartition_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
     ;
 
 partitionDefinitionOption_
-    : STORAGE? ENGINE EQ_? engineName_
+    : STORAGE? ENGINE EQ_? ignoredIdentifier_
     | COMMENT EQ_? STRING_
     | DATA DIRECTORY EQ_? STRING_
     | INDEX DIRECTORY EQ_? STRING_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
-    | TABLESPACE EQ_? tablespaceName
+    | TABLESPACE EQ_? ignoredIdentifier_
     ;
 
 lessThanPartition_
@@ -300,15 +288,11 @@ lessThanPartition_
     ;
 
 subpartitionDefinition_
-    : SUBPARTITION partitionName partitionDefinitionOption_*
-    ;
-
-partitionNames
-    : partitionName (COMMA_ partitionName)*
+    : SUBPARTITION ignoredIdentifier_ partitionDefinitionOption_*
     ;
 
 dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableNames
+    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
     ;
 
 truncateTable

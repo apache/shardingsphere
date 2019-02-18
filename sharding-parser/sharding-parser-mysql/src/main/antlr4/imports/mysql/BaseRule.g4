@@ -18,10 +18,6 @@ columnName
     : ID
     ;
 
-tablespaceName
-    : ID
-    ;
-
 indexName
     : ID
     ;
@@ -30,136 +26,16 @@ alias
     : ID
     ;
 
-cteName
-    : ID
-    ;
-
-parserName
-    : ID
-    ;
-
-extensionName
-    : ID
-    ;
-
-rowName
-    : ID
-    ;
-
-opclass
-    : ID
-    ;
-
-fileGroup
-    : ID
-    ;
-
-groupName
-    : ID
-    ;
-
-constraintName
-    : ID
-    ;
-
-keyName
-    : ID
-    ;
-
-typeName
-    : ID
-    ;
-
-xmlSchemaCollection
-    : ID
-    ;
-
-columnSetName
-    : ID
-    ;
-
-directoryName
-    : ID
-    ;
-
-triggerName
-    : ID
-    ;
-
-roleName
-    : STRING_ | ID
-    ;
-
-partitionName
-    : ID
-    ;
-
-rewriteRuleName
-    : ID
-    ;
-
-ownerName
-    : ID
+dataTypeLength
+    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
 primaryKey
     : PRIMARY? KEY
     ;
 
-matchNone
-    : 'Default does not match anything'
-    ;
-
-ids
-    : ID (COMMA_ ID)*
-    ;
-
-idList
-    : LP_ ids RP_
-    ;
-
-rangeClause
-    : rangeItem (COMMA_ rangeItem)* | rangeItem OFFSET rangeItem
-    ;
-
-rangeItem
-    : number | question
-    ;
-
-tableList
-    : LP_ tableNames RP_
-    ;
-
-tableNames
-    : tableName (COMMA_ tableName)*
-    ;
-
-columnNamesWithParen
-    : LP_ columnNames RP_
-    ;
-
 columnNames
-    : columnName (COMMA_ columnName)*
-    ;
-
-columnList
-    : LP_ columnNames RP_
-    ;
-
-indexNames
-    : indexName (COMMA_ indexName)*
-    ;
-
-indexList
-    : LP_ indexNames RP_
-    ;
-
-rowNames
-    : rowName (COMMA_ rowName)*
-    ;
-
-roleNames
-    : roleName (COMMA_ roleName)*
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 exprs
@@ -331,4 +207,16 @@ selectExprs
 
 selectExpr
     : (columnName | expr) AS? alias? | columnName DOT_ASTERISK_
+    ;
+
+ignoredIdentifier_
+    : ID
+    ;
+
+ignoredIdentifiers_
+    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+    ;
+
+matchNone
+    : 'Default does not match anything'
     ;

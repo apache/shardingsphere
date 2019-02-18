@@ -3,15 +3,15 @@ grammar PostgreSQLDCLStatement;
 import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, BaseRule, DataType;
 
 grant
-    : GRANT (privileges_ ON onObjectClause_ | roleNames)
+    : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 revoke
-    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | roleNames)
+    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 privileges_
-    : privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*
+    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
 
 privilegeType_
@@ -45,7 +45,7 @@ onObjectClause_
     | SCHEMA
     | TABLESPACE
     | TYPE
-    | TABLE? tableNames
+    | TABLE? tableName (COMMA_ tableName)*
     ;
 
 createUser

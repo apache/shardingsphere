@@ -47,7 +47,7 @@ tablespaceClauseWithParen
     ;
 
 tablespaceClause
-    : TABLESPACE tablespaceName
+    : TABLESPACE ignoredIdentifier_
     ;
 
 domainIndexClause
@@ -155,7 +155,7 @@ modifyConstraintClause
     ;
 
 constraintWithName
-    : CONSTRAINT constraintName
+    : CONSTRAINT ignoredIdentifier_
     ;
 
 constraintOption
@@ -163,17 +163,17 @@ constraintOption
     ;
 
 constraintPrimaryOrUnique
-    : primaryKey | UNIQUE columnList
+    : primaryKey | UNIQUE columnNames
     ;
 
 renameConstraintClause
-    : RENAME constraintWithName TO constraintName
+    : RENAME constraintWithName TO ignoredIdentifier_
     ;
 
 dropConstraintClause
     : DROP
     (
-    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT constraintName CASCADE?)
+    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT ignoredIdentifier_ CASCADE?)
     ) 
     ;
 
@@ -209,11 +209,11 @@ virtualColumnDefinition
     ;
 
 inlineConstraint
-    : (CONSTRAINT constraintName)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
+    : (CONSTRAINT ignoredIdentifier_)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
     ;
 
 referencesClause
-    : REFERENCES tableName columnList? (ON DELETE (CASCADE | SET NULL))?
+    : REFERENCES tableName columnNames? (ON DELETE (CASCADE | SET NULL))?
     ;
 
 constraintState
@@ -246,15 +246,15 @@ usingIndexClause
     ;
 
 inlineRefConstraint
-    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT constraintName)? referencesClause constraintState*
+    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier_)? referencesClause constraintState*
     ;
 
 outOfLineConstraint
-    : (CONSTRAINT constraintName)?
+    : (CONSTRAINT ignoredIdentifier_)?
     (
-    	UNIQUE columnList
-        | primaryKey columnList 
-        | FOREIGN KEY columnList referencesClause
+    	UNIQUE columnNames
+        | primaryKey columnNames 
+        | FOREIGN KEY columnNames referencesClause
         | CHECK LP_ expr RP_
     ) 
     constraintState*
@@ -263,7 +263,7 @@ outOfLineConstraint
 outOfLineRefConstraint
     : SCOPE FOR LP_ lobItem RP_ IS tableName
     | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState*
+    | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;
 
 encryptionSpec
@@ -291,5 +291,5 @@ objectTypeColProperties
     ;
 
 substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LP_ ONLY? typeName RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
+    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
