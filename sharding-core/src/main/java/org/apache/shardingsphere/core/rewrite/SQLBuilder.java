@@ -172,7 +172,7 @@ public final class SQLBuilder {
     private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         if (insertColumnValue.getDataNodes().isEmpty() || isToAppendInsertColumnValue(tableUnit, insertColumnValue)) {
             stringBuilder.append(insertColumnValue);
-            parameters.addAll(insertColumnValue.getParameters());
+            insertParameters.addAll(insertColumnValue.getParameters());
         }
     }
     
