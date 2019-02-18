@@ -17,35 +17,27 @@
 
 package io.shardingsphere.example.repository.api.senario;
 
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.example.repository.api.service.CommonService;
 
-public final class TransactionServiceScenario extends AbstractTransactionService implements Scenario {
+public final class JPACommonServiceScenario implements Scenario {
     
-    private final TransactionService transactionService;
+    private final CommonService commonService;
     
-    public TransactionServiceScenario(final TransactionService transactionService) {
-        this.transactionService = transactionService;
+    public JPACommonServiceScenario(final CommonService commonService) {
+        this.commonService = commonService;
     }
     
-    public TransactionService getTransactionService() {
-        return transactionService;
+    public CommonService getCommonService() {
+        return commonService;
     }
     
     @Override
     public void executeShardingCRUDSuccess() {
-        transactionService.initEnvironment();
-        transactionService.processSuccess();
-        transactionService.cleanEnvironment();
+        commonService.processSuccess();
     }
     
     @Override
     public void executeShardingCRUDFailure() {
-        transactionService.initEnvironment();
-        processFailure(transactionService, TransactionType.LOCAL);
-        processFailure(transactionService, TransactionType.XA);
-//        processFailure(transactionService, TransactionType.BASE);
-        processFailure(transactionService, TransactionType.LOCAL);
-        transactionService.cleanEnvironment();
+        commonService.processFailure();
     }
 }
