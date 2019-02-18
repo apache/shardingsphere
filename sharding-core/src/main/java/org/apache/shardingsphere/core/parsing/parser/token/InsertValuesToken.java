@@ -28,8 +28,10 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpressio
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Insert values token.
@@ -42,7 +44,7 @@ public final class InsertValuesToken extends SQLToken {
     
     private final DefaultKeyword type;
     
-    private final List<String> columnNames = new LinkedList<>();
+    private final Set<String> columnNames = new LinkedHashSet<>();
     
     private final List<InsertColumnValue> columnValues = new LinkedList<>();
     
@@ -129,7 +131,7 @@ public final class InsertValuesToken extends SQLToken {
     
         private void fillResultBySet(final StringBuilder result) {
             for (int i = 0; i < columnNames.size(); i++) {
-                result.append(String.format("%s = %s", columnNames.get(i), getColumnSQLExpressionValue(i))).append(", ");
+                result.append(String.format("%s = %s", columnNames.iterator().next(), getColumnSQLExpressionValue(i))).append(", ");
             }
             result.delete(result.length() - 2, result.length());
         }
