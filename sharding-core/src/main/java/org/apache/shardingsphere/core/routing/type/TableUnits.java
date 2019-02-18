@@ -56,13 +56,13 @@ public final class TableUnits {
     }
     
     /**
-     * Find routing table via data source name and actual table name.
+     * Get routing table via data source name and actual table name.
      *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
      * @return routing table
      */
-    public Optional<RoutingTable> findRoutingTable(final String dataSourceName, final String actualTableName) {
+    public Optional<RoutingTable> getRoutingTable(final String dataSourceName, final String actualTableName) {
         for (TableUnit each : tableUnits) {
             Optional<RoutingTable> result = each.getRoutingTable(dataSourceName, actualTableName);
             if (result.isPresent()) {
