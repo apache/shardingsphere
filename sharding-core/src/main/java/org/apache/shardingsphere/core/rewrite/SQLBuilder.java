@@ -175,13 +175,12 @@ public final class SQLBuilder {
         }
     }
     
-    private void appendInsertColumnValueByDataNode(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+    private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {
         for (DataNode each : insertColumnValue.getDataNodes()) {
             if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
-                stringBuilder.append(insertColumnValue);
-                insertParameters.addAll(insertColumnValue.getParameters());
-                return;
+                return true;
             }
         }
+        return false;
     }
 }
