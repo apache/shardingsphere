@@ -22,8 +22,6 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
@@ -510,14 +508,14 @@ public final class SQLRewriteEngineTest {
     public void assertTableTokenWithSchemaFromSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, "sharding_db".length() + 1, "table_x", "", ""));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+                "SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", DatabaseType.MySQL, showTablesStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
     }
     
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, "sharding_db".length() + 1, "table_x", "`", "`"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM sharding_db.`table_x`", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM sharding_db.`table_x`", DatabaseType.MySQL, showTablesStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1`"));
     }
     
@@ -525,14 +523,14 @@ public final class SQLRewriteEngineTest {
     public void assertTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, "sharding_db".length() + 1, "table_x", "`", "`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+                "SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
     }
     
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, "`sharding_db`".length() + 1, "table_x", "`", "`"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `sharding_db`.`table_x`", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `sharding_db`.`table_x`", DatabaseType.MySQL, showTablesStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1`"));
     }
     
@@ -540,14 +538,14 @@ public final class SQLRewriteEngineTest {
     public void assertTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, "`sharding_db`".length() + 1, "table_x", "`", "`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
+                "SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", DatabaseType.MySQL, showTablesStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
     }
     
     @Test
     public void assertTableTokenWithSchemaForSelect() {
         selectStatement.addSQLToken(new TableToken(14, "sharding_db".length() + 1, "table_x", "", ""));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM sharding_db.table_x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM sharding_db.table_x", DatabaseType.MySQL, selectStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT * FROM table_1"));
     }
     
@@ -555,7 +553,7 @@ public final class SQLRewriteEngineTest {
     public void assertTableTokenWithSchemaForInsert() {
         insertStatement.addSQLToken(new TableToken(12, "sharding_db".length() + 1, "table_x", "", ""));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')", DatabaseType.MySQL, insertStatement, null, Collections.emptyList());
+                "INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')", DatabaseType.MySQL, insertStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(
                 null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1 (order_id, user_id, status) values (1, 1, 'OK')"));
     }
@@ -564,14 +562,14 @@ public final class SQLRewriteEngineTest {
     public void assertTableTokenWithSchemaForUpdate() {
         dmlStatement.addSQLToken(new TableToken(7, "`sharding_db`".length() + 1, "table_x", "", ""));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
+                "UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1", DatabaseType.MySQL, dmlStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_1 SET user_id=1 WHERE order_id=1"));
     }
     
     @Test
     public void assertTableTokenWithSchemaForDelete() {
         dmlStatement.addSQLToken(new TableToken(12, "`sharding_db`".length() + 1, "table_x", "`", "`"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", DatabaseType.MySQL, dmlStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("DELETE FROM `table_1` WHERE user_id=1"));
     }
     
@@ -586,7 +584,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT id FROM table_z WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, null, parameters);
+                "SELECT id FROM table_z WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
         assertThat(parameters.get(0), is((Object) "encryptValue"));
     }
@@ -599,7 +597,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLNumberExpression(5)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+                "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, selectStatement, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("SELECT id FROM table_z WHERE id BETWEEN \"encryptValue\" AND \"encryptValue\""));
     }
@@ -615,7 +613,7 @@ public final class SQLRewriteEngineTest {
         sqlExpressions.add(new SQLNumberExpression(5));
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+                "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
     }
@@ -637,7 +635,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", DatabaseType.MySQL, selectStatement, null, parameters);
+                "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", DatabaseType.MySQL, selectStatement, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = \"encryptValue\""));
         assertThat(parameters.get(0), is((Object) "encryptValue"));
         assertThat(parameters.get(1), is((Object) "encryptValue"));
@@ -654,7 +652,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT id FROM table_k WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, null, parameters);
+                "SELECT id FROM table_k WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
         assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
     }
@@ -670,7 +668,7 @@ public final class SQLRewriteEngineTest {
         sqlExpressions.add(new SQLNumberExpression(5));
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+                "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("SELECT id FROM table_k WHERE query_id IN (\"assistedEncryptValue\", \"assistedEncryptValue\")"));
     }
@@ -685,7 +683,7 @@ public final class SQLRewriteEngineTest {
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
+                "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, dmlStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("UPDATE table_z SET id = \"encryptValue\" WHERE id = \"encryptValue\""));
     }
@@ -703,7 +701,7 @@ public final class SQLRewriteEngineTest {
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
-                "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, dmlStatement, null, parameters);
+                "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, dmlStatement, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("UPDATE table_k SET query_id = ? WHERE query_id BETWEEN \"assistedEncryptValue\" AND ?"));
         assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
