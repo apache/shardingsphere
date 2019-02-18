@@ -35,7 +35,7 @@ windowClause
     ;
 
 windowItem
-    : ID AS LP_ windowSpec RP_
+    : ignoredIdentifier_ AS LP_ windowSpec RP_
     ;
 
 subquery
@@ -103,5 +103,5 @@ indexHint
     ;
 
 intervalExpr
-    : INTERVAL expr ID
+    : INTERVAL expr ignoredIdentifier_
     ;

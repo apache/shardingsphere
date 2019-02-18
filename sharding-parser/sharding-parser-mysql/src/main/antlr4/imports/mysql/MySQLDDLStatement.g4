@@ -43,7 +43,7 @@ collateClause_
     ;
 
 collationName_
-    : STRING_ | ID
+    : STRING_ | ignoredIdentifier_
     ;
 
 dataTypeOption_
@@ -92,7 +92,7 @@ primaryKeyOption_
     ;
 
 uniqueOption_
-    : UNIQUE indexAndKey? indexName? indexType? LP_ keyParts_ RP_ indexOption*
+    : UNIQUE (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
     ;
 
 foreignKeyOption_
@@ -100,7 +100,7 @@ foreignKeyOption_
     ;
 
 indexDefinition
-    : (FULLTEXT | SPATIAL)? indexAndKey? indexName? indexType? LP_ keyParts_ RP_ indexOption*
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
     ;
 
 keyParts_
@@ -196,7 +196,7 @@ dropColumn
     ;
 
 dropIndexDef
-    : DROP indexAndKey indexName
+    : DROP (INDEX | KEY) indexName
     ;
 
 dropPrimaryKey
@@ -208,7 +208,7 @@ modifyColumn
     ;
 
 renameIndex
-    : RENAME indexAndKey indexName TO indexName
+    : RENAME (INDEX | KEY) indexName TO indexName
     ;
 
 renameTable
