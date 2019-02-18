@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Insert values placeholder for rewrite.
@@ -39,20 +39,7 @@ public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
     private final DefaultKeyword type;
     
-    private final List<String> columnNames;
+    private final Set<String> columnNames;
     
     private final List<InsertColumnValue> columnValues;
-    
-    /**
-     * Get parameter sets.
-     * 
-     * @return parameter sets
-     */
-    public List<List<Object>> getParameterSets() {
-        List<List<Object>> result = new LinkedList<>();
-        for (InsertColumnValue each : columnValues) {
-            result.add(each.getParameters());
-        }
-        return result;
-    }
 }
