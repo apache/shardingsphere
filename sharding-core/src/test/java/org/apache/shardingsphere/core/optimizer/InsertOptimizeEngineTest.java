@@ -229,7 +229,7 @@ public final class InsertOptimizeEngineTest {
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().size(), is(1));
         assertThat(insertStatementWithValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(0));
-        assertThat(insertStatementWithValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(12, \"a\", 1)"));
+        assertThat(insertStatementWithValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(12, 'a', 1)"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertTrue(insertStatementWithValuesWithoutPlaceHolder.isContainGenerateKey());
@@ -264,7 +264,7 @@ public final class InsertOptimizeEngineTest {
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().size(), is(1));
         assertThat(insertStatementWithoutValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(0));
-        assertThat(insertStatementWithoutValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("user_id = 12, status = \"a\", order_id = 1"));
+        assertThat(insertStatementWithoutValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("user_id = 12, status = 'a', order_id = 1"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertTrue(insertStatementWithoutValuesWithoutPlaceHolder.isContainGenerateKey());
