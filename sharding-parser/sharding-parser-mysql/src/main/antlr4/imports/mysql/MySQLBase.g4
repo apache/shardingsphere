@@ -10,24 +10,12 @@ tableName
     : ID | ID DOT_ASTERISK_ | ASTERISK_
     ;
 
-columnName
-    : ID | ROW
-    ;
-
-symbol
-    : ID
+indexOption
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
     ;
 
 indexType
     : USING (BTREE | HASH)
-    ;
-
-indexAndKey
-    : INDEX | KEY
-    ;
-
-indexOption
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING_
     ;
 
 assignmentValueList
@@ -130,6 +118,10 @@ limitClause
     : LIMIT rangeClause
     ;
 
-partitionClause 
-    : PARTITION columnList
+rangeClause
+    : rangeItem_ (COMMA_ rangeItem_)* | rangeItem_ OFFSET rangeItem_
+    ;
+
+rangeItem_
+    : number | question
     ;

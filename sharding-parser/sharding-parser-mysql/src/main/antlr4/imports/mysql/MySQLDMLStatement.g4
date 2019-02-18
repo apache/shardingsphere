@@ -3,11 +3,11 @@ grammar MySQLDMLStatement;
 import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, MySQLBase, BaseRule, DataType;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName partitionClause? (setClause | columnClause) onDuplicateClause?
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName (PARTITION columnNames)? (setClause | columnClause) onDuplicateClause?
     ;
 
 columnClause
-    : columnList? (valueClause | select)
+    : columnNames? (valueClause | select)
     ;
 
 valueClause
@@ -39,7 +39,7 @@ deleteClause
     ;
 
 fromSingle
-    : FROM tableName partitionClause?
+    : FROM tableName (PARTITION columnNames)?
     ;
 
 fromMulti

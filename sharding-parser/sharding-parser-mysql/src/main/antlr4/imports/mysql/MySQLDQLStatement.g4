@@ -15,7 +15,7 @@ unionSelect
     ;
 
 cteClause
-    : cteName idList? AS subquery
+    : ignoredIdentifier_ columnNames? AS subquery
     ;
 
 selectExpression
@@ -35,7 +35,7 @@ windowClause
     ;
 
 windowItem
-    : ID AS LP_ windowSpec RP_
+    : ignoredIdentifier_ AS LP_ windowSpec RP_
     ;
 
 subquery
@@ -70,10 +70,6 @@ caseResult
     : expr
     ;
 
-idListWithEmpty
-    : LP_ RP_ | idList
-    ;
-
 tableReferences
     : tableReference(COMMA_ tableReference)*
     ;
@@ -83,7 +79,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (PARTITION idList)? (AS? alias)? indexHintList? | subquery AS? alias | LP_ tableReferences RP_
+    : tableName (PARTITION ignoredIdentifiers_)? (AS? alias)? indexHintList? | subquery AS? alias | LP_ tableReferences RP_
     ;
 
 joinTable
@@ -95,7 +91,7 @@ joinTable
     ;
 
 joinCondition
-    : ON expr | USING idList
+    : ON expr | USING columnNames
     ;
 
 indexHintList
@@ -103,9 +99,9 @@ indexHintList
     ;
 
 indexHint
-    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* indexList
+    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* LP_ indexName (COMMA_ indexName)* RP_
     ;
 
 intervalExpr
-    : INTERVAL expr ID
+    : INTERVAL expr ignoredIdentifier_
     ;

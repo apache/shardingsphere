@@ -7,7 +7,11 @@ ID
     ;
 
 dataType
-    : typeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RP_)?
+    : dataTypeName_ (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
+    ;
+
+dataTypeName_
+    : ID
     ;
 
 privateExprOfDb
@@ -70,7 +74,7 @@ windowFrameFollowing
     : UNBOUNDED FOLLOWING | NUMBER_ FOLLOWING | CURRENT ROW
     ;
 
-columnList
+columnNames
     : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
 

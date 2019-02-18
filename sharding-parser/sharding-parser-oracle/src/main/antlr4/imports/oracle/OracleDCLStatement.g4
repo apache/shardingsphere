@@ -11,7 +11,7 @@ revoke
     ;
 
 objectPrivileges_
-    : objectPrivilegeType_ columnList? (COMMA_ objectPrivilegeType_ columnList?)*
+    : objectPrivilegeType_ columnNames? (COMMA_ objectPrivilegeType_ columnNames?)*
     ;
 
 objectPrivilegeType_

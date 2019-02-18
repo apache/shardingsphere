@@ -39,7 +39,7 @@ public enum RuleName {
     
     PRIMARY_KEY("PrimaryKey"),
     
-    COLUMN_LIST("ColumnList"),
+    COLUMN_NAMES("ColumnNames"),
     
     ADD_COLUMN("AddColumn"),
     

@@ -3,15 +3,15 @@ grammar MySQLDCLStatement;
 import MySQLKeyword, Keyword, Symbol, MySQLBase, BaseRule, DataType;
 
 grant
-    : GRANT (PROXY ON | privileges_ ON onObjectClause_ | roleNames)
+    : GRANT (PROXY ON | privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 revoke
-    : REVOKE (ALL PRIVILEGES? COMMA_ GRANT OPTION | PROXY ON | privileges_ ON onObjectClause_ | roleNames)
+    : REVOKE (ALL PRIVILEGES? COMMA_ GRANT OPTION | PROXY ON | privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 privileges_
-    : privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*
+    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
 
 privilegeType_
