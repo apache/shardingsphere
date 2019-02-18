@@ -209,10 +209,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
             ListRouteValue listRouteValue = (ListRouteValue) shardingCondition.getShardingValues().get(0);
-            String shardingColumnName = listRouteValue.getColumn().getName();
-            Object shardingColumnValue = listRouteValue.getValues().iterator().next();
             for (InsertColumnValue each : ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues()) {
-                if (each.getColumnValue(shardingColumnName).equals(shardingColumnValue.toString())) {
+                Optional<String> columnValue = each.getColumnValue(listRouteValue.getColumn().getName());
+                if (columnValue.isPresent() && columnValue.get().equals(listRouteValue.getValues().iterator().next().toString())) {
                     each.getDataNodes().addAll(dataNodes);
                 }
             }
