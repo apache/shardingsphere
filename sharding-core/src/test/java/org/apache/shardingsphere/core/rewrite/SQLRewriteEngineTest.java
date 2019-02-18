@@ -174,8 +174,11 @@ public final class SQLRewriteEngineTest {
         itemsToken.getItems().add("id");
         insertStatement.addSQLToken(itemsToken);
         insertStatement.addSQLToken(new InsertValuesToken(39, DefaultKeyword.VALUES));
-        InsertShardingCondition shardingCondition = new InsertShardingCondition("(?, ?, ?)", parameters);
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLPlaceholderExpression(0));
+        sqlExpressions.add(new SQLPlaceholderExpression(1));
+        insertStatement.getInsertValuesToken().addInsertColumnValue(sqlExpressions, parameters);
+        insertStatement.getInsertValuesToken().getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", 
