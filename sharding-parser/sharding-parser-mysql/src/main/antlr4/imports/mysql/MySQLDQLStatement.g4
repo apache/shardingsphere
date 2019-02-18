@@ -15,7 +15,7 @@ unionSelect
     ;
 
 cteClause
-    : ignoredIdentifier_ identifiers_? AS subquery
+    : ignoredIdentifier_ columnNames? AS subquery
     ;
 
 selectExpression
@@ -70,10 +70,6 @@ caseResult
     : expr
     ;
 
-idListWithEmpty
-    : LP_ RP_ | identifiers_
-    ;
-
 tableReferences
     : tableReference(COMMA_ tableReference)*
     ;
@@ -83,7 +79,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (PARTITION identifiers_)? (AS? alias)? indexHintList? | subquery AS? alias | LP_ tableReferences RP_
+    : tableName (PARTITION ignoredIdentifiers_)? (AS? alias)? indexHintList? | subquery AS? alias | LP_ tableReferences RP_
     ;
 
 joinTable
@@ -95,7 +91,7 @@ joinTable
     ;
 
 joinCondition
-    : ON expr | USING identifiers_
+    : ON expr | USING columnNames
     ;
 
 indexHintList
@@ -108,8 +104,4 @@ indexHint
 
 intervalExpr
     : INTERVAL expr ID
-    ;
-
-identifiers_
-    : LP_ ID (COMMA_ ID)* RP_
     ;
