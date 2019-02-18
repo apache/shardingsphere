@@ -113,8 +113,13 @@ public final class InsertOptimizeEngineTest {
         AndCondition andCondition2 = new AndCondition();
         andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(2)));
         insertStatementWithValuesWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
-        insertStatementWithValuesWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
-        insertStatementWithValuesWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
+        insertStatementWithValuesWithPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
+        insertStatementWithValuesWithPlaceHolder.getColumns().add(new Column("status", "t_order"));
+        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2);
+        insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
+        insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
+        insertStatementWithValuesWithPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
+        insertStatementWithValuesWithPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
     }
     
     private void initializeInsertWithValuesWithoutPlaceHolder() {
@@ -174,12 +179,12 @@ public final class InsertOptimizeEngineTest {
         assertThat(actual.getShardingConditions().size(), is(2));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(3));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().size(), is(3));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0), CoreMatchers.<Object>is(10));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(2), CoreMatchers.<Object>is(1));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0), CoreMatchers.<Object>is(11));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(2), CoreMatchers.<Object>is(2));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(2), CoreMatchers.<Object>is(2));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
         assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
