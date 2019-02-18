@@ -7,7 +7,11 @@ ID
     ;
 
 dataType
-    : typeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
+    : dataTypeName_ (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
+    ;
+
+dataTypeName_
+    : ID
     ;
 
 privateExprOfDb

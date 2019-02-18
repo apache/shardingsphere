@@ -275,7 +275,7 @@ columnNameGeneratedClause
     ;
 
 columnNameGenerated
-    : columnName typeName GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
+    : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
     ;
 
 alterDrop

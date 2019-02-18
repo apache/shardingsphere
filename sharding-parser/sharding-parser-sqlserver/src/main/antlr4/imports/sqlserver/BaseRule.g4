@@ -34,10 +34,6 @@ constraintName
     : ID
     ;
 
-typeName
-    : ID
-    ;
-
 dataTypeLength
     : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
     ;

@@ -73,11 +73,11 @@ constraintOptionalParam
     ;
 
 dataType
-    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | ID
+    : dataTypeName_ intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | ID
     ;
 
-typeName
-    : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
+dataTypeName_
+    : ID ID | ID
     ;
 
 intervalFields

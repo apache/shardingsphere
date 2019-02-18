@@ -27,11 +27,11 @@ columnDefinition
     ;
 
 dataType
-    : typeName_ dataTypeLength_? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | typeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName_ dataTypeLength_? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-typeName_
-    : DOUBLE PRECISION | ID
+dataTypeName_
+    : ID ID | ID
     ;
 
 dataTypeLength_
@@ -39,11 +39,7 @@ dataTypeLength_
     ;
 
 characterSet_
-    : (CHARACTER | CHAR) SET EQ_? charsetName_ | CHARSET EQ_? charsetName_
-    ;
-
-charsetName_
-    : ID | BINARY
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
     ;
 
 collateClause_

@@ -30,10 +30,6 @@ constraintName
     : ID
     ;
 
-typeName
-    : ID
-    ;
-
 primaryKey
     : PRIMARY? KEY
     ;

@@ -104,7 +104,7 @@ alterTableAction
     | RESET LP_ storageParameter (COMMA_ storageParameter)* RP_
     | INHERIT tableName
     | NO INHERIT tableName
-    | OF typeName
+    | OF dataTypeName_
     | NOT OF
     | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
