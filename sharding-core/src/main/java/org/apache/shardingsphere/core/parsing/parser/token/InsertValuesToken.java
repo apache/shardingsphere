@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.parser.token;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
@@ -126,6 +127,16 @@ public final class InsertValuesToken extends SQLToken {
             } else {
                 return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
             }
+        }
+    
+        /**
+         * Get column value.
+         *
+         * @param columnName column Name
+         * @return column value
+         */
+        public Optional<String> getColumnValue(final String columnName) {
+            return columnNames.contains(columnName) ? Optional.of(getColumnValue(new ArrayList<>(columnNames).indexOf(columnName))) : Optional.<String>absent();
         }
     
         @Override
