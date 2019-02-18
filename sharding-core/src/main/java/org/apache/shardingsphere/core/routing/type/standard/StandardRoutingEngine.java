@@ -211,7 +211,10 @@ public final class StandardRoutingEngine implements RoutingEngine {
         if (sqlStatement instanceof InsertStatement) {
             Set<InsertColumnValue> result = new LinkedHashSet<>();
             for (RouteValue each : shardingCondition.getShardingValues()) {
-                fillTargetInsertColumnValues(dataNodes, (ListRouteValue) each);
+                fillTargetInsertColumnValues((ListRouteValue) each, result);
+            }
+            if (1 == result.size()) {
+                result.iterator().next().getDataNodes().addAll(dataNodes);
             }
         }
     }
