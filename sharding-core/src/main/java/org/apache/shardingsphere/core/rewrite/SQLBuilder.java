@@ -169,15 +169,17 @@ public final class SQLBuilder {
     private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         if (insertColumnValue.getDataNodes().isEmpty()) {
             stringBuilder.append(insertColumnValue);
+            parameters.addAll(insertColumnValue.getParameters());
         } else {
-            appendInsertColumnValueByDataNode(tableUnit, insertColumnValue, stringBuilder);
+            appendInsertColumnValueByDataNode(tableUnit, insertColumnValue, insertParameters, stringBuilder);
         }
     }
     
-    private void appendInsertColumnValueByDataNode(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final StringBuilder stringBuilder) {
+    private void appendInsertColumnValueByDataNode(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         for (DataNode each : insertColumnValue.getDataNodes()) {
             if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 stringBuilder.append(insertColumnValue);
+                insertParameters.addAll(insertColumnValue.getParameters());
                 return;
             }
         }
