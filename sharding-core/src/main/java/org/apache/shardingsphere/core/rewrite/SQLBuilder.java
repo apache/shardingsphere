@@ -95,7 +95,7 @@ public final class SQLBuilder {
      * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingConditions shardingConditions, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
@@ -112,7 +112,7 @@ public final class SQLBuilder {
             } else if (each instanceof IndexPlaceholder) {
                 appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
             } else if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(tableUnit, shardingConditions, (InsertValuesPlaceholder) each, result);
+                appendInsertValuesPlaceholder(tableUnit, (InsertValuesPlaceholder) each, insertParameters, result);
             } else {
                 result.append(each);
             }
@@ -163,20 +163,19 @@ public final class SQLBuilder {
         }
     }
     
-    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final ShardingConditions shardingConditions, final InsertValuesPlaceholder insertValuesPlaceholder, final StringBuilder stringBuilder) {
-        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-            appendInsertValue(tableUnit, insertValuesPlaceholder, (InsertShardingCondition) each);
-        }
-    
-        for (int i = 0; i < shardingConditions.getShardingConditions().size(); i++) {
-            appendInsertValue(tableUnit, insertValuesPlaceholder.getColumnValues().get(i), (InsertShardingCondition) shardingConditions.getShardingConditions().get(i));
+    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
+            appendInsertColumnValue(tableUnit, each, insertParameters, stringBuilder);
         }
     }
     
-    private void appendInsertValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final InsertShardingCondition shardingCondition) {
+    private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        for (DataNode each : insertColumnValue.getDataNodes()) {
+            
+        }
+        
         for (DataNode each : shardingCondition.getDataNodes()) {
             if (each.getDataSourceName().equals(tableUnit.getDataSourceName()) && each.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
-                
                 return;
             }
         }
