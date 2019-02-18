@@ -166,6 +166,8 @@ public final class SQLRewriteEngineTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add("x");
         parameters.add(1);
+        parameters.add(1);
+        insertStatement.getTables().add(new Table("table_x", Optional.<String>absent()));
         insertStatement.setParametersIndex(2);
         insertStatement.setInsertValuesListLastIndex(44);
         insertStatement.addSQLToken(new TableToken(12, 0, "table_x", "", ""));
@@ -176,8 +178,12 @@ public final class SQLRewriteEngineTest {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLPlaceholderExpression(0));
         sqlExpressions.add(new SQLPlaceholderExpression(1));
+        sqlExpressions.add(new SQLPlaceholderExpression(2));
         insertStatement.getInsertValuesToken().addInsertColumnValue(sqlExpressions, parameters);
         insertStatement.getInsertValuesToken().getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        insertStatement.getInsertValuesToken().getColumnNames().add("name");
+        insertStatement.getInsertValuesToken().getColumnNames().add("age");
+        insertStatement.getInsertValuesToken().getColumnNames().add("id");
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", 
