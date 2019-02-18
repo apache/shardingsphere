@@ -55,17 +55,4 @@ public final class InsertValuesPlaceholder implements ShardingPlaceholder {
         }
         return result;
     }
-    
-    @Override
-    public String toString() {
-        if (DefaultKeyword.SET == type) {
-            return columnNames.get(0);
-        }
-        StringBuilder result = new StringBuilder();
-        for (InsertColumnValue each : columnValues) {
-            result.append(each).append(", ");
-        }
-        result.delete(result.length() - 2, result.length());
-        return result.toString();
-    }
 }
