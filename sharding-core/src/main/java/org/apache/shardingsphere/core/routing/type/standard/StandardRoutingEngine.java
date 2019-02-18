@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Standard routing engine.
@@ -208,17 +209,18 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
+            Set<InsertColumnValue> result = new LinkedHashSet<>();
             for (RouteValue each : shardingCondition.getShardingValues()) {
-                fillInsertColumnValue(dataNodes, (ListRouteValue) each);
+                fillTargetInsertColumnValues(dataNodes, (ListRouteValue) each);
             }
         }
     }
     
-    private void fillInsertColumnValue(final Collection<DataNode> dataNodes, final ListRouteValue listRouteValue) {
+    private void fillTargetInsertColumnValues(final ListRouteValue listRouteValue, final Set<InsertColumnValue> targetInsertColumnValues) {
         for (InsertColumnValue each : ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues()) {
             Optional<String> columnValue = each.getColumnValue(listRouteValue.getColumn().getName());
             if (columnValue.isPresent() && columnValue.get().equals(listRouteValue.getValues().iterator().next().toString())) {
-                each.getDataNodes().addAll(dataNodes);
+                targetInsertColumnValues.add(each);
             }
         }
     }
