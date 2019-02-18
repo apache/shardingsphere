@@ -127,19 +127,19 @@ public final class InsertValuesToken extends SQLToken {
             return result.toString();
         }
     
+        private void fillResultBySet(final StringBuilder result) {
+            for (int i = 0; i < columnNames.size(); i++) {
+                result.append(String.format("%s = %s", columnNames.get(i), getColumnSQLExpressionValue(i))).append(", ");
+            }
+            result.delete(result.length() - 2, result.length());
+        }
+    
         private void fillResultByValues(final StringBuilder result) {
             result.append("(");
             for (int i = 0; i < columnNames.size(); i++) {
                 result.append(getColumnSQLExpressionValue(i)).append(", ");
             }
             result.delete(result.length() - 2, result.length()).append(")");
-        }
-    
-        private void fillResultBySet(final StringBuilder result) {
-            for (int i = 0; i < columnNames.size(); i++) {
-                result.append(String.format("%s = %s", columnNames.get(i), getColumnSQLExpressionValue(i))).append(", ");
-            }
-            result.delete(result.length() - 2, result.length());
         }
     
         private String getColumnSQLExpressionValue(final int columnValueIndex) {
