@@ -20,51 +20,49 @@ package io.shardingsphere.example.repository.jdbc.repository;
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 
-public final class JDBCOrderTransactionRepositoryImpl implements OrderRepository {
+public final class JDBCOrderTransactionRepositoryImpl extends BaseOrderRepository implements OrderRepository {
     
-    private final JDBCOrderRepositoryImpl jdbcOrderRepository;
+    private Connection connection;
     
-    private Connection insertConnection;
-    
-    public JDBCOrderTransactionRepositoryImpl(final DataSource dataSource) {
-        this.jdbcOrderRepository = new JDBCOrderRepositoryImpl(dataSource);
+    public JDBCOrderTransactionRepositoryImpl(final Connection connection) {
+        this.connection = connection;
     }
     
     @Override
     public void createTableIfNotExists() {
-        jdbcOrderRepository.createTableIfNotExists();
+        try (Statement statement = connection.createStatement()) {
+            createOrderTableNotExist(statement);
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
     public void dropTable() {
-        jdbcOrderRepository.dropTable();
+        try (Statement statement = connection.createStatement()) {
+            dropOrderTable(statement);
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
     public void truncateTable() {
-        jdbcOrderRepository.truncateTable();
+        try (Statement statement = connection.createStatement()) {
+            truncateOrderTable(statement);
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
     public Long insert(final Order order) {
-        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = insertConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setString(2, order.getStatus());
-            preparedStatement.executeUpdate();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    order.setOrderId(resultSet.getLong(1));
-                }
-            }
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_T_ORDER, Statement.RETURN_GENERATED_KEYS)) {
+            insertOrder(preparedStatement, order);
         } catch (final SQLException ignored) {
         }
         return order.getOrderId();
@@ -72,20 +70,19 @@ public final class JDBCOrderTransactionRepositoryImpl implements OrderRepository
     
     @Override
     public void delete(final Long id) {
-        jdbcOrderRepository.delete(id);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_ORDER_ID)) {
+            deleteById(preparedStatement, id);
+        } catch (final SQLException ignored) {
+        }
     }
     
     @Override
-    public List<Order> selectAll() {
-        return jdbcOrderRepository.selectAll();
-    }
-    
-    @Override
-    public List<Order> selectRange() {
-        return jdbcOrderRepository.selectRange();
-    }
-    
-    public void setInsertConnection(final Connection insertConnection) {
-        this.insertConnection = insertConnection;
+    public List<Order> getOrders(final String sql) {
+        List<Order> result = new LinkedList<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            result = queryOrder(preparedStatement);
+        } catch (final SQLException ignored) {
+        }
+        return result;
     }
 }

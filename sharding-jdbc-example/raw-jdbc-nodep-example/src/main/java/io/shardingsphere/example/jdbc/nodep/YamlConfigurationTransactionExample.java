@@ -18,7 +18,6 @@
 package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.jdbc.nodep.factory.YamlCommonTransactionServiceFactory;
-import io.shardingsphere.example.repository.api.senario.Scenario;
 import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
 import io.shardingsphere.example.type.ShardingType;
 
@@ -38,7 +37,6 @@ public class YamlConfigurationTransactionExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(YamlCommonTransactionServiceFactory.newInstance(type));
-        scenario.executeShardingCRUDSuccess();
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
     }
 }

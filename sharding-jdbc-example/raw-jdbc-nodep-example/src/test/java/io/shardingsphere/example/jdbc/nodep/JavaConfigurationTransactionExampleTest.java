@@ -30,35 +30,35 @@ public class JavaConfigurationTransactionExampleTest {
     @Test
     public void assertShardingDatabasePrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingTablesPrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_TABLES));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingDatabaseAndTablesPrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertMasterSlave() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE));
-        scenario.executeShardingCRUDFailure();
-        ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
+        scenario.process();
+        ResultAssertUtils.assertTransactionMasterSlaveResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingMasterSlavePrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE));
-        scenario.executeShardingCRUDFailure();
-        ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
+        scenario.process();
+        ResultAssertUtils.assertTransactionMasterSlaveResult(scenario.getTransactionService());
     }
 }

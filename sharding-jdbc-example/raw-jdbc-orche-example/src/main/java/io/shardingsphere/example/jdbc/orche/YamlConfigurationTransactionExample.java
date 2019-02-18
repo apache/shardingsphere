@@ -45,7 +45,6 @@ public class YamlConfigurationTransactionExample {
     public static void main(final String[] args) throws Exception {
         TransactionService transactionService = YamlCommonTransactionServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
         TransactionServiceScenario scenario = new TransactionServiceScenario(transactionService);
-        scenario.executeShardingCRUDSuccess();
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
     }
 }

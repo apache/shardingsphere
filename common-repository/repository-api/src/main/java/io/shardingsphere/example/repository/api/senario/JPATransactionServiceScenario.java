@@ -33,12 +33,8 @@ public final class JPATransactionServiceScenario extends AbstractTransactionServ
     }
     
     @Override
-    public void executeShardingCRUDSuccess() {
+    public void process() {
         transactionService.processSuccess();
-    }
-    
-    @Override
-    public void executeShardingCRUDFailure() {
         processFailure(transactionService, TransactionType.LOCAL);
         processFailure(transactionService, TransactionType.XA);
         processFailure(transactionService, TransactionType.LOCAL);

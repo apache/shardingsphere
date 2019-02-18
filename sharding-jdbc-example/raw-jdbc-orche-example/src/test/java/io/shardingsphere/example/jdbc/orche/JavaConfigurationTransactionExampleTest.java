@@ -34,70 +34,70 @@ public class JavaConfigurationTransactionExampleTest {
     @Test
     public void assertShardingDatabaseWithLocalZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingDatabaseWithCloudZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertShardingTablesWithLocalZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingTablesWithCloudZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertShardingDatabaseAndTablesWithLocalZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingDatabaseAndTablesWithCloudZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertMasterSlaveWithLocalZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertMasterSlaveWithCloudZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertShardingMasterSlaveWithLocalZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingMasterSlaveWithCloudZookeeper() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 }

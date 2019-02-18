@@ -32,14 +32,9 @@ public final class CommonServiceScenario implements Scenario {
     }
     
     @Override
-    public void executeShardingCRUDSuccess() {
+    public void process() {
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
-    }
-    
-    @Override
-    public void executeShardingCRUDFailure() {
-    
     }
 }

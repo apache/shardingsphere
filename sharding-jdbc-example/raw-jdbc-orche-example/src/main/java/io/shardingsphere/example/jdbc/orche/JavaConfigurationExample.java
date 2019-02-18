@@ -45,6 +45,6 @@ public class JavaConfigurationExample {
     public static void main(final String[] args) throws Exception {
         CommonService commonService = CommonServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
         CommonServiceScenario scenario = new CommonServiceScenario(commonService);
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
     }
 }

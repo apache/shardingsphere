@@ -33,18 +33,11 @@ public final class TransactionServiceScenario extends AbstractTransactionService
     }
     
     @Override
-    public void executeShardingCRUDSuccess() {
+    public void process() {
         transactionService.initEnvironment();
         transactionService.processSuccess();
-        transactionService.cleanEnvironment();
-    }
-    
-    @Override
-    public void executeShardingCRUDFailure() {
-        transactionService.initEnvironment();
         processFailure(transactionService, TransactionType.LOCAL);
         processFailure(transactionService, TransactionType.XA);
-//        processFailure(transactionService, TransactionType.BASE);
         processFailure(transactionService, TransactionType.LOCAL);
         transactionService.cleanEnvironment();
     }

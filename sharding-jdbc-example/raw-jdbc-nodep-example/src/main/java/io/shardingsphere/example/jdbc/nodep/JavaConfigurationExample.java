@@ -36,6 +36,6 @@ public class JavaConfigurationExample {
     
     public static void main(final String[] args) throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(type));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
     }
 }

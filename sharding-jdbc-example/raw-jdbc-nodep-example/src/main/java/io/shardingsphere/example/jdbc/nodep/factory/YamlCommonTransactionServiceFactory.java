@@ -18,8 +18,6 @@
 package io.shardingsphere.example.jdbc.nodep.factory;
 
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
@@ -50,7 +48,7 @@ public class YamlCommonTransactionServiceFactory {
     }
     
     private static TransactionService createTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
+        return new RawPojoTransactionService(dataSource);
     }
     
     private static File getFile(final String fileName) {

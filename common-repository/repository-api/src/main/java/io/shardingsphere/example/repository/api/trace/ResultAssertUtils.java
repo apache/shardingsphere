@@ -80,9 +80,17 @@ public class ResultAssertUtils {
     
     public static void assertTransactionServiceResult(final TransactionService transactionService) {
         MemoryLogService memoryLogService = ((CommonServiceImpl) transactionService).getMemoryLogService();
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(30));
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(0));
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(30));
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(0));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(40));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(10));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(40));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(10));
+    }
+    
+    public static void assertTransactionMasterSlaveResult(final TransactionService transactionService) {
+        MemoryLogService memoryLogService = ((CommonServiceImpl) transactionService).getMemoryLogService();
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(40));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(10));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(40));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(10));
     }
 }

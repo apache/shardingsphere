@@ -20,7 +20,6 @@ package io.shardingsphere.example.repository.jdbc.repository;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -28,18 +27,17 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class JDBCOrderItemRepositoryImpl extends BaseOrderItemRepository implements OrderItemRepository {
+public final class JDBCOrderItemTransactionRepositoryImpl extends BaseOrderItemRepository implements OrderItemRepository {
     
-    private final DataSource dataSource;
+    private Connection connection;
     
-    public JDBCOrderItemRepositoryImpl(final DataSource dataSource) {
-        this.dataSource = dataSource;
+    public JDBCOrderItemTransactionRepositoryImpl(final Connection connection) {
+        this.connection = connection;
     }
     
     @Override
     public void createTableIfNotExists() {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             createItemTableNotExist(statement);
         } catch (final SQLException ignored) {
         }
@@ -47,8 +45,7 @@ public final class JDBCOrderItemRepositoryImpl extends BaseOrderItemRepository i
     
     @Override
     public void dropTable() {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             dropItemTable(statement);
         } catch (final SQLException ignored) {
         }
@@ -56,8 +53,7 @@ public final class JDBCOrderItemRepositoryImpl extends BaseOrderItemRepository i
     
     @Override
     public void truncateTable() {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             truncateItemTable(statement);
         } catch (final SQLException ignored) {
         }
@@ -65,8 +61,7 @@ public final class JDBCOrderItemRepositoryImpl extends BaseOrderItemRepository i
     
     @Override
     public Long insert(final OrderItem orderItem) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_T_ORDER_ITEM, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_T_ORDER_ITEM, Statement.RETURN_GENERATED_KEYS)) {
             insertItem(preparedStatement, orderItem);
         } catch (final SQLException ignored) {
         }
@@ -75,8 +70,7 @@ public final class JDBCOrderItemRepositoryImpl extends BaseOrderItemRepository i
     
     @Override
     public void delete(final Long orderItemId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_ITEM_ID)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_ITEM_ID)) {
             deleteById(preparedStatement, orderItemId);
         } catch (final SQLException ignored) {
         }
@@ -85,8 +79,7 @@ public final class JDBCOrderItemRepositoryImpl extends BaseOrderItemRepository i
     @Override
     public List<OrderItem> getOrderItems(final String sql) {
         List<OrderItem> result = new LinkedList<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             result = queryOrderItem(preparedStatement);
         } catch (final SQLException ignored) {
         }

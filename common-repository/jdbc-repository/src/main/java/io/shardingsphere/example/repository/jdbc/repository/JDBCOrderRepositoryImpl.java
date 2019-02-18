@@ -23,13 +23,12 @@ import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class JDBCOrderRepositoryImpl implements OrderRepository {
+public final class JDBCOrderRepositoryImpl extends BaseOrderRepository implements OrderRepository {
     
     private final DataSource dataSource;
     
@@ -39,47 +38,36 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
     
     @Override
     public void createTableIfNotExists() {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+            createOrderTableNotExist(statement);
         } catch (final SQLException ignored) {
         }
     }
     
     @Override
     public void dropTable() {
-        String sql = "DROP TABLE t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+            dropOrderTable(statement);
         } catch (final SQLException ignored) {
         }
     }
     
     @Override
     public void truncateTable() {
-        String sql = "TRUNCATE TABLE t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+            truncateOrderTable(statement);
         } catch (final SQLException ignored) {
         }
     }
     
     @Override
     public Long insert(final Order order) {
-        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setString(2, order.getStatus());
-            preparedStatement.executeUpdate();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    order.setOrderId(resultSet.getLong(1));
-                }
-            }
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_T_ORDER, Statement.RETURN_GENERATED_KEYS)) {
+            insertOrder(preparedStatement, order);
         } catch (final SQLException ignored) {
         }
         return order.getOrderId();
@@ -87,39 +75,19 @@ public final class JDBCOrderRepositoryImpl implements OrderRepository {
     
     @Override
     public void delete(final Long orderId) {
-        String sql = "DELETE FROM t_order WHERE order_id=?";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, orderId);
-            preparedStatement.executeUpdate();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_ORDER_ID)) {
+            deleteById(preparedStatement, orderId);
         } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public List<Order> selectAll() {
-        String sql = "SELECT * FROM t_order";
-        return getOrders(sql);
-    }
-    
-    @Override
-    public List<Order> selectRange() {
-        String sql = "SELECT * FROM t_order WHERE order_id BETWEEN 200000000000000000 AND 400000000000000000";
-        return getOrders(sql);
-    }
-    
-    private List<Order> getOrders(final String sql) {
+    public List<Order> getOrders(final String sql) {
         List<Order> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                Order order = new Order();
-                order.setOrderId(resultSet.getLong(1));
-                order.setUserId(resultSet.getInt(2));
-                order.setStatus(resultSet.getString(3));
-                result.add(order);
-            }
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            result = queryOrder(preparedStatement);
         } catch (final SQLException ignored) {
         }
         return result;

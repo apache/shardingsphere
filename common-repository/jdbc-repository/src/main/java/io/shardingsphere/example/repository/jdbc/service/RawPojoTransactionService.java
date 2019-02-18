@@ -23,7 +23,7 @@ import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -36,17 +36,14 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private final JDBCOrderTransactionRepositoryImpl orderRepository;
     
-    private final JDBCOrderItemTransactionRepositotyImpl orderItemRepository;
+    private final JDBCOrderItemTransactionRepositoryImpl orderItemRepository;
     
-    private Connection insertConnection;
+    private Connection connection;
     
-    public RawPojoTransactionService(final JDBCOrderTransactionRepositoryImpl orderRepository,
-        final JDBCOrderItemTransactionRepositotyImpl orderItemRepository, final DataSource dataSource) throws SQLException {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.insertConnection = dataSource.getConnection();
-        orderRepository.setInsertConnection(insertConnection);
-        orderItemRepository.setInsertConnection(insertConnection);
+    public RawPojoTransactionService(final DataSource dataSource) throws SQLException {
+        this.connection = dataSource.getConnection();
+        this.orderRepository = new JDBCOrderTransactionRepositoryImpl(connection);
+        this.orderItemRepository = new JDBCOrderItemTransactionRepositoryImpl(connection);
     }
     
     @Override
@@ -110,8 +107,8 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private void beginTransaction() {
         try {
-            if (null != this.insertConnection && !this.insertConnection.isClosed()) {
-                this.insertConnection.setAutoCommit(false);
+            if (null != this.connection && !this.connection.isClosed()) {
+                this.connection.setAutoCommit(false);
             }
         } catch (SQLException ignored) {
         }
@@ -119,8 +116,8 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private void commitTransaction() {
         try {
-            if (null != this.insertConnection && !this.insertConnection.isClosed()) {
-                this.insertConnection.commit();
+            if (null != this.connection && !this.connection.isClosed()) {
+                this.connection.commit();
             }
         } catch (SQLException ignored) {
         }
@@ -128,8 +125,8 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private void rollbackTransaction() {
         try {
-            if (null != this.insertConnection && !this.insertConnection.isClosed()) {
-                this.insertConnection.rollback();
+            if (null != this.connection && !this.connection.isClosed()) {
+                this.connection.rollback();
             }
         } catch (SQLException ignored) {
         }

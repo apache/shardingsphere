@@ -32,12 +32,13 @@ public final class JPACommonServiceScenario implements Scenario {
     }
     
     @Override
-    public void executeShardingCRUDSuccess() {
+    public void process() {
         commonService.processSuccess();
-    }
-    
-    @Override
-    public void executeShardingCRUDFailure() {
-        commonService.processFailure();
+        try {
+            commonService.processFailure();
+        } catch (final Exception ex) {
+            System.out.println(ex.getMessage());
+            commonService.printData();
+        }
     }
 }

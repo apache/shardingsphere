@@ -24,10 +24,7 @@ import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfiguratio
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
-import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
 
@@ -58,6 +55,6 @@ public class CommonTransactionServiceFactory {
     }
     
     private static TransactionService createTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
+        return new RawPojoTransactionService(dataSource);
     }
 }

@@ -18,7 +18,6 @@
 package io.shardingsphere.example.spring.boot.jpa.nodep;
 
 import io.shardingsphere.example.repository.api.senario.JPATransactionServiceScenario;
-import io.shardingsphere.example.repository.api.senario.Scenario;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jpa.service.SpringEntityTransactionService;
 import org.springframework.boot.SpringApplication;
@@ -41,8 +40,7 @@ public class SpringBootStarterTransactionExample {
     private static void process(final ConfigurableApplicationContext applicationContext) {
         TransactionService transactionService = getTransactionService(applicationContext);
         JPATransactionServiceScenario scenario = new JPATransactionServiceScenario(transactionService);
-        scenario.executeShardingCRUDSuccess();
-        scenario.executeShardingCRUDFailure();
+        scenario.process();
     }
     
     private static TransactionService getTransactionService(final ConfigurableApplicationContext applicationContext) {

@@ -34,70 +34,70 @@ public class JavaConfigurationExampleTest {
     @Test
     public void assertShardingDatabaseWithLocalZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertShardingDatabaseResult(scenario.getCommonService(), false);
     }
     
     @Test
     public void assertShardingDatabaseWithCloudZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertShardingDatabaseResult(scenario.getCommonService(), false);
     }
 
     @Test
     public void assertShardingTablesWithLocalZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertShardingTableResult(scenario.getCommonService(), false);
     }
     
     @Test
     public void assertShardingTablesWithCloudZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertShardingTableResult(scenario.getCommonService(), false);
     }
 
     @Test
     public void assertShardingDatabaseAndTablesWithLocalZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertShardingDatabaseAndTableResult(scenario.getCommonService(), false);
     }
     
     @Test
     public void assertShardingDatabaseAndTablesWithCloudZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertShardingDatabaseAndTableResult(scenario.getCommonService(), false);
     }
 
     @Test
     public void assertMasterSlaveWithLocalZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
     
     @Test
     public void assertMasterSlaveWithCloudZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
 
     @Test
     public void assertShardingMasterSlaveWithLocalZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
     
     @Test
     public void assertShardingMasterSlaveWithCloudZookeeper() throws SQLException {
         CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true));
-        scenario.executeShardingCRUDSuccess();
+        scenario.process();
         ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
 }
