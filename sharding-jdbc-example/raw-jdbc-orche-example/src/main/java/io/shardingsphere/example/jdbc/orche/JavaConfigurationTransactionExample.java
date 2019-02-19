@@ -44,7 +44,11 @@ public class JavaConfigurationTransactionExample {
     
     public static void main(final String[] args) throws Exception {
         TransactionService transactionService = CommonTransactionServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
-        TransactionServiceScenario scenario = new TransactionServiceScenario(transactionService);
-        scenario.process();
+        transactionService.initEnvironment();
+        transactionService.processSuccessWithLocal();
+        transactionService.processSuccessWithXA();
+        transactionService.processFailureWithLocal();
+        transactionService.processFailureWithXA();
+        transactionService.cleanEnvironment();
     }
 }

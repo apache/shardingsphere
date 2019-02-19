@@ -18,7 +18,6 @@
 package io.shardingsphere.example.jdbc.orche;
 
 import io.shardingsphere.example.jdbc.orche.factory.YamlCommonServiceFactory;
-import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
@@ -44,7 +43,8 @@ public class YamlConfigurationExample {
     
     public static void main(final String[] args) throws Exception {
         CommonService commonService = YamlCommonServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
-        CommonServiceScenario scenario = new CommonServiceScenario(commonService);
-        scenario.process();
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        commonService.cleanEnvironment();
     }
 }
