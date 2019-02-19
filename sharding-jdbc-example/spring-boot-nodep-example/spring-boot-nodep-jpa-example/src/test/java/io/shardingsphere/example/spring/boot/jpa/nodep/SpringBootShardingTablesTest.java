@@ -32,8 +32,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootTestMain.class)
-@ActiveProfiles("sharding-databases")
-public class SpringBootShardingDatabasesTest {
+@ActiveProfiles("sharding-tables")
+public class SpringBootShardingTablesTest {
     
     @Autowired
     private SpringEntityService commonService;
@@ -46,7 +46,7 @@ public class SpringBootShardingDatabasesTest {
     public void assertCommonService() {
         JPACommonServiceScenario scenario = new JPACommonServiceScenario(commonService);
         scenario.process();
-        SpringResultAssertUtils.assertShardingDatabaseResult(commonService);
+        SpringResultAssertUtils.assertShardingTableResult(commonService);
     }
     
     @Test
