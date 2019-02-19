@@ -100,11 +100,12 @@ public final class ParsingSQLRouter implements ShardingRouter {
             mergeShardingValueForSubQuery(sqlStatement.getConditions(), shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
+        boolean isSingleRouting = routingResult.isSingleRouting();
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
-            processLimit(parameters, (SelectStatement) sqlStatement);
+            processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
         }
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(routingResult.isSingleRouting());
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(isSingleRouting);
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
             result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingMetaData.getDataSource())));
         }
@@ -219,8 +220,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getLogicTableName());
     }
     
-    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement) {
+    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement, final boolean isSingleRouting) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll, databaseType);
+        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll, databaseType, isSingleRouting);
     }
 }
