@@ -11,7 +11,7 @@ createDefinitions_
     ;
 
 createDefinition_
-    : columnDefinition | constraintDefinition | indexDefinition_ | checkExpr_
+    : columnDefinition | constraintDefinition | indexDefinition_ | checkConstraintDefinition_
     ;
 
 columnDefinition
@@ -47,6 +47,10 @@ dataTypeGeneratedOption_
     : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING_
     ;
 
+dataTypeGenerated_
+    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption_*
+    ;
+
 defaultValue_
     : NULL | NUMBER_ | STRING_ | currentTimestampType_ (ON UPDATE currentTimestampType_)? | ON UPDATE currentTimestampType_
     ;
@@ -65,10 +69,6 @@ referenceType_
 
 referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
-    ;
-
-dataTypeGenerated_
-    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption_*
     ;
 
 constraintDefinition
@@ -99,8 +99,8 @@ keyPart_
     : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
     ;
 
-checkExpr_
-    : CHECK expr
+checkConstraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
 createLike_
