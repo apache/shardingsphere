@@ -39,7 +39,7 @@ public final class ExpectedInsertValuesToken {
     @XmlAttribute(name = "type")
     private String type;
     
-    @XmlElement(name = "column-names")
+    @XmlAttribute(name = "column-names")
     private String columnNames;
     
     @XmlElementWrapper(name = "insert-values")
