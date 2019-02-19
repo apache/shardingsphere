@@ -323,7 +323,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-values-token begin-position="29" table-name="t_order_item"/>
+            <insert-values-token begin-position="29" type="SET" column-names="item_id, order_id, user_id, status, creation_date">
+                <insert-values>
+                    <insert-value values="10000, 1000, 10, 'insert', '2017-08-08'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -346,7 +350,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-values-token begin-position="29" table-name="t_order_item"/>
+            <insert-values-token begin-position="29" type="SET" column-names="order_id, user_id, status, creation_date, item_id">
+                <insert-values>
+                    <insert-value values="1000, 10, 'insert', '2017-08-08', 1"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
