@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.proxy.spring.boot.jpa;
 
+import io.shardingsphere.example.repository.api.senario.JPACommonServiceScenario;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
 import org.springframework.boot.SpringApplication;
@@ -44,13 +45,8 @@ public class SpringBootStarterExample {
     
     private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
-        commonService.processSuccess();
-        try {
-            commonService.processFailure();
-        } catch (final Exception ex) {
-            System.out.println(ex.getMessage());
-            commonService.printData();
-        }
+        JPACommonServiceScenario scenario = new JPACommonServiceScenario(commonService);
+        scenario.process();
     }
     
     private static CommonService getCommonService(final ConfigurableApplicationContext applicationContext) {
