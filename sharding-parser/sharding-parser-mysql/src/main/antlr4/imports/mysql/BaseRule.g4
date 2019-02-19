@@ -201,14 +201,6 @@ asterisk
     : ASTERISK_
     ;
 
-selectExprs
-    : (asterisk | selectExpr) (COMMA_ selectExpr)*
-    ; 
-
-selectExpr
-    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK_
-    ;
-
 ignoredIdentifier_
     : ID
     ;
