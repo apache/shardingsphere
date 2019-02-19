@@ -11,11 +11,11 @@ createDefinitions_
     ;
 
 createDefinition_
-    : columnDefinition | constraintDefinition | indexDefinition_ | checkConstraintDefinition_
+    : columnDefinition | constraintDefinition_ | indexDefinition_ | checkConstraintDefinition_
     ;
 
 columnDefinition
-    : columnName dataType (dataTypeOption_* | dataTypeGenerated_?)
+    : columnName dataType (inlineDataType_* | generatedDataType_*)
     ;
 
 dataType
@@ -34,44 +34,33 @@ collateClause_
     : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
 
-dataTypeOption_
-    : dataTypeGeneratedOption_
-    | DEFAULT? defaultValue_
+inlineDataType_
+    : commonDataTypeOption_
     | AUTO_INCREMENT
+    | DEFAULT (literal | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
-    | referenceDefinition_
     ;
 
-dataTypeGeneratedOption_
-    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING_
+generatedDataType_
+    : commonDataTypeOption_
+    | (GENERATED ALWAYS)? AS expr
+    | (VIRTUAL | STORED)
     ;
 
-dataTypeGenerated_
-    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption_*
-    ;
-
-defaultValue_
-    : NULL | NUMBER_ | STRING_ | currentTimestampType_ (ON UPDATE currentTimestampType_)? | ON UPDATE currentTimestampType_
-    ;
-
-currentTimestampType_
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength?
+commonDataTypeOption_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
     ;
 
 referenceDefinition_
-    : REFERENCES tableName keyParts_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType_*
-    ;
-
-referenceType_
-    : ON (UPDATE | DELETE) referenceOption_
+    : REFERENCES tableName keyParts_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (UPDATE | DELETE) referenceOption_)*
     ;
 
 referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-constraintDefinition
+constraintDefinition_
     : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
@@ -168,7 +157,7 @@ multiColumn
     ;
 
 addConstraint
-    : ADD constraintDefinition
+    : ADD constraintDefinition_
     ;
 
 addIndex
