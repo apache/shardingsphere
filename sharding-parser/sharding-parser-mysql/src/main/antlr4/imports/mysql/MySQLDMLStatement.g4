@@ -3,13 +3,17 @@ grammar MySQLDMLStatement;
 import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, MySQLBase, BaseRule, DataType;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause) onDuplicateKeyClause?
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | selectClause) onDuplicateKeyClause?
     ;
 
 columnClause
-    : columnNames? (valueClause | select)
+    : columnNames? valueClause
     ;
 
+selectClause
+    : columnNames? select
+    ;
+    
 valueClause
     : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
     ;
