@@ -100,7 +100,7 @@ public class SpringNamespaceTransactionExample {
                     transactionService.processFailureWithLocal();
                     break;
                 case XA:
-                    transactionService.processFailureWithXa();
+                    transactionService.processFailureWithXA();
                     break;
                 case BASE:
                     transactionService.processFailureWithBase();

@@ -18,25 +18,20 @@
 package io.shardingsphere.example.repository.api.senario;
 
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
-public final class JPATransactionServiceScenario extends AbstractTransactionService implements Scenario {
-    
-    private final TransactionService transactionService;
+import java.sql.SQLException;
+
+public final class JPATransactionServiceScenario extends AbstractTransactionScenario implements Scenario {
     
     public JPATransactionServiceScenario(final TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
-    
-    public TransactionService getTransactionService() {
-        return transactionService;
+        super(transactionService);
     }
     
     @Override
-    public void process() {
-        transactionService.processSuccess();
-        processFailure(transactionService, TransactionType.LOCAL);
-        processFailure(transactionService, TransactionType.XA);
-        processFailure(transactionService, TransactionType.LOCAL);
+    public void process() throws SQLException {
+        getTransactionService().initEnvironment();
+        doInTransactionWithSuccess();
+        doInTransactionWithFailure();
+        getTransactionService().cleanEnvironment();
     }
 }

@@ -24,32 +24,74 @@ import org.springframework.transaction.annotation.Transactional;
 
 public abstract class ShardingProxyTransactionService extends CommonServiceImpl implements TransactionService {
     
-    @Override
-    @Transactional
+    /**
+     * process success with local.
+     */
     @ShardingTransactionType
+    @Transactional
+    @Override
+    public void processSuccessWithLocal() {
+        printTransactionType();
+        super.processFailure();
+    }
+    
+    /**
+     * process success with XA.
+     */
+    @ShardingTransactionType(TransactionType.XA)
+    @Transactional
+    @Override
+    public void processSuccessWithXA() {
+        printTransactionType();
+        super.processFailure();
+    }
+    
+    /**
+     * process success with BASE.
+     */
+    @ShardingTransactionType(TransactionType.BASE)
+    @Transactional
+    @Override
+    public void processSuccessWithBase() {
+        printTransactionType();
+        super.processFailure();
+    }
+    
+    /**
+     * process failure with local.
+     */
+    @ShardingTransactionType
+    @Transactional
+    @Override
     public void processFailureWithLocal() {
         printTransactionType();
         super.processFailure();
     }
     
-    @Override
-    @Transactional
+    /**
+     * process failure with XA.
+     */
     @ShardingTransactionType(TransactionType.XA)
-    public void processFailureWithXa() {
+    @Transactional
+    @Override
+    public void processFailureWithXA() {
         printTransactionType();
         super.processFailure();
     }
     
-    @Override
-    @Transactional
+    /**
+     * process failure with BASE.
+     */
     @ShardingTransactionType(TransactionType.BASE)
+    @Transactional
+    @Override
     public void processFailureWithBase() {
         printTransactionType();
         super.processFailure();
     }
     
     @Override
-    public void printTransactionType() {
+    public final void printTransactionType() {
         System.out.println(String.format("-------------- Process With Transaction %s ---------------", getTransactionTypeRepository().showTransactionType()));
     }
     

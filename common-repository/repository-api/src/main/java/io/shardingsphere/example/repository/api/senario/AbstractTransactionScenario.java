@@ -21,11 +21,11 @@ import io.shardingsphere.example.repository.api.service.TransactionService;
 
 import java.sql.SQLException;
 
-public final class TransactionServiceScenario implements Scenario {
+public abstract class AbstractTransactionScenario {
     
     private final TransactionService transactionService;
     
-    public TransactionServiceScenario(final TransactionService transactionService) {
+    public AbstractTransactionScenario(final TransactionService transactionService) {
         this.transactionService = transactionService;
     }
     
@@ -33,13 +33,41 @@ public final class TransactionServiceScenario implements Scenario {
         return transactionService;
     }
     
-    @Override
-    public void process() throws SQLException {
-        transactionService.initEnvironment();
+    protected final void doInTransactionWithFailure() {
+        try {
+            transactionService.processFailureWithLocal();
+        } catch (final Exception ex) {
+            transactionService.printData();
+        }
+        try {
+            transactionService.processFailureWithXA();
+        } catch (final Exception ex) {
+            transactionService.printData();
+        }
+    }
+    
+    protected final void doInTransactionWithSuccess() throws SQLException {
         transactionService.processSuccessWithLocal();
         transactionService.processSuccessWithXA();
-        transactionService.processFailureWithLocal();
-        transactionService.processFailureWithXA();
-        transactionService.cleanEnvironment();
     }
+    
+//    protected final void processFailure(final TransactionType type) {
+//        try {
+//            switch (type) {
+//                case LOCAL:
+//                    transactionService.processFailureWithLocal();
+//                    break;
+//                case XA:
+//                    transactionService.processFailureWithXA();
+//                    break;
+//                case BASE:
+//                    transactionService.processFailureWithBase();
+//                    break;
+//                default:
+//            }
+//        } catch (Exception ex) {
+//            System.out.println(ex.getMessage());
+//            transactionService.printData();
+//        }
+//    }
 }

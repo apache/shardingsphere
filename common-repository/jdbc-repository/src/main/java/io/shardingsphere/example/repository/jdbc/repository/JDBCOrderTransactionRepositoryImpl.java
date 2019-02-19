@@ -35,6 +35,10 @@ public final class JDBCOrderTransactionRepositoryImpl extends BaseOrderRepositor
         this.connection = connection;
     }
     
+    public void setConnection(final Connection connection) {
+        this.connection = connection;
+    }
+    
     @Override
     public void createTableIfNotExists() {
         try (Statement statement = connection.createStatement()) {

@@ -19,11 +19,9 @@ package io.shardingsphere.example.jdbc.nodep.factory;
 
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
@@ -39,12 +37,8 @@ public class CommonTransactionServiceFactory {
                 return createTransactionService(new ShardingDatabasesConfigurationPrecise().getDataSource());
             case SHARDING_TABLES:
                 return createTransactionService(new ShardingTablesConfigurationPrecise().getDataSource());
-            case SHARDING_TABLES_RANGE:
-                return createTransactionService(new ShardingTablesConfigurationRange().getDataSource());
             case SHARDING_DATABASES_AND_TABLES:
                 return createTransactionService(new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource());
-            case SHARDING_DATABASES_AND_TABLES_RANGE:
-                return createTransactionService(new ShardingDatabasesAndTablesConfigurationRange().getDataSource());
             case MASTER_SLAVE:
                 return createTransactionService(new MasterSlaveConfiguration().getDataSource());
             case SHARDING_MASTER_SLAVE:

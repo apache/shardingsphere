@@ -40,37 +40,54 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private Connection connection;
     
+    private DataSource dataSource;
+    
     public RawPojoTransactionService(final DataSource dataSource) throws SQLException {
+        this.dataSource = dataSource;
         this.connection = dataSource.getConnection();
         this.orderRepository = new JDBCOrderTransactionRepositoryImpl(connection);
         this.orderItemRepository = new JDBCOrderItemTransactionRepositoryImpl(connection);
     }
     
     @Override
-    public void processFailureWithLocal() {
+    public void processFailureWithLocal() throws SQLException {
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        printTransactionType();
-        executeFailure();
+        doInTransactionWithFailure();
     }
     
     @Override
-    public void processFailureWithXa() {
+    public void processFailureWithXA() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
-        printTransactionType();
-        executeFailure();
+        doInTransactionWithFailure();
     }
     
     @Override
-    public void processFailureWithBase() {
+    public void processFailureWithBase() throws SQLException {
         TransactionTypeHolder.set(TransactionType.BASE);
-        printTransactionType();
-        executeFailure();
+        doInTransactionWithFailure();
+    }
+    
+    @Override
+    public void processSuccessWithLocal() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+        doInTransactionWithSuccess();
+    }
+    
+    @Override
+    public void processSuccessWithXA() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        doInTransactionWithSuccess();
+    }
+    
+    @Override
+    public void processSuccessWithBase() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.BASE);
+        doInTransactionWithSuccess();
     }
     
     @Override
     public void printTransactionType() {
         System.out.println(String.format("-------------- Process With Transaction %s ---------------", TransactionTypeHolder.get()));
-    
     }
     
     @Override
@@ -93,16 +110,37 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
         return new OrderItem();
     }
     
-    private void executeFailure() {
+    private void doInTransactionWithFailure() throws SQLException {
+        createNewConnection();
+        printTransactionType();
         try {
             beginTransaction();
             super.processFailure();
-            commitTransaction();
-        } catch (RuntimeException ex) {
+        } catch (final RuntimeException ex) {
             System.out.println(ex.getMessage());
             rollbackTransaction();
             super.printData();
+        } finally {
+            connection.close();
         }
+    }
+    
+    private void doInTransactionWithSuccess() throws SQLException {
+        try {
+            createNewConnection();
+            printTransactionType();
+            beginTransaction();
+            super.processSuccess();
+            commitTransaction();
+        } finally {
+            connection.close();
+        }
+    }
+    
+    private void createNewConnection() throws SQLException {
+        connection = dataSource.getConnection();
+        orderRepository.setConnection(connection);
+        orderItemRepository.setConnection(connection);
     }
     
     private void beginTransaction() {
