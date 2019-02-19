@@ -6,20 +6,20 @@ insert
     : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | selectClause) onDuplicateKeyClause?
     ;
 
-columnClause
-    : columnNames? valueClause
+setClause
+    : SET assignmentList
     ;
 
-selectClause
-    : columnNames? select
+columnClause
+    : columnNames? valueClause
     ;
 
 valueClause
     : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
     ;
 
-setClause
-    : SET assignmentList
+selectClause
+    : columnNames? select
     ;
 
 onDuplicateKeyClause
@@ -27,7 +27,7 @@ onDuplicateKeyClause
     ;
 
 update
-    : updateClause setClause whereClause? orderByClause? limitClause?
+    : updateClause setClause whereClause?
     ;
 
 updateClause
@@ -35,7 +35,7 @@ updateClause
     ;
 
 delete
-    : deleteClause whereClause? orderByClause? limitClause?
+    : deleteClause whereClause?
     ;
 
 deleteClause
