@@ -26,3 +26,21 @@ shardingRule:
         type: SNOWFLAKE
         column: order_id
       logicIndex: order_index
+    t_encrypt:
+      actualDataNodes: ds_${0..1}.t_encrypt_${0..1}
+      databaseStrategy:
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: t_encrypt_${user_id % 2}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_encrypt_${order_id % 2}
+      encryptor:
+        type: test
+        columns: order_id
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+        
+        
