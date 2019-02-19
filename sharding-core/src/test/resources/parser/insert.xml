@@ -267,7 +267,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-values-token begin-position="83" table-name="t_order_item"/>
+            <insert-values-token begin-position="83" type="VALUES" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="10000, 1000, 10, 1"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
