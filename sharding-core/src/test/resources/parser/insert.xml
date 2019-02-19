@@ -452,7 +452,7 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
-            <insert-values-token begin-position="55" type="SET" column-names="order_id, user_id, status">
+            <insert-values-token begin-position="55" type="VALUES" column-names="order_id, user_id, status">
                 <insert-values>
                     <insert-value values="1000, 10, 'init'"/>
                     <insert-value values="1100, 11, 'init'"/>
@@ -486,6 +486,12 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
+            <insert-values-token begin-position="55" type="VALUES" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="1, 1, 'insert'"/>
+                    <insert-value values="2, 2, 'init'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
