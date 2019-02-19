@@ -17,11 +17,11 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.orche;
 
+import io.shardingsphere.example.repository.api.senario.AnnotationTractionServiceScenario;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -33,9 +33,6 @@ public class SpringNamespaceTransactionExample {
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
-//    private static boolean isRangeSharding = true;
-    private static boolean isRangeSharding = false;
-    
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
     
@@ -43,7 +40,7 @@ public class SpringNamespaceTransactionExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(isRangeSharding ? getApplicationFileRange() : getApplicationFilePrecise())) {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFilePrecise())) {
             process(applicationContext);
         }
     }
@@ -65,52 +62,10 @@ public class SpringNamespaceTransactionExample {
         }
     }
     
-    private static String getApplicationFileRange() {
-        switch (shardingType) {
-            case SHARDING_DATABASES:
-                return String.format("META-INF/%s/%s/application-sharding-databases-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case SHARDING_TABLES:
-                return String.format("META-INF/%s/%s/application-sharding-tables-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case SHARDING_DATABASES_AND_TABLES:
-                return String.format("META-INF/%s/%s/application-sharding-databases-tables-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case MASTER_SLAVE:
-                return String.format("META-INF/%s/%s/application-master-slave.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case SHARDING_MASTER_SLAVE:
-                return String.format("META-INF/%s/%s/application-sharding-master-slave-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            default:
-                throw new UnsupportedOperationException(shardingType.name());
-        }
-    }
-    
     private static void process(final ConfigurableApplicationContext applicationContext) {
         TransactionService transactionService = getTransactionService(applicationContext);
-        transactionService.initEnvironment();
-        transactionService.processSuccess();
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        transactionService.cleanEnvironment();
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
-        try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXA();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData();
-        }
+        AnnotationTractionServiceScenario scenario = new AnnotationTractionServiceScenario(transactionService);
+        scenario.process();
     }
     
     private static TransactionService getTransactionService(final ConfigurableApplicationContext applicationContext) {
