@@ -128,16 +128,6 @@ public final class InsertValuesToken extends SQLToken {
                 return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
             }
         }
-        
-        private int getParameterIndex(final SQLPlaceholderExpression sqlPlaceholderExpression) {
-            return new ArrayList<>(Collections2.filter(values, new Predicate<SQLExpression>() {
-    
-                @Override
-                public boolean apply(final SQLExpression input) {
-                    return input instanceof SQLPlaceholderExpression;
-                }
-            })).indexOf(sqlPlaceholderExpression);
-        }
     
         /**
          * Get column value.
