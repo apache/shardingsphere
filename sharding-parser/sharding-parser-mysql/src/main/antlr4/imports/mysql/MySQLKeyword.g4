@@ -849,3 +849,11 @@ WRITE
 ZEROFILL
     : Z E R O F I L L
     ;
+
+VISIBLE
+    : V I S I B L E
+    ;
+
+INVISIBLE
+    : I N V I S I B L E
+    ;

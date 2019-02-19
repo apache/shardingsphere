@@ -117,8 +117,12 @@ alterSpecification_
     | addColumn
     | addIndex
     | addConstraint
-    | ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
-    | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
+    | ADD checkConstraintDefinition_
+    | DROP CHECK ignoredIdentifier_
+    | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
+    | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
+    | ALTER COLUMN? columnName (SET DEFAULT literal | DROP DEFAULT)
+    | ALTER INDEX indexName (VISIBLE | INVISIBLE)
     | changeColumn
     | DEFAULT? characterSet_ collateClause_?
     | CONVERT TO characterSet_ collateClause_?
@@ -131,11 +135,13 @@ alterSpecification_
     | FORCE
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumn
+    // TODO hongjun investigate ORDER BY col_name [, col_name] ...
     | ORDER BY columnName (COMMA_ columnName)*
+    | renameColumn
     | renameIndex
     | renameTable
     | (WITHOUT | WITH) VALIDATION
-    | ADD PARTITION partitionDefinitions_
+    | ADD PARTITION LP_ partitionDefinition_ RP_
     | DROP PARTITION ignoredIdentifiers_
     | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
     | IMPORT_ PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
@@ -182,36 +188,24 @@ tableOption_
     | UNION EQ_? LP_ tableName (COMMA_ tableName)* RP_
     ;
 
-singleColumn
-    : columnDefinition firstOrAfterColumn?
+addColumn
+    : ADD COLUMN? (columnDefinition firstOrAfterColumn? | LP_ columnDefinition (COMMA_ columnDefinition)* RP_)
     ;
 
 firstOrAfterColumn
     : FIRST | AFTER columnName
     ;
 
-multiColumn
-    : LP_ columnDefinition (COMMA_ columnDefinition)* RP_
+addIndex
+    : ADD indexDefinition_
     ;
 
 addConstraint
     : ADD constraintDefinition_
     ;
 
-addIndex
-    : ADD indexDefinition_
-    ;
-
-addColumn
-    : ADD COLUMN? (singleColumn | multiColumn)
-    ;
-
 changeColumn
-    : changeColumnOp columnName columnDefinition firstOrAfterColumn?
-    ;
-
-changeColumnOp
-    : CHANGE COLUMN?
+    : CHANGE COLUMN? columnName columnDefinition firstOrAfterColumn?
     ;
 
 dropColumn
@@ -230,36 +224,31 @@ modifyColumn
     : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
 
+// TODO hongjun: parse renameColumn and refresh meta, but throw exception if is sharding column
+renameColumn
+    : RENAME COLUMN columnName TO columnName
+    ;
+
+// TODO hongjun: should support renameIndex on mysql
 renameIndex
     : RENAME (INDEX | KEY) indexName TO indexName
     ;
 
+// TODO hongjun: parse renameTable and refresh meta, but throw exception if is sharding table
 renameTable
     : RENAME (TO | AS)? tableName
     ;
 
-partitionOptions_
-    : PARTITION BY (linearPartition_ | rangeOrListPartition_) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition_ (SUBPARTITIONS NUMBER_)?)? (LP_ partitionDefinitions_ RP_)?
-    ;
-
-linearPartition_
-    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNames)
-    ;
-
-yearFunctionExpr_
-    : LP_ YEAR expr RP_
-    ;
-
-rangeOrListPartition_
-    : (RANGE | LIST) (expr | COLUMNS columnNames)
-    ;
-
 partitionDefinitions_
-    : partitionDefinition_ (COMMA_ partitionDefinition_)*
+    : LP_ partitionDefinition_ (COMMA_ partitionDefinition_)* RP_
     ;
 
 partitionDefinition_
-    : PARTITION ignoredIdentifier_ (VALUES (lessThanPartition_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    : PARTITION ignoredIdentifier_ (VALUES (LESS THAN lessThanValue_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    ;
+
+lessThanValue_
+    : LP_ (expr | assignmentValues) RP_ | MAXVALUE
     ;
 
 partitionDefinitionOption_
@@ -270,10 +259,6 @@ partitionDefinitionOption_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
     | TABLESPACE EQ_? ignoredIdentifier_
-    ;
-
-lessThanPartition_
-    : LESS THAN (LP_ (expr | assignmentValues) RP_ | MAXVALUE)
     ;
 
 subpartitionDefinition_

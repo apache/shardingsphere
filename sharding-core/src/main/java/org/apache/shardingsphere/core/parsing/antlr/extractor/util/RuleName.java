@@ -59,6 +59,7 @@ public enum RuleName {
     
     TABLE_NAME("TableName"),
     
+    // TODO hongjun: parse AddIndex
     ADD_INDEX("AddIndex"),
     
     RENAME_INDEX("RenameIndex"),
@@ -67,6 +68,7 @@ public enum RuleName {
     
     DROP_INDEX_DEF("DropIndexDef"),
     
+    // TODO hongjun: parse AddConstraint
     ADD_CONSTRAINT("AddConstraint"),
     
     DROP_CONSTRAINT_CLAUSE("DropConstraintClause"),
