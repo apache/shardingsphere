@@ -619,7 +619,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_place" />
-            <insert-values-token begin-position="64" table-name="t_place"/>
+            <insert-values-token begin-position="64" type="VALUES" column-names="user_new_id, guid, start_point, rule">
+                <insert-values>
+                    <insert-value values="7, 200, 100, 200"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -650,7 +654,11 @@
                 </items>
             </items-token>
             <insert-column-token begin-position="24" column-name=")" />
-            <insert-values-token begin-position="31" table-name="t_order_item"/>
+            <insert-values-token begin-position="31" type="VALUES" column-names="item_id, order_id, user_id, status, creation_date">
+                <insert-values>
+                    <insert-value values="10000, 1000, 10, 'insert', '2017-08-08'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
