@@ -79,22 +79,22 @@ unionSelect
     ;
 
 alterTableProperties
-    : renameTable | REKEY encryptionSpec
+    : renameTableSpecification | REKEY encryptionSpec
     ;
 
-renameTable
+renameTableSpecification
     : RENAME TO tableName
     ;
 
 columnClauses
-    : opColumnClause+ | renameColumn
+    : opColumnClause+ | renameColumnSpecification
     ;
 
 opColumnClause
-    : addColumn | modifyColumn | dropColumnClause
+    : addColumnSpecification | modifyColumnSpecification | dropColumnClause
     ;
 
-addColumn
+addColumnSpecification
     : ADD columnOrVirtualDefinitions columnProperties?
     ;
 
@@ -106,7 +106,7 @@ columnOrVirtualDefinition
     : columnDefinition | virtualColumnDefinition
     ;
 
-modifyColumn
+modifyColumnSpecification
     : MODIFY (LP_? modifyColProperties (COMMA_ modifyColProperties)* RP_? | modifyColSubstitutable)
     ;
 
@@ -119,10 +119,10 @@ modifyColSubstitutable
     ;
 
 dropColumnClause
-    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropColumn
+    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropColumnSpecification
     ;
 
-dropColumn
+dropColumnSpecification
     : DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
     ;
 
@@ -138,15 +138,15 @@ checkpointNumber
     : CHECKPOINT NUMBER_
     ;
 
-renameColumn
+renameColumnSpecification
     : RENAME COLUMN columnName TO columnName
     ;
 
 constraintClauses
-    : addConstraint | modifyConstraintClause | renameConstraintClause | dropConstraintClause+
+    : addConstraintSpecification | modifyConstraintClause | renameConstraintClause | dropConstraintClause+
     ;
 
-addConstraint
+addConstraintSpecification
     : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
     ;
 
@@ -178,7 +178,7 @@ dropConstraintClause
     ;
 
 alterExternalTable
-    : (addColumn | modifyColumn | dropColumn)+
+    : (addColumnSpecification | modifyColumnSpecification | dropColumnSpecification)+
     ;
 
 columnDefinition

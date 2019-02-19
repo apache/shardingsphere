@@ -38,7 +38,7 @@ public final class DropColumnDefinitionExtractor implements CollectionSQLSegment
     @Override
     public Collection<DropColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<DropColumnDefinitionSegment> result = new HashSet<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN_SPECIFICATION)) {
             result.addAll(extractDropColumnSegments(each));
         }
         return result;

@@ -41,7 +41,7 @@ public final class OracleModifyColumnDefinitionExtractor implements CollectionSQ
     
     @Override
     public Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
+        Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN_SPECIFICATION);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }

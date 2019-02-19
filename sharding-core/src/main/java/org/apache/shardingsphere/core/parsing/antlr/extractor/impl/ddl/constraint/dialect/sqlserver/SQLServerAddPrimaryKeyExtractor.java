@@ -36,7 +36,7 @@ public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegment
     
     @Override
     public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> addColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
+        Optional<ParserRuleContext> addColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN_SPECIFICATION);
         if (!addColumnNode.isPresent()) {
             return Optional.absent();
         }

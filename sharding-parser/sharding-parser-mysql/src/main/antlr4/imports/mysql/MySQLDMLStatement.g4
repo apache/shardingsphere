@@ -13,7 +13,7 @@ columnClause
 selectClause
     : columnNames? select
     ;
-    
+
 valueClause
     : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
     ;

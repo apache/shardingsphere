@@ -114,32 +114,32 @@ alterSpecifications_
 
 alterSpecification_
     : tableOptions_
-    | addColumn
-    | addIndex
-    | addConstraint
+    | addColumnSpecification
+    | addIndexSpecification
+    | addConstraintSpecification
     | ADD checkConstraintDefinition_
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
     | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
     | ALTER COLUMN? columnName (SET DEFAULT literal | DROP DEFAULT)
     | ALTER INDEX indexName (VISIBLE | INVISIBLE)
-    | changeColumn
+    | changeColumnSpecification
     | DEFAULT? characterSet_ collateClause_?
     | CONVERT TO characterSet_ collateClause_?
     | (DISABLE | ENABLE) KEYS
     | (DISCARD | IMPORT_) TABLESPACE
-    | dropColumn
-    | dropIndexDef
-    | dropPrimaryKey
+    | dropColumnSpecification
+    | dropIndexSpecification
+    | dropPrimaryKeySpecification
     | DROP FOREIGN KEY ignoredIdentifier_
     | FORCE
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
-    | modifyColumn
+    | modifyColumnSpecification
     // TODO hongjun investigate ORDER BY col_name [, col_name] ...
     | ORDER BY columnName (COMMA_ columnName)*
-    | renameColumn
-    | renameIndex
-    | renameTable
+    | renameColumnSpecification
+    | renameIndexSpecification
+    | renameTableSpecification
     | (WITHOUT | WITH) VALIDATION
     | ADD PARTITION LP_ partitionDefinition_ RP_
     | DROP PARTITION ignoredIdentifiers_
@@ -188,7 +188,7 @@ tableOption_
     | UNION EQ_? LP_ tableName (COMMA_ tableName)* RP_
     ;
 
-addColumn
+addColumnSpecification
     : ADD COLUMN? (columnDefinition firstOrAfterColumn? | LP_ columnDefinition (COMMA_ columnDefinition)* RP_)
     ;
 
@@ -196,46 +196,46 @@ firstOrAfterColumn
     : FIRST | AFTER columnName
     ;
 
-addIndex
+addIndexSpecification
     : ADD indexDefinition_
     ;
 
-addConstraint
+addConstraintSpecification
     : ADD constraintDefinition_
     ;
 
-changeColumn
+changeColumnSpecification
     : CHANGE COLUMN? columnName columnDefinition firstOrAfterColumn?
     ;
 
-dropColumn
+dropColumnSpecification
     : DROP COLUMN? columnName
     ;
 
-dropIndexDef
+dropIndexSpecification
     : DROP (INDEX | KEY) indexName
     ;
 
-dropPrimaryKey
+dropPrimaryKeySpecification
     : DROP primaryKey
     ;
 
-modifyColumn
+modifyColumnSpecification
     : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
 
-// TODO hongjun: parse renameColumn and refresh meta, but throw exception if is sharding column
-renameColumn
+// TODO hongjun: parse renameColumnSpecification and refresh meta, but throw exception if is sharding column
+renameColumnSpecification
     : RENAME COLUMN columnName TO columnName
     ;
 
-// TODO hongjun: should support renameIndex on mysql
-renameIndex
+// TODO hongjun: should support renameIndexSpecification on mysql
+renameIndexSpecification
     : RENAME (INDEX | KEY) indexName TO indexName
     ;
 
-// TODO hongjun: parse renameTable and refresh meta, but throw exception if is sharding table
-renameTable
+// TODO hongjun: parse renameTableSpecification and refresh meta, but throw exception if is sharding table
+renameTableSpecification
     : RENAME (TO | AS)? tableName
     ;
 

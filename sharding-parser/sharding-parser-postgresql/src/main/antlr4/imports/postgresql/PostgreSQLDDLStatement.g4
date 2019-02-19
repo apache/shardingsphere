@@ -11,7 +11,7 @@ dropIndex
     ;
 
 alterIndex
-    : alterIndexName renameIndex | alterIndexDependsOnExtension | alterIndexSetTableSpace
+    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
     ;
 
 createTable
@@ -19,7 +19,7 @@ createTable
     ;
 
 alterTable
-    : alterTableNameWithAsterisk (alterTableActions | renameColumn | renameConstraint) | alterTableNameExists renameTable
+    : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification
     ;
 
 truncateTable
@@ -34,7 +34,7 @@ alterIndexName
     : ALTER INDEX (IF EXISTS)? indexName
     ;
 
-renameIndex
+renameIndexSpecification
     : RENAME TO indexName
     ;
 
@@ -83,10 +83,10 @@ alterTableActions
     ;
 
 alterTableAction
-    : addColumn
-    | dropColumn
-    | modifyColumn
-    | addConstraint
+    : addColumnSpecification
+    | dropColumnSpecification
+    | modifyColumnSpecification
+    | addConstraintSpecification
     | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
     | VALIDATE CONSTRAINT ignoredIdentifier_
     | DROP CONSTRAINT (IF EXISTS)? ignoredIdentifier_ (RESTRICT | CASCADE)?
@@ -114,15 +114,15 @@ tableConstraintUsingIndex
     : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
-addColumn
+addColumnSpecification
     : ADD COLUMN? (IF NOT EXISTS)? columnDefinition
     ;
 
-dropColumn
+dropColumnSpecification
     : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
     ;
 
-modifyColumn
+modifyColumnSpecification
     : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
     | alterColumn SET DEFAULT expr
     | alterColumn DROP DEFAULT
@@ -152,11 +152,11 @@ attributeOption
     : ID EQ_ simpleExpr
     ;
 
-addConstraint
+addConstraintSpecification
     : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
 
-renameColumn
+renameColumnSpecification
     : RENAME COLUMN? columnName TO columnName
     ;
 
@@ -176,7 +176,7 @@ alterTableNameExists
     : ALTER TABLE (IF EXISTS)? tableName
     ;
 
-renameTable
+renameTableSpecification
     : RENAME TO tableName
     ;
 

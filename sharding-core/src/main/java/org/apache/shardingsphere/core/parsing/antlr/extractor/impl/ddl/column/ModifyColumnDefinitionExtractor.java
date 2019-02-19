@@ -40,7 +40,7 @@ public class ModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtr
     @Override
     public final Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ModifyColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN_SPECIFICATION)) {
             Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
             if (columnDefinitionSegment.isPresent()) {
                 ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = new ModifyColumnDefinitionSegment(null, columnDefinitionSegment.get());
