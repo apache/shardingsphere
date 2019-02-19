@@ -693,6 +693,11 @@
             </items-token>
             <insert-column-token begin-position="24" column-name=")" />
             <insert-values-token begin-position="31" table-name="t_order_item"/>
+            <insert-values-token begin-position="31" type="VALUES" column-names="order_id, user_id, status, creation_date, item_id">
+                <insert-values>
+                    <insert-value values="1000, 10, 'insert', '2017-08-08', 1"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
