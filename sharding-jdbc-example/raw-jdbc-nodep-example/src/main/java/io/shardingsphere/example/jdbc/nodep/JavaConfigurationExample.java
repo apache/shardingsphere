@@ -18,7 +18,7 @@
 package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
-import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
+import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.type.ShardingType;
 
 import java.sql.SQLException;
@@ -35,7 +35,9 @@ public class JavaConfigurationExample {
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(type));
-        scenario.process();
+        CommonService commonService = CommonServiceFactory.newInstance(type);
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        commonService.cleanEnvironment();
     }
 }
