@@ -74,8 +74,6 @@ public final class InsertOptimizeEngineTest {
     
     private InsertStatement insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt;
     
-    private InsertStatement insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt;
-    
     private List<Object> parametersWithValues;
     
     private List<Object> parametersWithoutValues;
@@ -95,7 +93,6 @@ public final class InsertOptimizeEngineTest {
         initializeWithValuesWithPlaceHolderWithEncrypt();
         initializeInsertWithoutValuesWithoutPlaceHolderWithEncrypt();
         initializeInsertWithoutValuesWithPlaceHolderWithQueryEncrypt();
-        initializeInsertWithValuesWithoutPlaceHolderWithQueryEncrypt()
     }
     
     private void initializeParametersWithValues() {
