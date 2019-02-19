@@ -2,18 +2,6 @@ grammar OracleDDLStatement;
 
 import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
-createIndex
-    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause | bitmapJoinIndexClause)
-    ;
-
-alterIndex
-    : ALTER INDEX indexName (RENAME TO indexName)?
-    ;
-
-dropIndex
-    : DROP INDEX indexName
-    ;
-
 createTable
     : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
     ;
@@ -30,18 +18,6 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
-tableIndexClause
-    : tableName alias? LP_ indexExprSort (COMMA_ indexExprSort)* RP_
-    ;
-
-indexExprSort
-    : indexExpr (ASC | DESC)?
-    ;
-
-indexExpr
-    : columnName | expr 
-    ;
-
 tablespaceClauseWithParen
     : LP_ tablespaceClause RP_
     ;
@@ -52,10 +28,6 @@ tablespaceClause
 
 domainIndexClause
     : indexTypeName
-    ;
-
-bitmapJoinIndexClause
-    : tableName LP_ columnSortClause(COMMA_ columnSortClause)* RP_ FROM tableAndAlias (COMMA_ tableAndAlias)* WHERE expr
     ;
 
 relationalTable
@@ -292,4 +264,33 @@ objectTypeColProperties
 
 substitutableColumnClause
     : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
+    ;
+
+createIndex
+    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
+    ;
+
+tableIndexClause_
+    : tableName alias? LP_ indexExpr_ (COMMA_ indexExpr_)* RP_
+    ;
+
+indexExpr_
+    : (columnName | expr) (ASC | DESC)?
+    ;
+
+bitmapJoinIndexClause_
+    : tableName LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_ FROM tableName alias? (COMMA_ tableName alias?)* WHERE expr
+    ;
+
+columnSortClause_
+    : tableName alias? columnName (ASC | DESC)?
+    ;
+
+dropIndex
+    : DROP INDEX indexName
+    ;
+
+// TODO hongjun throw exeption when alter index on oracle
+alterIndex
+    : ALTER INDEX indexName (RENAME TO indexName)?
     ;

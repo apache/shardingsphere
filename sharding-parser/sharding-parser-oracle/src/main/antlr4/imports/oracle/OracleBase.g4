@@ -66,14 +66,6 @@ datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
     ;
 
-columnSortClause
-    : tableAndAlias columnName (ASC | DESC)?
-    ;
-
-tableAndAlias
-    : tableName alias?
-    ;
-
 privateExprOfDb
     : treatFunction | caseExpr | intervalExpression | objectAccessExpression | constructorExpr
     ;
