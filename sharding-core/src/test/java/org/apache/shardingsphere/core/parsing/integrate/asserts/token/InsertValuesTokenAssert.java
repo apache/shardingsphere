@@ -52,7 +52,7 @@ final class InsertValuesTokenAssert {
     
     private void assertInsertValuesToken(final InsertValuesToken actual, final ExpectedInsertValuesToken expected) {
         assertThat(assertMessage.getFullAssertMessage("Insert values token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
-        assertThat(assertMessage.getFullAssertMessage("Insert values table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
+        assertThat(assertMessage.getFullAssertMessage("Insert values type assertion error: "), actual.getType().name(), is(expected.getType()));
     }
     
     private Optional<InsertValuesToken> getInsertValuesToken(final Collection<SQLToken> actual) {
