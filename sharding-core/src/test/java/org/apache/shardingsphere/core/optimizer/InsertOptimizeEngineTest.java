@@ -186,17 +186,17 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeInsertWithoutValuesWithPlaceHolderWithQueryEncrypt() {
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt = new InsertStatement();
-        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_query_encrypt", Optional.<String>absent()));
+        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", Optional.<String>absent()));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setInsertValuesListLastIndex(47);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setColumnsListLastIndex(19);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setGenerateKeyColumnIndex(-1);
-        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, 0, "t_query_encrypt", "", ""));
+        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, 0, "t_encrypt_query", "", ""));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
-        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getColumns().add(new Column("user_id", "t_query_encrypt"));
-        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getColumns().add(new Column("status", "t_query_encrypt"));
+        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getColumns().add(new Column("user_id", "t_encrypt_query"));
+        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getColumns().add(new Column("status", "t_encrypt_query"));
         AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new Condition(new Column("user_id", "t_query_encrypt"), new SQLNumberExpression(12)));
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), new SQLNumberExpression(12)));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
     }
     
@@ -347,7 +347,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithoutValuesWithPlaceHolderWithGeneratedKeyWithQueryEncrypt() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_query_encrypt"));
+        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt_query"));
         generatedKey.getGeneratedKeys().add(1);
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = ?, status = ?", 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
