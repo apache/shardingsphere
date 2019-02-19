@@ -3,7 +3,7 @@ grammar MySQLDMLStatement;
 import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, MySQLBase, BaseRule, DataType;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause) onDuplicateKeyClause?
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause) onDuplicateKeyClause?
     ;
 
 columnClause
@@ -35,11 +35,11 @@ delete
     ;
 
 deleteClause
-    : DELETE deleteSpec (fromMulti | fromSingle) 
+    : DELETE LOW_PRIORITY? QUICK? IGNORE? (fromMulti | fromSingle) 
     ;
 
 fromSingle
-    : FROM tableName (PARTITION columnNames)?
+    : FROM tableName (PARTITION ignoredIdentifiers_)?
     ;
 
 fromMulti
@@ -52,8 +52,4 @@ fromMultiTables
 
 fromMultiTable
     : tableName DOT_ASTERISK_?
-    ;
-    
-deleteSpec
-    : LOW_PRIORITY? | QUICK? | IGNORE?
     ;
