@@ -121,7 +121,7 @@ public final class InsertValuesToken extends SQLToken {
         public String getColumnValue(final int columnValueIndex) {
             SQLExpression sqlExpression = values.get(columnValueIndex);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
-                return parameters.get(columnValueIndex).toString();
+                return parameters.get(getParameterIndex(sqlExpression)).toString();
             } else if (sqlExpression instanceof SQLTextExpression) {
                 return ((SQLTextExpression) sqlExpression).getText();
             } else {
