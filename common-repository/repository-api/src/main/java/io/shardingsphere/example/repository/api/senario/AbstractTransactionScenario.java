@@ -31,6 +31,14 @@ public abstract class AbstractTransactionScenario {
         return transactionService;
     }
     
+    protected final void doInTransactionWithSuccess() {
+        try {
+            transactionService.processSuccessWithLocal();
+            transactionService.processSuccessWithXA();
+        } catch (final Exception ignore) {
+        }
+    }
+    
     protected final void doInTransactionWithFailure() {
         try {
             transactionService.processFailureWithLocal();
@@ -42,11 +50,6 @@ public abstract class AbstractTransactionScenario {
         } catch (final Exception ex) {
             transactionService.printData();
         }
-    }
-    
-    protected final void doInTransactionWithSuccess() {
-        transactionService.processSuccessWithLocal();
-        transactionService.processSuccessWithXA();
     }
     
 //    protected final void processFailure(final TransactionType type) {

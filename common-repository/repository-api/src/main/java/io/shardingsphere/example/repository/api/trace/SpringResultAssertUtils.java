@@ -24,69 +24,38 @@ import io.shardingsphere.example.repository.api.service.TransactionService;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ResultAssertUtils {
+public class SpringResultAssertUtils {
 
     public static void assertShardingDatabaseResult(final CommonService commonService) {
-        assertShardingDatabaseResult(commonService, false);
-    }
-    
-    public static void assertShardingDatabaseResult(final CommonService commonService, final boolean isRangeSharding) {
         MemoryLogService memoryLogService = ((CommonServiceImpl) commonService).getMemoryLogService();
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(10));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(20));
         assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(10));
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(10));
-        if (isRangeSharding) {
-            assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(2));
-        } else {
-            assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(10));
-        }
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(20));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(10));
     }
 
     public static void assertShardingTableResult(final CommonService commonService) {
-        assertShardingTableResult(commonService, false);
-    }
-    
-    public static void assertShardingTableResult(final CommonService commonService, final boolean isRangeSharding) {
         MemoryLogService memoryLogService = ((CommonServiceImpl) commonService).getMemoryLogService();
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(10));
-        if (isRangeSharding) {
-            assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(5));
-        } else {
-            assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(10));
-        }
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(10));
-        if (isRangeSharding) {
-            assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(5));
-        } else {
-            assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(10));
-        }
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(20));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(20));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(20));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(20));
     }
+
 
     public static void assertShardingDatabaseAndTableResult(final CommonService commonService) {
-        assertShardingDatabaseAndTableResult(commonService, false);
-    }
-
-    public static void assertShardingDatabaseAndTableResult(final CommonService commonService, final boolean isRangeSharding) {
         MemoryLogService memoryLogService = ((CommonServiceImpl) commonService).getMemoryLogService();
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(10));
-        if (isRangeSharding) {
-            assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(5));
-        } else {
-            assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(10));
-        }
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(10));
-        if (isRangeSharding) {
-            assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(2));
-        } else {
-            assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(10));
-        }
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(20));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(20));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(20));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(20));
     }
 
     public static void assertMasterSlaveResult(final CommonService commonService) {
         MemoryLogService memoryLogService = ((CommonServiceImpl) commonService).getMemoryLogService();
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(10));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(20));
         assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(0));
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(10));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(20));
         assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(0));
     }
     

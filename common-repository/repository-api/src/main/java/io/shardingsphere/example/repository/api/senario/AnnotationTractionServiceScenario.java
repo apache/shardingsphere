@@ -19,7 +19,7 @@ package io.shardingsphere.example.repository.api.senario;
 
 import io.shardingsphere.example.repository.api.service.TransactionService;
 
-public class AnnotationTractionServiceScenario extends AbstractTransactionScenario implements Scenario {
+public final class AnnotationTractionServiceScenario extends AbstractTransactionScenario implements Scenario {
     
     public AnnotationTractionServiceScenario(final TransactionService transactionService) {
         super(transactionService);
