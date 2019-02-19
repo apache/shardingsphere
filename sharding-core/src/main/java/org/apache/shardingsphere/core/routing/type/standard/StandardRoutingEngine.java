@@ -224,6 +224,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
             Optional<String> columnValue = each.getColumnValue(listRouteValue.getColumn().getName());
             if (columnValue.isPresent() && columnValue.get().equals(listRouteValue.getValues().iterator().next().toString())) {
                 targetInsertColumnValues.add(each);
+                return;
             }
         }
     }
