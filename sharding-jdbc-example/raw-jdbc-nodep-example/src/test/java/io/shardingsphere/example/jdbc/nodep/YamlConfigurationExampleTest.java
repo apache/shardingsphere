@@ -32,7 +32,7 @@ public class YamlConfigurationExampleTest {
     public void assertShardingDatabasePrecise() throws SQLException, IOException {
         CommonServiceScenario scenario = new CommonServiceScenario(YamlCommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES));
         scenario.process();
-        ResultAssertUtils.assertShardingDatabaseResult(scenario.getCommonService(), false);
+        ResultAssertUtils.assertShardingDatabaseResult(scenario.getCommonService());
     }
     
     @Test

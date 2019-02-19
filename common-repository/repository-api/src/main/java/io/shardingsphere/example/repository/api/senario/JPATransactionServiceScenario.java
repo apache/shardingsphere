@@ -19,8 +19,6 @@ package io.shardingsphere.example.repository.api.senario;
 
 import io.shardingsphere.example.repository.api.service.TransactionService;
 
-import java.sql.SQLException;
-
 public final class JPATransactionServiceScenario extends AbstractTransactionScenario implements Scenario {
     
     public JPATransactionServiceScenario(final TransactionService transactionService) {

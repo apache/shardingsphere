@@ -43,12 +43,19 @@ public abstract class AbstractTransactionScenario {
         try {
             transactionService.processFailureWithLocal();
         } catch (final Exception ex) {
-            transactionService.printData();
+            printData();
         }
         try {
             transactionService.processFailureWithXA();
         } catch (final Exception ex) {
+            printData();
+        }
+    }
+    
+    private void printData() {
+        try {
             transactionService.printData();
+        } catch (final Exception ignore) {
         }
     }
     

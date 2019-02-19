@@ -33,12 +33,30 @@ public final class JPACommonServiceScenario implements Scenario {
     
     @Override
     public void process() {
-        commonService.processSuccess();
+        processSuccess();
+        processFailure();
+    }
+    
+    private void processSuccess() {
+        try {
+            commonService.processSuccess();
+        } catch (final Exception ignore) {
+        }
+    }
+    
+    private void processFailure() {
         try {
             commonService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
+            printData();
+        }
+    }
+    
+    private void printData() {
+        try {
             commonService.printData();
+        } catch (final Exception ignore) {
         }
     }
 }

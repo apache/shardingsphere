@@ -54,9 +54,9 @@ public class SpringResultAssertUtils {
     public static void assertMasterSlaveResult(final CommonService commonService) {
         MemoryLogService memoryLogService = ((CommonServiceImpl) commonService).getMemoryLogService();
         assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(20));
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(0));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(10));
         assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(20));
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(0));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(10));
     }
     
     public static void assertTransactionServiceResult(final TransactionService transactionService) {
