@@ -55,6 +55,7 @@ shardingRule:
       encryptor:
         type: assistedTest
         columns: user_id
+        assistedQueryColumns: assisted_user_id
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
