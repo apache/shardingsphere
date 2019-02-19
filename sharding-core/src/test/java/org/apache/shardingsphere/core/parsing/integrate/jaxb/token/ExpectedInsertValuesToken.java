@@ -39,10 +39,10 @@ public final class ExpectedInsertValuesToken {
     @XmlAttribute(name = "type")
     private String type;
     
-    @XmlElement(name = "column-name")
+    @XmlElement(name = "column-names")
     private String columnNames;
     
-    @XmlElementWrapper(name = "column-values")
-    @XmlElement(name = "value")
-    private List<String> columnValues = new LinkedList<>();
+    @XmlElementWrapper(name = "insert-values")
+    @XmlElement(name = "insert-value")
+    private List<ExpectedInsertValueToken> insertValues = new LinkedList<>();
 }
