@@ -87,7 +87,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" left-delimiter="`" right-delimiter="`" />
-            <insert-values-token begin-position="63" table-name="t_order"/>
+            <insert-values-token begin-position="63" type="VALUES" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="1, 1, 'insert'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
