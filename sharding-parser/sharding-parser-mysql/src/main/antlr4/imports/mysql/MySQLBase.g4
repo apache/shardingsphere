@@ -10,14 +10,6 @@ tableName
     : ID | ID DOT_ASTERISK_ | ASTERISK_
     ;
 
-indexOption
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
-    ;
-
-indexType
-    : USING (BTREE | HASH)
-    ;
-
 assignmentValueList
     : LP_ assignmentValues RP_
     ;

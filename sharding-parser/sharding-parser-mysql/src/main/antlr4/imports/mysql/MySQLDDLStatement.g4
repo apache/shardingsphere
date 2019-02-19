@@ -11,7 +11,7 @@ createDefinitions_
     ;
 
 createDefinition_
-    : columnDefinition | constraintDefinition_ | indexDefinition_ | checkConstraintDefinition_
+    : columnDefinition | indexDefinition_ | constraintDefinition_ | checkConstraintDefinition_
     ;
 
 columnDefinition
@@ -60,24 +60,32 @@ referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
+indexDefinition_
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
+    ;
+
+indexOption_
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType_ | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
+    ;
+
+indexType_
+    : USING (BTREE | HASH)
+    ;
+
 constraintDefinition_
     : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
 primaryKeyOption_
-    : primaryKey indexType? columnNames indexOption*
+    : primaryKey indexType_? columnNames indexOption_*
     ;
 
 uniqueOption_
-    : UNIQUE (INDEX | KEY)? indexName? indexType? keyParts_ indexOption*
+    : UNIQUE (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
 foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
-    ;
-
-indexDefinition_
-    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType? keyParts_ indexOption*
     ;
 
 keyParts_
@@ -144,6 +152,36 @@ alterSpecification_
     | UPGRADE PARTITIONING
     ;
 
+tableOptions_
+    : tableOption_ (COMMA_? tableOption_)*
+    ;
+
+tableOption_
+    : AUTO_INCREMENT EQ_? NUMBER_
+    | AVG_ROW_LENGTH EQ_? NUMBER_
+    | DEFAULT? (characterSet_ | collateClause_)
+    | CHECKSUM EQ_? NUMBER_
+    | COMMENT EQ_? STRING_
+    | COMPRESSION EQ_? STRING_
+    | CONNECTION EQ_? STRING_
+    | (DATA | INDEX) DIRECTORY EQ_? STRING_
+    | DELAY_KEY_WRITE EQ_? NUMBER_
+    | ENCRYPTION EQ_? STRING_
+    | ENGINE EQ_? ignoredIdentifier_
+    | INSERT_METHOD EQ_? (NO | FIRST | LAST)
+    | KEY_BLOCK_SIZE EQ_? NUMBER_
+    | MAX_ROWS EQ_? NUMBER_
+    | MIN_ROWS EQ_? NUMBER_
+    | PACK_KEYS EQ_? (NUMBER_ | DEFAULT)
+    | PASSWORD EQ_? STRING_
+    | ROW_FORMAT EQ_? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
+    | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
+    | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
+    | STATS_SAMPLE_PAGES EQ_? NUMBER_
+    | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
+    | UNION EQ_? LP_ tableName (COMMA_ tableName)* RP_
+    ;
+
 singleColumn
     : columnDefinition firstOrAfterColumn?
     ;
@@ -200,40 +238,6 @@ renameTable
     : RENAME (TO | AS)? tableName
     ;
 
-tableOptions_
-    : tableOption_ (COMMA_? tableOption_)*
-    ;
-
-tableOption_
-    : AUTO_INCREMENT EQ_? NUMBER_
-    | AVG_ROW_LENGTH EQ_? NUMBER_
-    | DEFAULT? (characterSet_ | collateClause_)
-    | CHECKSUM EQ_? NUMBER_
-    | COMMENT EQ_? STRING_
-    | COMPRESSION EQ_? STRING_
-    | CONNECTION EQ_? STRING_
-    | (DATA | INDEX) DIRECTORY EQ_? STRING_
-    | DELAY_KEY_WRITE EQ_? NUMBER_
-    | ENCRYPTION EQ_? STRING_
-    | ENGINE EQ_? ignoredIdentifier_
-    | INSERT_METHOD EQ_? (NO | FIRST | LAST)
-    | KEY_BLOCK_SIZE EQ_? NUMBER_
-    | MAX_ROWS EQ_? NUMBER_
-    | MIN_ROWS EQ_? NUMBER_
-    | PACK_KEYS EQ_? (NUMBER_ | DEFAULT)
-    | PASSWORD EQ_? STRING_
-    | ROW_FORMAT EQ_? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
-    | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
-    | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
-    | STATS_SAMPLE_PAGES EQ_? NUMBER_
-    | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_? tableNames_
-    ;
-
-tableNames_
-    : LP_ tableName (COMMA_ tableName)* RP_
-    ;
-
 partitionOptions_
     : PARTITION BY (linearPartition_ | rangeOrListPartition_) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition_ (SUBPARTITIONS NUMBER_)?)? (LP_ partitionDefinitions_ RP_)?
     ;
@@ -285,7 +289,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
+    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
     ;
 
 dropIndex
