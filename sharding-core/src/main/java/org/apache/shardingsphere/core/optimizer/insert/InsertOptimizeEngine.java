@@ -105,7 +105,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private boolean isNeededToAppendGeneratedKey() {
-        return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
+        return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(generateKeyColumn.get());
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {
