@@ -138,7 +138,11 @@
             <table-token start-index="21" table-name="t_order" />
             <table-token start-index="39" table-name="t_order" />
             <table-token start-index="56" table-name="t_order" />
-            <insert-values-token begin-position="79" table-name="t_order"/>
+            <insert-values-token begin-position="79" type="VALUES" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="1, 1, 'init'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
