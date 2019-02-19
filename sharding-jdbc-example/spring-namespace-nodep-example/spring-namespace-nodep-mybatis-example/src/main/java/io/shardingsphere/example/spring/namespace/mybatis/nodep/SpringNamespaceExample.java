@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.spring.namespace.mybatis.nodep;
 
+import io.shardingsphere.example.repository.api.senario.AnnotationCommonServiceScenario;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import io.shardingsphere.example.type.ShardingType;
@@ -31,11 +32,8 @@ public class SpringNamespaceExample {
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
     
-//    private static boolean isRangeSharding = true;
-    private static boolean isRangeSharding = false;
-    
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(isRangeSharding ? getApplicationFileRange() : getApplicationFilePrecise())) {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFilePrecise())) {
             process(applicationContext);
         }
     }
@@ -57,35 +55,10 @@ public class SpringNamespaceExample {
         }
     }
     
-    private static String getApplicationFileRange() {
-        switch (type) {
-            case SHARDING_DATABASES:
-                return "META-INF/application-sharding-databases-range.xml";
-            case SHARDING_TABLES:
-                return "META-INF/application-sharding-tables-range.xml";
-            case SHARDING_DATABASES_AND_TABLES:
-                return "META-INF/application-sharding-databases-tables-range.xml";
-            case MASTER_SLAVE:
-                return "META-INF/application-master-slave.xml";
-            case SHARDING_MASTER_SLAVE:
-                return "META-INF/application-sharding-master-slave-range.xml";
-            default:
-                throw new UnsupportedOperationException(type.name());
-        }
-    }
-    
     private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        try {
-            commonService.processFailure();
-        } catch (final Exception ex) {
-            System.out.println(ex.getMessage());
-            commonService.printData();
-        } finally {
-            commonService.cleanEnvironment();
-        }
+        AnnotationCommonServiceScenario scenario = new AnnotationCommonServiceScenario(commonService);
+        scenario.process();
     }
     
     private static CommonService getCommonService(final ConfigurableApplicationContext applicationContext) {

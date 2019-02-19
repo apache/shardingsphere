@@ -17,32 +17,29 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.nodep;
 
+import io.shardingsphere.example.repository.api.senario.JPATransactionServiceScenario;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jpa.service.SpringEntityTransactionService;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SpringNamespaceTransactionExample {
     
-    private static ShardingType type = ShardingType.SHARDING_DATABASES;
-//    private static ShardingType type = ShardingType.SHARDING_TABLES;
-//    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType type = ShardingType.MASTER_SLAVE;
-//    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
-    
-    //    private static boolean isRangeSharding = true;
-    private static boolean isRangeSharding = false;
+    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
+//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(isRangeSharding ? getApplicationFileRange() : getApplicationFilePrecise())) {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
             process(applicationContext);
         }
     }
     
-    private static String getApplicationFilePrecise() {
-        switch (type) {
+    private static String getApplicationFile() {
+        switch (shardingType) {
             case SHARDING_DATABASES:
                 return "META-INF/application-sharding-databases-precise.xml";
             case SHARDING_TABLES:
@@ -54,54 +51,15 @@ public class SpringNamespaceTransactionExample {
             case SHARDING_MASTER_SLAVE:
                 return "META-INF/application-sharding-master-slave-precise.xml";
             default:
-                throw new UnsupportedOperationException(type.name());
+                throw new UnsupportedOperationException(shardingType.name());
         }
     }
     
-    private static String getApplicationFileRange() {
-        switch (type) {
-            case SHARDING_DATABASES:
-                return "META-INF/application-sharding-databases-range.xml";
-            case SHARDING_TABLES:
-                return "META-INF/application-sharding-tables-range.xml";
-            case SHARDING_DATABASES_AND_TABLES:
-                return "META-INF/application-sharding-databases-tables-range.xml";
-            case MASTER_SLAVE:
-                return "META-INF/application-master-slave.xml";
-            case SHARDING_MASTER_SLAVE:
-                return "META-INF/application-sharding-master-slave-range.xml";
-            default:
-                throw new UnsupportedOperationException(type.name());
-        }
-    }
     
     private static void process(final ConfigurableApplicationContext applicationContext) {
         TransactionService transactionService = getTransactionService(applicationContext);
-        transactionService.processSuccess();
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
-        try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXA();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (final Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData();
-        }
+        JPATransactionServiceScenario scenario = new JPATransactionServiceScenario(transactionService);
+        scenario.process();
     }
     
     private static TransactionService getTransactionService(final ConfigurableApplicationContext applicationContext) {

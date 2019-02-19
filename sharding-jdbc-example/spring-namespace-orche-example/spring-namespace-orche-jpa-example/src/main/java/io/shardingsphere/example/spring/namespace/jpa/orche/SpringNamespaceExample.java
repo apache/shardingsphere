@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.spring.namespace.jpa.orche;
 
+import io.shardingsphere.example.repository.api.senario.JPACommonServiceScenario;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
 import io.shardingsphere.example.type.RegistryCenterType;
@@ -32,9 +33,6 @@ public class SpringNamespaceExample {
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
-//    private static boolean isRangeSharding = true;
-    private static boolean isRangeSharding = false;
-    
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
     
@@ -42,7 +40,7 @@ public class SpringNamespaceExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(isRangeSharding ? getApplicationFileRange() : getApplicationFilePrecise())) {
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFilePrecise())) {
             process(applicationContext);
         }
     }
@@ -64,32 +62,10 @@ public class SpringNamespaceExample {
         }
     }
     
-    private static String getApplicationFileRange() {
-        switch (shardingType) {
-            case SHARDING_DATABASES:
-                return String.format("META-INF/%s/%s/application-sharding-databases-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case SHARDING_TABLES:
-                return String.format("META-INF/%s/%s/application-sharding-tables-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case SHARDING_DATABASES_AND_TABLES:
-                return String.format("META-INF/%s/%s/application-sharding-databases-tables-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case MASTER_SLAVE:
-                return String.format("META-INF/%s/%s/application-master-slave.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case SHARDING_MASTER_SLAVE:
-                return String.format("META-INF/%s/%s/application-sharding-master-slave-range.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            default:
-                throw new UnsupportedOperationException(shardingType.name());
-        }
-    }
-    
     private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
-        commonService.processSuccess();
-        try {
-            commonService.processFailure();
-        } catch (final Exception ex) {
-            System.out.println(ex.getMessage());
-            commonService.printData();
-        }
+        JPACommonServiceScenario scenario = new JPACommonServiceScenario(commonService);
+        scenario.process();
     }
     
     private static CommonService getCommonService(final ConfigurableApplicationContext applicationContext) {
