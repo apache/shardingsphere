@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.spring.boot.mybatis.orche;
 
+import io.shardingsphere.example.repository.api.senario.AnnotationCommonServiceScenario;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.mybatis.spring.annotation.MapperScan;
@@ -43,16 +44,8 @@ public class SpringBootStarterExample {
     
     private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        try {
-            commonService.processFailure();
-        } catch (final Exception ex) {
-            System.out.println(ex.getMessage());
-            commonService.printData();
-        } finally {
-            commonService.cleanEnvironment();
-        }
+        AnnotationCommonServiceScenario scenario = new AnnotationCommonServiceScenario(commonService);
+        scenario.process();
     }
     
     private static CommonService getCommonService(final ConfigurableApplicationContext applicationContext) {

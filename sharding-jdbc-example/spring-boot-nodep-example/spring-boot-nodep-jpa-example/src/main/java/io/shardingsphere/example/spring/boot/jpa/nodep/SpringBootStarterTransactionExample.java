@@ -39,7 +39,7 @@ public class SpringBootStarterTransactionExample {
         }
     }
     
-    private static void process(final ConfigurableApplicationContext applicationContext) throws SQLException {
+    private static void process(final ConfigurableApplicationContext applicationContext) {
         TransactionService transactionService = getTransactionService(applicationContext);
         JPATransactionServiceScenario scenario = new JPATransactionServiceScenario(transactionService);
         scenario.process();
