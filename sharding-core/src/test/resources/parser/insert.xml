@@ -171,7 +171,11 @@
                 </items>
             </items-token>
             <insert-column-token begin-position="19" column-name=")" />
-            <insert-values-token begin-position="27" table-name="t_order"/>
+            <insert-values-token begin-position="27" type="VALUES" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="1, 1, 'init'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -191,7 +195,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="24" table-name="t_order"/>
+            <insert-values-token begin-position="24" type="SET" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="1, 1, 'init'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -211,7 +219,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="55" table-name="t_order"/>
+            <insert-values-token begin-position="55" type="VALUES" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="1, 1, 'insert'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -231,7 +243,11 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="24" table-name="t_order"/>
+            <insert-values-token begin-position="24" type="SET" column-names="order_id, user_id, status">
+                <insert-values>
+                    <insert-value values="1, 1, 'insert'"/>
+                </insert-values>
+            </insert-values-token>
         </tokens>
         <or-condition>
             <and-condition>
