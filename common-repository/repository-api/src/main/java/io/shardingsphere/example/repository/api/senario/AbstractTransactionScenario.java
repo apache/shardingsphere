@@ -19,8 +19,6 @@ package io.shardingsphere.example.repository.api.senario;
 
 import io.shardingsphere.example.repository.api.service.TransactionService;
 
-import java.sql.SQLException;
-
 public abstract class AbstractTransactionScenario {
     
     private final TransactionService transactionService;
@@ -46,7 +44,7 @@ public abstract class AbstractTransactionScenario {
         }
     }
     
-    protected final void doInTransactionWithSuccess() throws SQLException {
+    protected final void doInTransactionWithSuccess() {
         transactionService.processSuccessWithLocal();
         transactionService.processSuccessWithXA();
     }

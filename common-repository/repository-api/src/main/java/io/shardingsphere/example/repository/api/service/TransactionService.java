@@ -17,21 +17,19 @@
 
 package io.shardingsphere.example.repository.api.service;
 
-import java.sql.SQLException;
-
 public interface TransactionService extends CommonService {
     
-    void processFailureWithLocal() throws SQLException;
+    void processFailureWithLocal();
     
-    void processFailureWithXA() throws SQLException;
+    void processFailureWithXA();
     
-    void processFailureWithBase() throws SQLException;
+    void processFailureWithBase();
     
-    void processSuccessWithLocal() throws SQLException;
+    void processSuccessWithLocal();
     
-    void processSuccessWithXA() throws SQLException;
+    void processSuccessWithXA();
     
-    void processSuccessWithBase() throws SQLException;
+    void processSuccessWithBase();
     
     void printTransactionType();
 }

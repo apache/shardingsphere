@@ -32,7 +32,7 @@ public abstract class ShardingJDBCTransactionService extends CommonServiceImpl i
     @Override
     public void processSuccessWithLocal() {
         printTransactionType();
-        super.processFailure();
+        super.processSuccess();
     }
     
     /**
@@ -43,7 +43,7 @@ public abstract class ShardingJDBCTransactionService extends CommonServiceImpl i
     @Override
     public void processSuccessWithXA() {
         printTransactionType();
-        super.processFailure();
+        super.processSuccess();
     }
     
     /**
@@ -54,7 +54,7 @@ public abstract class ShardingJDBCTransactionService extends CommonServiceImpl i
     @Override
     public void processSuccessWithBase() {
         printTransactionType();
-        super.processFailure();
+        super.processSuccess();
     }
     
     /**

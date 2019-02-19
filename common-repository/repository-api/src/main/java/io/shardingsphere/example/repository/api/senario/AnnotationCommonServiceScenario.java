@@ -17,27 +17,31 @@
 
 package io.shardingsphere.example.repository.api.senario;
 
-import io.shardingsphere.example.repository.api.service.TransactionService;
+import io.shardingsphere.example.repository.api.service.CommonService;
 
-public final class TransactionServiceScenario implements Scenario {
+public final class AnnotationCommonServiceScenario implements Scenario {
     
-    private final TransactionService transactionService;
+    private final CommonService commonService;
     
-    public TransactionServiceScenario(final TransactionService transactionService) {
-        this.transactionService = transactionService;
+    public AnnotationCommonServiceScenario(final CommonService commonService) {
+        this.commonService = commonService;
     }
     
-    public TransactionService getTransactionService() {
-        return transactionService;
+    public CommonService getCommonService() {
+        return commonService;
     }
     
     @Override
     public void process() {
-        transactionService.initEnvironment();
-        transactionService.processSuccessWithLocal();
-        transactionService.processSuccessWithXA();
-        transactionService.processFailureWithLocal();
-        transactionService.processFailureWithXA();
-        transactionService.cleanEnvironment();
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        try {
+            commonService.processFailure();
+        } catch (final Exception ex) {
+            System.out.println(ex.getMessage());
+            commonService.printData();
+        } finally {
+            commonService.cleanEnvironment();
+        }
     }
 }

@@ -17,9 +17,7 @@
 
 package io.shardingsphere.example.repository.api.senario;
 
-import java.sql.SQLException;
-
 public interface Scenario {
     
-    void process() throws SQLException;
+    void process();
 }

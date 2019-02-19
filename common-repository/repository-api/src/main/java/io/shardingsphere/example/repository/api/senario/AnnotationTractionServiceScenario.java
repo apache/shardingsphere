@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package io.shardingsphere.example.repository.mybatis.service;
+package io.shardingsphere.example.repository.api.senario;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import io.shardingsphere.example.repository.api.service.TransactionService;
 
-@Service("springPojoRangeService")
-@Transactional
-public class SpringPojoRangeServiceImpl extends SpringPojoServiceImpl {
+public class AnnotationTractionServiceScenario extends AbstractTransactionScenario implements Scenario {
+    
+    public AnnotationTractionServiceScenario(final TransactionService transactionService) {
+        super(transactionService);
+    }
     
     @Override
-    public final void printData() {
-        doPrintRangeData();
+    public void process() {
+        getTransactionService().initEnvironment();
+        doInTransactionWithSuccess();
+        doInTransactionWithFailure();
+        getTransactionService().cleanEnvironment();
     }
 }

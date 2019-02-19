@@ -26,18 +26,20 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.sql.SQLException;
+
 @ComponentScan("io.shardingsphere.example.repository.jpa")
 @EntityScan(basePackages = "io.shardingsphere.example.repository.jpa.entity")
 @SpringBootApplication
 public class SpringBootStarterTransactionExample {
     
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootStarterTransactionExample.class, args)) {
             process(applicationContext);
         }
     }
     
-    private static void process(final ConfigurableApplicationContext applicationContext) {
+    private static void process(final ConfigurableApplicationContext applicationContext) throws SQLException {
         TransactionService transactionService = getTransactionService(applicationContext);
         JPATransactionServiceScenario scenario = new JPATransactionServiceScenario(transactionService);
         scenario.process();
