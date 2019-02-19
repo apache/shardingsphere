@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parsing.integrate.asserts.SQLStatementAsse
 import org.apache.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedInsertValuesToken;
 import org.apache.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 
 import java.util.Collection;
@@ -53,6 +54,11 @@ final class InsertValuesTokenAssert {
     private void assertInsertValuesToken(final InsertValuesToken actual, final ExpectedInsertValuesToken expected) {
         assertThat(assertMessage.getFullAssertMessage("Insert values token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
         assertThat(assertMessage.getFullAssertMessage("Insert values type assertion error: "), actual.getType().name(), is(expected.getType()));
+        assertThat(assertMessage.getFullAssertMessage("Insert values column size assertion error: "), actual.getColumnValues().size(), is(expected.getInsertColumns().size()));
+    
+        for (InsertColumnValue each : actual.getColumnValues()) {
+            assertThat(assertMessage.getFullAssertMessage("Insert values type assertion error: "), actual.getType().name(), is(expected.getType()));
+        }
     }
     
     private Optional<InsertValuesToken> getInsertValuesToken(final Collection<SQLToken> actual) {
