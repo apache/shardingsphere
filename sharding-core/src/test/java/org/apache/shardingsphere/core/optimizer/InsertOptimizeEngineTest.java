@@ -199,19 +199,22 @@ public final class InsertOptimizeEngineTest {
     @Test
     public void assertOptimizeWithValuesWithPlaceHolderWithoutGeneratedKey() {
         insertStatementWithValuesWithPlaceHolder.setGenerateKeyColumnIndex(1);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, null).optimize();
+        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        generatedKey.getGeneratedKeys().add(1);
+        generatedKey.getGeneratedKeys().add(1);
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
         assertFalse(actual.isAlwaysFalse());
         assertThat(actual.getShardingConditions().size(), is(2));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(2));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().size(), is(2));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(3));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().size(), is(3));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
         assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(?, ?)"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).toString(), is("(?, ?)"));
-        assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(1));
-        assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(1));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
+        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
+        assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
+        assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(2));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
     }
