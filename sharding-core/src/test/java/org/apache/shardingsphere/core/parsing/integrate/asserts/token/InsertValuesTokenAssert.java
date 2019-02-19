@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.integrate.asserts.token;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
@@ -27,6 +28,8 @@ import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.Ins
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -54,11 +57,19 @@ final class InsertValuesTokenAssert {
     private void assertInsertValuesToken(final InsertValuesToken actual, final ExpectedInsertValuesToken expected) {
         assertThat(assertMessage.getFullAssertMessage("Insert values token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
         assertThat(assertMessage.getFullAssertMessage("Insert values type assertion error: "), actual.getType().name(), is(expected.getType()));
-        assertThat(assertMessage.getFullAssertMessage("Insert values column size assertion error: "), actual.getColumnValues().size(), is(expected.getInsertColumns().size()));
+        assertThat(assertMessage.getFullAssertMessage("Insert values column names assertion error: "), Joiner.on(", ").join(actual.getColumnNames()), is(expected.getColumnNames()));
     
-        for (InsertColumnValue each : actual.getColumnValues()) {
-            assertThat(assertMessage.getFullAssertMessage("Insert values type assertion error: "), actual.getType().name(), is(expected.getType()));
+        for (int i = 0; i < actual.getColumnValues().size(); i++) {
+            assertThat(assertMessage.getFullAssertMessage("Insert column values assertion error: "),  is(expected.getType()));
         }
+    }
+    
+    private String getInsertValues(final InsertColumnValue insertColumnValue, final int columnSize) {
+        List<String> result = new LinkedList<>();
+        for (int i = 0; i < columnSize; i++) {
+            result.add(insertColumnValue.getColumnValue(0));
+        }
+        return Joiner.on(", ").join(result);
     }
     
     private Optional<InsertValuesToken> getInsertValuesToken(final Collection<SQLToken> actual) {
