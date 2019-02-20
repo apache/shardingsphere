@@ -17,6 +17,8 @@
 
 package io.shardingsphere.example.repository.api.service;
 
+import io.shardingsphere.example.repository.api.trace.MemoryLogService;
+
 public interface CommonService {
     
     void initEnvironment();
@@ -28,4 +30,7 @@ public interface CommonService {
     void processFailure();
     
     void printData();
+    
+    MemoryLogService getMemoryLogService();
+    
 }

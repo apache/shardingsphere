@@ -32,7 +32,6 @@ public class SpringNamespaceExample {
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
-    
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
             process(applicationContext);
@@ -42,15 +41,15 @@ public class SpringNamespaceExample {
     private static String getApplicationFile() {
         switch (shardingType) {
             case SHARDING_DATABASES:
-                return "META-INF/application-sharding-databases-precise.xml";
+                return "META-INF/application-sharding-databases.xml";
             case SHARDING_TABLES:
-                return "META-INF/application-sharding-tables-precise.xml";
+                return "META-INF/application-sharding-tables.xml";
             case SHARDING_DATABASES_AND_TABLES:
-                return "META-INF/application-sharding-databases-tables-precise.xml";
+                return "META-INF/application-sharding-databases-tables.xml";
             case MASTER_SLAVE:
                 return "META-INF/application-master-slave.xml";
             case SHARDING_MASTER_SLAVE:
-                return "META-INF/application-sharding-master-slave-precise.xml";
+                return "META-INF/application-sharding-master-slave.xml";
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

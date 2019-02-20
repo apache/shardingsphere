@@ -32,6 +32,7 @@ public abstract class CommonServiceImpl implements CommonService {
     
     private MemoryLogService memoryLogService = new MemoryLogService();
     
+    @Override
     public MemoryLogService getMemoryLogService() {
         return memoryLogService;
     }
