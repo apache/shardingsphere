@@ -26,7 +26,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -322,7 +321,7 @@ public final class SQLRewriteEngine {
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
         return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), 
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getPlaceholderPositionsFromUpdateItem(encryptColumnToken));
+                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getPlaceholderPositionFromUpdateItem(encryptColumnToken));
     }
     
     private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
@@ -419,7 +418,7 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private int getPlaceholderPositionsFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
+    private int getPlaceholderPositionFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             return ((SQLPlaceholderExpression) sqlExpression).getIndex();
