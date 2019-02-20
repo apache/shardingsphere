@@ -317,7 +317,9 @@ public final class SQLRewriteEngine {
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        List<Comparable<?>> encryptColumnValues = getFinalEncryptColumnValues(encryptColumnToken, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
+        ShardingEncryptor shardingEncryptor = getShardingEncryptor(encryptColumnToken);
+        List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
+        List<Comparable<?>> encryptAssistedColumnValues = shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken)) : new LinkedList<Comparable<?>>();
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
         return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), 
                 getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getPlaceholderPositionFromUpdateItem(encryptColumnToken));
@@ -361,10 +363,10 @@ public final class SQLRewriteEngine {
     private List<Comparable<?>> getFinalEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> originalColumnValues) {
         ShardingEncryptor shardingEncryptor = getShardingEncryptor(encryptColumnToken);
         return shardingEncryptor instanceof ShardingQueryAssistedEncryptor 
-                ? getEncryptAssistedColumnValues(originalColumnValues, (ShardingQueryAssistedEncryptor) shardingEncryptor) : getEncryptColumnValues(originalColumnValues, shardingEncryptor);
+                ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, originalColumnValues) : getEncryptColumnValues(shardingEncryptor, originalColumnValues);
     }
     
-    private List<Comparable<?>> getEncryptAssistedColumnValues(final List<Comparable<?>> originalColumnValues, final ShardingQueryAssistedEncryptor shardingEncryptor) {
+    private List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
@@ -374,7 +376,7 @@ public final class SQLRewriteEngine {
         });
     }
     
-    private List<Comparable<?>> getEncryptColumnValues(final List<Comparable<?>> originalColumnValues, final ShardingEncryptor shardingEncryptor) {
+    private List<Comparable<?>> getEncryptColumnValues(final ShardingEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
@@ -390,6 +392,20 @@ public final class SQLRewriteEngine {
             return Collections.singletonMap(0, ((SQLPlaceholderExpression) result).getIndex());
         }
         return new LinkedHashMap<>();
+    }
+    
+    private void fillParameters(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptAssistedColumnValues) {
+        if (encryptAssistedColumnValues.isEmpty()) {
+            return;
+        }
+        if (!(getShardingEncryptor(encryptColumnToken) instanceof ShardingQueryAssistedEncryptor)) {
+            return;
+        }
+        parameters.add(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
+    }
+    
+    private int getEncryptAssistedParameterIndex(final EncryptColumnToken encryptColumnToken) {
+        return getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1;
     }
     
     private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
