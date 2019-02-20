@@ -50,7 +50,7 @@ public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAs
     }
     
     @Override
-    public String queryAssistedEncrypt(String plaintext) {
+    public String queryAssistedEncrypt(final String plaintext) {
         return "assistedEncryptValue";
     }
 }
