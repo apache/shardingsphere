@@ -311,17 +311,17 @@ public final class SQLRewriteEngine {
     }
     
     private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
-        List<Condition> result = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
-        if (0 == result.size()) {
+        List<Condition> conditions = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
+        if (0 == conditions.size()) {
             if (encryptColumnToken.isInWhere()) {
                 throw new ShardingException("Can not find encrypt condition");
             }
             return Optional.absent();
         }
-        if (1 == result.size()) {
-            return Optional.of(result.iterator().next());
+        if (1 == conditions.size()) {
+            return Optional.of(conditions.iterator().next());
         }
-        return Optional.of(result.get(getEncryptConditionIndex(encryptColumnToken)));
+        return Optional.of(conditions.get(getEncryptConditionIndex(encryptColumnToken)));
     }
     
     private int getEncryptConditionIndex(final EncryptColumnToken encryptColumnToken) {
@@ -339,6 +339,10 @@ public final class SQLRewriteEngine {
         if (encryptColumnToken.isInWhere()) {
             return encryptCondition.getConditionValues(parameters);
         }
+       return getOriginalColumnValuesFromUpdateItem(encryptColumnToken);
+    }
+    
+    private List<Comparable<?>> getOriginalColumnValuesFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         List<Comparable<?>> result = new LinkedList<>();
         SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
