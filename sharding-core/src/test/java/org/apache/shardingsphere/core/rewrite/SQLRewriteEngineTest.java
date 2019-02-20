@@ -640,7 +640,7 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, selectStatement, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
-                is("SELECT id FROM table_z WHERE id BETWEEN \"encryptValue\" AND \"encryptValue\""));
+                is("SELECT id FROM table_z WHERE id BETWEEN 'encryptValue' AND 'encryptValue'"));
     }
     
     @Test
@@ -656,7 +656,7 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
-                is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
+                is("SELECT id FROM table_z WHERE id IN ('encryptValue', 'encryptValue')"));
     }
     
     @Test
@@ -677,7 +677,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", DatabaseType.MySQL, selectStatement, parameters);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = \"encryptValue\""));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = 'encryptValue'"));
         assertThat(parameters.get(0), is((Object) "encryptValue"));
         assertThat(parameters.get(1), is((Object) "encryptValue"));
     }
@@ -711,7 +711,7 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
-                is("SELECT id FROM table_k WHERE query_id IN (\"assistedEncryptValue\", \"assistedEncryptValue\")"));
+                is("SELECT id FROM table_k WHERE query_id IN ('assistedEncryptValue', 'assistedEncryptValue')"));
     }
     
     @Test
@@ -726,7 +726,7 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, dmlStatement, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
-                is("UPDATE table_z SET id = \"encryptValue\" WHERE id = \"encryptValue\""));
+                is("UPDATE table_z SET id = 'encryptValue' WHERE id = 'encryptValue'"));
     }
     
     @Test
@@ -744,8 +744,9 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, dmlStatement, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
-                is("UPDATE table_k SET query_id = ? WHERE query_id BETWEEN \"assistedEncryptValue\" AND ?"));
-        assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
+                is("UPDATE table_k SET id = ?, query_id = ? WHERE query_id BETWEEN 'assistedEncryptValue' AND ?"));
+        assertThat(parameters.get(0), is((Object) "encryptValue"));
+        assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
         assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
     }
 }
