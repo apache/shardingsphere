@@ -23,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.type.RoutingEngine;
@@ -44,6 +46,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Standard routing engine.
@@ -54,6 +57,8 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class StandardRoutingEngine implements RoutingEngine {
+    
+    private final SQLStatement sqlStatement;
     
     private final ShardingRule shardingRule;
     
@@ -104,7 +109,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (ShardingCondition each : shardingConditions.getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            reviseShardingConditions(each, dataNodes);
+            reviseInsertStatement(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -118,7 +123,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : shardingConditions.getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
-            reviseShardingConditions(each, dataNodes);
+            reviseInsertStatement(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -202,9 +207,25 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private void reviseShardingConditions(final ShardingCondition each, final Collection<DataNode> dataNodes) {
-        if (each instanceof InsertShardingCondition) {
-            ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
+    private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
+        if (sqlStatement instanceof InsertStatement) {
+            Set<InsertColumnValue> result = new LinkedHashSet<>();
+            for (RouteValue each : shardingCondition.getShardingValues()) {
+                fillTargetInsertColumnValues((ListRouteValue) each, result);
+            }
+            if (1 == result.size()) {
+                result.iterator().next().getDataNodes().addAll(dataNodes);
+            }
+        }
+    }
+    
+    private void fillTargetInsertColumnValues(final ListRouteValue listRouteValue, final Set<InsertColumnValue> targetInsertColumnValues) {
+        for (InsertColumnValue each : ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues()) {
+            Optional<String> columnValue = each.getColumnValue(listRouteValue.getColumn().getName());
+            if (columnValue.isPresent() && columnValue.get().equals(listRouteValue.getValues().iterator().next().toString())) {
+                targetInsertColumnValues.add(each);
+                return;
+            }
         }
     }
 }

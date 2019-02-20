@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.core.routing.router.sharding;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
@@ -49,10 +47,10 @@ import org.apache.shardingsphere.core.spi.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.util.SQLLogger;
 import org.apache.shardingsphere.spi.hook.ParsingHook;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Sharding router with parse.
@@ -110,7 +108,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             mergeShardingValues(shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
-        result.getRouteUnits().addAll(rewrite(logicSQL, parameters, sqlStatement, shardingConditions, routingResult));
+        result.getRouteUnits().addAll(rewrite(logicSQL, parameters, sqlStatement, routingResult));
         if (needMerge) {
             Preconditions.checkState(1 == result.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
@@ -199,11 +197,11 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
     }
     
-    private Collection<RouteUnit> rewrite(final String logicSQL, final List<Object> parameters,
-                                          final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final RoutingResult routingResult) {
+    private Collection<RouteUnit> rewrite(final String logicSQL, final List<Object> parameters, 
+                                          final SQLStatement sqlStatement, final RoutingResult routingResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
         boolean isSingleRouting = routingResult.isSingleRouting();
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, parameters);
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
         }

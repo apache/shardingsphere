@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.core.parsing.parser.sql.dml.insert;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,6 +28,7 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 
@@ -70,5 +75,34 @@ public final class InsertStatement extends DMLStatement {
             }
         }
         return result;
+    }
+    
+    /**
+     * Get insert values token.
+     * 
+     * @return insert values token
+     */
+    public InsertValuesToken getInsertValuesToken() {
+        return (InsertValuesToken) Collections2.filter(getSQLTokens(), new Predicate<SQLToken>() {
+            
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof InsertValuesToken;
+            }
+        }).iterator().next();
+    }
+    
+    /**
+     * Get insert column names.
+     * 
+     * @return insert column names
+     */
+    public List<String> getInsertColumnNames() {
+        return Lists.transform(columns, new Function<Column, String>() {
+            @Override
+            public String apply(final Column input) {
+                return input.getName();
+            }
+        });
     }
 }

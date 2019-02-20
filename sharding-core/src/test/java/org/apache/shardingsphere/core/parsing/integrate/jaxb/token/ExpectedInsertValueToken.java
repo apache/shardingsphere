@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.insert;
+package org.apache.shardingsphere.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.rule.DataNode;
+import lombok.Setter;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
-/**
- * Sharding condition.
- * 
- * @author maxiaoguang
- */
-@RequiredArgsConstructor
 @Getter
-@ToString
-public class InsertShardingCondition extends ShardingCondition {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedInsertValueToken {
     
-    private final String insertValueExpression;
-    
-    private final List<Object> parameters;
-    
-    private final List<DataNode> dataNodes = new LinkedList<>();
+    @XmlElement(name = "values")
+    private String values;
 }

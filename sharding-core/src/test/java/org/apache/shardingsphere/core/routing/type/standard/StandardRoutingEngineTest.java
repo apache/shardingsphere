@@ -23,6 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
@@ -39,6 +40,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class StandardRoutingEngineTest {
     
@@ -58,7 +60,7 @@ public final class StandardRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
-        standardRoutingEngine = new StandardRoutingEngine(shardingRule, "t_order", new ShardingConditions(shardingConditions));
+        standardRoutingEngine = new StandardRoutingEngine(mock(SQLStatement.class), shardingRule, "t_order", new ShardingConditions(shardingConditions));
     }
     
     @Test

@@ -19,20 +19,27 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
+import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Insert values placeholder for rewrite.
  *
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
     
-    private final ShardingConditions shardingConditions;
+    private final DefaultKeyword type;
+    
+    private final Set<String> columnNames;
+    
+    private final List<InsertColumnValue> columnValues;
 }

@@ -33,6 +33,7 @@ import java.util.Set;
  * 
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -45,13 +46,13 @@ public final class TableUnit {
     private final List<RoutingTable> routingTables = new LinkedList<>();
     
     /**
-     * Find routing table via data source name and actual table name.
+     * Get routing table via data source name and actual table name.
      *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
      * @return routing table
      */
-    public Optional<RoutingTable> findRoutingTable(final String dataSourceName, final String actualTableName) {
+    public Optional<RoutingTable> getRoutingTable(final String dataSourceName, final String actualTableName) {
         for (RoutingTable each : routingTables) {
             if (dataSourceName.equalsIgnoreCase(this.dataSourceName) && each.getActualTableName().equalsIgnoreCase(actualTableName)) {
                 return Optional.of(each);

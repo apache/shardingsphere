@@ -25,13 +25,13 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Encrypt Column placeholder for rewrite.
+ * Encrypt column placeholder for rewrite.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
+public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
     
@@ -39,7 +39,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private final Map<Integer, Comparable<?>> indexValues;
     
-    private final Collection<Integer> placeholderIndex;
+    private final Collection<Integer> placeholderIndexes;
     
     private final ShardingOperator operator;
     
@@ -47,7 +47,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     public String toString() {
         switch (operator) {
             case EQUAL:
-                return placeholderIndex.isEmpty() ? String.format("%s = \"%s\"", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
+                return placeholderIndexes.isEmpty() ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
             case BETWEEN:
                 return toStringFromBetween();
             case IN:
@@ -58,26 +58,26 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     }
     
     private String toStringFromBetween() {
-        if (placeholderIndex.isEmpty()) {
-            return String.format("%s %s \"%s\" AND \"%s\"", columnName, operator.name(), indexValues.get(0), indexValues.get(1));
+        if (placeholderIndexes.isEmpty()) {
+            return String.format("%s %s '%s' AND '%s'", columnName, operator.name(), indexValues.get(0), indexValues.get(1));
         }
-        if (2 == placeholderIndex.size()) {
+        if (2 == placeholderIndexes.size()) {
             return String.format("%s %s ? AND ?", columnName, operator.name());
         }
-        if (0 == placeholderIndex.iterator().next()) {
-            return String.format("%s %s ? AND \"%s\"", columnName, operator.name(), indexValues.get(0));
+        if (0 == placeholderIndexes.iterator().next()) {
+            return String.format("%s %s ? AND '%s'", columnName, operator.name(), indexValues.get(0));
         }
-        return String.format("%s %s \"%s\" AND ?", columnName, operator.name(), indexValues.get(0));
+        return String.format("%s %s '%s' AND ?", columnName, operator.name(), indexValues.get(0));
     }
     
     private String toStringFromIn() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(columnName).append(" ").append(operator.name()).append(" (");
-        for (int i = 0; i < indexValues.size() + placeholderIndex.size(); i++) {
-            if (placeholderIndex.contains(i)) {
+        for (int i = 0; i < indexValues.size() + placeholderIndexes.size(); i++) {
+            if (placeholderIndexes.contains(i)) {
                 stringBuilder.append("?");
             } else {
-                stringBuilder.append('"').append(indexValues.get(i)).append('"');
+                stringBuilder.append("'").append(indexValues.get(i)).append("'");
             }
             stringBuilder.append(", ");
         }

@@ -109,7 +109,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
     
     private RoutingTable findRoutingTable(final String dataSource, final String actualTable) {
         for (RoutingResult each : routingResults) {
-            Optional<RoutingTable> result = each.getTableUnits().findRoutingTable(dataSource, actualTable);
+            Optional<RoutingTable> result = each.getTableUnits().getRoutingTable(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();
             }
