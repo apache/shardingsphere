@@ -40,15 +40,6 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final int placeholderIndex;
     
-    @Override
-    public String toString() {
-        if (Strings.isNullOrEmpty(assistedColumnName)) {
-            return -1 == placeholderIndex ? String.format("%s = '%s'", columnName, columnValue) : String.format("%s = ?", columnName);
-        }
-        return -1 == placeholderIndex ? String.format("%s = '%s', %s = '%s'", columnName, columnValue, assistedColumnName, assistedColumnValue) 
-                : String.format("%s = ?, %s = ?", columnName, assistedColumnName);
-    }
-    
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final String assistedColumnName) {
         this.logicTableName = logicTableName;
         this.columnName = columnName;
@@ -58,7 +49,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         placeholderIndex = -1;
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, 
+    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName,
                                               final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
         this.logicTableName = logicTableName;
         this.columnName = columnName;
@@ -66,5 +57,14 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         this.assistedColumnName = assistedColumnName;
         this.assistedColumnValue = assistedColumnValue;
         placeholderIndex = 0;
+    }
+    
+    @Override
+    public String toString() {
+        if (Strings.isNullOrEmpty(assistedColumnName)) {
+            return -1 == placeholderIndex ? String.format("%s = '%s'", columnName, columnValue) : String.format("%s = ?", columnName);
+        }
+        return -1 == placeholderIndex ? String.format("%s = '%s', %s = '%s'", columnName, columnValue, assistedColumnName, assistedColumnValue) 
+                : String.format("%s = ?, %s = ?", columnName, assistedColumnName);
     }
 }
