@@ -308,15 +308,23 @@ public final class SQLRewriteEngine {
             List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, encryptCondition.get().getConditionValues(parameters));
             encryptParameters(encryptCondition.get().getPositionIndexMap(), encryptColumnValues);
             EncryptColumnPlaceholder placeholder = new EncryptColumnPlaceholder((encryptColumnToken.getColumn().getTableName(),
-                    getEncryptColumnName(encryptColumnToken), getPositionValues(encryptCondition.get().getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.get().getPositionIndexMap().keySet(), encryptCondition.get().getOperator();
+                    getEncryptColumnName(encryptColumnToken), getPositionValues(encryptCondition.get().getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.get().getPositionIndexMap().keySet(), encryptCondition.get().getOperator());
         } else {
             List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
             encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
             EncryptColumnPlaceholder placeholder = new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(),
-                    getEncryptColumnName(encryptColumnToken), getPositionValues(Collections.singletonList(0), encryptColumnValues), getPlaceholderPositionsFromUpdateItem(encryptColumnToken), ShardingOperator.EQUAL)
+                    getEncryptColumnName(encryptColumnToken), getPositionValues(Collections.singletonList(0), encryptColumnValues), getPlaceholderPositionsFromUpdateItem(encryptColumnToken), ShardingOperator.EQUAL);
         }
-        sqlBuilder.appendPlaceholder(););
+        EncryptColumnPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get()) 
+        sqlBuilder.appendPlaceholder();
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
+    }
+    
+    private EncryptColumnPlaceholder getEncryptColumnPlaceholderFromConditions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, encryptCondition.getConditionValues(parameters));
+        encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
+        return new EncryptColumnPlaceholder((encryptColumnToken.getColumn().getTableName(),
+                getEncryptColumnName(encryptColumnToken), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
     private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
