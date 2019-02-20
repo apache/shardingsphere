@@ -15,7 +15,7 @@ columnConstraint
     ;
 
 constraintClause
-    : CONSTRAINT constraintName
+    : CONSTRAINT ignoredIdentifier_
     ;
 
 columnConstraintOption
@@ -53,7 +53,7 @@ sequenceOption
     ;
 
 indexParameters
-    : (USING INDEX TABLESPACE tablespaceName)?
+    : (USING INDEX TABLESPACE ignoredIdentifier_)?
     ;
 
 action
@@ -73,15 +73,11 @@ constraintOptionalParam
     ;
 
 dataType
-    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | ID
+    : dataTypeName_ intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | ID
     ;
 
-typeName
-    : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
-    ;
-
-typeNames
-    : typeName (COMMA_ typeName)*
+dataTypeName_
+    : ID ID | ID
     ;
 
 intervalFields

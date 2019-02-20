@@ -2,143 +2,170 @@ grammar MySQLDDLStatement;
 
 import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, DataType, MySQLBase, BaseRule;
 
-createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
-    ;
-
-dropIndex
-    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
-    ;
-
-truncateTable
-    : TRUNCATE TABLE? tableName
-    ;
-
 createTable
-    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName createTableOptions
+    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)
     ;
 
-dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableNames
+createDefinitions_
+    : createDefinition_ (COMMA_ createDefinition_)*
     ;
 
-alterTable
-    : ALTER TABLE tableName alterSpecifications?
-    ;
-
-createTableOptions
-    : createTableBasic | createTableSelect | createTableLike
-    ;
-
-createTableBasic
-    : createDefinitionsWithParen tableOptions? partitionOptions?
-    ;
-
-createDefinitionsWithParen
-    : LP_ createDefinitions RP_
-    ;
-
-createDefinitions
-    : createDefinition (COMMA_ createDefinition)*
-    ;
-
-createDefinition
-    : columnDefinition | constraintDefinition | indexDefinition | checkExpr
-    ;
-
-checkExpr
-    : CHECK expr
-    ;
-
-createTableSelect
-    : createDefinitionsWithParen? tableOptions? partitionOptions? (IGNORE | REPLACE)? AS? unionSelect
-    ;
-
-createTableLike
-    : likeTable | LP_ likeTable RP_
-    ;
-
-likeTable
-    : LIKE tableName
+createDefinition_
+    : columnDefinition | indexDefinition_ | constraintDefinition_ | checkConstraintDefinition_
     ;
 
 columnDefinition
-    : columnName dataType (dataTypeOption* | dataTypeGenerated?)
+    : columnName dataType (inlineDataType_* | generatedDataType_*)
     ;
 
 dataType
-    : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL? | typeName (LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?)
+    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-typeName
-    : DOUBLE PRECISION | ID
+dataTypeName_
+    : ID ID?
     ;
 
-dataTypeOption
-    : dataTypeGeneratedOption
-    | DEFAULT? defaultValue
+characterSet_
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
+    ;
+
+collateClause_
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
+    ;
+
+inlineDataType_
+    : commonDataTypeOption_
     | AUTO_INCREMENT
+    | DEFAULT (literal | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
-    | referenceDefinition
     ;
 
-dataTypeGeneratedOption
-    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING_
+generatedDataType_
+    : commonDataTypeOption_
+    | (GENERATED ALWAYS)? AS expr
+    | (VIRTUAL | STORED)
     ;
 
-defaultValue
-    : NULL | NUMBER_ | STRING_ | currentTimestampType (ON UPDATE currentTimestampType)? | ON UPDATE currentTimestampType
+commonDataTypeOption_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
     ;
 
-currentTimestampType
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength?
+referenceDefinition_
+    : REFERENCES tableName keyParts_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (UPDATE | DELETE) referenceOption_)*
     ;
 
-referenceDefinition
-    : REFERENCES tableName keyPartsWithParen (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType*
-    ;
-
-referenceType
-    : ON (UPDATE | DELETE) referenceOption
-    ;
-
-referenceOption
+referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-dataTypeGenerated
-    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption*
+indexDefinition_
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
-constraintDefinition
-    : (CONSTRAINT symbol?)? (primaryKeyOption | uniqueOption | foreignKeyOption)
+indexOption_
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType_ | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
     ;
 
-primaryKeyOption
-    : primaryKey indexType? columnList indexOption*
+indexType_
+    : USING (BTREE | HASH)
     ;
 
-uniqueOption
-    : UNIQUE indexAndKey? indexName? indexType? keyPartsWithParen indexOption*
+constraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
-foreignKeyOption
-    : FOREIGN KEY indexName? columnNamesWithParen referenceDefinition
+primaryKeyOption_
+    : primaryKey indexType_? columnNames indexOption_*
     ;
 
-indexDefinition
-    : (FULLTEXT | SPATIAL)? indexAndKey? indexName? indexType? keyPartsWithParen indexOption*
+uniqueOption_
+    : UNIQUE (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
-tableOptions
-    : tableOption (COMMA_? tableOption)*
+foreignKeyOption_
+    : FOREIGN KEY indexName? columnNames referenceDefinition_
     ;
 
-tableOption
+keyParts_
+    : LP_ keyPart_ (COMMA_ keyPart_)* RP_
+    ;
+
+keyPart_
+    : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
+    ;
+
+checkConstraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
+    ;
+
+createLike_
+    : LIKE tableName | LP_ LIKE tableName RP_
+    ;
+
+alterTable
+    : ALTER TABLE tableName alterSpecifications_?
+    ;
+
+alterSpecifications_
+    : alterSpecification_ (COMMA_ alterSpecification_)*
+    ;
+
+alterSpecification_
+    : tableOptions_
+    | addColumnSpecification
+    | addIndexSpecification
+    | addConstraintSpecification
+    | ADD checkConstraintDefinition_
+    | DROP CHECK ignoredIdentifier_
+    | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
+    | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
+    | ALTER COLUMN? columnName (SET DEFAULT literal | DROP DEFAULT)
+    | ALTER INDEX indexName (VISIBLE | INVISIBLE)
+    | changeColumnSpecification
+    | DEFAULT? characterSet_ collateClause_?
+    | CONVERT TO characterSet_ collateClause_?
+    | (DISABLE | ENABLE) KEYS
+    | (DISCARD | IMPORT_) TABLESPACE
+    | dropColumnSpecification
+    | dropIndexSpecification
+    | dropPrimaryKeySpecification
+    | DROP FOREIGN KEY ignoredIdentifier_
+    | FORCE
+    | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    | modifyColumnSpecification
+    // TODO hongjun investigate ORDER BY col_name [, col_name] ...
+    | ORDER BY columnName (COMMA_ columnName)*
+    | renameColumnSpecification
+    | renameIndexSpecification
+    | renameTableSpecification
+    | (WITHOUT | WITH) VALIDATION
+    | ADD PARTITION LP_ partitionDefinition_ RP_
+    | DROP PARTITION ignoredIdentifiers_
+    | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | IMPORT_ PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
+    | TRUNCATE PARTITION (ignoredIdentifiers_ | ALL)
+    | COALESCE PARTITION NUMBER_
+    | REORGANIZE PARTITION ignoredIdentifiers_ INTO partitionDefinitions_
+    | EXCHANGE PARTITION ignoredIdentifier_ WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
+    | ANALYZE PARTITION (ignoredIdentifiers_ | ALL)
+    | CHECK PARTITION (ignoredIdentifiers_ | ALL)
+    | OPTIMIZE PARTITION (ignoredIdentifiers_ | ALL)
+    | REBUILD PARTITION (ignoredIdentifiers_ | ALL)
+    | REPAIR PARTITION (ignoredIdentifiers_ | ALL)
+    | REMOVE PARTITIONING
+    | UPGRADE PARTITIONING
+    ;
+
+tableOptions_
+    : tableOption_ (COMMA_? tableOption_)*
+    ;
+
+tableOption_
     : AUTO_INCREMENT EQ_? NUMBER_
     | AVG_ROW_LENGTH EQ_? NUMBER_
-    | DEFAULT? (characterSet | collateClause)
+    | DEFAULT? (characterSet_ | collateClause_)
     | CHECKSUM EQ_? NUMBER_
     | COMMENT EQ_? STRING_
     | COMPRESSION EQ_? STRING_
@@ -146,7 +173,7 @@ tableOption
     | (DATA | INDEX) DIRECTORY EQ_? STRING_
     | DELAY_KEY_WRITE EQ_? NUMBER_
     | ENCRYPTION EQ_? STRING_
-    | ENGINE EQ_? engineName
+    | ENGINE EQ_? ignoredIdentifier_
     | INSERT_METHOD EQ_? (NO | FIRST | LAST)
     | KEY_BLOCK_SIZE EQ_? NUMBER_
     | MAX_ROWS EQ_? NUMBER_
@@ -157,160 +184,99 @@ tableOption
     | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
     | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
     | STATS_SAMPLE_PAGES EQ_? NUMBER_
-    | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_? tableList
+    | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
+    | UNION EQ_? LP_ tableName (COMMA_ tableName)* RP_
     ;
 
-engineName
-    : ID | MEMORY
-    ;
-
-partitionOptions
-    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER_)?)? (LP_ partitionDefinitions RP_)?
-    ;
-
-linearPartition
-    : LINEAR? (HASH (yearFunctionExpr | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNamesWithParen)
-    ;
-
-yearFunctionExpr
-    : LP_ YEAR expr RP_
-    ;
-
-rangeOrListPartition
-    : (RANGE | LIST) (expr | COLUMNS columnNamesWithParen)
-    ;
-
-partitionDefinitions
-    : partitionDefinition (COMMA_ partitionDefinition)*
-    ;
-
-partitionDefinition
-    : PARTITION partitionName (VALUES (lessThanPartition | IN assignmentValueList))? partitionDefinitionOption* (LP_ subpartitionDefinition (COMMA_ subpartitionDefinition)* RP_)?
-    ;
-
-partitionDefinitionOption
-    : STORAGE? ENGINE EQ_? engineName
-    | COMMENT EQ_? STRING_
-    | DATA DIRECTORY EQ_? STRING_
-    | INDEX DIRECTORY EQ_? STRING_
-    | MAX_ROWS EQ_? NUMBER_
-    | MIN_ROWS EQ_? NUMBER_
-    | TABLESPACE EQ_? tablespaceName
-    ;
-
-lessThanPartition
-    : LESS THAN (LP_ (expr | assignmentValues) RP_ | MAXVALUE)
-    ;
-
-subpartitionDefinition
-    : SUBPARTITION partitionName partitionDefinitionOption*
-    ;
-
-alterSpecifications
-    : alterSpecification (COMMA_ alterSpecification)*
-    ;
-
-alterSpecification
-    : tableOptions
-    | addColumn
-    | addIndex
-    | addConstraint
-    | ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
-    | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
-    | changeColumn
-    | DEFAULT? characterSet collateClause?
-    | CONVERT TO characterSet collateClause?
-    | (DISABLE | ENABLE) KEYS
-    | (DISCARD | IMPORT_) TABLESPACE
-    | dropColumn
-    | dropIndexDef
-    | dropPrimaryKey
-    | DROP FOREIGN KEY fkSymbol
-    | FORCE
-    | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
-    | modifyColumn
-    | ORDER BY columnName (COMMA_ columnName)*
-    | renameIndex
-    | renameTable
-    | (WITHOUT | WITH) VALIDATION
-    | ADD PARTITION partitionDefinitions
-    | DROP PARTITION partitionNames
-    | DISCARD PARTITION (partitionNames | ALL) TABLESPACE
-    | IMPORT_ PARTITION (partitionNames | ALL) TABLESPACE
-    | TRUNCATE PARTITION (partitionNames | ALL)
-    | COALESCE PARTITION NUMBER_
-    | REORGANIZE PARTITION partitionNames INTO partitionDefinitions
-    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
-    | ANALYZE PARTITION (partitionNames | ALL)
-    | CHECK PARTITION (partitionNames | ALL)
-    | OPTIMIZE PARTITION (partitionNames | ALL)
-    | REBUILD PARTITION (partitionNames | ALL)
-    | REPAIR PARTITION (partitionNames | ALL)
-    | REMOVE PARTITIONING
-    | UPGRADE PARTITIONING
-    ;
-
-singleColumn
-    : columnDefinition firstOrAfterColumn?
+addColumnSpecification
+    : ADD COLUMN? (columnDefinition firstOrAfterColumn? | LP_ columnDefinition (COMMA_ columnDefinition)* RP_)
     ;
 
 firstOrAfterColumn
     : FIRST | AFTER columnName
     ;
 
-multiColumn
-    : LP_ columnDefinition (COMMA_ columnDefinition)* RP_
+addIndexSpecification
+    : ADD indexDefinition_
     ;
 
-addConstraint
-    : ADD constraintDefinition
+addConstraintSpecification
+    : ADD constraintDefinition_
     ;
 
-addIndex
-    : ADD indexDefinition
+changeColumnSpecification
+    : CHANGE COLUMN? columnName columnDefinition firstOrAfterColumn?
     ;
 
-addColumn
-    : ADD COLUMN? (singleColumn | multiColumn)
-    ;
-
-changeColumn
-    : changeColumnOp columnName columnDefinition firstOrAfterColumn?
-    ;
-
-changeColumnOp
-    : CHANGE COLUMN?
-    ;
-
-dropColumn
+dropColumnSpecification
     : DROP COLUMN? columnName
     ;
 
-dropIndexDef
-    : DROP indexAndKey indexName
+dropIndexSpecification
+    : DROP (INDEX | KEY) indexName
     ;
 
-dropPrimaryKey
+dropPrimaryKeySpecification
     : DROP primaryKey
     ;
 
-fkSymbol
-    : ID
-    ;
-
-modifyColumn
+modifyColumnSpecification
     : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
 
-renameIndex
-    : RENAME indexAndKey indexName TO indexName
+// TODO hongjun: parse renameColumnSpecification and refresh meta, but throw exception if is sharding column
+renameColumnSpecification
+    : RENAME COLUMN columnName TO columnName
     ;
 
-renameTable
+// TODO hongjun: should support renameIndexSpecification on mysql
+renameIndexSpecification
+    : RENAME (INDEX | KEY) indexName TO indexName
+    ;
+
+// TODO hongjun: parse renameTableSpecification and refresh meta, but throw exception if is sharding table
+renameTableSpecification
     : RENAME (TO | AS)? tableName
     ;
 
-partitionNames
-    : partitionName (COMMA_ partitionName)*
+partitionDefinitions_
+    : LP_ partitionDefinition_ (COMMA_ partitionDefinition_)* RP_
+    ;
+
+partitionDefinition_
+    : PARTITION ignoredIdentifier_ (VALUES (LESS THAN lessThanValue_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    ;
+
+lessThanValue_
+    : LP_ (expr | assignmentValues) RP_ | MAXVALUE
+    ;
+
+partitionDefinitionOption_
+    : STORAGE? ENGINE EQ_? ignoredIdentifier_
+    | COMMENT EQ_? STRING_
+    | DATA DIRECTORY EQ_? STRING_
+    | INDEX DIRECTORY EQ_? STRING_
+    | MAX_ROWS EQ_? NUMBER_
+    | MIN_ROWS EQ_? NUMBER_
+    | TABLESPACE EQ_? ignoredIdentifier_
+    ;
+
+subpartitionDefinition_
+    : SUBPARTITION ignoredIdentifier_ partitionDefinitionOption_*
+    ;
+
+dropTable
+    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    ;
+
+truncateTable
+    : TRUNCATE TABLE? tableName
+    ;
+
+createIndex
+    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
+    ;
+
+dropIndex
+    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
     ;

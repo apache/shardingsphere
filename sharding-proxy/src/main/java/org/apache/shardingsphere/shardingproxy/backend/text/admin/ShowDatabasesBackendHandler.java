@@ -44,7 +44,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private MergedResult mergedResult;
     
-    private int currentSequenceId;
+    private int currentSequenceId = 1;
     
     private int columnCount;
     
@@ -53,11 +53,9 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     @Override
     public CommandResponsePackets execute() {
         mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
-        int sequenceId = 1;
         Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
-        dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, "", "", "", "Database", "", 100, Types.VARCHAR, 0));
-        QueryResponsePackets result = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), 1, dataHeaderPackets, ++sequenceId);
-        currentSequenceId = result.getPackets().size();
+        dataHeaderPackets.add(new DataHeaderPacket(++currentSequenceId, "", "", "", "Database", "", 100, Types.VARCHAR, 0));
+        QueryResponsePackets result = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), 1, dataHeaderPackets, ++currentSequenceId);
         columnCount = result.getFieldCount();
         columnTypes.addAll(result.getColumnTypes());
         return result;

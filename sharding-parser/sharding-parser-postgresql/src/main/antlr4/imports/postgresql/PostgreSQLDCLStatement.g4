@@ -3,22 +3,18 @@ grammar PostgreSQLDCLStatement;
 import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, BaseRule, DataType;
 
 grant
-    : GRANT privType_ columnList? (COMMA_ privType_ columnList?)* ON privLevel
-    ;
-
-grantRole
-    : GRANT roleNames
+    : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 revoke
-    : REVOKE (GRANT OPTION FOR)? privType_ columnList? (COMMA_ privType_ columnList?)* ON privLevel
+    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
-revokeRole
-    : REVOKE (ADMIN OPTION FOR)? roleNames
+privileges_
+    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
 
-privType_
+privilegeType_
     : ALL PRIVILEGES?
     | SELECT
     | INSERT
@@ -35,21 +31,21 @@ privType_
     | USAGE
     ;
 
-privLevel
+onObjectClause_
     : SEQUENCE
     | DATABASE
     | DOMAIN
     | FOREIGN
-    | FUNCTION 
+    | FUNCTION
     | PROCEDURE
-    | ROUTINE 
+    | ROUTINE
     | ALL
     | LANGUAGE
     | LARGE OBJECT
     | SCHEMA
     | TABLESPACE
     | TYPE
-    | TABLE? tableNames
+    | TABLE? tableName (COMMA_ tableName)*
     ;
 
 createUser

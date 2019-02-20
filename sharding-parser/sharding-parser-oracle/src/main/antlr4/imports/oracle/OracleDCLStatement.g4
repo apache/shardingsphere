@@ -3,23 +3,39 @@ grammar OracleDCLStatement;
 import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
 grant
-    : GRANT (systemPrivileges_ | objectPrivileges_ ON onObjectClause_ | rolesToPrograms_) TO
+    : GRANT (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
     ;
 
 revoke
-    : REVOKE (systemPrivileges_ | objectPrivileges_ ON onObjectClause_ | rolesToPrograms_) FROM
-    ;
-
-systemPrivileges_
-    : privilege_ (COMMA_ privilege_)*
+    : REVOKE (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
     ;
 
 objectPrivileges_
-    : privilege_ columnList? (COMMA_ privilege_ columnList?)*
+    : objectPrivilegeType_ columnNames? (COMMA_ objectPrivilegeType_ columnNames?)*
     ;
 
-privilege_
-    : ALL PRIVILEGES? | ID*?
+objectPrivilegeType_
+    : ALL PRIVILEGES?
+    | SELECT
+    | INSERT
+    | DELETE
+    | UPDATE
+    | ALTER
+    | READ
+    | WRITE
+    | EXECUTE
+    | USE
+    | INDEX
+    | REFERENCES
+    | DEBUG
+    | UNDER
+    | FLASHBACK ARCHIVE
+    | ON COMMIT REFRESH
+    | QUERY REWRITE
+    | KEEP SEQUENCE
+    | INHERIT PRIVILEGES
+    | TRANSLATE SQL
+    | MERGE VIEW
     ;
 
 onObjectClause_
@@ -28,8 +44,8 @@ onObjectClause_
     | tableName
     ;
 
-rolesToPrograms_
-    : ALL | ID*?
+otherPrivileges_
+    : STRING_+ | ID+
     ;
 
 createUser

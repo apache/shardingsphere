@@ -33,6 +33,7 @@ public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExt
     
     @Override
     public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
-        return ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
+        return ExtractorUtils.findFirstChildNode(
+                ancestorNode, RuleName.DROP_PRIMARY_KEY_SPECIFICATION).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
     }
 }

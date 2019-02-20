@@ -15,35 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.netty.client.response;
+package org.apache.shardingsphere.shardingproxy.frontend.common;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.backend.communication.netty.client.response.mysql.MySQLResponseHandler;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 /**
- * Response handler factory for using netty connect backend.
+ * Database frontend engine factory.
  *
- * @author wangkai
- * @author linjiaqi
+ * @author zhangliang
+ * @author xiaoyu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResponseHandlerFactory {
+public final class DatabaseFrontendEngineFactory {
+    
+    static {
+        NewInstanceServiceLoader.register(DatabaseFrontendEngine.class);
+    }
+    
     /**
-     * Create new instance of response handler factory for using netty connect backend.
+     * Create new instance of database frontend engine.
      *
      * @param databaseType database type
-     * @param dataSourceName data source name
-     * @param schema schema
-     * @return new instance of response handler factory for using netty connect backend
+     * @return new instance of database frontend engine
      */
-    public static ResponseHandler newInstance(final DatabaseType databaseType, final String dataSourceName, final String schema) {
-        switch (databaseType) {
-            case MySQL:
-                return new MySQLResponseHandler(dataSourceName, schema);
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+    public static DatabaseFrontendEngine newInstance(final DatabaseType databaseType) {
+        for (DatabaseFrontendEngine each : NewInstanceServiceLoader.newServiceInstances(DatabaseFrontendEngine.class)) {
+            if (DatabaseType.valueFrom(each.getDatabaseType()) == databaseType) {
+                return each;
+            }
         }
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
 }

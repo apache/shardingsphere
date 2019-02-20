@@ -10,16 +10,13 @@ execute
     | alterTable
     | dropTable
     | truncateTable
+    | setTransaction
     | beginTransaction
-    | startTransaction
     | commit
     | rollback
-    | setTransaction
     | savepoint
     | grant
-    | grantRole
     | revoke
-    | revokeRole
     | createUser
     | dropUser
     | alterUser

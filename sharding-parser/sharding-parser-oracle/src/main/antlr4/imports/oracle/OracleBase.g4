@@ -51,27 +51,19 @@ lobItemList
     ;
 
 dataType
-    : typeName dataTypeLength? | specialDatatype | typeName dataTypeLength? datetimeTypeSuffix
-    ;
-
-typeName
-    : DOUBLE PRECISION | INTERVAL YEAR | INTERVAL DAY | ID
+    : dataTypeName_ dataTypeLength? | specialDatatype | dataTypeName_ dataTypeLength? datetimeTypeSuffix
     ;
 
 specialDatatype
-    : typeName (LP_ NUMBER_ ID RP_) | NATIONAL typeName VARYING? LP_ NUMBER_ RP_ | typeName LP_? columnName RP_?
+    : dataTypeName_ (LP_ NUMBER_ ID RP_) | NATIONAL dataTypeName_ VARYING? LP_ NUMBER_ RP_ | dataTypeName_ LP_? columnName RP_?
+    ;
+
+dataTypeName_
+    : ID ID | ID
     ;
 
 datetimeTypeSuffix
     : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
-    ;
-
-columnSortClause
-    : tableAndAlias columnName (ASC | DESC)?
-    ;
-
-tableAndAlias
-    : tableName alias?
     ;
 
 privateExprOfDb
@@ -79,7 +71,7 @@ privateExprOfDb
     ;
 
 treatFunction
-    : TREAT LP_ expr AS REF? typeName RP_
+    : TREAT LP_ expr AS REF? dataTypeName_ RP_
     ;
 
 caseExpr
@@ -115,5 +107,5 @@ objectAccessExpression
     ;
 
 constructorExpr
-    : NEW typeName exprList
+    : NEW dataTypeName_ exprList
     ;

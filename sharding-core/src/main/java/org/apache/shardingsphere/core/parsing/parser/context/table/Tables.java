@@ -129,14 +129,4 @@ public final class Tables {
         }
         return Optional.absent();
     }
-    
-    /**
-     * Is table alias.
-     * 
-     * @param alias alias name
-     * @return boolean
-     */
-    public boolean isTableAlias(final String alias) {
-        return findTableFromAlias(alias).isPresent();
-    }
 }

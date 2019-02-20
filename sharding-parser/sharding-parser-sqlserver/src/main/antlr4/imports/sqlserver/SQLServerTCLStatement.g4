@@ -3,32 +3,7 @@ grammar SQLServerTCLStatement;
 import SQLServerKeyword, Keyword, Symbol, SQLServerBase, DataType;
 
 setTransaction
-    : SET TRANSACTION ISOLATION LEVEL
-    (
-        READ (UNCOMMITTED | COMMITTED) | REPEATABLE READ | SNAPSHOT | SERIALIZABLE
-    )
-    ;
-
-commit
-    : COMMIT 
-    (
-        ((TRAN | TRANSACTION) ID?)? (WITH LP_ DELAYED_DURABILITY EQ_ (OFF | ON) RP_)? | WORK?
-    )
-    ;
-
-rollback
-    : ROLLBACK
-    (
-        (TRAN | TRANSACTION) ID? | WORK?
-    )
-    ;
-
-savepoint
-    : SAVE (TRAN | TRANSACTION) ID
-    ;
-
-beginTransaction
-    : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING_)?)?
+    : SET TRANSACTION
     ;
 
 setAutoCommit
@@ -37,4 +12,20 @@ setAutoCommit
 
 autoCommitValue
     : ON | OFF
+    ;
+
+beginTransaction
+    : BEGIN (TRAN | TRANSACTION)
+    ;
+
+commit
+    : COMMIT 
+    ;
+
+rollback
+    : ROLLBACK
+    ;
+
+savepoint
+    : SAVE (TRAN | TRANSACTION)
     ;

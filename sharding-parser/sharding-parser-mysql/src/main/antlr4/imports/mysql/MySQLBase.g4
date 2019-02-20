@@ -10,50 +10,6 @@ tableName
     : ID | ID DOT_ASTERISK_ | ASTERISK_
     ;
 
-columnName
-    : ID | ROW
-    ;
-
-characterSet
-    : (CHARACTER | CHAR) SET EQ_? charsetName | CHARSET EQ_? charsetName
-    ;
-
-charsetName
-    : ID | BINARY
-    ;
-
-collateClause
-    : COLLATE EQ_? collationName
-    ;
-
-keyPartsWithParen
-    : LP_ keyParts RP_
-    ;
-
-keyParts
-    : keyPart (COMMA_ keyPart)*
-    ;
-
-keyPart
-    : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
-    ;
-
-symbol
-    : ID
-    ;
-
-indexType
-    : USING (BTREE | HASH)
-    ;
-
-indexAndKey
-    : INDEX | KEY
-    ;
-
-indexOption
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING_
-    ;
-
 assignmentValueList
     : LP_ assignmentValues RP_
     ;
@@ -130,30 +86,10 @@ assignment
     : columnName EQ_ assignmentValue
     ;
 
-fromClause
-    : FROM tableReferences
-    ;
-
 tableReferences
     : matchNone
     ;
 
 whereClause
     : WHERE expr
-    ;
-
-groupByClause 
-    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
-    ;
-
-havingClause
-    : HAVING expr
-    ;
-
-limitClause
-    : LIMIT rangeClause
-    ;
-
-partitionClause 
-    : PARTITION columnList
     ;

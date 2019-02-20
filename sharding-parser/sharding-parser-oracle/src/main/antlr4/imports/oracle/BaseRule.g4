@@ -10,27 +10,11 @@ schemaName
     : ID
     ;
 
-databaseName
-    : ID
-    ;
-
-domainName
-    : ID
-    ;
-
 tableName
     : ID
     ;
 
 columnName
-    : ID
-    ;
-
-sequenceName
-    : ID
-    ;
-
-tablespaceName
     : ID
     ;
 
@@ -46,90 +30,6 @@ alias
     : ID
     ;
 
-cteName
-    : ID
-    ;
-
-parserName
-    : ID
-    ;
-
-extensionName
-    : ID
-    ;
-
-rowName
-    : ID
-    ;
-
-opclass
-    : ID
-    ;
-
-fileGroup
-    : ID
-    ;
-
-groupName
-    : ID
-    ;
-
-constraintName
-    : ID
-    ;
-
-keyName
-    : ID
-    ;
-
-typeName
-    : ID
-    ;
-
-xmlSchemaCollection
-    : ID
-    ;
-
-columnSetName
-    : ID
-    ;
-
-directoryName
-    : ID
-    ;
-
-triggerName
-    : ID
-    ;
-
-routineName
-    : ID
-    ;
-
-roleName
-    : STRING_ | ID
-    ;
-
-partitionName
-    : ID
-    ;
-
-rewriteRuleName
-    : ID
-    ;
-
-ownerName
-    : ID
-    ;
-
-userName
-    : STRING_ | ID
-    ;
-
-serverName
-    : ID
-    ;
-
 dataTypeLength
     : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
     ;
@@ -138,96 +38,8 @@ primaryKey
     : PRIMARY? KEY
     ;
 
-matchNone
-    : 'Default does not match anything'
-    ;
-
-ids
-    : ID (COMMA_ ID)*
-    ;
-
-idList
-    : LP_ ids RP_
-    ;
-
-rangeClause
-    : rangeItem (COMMA_ rangeItem)* | rangeItem OFFSET rangeItem
-    ;
-
-rangeItem
-    : number | question
-    ;
-
-schemaNames
-    : schemaName (COMMA_ schemaName)*
-    ;
-
-databaseNames
-    : databaseName (COMMA_ databaseName)*
-    ;
-
-domainNames
-    : domainName (COMMA_ domainName)*
-    ;
-
-tableList
-    : LP_ tableNames RP_
-    ;
-
-tableNames
-    : tableName (COMMA_ tableName)*
-    ;
-
-columnNamesWithParen
-    : LP_ columnNames RP_
-    ;
-
 columnNames
-    : columnName (COMMA_ columnName)*
-    ;
-
-columnList
-    : LP_ columnNames RP_
-    ;
-
-sequenceNames
-    : sequenceName (COMMA_ sequenceName)*
-    ;
-
-tablespaceNames
-    : tablespaceName (COMMA_ tablespaceName)*
-    ;
-
-indexNames
-    : indexName (COMMA_ indexName)*
-    ;
-
-indexList
-    : LP_ indexNames RP_
-    ;
-
-typeNames
-    : typeName (COMMA_ typeName)*
-    ;
-
-rowNames
-    : rowName (COMMA_ rowName)*
-    ;
-
-roleNames
-    : roleName (COMMA_ roleName)*
-    ;
-
-userNames
-    : userName (COMMA_ userName)*
-    ;
-
-serverNames
-    : serverName (COMMA_ serverName)*
-    ;
-
-bitExprs
-    : bitExpr (COMMA_ bitExpr)*
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 exprs
@@ -236,18 +48,6 @@ exprs
 
 exprList
     : LP_ exprs RP_
-    ;
-
-exprOrExprListsList
-    : LP_ exprOrExprLists RP_
-    ;
-
-exprOrExprLists
-    : exprOrExprList (COMMA_ exprOrExprList)*
-    ;
-
-exprOrExprList
-    : expr | exprList
     ;
 
 expr
@@ -405,10 +205,14 @@ asterisk
     : ASTERISK_
     ;
 
-selectExprs
-    : (asterisk | selectExpr) (COMMA_ selectExpr)*
-    ; 
+ignoredIdentifier_
+    : ID
+    ;
 
-selectExpr
-    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK_
+ignoredIdentifiers_
+    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+    ;
+
+matchNone
+    : 'Default does not match anything'
     ;

@@ -21,9 +21,10 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
-import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -35,7 +36,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 
 /**
- * MySQL frontend handler.
+ * MySQL frontend engine.
  *
  * @author zhangliang
  * @author panjuan
@@ -43,48 +44,44 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class MySQLFrontendHandler extends FrontendHandler {
+public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
-    private final MySQLAuthenticationHandler mySQLAuthenticationHandler = new MySQLAuthenticationHandler();
+    private final MySQLAuthenticationHandler mysqlAuthenticationHandler = new MySQLAuthenticationHandler();
     
     @Override
-    protected void handshake(final ChannelHandlerContext context) {
-        int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
-        ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
-        getBackendConnection().setConnectionId(connectionId);
-        context.writeAndFlush(new MySQLHandshakePacket(connectionId, mySQLAuthenticationHandler.getMySQLAuthPluginData()));
+    public String getDatabaseType() {
+        return DatabaseType.MySQL.name();
     }
     
     @Override
-    protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
+    public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
+        int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
+        backendConnection.setConnectionId(connectionId);
+        context.writeAndFlush(new MySQLHandshakePacket(connectionId, mysqlAuthenticationHandler.getMySQLAuthPluginData()));
+    }
+    
+    @Override
+    public boolean auth(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
             MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet(payload);
-            if (mySQLAuthenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
+            if (mysqlAuthenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 if (!Strings.isNullOrEmpty(response41.getDatabase()) && !GlobalRegistry.getInstance().schemaExists(response41.getDatabase())) {
                     context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
-                    return;
+                    return true;
                 }
-                getBackendConnection().setCurrentSchema(response41.getDatabase());
+                backendConnection.setCurrentSchema(response41.getDatabase());
                 context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
             } else {
                 // TODO localhost should replace to real ip address
                 context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
                     MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             }
+            return true;
         }
     }
     
     @Override
-    protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new MySQLCommandExecutor(context, message, this));
-    }
-    
-    @Override
-    public void channelWritabilityChanged(final ChannelHandlerContext context) {
-        if (context.channel().isWritable()) {
-            synchronized (this) {
-                this.notifyAll();
-            }
-        }
+    public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
+        CommandExecutorSelector.getExecutor(backendConnection.getTransactionType(), context.channel().id()).execute(new MySQLCommandExecutor(context, message, backendConnection));
     }
 }

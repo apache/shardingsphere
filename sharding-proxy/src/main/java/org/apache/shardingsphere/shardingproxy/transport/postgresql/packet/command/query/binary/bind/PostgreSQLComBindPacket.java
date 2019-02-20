@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -71,7 +70,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         binaryStatement = backendConnection.getConnectionScopeBinaryStatementRegistry().getBinaryStatement(statementId);
         if (null != binaryStatement && null != binaryStatement.getSql()) {
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                backendConnection.getLogicSchema(), 0, binaryStatement.getSql(), getParameters(payload), backendConnection, DatabaseType.PostgreSQL);
+                backendConnection.getLogicSchema(), binaryStatement.getSql(), getParameters(payload), backendConnection);
         }
         for (int i = 0; i < payload.readInt2(); i++) {
             payload.readInt2();

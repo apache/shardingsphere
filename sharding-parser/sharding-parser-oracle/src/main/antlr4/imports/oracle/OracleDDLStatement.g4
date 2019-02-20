@@ -2,18 +2,6 @@ grammar OracleDDLStatement;
 
 import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
-createIndex
-    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause | bitmapJoinIndexClause)
-    ;
-
-alterIndex
-    : ALTER INDEX indexName (RENAME TO indexName)?
-    ;
-
-dropIndex
-    : DROP INDEX indexName
-    ;
-
 createTable
     : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
     ;
@@ -30,32 +18,16 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
-tableIndexClause
-    : tableName alias? LP_ indexExprSort (COMMA_ indexExprSort)* RP_
-    ;
-
-indexExprSort
-    : indexExpr (ASC | DESC)?
-    ;
-
-indexExpr
-    : columnName | expr 
-    ;
-
 tablespaceClauseWithParen
     : LP_ tablespaceClause RP_
     ;
 
 tablespaceClause
-    : TABLESPACE tablespaceName
+    : TABLESPACE ignoredIdentifier_
     ;
 
 domainIndexClause
     : indexTypeName
-    ;
-
-bitmapJoinIndexClause
-    : tableName LP_ columnSortClause(COMMA_ columnSortClause)* RP_ FROM tableAndAlias (COMMA_ tableAndAlias)* WHERE expr
     ;
 
 relationalTable
@@ -79,22 +51,22 @@ unionSelect
     ;
 
 alterTableProperties
-    : renameTable | REKEY encryptionSpec
+    : renameTableSpecification | REKEY encryptionSpec
     ;
 
-renameTable
+renameTableSpecification
     : RENAME TO tableName
     ;
 
 columnClauses
-    : opColumnClause+ | renameColumn
+    : opColumnClause+ | renameColumnSpecification
     ;
 
 opColumnClause
-    : addColumn | modifyColumn | dropColumnClause
+    : addColumnSpecification | modifyColumnSpecification | dropColumnClause
     ;
 
-addColumn
+addColumnSpecification
     : ADD columnOrVirtualDefinitions columnProperties?
     ;
 
@@ -106,7 +78,7 @@ columnOrVirtualDefinition
     : columnDefinition | virtualColumnDefinition
     ;
 
-modifyColumn
+modifyColumnSpecification
     : MODIFY (LP_? modifyColProperties (COMMA_ modifyColProperties)* RP_? | modifyColSubstitutable)
     ;
 
@@ -119,10 +91,10 @@ modifyColSubstitutable
     ;
 
 dropColumnClause
-    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropColumn
+    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropColumnSpecification
     ;
 
-dropColumn
+dropColumnSpecification
     : DROP columnOrColumnList cascadeOrInvalidate* checkpointNumber?
     ;
 
@@ -138,15 +110,15 @@ checkpointNumber
     : CHECKPOINT NUMBER_
     ;
 
-renameColumn
+renameColumnSpecification
     : RENAME COLUMN columnName TO columnName
     ;
 
 constraintClauses
-    : addConstraint | modifyConstraintClause | renameConstraintClause | dropConstraintClause+
+    : addConstraintSpecification | modifyConstraintClause | renameConstraintClause | dropConstraintClause+
     ;
 
-addConstraint
+addConstraintSpecification
     : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
     ;
 
@@ -155,7 +127,7 @@ modifyConstraintClause
     ;
 
 constraintWithName
-    : CONSTRAINT constraintName
+    : CONSTRAINT ignoredIdentifier_
     ;
 
 constraintOption
@@ -163,22 +135,22 @@ constraintOption
     ;
 
 constraintPrimaryOrUnique
-    : primaryKey | UNIQUE columnList
+    : primaryKey | UNIQUE columnNames
     ;
 
 renameConstraintClause
-    : RENAME constraintWithName TO constraintName
+    : RENAME constraintWithName TO ignoredIdentifier_
     ;
 
 dropConstraintClause
     : DROP
     (
-    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT constraintName CASCADE?)
+    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT ignoredIdentifier_ CASCADE?)
     ) 
     ;
 
 alterExternalTable
-    : (addColumn | modifyColumn | dropColumn)+
+    : (addColumnSpecification | modifyColumnSpecification | dropColumnSpecification)+
     ;
 
 columnDefinition
@@ -209,11 +181,11 @@ virtualColumnDefinition
     ;
 
 inlineConstraint
-    : (CONSTRAINT constraintName)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
+    : (CONSTRAINT ignoredIdentifier_)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
     ;
 
 referencesClause
-    : REFERENCES tableName columnList? (ON DELETE (CASCADE | SET NULL))?
+    : REFERENCES tableName columnNames? (ON DELETE (CASCADE | SET NULL))?
     ;
 
 constraintState
@@ -246,15 +218,15 @@ usingIndexClause
     ;
 
 inlineRefConstraint
-    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT constraintName)? referencesClause constraintState*
+    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier_)? referencesClause constraintState*
     ;
 
 outOfLineConstraint
-    : (CONSTRAINT constraintName)?
+    : (CONSTRAINT ignoredIdentifier_)?
     (
-    	UNIQUE columnList
-        | primaryKey columnList 
-        | FOREIGN KEY columnList referencesClause
+    	UNIQUE columnNames
+        | primaryKey columnNames 
+        | FOREIGN KEY columnNames referencesClause
         | CHECK LP_ expr RP_
     ) 
     constraintState*
@@ -263,7 +235,7 @@ outOfLineConstraint
 outOfLineRefConstraint
     : SCOPE FOR LP_ lobItem RP_ IS tableName
     | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState*
+    | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;
 
 encryptionSpec
@@ -291,5 +263,34 @@ objectTypeColProperties
     ;
 
 substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LP_ ONLY? typeName RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
+    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
+    ;
+
+createIndex
+    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
+    ;
+
+tableIndexClause_
+    : tableName alias? LP_ indexExpr_ (COMMA_ indexExpr_)* RP_
+    ;
+
+indexExpr_
+    : (columnName | expr) (ASC | DESC)?
+    ;
+
+bitmapJoinIndexClause_
+    : tableName LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_ FROM tableName alias? (COMMA_ tableName alias?)* WHERE expr
+    ;
+
+columnSortClause_
+    : tableName alias? columnName (ASC | DESC)?
+    ;
+
+dropIndex
+    : DROP INDEX indexName
+    ;
+
+// TODO hongjun throw exeption when alter index on oracle
+alterIndex
+    : ALTER INDEX indexName (RENAME TO indexName)?
     ;

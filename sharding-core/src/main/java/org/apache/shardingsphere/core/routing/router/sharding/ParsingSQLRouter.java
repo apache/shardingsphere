@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.core.routing.router.sharding;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
@@ -29,8 +30,6 @@ import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.SQLParsingEngine;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Conditions;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -50,10 +49,10 @@ import org.apache.shardingsphere.core.spi.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.util.SQLLogger;
 import org.apache.shardingsphere.spi.hook.ParsingHook;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding router with parse.
@@ -102,12 +101,19 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (generatedKey.isPresent()) {
             setGeneratedKeys(result, generatedKey.get());
         }
-        if (sqlStatement instanceof SelectStatement && isNeedMergeShardingValues((SelectStatement) sqlStatement)) {
-            checkSubqueryShardingValues(sqlStatement, sqlStatement.getRouteConditions(), shardingConditions);
+        boolean needMerge = false;
+        if (sqlStatement instanceof SelectStatement) {
+            needMerge = isNeedMergeShardingValues((SelectStatement) sqlStatement);
+        }
+        if (needMerge) {
+            checkSubqueryShardingValues(result, sqlStatement, sqlStatement.getRouteConditions(), shardingConditions);
             mergeShardingValues(shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
         result.getRouteUnits().addAll(rewrite(logicSQL, parameters, sqlStatement, routingResult));
+        if (needMerge) {
+            Preconditions.checkState(1 == result.getRouteUnits().size(), "Must have one sharding with subquery.");
+        }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
         }
@@ -124,7 +130,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return !selectStatement.getSubqueryConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(selectStatement.getTables().getTableNames()).isEmpty();
     }
     
-    private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final Conditions conditions, final ShardingConditions shardingConditions) {
+    private void checkSubqueryShardingValues(final SQLRouteResult sqlRouteResult, final SQLStatement sqlStatement, final Conditions conditions, final ShardingConditions shardingConditions) {
         for (String each : sqlStatement.getTables().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManagerHolder.getDatabaseShardingValues(each).isEmpty()
@@ -132,39 +138,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
                 return;
             }
         }
-        Preconditions.checkState(!shardingConditions.getShardingConditions().isEmpty(), "Must have sharding column with subquery.");
-        Preconditions.checkState(isShardingOperatorAllEqual(conditions), "Only support sharding by '=' with subquery.");
-        Preconditions.checkState(isListShardingValue(shardingConditions), "Only support sharding by '=' with subquery.");
+        Preconditions.checkState(null != shardingConditions.getShardingConditions() && !shardingConditions.getShardingConditions().isEmpty(), "Must have sharding column with subquery.");
         if (shardingConditions.getShardingConditions().size() > 1) {
             Preconditions.checkState(isSameShardingCondition(shardingConditions), "Sharding value must same with subquery.");
         }
-    }
-    
-    private boolean isShardingOperatorAllEqual(final Conditions conditions) {
-        for (AndCondition each : conditions.getOrCondition().getAndConditions()) {
-            if (!isShardingOperatorAllEqual(each)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isShardingOperatorAllEqual(final AndCondition andCondition) {
-        for (Condition each : andCondition.getConditions()) {
-            if (ShardingOperator.EQUAL != each.getOperator()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isListShardingValue(final ShardingConditions shardingConditions) {
-        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-            if (!isListShardingValue(each)) {
-                return false;
-            }
-        }
-        return true;
     }
     
     private boolean isListShardingValue(final ShardingCondition shardingCondition) {

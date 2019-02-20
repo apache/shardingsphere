@@ -24,6 +24,7 @@ import io.netty.channel.ChannelId;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
@@ -38,15 +39,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLFrontendHandlerTest {
+public final class MySQLFrontendEngineTest {
     
-    private MySQLFrontendHandler mysqlFrontendHandler;
+    private MySQLFrontendEngine mysqlFrontendEngine;
     
     @Mock
     private ChannelHandlerContext context;
@@ -57,17 +59,12 @@ public final class MySQLFrontendHandlerTest {
         Field field = MySQLConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
         field.set(MySQLConnectionIdGenerator.getInstance(), 0);
-        mysqlFrontendHandler = new MySQLFrontendHandler();
+        mysqlFrontendEngine = new MySQLFrontendEngine();
     }
     
     @Test
     public void assertHandshake() {
-        Channel channel = mock(Channel.class);
-        ChannelId channelId = mock(ChannelId.class);
-        when(channelId.asShortText()).thenReturn("1");
-        when(channel.id()).thenReturn(channelId);
-        when(context.channel()).thenReturn(channel);
-        mysqlFrontendHandler.handshake(context);
+        mysqlFrontendEngine.handshake(context, mock(BackendConnection.class));
         verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
     
@@ -75,7 +72,7 @@ public final class MySQLFrontendHandlerTest {
     public void assertAuthWhenLoginSuccess() throws ReflectiveOperationException {
         Authentication authentication = new Authentication("", "");
         setAuthentication(authentication);
-        mysqlFrontendHandler.auth(context, mock(ByteBuf.class));
+        assertTrue(mysqlFrontendEngine.auth(context, mock(ByteBuf.class), mock(BackendConnection.class)));
         verify(context).writeAndFlush(isA(MySQLOKPacket.class));
     }
     
@@ -83,7 +80,7 @@ public final class MySQLFrontendHandlerTest {
     public void assertAuthWhenLoginFailure() throws ReflectiveOperationException {
         Authentication authentication = new Authentication("root", "root");
         setAuthentication(authentication);
-        mysqlFrontendHandler.auth(context, mock(ByteBuf.class));
+        assertTrue(mysqlFrontendEngine.auth(context, mock(ByteBuf.class), mock(BackendConnection.class)));
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
     
@@ -94,7 +91,7 @@ public final class MySQLFrontendHandlerTest {
         when(channel.id()).thenReturn(channelId);
         when(context.channel()).thenReturn(channel);
         setTransactionType();
-        mysqlFrontendHandler.executeCommand(context, mock(ByteBuf.class));
+        mysqlFrontendEngine.executeCommand(context, mock(ByteBuf.class), mock(BackendConnection.class));
     }
     
     private void setAuthentication(final Object value) throws ReflectiveOperationException {

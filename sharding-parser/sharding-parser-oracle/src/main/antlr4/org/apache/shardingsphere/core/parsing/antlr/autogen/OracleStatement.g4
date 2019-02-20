@@ -3,13 +3,13 @@ grammar OracleStatement;
 import OracleKeyword, Keyword, Symbol, OracleBase, OracleDDLStatement, OracleTCLStatement, OracleDCLStatement;
 
 execute
-    : (createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
+    : (createTable
     | alterTable
     | dropTable
     | truncateTable
+    | createIndex
+    | dropIndex
+    | alterIndex
     | commit
     | rollback
     | setTransaction

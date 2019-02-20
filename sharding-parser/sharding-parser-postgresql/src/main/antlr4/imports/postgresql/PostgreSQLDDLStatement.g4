@@ -7,11 +7,11 @@ createIndex
     ;
 
 dropIndex
-    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexNames
+    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
     ;
 
 alterIndex
-    : alterIndexName renameIndex | alterIndexDependsOnExtension | alterIndexSetTableSpace
+    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
     ;
 
 createTable
@@ -19,7 +19,7 @@ createTable
     ;
 
 alterTable
-    : alterTableNameWithAsterisk (alterTableActions | renameColumn | renameConstraint) | alterTableNameExists renameTable
+    : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification
     ;
 
 truncateTable
@@ -27,23 +27,23 @@ truncateTable
     ;
 
 dropTable
-    : DROP TABLE (IF EXISTS)? tableNames
+    : DROP TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
     ;
 
 alterIndexName
     : ALTER INDEX (IF EXISTS)? indexName
     ;
 
-renameIndex
+renameIndexSpecification
     : RENAME TO indexName
     ;
 
 alterIndexDependsOnExtension
-    : ALTER INDEX indexName DEPENDS ON EXTENSION extensionName
+    : ALTER INDEX indexName DEPENDS ON EXTENSION ignoredIdentifier_
     ;
 
 alterIndexSetTableSpace
-    : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY rowNames)?
+    : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY ignoredIdentifiers_)?
     ;
 
 tableNameParts
@@ -83,46 +83,46 @@ alterTableActions
     ;
 
 alterTableAction
-    : addColumn
-    | dropColumn
-    | modifyColumn
-    | addConstraint
-    | ALTER CONSTRAINT constraintName constraintOptionalParam
-    | VALIDATE CONSTRAINT constraintName
-    | DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?
-    | (DISABLE | ENABLE) TRIGGER (triggerName | ALL | USER)?
-    | ENABLE (REPLICA | ALWAYS) TRIGGER triggerName
-    | (DISABLE | ENABLE) RULE rewriteRuleName
-    | ENABLE (REPLICA | ALWAYS) RULE rewriteRuleName
+    : addColumnSpecification
+    | dropColumnSpecification
+    | modifyColumnSpecification
+    | addConstraintSpecification
+    | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
+    | VALIDATE CONSTRAINT ignoredIdentifier_
+    | DROP CONSTRAINT (IF EXISTS)? ignoredIdentifier_ (RESTRICT | CASCADE)?
+    | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
+    | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
+    | (DISABLE | ENABLE) RULE ignoredIdentifier_
+    | ENABLE (REPLICA | ALWAYS) RULE ignoredIdentifier_
     | (DISABLE | ENABLE | (NO? FORCE)) ROW LEVEL SECURITY
     | CLUSTER ON indexName
     | SET WITHOUT CLUSTER
     | SET (WITH | WITHOUT) OIDS
-    | SET TABLESPACE tablespaceName
+    | SET TABLESPACE ignoredIdentifier_
     | SET (LOGGED | UNLOGGED)
     | SET LP_ storageParameterWithValue (COMMA_ storageParameterWithValue)* RP_
     | RESET LP_ storageParameter (COMMA_ storageParameter)* RP_
     | INHERIT tableName
     | NO INHERIT tableName
-    | OF typeName
+    | OF dataTypeName_
     | NOT OF
-    | OWNER TO (ownerName | CURRENT_USER | SESSION_USER)
+    | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
     ;
 
 tableConstraintUsingIndex
-    : (CONSTRAINT constraintName)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
+    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
-addColumn
+addColumnSpecification
     : ADD COLUMN? (IF NOT EXISTS)? columnDefinition
     ;
 
-dropColumn
+dropColumnSpecification
     : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
     ;
 
-modifyColumn
+modifyColumnSpecification
     : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
     | alterColumn SET DEFAULT expr
     | alterColumn DROP DEFAULT
@@ -152,16 +152,16 @@ attributeOption
     : ID EQ_ simpleExpr
     ;
 
-addConstraint
+addConstraintSpecification
     : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
 
-renameColumn
+renameColumnSpecification
     : RENAME COLUMN? columnName TO columnName
     ;
 
 renameConstraint
-    : RENAME CONSTRAINT constraintName TO constraintName
+    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
     ;
 
 storageParameterWithValue
@@ -176,7 +176,7 @@ alterTableNameExists
     : ALTER TABLE (IF EXISTS)? tableName
     ;
 
-renameTable
+renameTableSpecification
     : RENAME TO tableName
     ;
 
@@ -190,11 +190,11 @@ tableConstraint
 
 tableConstraintOption
     : checkOption
-    | UNIQUE columnList indexParameters
-    | primaryKey columnList indexParameters
-    | FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
+    | UNIQUE columnNames indexParameters
+    | primaryKey columnNames indexParameters
+    | FOREIGN KEY columnNames REFERENCES tableName columnNames (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
     ;
 
 excludeElement
-    : (columnName | expr) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
+    : (columnName | expr) ignoredIdentifier_? (ASC | DESC)? (NULLS (FIRST | LAST))?
     ;

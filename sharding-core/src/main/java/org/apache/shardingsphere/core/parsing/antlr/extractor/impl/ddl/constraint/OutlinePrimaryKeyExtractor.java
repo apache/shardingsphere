@@ -39,7 +39,7 @@ public final class OutlinePrimaryKeyExtractor implements OptionalSQLSegmentExtra
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> columnListNode = ExtractorUtils.findFirstChildNode(primaryKeyNode.get().getParent().getParent(), RuleName.COLUMN_LIST);
+        Optional<ParserRuleContext> columnListNode = ExtractorUtils.findFirstChildNode(primaryKeyNode.get().getParent().getParent(), RuleName.COLUMN_NAMES);
         if (!columnListNode.isPresent()) {
             return Optional.absent();
         }

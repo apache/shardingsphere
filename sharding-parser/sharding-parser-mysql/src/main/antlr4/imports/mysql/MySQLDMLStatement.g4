@@ -3,27 +3,31 @@ grammar MySQLDMLStatement;
 import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, MySQLBase, BaseRule, DataType;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName partitionClause? (setClause | columnClause) onDuplicateClause?
-    ;
-
-columnClause
-    : columnList? (valueClause | select)
-    ;
-
-valueClause
-    : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | selectClause) onDuplicateKeyClause?
     ;
 
 setClause
     : SET assignmentList
     ;
 
-onDuplicateClause
+columnClause
+    : columnNames? valueClause
+    ;
+
+valueClause
+    : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
+    ;
+
+selectClause
+    : columnNames? select
+    ;
+
+onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignmentList
     ;
 
 update
-    : updateClause setClause whereClause? orderByClause? limitClause?
+    : updateClause setClause whereClause?
     ;
 
 updateClause
@@ -31,15 +35,15 @@ updateClause
     ;
 
 delete
-    : deleteClause whereClause? orderByClause? limitClause?
+    : deleteClause whereClause?
     ;
 
 deleteClause
-    : DELETE deleteSpec (fromMulti | fromSingle) 
+    : DELETE LOW_PRIORITY? QUICK? IGNORE? (fromMulti | fromSingle) 
     ;
 
 fromSingle
-    : FROM tableName partitionClause?
+    : FROM tableName (PARTITION ignoredIdentifiers_)?
     ;
 
 fromMulti
@@ -52,8 +56,4 @@ fromMultiTables
 
 fromMultiTable
     : tableName DOT_ASTERISK_?
-    ;
-    
-deleteSpec
-    : LOW_PRIORITY? | QUICK? | IGNORE?
     ;

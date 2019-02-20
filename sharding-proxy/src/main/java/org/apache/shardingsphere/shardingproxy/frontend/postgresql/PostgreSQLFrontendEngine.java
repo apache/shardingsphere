@@ -21,9 +21,10 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
-import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
@@ -33,12 +34,12 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.hands
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 
 /**
- * PostgreSQL frontend handler.
+ * PostgreSQL frontend engine.
  *
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class PostgreSQLFrontendHandler extends FrontendHandler {
+public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;
     
@@ -47,18 +48,21 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
     private static final String DATABASE_NAME_KEYWORD = "database";
     
     @Override
-    protected void handshake(final ChannelHandlerContext context) {
-        int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
-        ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
-        getBackendConnection().setConnectionId(connectionId);
+    public String getDatabaseType() {
+        return DatabaseType.PostgreSQL.name();
     }
     
     @Override
-    protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
+    public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
+        int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
+        backendConnection.setConnectionId(connectionId);
+    }
+    
+    @Override
+    public boolean auth(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
         if (SSL_REQUEST_PAYLOAD_LENGTH == message.markReaderIndex().readInt() && SSL_REQUEST_CODE == message.readInt()) {
-            setAuthorized(false);
             context.writeAndFlush(new PostgreSQLSSLNegativePacket());
-            return;
+            return false;
         }
         message.resetReaderIndex();
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
@@ -66,26 +70,18 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
             String databaseName = postgreSQLComStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
             if (!Strings.isNullOrEmpty(databaseName) && !GlobalRegistry.getInstance().schemaExists(databaseName)) {
                 // TODO send an error message
-                return;
+                return true;
             }
-            getBackendConnection().setCurrentSchema(databaseName);
+            backendConnection.setCurrentSchema(databaseName);
             // TODO send a md5 authentication request message
             context.write(new PostgreSQLAuthenticationOKPacket(true));
             context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
+            return true;
         }
     }
     
     @Override
-    protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, this));
-    }
-    
-    @Override
-    public void channelWritabilityChanged(final ChannelHandlerContext context) {
-        if (context.channel().isWritable()) {
-            synchronized (this) {
-                this.notifyAll();
-            }
-        }
+    public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
+        CommandExecutorSelector.getExecutor(backendConnection.getTransactionType(), context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
     }
 }
