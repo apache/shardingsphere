@@ -322,10 +322,7 @@ public final class SQLRewriteEngine {
         List<Comparable<?>> encryptAssistedColumnValues = shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken)) : new LinkedList<Comparable<?>>();
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
         fillParameters(encryptColumnToken, encryptAssistedColumnValues);
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            return getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues);
-        }
-        return getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues);
+        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues) : getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues);
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
