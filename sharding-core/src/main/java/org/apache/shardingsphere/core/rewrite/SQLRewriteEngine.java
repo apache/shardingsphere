@@ -397,10 +397,7 @@ public final class SQLRewriteEngine {
     }
     
     private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
-        String result = getEncryptAssistedColumnName(encryptColumnToken);
-        if (result != null)
-            return result;
-        return encryptColumnToken.getColumn().getName();
+        return getShardingEncryptor(encryptColumnToken) instanceof ShardingQueryAssistedEncryptor ? getEncryptAssistedColumnName(encryptColumnToken) : encryptColumnToken.getColumn().getName();
     }
     
     private String getEncryptAssistedColumnName(final EncryptColumnToken encryptColumnToken) {
