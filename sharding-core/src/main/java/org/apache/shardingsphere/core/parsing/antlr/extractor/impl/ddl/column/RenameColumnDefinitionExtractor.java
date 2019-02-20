@@ -36,7 +36,7 @@ public final class RenameColumnDefinitionExtractor implements OptionalSQLSegment
     
     @Override
     public Optional<RenameColumnSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
+        Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN_SPECIFICATION);
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
         }

@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RuleName {
     
+    TABLE_NAME("TableName"),
+    
     COLUMN_DEFINITION("ColumnDefinition"),
     
     COLUMN_NAME("ColumnName"),
@@ -41,35 +43,35 @@ public enum RuleName {
     
     COLUMN_NAMES("ColumnNames"),
     
-    ADD_COLUMN("AddColumn"),
-    
-    CHANGE_COLUMN("ChangeColumn"),
-    
-    DROP_COLUMN("DropColumn"),
-    
-    MODIFY_COLUMN("ModifyColumn"),
-    
-    MODIFY_COL_PROPERTIES("ModifyColProperties"),
-    
-    RENAME_COLUMN("RenameColumn"),
-    
-    DROP_PRIMARY_KEY("DropPrimaryKey"),
-    
-    RENAME_TABLE("RenameTable"),
-    
-    TABLE_NAME("TableName"),
-    
-    ADD_INDEX("AddIndex"),
-    
-    RENAME_INDEX("RenameIndex"),
-    
     INDEX_NAME("IndexName"),
     
-    DROP_INDEX_DEF("DropIndexDef"),
+    ADD_COLUMN_SPECIFICATION("AddColumnSpecification"),
     
-    ADD_CONSTRAINT("AddConstraint"),
+    CHANGE_COLUMN_SPECIFICATION("ChangeColumnSpecification"),
+    
+    DROP_COLUMN_SPECIFICATION("DropColumnSpecification"),
+    
+    MODIFY_COLUMN_SPECIFICATION("ModifyColumnSpecification"),
+    
+    RENAME_COLUMN_SPECIFICATION("RenameColumnSpecification"),
+    
+    DROP_PRIMARY_KEY_SPECIFICATION("DropPrimaryKeySpecification"),
+    
+    RENAME_TABLE_SPECIFICATION("RenameTableSpecification"),
+    
+    // TODO hongjun: parse AddIndex
+    ADD_INDEX_SPECIFICATION("AddIndexSpecification"),
+    
+    RENAME_INDEX_SPECIFICATION("RenameIndexSpecification"),
+    
+    DROP_INDEX_SPECIFICATION("DropIndexSpecification"),
+    
+    // TODO hongjun: parse AddConstraint
+    ADD_CONSTRAINT_SPECIFICATION("AddConstraintSpecification"),
     
     DROP_CONSTRAINT_CLAUSE("DropConstraintClause"),
+    
+    MODIFY_COL_PROPERTIES("ModifyColProperties"),
     
     SELECT_CLAUSE("SelectClause"),
     
@@ -149,7 +151,7 @@ public enum RuleName {
     
     ASSIGNMENT("Assignment"),
     
-    ON_DUPLICATE_CLAUSE("OnDuplicateClause");
+    ON_DUPLICATE_KEY_CLAUSE("OnDuplicateKeyClause");
     
     private final String name;
     

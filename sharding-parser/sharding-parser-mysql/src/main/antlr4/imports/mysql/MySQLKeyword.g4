@@ -849,3 +849,19 @@ WRITE
 ZEROFILL
     : Z E R O F I L L
     ;
+
+VISIBLE
+    : V I S I B L E
+    ;
+
+INVISIBLE
+    : I N V I S I B L E
+    ;
+
+INSTANT
+    : I N S T A N T
+    ;
+
+ENFORCED
+    : E N F O R C E D
+    ;

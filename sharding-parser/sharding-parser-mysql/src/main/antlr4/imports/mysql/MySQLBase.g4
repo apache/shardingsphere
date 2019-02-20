@@ -10,14 +10,6 @@ tableName
     : ID | ID DOT_ASTERISK_ | ASTERISK_
     ;
 
-indexOption
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
-    ;
-
-indexType
-    : USING (BTREE | HASH)
-    ;
-
 assignmentValueList
     : LP_ assignmentValues RP_
     ;
@@ -94,30 +86,10 @@ assignment
     : columnName EQ_ assignmentValue
     ;
 
-fromClause
-    : FROM tableReferences
-    ;
-
 tableReferences
     : matchNone
     ;
 
 whereClause
     : WHERE expr
-    ;
-
-groupByClause 
-    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
-    ;
-
-havingClause
-    : HAVING expr
-    ;
-
-limitClause
-    : LIMIT (rangeItem_ (COMMA_ rangeItem_)? | rangeItem_ OFFSET rangeItem_)
-    ;
-
-rangeItem_
-    : number | question
     ;

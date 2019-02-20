@@ -35,7 +35,7 @@ public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
+        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE_SPECIFICATION);
         if (!renameTableNode.isPresent()) {
             return Optional.absent();
         }

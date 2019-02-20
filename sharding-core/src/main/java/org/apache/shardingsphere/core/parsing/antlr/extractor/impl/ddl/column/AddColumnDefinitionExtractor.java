@@ -40,7 +40,7 @@ public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtract
     @Override
     public final Collection<AddColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<AddColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN_SPECIFICATION)) {
             result.addAll(extractAddColumnDefinitions(each));
         }
         return result;

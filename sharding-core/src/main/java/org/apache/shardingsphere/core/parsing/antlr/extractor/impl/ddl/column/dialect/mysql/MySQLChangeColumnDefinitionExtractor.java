@@ -38,7 +38,7 @@ public final class MySQLChangeColumnDefinitionExtractor implements OptionalSQLSe
     
     @Override
     public Optional<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> changeColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
+        Optional<ParserRuleContext> changeColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN_SPECIFICATION);
         if (!changeColumnNode.isPresent()) {
             return Optional.absent();
         }

@@ -11,19 +11,11 @@ createDefinitions_
     ;
 
 createDefinition_
-    : columnDefinition | constraintDefinition | indexDefinition | checkExpr_
-    ;
-
-checkExpr_
-    : CHECK expr
-    ;
-
-createLike_
-    : LIKE tableName | LP_ LIKE tableName RP_
+    : columnDefinition | indexDefinition_ | constraintDefinition_ | checkConstraintDefinition_
     ;
 
 columnDefinition
-    : columnName dataType (dataTypeOption_* | dataTypeGenerated_?)
+    : columnName dataType (inlineDataType_* | generatedDataType_*)
     ;
 
 dataType
@@ -31,7 +23,7 @@ dataType
     ;
 
 dataTypeName_
-    : ID ID | ID
+    : ID ID?
     ;
 
 characterSet_
@@ -39,76 +31,77 @@ characterSet_
     ;
 
 collateClause_
-    : COLLATE EQ_? collationName_
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
 
-collationName_
-    : STRING_ | ignoredIdentifier_
-    ;
-
-dataTypeOption_
-    : dataTypeGeneratedOption_
-    | DEFAULT? defaultValue_
+inlineDataType_
+    : commonDataTypeOption_
     | AUTO_INCREMENT
+    | DEFAULT (literal | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
-    | referenceDefinition_
     ;
 
-dataTypeGeneratedOption_
-    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING_
+generatedDataType_
+    : commonDataTypeOption_
+    | (GENERATED ALWAYS)? AS expr
+    | (VIRTUAL | STORED)
     ;
 
-defaultValue_
-    : NULL | NUMBER_ | STRING_ | currentTimestampType_ (ON UPDATE currentTimestampType_)? | ON UPDATE currentTimestampType_
-    ;
-
-currentTimestampType_
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength?
+commonDataTypeOption_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
     ;
 
 referenceDefinition_
-    : REFERENCES tableName LP_ keyParts_ RP_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType_*
-    ;
-
-referenceType_
-    : ON (UPDATE | DELETE) referenceOption_
+    : REFERENCES tableName keyParts_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (UPDATE | DELETE) referenceOption_)*
     ;
 
 referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-dataTypeGenerated_
-    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption_*
+indexDefinition_
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
-constraintDefinition
+indexOption_
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType_ | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
+    ;
+
+indexType_
+    : USING (BTREE | HASH)
+    ;
+
+constraintDefinition_
     : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
 primaryKeyOption_
-    : primaryKey indexType? columnNames indexOption*
+    : primaryKey indexType_? columnNames indexOption_*
     ;
 
 uniqueOption_
-    : UNIQUE (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
+    : UNIQUE (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
 foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
     ;
 
-indexDefinition
-    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType? LP_ keyParts_ RP_ indexOption*
-    ;
-
 keyParts_
-    : keyPart_ (COMMA_ keyPart_)*
+    : LP_ keyPart_ (COMMA_ keyPart_)* RP_
     ;
 
 keyPart_
     : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
+    ;
+
+checkConstraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
+    ;
+
+createLike_
+    : LIKE tableName | LP_ LIKE tableName RP_
     ;
 
 alterTable
@@ -121,28 +114,34 @@ alterSpecifications_
 
 alterSpecification_
     : tableOptions_
-    | addColumn
-    | addIndex
-    | addConstraint
-    | ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
-    | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
-    | changeColumn
+    | addColumnSpecification
+    | addIndexSpecification
+    | addConstraintSpecification
+    | ADD checkConstraintDefinition_
+    | DROP CHECK ignoredIdentifier_
+    | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
+    | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
+    | ALTER COLUMN? columnName (SET DEFAULT literal | DROP DEFAULT)
+    | ALTER INDEX indexName (VISIBLE | INVISIBLE)
+    | changeColumnSpecification
     | DEFAULT? characterSet_ collateClause_?
     | CONVERT TO characterSet_ collateClause_?
     | (DISABLE | ENABLE) KEYS
     | (DISCARD | IMPORT_) TABLESPACE
-    | dropColumn
-    | dropIndexDef
-    | dropPrimaryKey
+    | dropColumnSpecification
+    | dropIndexSpecification
+    | dropPrimaryKeySpecification
     | DROP FOREIGN KEY ignoredIdentifier_
     | FORCE
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
-    | modifyColumn
+    | modifyColumnSpecification
+    // TODO hongjun investigate ORDER BY col_name [, col_name] ...
     | ORDER BY columnName (COMMA_ columnName)*
-    | renameIndex
-    | renameTable
+    | renameColumnSpecification
+    | renameIndexSpecification
+    | renameTableSpecification
     | (WITHOUT | WITH) VALIDATION
-    | ADD PARTITION partitionDefinitions_
+    | ADD PARTITION LP_ partitionDefinition_ RP_
     | DROP PARTITION ignoredIdentifiers_
     | DISCARD PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
     | IMPORT_ PARTITION (ignoredIdentifiers_ | ALL) TABLESPACE
@@ -157,62 +156,6 @@ alterSpecification_
     | REPAIR PARTITION (ignoredIdentifiers_ | ALL)
     | REMOVE PARTITIONING
     | UPGRADE PARTITIONING
-    ;
-
-singleColumn
-    : columnDefinition firstOrAfterColumn?
-    ;
-
-firstOrAfterColumn
-    : FIRST | AFTER columnName
-    ;
-
-multiColumn
-    : LP_ columnDefinition (COMMA_ columnDefinition)* RP_
-    ;
-
-addConstraint
-    : ADD constraintDefinition
-    ;
-
-addIndex
-    : ADD indexDefinition
-    ;
-
-addColumn
-    : ADD COLUMN? (singleColumn | multiColumn)
-    ;
-
-changeColumn
-    : changeColumnOp columnName columnDefinition firstOrAfterColumn?
-    ;
-
-changeColumnOp
-    : CHANGE COLUMN?
-    ;
-
-dropColumn
-    : DROP COLUMN? columnName
-    ;
-
-dropIndexDef
-    : DROP (INDEX | KEY) indexName
-    ;
-
-dropPrimaryKey
-    : DROP primaryKey
-    ;
-
-modifyColumn
-    : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
-    ;
-
-renameIndex
-    : RENAME (INDEX | KEY) indexName TO indexName
-    ;
-
-renameTable
-    : RENAME (TO | AS)? tableName
     ;
 
 tableOptions_
@@ -242,35 +185,70 @@ tableOption_
     | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
     | STATS_SAMPLE_PAGES EQ_? NUMBER_
     | TABLESPACE ignoredIdentifier_ (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_? tableNames_
+    | UNION EQ_? LP_ tableName (COMMA_ tableName)* RP_
     ;
 
-tableNames_
-    : LP_ tableName (COMMA_ tableName)* RP_
+addColumnSpecification
+    : ADD COLUMN? (columnDefinition firstOrAfterColumn? | LP_ columnDefinition (COMMA_ columnDefinition)* RP_)
     ;
 
-partitionOptions_
-    : PARTITION BY (linearPartition_ | rangeOrListPartition_) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition_ (SUBPARTITIONS NUMBER_)?)? (LP_ partitionDefinitions_ RP_)?
+firstOrAfterColumn
+    : FIRST | AFTER columnName
     ;
 
-linearPartition_
-    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNames)
+addIndexSpecification
+    : ADD indexDefinition_
     ;
 
-yearFunctionExpr_
-    : LP_ YEAR expr RP_
+addConstraintSpecification
+    : ADD constraintDefinition_
     ;
 
-rangeOrListPartition_
-    : (RANGE | LIST) (expr | COLUMNS columnNames)
+changeColumnSpecification
+    : CHANGE COLUMN? columnName columnDefinition firstOrAfterColumn?
+    ;
+
+dropColumnSpecification
+    : DROP COLUMN? columnName
+    ;
+
+dropIndexSpecification
+    : DROP (INDEX | KEY) indexName
+    ;
+
+dropPrimaryKeySpecification
+    : DROP primaryKey
+    ;
+
+modifyColumnSpecification
+    : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
+    ;
+
+// TODO hongjun: parse renameColumnSpecification and refresh meta, but throw exception if is sharding column
+renameColumnSpecification
+    : RENAME COLUMN columnName TO columnName
+    ;
+
+// TODO hongjun: should support renameIndexSpecification on mysql
+renameIndexSpecification
+    : RENAME (INDEX | KEY) indexName TO indexName
+    ;
+
+// TODO hongjun: parse renameTableSpecification and refresh meta, but throw exception if is sharding table
+renameTableSpecification
+    : RENAME (TO | AS)? tableName
     ;
 
 partitionDefinitions_
-    : partitionDefinition_ (COMMA_ partitionDefinition_)*
+    : LP_ partitionDefinition_ (COMMA_ partitionDefinition_)* RP_
     ;
 
 partitionDefinition_
-    : PARTITION ignoredIdentifier_ (VALUES (lessThanPartition_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    : PARTITION ignoredIdentifier_ (VALUES (LESS THAN lessThanValue_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    ;
+
+lessThanValue_
+    : LP_ (expr | assignmentValues) RP_ | MAXVALUE
     ;
 
 partitionDefinitionOption_
@@ -281,10 +259,6 @@ partitionDefinitionOption_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
     | TABLESPACE EQ_? ignoredIdentifier_
-    ;
-
-lessThanPartition_
-    : LESS THAN (LP_ (expr | assignmentValues) RP_ | MAXVALUE)
     ;
 
 subpartitionDefinition_
@@ -300,7 +274,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
+    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
     ;
 
 dropIndex

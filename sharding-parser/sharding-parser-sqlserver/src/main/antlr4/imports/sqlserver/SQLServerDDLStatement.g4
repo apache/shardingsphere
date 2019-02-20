@@ -22,7 +22,7 @@ alterTable
     : alterTableOp
     (
         alterColumn
-        | addColumn
+        | addColumnSpecification
         | alterDrop
         | alterCheckConstraint
         | alterTrigger
@@ -234,10 +234,10 @@ alterTableOp
     ;
 
 alterColumn
-    : modifyColumn
+    : modifyColumnSpecification
     ;
 
-modifyColumn
+modifyColumnSpecification
     : alterColumnOp dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
     ;
 
@@ -245,7 +245,7 @@ alterColumnOp
     : ALTER COLUMN columnName
     ;
 
-addColumn
+addColumnSpecification
     : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOption (COMMA_ alterColumnAddOption)* | (columnNameGeneratedClause COMMA_ periodClause| periodClause COMMA_ columnNameGeneratedClause))
     ;
 
@@ -282,8 +282,8 @@ alterDrop
     : DROP
     (
         alterTableDropConstraint
-        | dropColumn
-        | dropIndexDef
+        | dropColumnSpecification
+        | dropIndexSpecification
         | PERIOD FOR SYSTEM_TIME
     )
     ;
@@ -304,11 +304,11 @@ dropConstraintOption
     : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ (ON | OFF) | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))
     ;
 
-dropColumn
+dropColumnSpecification
     : COLUMN (IF EXISTS)? columnName (COMMA_ columnName)*
     ;
 
-dropIndexDef
+dropIndexSpecification
     : INDEX (IF EXISTS)? indexName (COMMA_ indexName)*
     ;
 
