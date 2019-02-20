@@ -15,32 +15,35 @@
  * limitations under the License.
  */
 
-package io.shardingsphere.example.repository.api.senario;
+package io.shardingsphere.example.spring.boot.jpa.orche;
 
-import io.shardingsphere.example.repository.api.service.CommonService;
+import org.junit.AfterClass;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public final class CommonServiceScenario implements Scenario {
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+import java.lang.reflect.Method;
 
-//    private final DataSource dataSource;
+public abstract class SpringBootBaseTest {
     
-    private final CommonService commonService;
-    
-    public CommonServiceScenario(final CommonService commonService) {
-//        this.dataSource = dataSource;
-        this.commonService = commonService;
+    private static DataSource staticDataSource;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @PostConstruct
+    public void beforeInit() {
+        staticDataSource = dataSource;
     }
-    
-    public CommonService getCommonService() {
-        return commonService;
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        closeDataSource(staticDataSource);
     }
-    
-    @Override
-    public void process() {
-        try {
-            commonService.initEnvironment();
-            commonService.processSuccess();
-        } finally {
-            commonService.cleanEnvironment();
-        }
+
+    private static void closeDataSource(final DataSource dataSource) throws Exception {
+        Method method = dataSource.getClass().getMethod("close");
+        method.setAccessible(true);
+        method.invoke(dataSource);
     }
 }

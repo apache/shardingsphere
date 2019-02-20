@@ -33,11 +33,14 @@ public final class TransactionServiceScenario implements Scenario {
     
     @Override
     public void process() {
-        transactionService.initEnvironment();
-        transactionService.processSuccessWithLocal();
-        transactionService.processSuccessWithXA();
-        transactionService.processFailureWithLocal();
-        transactionService.processFailureWithXA();
-        transactionService.cleanEnvironment();
+        try {
+            transactionService.initEnvironment();
+            transactionService.processSuccessWithLocal();
+            transactionService.processSuccessWithXA();
+            transactionService.processFailureWithLocal();
+            transactionService.processFailureWithXA();
+        } finally {
+            transactionService.cleanEnvironment();
+        }
     }
 }

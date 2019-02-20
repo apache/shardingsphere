@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package io.shardingsphere.example.repository.api.senario;
+package io.shardingsphere.example.spring.boot.jpa.orche;
 
-import io.shardingsphere.example.repository.api.service.TransactionService;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 
-public final class AnnotationTractionServiceScenario extends AbstractTransactionScenario implements Scenario {
+@ComponentScan("io.shardingsphere.example.repository.jpa")
+@EntityScan(basePackages = "io.shardingsphere.example.repository.jpa.entity")
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
+public class SpringBootTestMain {
     
-    public AnnotationTractionServiceScenario(final TransactionService transactionService) {
-        super(transactionService);
-    }
-    
-    @Override
-    public void process() {
-        try {
-            getTransactionService().initEnvironment();
-            doInTransactionWithSuccess();
-            doInTransactionWithFailure();
-        } finally {
-            getTransactionService().cleanEnvironment();
-        }
+    public static void main(final String[] args) {
+        SpringApplication.run(SpringBootTestMain.class, args);
     }
 }
