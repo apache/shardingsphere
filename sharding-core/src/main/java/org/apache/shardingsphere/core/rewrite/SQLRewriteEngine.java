@@ -56,6 +56,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SchemaToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.EncryptUpdateItemColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
@@ -317,11 +318,11 @@ public final class SQLRewriteEngine {
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
-    private EncryptWhereColumnPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
+    private EncryptUpdateItemColumnPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
-        return new EncryptWhereColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), 
-                getPositionValues(Collections.singletonList(0), encryptColumnValues), getPlaceholderPositionsFromUpdateItem(encryptColumnToken), ShardingOperator.EQUAL);
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), 
+                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getPlaceholderPositionsFromUpdateItem(encryptColumnToken));
     }
     
     private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
@@ -418,13 +419,12 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private Collection<Integer> getPlaceholderPositionsFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        Collection<Integer> result = new LinkedList<>();
+    private int getPlaceholderPositionsFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            result.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
+            return ((SQLPlaceholderExpression) sqlExpression).getIndex();
         }
-        return result;
+        return -1;
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
