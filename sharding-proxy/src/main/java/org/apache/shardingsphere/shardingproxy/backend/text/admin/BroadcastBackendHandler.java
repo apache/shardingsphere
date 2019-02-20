@@ -55,7 +55,6 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     public CommandResponsePackets execute() {
         List<DatabasePacket> packets = new LinkedList<>();
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
-            backendConnection.setCurrentSchema(each);
             packets.addAll(databaseCommunicationEngineFactory.newTextProtocolInstance(
                     GlobalRegistry.getInstance().getLogicSchema(each), sequenceId, sql, backendConnection, databaseType).execute().getPackets());
         }

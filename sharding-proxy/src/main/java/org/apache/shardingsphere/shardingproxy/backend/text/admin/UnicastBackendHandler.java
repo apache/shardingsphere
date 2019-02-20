@@ -51,7 +51,6 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        backendConnection.setCurrentSchema(GlobalRegistry.getInstance().getSchemaNames().iterator().next());
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(
                 GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sequenceId, sql, backendConnection, databaseType);
         return databaseCommunicationEngine.execute();
