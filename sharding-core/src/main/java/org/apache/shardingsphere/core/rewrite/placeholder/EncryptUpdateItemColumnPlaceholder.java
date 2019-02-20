@@ -46,12 +46,10 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final int placeholderIndex;
     
-    private final ShardingOperator operator = ShardingOperator.EQUAL;
-    
     @Override
     public String toString() {
         if (Strings.isNullOrEmpty(assistedColumnName)) {
-            return -1 == placeholderIndex ? String.format("%s = \"%s\"", columnName, columnValue) : String.format("%s = ?", columnName);
+            return -1 == placeholderIndex ? String.format("%s = '%s'", columnName, columnValue) : String.format("%s = ?", columnName);
         }
         
     }
