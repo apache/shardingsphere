@@ -307,14 +307,15 @@ public final class SQLRewriteEngine {
         if (encryptColumnToken.isInWhere()) {
             List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, encryptCondition.get().getConditionValues(parameters));
             encryptParameters(encryptCondition.get().getPositionIndexMap(), encryptColumnValues);
+            EncryptColumnPlaceholder placeholder = new EncryptColumnPlaceholder((encryptColumnToken.getColumn().getTableName(),
+                    getEncryptColumnName(encryptColumnToken), getPositionValues(encryptCondition.get().getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.get().getPositionIndexMap().keySet(), encryptCondition.get().getOperator();
         } else {
             List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
-            encryptParameters(getPositionIndexes(encryptColumnToken, encryptCondition), encryptColumnValues);
+            encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
+            EncryptColumnPlaceholder placeholder = new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(),
+                    getEncryptColumnName(encryptColumnToken), getPositionValues(Collections.singletonList(0), encryptColumnValues), getPlaceholderPositionsFromUpdateItem(encryptColumnToken), ShardingOperator.EQUAL)
         }
-        
-        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), 
-                getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), 
-                getPlaceholderPositions(encryptColumnToken, encryptCondition), getShardingOperator(encryptColumnToken, encryptCondition)));
+        sqlBuilder.appendPlaceholder(););
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
     }
     
@@ -374,7 +375,7 @@ public final class SQLRewriteEngine {
         });
     }
     
-    private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken) {
+    private Map<Integer, Integer> getPositionIndexesFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         SQLExpression result = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (result instanceof SQLPlaceholderExpression) {
             return Collections.singletonMap(0, ((SQLPlaceholderExpression) result).getIndex());
@@ -404,13 +405,6 @@ public final class SQLRewriteEngine {
         return encryptColumnToken.getColumn().getName();
     }
     
-    private Collection<Integer> getValuePositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
-        if (encryptColumnToken.isInWhere()) {
-            return encryptCondition.getPositionValueMap().keySet();
-        }
-        return Collections.singletonList(0);
-    }
-    
     private Map<Integer, Comparable<?>> getPositionValues(final Collection<Integer> valuePositions, final List<Comparable<?>> encryptColumnValues) {
         Map<Integer, Comparable<?>> result = new LinkedHashMap<>();
         for (int each : valuePositions) {
@@ -419,23 +413,13 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private Collection<Integer> getPlaceholderPositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
-        if (encryptColumnToken.isInWhere()) {
-            return encryptCondition.getPositionIndexMap().keySet();
-        }
+    private Collection<Integer> getPlaceholderPositionsFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         Collection<Integer> result = new LinkedList<>();
         SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             result.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
         }
         return result;
-    }
-    
-    private ShardingOperator getShardingOperator(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
-        if (encryptColumnToken.isInWhere()) {
-            return encryptCondition.getOperator();
-        }
-        return ShardingOperator.EQUAL;
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
