@@ -426,10 +426,14 @@ public final class SQLRewriteEngine {
         if (encryptAssistedColumnValues.isEmpty()) {
             return;
         }
-        if (!(getShardingEncryptor(encryptColumnToken) instanceof ShardingQueryAssistedEncryptor)) {
+        if (!isUsingParameters(encryptColumnToken)) {
             return;
         }
         parameters.add(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
+    }
+    
+    private boolean isUsingParameters(final EncryptColumnToken encryptColumnToken) {
+        return ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn()) instanceof SQLPlaceholderExpression;
     }
     
     private int getEncryptAssistedParameterIndex(final EncryptColumnToken encryptColumnToken) {
