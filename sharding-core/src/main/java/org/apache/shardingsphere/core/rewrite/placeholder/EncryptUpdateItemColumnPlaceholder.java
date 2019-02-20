@@ -40,6 +40,24 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final int placeholderIndex;
     
+    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName) {
+        this.logicTableName = logicTableName;
+        this.columnName = columnName;
+        columnValue = null;
+        this.assistedColumnName = null;
+        assistedColumnValue = null;
+        placeholderIndex = -1;
+    }
+    
+    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final Comparable<?> columnValue) {
+        this.logicTableName = logicTableName;
+        this.columnName = columnName;
+        this.columnValue = columnValue;
+        this.assistedColumnName = null;
+        this.assistedColumnValue = null;
+        placeholderIndex = 0;
+    }
+    
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final String assistedColumnName) {
         this.logicTableName = logicTableName;
         this.columnName = columnName;
