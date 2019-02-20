@@ -321,8 +321,27 @@ public final class SQLRewriteEngine {
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
         List<Comparable<?>> encryptAssistedColumnValues = shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken)) : new LinkedList<Comparable<?>>();
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
+        fillParameters(encryptColumnToken, encryptAssistedColumnValues);
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            return getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues);
+        }
+        return getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues);
+    }
+    
+    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
+        if (encryptColumnValues.isEmpty()) {
+            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+        }
         return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), 
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getPlaceholderPositionFromUpdateItem(encryptColumnToken));
+                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
+    }
+    
+    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
+        if (encryptColumnValues.isEmpty()) {
+            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), getEncryptAssistedColumnName(encryptColumnToken));
+        }
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
+                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getEncryptAssistedColumnName(encryptColumnToken), encryptAssistedColumnValues.get(0));
     }
     
     private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
