@@ -318,10 +318,10 @@ public final class SQLRewriteEngine {
         if (1 == result.size()) {
             return result.iterator().next();
         }
-        return result.get(getEncryptColumnTokenIndex(encryptColumnToken));
+        return result.get(getEncryptConditionIndex(encryptColumnToken));
     }
     
-    private int getEncryptColumnTokenIndex(final EncryptColumnToken encryptColumnToken) {
+    private int getEncryptConditionIndex(final EncryptColumnToken encryptColumnToken) {
         List<SQLToken> result = new ArrayList<>(Collections2.filter(sqlTokens, new Predicate<SQLToken>() {
             
             @Override
