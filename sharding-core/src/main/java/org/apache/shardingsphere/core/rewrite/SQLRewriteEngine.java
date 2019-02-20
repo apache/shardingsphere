@@ -304,8 +304,8 @@ public final class SQLRewriteEngine {
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         Optional<Condition> encryptCondition = getEncryptCondition(encryptColumnToken);
         Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
-        EncryptColumnPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get()) 
-        sqlBuilder.appendPlaceholder();
+        EncryptColumnPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get()) : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken);
+        sqlBuilder.appendPlaceholder(result);
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
     }
     
