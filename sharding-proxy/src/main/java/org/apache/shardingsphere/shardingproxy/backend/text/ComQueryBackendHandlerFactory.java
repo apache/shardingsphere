@@ -39,6 +39,10 @@ import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBack
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Com query backend handler factory.
  *
@@ -53,9 +57,7 @@ public final class ComQueryBackendHandlerFactory {
     
     private static final String SET_AUTOCOMMIT_1 = "SET AUTOCOMMIT=1";
     
-    private static final String GUI_SET_NAMES = "SET NAMES";
-    
-    private static final String GUI_SHOW_VARIABLES = "SHOW VARIABLES LIKE";
+    private static final List<String> GUI_SQL = new ArrayList<>(Arrays.asList("SET NAMES", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION"));
     
     /**
      * Create new text protocol backend handler instance.
@@ -81,10 +83,13 @@ public final class ComQueryBackendHandlerFactory {
         return SQLType.DAL == sqlStatement.getType() ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
     }
     
-    private static TextProtocolBackendHandler createDALBackendHandler(
-            final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
-        if (null == backendConnection.getLogicSchema() && (sql.toUpperCase().startsWith(GUI_SET_NAMES) || sql.toUpperCase().startsWith(GUI_SHOW_VARIABLES))) {
-            return new GUICompatibilityBackendHandler();
+    private static TextProtocolBackendHandler createDALBackendHandler(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
+        if (null == backendConnection.getLogicSchema()) {
+            for (String each : GUI_SQL) {
+                if (sql.toUpperCase().startsWith(each)) {
+                    return new GUICompatibilityBackendHandler();
+                }
+            }
         }
         if (sqlStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sql, backendConnection);
