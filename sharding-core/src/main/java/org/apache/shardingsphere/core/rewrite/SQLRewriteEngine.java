@@ -334,9 +334,9 @@ public final class SQLRewriteEngine {
         return result.indexOf(encryptColumnToken);
     }
     
-    private List<Comparable<?>> getOriginalColumnValues(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+    private List<Comparable<?>> getOriginalColumnValues(final EncryptColumnToken encryptColumnToken, final Optional<Condition> encryptCondition) {
         if (encryptColumnToken.isInWhere()) {
-            return encryptCondition.getConditionValues(parameters);
+            return encryptCondition.get().getConditionValues(parameters);
         }
        return getOriginalColumnValuesFromUpdateItem(encryptColumnToken);
     }
@@ -355,8 +355,8 @@ public final class SQLRewriteEngine {
     }
     
     private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> originalColumnValues) {
-        final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), 
-                encryptColumnToken.getColumn().getName()).get();
+        final ShardingEncryptor shardingEncryptor = 
+                shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
                 
