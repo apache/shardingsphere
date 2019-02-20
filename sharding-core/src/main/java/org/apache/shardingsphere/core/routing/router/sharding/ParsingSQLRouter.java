@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.core.routing.router.sharding;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
@@ -49,10 +47,10 @@ import org.apache.shardingsphere.core.spi.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.util.SQLLogger;
 import org.apache.shardingsphere.spi.hook.ParsingHook;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Sharding router with parse.
