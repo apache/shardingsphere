@@ -22,7 +22,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngineFactory;
-import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendChannelInboundHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodecFactory;
 
