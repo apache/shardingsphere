@@ -7,7 +7,7 @@ select
     ;
 
 unionSelect
-    : selectExpression (UNION ALL? selectExpression)*
+    : selectExpression (UNION (ALL | DISTINCT)? selectExpression)*
     ;
 
 selectExpression
