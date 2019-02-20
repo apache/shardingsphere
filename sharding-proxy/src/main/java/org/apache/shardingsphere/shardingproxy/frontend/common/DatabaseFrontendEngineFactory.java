@@ -20,32 +20,33 @@ package org.apache.shardingsphere.shardingproxy.frontend.common;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandler;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLFrontendHandler;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 /**
- * Frontend handler factory.
+ * Database frontend engine factory.
  *
  * @author zhangliang
  * @author xiaoyu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FrontendHandlerFactory {
+public final class DatabaseFrontendEngineFactory {
+    
+    static {
+        NewInstanceServiceLoader.register(DatabaseFrontendEngine.class);
+    }
     
     /**
-     * Create frontend handler instance.
+     * Create new instance of database frontend engine.
      *
      * @param databaseType database type
-     * @return frontend handler instance
+     * @return new instance of database frontend engine
      */
-    public static FrontendHandler createFrontendHandlerInstance(final DatabaseType databaseType) {
-        switch (databaseType) {
-            case MySQL:
-                return new MySQLFrontendHandler();
-            case PostgreSQL:
-                return new PostgreSQLFrontendHandler();
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+    public static DatabaseFrontendEngine newInstance(final DatabaseType databaseType) {
+        for (DatabaseFrontendEngine each : NewInstanceServiceLoader.newServiceInstances(DatabaseFrontendEngine.class)) {
+            if (DatabaseType.valueFrom(each.getDatabaseType()) == databaseType) {
+                return each;
+            }
         }
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
 }

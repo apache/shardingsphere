@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -58,7 +57,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
     
     private final ByteBuf message;
     
-    private final FrontendHandler frontendHandler;
+    private final BackendConnection backendConnection;
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
@@ -67,7 +66,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
         rootInvokeHook.start();
         int connectionSize = 0;
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message);
-             BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
+             BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             PostgreSQLCommandPacket commandPacket = getCommandPacket(payload, backendConnection);
             Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
@@ -120,9 +119,9 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                synchronized (frontendHandler) {
+                synchronized (backendConnection) {
                     try {
-                        frontendHandler.wait();
+                        backendConnection.wait();
                     } catch (final InterruptedException ignored) {
                     }
                 }

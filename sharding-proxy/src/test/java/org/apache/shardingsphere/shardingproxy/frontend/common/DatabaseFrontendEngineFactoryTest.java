@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.shardingproxy.frontend.common;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandler;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendEngine;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class FrontendHandlerFactoryTest {
+public final class DatabaseFrontendEngineFactoryTest {
     
     @Test
-    public void assertCreateFrontendHandlerInstanceWithMySQL() {
-        assertThat(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL), instanceOf(MySQLFrontendHandler.class));
+    public void assertNewInstanceWithMySQL() {
+        assertThat(DatabaseFrontendEngineFactory.newInstance(DatabaseType.MySQL), instanceOf(MySQLFrontendEngine.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void assertCreateFrontendHandlerInstanceWhenUnsupported() {
-        FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.Oracle);
+    public void assertNewInstanceWhenUnsupported() {
+        DatabaseFrontendEngineFactory.newInstance(DatabaseType.Oracle);
     }
 }

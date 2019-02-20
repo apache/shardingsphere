@@ -20,53 +20,55 @@ package org.apache.shardingsphere.shardingproxy.frontend.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 /**
- * Frontend handler.
+ * Frontend channel inbound handler.
  * 
  * @author zhangliang 
  */
-public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
+@RequiredArgsConstructor
+public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
-    @Setter
+    private final DatabaseFrontendEngine databaseFrontendEngine;
+    
     private volatile boolean authorized;
     
-    @Getter
-    private volatile BackendConnection backendConnection = new BackendConnection(GlobalRegistry.getInstance().getTransactionType());
-
+    private final BackendConnection backendConnection = new BackendConnection(GlobalRegistry.getInstance().getTransactionType());
+    
     @Override
-    public final void channelActive(final ChannelHandlerContext context) {
+    public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
-        handshake(context);
+        databaseFrontendEngine.handshake(context, backendConnection);
     }
     
-    protected abstract void handshake(ChannelHandlerContext context);
-    
     @Override
-    public final void channelRead(final ChannelHandlerContext context, final Object message) {
+    public void channelRead(final ChannelHandlerContext context, final Object message) {
         if (!authorized) {
-            authorized = true;
-            auth(context, (ByteBuf) message);
+            authorized = databaseFrontendEngine.auth(context, (ByteBuf) message, backendConnection);
         } else {
-            executeCommand(context, (ByteBuf) message);
+            databaseFrontendEngine.executeCommand(context, (ByteBuf) message, backendConnection);
         }
     }
     
-    protected abstract void auth(ChannelHandlerContext context, ByteBuf message);
-    
-    protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
-    
     @Override
     @SneakyThrows
-    public final void channelInactive(final ChannelHandlerContext context) {
+    public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
+    }
+    
+    @Override
+    public void channelWritabilityChanged(final ChannelHandlerContext context) {
+        if (context.channel().isWritable()) {
+            synchronized (backendConnection) {
+                backendConnection.notifyAll();
+            }
+        }
     }
 }
