@@ -459,14 +459,6 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private int getPlaceholderPositionFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
-            return ((SQLPlaceholderExpression) sqlExpression).getIndex();
-        }
-        return -1;
-    }
-    
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
