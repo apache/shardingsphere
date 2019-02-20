@@ -67,7 +67,7 @@ public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder 
         if (0 == placeholderIndexes.iterator().next()) {
             return String.format("%s %s ? AND '%s'", columnName, operator.name(), indexValues.get(0));
         }
-        return String.format("%s %s %s' AND ?", columnName, operator.name(), indexValues.get(0));
+        return String.format("%s %s '%s' AND ?", columnName, operator.name(), indexValues.get(0));
     }
     
     private String toStringFromIn() {
