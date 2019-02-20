@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
@@ -302,9 +303,7 @@ public final class SQLRewriteEngine {
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         Optional<Condition> encryptCondition = getEncryptCondition(encryptColumnToken);
-        if (encryptColumnToken.isInWhere() && !encryptCondition.isPresent()) {
-            throw new ShardingException("Can not find encrypt condition");
-        }
+        Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValues(encryptColumnToken, encryptCondition));
         encryptParameters(getPositionIndexes(encryptColumnToken, encryptCondition), encryptColumnValues);
         sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), 
