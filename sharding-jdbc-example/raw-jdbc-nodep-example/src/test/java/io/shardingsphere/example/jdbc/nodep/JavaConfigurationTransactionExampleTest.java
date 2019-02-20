@@ -17,47 +17,54 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.factory.CommonTransactionServiceFactory;
+import io.shardingsphere.example.jdbc.nodep.factory.DataSourceFactory;
 import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
 import io.shardingsphere.example.repository.api.trace.ResultAssertUtils;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class JavaConfigurationTransactionExampleTest {
     
     @Test
-    public void assertShardingDatabasePrecise() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES));
+    public void assertShardingDatabase() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
-    public void assertShardingTablesPrecise() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_TABLES));
+    public void assertShardingTables() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_TABLES);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
-    public void assertShardingDatabaseAndTablesPrecise() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES));
+    public void assertShardingDatabaseAndTables() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertMasterSlave() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE));
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.MASTER_SLAVE);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionMasterSlaveResult(scenario.getTransactionService());
     }
     
     @Test
-    public void assertShardingMasterSlavePrecise() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE));
+    public void assertShardingMasterSlave() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionMasterSlaveResult(scenario.getTransactionService());
     }

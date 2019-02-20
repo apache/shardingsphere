@@ -17,10 +17,6 @@
 
 package io.shardingsphere.example.jdbc.nodep.factory;
 
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
@@ -30,27 +26,23 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class YamlCommonServiceFactory {
+public class YamlDataSourceFactory {
     
-    public static CommonService newInstance(final ShardingType shardingType) throws SQLException, IOException {
+    public static DataSource newInstance(final ShardingType shardingType) throws SQLException, IOException {
         switch (shardingType) {
             case SHARDING_DATABASES:
-                return createCommonService(YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases.yaml")));
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases.yaml"));
             case SHARDING_TABLES:
-                return createCommonService(YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables.yaml")));
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables.yaml"));
             case SHARDING_DATABASES_AND_TABLES:
-                return createCommonService(YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml")));
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
             case MASTER_SLAVE:
-                return createCommonService(YamlMasterSlaveDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml")));
+                return YamlMasterSlaveDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml"));
             case SHARDING_MASTER_SLAVE:
-                return createCommonService(YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-master-slave.yaml")));
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-master-slave.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
-    }
-    
-    private static CommonService createCommonService(final DataSource dataSource) {
-        return new RawPojoService(dataSource);
     }
     
     private static File getFile(final String fileName) {

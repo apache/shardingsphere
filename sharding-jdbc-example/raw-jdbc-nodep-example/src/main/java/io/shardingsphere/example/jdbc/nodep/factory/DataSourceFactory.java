@@ -22,33 +22,27 @@ import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesCon
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class CommonTransactionServiceFactory {
+public class DataSourceFactory {
     
-    public static TransactionService newInstance(final ShardingType shardingType) throws SQLException {
+    public static DataSource newInstance(final ShardingType shardingType) throws SQLException {
         switch (shardingType) {
             case SHARDING_DATABASES:
-                return createTransactionService(new ShardingDatabasesConfigurationPrecise().getDataSource());
+                return new ShardingDatabasesConfigurationPrecise().getDataSource();
             case SHARDING_TABLES:
-                return createTransactionService(new ShardingTablesConfigurationPrecise().getDataSource());
+                return new ShardingTablesConfigurationPrecise().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
-                return createTransactionService(new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource());
+                return new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource();
             case MASTER_SLAVE:
-                return createTransactionService(new MasterSlaveConfiguration().getDataSource());
+                return new MasterSlaveConfiguration().getDataSource();
             case SHARDING_MASTER_SLAVE:
-                return createTransactionService(new ShardingMasterSlaveConfigurationPrecise().getDataSource());
+                return new ShardingMasterSlaveConfigurationPrecise().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
-    }
-    
-    private static TransactionService createTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(dataSource);
     }
 }

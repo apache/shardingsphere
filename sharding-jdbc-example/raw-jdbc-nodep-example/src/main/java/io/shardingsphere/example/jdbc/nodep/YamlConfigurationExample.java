@@ -17,10 +17,12 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.factory.YamlCommonServiceFactory;
+import io.shardingsphere.example.jdbc.nodep.factory.YamlDataSourceFactory;
 import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.ShardingType;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -36,7 +38,8 @@ public class YamlConfigurationExample {
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) throws SQLException, IOException {
-        CommonService commonService = YamlCommonServiceFactory.newInstance(shardingType);
+        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
+        CommonService commonService = new RawPojoService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();

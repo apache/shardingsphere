@@ -17,79 +17,58 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
+import io.shardingsphere.example.jdbc.nodep.factory.DataSourceFactory;
 import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
 import io.shardingsphere.example.repository.api.trace.ResultAssertUtils;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.ShardingType;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class JavaConfigurationExampleTest {
 
     @Test
-    public void assertShardingDatabasePrecise() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES));
+    public void assertShardingDatabase() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
         scenario.process();
         ResultAssertUtils.assertShardingDatabaseResult(scenario.getCommonService(), false);
     }
 
     @Test
-    public void assertShardingDatabaseRange() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_RANGE));
-        scenario.process();
-        ResultAssertUtils.assertShardingDatabaseResult(scenario.getCommonService(), true);
-    }
-    
-    @Test
-    public void assertShardingTablesPrecise() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_TABLES));
+    public void assertShardingTables() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_TABLES);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
         scenario.process();
         ResultAssertUtils.assertShardingTableResult(scenario.getCommonService(), false);
     }
     
     @Test
-    public void assertShardingTablesRange() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_TABLES_RANGE));
-        scenario.process();
-        ResultAssertUtils.assertShardingTableResult(scenario.getCommonService(), true);
-    }
-
-    @Test
-    public void assertShardingDatabaseAndTablesPrecise() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES));
+    public void assertShardingDatabaseAndTables() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
         scenario.process();
         ResultAssertUtils.assertShardingDatabaseAndTableResult(scenario.getCommonService(), false);
     }
 
     @Test
-    public void assertShardingDatabaseAndTablesRange() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES_RANGE));
-        scenario.process();
-        ResultAssertUtils.assertShardingDatabaseAndTableResult(scenario.getCommonService(), true);
-    }
-
-    @Test
     public void assertMasterSlave() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.MASTER_SLAVE));
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.MASTER_SLAVE);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
         scenario.process();
         ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
 
     @Test
-    public void assertShardingMasterSlavePrecise() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE));
+    public void assertShardingMasterSlave() throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
         scenario.process();
         ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
 
-    @Test
-    public void assertShardingMasterSlaveRange() throws SQLException {
-        CommonServiceScenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE_RANGE));
-        scenario.process();
-        ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
-    }
-    
 //    @Test
 //    public void assertSubStatementQuery() throws SQLException {
 //        DataSource dataSource = new ShardingDatabasesConfigurationPrecise().getDataSource();
