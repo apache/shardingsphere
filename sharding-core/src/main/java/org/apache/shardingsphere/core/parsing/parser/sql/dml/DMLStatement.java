@@ -52,6 +52,8 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private final Map<Column, SQLExpression> updateColumnValues = new LinkedHashMap<>();
     
+    public  Map<Column, SQLExpression> getUpdateColumnValues()
+    
     private int whereStartIndex;
     
     private int whereStopIndex;
