@@ -18,7 +18,6 @@
 package io.shardingsphere.example.jdbc.orche.config.local;
 
 import io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
-import io.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
@@ -35,11 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class LocalShardingTablesConfigurationRange implements ExampleConfiguration {
+public final class LocalShardingTablesConfiguration implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     
-    public LocalShardingTablesConfigurationRange(final RegistryCenterConfiguration registryCenterConfig) {
+    public LocalShardingTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
         this.registryCenterConfig = registryCenterConfig;
     }
     
@@ -49,8 +48,7 @@ public final class LocalShardingTablesConfigurationRange implements ExampleConfi
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-                new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm(), new RangeModuloShardingTableAlgorithm()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", registryCenterConfig, true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties(), orchestrationConfig);
     }

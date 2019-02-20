@@ -17,14 +17,12 @@
 
 package io.shardingsphere.example.jdbc.orche.config.local;
 
-import io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
@@ -35,11 +33,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class LocalShardingDatabasesAndTablesConfigurationPrecise implements ExampleConfiguration {
+public final class LocalShardingDatabasesConfiguration implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
     
-    public LocalShardingDatabasesAndTablesConfigurationPrecise(final RegistryCenterConfiguration registryCenterConfig) {
+    public LocalShardingDatabasesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
         this.registryCenterConfig = registryCenterConfig;
     }
     
@@ -48,21 +46,19 @@ public final class LocalShardingDatabasesAndTablesConfigurationPrecise implement
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", registryCenterConfig, true);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-db-data-source", registryCenterConfig, true);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties(), orchestrationConfig);
     }
     
     private TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
     private TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        return new TableRuleConfiguration("t_order_item");
     }
     
     private Map<String, DataSource> createDataSourceMap() {

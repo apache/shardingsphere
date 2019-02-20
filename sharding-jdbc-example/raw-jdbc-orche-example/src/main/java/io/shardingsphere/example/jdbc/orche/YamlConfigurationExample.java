@@ -19,13 +19,9 @@ package io.shardingsphere.example.jdbc.orche;
 
 import io.shardingsphere.example.jdbc.orche.factory.YamlOrchestrationDataSourceFactory;
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.AbstractOrchestrationDataSource;
 
 import javax.sql.DataSource;
 
@@ -54,12 +50,5 @@ public class YamlConfigurationExample {
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
-        closeDataSource(dataSource);
-    }
-    
-    private static void closeDataSource(final DataSource dataSource) throws Exception {
-        if (dataSource instanceof AbstractDataSourceAdapter) {
-            ((AbstractDataSourceAdapter) dataSource).close();
-        }
     }
 }

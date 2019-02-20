@@ -24,7 +24,6 @@ import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -54,11 +53,5 @@ public class JavaConfigurationTransactionExample {
         transactionService.processFailureWithLocal();
         transactionService.processFailureWithXA();
         transactionService.cleanEnvironment();
-    }
-    
-    private static void closeDataSource(final DataSource dataSource) throws Exception {
-        Method method = dataSource.getClass().getMethod("close");
-        method.setAccessible(true);
-        method.invoke(dataSource);
     }
 }
