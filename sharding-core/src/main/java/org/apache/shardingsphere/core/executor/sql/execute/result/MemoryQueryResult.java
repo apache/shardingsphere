@@ -53,11 +53,11 @@ public final class MemoryQueryResult implements QueryResult {
     private QueryRow currentRow;
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
-        columnLabelAndIndexMap = getMetaData(resultSet.getMetaData());
+        columnLabelAndIndexMap = getColumnLabelAndIndexMap(resultSet.getMetaData());
         resultData = getResultData(resultSet);
     }
     
-    private Multimap<String, Integer> getMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
+    private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
         Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
