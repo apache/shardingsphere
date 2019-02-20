@@ -304,7 +304,8 @@ public final class SQLRewriteEngine {
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         Optional<Condition> encryptCondition = getEncryptCondition(encryptColumnToken);
         Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
-        ShardingPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get()) : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken);
+        ShardingPlaceholder result = encryptColumnToken.isInWhere() 
+                ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get()) : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken);
         sqlBuilder.appendPlaceholder(result);
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
     }
@@ -319,10 +320,12 @@ public final class SQLRewriteEngine {
     private EncryptUpdateItemColumnPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         ShardingEncryptor shardingEncryptor = getShardingEncryptor(encryptColumnToken);
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
-        List<Comparable<?>> encryptAssistedColumnValues = shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken)) : new LinkedList<Comparable<?>>();
+        List<Comparable<?>> encryptAssistedColumnValues = shardingEncryptor instanceof ShardingQueryAssistedEncryptor 
+                ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, getOriginalColumnValuesFromUpdateItem(encryptColumnToken)) : new LinkedList<Comparable<?>>();
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
         fillParameters(encryptColumnToken, encryptAssistedColumnValues);
-        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues) : getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues);
+        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues) 
+                : getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues);
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
@@ -333,7 +336,8 @@ public final class SQLRewriteEngine {
                 getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
     }
     
-    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
+    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, 
+                                                                                     final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         if (encryptColumnValues.isEmpty()) {
             return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), getEncryptAssistedColumnName(encryptColumnToken));
         }
