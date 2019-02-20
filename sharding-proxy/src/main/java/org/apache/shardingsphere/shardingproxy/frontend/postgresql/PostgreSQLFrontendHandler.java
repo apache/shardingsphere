@@ -23,7 +23,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
-import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
@@ -49,7 +48,6 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
-        ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
         getBackendConnection().setConnectionId(connectionId);
     }
     

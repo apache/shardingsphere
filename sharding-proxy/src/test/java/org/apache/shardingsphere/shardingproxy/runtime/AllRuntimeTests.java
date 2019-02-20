@@ -23,9 +23,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        ProxyTableMetaDataConnectionManagerTest.class, 
-        ChannelRegistryTest.class
-})
+@SuiteClasses(ProxyTableMetaDataConnectionManagerTest.class)
 public final class AllRuntimeTests {
 }

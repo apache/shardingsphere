@@ -19,15 +19,11 @@ package org.apache.shardingsphere.shardingproxy.backend.communication;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.backend.communication.netty.NettyDatabaseCommunicationEngine;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 
 import java.util.List;
@@ -44,8 +40,6 @@ public final class DatabaseCommunicationEngineFactory {
     
     private static final DatabaseCommunicationEngineFactory INSTANCE = new DatabaseCommunicationEngineFactory();
     
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
-    
     /**
      * Get backend handler factory instance.
      *
@@ -59,34 +53,24 @@ public final class DatabaseCommunicationEngineFactory {
      * Create new instance of text protocol backend handler.
      *
      * @param logicSchema logic schema
-     * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param backendConnection backend connection
-     * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newTextProtocolInstance(
-            final LogicSchema logicSchema, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
-        return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
-                ? new NettyDatabaseCommunicationEngine(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
-                : new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
+    public DatabaseCommunicationEngine newTextProtocolInstance(final LogicSchema logicSchema, final String sql, final BackendConnection backendConnection) {
+        return new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
     }
     
     /**
      * Create new instance of text protocol backend handler.
      *
      * @param logicSchema logic schema
-     * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
-     * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newBinaryProtocolInstance(
-            final LogicSchema logicSchema, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType) {
-        return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
-                ? new NettyDatabaseCommunicationEngine(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
-                : new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
+    public DatabaseCommunicationEngine newBinaryProtocolInstance(final LogicSchema logicSchema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+        return new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
     }
 }

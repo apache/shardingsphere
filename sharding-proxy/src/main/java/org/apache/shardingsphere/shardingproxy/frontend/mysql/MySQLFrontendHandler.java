@@ -23,7 +23,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
-import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -50,7 +49,6 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
-        ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
         getBackendConnection().setConnectionId(connectionId);
         context.writeAndFlush(new MySQLHandshakePacket(connectionId, mySQLAuthenticationHandler.getMySQLAuthPluginData()));
     }

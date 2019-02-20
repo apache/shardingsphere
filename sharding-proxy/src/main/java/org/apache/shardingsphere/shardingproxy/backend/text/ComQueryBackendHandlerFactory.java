@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parsing.SQLJudgeEngine;
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -56,13 +55,11 @@ public final class ComQueryBackendHandlerFactory {
     /**
      * Create new text protocol backend handler instance.
      *
-     * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param backendConnection backend connection
-     * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public static TextProtocolBackendHandler createTextProtocolBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
+    public static TextProtocolBackendHandler createTextProtocolBackendHandler(final String sql, final BackendConnection backendConnection) {
         Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql.toUpperCase());
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
@@ -76,14 +73,13 @@ public final class ComQueryBackendHandlerFactory {
             return new ShardingCTLShowBackendHandler(sql, backendConnection);
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        return SQLType.DAL == sqlStatement.getType()
-                ? createDALBackendHandler(sqlStatement, sequenceId, sql, backendConnection, databaseType) : new QueryBackendHandler(sequenceId, sql, backendConnection, databaseType);
+        return SQLType.DAL == sqlStatement.getType() ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
     }
     
     private static TextProtocolBackendHandler createDALBackendHandler(
-            final SQLStatement sqlStatement, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
+            final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
         if (sqlStatement instanceof SetStatement) {
-            return new BroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
+            return new BroadcastBackendHandler(sql, backendConnection);
         }
         if (sqlStatement instanceof UseStatement) {
             return new UseDatabaseBackendHandler((UseStatement) sqlStatement, backendConnection);
@@ -91,6 +87,6 @@ public final class ComQueryBackendHandlerFactory {
         if (sqlStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler();
         }
-        return new UnicastBackendHandler(sequenceId, sql, backendConnection, databaseType);
+        return new UnicastBackendHandler(sql, backendConnection);
     }
 }

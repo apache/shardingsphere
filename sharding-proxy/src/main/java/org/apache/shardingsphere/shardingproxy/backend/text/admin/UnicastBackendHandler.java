@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -39,20 +38,15 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
-    private final int sequenceId;
-    
     private final String sql;
     
     private final BackendConnection backendConnection;
-    
-    private final DatabaseType databaseType;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public CommandResponsePackets execute() {
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(
-                GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sequenceId, sql, backendConnection, databaseType);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     

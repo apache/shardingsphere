@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -38,7 +37,6 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,7 +58,7 @@ public final class BroadcastBackendHandlerTest {
     public void assertExecuteSuccess() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
         mockDatabaseCommunicationEngine(new CommandResponsePackets(new DatabaseSuccessPacket(1, 0, 0)));
-        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler(1, "SET timeout = 1000", backendConnection, DatabaseType.MySQL);
+        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         DatabaseSuccessPacket actual = (DatabaseSuccessPacket) broadcastBackendHandler.execute().getHeadPacket();
         assertThat(actual.getSequenceId(), is(1));
@@ -74,7 +72,7 @@ public final class BroadcastBackendHandlerTest {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
         DatabaseFailurePacket databaseFailurePacket = new DatabaseFailurePacket(1, new SQLException("no reason", "X999", -1));
         mockDatabaseCommunicationEngine(new CommandResponsePackets(databaseFailurePacket));
-        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler(1, "SET timeout = 1000", backendConnection, DatabaseType.MySQL);
+        BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         DatabaseFailurePacket actual = (DatabaseFailurePacket) broadcastBackendHandler.execute().getHeadPacket();
         assertThat(actual, is(databaseFailurePacket));
@@ -83,8 +81,7 @@ public final class BroadcastBackendHandlerTest {
     
     private void mockDatabaseCommunicationEngine(final CommandResponsePackets commandResponsePackets) {
         when(databaseCommunicationEngine.execute()).thenReturn(commandResponsePackets);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(
-                (LogicSchema) any(), anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance((LogicSchema) any(), anyString(), (BackendConnection) any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows

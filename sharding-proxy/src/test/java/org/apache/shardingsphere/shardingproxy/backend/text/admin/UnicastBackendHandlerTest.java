@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -38,7 +37,6 @@ import java.lang.reflect.Field;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,7 +57,7 @@ public final class UnicastBackendHandlerTest {
     
     @Test
     public void assertExecuteWhileSchemaIsNull() {
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler(1, "show variable like %s", backendConnection, DatabaseType.MySQL);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(MySQLOKPacket.class));
@@ -69,7 +67,7 @@ public final class UnicastBackendHandlerTest {
     @Test
     public void assertExecuteWhileSchemaNotNull() {
         backendConnection.setCurrentSchema("schema_0");
-        UnicastBackendHandler backendHandler = new UnicastBackendHandler(1, "show variable like %s", backendConnection, DatabaseType.MySQL);
+        UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(MySQLOKPacket.class));
@@ -79,8 +77,7 @@ public final class UnicastBackendHandlerTest {
     private void setUnderlyingHandler(final CommandResponsePackets commandResponsePackets) {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(databaseCommunicationEngine.execute()).thenReturn(commandResponsePackets);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(
-                (LogicSchema) any(), anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance((LogicSchema) any(), anyString(), (BackendConnection) any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows

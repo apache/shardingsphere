@@ -33,11 +33,8 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
-import org.apache.shardingsphere.shardingproxy.backend.communication.netty.client.BackendNettyClientManager;
 import org.apache.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 /**
  * Sharding-Proxy.
@@ -52,8 +49,6 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 public final class ShardingProxy {
     
     private static final ShardingProxy INSTANCE = new ShardingProxy();
-    
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
@@ -86,17 +81,11 @@ public final class ShardingProxy {
                 groupsNio(bootstrap);
             }
             ChannelFuture future = bootstrap.bind(port).sync();
-            if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
-                BackendNettyClientManager.getInstance().start(workerGroup);
-            }
             future.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
-            if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
-                BackendNettyClientManager.getInstance().stop();
-            }
         }
     }
     
