@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
+public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
     
