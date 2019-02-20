@@ -39,7 +39,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBack
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public final class ComQueryBackendHandlerFactory {
     
     private static final String SET_AUTOCOMMIT_1 = "SET AUTOCOMMIT=1";
     
-    private static final List<String> GUI_SQL = new ArrayList<>(Arrays.asList("SET NAMES", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION"));
+    private static final List<String> GUI_SQL = Arrays.asList("SET NAMES", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION");
     
     /**
      * Create new text protocol backend handler instance.
