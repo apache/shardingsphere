@@ -17,13 +17,12 @@
 
 package io.shardingsphere.example.repository.jdbc.service;
 
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
+import javax.sql.DataSource;
 
 public class RangeRawPojoService extends RawPojoService {
     
-    public RangeRawPojoService(final JDBCOrderRepositoryImpl orderRepository, final JDBCOrderItemRepositoryImpl orderItemRepository) {
-        super(orderRepository, orderItemRepository);
+    public RangeRawPojoService(final DataSource dataSource) {
+        super(dataSource);
     }
     
     @Override

@@ -50,7 +50,7 @@ public class YamlCommonServiceFactory {
     }
     
     private static CommonService createCommonService(final DataSource dataSource) {
-        return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+        return new RawPojoService(dataSource);
     }
     
     private static File getFile(final String fileName) {

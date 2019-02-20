@@ -29,45 +29,41 @@ import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesA
 import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfigurationPrecise;
 import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfigurationPrecise;
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class CommonTransactionServiceFactory {
+public class OrchestrationDataSourceFactory {
     
-    public static TransactionService newInstance(final ShardingType shardingType, final RegistryCenterType registryCenterType, final boolean loadConfigFromRegCenter) throws SQLException {
+    public static DataSource newInstance(final ShardingType shardingType, final RegistryCenterType registryCenterType, final boolean loadConfigFromRegCenter) throws SQLException {
         RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration(registryCenterType);
-        ExampleConfiguration exampleConfig;
+        ExampleConfiguration configuration;
         switch (shardingType) {
             case SHARDING_DATABASES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfigurationPrecise(registryCenterConfig);
-                return createTransactionService(exampleConfig);
+                configuration = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfigurationPrecise(registryCenterConfig);
+                break;
             case SHARDING_TABLES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfigurationPrecise(registryCenterConfig);
-                return createTransactionService(exampleConfig);
+                configuration = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfigurationPrecise(registryCenterConfig);
+                break;
             case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfigurationPrecise(registryCenterConfig);
-                return createTransactionService(exampleConfig);
+                configuration = loadConfigFromRegCenter ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfigurationPrecise(registryCenterConfig);
+                break;
             case MASTER_SLAVE:
-                exampleConfig = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
-                return createTransactionService(exampleConfig);
+                configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
+                break;
             case SHARDING_MASTER_SLAVE:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfigurationPrecise(registryCenterConfig);
-                return createTransactionService(exampleConfig);
+                configuration = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfigurationPrecise(registryCenterConfig);
+                break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
+        return configuration.getDataSource();
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration(final RegistryCenterType registryCenterType) {
         return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
-    }
-    
-    private static TransactionService createTransactionService(final ExampleConfiguration exampleConfiguration) throws SQLException {
-        return new RawPojoTransactionService(exampleConfiguration.getDataSource());
     }
 }

@@ -17,11 +17,13 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
-import io.shardingsphere.example.jdbc.orche.factory.YamlCommonTransactionServiceFactory;
-import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
+import io.shardingsphere.example.jdbc.orche.factory.YamlOrchestrationDataSourceFactory;
 import io.shardingsphere.example.repository.api.service.TransactionService;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
+
+import javax.sql.DataSource;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -43,7 +45,8 @@ public class YamlConfigurationTransactionExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
-        TransactionService transactionService = YamlCommonTransactionServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        DataSource dataSource = YamlOrchestrationDataSourceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        TransactionService transactionService = new RawPojoTransactionService(dataSource);
         transactionService.initEnvironment();
         transactionService.processSuccessWithLocal();
         transactionService.processSuccessWithXA();

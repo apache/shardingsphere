@@ -17,86 +17,114 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
-import io.shardingsphere.example.jdbc.orche.factory.CommonTransactionServiceFactory;
+import io.shardingsphere.example.jdbc.orche.factory.OrchestrationDataSourceFactory;
 import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
 import io.shardingsphere.example.repository.api.trace.ResultAssertUtils;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.AbstractOrchestrationDataSource;
+import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import javax.sql.DataSource;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 
 @FixMethodOrder(MethodSorters.JVM)
 public class JavaConfigurationTransactionExampleTest {
+    
+    private DataSource dataSource;
+    
+    @After
+    public void tearDown() throws Exception {
+        closeDataSource(dataSource);
+    }
+    
+    private void closeDataSource(final DataSource dataSource) throws Exception {
+        Method method = dataSource.getClass().getMethod("close");
+        method.setAccessible(true);
+        method.invoke(dataSource);
+    }
 
     @Test
     public void assertShardingDatabaseWithLocalZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, false));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, false);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingDatabaseWithCloudZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, true));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES, RegistryCenterType.ZOOKEEPER, true);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertShardingTablesWithLocalZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, false));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, false);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingTablesWithCloudZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, true));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_TABLES, RegistryCenterType.ZOOKEEPER, true);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertShardingDatabaseAndTablesWithLocalZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, false));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, false);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingDatabaseAndTablesWithCloudZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, true));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES, RegistryCenterType.ZOOKEEPER, true);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertMasterSlaveWithLocalZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertMasterSlaveWithCloudZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 
     @Test
     public void assertShardingMasterSlaveWithLocalZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, false);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingMasterSlaveWithCloudZookeeper() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true));
+        dataSource = OrchestrationDataSourceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE, RegistryCenterType.ZOOKEEPER, true);
+        TransactionServiceScenario scenario = new TransactionServiceScenario(new RawPojoTransactionService(dataSource));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }

@@ -17,8 +17,6 @@
 
 package io.shardingsphere.example.jdbc.orche.factory;
 
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
@@ -29,36 +27,33 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class YamlCommonTransactionServiceFactory {
+public class YamlOrchestrationDataSourceFactory {
     
-    public static TransactionService newInstance(final ShardingType shardingType, final RegistryCenterType registryCenterType, final boolean loadConfigFromRegCenter) throws SQLException, IOException {
+    public static DataSource newInstance(final ShardingType shardingType, final RegistryCenterType registryCenterType, final boolean loadConfigFromRegCenter) throws SQLException, IOException {
         String yamlFilePath;
         switch (shardingType) {
             case SHARDING_DATABASES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return createTransactionService(YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath)));
+                return YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case SHARDING_TABLES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return createTransactionService(YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath)));
+                return YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case SHARDING_DATABASES_AND_TABLES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return createTransactionService(YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath)));
+                return YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case MASTER_SLAVE:
                 yamlFilePath = String.format("/META-INF/%s/%s/master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return createTransactionService(YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getFile(yamlFilePath)));
+                return YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case SHARDING_MASTER_SLAVE:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                return createTransactionService(YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath)));
+                return YamlOrchestrationShardingDataSourceFactory.createDataSource(getFile(yamlFilePath));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
     }
     
-    private static TransactionService createTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(dataSource);
-    }
-    
     private static File getFile(final String fileName) {
         return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
     }
+    
 }

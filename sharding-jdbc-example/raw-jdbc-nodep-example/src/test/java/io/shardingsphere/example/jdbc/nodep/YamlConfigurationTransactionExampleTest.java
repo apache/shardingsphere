@@ -51,8 +51,8 @@ public class YamlConfigurationTransactionExampleTest {
     }
     
     @Test
-    public void assertMasterSlave() throws SQLException {
-        TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE));
+    public void assertMasterSlave() throws SQLException, IOException {
+        TransactionServiceScenario scenario = new TransactionServiceScenario(YamlCommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE));
         scenario.process();
         ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }

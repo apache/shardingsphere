@@ -17,18 +17,13 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
 import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
 import io.shardingsphere.example.repository.api.trace.ResultAssertUtils;
 import io.shardingsphere.example.type.ShardingType;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class JavaConfigurationExampleTest {
 
@@ -95,23 +90,23 @@ public class JavaConfigurationExampleTest {
         ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
     
-    @Test
-    public void assertSubStatementQuery() throws SQLException {
-        DataSource dataSource = new ShardingDatabasesConfigurationPrecise().getDataSource();
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute("select * from t_order where order_id = ("
-                + "select order_id from t_order_item where order_item_id=1 and user_id=1)");
-        }
-    }
-    
-    @Test
-    public void assertSubPrepareStatementQuery() throws SQLException {
-        DataSource dataSource = new ShardingDatabasesConfigurationPrecise().getDataSource();
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from t_order where order_id = ("
-                + "select order_id from t_order_item where order_item_id=1)");
-            preparedStatement.execute();
-        }
-    }
+//    @Test
+//    public void assertSubStatementQuery() throws SQLException {
+//        DataSource dataSource = new ShardingDatabasesConfigurationPrecise().getDataSource();
+//        try (Connection connection = dataSource.getConnection()) {
+//            Statement statement = connection.createStatement();
+//            statement.execute("select * from t_order where order_id = ("
+//                + "select order_id from t_order_item where order_item_id=1 and user_id=1)");
+//        }
+//    }
+//
+//    @Test
+//    public void assertSubPrepareStatementQuery() throws SQLException {
+//        DataSource dataSource = new ShardingDatabasesConfigurationPrecise().getDataSource();
+//        try (Connection connection = dataSource.getConnection()) {
+//            PreparedStatement preparedStatement = connection.prepareStatement("select * from t_order where order_id = ("
+//                + "select order_id from t_order_item where order_item_id=1)");
+//            preparedStatement.execute();
+//        }
+//    }
 }

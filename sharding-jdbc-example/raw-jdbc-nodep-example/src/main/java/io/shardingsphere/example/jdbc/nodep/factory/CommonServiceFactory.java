@@ -64,10 +64,10 @@ public class CommonServiceFactory {
     }
     
     private static CommonService createCommonService(final DataSource dataSource) {
-        return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+        return new RawPojoService(dataSource);
     }
     
     private static CommonService CreateRangeCommonService(final DataSource dataSource) {
-        return new RangeRawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+        return new RangeRawPojoService(dataSource);
     }
 }

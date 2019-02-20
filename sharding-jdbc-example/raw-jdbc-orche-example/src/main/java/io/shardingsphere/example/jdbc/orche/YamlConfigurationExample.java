@@ -17,10 +17,17 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
-import io.shardingsphere.example.jdbc.orche.factory.YamlCommonServiceFactory;
+import io.shardingsphere.example.jdbc.orche.factory.YamlOrchestrationDataSourceFactory;
 import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.AbstractOrchestrationDataSource;
+
+import javax.sql.DataSource;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -42,9 +49,17 @@ public class YamlConfigurationExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
-        CommonService commonService = YamlCommonServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        DataSource dataSource = YamlOrchestrationDataSourceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        CommonService commonService = new RawPojoService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
+        closeDataSource(dataSource);
+    }
+    
+    private static void closeDataSource(final DataSource dataSource) throws Exception {
+        if (dataSource instanceof AbstractDataSourceAdapter) {
+            ((AbstractDataSourceAdapter) dataSource).close();
+        }
     }
 }

@@ -17,11 +17,14 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
-import io.shardingsphere.example.jdbc.orche.factory.CommonTransactionServiceFactory;
-import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
+import io.shardingsphere.example.jdbc.orche.factory.OrchestrationDataSourceFactory;
 import io.shardingsphere.example.repository.api.service.TransactionService;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
+
+import javax.sql.DataSource;
+import java.lang.reflect.Method;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -43,12 +46,19 @@ public class JavaConfigurationTransactionExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
-        TransactionService transactionService = CommonTransactionServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        DataSource dataSource = OrchestrationDataSourceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        TransactionService transactionService = new RawPojoTransactionService(dataSource);
         transactionService.initEnvironment();
         transactionService.processSuccessWithLocal();
         transactionService.processSuccessWithXA();
         transactionService.processFailureWithLocal();
         transactionService.processFailureWithXA();
         transactionService.cleanEnvironment();
+    }
+    
+    private static void closeDataSource(final DataSource dataSource) throws Exception {
+        Method method = dataSource.getClass().getMethod("close");
+        method.setAccessible(true);
+        method.invoke(dataSource);
     }
 }

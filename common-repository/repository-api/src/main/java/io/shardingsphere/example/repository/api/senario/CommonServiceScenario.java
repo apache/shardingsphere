@@ -20,10 +20,13 @@ package io.shardingsphere.example.repository.api.senario;
 import io.shardingsphere.example.repository.api.service.CommonService;
 
 public final class CommonServiceScenario implements Scenario {
+
+//    private final DataSource dataSource;
     
     private final CommonService commonService;
     
     public CommonServiceScenario(final CommonService commonService) {
+//        this.dataSource = dataSource;
         this.commonService = commonService;
     }
     
