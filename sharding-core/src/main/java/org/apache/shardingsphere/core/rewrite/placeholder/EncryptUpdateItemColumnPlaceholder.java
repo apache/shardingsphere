@@ -50,4 +50,23 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         return -1 == placeholderIndex ? String.format("%s = '%s', %s = '%s'", columnName, columnValue, assistedColumnName, assistedColumnValue) 
                 : String.format("%s = ?, %s = ?", columnName, assistedColumnName);
     }
+    
+    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final String assistedColumnName) {
+        this.logicTableName = logicTableName;
+        this.columnName = columnName;
+        columnValue = null;
+        this.assistedColumnName = assistedColumnName;
+        assistedColumnValue = null;
+        placeholderIndex = -1;
+    }
+    
+    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, 
+                                              final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
+        this.logicTableName = logicTableName;
+        this.columnName = columnName;
+        this.columnValue = columnValue;
+        this.assistedColumnName = assistedColumnName;
+        this.assistedColumnValue = assistedColumnValue;
+        placeholderIndex = 0;
+    }
 }
