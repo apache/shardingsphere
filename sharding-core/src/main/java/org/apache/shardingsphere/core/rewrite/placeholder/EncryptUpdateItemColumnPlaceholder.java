@@ -20,10 +20,6 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Encrypt update item column placeholder for rewrite.
@@ -51,6 +47,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         if (Strings.isNullOrEmpty(assistedColumnName)) {
             return -1 == placeholderIndex ? String.format("%s = '%s'", columnName, columnValue) : String.format("%s = ?", columnName);
         }
-        
+        return -1 == placeholderIndex ? String.format("%s = '%s', %s = '%s'", columnName, columnValue, assistedColumnName, assistedColumnValue) 
+                : String.format("%s = ?, %s = ?", columnName, assistedColumnName);
     }
 }
