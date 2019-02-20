@@ -33,6 +33,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
 
@@ -69,9 +70,9 @@ public final class ShardingProxy {
      * Start Sharding-Proxy.
      *
      * @param port port
-     * @throws InterruptedException interrupted exception
      */
-    public void start(final int port) throws InterruptedException {
+    @SneakyThrows
+    public void start(final int port) {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bossGroup = createEventLoopGroup();
