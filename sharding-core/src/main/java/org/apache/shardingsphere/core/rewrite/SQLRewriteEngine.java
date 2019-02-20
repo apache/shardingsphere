@@ -77,7 +77,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -318,7 +317,7 @@ public final class SQLRewriteEngine {
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValuesFromUpdateItem(encryptColumnToken));
+        List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValueFromUpdateItem(encryptColumnToken));
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
         return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), 
                 getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getPlaceholderPositionFromUpdateItem(encryptColumnToken));
@@ -346,17 +345,15 @@ public final class SQLRewriteEngine {
         return result.indexOf(encryptColumnToken);
     }
     
-    private List<Comparable<?>> getOriginalColumnValuesFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        List<Comparable<?>> result = new LinkedList<>();
+    private Comparable<?> getOriginalColumnValueFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            result.add(parameters.get(((SQLPlaceholderExpression) sqlExpression).getIndex()).toString());
+            return parameters.get(((SQLPlaceholderExpression) sqlExpression).getIndex()).toString();
         } else if (sqlExpression instanceof SQLTextExpression) {
-            result.add(((SQLTextExpression) sqlExpression).getText());
-        } else if (sqlExpression instanceof SQLNumberExpression) {
-            result.add((Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
+            return ((SQLTextExpression) sqlExpression).getText();
+        } else {
+            return (Comparable) ((SQLNumberExpression) sqlExpression).getNumber();
         }
-        return result;
     }
     
     private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> originalColumnValues) {
