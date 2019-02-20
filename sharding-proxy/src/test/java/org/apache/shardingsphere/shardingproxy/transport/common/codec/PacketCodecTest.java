@@ -19,14 +19,14 @@ package org.apache.shardingsphere.shardingproxy.transport.common.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.codec.fixture.PacketCodecFixture;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.LinkedList;
+import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -37,28 +37,41 @@ import static org.mockito.Mockito.when;
 public final class PacketCodecTest {
     
     @Mock
+    private DatabasePacketCodecEngine databasePacketCodecEngine;
+    
+    @Mock
     private ChannelHandlerContext context;
     
     @Mock
     private ByteBuf byteBuf;
     
+    private PacketCodec packetCodec;
+    
+    @Before
+    public void setUp() {
+        packetCodec = new PacketCodec(databasePacketCodecEngine);
+    }
+    
     @Test
     public void assertDecodeWithValidHeader() {
         when(byteBuf.readableBytes()).thenReturn(1);
-        new PacketCodecFixture().decode(context, byteBuf, new LinkedList<>());
+        when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(true);
+        packetCodec.decode(context, byteBuf, Collections.emptyList());
+        verify(databasePacketCodecEngine).decode(context, byteBuf, Collections.emptyList(), 1);
     }
     
     @Test
     public void assertDecodeWithInvalidHeader() {
-        when(byteBuf.readableBytes()).thenReturn(-1);
-        new PacketCodecFixture().decode(context, byteBuf, new LinkedList<>());
-        verify(context, times(0)).read();
+        when(byteBuf.readableBytes()).thenReturn(1);
+        when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(false);
+        packetCodec.decode(context, byteBuf, Collections.emptyList());
+        verify(databasePacketCodecEngine, times(0)).decode(context, byteBuf, Collections.emptyList(), 1);
     }
     
     @Test
     public void assertEncode() {
         DatabasePacket databasePacket = mock(DatabasePacket.class);
-        new PacketCodecFixture().encode(context, databasePacket, byteBuf);
-        verify(context).write(databasePacket);
+        packetCodec.encode(context, databasePacket, byteBuf);
+        verify(databasePacketCodecEngine).encode(context, databasePacket, byteBuf);
     }
 }
