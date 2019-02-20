@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.GUICompatibilityBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
@@ -51,6 +52,10 @@ public final class ComQueryBackendHandlerFactory {
     private static final String SCTL_SHOW = "SCTL:SHOW";
     
     private static final String SET_AUTOCOMMIT_1 = "SET AUTOCOMMIT=1";
+    
+    private static final String GUI_SET_NAMES = "SET NAMES";
+    
+    private static final String GUI_SHOW_VARIABLES = "SHOW VARIABLES LIKE";
     
     /**
      * Create new text protocol backend handler instance.
@@ -78,6 +83,9 @@ public final class ComQueryBackendHandlerFactory {
     
     private static TextProtocolBackendHandler createDALBackendHandler(
             final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
+        if (null == backendConnection.getLogicSchema() && (sql.toUpperCase().startsWith(GUI_SET_NAMES) || sql.toUpperCase().startsWith(GUI_SHOW_VARIABLES))) {
+            return new GUICompatibilityBackendHandler();
+        }
         if (sqlStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sql, backendConnection);
         }

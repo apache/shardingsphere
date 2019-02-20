@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabaseP
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Data header packet.
@@ -55,8 +56,12 @@ public final class DataHeaderPacket implements DatabasePacket {
     public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
         this.sequenceId = sequenceId;
         this.schema = logicSchema.getName();
-        this.table = logicSchema instanceof ShardingSchema 
-                ? ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex)).iterator().next() : resultSetMetaData.getTableName(columnIndex);
+        if (logicSchema instanceof ShardingSchema) {
+            Collection<String> tableNames = ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex));
+            this.table = tableNames.isEmpty() ? "" : tableNames.iterator().next();
+        } else {
+            this.table = resultSetMetaData.getTableName(columnIndex);
+        }
         this.orgTable = table;
         this.name = resultSetMetaData.getColumnLabel(columnIndex);
         this.orgName = resultSetMetaData.getColumnName(columnIndex);
