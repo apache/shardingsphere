@@ -19,14 +19,12 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Encrypt update item column placeholder for rewrite.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceholder {
     
