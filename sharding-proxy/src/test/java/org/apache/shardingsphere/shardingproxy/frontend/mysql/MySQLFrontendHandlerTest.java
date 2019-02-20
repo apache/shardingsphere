@@ -62,11 +62,6 @@ public final class MySQLFrontendHandlerTest {
     
     @Test
     public void assertHandshake() {
-        Channel channel = mock(Channel.class);
-        ChannelId channelId = mock(ChannelId.class);
-        when(channelId.asShortText()).thenReturn("1");
-        when(channel.id()).thenReturn(channelId);
-        when(context.channel()).thenReturn(channel);
         mysqlFrontendHandler.handshake(context);
         verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
