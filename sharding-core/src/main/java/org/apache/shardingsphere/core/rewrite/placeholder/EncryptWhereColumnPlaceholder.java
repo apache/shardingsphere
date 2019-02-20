@@ -77,7 +77,7 @@ public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder 
             if (placeholderIndexes.contains(i)) {
                 stringBuilder.append("?");
             } else {
-                stringBuilder.append('"').append(indexValues.get(i)).append('"');
+                stringBuilder.append("'").append(indexValues.get(i)).append("'");
             }
             stringBuilder.append(", ");
         }
