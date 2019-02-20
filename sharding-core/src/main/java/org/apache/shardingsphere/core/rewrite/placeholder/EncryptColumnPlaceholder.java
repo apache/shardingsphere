@@ -39,7 +39,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private final Map<Integer, Comparable<?>> indexValues;
     
-    private final Collection<Integer> placeholderIndex;
+    private final Collection<Integer> placeholderIndexes;
     
     private final ShardingOperator operator;
     
@@ -47,7 +47,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     public String toString() {
         switch (operator) {
             case EQUAL:
-                return placeholderIndex.isEmpty() ? String.format("%s = \"%s\"", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
+                return placeholderIndexes.isEmpty() ? String.format("%s = \"%s\"", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
             case BETWEEN:
                 return toStringFromBetween();
             case IN:
@@ -58,13 +58,13 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     }
     
     private String toStringFromBetween() {
-        if (placeholderIndex.isEmpty()) {
+        if (placeholderIndexes.isEmpty()) {
             return String.format("%s %s \"%s\" AND \"%s\"", columnName, operator.name(), indexValues.get(0), indexValues.get(1));
         }
-        if (2 == placeholderIndex.size()) {
+        if (2 == placeholderIndexes.size()) {
             return String.format("%s %s ? AND ?", columnName, operator.name());
         }
-        if (0 == placeholderIndex.iterator().next()) {
+        if (0 == placeholderIndexes.iterator().next()) {
             return String.format("%s %s ? AND \"%s\"", columnName, operator.name(), indexValues.get(0));
         }
         return String.format("%s %s \"%s\" AND ?", columnName, operator.name(), indexValues.get(0));
@@ -73,8 +73,8 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     private String toStringFromIn() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(columnName).append(" ").append(operator.name()).append(" (");
-        for (int i = 0; i < indexValues.size() + placeholderIndex.size(); i++) {
-            if (placeholderIndex.contains(i)) {
+        for (int i = 0; i < indexValues.size() + placeholderIndexes.size(); i++) {
+            if (placeholderIndexes.contains(i)) {
                 stringBuilder.append("?");
             } else {
                 stringBuilder.append('"').append(indexValues.get(i)).append('"');
