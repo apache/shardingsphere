@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
@@ -37,51 +38,21 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final String columnName;
     
-    private final Comparable<?> columNalue;
+    private final Comparable<?> columnValue;
     
-    private final Integer placeholderIndex;
+    private final String assistedColumnName;
+    
+    private final Comparable<?> assistedColumnValue;
+    
+    private final int placeholderIndex;
     
     private final ShardingOperator operator = ShardingOperator.EQUAL;
     
     @Override
     public String toString() {
-        switch (operator) {
-            case EQUAL:
-                return placeholderIndex.isEmpty() ? String.format("%s = \"%s\"", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
-            case BETWEEN:
-                return toStringFromBetween();
-            case IN:
-                return toStringFromIn();
-            default:
-                return "";
+        if (Strings.isNullOrEmpty(assistedColumnName)) {
+            return -1 == placeholderIndex ? String.format("%s = \"%s\"", columnName, columnValue) : String.format("%s = ?", columnName);
         }
-    }
-    
-    private String toStringFromBetween() {
-        if (placeholderIndex.isEmpty()) {
-            return String.format("%s %s \"%s\" AND \"%s\"", columnName, operator.name(), indexValues.get(0), indexValues.get(1));
-        }
-        if (2 == placeholderIndex.size()) {
-            return String.format("%s %s ? AND ?", columnName, operator.name());
-        }
-        if (0 == placeholderIndex.iterator().next()) {
-            return String.format("%s %s ? AND \"%s\"", columnName, operator.name(), indexValues.get(0));
-        }
-        return String.format("%s %s \"%s\" AND ?", columnName, operator.name(), indexValues.get(0));
-    }
-    
-    private String toStringFromIn() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(columnName).append(" ").append(operator.name()).append(" (");
-        for (int i = 0; i < indexValues.size() + placeholderIndex.size(); i++) {
-            if (placeholderIndex.contains(i)) {
-                stringBuilder.append("?");
-            } else {
-                stringBuilder.append('"').append(indexValues.get(i)).append('"');
-            }
-            stringBuilder.append(", ");
-        }
-        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length()).append(")");
-        return stringBuilder.toString();
+        
     }
 }
