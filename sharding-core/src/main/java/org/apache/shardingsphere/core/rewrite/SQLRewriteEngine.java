@@ -302,6 +302,9 @@ public final class SQLRewriteEngine {
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         Optional<Condition> encryptCondition = getEncryptCondition(encryptColumnToken);
+        if (encryptColumnToken.isInWhere() && !encryptCondition.isPresent()) {
+            throw new ShardingException("Can not find encrypt condition");
+        }
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValues(encryptColumnToken, encryptCondition));
         encryptParameters(getPositionIndexes(encryptColumnToken, encryptCondition), encryptColumnValues);
         sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), 
@@ -313,9 +316,6 @@ public final class SQLRewriteEngine {
     private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
         List<Condition> conditions = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
         if (0 == conditions.size()) {
-            if (encryptColumnToken.isInWhere()) {
-                throw new ShardingException("Can not find encrypt condition");
-            }
             return Optional.absent();
         }
         if (1 == conditions.size()) {
