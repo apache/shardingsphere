@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package io.shardingsphere.example.spring.boot.jpa.orche;
+package io.shardingsphere.example.spring.boot.mybatis.orche;
 
-import io.shardingsphere.example.repository.api.senario.JPACommonServiceScenario;
-import io.shardingsphere.example.repository.api.senario.JPATransactionServiceScenario;
+import io.shardingsphere.example.repository.api.senario.AnnotationCommonServiceScenario;
+import io.shardingsphere.example.repository.api.senario.AnnotationTractionServiceScenario;
 import io.shardingsphere.example.repository.api.trace.SpringResultAssertUtils;
-import io.shardingsphere.example.repository.jpa.service.SpringEntityService;
-import io.shardingsphere.example.repository.jpa.service.SpringEntityTransactionService;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactionService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,27 +32,26 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootTestMain.class)
-@ActiveProfiles("local-zookeeper-master-slave")
-public class SpringBootLocalZookeeperMasterSlaveTest extends SpringBootBaseTest {
+@ActiveProfiles("cloud-zookeeper-sharding-tables")
+public class SpringBootCloudZookeeperShardingTablesTest extends SpringBootBaseTest {
     
     @Autowired
-    private SpringEntityService commonService;
+    private SpringPojoService commonService;
     
     @Autowired
     @Qualifier("jdbcTransactionService")
-    private SpringEntityTransactionService transactionService;
-    
+    private SpringPojoTransactionService transactionService;
     
     @Test
     public void assertCommonService() {
-        JPACommonServiceScenario scenario = new JPACommonServiceScenario(commonService);
+        AnnotationCommonServiceScenario scenario = new AnnotationCommonServiceScenario(commonService);
         scenario.process();
-        SpringResultAssertUtils.assertMasterSlaveResult(commonService);
+        SpringResultAssertUtils.assertShardingTableResult(commonService);
     }
     
     @Test
     public void assertTransactionService() {
-        JPATransactionServiceScenario scenario = new JPATransactionServiceScenario(transactionService);
+        AnnotationTractionServiceScenario scenario = new AnnotationTractionServiceScenario(transactionService);
         scenario.process();
         SpringResultAssertUtils.assertTransactionServiceResult(transactionService);
     }

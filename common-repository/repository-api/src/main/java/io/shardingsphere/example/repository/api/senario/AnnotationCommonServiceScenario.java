@@ -33,9 +33,9 @@ public final class AnnotationCommonServiceScenario implements Scenario {
     
     @Override
     public void process() {
-        commonService.initEnvironment();
-        commonService.processSuccess();
         try {
+            commonService.initEnvironment();
+            commonService.processSuccess();
             commonService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
