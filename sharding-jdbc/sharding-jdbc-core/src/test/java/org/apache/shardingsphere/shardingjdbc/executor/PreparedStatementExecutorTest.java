@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -75,7 +76,12 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("test");
+        when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getInt(1)).thenReturn(1);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
         assertThat((int) actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
@@ -103,6 +109,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
+        
         List<QueryResult> result = actual.executeQuery();
         List<ResultSet> resultSets = Arrays.asList(resultSet1, resultSet2);
         for (int i = 0; i < result.size(); i++) {
