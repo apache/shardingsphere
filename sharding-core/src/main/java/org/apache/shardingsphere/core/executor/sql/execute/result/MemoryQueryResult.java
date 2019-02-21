@@ -162,11 +162,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @SneakyThrows
     private Object decode(final String columnLabel, final Object value) {
-        Collection<Integer> index = columnLabelAndIndexes.get(columnLabel);
-        if (index.isEmpty()) {
-            return value;
-        }
-        return decode(index.iterator().next(), value);
+        return decode(getColumnIndex(columnLabel), value);
     }
     
     @SneakyThrows
