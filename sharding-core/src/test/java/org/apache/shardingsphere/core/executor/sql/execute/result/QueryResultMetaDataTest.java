@@ -17,13 +17,33 @@
 
 package org.apache.shardingsphere.core.executor.sql.execute.result;
 
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class QueryResultMetaDataTest {
     
+    private QueryResultMetaData queryResultMetaData;
+    
     @Before
+    @SneakyThrows
     public void setUp() {
+        getResultMetaData();
+    }
+    
+    private ResultSetMetaData getResultMetaData() throws SQLException {
+        ResultSetMetaData result = mock(ResultSetMetaData.class);
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnName(anyInt())).thenReturn("column");
+        when(result.getColumnLabel(anyInt())).thenReturn("label");
+        when(result.getTableName(anyInt())).thenReturn("table");
     }
     
     @Test
