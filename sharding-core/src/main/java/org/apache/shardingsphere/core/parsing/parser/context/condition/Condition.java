@@ -67,7 +67,8 @@ public class Condition {
     }
     
     public Condition(final Column column, final SQLExpression sqlExpression) {
-        this(column, ShardingOperator.EQUAL.name(), sqlExpression);
+        this(column, ShardingOperator.EQUAL);
+        init(sqlExpression, 0);
     }
     
     public Condition(final Column column, final String compareOperator, final SQLExpression sqlExpression) {
