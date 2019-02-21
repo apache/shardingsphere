@@ -49,19 +49,14 @@ public final class QueryResultMetaData {
     
     private final Multimap<String, Integer> columnLabelAndIndexes;
     
-    private final Iterator<QueryRow> resultData;
-    
-    private QueryRow currentRow;
-    
     private final ResultSetMetaData resultSetMetaData;
     
     private final ShardingRule shardingRule;
     
     @SneakyThrows 
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
-        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSet.getMetaData());
-        resultData = getResultData(resultSet);
-        this.resultSetMetaData = resultSet.getMetaData();
+        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
+        this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
     }
     
@@ -74,75 +69,11 @@ public final class QueryResultMetaData {
         return result;
     }
     
-    @SneakyThrows
-    private Iterator<QueryRow> getResultData(final ResultSet resultSet) {
-        Collection<QueryRow> result = new LinkedList<>();
-        while (resultSet.next()) {
-            List<Object> rowData = new ArrayList<>(columnLabelAndIndexes.size());
-            for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                rowData.add(resultSet.getObject(columnIndex));
-            }
-            result.add(new QueryRow(rowData));
-        }
-        return result.iterator();
-    }
-    
-    @Override
-    public boolean next() {
-        if (resultData.hasNext()) {
-            currentRow = resultData.next();
-            return true;
-        }
-        currentRow = null;
-        return false;
-    }
-    
-    @Override
-    public Object getValue(final int columnIndex, final Class<?> type) {
-        return decrypt(columnIndex, currentRow.getColumnValue(columnIndex));
-    }
-    
-    @Override
-    public Object getValue(final String columnLabel, final Class<?> type) {
-        return decrypt(columnLabel, currentRow.getColumnValue(getColumnIndex(columnLabel)));
-    }
-    
-    @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(columnIndex);
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(getColumnIndex(columnLabel));
-    }
-    
-    @Override
-    public InputStream getInputStream(final int columnIndex, final String type) {
-        return getInputStream(currentRow.getColumnValue(columnIndex));
-    }
-    
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) {
-        return getInputStream(currentRow.getColumnValue(getColumnIndex(columnLabel)));
-    }
-    
-    @SneakyThrows
-    private InputStream getInputStream(final Object value) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(value);
-        objectOutputStream.flush();
-        objectOutputStream.close();
-        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-    }
-    
-    @Override
-    public boolean wasNull() {
-        return null == currentRow;
-    }
-    
-    @Override
+    /**
+     * Get column count.
+     * 
+     * @return column count
+     */
     public int getColumnCount() {
         return columnLabelAndIndexes.size();
     }
