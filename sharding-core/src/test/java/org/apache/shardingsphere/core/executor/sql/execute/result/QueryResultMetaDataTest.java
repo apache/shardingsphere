@@ -78,7 +78,8 @@ public class QueryResultMetaDataTest {
     }
     
     @Test
-    public void testGetColumnName() {
+    public void assertGetColumnName() {
+        assertThat(queryResultMetaData.getColumnName(1), is("column"));
     }
     
     @Test
