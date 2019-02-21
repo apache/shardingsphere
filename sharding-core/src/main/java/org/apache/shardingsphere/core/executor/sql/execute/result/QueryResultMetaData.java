@@ -119,11 +119,11 @@ public final class QueryResultMetaData {
     /**
      * Get sharding encryptor.
      * 
-     * @param logicTableName logic table name
-     * @param columnName column name
+     * @param columnIndex column index
      * @return sharding encryptor optional
      */
-    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
-        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
+    @SneakyThrows
+    public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
+        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
     }
 }
