@@ -40,6 +40,8 @@ public class QueryResultMetaDataTest {
     
     private QueryResultMetaData queryResultMetaData;
     
+    private ShardingEncryptor shardingEncryptor;
+    
     @Before
     @SneakyThrows
     public void setUp() {
@@ -49,7 +51,7 @@ public class QueryResultMetaDataTest {
     }
     
     private ShardingRule getShardingRule() {
-        ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+        shardingEncryptor = mock(ShardingEncryptor.class);
         ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
         when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
         ShardingRule result = mock(ShardingRule.class);
@@ -88,6 +90,7 @@ public class QueryResultMetaDataTest {
     }
     
     @Test
-    public void testGetShardingEncryptor() {
+    public void assertGetShardingEncryptor() {
+        assertThat(queryResultMetaData.getShardingEncryptor(1).get(), is(shardingEncryptor));
     }
 }
