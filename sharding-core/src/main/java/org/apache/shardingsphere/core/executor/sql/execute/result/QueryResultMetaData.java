@@ -116,7 +116,14 @@ public final class QueryResultMetaData {
         return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
     }
     
-    private Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
+    /**
+     * Get sharding encryptor.
+     * 
+     * @param logicTableName logic table name
+     * @param columnName column name
+     * @return
+     */
+    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
         return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
     }
 }
