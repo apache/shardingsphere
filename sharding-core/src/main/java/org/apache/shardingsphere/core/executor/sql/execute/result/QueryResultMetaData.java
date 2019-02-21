@@ -21,23 +21,12 @@ import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -78,8 +67,14 @@ public final class QueryResultMetaData {
         return columnLabelAndIndexes.size();
     }
     
-    @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
+    /**
+     * Get column label.
+     * 
+     * @param columnIndex column index
+     * @return column label
+     */
+    @SneakyThrows
+    public String getColumnLabel(final int columnIndex) {
         for (Entry<String, Integer> entry : columnLabelAndIndexes.entries()) {
             if (columnIndex == entry.getValue()) {
                 return entry.getKey();
