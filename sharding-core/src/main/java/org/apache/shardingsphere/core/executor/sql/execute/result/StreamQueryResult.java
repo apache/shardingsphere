@@ -132,23 +132,23 @@ public final class StreamQueryResult implements QueryResult {
         if (Object.class == type) {
             result = decode(columnLabel, resultSet.getObject(columnLabel));
         } else if (boolean.class == type) {
-            result = resultSet.getBoolean(columnLabel);
+            result = decode(columnLabel, resultSet.getBoolean(columnLabel));
         } else if (byte.class == type) {
-            result = resultSet.getByte(columnLabel);
+            result = decode(columnLabel, resultSet.getByte(columnLabel));
         } else if (short.class == type) {
             result = decode(columnLabel, resultSet.getShort(columnLabel));
         } else if (int.class == type) {
             result = decode(columnLabel, resultSet.getInt(columnLabel));
         } else if (long.class == type) {
-            result = resultSet.getLong(columnLabel);
+            result = decode(columnLabel, resultSet.getLong(columnLabel));
         } else if (float.class == type) {
-            result = resultSet.getFloat(columnLabel);
+            result = decode(columnLabel, resultSet.getFloat(columnLabel));
         } else if (double.class == type) {
-            result = resultSet.getDouble(columnLabel);
+            result = decode(columnLabel, resultSet.getDouble(columnLabel));
         } else if (String.class == type) {
-            result = resultSet.getString(columnLabel);
+            result = decode(columnLabel, resultSet.getString(columnLabel));
         } else if (BigDecimal.class == type) {
-            result = resultSet.getBigDecimal(columnLabel);
+            result = decode(columnLabel, resultSet.getBigDecimal(columnLabel));
         } else if (byte[].class == type) {
             result = resultSet.getBytes(columnLabel);
         } else if (Date.class == type) {
@@ -168,7 +168,7 @@ public final class StreamQueryResult implements QueryResult {
         } else if (Reader.class == type) {
             result = resultSet.getCharacterStream(columnLabel);
         } else {
-            result = resultSet.getObject(columnLabel);
+            result = decode(columnLabel, resultSet.getObject(columnLabel));
         }
         return result;
     }
