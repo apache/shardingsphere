@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -65,8 +68,9 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
         when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
+    
+        ShardingRule shardingRule = getShardingRule();
+        
         when(shardingContext.getShardingRule()).thenReturn(shardingRule);
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
@@ -75,6 +79,17 @@ public abstract class AbstractBaseExecutorTest {
         dataSourceSourceMap.put("ds_1", dataSource);
         ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
         connection = new ShardingConnection(dataSourceSourceMap, shardingContext, shardingTransactionManagerEngine, TransactionType.LOCAL);
+    }
+    
+    private ShardingRule getShardingRule() {
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
+        ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+        when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
+        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
+        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        return shardingRule;
     }
     
     private ShardingProperties getShardingProperties() {
