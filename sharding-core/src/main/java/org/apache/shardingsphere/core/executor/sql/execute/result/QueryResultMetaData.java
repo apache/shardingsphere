@@ -59,6 +59,18 @@ public final class QueryResultMetaData {
     }
     
     /**
+     * Get table name.
+     *
+     * @param columnIndex column index
+     * @return column name
+     */
+    @SneakyThrows
+    private String getTableName(final int columnIndex) {
+        String actualTableName = resultSetMetaData.getTableName(columnIndex);
+        return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
+    }
+    
+    /**
      * Get column count.
      * 
      * @return column count
@@ -84,19 +96,24 @@ public final class QueryResultMetaData {
     }
     
     /**
+     * Get column name.
+     * 
+     * @param columnIndex column index
+     * @return column name
+     */
+    @SneakyThrows
+    public String getColumnName(final int columnIndex) {
+        return resultSetMetaData.getColumnName(columnIndex);
+    }
+    
+    /**
      * Get column index.
      * 
      * @param columnLabel column label
      * @return column name
      */
-    private Integer getColumnIndex(final String columnLabel) {
+    public Integer getColumnIndex(final String columnLabel) {
         return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
-    }
-    
-    @SneakyThrows
-    private String getLogicTableName(final int columnIndex) {
-        String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
     }
     
     private Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
