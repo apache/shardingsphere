@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import com.google.common.base.Optional;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractResultSetAdapter;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -38,9 +34,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Result that support sharding.
@@ -52,17 +46,9 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private final MergedResult mergeResultSet;
     
-    private final Map<String, Integer> columnLabelIndexMap = new LinkedHashMap<>();
-    
     public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement) {
         super(resultSets, statement);
         this.mergeResultSet = mergeResultSet;
-    }
-    
-    public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Map<String, Integer> columnLabelIndexMap, final Statement statement) {
-        super(resultSets, statement);
-        this.mergeResultSet = mergeResultSet;
-        this.columnLabelIndexMap.putAll(columnLabelIndexMap);
     }
     
     @Override
@@ -331,7 +317,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
-        return mergeResultSet.getValue(columnIndex, Object.class;
+        return mergeResultSet.getValue(columnIndex, Object.class);
     }
     
     @Override
