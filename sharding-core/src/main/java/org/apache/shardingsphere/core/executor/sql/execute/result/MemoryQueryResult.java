@@ -98,7 +98,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.getColumnValue(columnIndex);
+        return decode(currentRow.getColumnValue(columnIndex), columnIndex);
     }
     
     @Override
@@ -166,11 +166,11 @@ public final class MemoryQueryResult implements QueryResult {
         if (index.isEmpty()) {
             return value;
         }
-        return decode(value, index.iterator().next());
+        return decode(index.iterator().next(), value);
     }
     
     @SneakyThrows
-    private Object decode(final Object value, final int columnIndex) {
+    private Object decode(final int columnIndex, final Object value) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine(getLogicTableName(columnIndex), metaData.getColumnName(columnIndex));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
