@@ -98,12 +98,12 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return decode(currentRow.getColumnValue(columnIndex), columnIndex);
+        return decode(columnIndex, currentRow.getColumnValue(columnIndex));
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.getColumnValue(getColumnIndex(columnLabel));
+        return decode(columnLabel, currentRow.getColumnValue(getColumnIndex(columnLabel)));
     }
     
     @Override
@@ -161,7 +161,7 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Object decode(final Object value, final String columnLabel) {
+    private Object decode(final String columnLabel, final Object value) {
         Collection<Integer> index = columnLabelAndIndexes.get(columnLabel);
         if (index.isEmpty()) {
             return value;
