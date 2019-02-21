@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -28,11 +32,13 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collection;
 
 /**
  * Query result for stream loading.
@@ -44,6 +50,10 @@ import java.util.Calendar;
 public final class StreamQueryResult implements QueryResult {
     
     private final ResultSet resultSet;
+    
+    private final ResultSetMetaData metaData;
+    
+    private final ShardingRule shardingRule;
     
     @Override
     public boolean next() throws SQLException {
@@ -215,5 +225,30 @@ public final class StreamQueryResult implements QueryResult {
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         return resultSet.getMetaData().getColumnLabel(columnIndex);
+    }
+    
+    @SneakyThrows
+    private Object decode(final String columnLabel, final Object value) {
+        Collection<Integer> index = columnLabelAndIndexes.get(columnLabel);
+        if (index.isEmpty()) {
+            return value;
+        }
+        return decode(index.iterator().next(), value);
+    }
+    
+    @SneakyThrows
+    private Object decode(final int columnIndex, final Object value) {
+        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine(getLogicTableName(columnIndex), metaData.getColumnName(columnIndex));
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
+    }
+    
+    @SneakyThrows
+    private String getLogicTableName(final int columnIndex) {
+        String actualTableName = metaData.getTableName(columnIndex);
+        return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
+    }
+    
+    private Optional<ShardingEncryptor> getShardingEncryptorEngine(final String logicTableName, final String columnName) {
+        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
     }
 }
