@@ -59,15 +59,6 @@ public final class StreamQueryResult implements QueryResult {
         metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
-    @SneakyThrows
-    private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
-        Multimap<String, Integer> result = HashMultimap.create();
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
-        }
-        return result;
-    }
-    
     @Override
     public boolean next() throws SQLException {
         return resultSet.next();
@@ -231,13 +222,13 @@ public final class StreamQueryResult implements QueryResult {
     }
     
     @Override
-    public int getColumnCount() throws SQLException {
-        return resultSet.getMetaData().getColumnCount();
+    public int getColumnCount() {
+        return metaData.getColumnCount();
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
-        return resultSet.getMetaData().getColumnLabel(columnIndex);
+    public String getColumnLabel(final int columnIndex) {
+        return metaData.getColumnLabel(columnIndex);
     }
     
     @SneakyThrows
