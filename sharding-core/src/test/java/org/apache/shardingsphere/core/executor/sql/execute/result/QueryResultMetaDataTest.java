@@ -73,7 +73,8 @@ public class QueryResultMetaDataTest {
     }
     
     @Test
-    public void testGetColumnLabel() {
+    public void assertGetColumnLabel() {
+        assertThat(queryResultMetaData.getColumnLabel(1), is("label"));
     }
     
     @Test
