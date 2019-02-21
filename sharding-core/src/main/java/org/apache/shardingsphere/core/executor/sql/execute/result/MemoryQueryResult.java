@@ -175,13 +175,13 @@ public final class MemoryQueryResult implements QueryResult {
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
     
-    private Optional<ShardingEncryptor> getShardingEncryptorEngine(final String logicTableName, final String columnName) {
-        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
-    }
-    
     @SneakyThrows
     private String getLogicTableName(final int columnIndex) {
         String actualTableName = metaData.getTableName(columnIndex);
         return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
+    }
+    
+    private Optional<ShardingEncryptor> getShardingEncryptorEngine(final String logicTableName, final String columnName) {
+        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
     }
 }
