@@ -43,6 +43,7 @@ public class QueryResultMetaDataTest {
     public void setUp() {
         ResultSetMetaData resultSetMetaData = getResultMetaData();
         ShardingRule shardingRule = getShardingRule();
+        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule);
     }
     
     private ShardingRule getShardingRule() {
@@ -52,6 +53,7 @@ public class QueryResultMetaDataTest {
         ShardingRule result = mock(ShardingRule.class);
         when(result.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
         when(result.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
+        return result;
     }
     
     private ResultSetMetaData getResultMetaData() throws SQLException {
@@ -60,6 +62,7 @@ public class QueryResultMetaDataTest {
         when(result.getColumnName(anyInt())).thenReturn("column");
         when(result.getColumnLabel(anyInt())).thenReturn("label");
         when(result.getTableName(anyInt())).thenReturn("table");
+        return result;
     }
     
     @Test
