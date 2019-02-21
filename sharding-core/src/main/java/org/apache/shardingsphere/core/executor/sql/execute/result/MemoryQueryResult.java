@@ -49,33 +49,18 @@ import java.util.Map.Entry;
  */
 public final class MemoryQueryResult implements QueryResult {
     
-    private final Multimap<String, Integer> columnLabelAndIndexes;
-    
     private final Iterator<QueryRow> resultData;
     
     private QueryRow currentRow;
     
-    private final ResultSetMetaData metaData;
-    
-    private final ShardingRule shardingRule;
+    private final QueryResultMetaData metaData;
     
     @SneakyThrows 
     public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
-        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSet.getMetaData());
         resultData = getResultData(resultSet);
-        this.metaData = resultSet.getMetaData();
-        this.shardingRule = shardingRule;
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
-    
-    @SneakyThrows
-    private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
-        Multimap<String, Integer> result = HashMultimap.create();
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
-        }
-        return result;
-    }
-    
+        
     @SneakyThrows
     private Iterator<QueryRow> getResultData(final ResultSet resultSet) {
         Collection<QueryRow> result = new LinkedList<>();
