@@ -43,12 +43,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Com query backend handler factory.
+ * Text protocol backend handler factory.
  *
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ComQueryBackendHandlerFactory {
+public final class TextProtocolBackendHandlerFactory {
     
     private static final String SCTL_SET = "SCTL:SET";
     
@@ -59,13 +59,13 @@ public final class ComQueryBackendHandlerFactory {
     private static final List<String> GUI_SQL = Arrays.asList("SET NAMES", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION");
     
     /**
-     * Create new text protocol backend handler instance.
+     * Create new instance of text protocol backend handler.
      *
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public static TextProtocolBackendHandler createTextProtocolBackendHandler(final String sql, final BackendConnection backendConnection) {
+    public static TextProtocolBackendHandler newInstance(final String sql, final BackendConnection backendConnection) {
         Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql.toUpperCase());
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);

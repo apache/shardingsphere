@@ -37,7 +37,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ComQueryBackendHandlerFactoryTest.class, 
+        TextProtocolBackendHandlerFactoryTest.class, 
         BroadcastBackendHandlerTest.class, 
         ShowDatabasesBackendHandlerTest.class, 
         SkipBackendHandlerTest.class, 

@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.text.ComQueryBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -57,7 +57,7 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     public MySQLComPacketQuery(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        textProtocolBackendHandler = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(sql, backendConnection);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
     }
     
     public MySQLComPacketQuery(final int sequenceId, final String sql) {
