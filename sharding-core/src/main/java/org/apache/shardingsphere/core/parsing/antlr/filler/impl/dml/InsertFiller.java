@@ -136,7 +136,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {
                 Column column = iterator.next();
                 boolean shardingColumn = shardingRule.isShardingColumn(column);
-                SQLExpression sqlExpression = orConditionFiller.buildExpression(commonExpressionSegment, sql).get();
+                SQLExpression sqlExpression = commonExpressionSegment.convertToSQLExpression(sql).get();
                 insertValue.getColumnValues().add(sqlExpression);
                 if (shardingColumn) {
                     if (!(-1 < commonExpressionSegment.getPlaceholderIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {

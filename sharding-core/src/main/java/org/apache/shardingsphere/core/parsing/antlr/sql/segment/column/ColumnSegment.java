@@ -23,6 +23,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.List;
@@ -66,5 +68,10 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     @Override
     public final Optional<String> getOwner() {
         return Optional.fromNullable(owner);
+    }
+
+    @Override
+    public Condition buildCondition(final Column column, final String sql) {
+        throw new RuntimeException("Unsupported right column segment to condition ");
     }
 }

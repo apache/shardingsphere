@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 
 /**
  * SQL right value expression segment.
@@ -25,4 +27,11 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
  * @author duhongjun
  */
 public interface SQLRightValueExpressionSegment extends SQLSegment {
+    
+    /**
+     * Build condition.
+     *
+     * @return condition
+     */
+    Condition buildCondition(Column column, String sql);
 }

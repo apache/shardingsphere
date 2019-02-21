@@ -25,17 +25,19 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Equals value expression segment.
- *
+ * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class EqualsValueExpressionSegment implements SQLRightValueExpressionSegment {
+public final class CompareValueExpressionSegment implements SQLRightValueExpressionSegment {
     
     private final ExpressionSegment expression;
     
+    private final String compareOperator;
+
     @Override
     public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, expression.convertToSQLExpression(sql).get());
+        return new Condition(column, compareOperator, expression.convertToSQLExpression(sql).get());
     }
 }

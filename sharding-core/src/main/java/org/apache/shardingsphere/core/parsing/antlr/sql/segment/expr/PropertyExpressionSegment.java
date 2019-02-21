@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +47,10 @@ public final class PropertyExpressionSegment implements ExpressionSegment {
      */
     public Optional<String> getOwner() {
         return Optional.fromNullable(owner);
+    }
+
+    @Override
+    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
+        throw new RuntimeException("Unsupported convert property expression");
     }
 }

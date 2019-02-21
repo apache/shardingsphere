@@ -17,23 +17,26 @@
 
 package org.apache.shardingsphere.core.parsing.parser.context.condition;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
+
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Condition.
@@ -51,6 +54,9 @@ public class Condition {
     
     private final ShardingOperator operator;
     
+    @Setter
+    private String compareOperator;
+    
     private final Map<Integer, Comparable<?>> positionValueMap = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
@@ -61,7 +67,17 @@ public class Condition {
     }
     
     public Condition(final Column column, final SQLExpression sqlExpression) {
-        this(column, ShardingOperator.EQUAL);
+        this(column, ShardingOperator.EQUAL.name(), sqlExpression);
+    }
+    
+    public Condition(final Column column, final String compareOperator, final SQLExpression sqlExpression) {
+        this.column = column;
+        this.compareOperator = compareOperator;
+        if (Symbol.EQ.getLiterals().equals(compareOperator)) {
+            operator = ShardingOperator.EQUAL;
+        } else {
+            operator = null;
+        }
         init(sqlExpression, 0);
     }
     
@@ -79,7 +95,7 @@ public class Condition {
             count++;
         }
     }
- 
+    
     private void init(final SQLExpression sqlExpression, final int position) {
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             positionIndexMap.put(position, ((SQLPlaceholderExpression) sqlExpression).getIndex());
@@ -92,7 +108,7 @@ public class Condition {
     
     /**
      * Get condition values.
-     * 
+     *
      * @param parameters parameters
      * @return condition values
      */

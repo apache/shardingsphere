@@ -31,21 +31,13 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSeg
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.BetweenValueExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.EqualsValueExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
+import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Tables;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
@@ -69,10 +61,10 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     /**
      * Build condition.
      *
-     * @param sqlSegment SQL segment
-     * @param sqlStatement SQL statement
-     * @param sql SQL
-     * @param shardingRule databases and tables sharding rule
+     * @param sqlSegment            SQL segment
+     * @param sqlStatement          SQL statement
+     * @param sql                   SQL
+     * @param shardingRule          databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      * @return or condition
      */
@@ -81,7 +73,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        return filterShardingCondition(shardingTableMetaData, sqlStatement, sqlSegment, sql, shardingRule, columnNameToTable, columnNameCount);
+        return filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, sql, shardingRule, columnNameToTable, columnNameCount);
     }
     
     private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
@@ -104,8 +96,8 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         }
     }
     
-    private OrCondition filterShardingCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql,
-                                                final ShardingRule shardingRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql,
+                                        final ShardingRule shardingRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
@@ -120,7 +112,9 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                     needSharding = true;
                     continue;
                 }
-                if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition)))) {
+                Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
+                fillEncryptCondition(column, condition, shardingRule, sqlStatement, sql);
+                if (shardingRule.isShardingColumn(column)) {
                     shardingCondition.add(condition);
                     needSharding = true;
                 }
@@ -154,44 +148,38 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         orCondition.getAndConditions().add(andConditionResult);
         for (ConditionSegment eachCondition : shardingCondition) {
             Column column = new Column(eachCondition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, eachCondition));
-            if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
-                EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                Optional<Condition> condition = buildEqualsCondition(column, expressionSegment.getExpression(), sql);
-                if (condition.isPresent()) {
-                    andConditionResult.getConditions().add(condition.get());
-                }
-                continue;
-            }
-            if (ShardingOperator.IN == eachCondition.getOperator()) {
-                InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
-                List<SQLExpression> expressions = new LinkedList<>();
-                for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-                    Optional<SQLExpression> expression = buildExpression(each, sql);
-                    if (expression.isPresent()) {
-                        expressions.add(expression.get());
-                    } else {
-                        expressions.clear();
-                        break;
-                    }
-                }
-                if (!expressions.isEmpty()) {
-                    andConditionResult.getConditions().add(new Condition(column, expressions));
-                }
-                continue;
-            }
-            if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
-                BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                Optional<SQLExpression> beginExpress = buildExpression(expressionSegment.getBeginExpress(), sql);
-                if (!beginExpress.isPresent()) {
-                    continue;
-                }
-                Optional<SQLExpression> endExpress = buildExpression(expressionSegment.getEndExpress(), sql);
-                if (!endExpress.isPresent()) {
-                    continue;
-                }
-                andConditionResult.getConditions().add(new Condition(column, beginExpress.get(), endExpress.get()));
+            Condition condition = eachCondition.getExpression().buildCondition(column, sql);
+            if (isShardingCondition(eachCondition.getOperator())) {
+                andConditionResult.getConditions().add(condition);
             }
         }
+    }
+    
+    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final ShardingRule shardingRule, final SQLStatement sqlStatement, final String sql) {
+        if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+            return;
+        }
+        AndCondition andCondition;
+        if (0 == sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().size()) {
+            andCondition = new AndCondition();
+            sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(andCondition);
+        } else {
+            andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
+        }
+        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sql));
+    }
+    
+    private boolean isShardingCondition(final String operator) {
+        if (Symbol.EQ.getLiterals().equals(operator)) {
+            return true;
+        }
+        if (ShardingOperator.IN.name().equals(operator)) {
+            return true;
+        }
+        if (ShardingOperator.BETWEEN.name().equals(operator)) {
+            return true;
+        }
+        return false;
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
@@ -223,14 +211,6 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         }
     }
     
-    private Optional<Condition> buildEqualsCondition(final Column column, final ExpressionSegment expressionSegment, final String sql) {
-        Optional<SQLExpression> expression = buildExpression(expressionSegment, sql);
-        if (expression.isPresent()) {
-            return Optional.of(new Condition(column, expression.get()));
-        }
-        return Optional.absent();
-    }
-    
     private String getTableNameFromMetaData(final ShardingTableMetaData shardingTableMetaData, final Tables tables, final String columnName) {
         for (String each : tables.getTableNames()) {
             TableMetaData tableMetaData = shardingTableMetaData.get(each);
@@ -241,30 +221,5 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             }
         }
         return "";
-    }
-    
-    
-    /**
-     * Build expression.
-     *
-     * @param expressionSegment expression segment
-     * @param sql SQL
-     * @return condition
-     */
-    public Optional<SQLExpression> buildExpression(final ExpressionSegment expressionSegment, final String sql) {
-        if (!(expressionSegment instanceof CommonExpressionSegment)) {
-            return Optional.absent();
-        }
-        CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment) expressionSegment;
-        if (-1 < commonExpressionSegment.getPlaceholderIndex()) {
-            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getPlaceholderIndex()));
-        }
-        if (null != commonExpressionSegment.getValue()) {
-            return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
-        }
-        if (commonExpressionSegment.isText()) {
-            return Optional.<SQLExpression>of(new SQLTextExpression(sql.substring(commonExpressionSegment.getStartIndex() + 1, commonExpressionSegment.getStopIndex())));
-        }
-        return Optional.<SQLExpression>of(new SQLTextExpression(sql.substring(commonExpressionSegment.getStartIndex(), commonExpressionSegment.getStopIndex() + 1)));
     }
 }

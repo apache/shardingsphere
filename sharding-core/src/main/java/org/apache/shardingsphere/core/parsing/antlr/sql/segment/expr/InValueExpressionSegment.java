@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * In value expression segment.
- * 
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
@@ -33,4 +37,13 @@ import java.util.List;
 public final class InValueExpressionSegment implements SQLRightValueExpressionSegment {
     
     private final List<ExpressionSegment> sqlExpressions = new LinkedList<>();
+    
+    @Override
+    public Condition buildCondition(final Column column, final String sql) {
+        List<SQLExpression> result = new LinkedList<>();
+        for (ExpressionSegment each : sqlExpressions) {
+            result.add(each.convertToSQLExpression(sql).get());
+        }
+        return new Condition(column, result);
+    }
 }

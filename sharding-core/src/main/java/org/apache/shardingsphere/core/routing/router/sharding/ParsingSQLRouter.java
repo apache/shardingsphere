@@ -144,15 +144,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
     }
     
-    private boolean isListShardingValue(final ShardingCondition shardingCondition) {
-        for (RouteValue each : shardingCondition.getShardingValues()) {
-            if (!(each instanceof ListRouteValue)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     private boolean isSameShardingCondition(final ShardingConditions shardingConditions) {
         ShardingCondition example = shardingConditions.getShardingConditions().remove(shardingConditions.getShardingConditions().size() - 1);
         for (ShardingCondition each : shardingConditions.getShardingConditions()) {
