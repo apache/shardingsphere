@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -46,14 +47,32 @@ import java.util.Collection;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class StreamQueryResult implements QueryResult {
+    
+    private final Multimap<String, Integer> columnLabelAndIndexes;
     
     private final ResultSet resultSet;
     
     private final ResultSetMetaData metaData;
     
     private final ShardingRule shardingRule;
+    
+    @SneakyThrows
+    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
+        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSet.getMetaData());
+        this.resultSet = resultSet;
+        this.metaData = resultSet.getMetaData();
+        this.shardingRule = shardingRule;
+    }
+    
+    @SneakyThrows
+    private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
+        Multimap<String, Integer> result = HashMultimap.create();
+        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+        }
+        return result;
+    }
     
     @Override
     public boolean next() throws SQLException {
