@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.set;
 
-import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLStatement;
 
 /**
- * Sharding CTL parser interface.
+ * Sharding CTL set statement.
  *
  * @author zhaojun
- * @param <T> type of sharding CTL statement
  */
-public interface ShardingCTLParser<T extends ShardingCTLStatement> {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingCTLSetStatement implements ShardingCTLStatement {
     
-    /**
-     * Do sharding CTL parse.
-     *
-     * @return sharding CTL statement.
-     */
-    Optional<T> doParse();
+    private final String key;
+    
+    private final String value;
 }
-

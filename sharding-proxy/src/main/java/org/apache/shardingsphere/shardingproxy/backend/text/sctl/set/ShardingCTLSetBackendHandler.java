@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl.set;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.set;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl.show;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.merger.MergedResult;

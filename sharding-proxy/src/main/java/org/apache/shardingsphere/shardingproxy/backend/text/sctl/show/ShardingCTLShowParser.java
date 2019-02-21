@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl.show;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLParser;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLParser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
