@@ -59,14 +59,16 @@ public final class MemoryQueryResult implements QueryResult {
     
     private final ShardingRule shardingRule;
     
-    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
+    @SneakyThrows 
+    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSet.getMetaData());
         resultData = getResultData(resultSet);
         this.metaData = resultSet.getMetaData();
         this.shardingRule = shardingRule;
     }
     
-    private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
+    @SneakyThrows
+    private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
         Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
@@ -74,7 +76,8 @@ public final class MemoryQueryResult implements QueryResult {
         return result;
     }
     
-    private Iterator<QueryRow> getResultData(final ResultSet resultSet) throws SQLException {
+    @SneakyThrows
+    private Iterator<QueryRow> getResultData(final ResultSet resultSet) {
         Collection<QueryRow> result = new LinkedList<>();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(columnLabelAndIndexes.size());
