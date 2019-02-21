@@ -44,7 +44,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -85,7 +84,6 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
         ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
         when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
-        when(shardingEncryptor.decrypt(anyInt())).thenReturn("decryptValue");
         ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
         when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
         when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
