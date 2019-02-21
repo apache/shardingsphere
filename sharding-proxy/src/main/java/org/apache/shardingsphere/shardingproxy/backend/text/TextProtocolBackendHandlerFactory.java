@@ -27,8 +27,7 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Use
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.set.ShardingCTLSetBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.show.ShardingCTLShowBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.GUICompatibilityBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
@@ -50,10 +49,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {
     
-    private static final String SCTL_SET = "SCTL:SET";
-    
-    private static final String SCTL_SHOW = "SCTL:SHOW";
-    
     private static final String SET_AUTOCOMMIT_1 = "SET AUTOCOMMIT=1";
     
     private static final List<String> GUI_SQL = Arrays.asList("SET NAMES", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION");
@@ -66,17 +61,16 @@ public final class TextProtocolBackendHandlerFactory {
      * @return instance of text protocol backend handler
      */
     public static TextProtocolBackendHandler newInstance(final String sql, final BackendConnection backendConnection) {
+        if (sql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
+            return ShardingCTLBackendHandlerFactory.newInstance(sql, backendConnection);
+        }
+        // TODO use sql parser engine instead of string compare
         Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql.toUpperCase());
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
         }
         if (sql.toUpperCase().contains(SET_AUTOCOMMIT_1)) {
             return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
-        }
-        if (sql.toUpperCase().startsWith(SCTL_SET)) {
-            return new ShardingCTLSetBackendHandler(sql, backendConnection);
-        } else if (sql.toUpperCase().startsWith(SCTL_SHOW)) {
-            return new ShardingCTLShowBackendHandler(sql, backendConnection);
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         return SQLType.DAL == sqlStatement.getType() ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
