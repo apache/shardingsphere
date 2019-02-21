@@ -107,99 +107,99 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
-        return (int) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, int.class), columnIndex), int.class);
+        return (int) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, int.class), int.class);
     }
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
-        return (int) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, int.class), columnLabel), int.class);
+        return (int) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, int.class), int.class);
     }
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
-        return (long) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, long.class), columnIndex), long.class);
+        return (long) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, long.class), long.class);
     }
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
-        return (long) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, long.class), columnLabel), long.class);
+        return (long) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, long.class), long.class);
     }
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
-        return (float) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, float.class), columnIndex), float.class);
+        return (float) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, float.class), float.class);
     }
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
-        return (float) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, float.class), columnLabel), float.class);
+        return (float) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, float.class), float.class);
     }
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
-        return (double) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, double.class), columnIndex), double.class);
+        return (double) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, double.class), double.class);
     }
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
-        return (double) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, double.class), columnLabel), double.class);
+        return (double) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, double.class), double.class);
     }
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return (String) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, String.class), columnIndex), String.class);
+        return (String) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        return (String) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, String.class), columnLabel), String.class);
+        return (String) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, String.class), String.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, BigDecimal.class), columnIndex), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, BigDecimal.class), columnLabel), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, BigDecimal.class), columnIndex), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, BigDecimal.class), columnLabel), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
-        return (byte[]) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, byte[].class), columnIndex), byte[].class);
+        return (byte[]) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte[].class), byte[].class);
     }
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        return (byte[]) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, byte[].class), columnLabel), byte[].class);
+        return (byte[]) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, byte[].class), byte[].class);
     }
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, Date.class), columnIndex), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, Date.class), columnLabel), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Date.class), Date.class);
     }
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), columnIndex), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
