@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -46,8 +47,8 @@ import java.util.Map.Entry;
  * @author panjuan
  * @author maxiaoguang
  */
-@Slf4j
 @NoArgsConstructor
+@Slf4j
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
     private Map<String, DataSource> dataSources;

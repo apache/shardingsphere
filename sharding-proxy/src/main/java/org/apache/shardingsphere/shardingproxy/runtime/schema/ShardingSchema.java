@@ -29,8 +29,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.event.Dis
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 
@@ -66,7 +66,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingMetaData createShardingMetaData(final boolean isCheckingMetaData) {
         return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, GlobalRegistry.getInstance().getDatabaseType(),
-                BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
+                ExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
                 GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), isCheckingMetaData);
     }
     

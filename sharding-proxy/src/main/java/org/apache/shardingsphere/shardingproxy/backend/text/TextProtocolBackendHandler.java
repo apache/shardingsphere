@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import java.sql.SQLException;
 
 /**
- * Backend handler.
+ * Text protocol backend handler.
  *
  * @author zhangliang
  */

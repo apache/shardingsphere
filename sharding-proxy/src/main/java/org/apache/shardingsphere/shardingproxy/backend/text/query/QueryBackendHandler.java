@@ -48,9 +48,8 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     @Override
     public CommandResponsePackets execute() {
         if (null == backendConnection.getLogicSchema()) {
-            MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_NO_DB_ERROR;
-            return new CommandResponsePackets(new DatabaseFailurePacket(
-                1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), "")));
+            MySQLServerErrorCode serverErrorCode = MySQLServerErrorCode.ER_NO_DB_ERROR;
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), "")));
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sql, backendConnection);
         return databaseCommunicationEngine.execute();

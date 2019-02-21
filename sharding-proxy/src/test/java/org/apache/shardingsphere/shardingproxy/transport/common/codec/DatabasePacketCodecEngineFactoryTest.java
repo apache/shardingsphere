@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.codec;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodec;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodecEngine;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
 
-public final class PacketCodecFactoryTest {
+public final class DatabasePacketCodecEngineFactoryTest {
     
     @Test
     public void assertNewInstanceForMySQL() {
-        assertThat(PacketCodecFactory.newInstance(DatabaseType.MySQL), CoreMatchers.<PacketCodec>instanceOf(MySQLPacketCodec.class));
+        assertThat(DatabasePacketCodecEngineFactory.newInstance(DatabaseType.MySQL), CoreMatchers.<DatabasePacketCodecEngine>instanceOf(MySQLPacketCodecEngine.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceForUnsupportedType() {
-        PacketCodecFactory.newInstance(DatabaseType.H2);
+        DatabasePacketCodecEngineFactory.newInstance(DatabaseType.H2);
     }
 }

@@ -23,7 +23,8 @@ import io.netty.channel.socket.SocketChannel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngineFactory;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodecFactory;
+import org.apache.shardingsphere.shardingproxy.transport.common.codec.DatabasePacketCodecEngineFactory;
+import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodec;
 
 /**
  * Channel initializer.
@@ -33,10 +34,11 @@ import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCode
 @RequiredArgsConstructor
 public final class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
     
+    @SuppressWarnings("unchecked")
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
-        pipeline.addLast(PacketCodecFactory.newInstance(GlobalRegistry.getInstance().getDatabaseType()));
+        pipeline.addLast(new PacketCodec(DatabasePacketCodecEngineFactory.newInstance(GlobalRegistry.getInstance().getDatabaseType())));
         pipeline.addLast(new FrontendChannelInboundHandler(DatabaseFrontendEngineFactory.newInstance(GlobalRegistry.getInstance().getDatabaseType())));
     }
 }

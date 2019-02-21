@@ -15,42 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.fixture;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.set;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
-
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLStatement;
 
 /**
- * Test query assisted sharding encryptor.
+ * Sharding CTL set statement.
  *
- * @author panjuan
+ * @author zhaojun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAssistedEncryptor {
+public final class ShardingCTLSetStatement implements ShardingCTLStatement {
     
-    private Properties properties = new Properties();
+    private final String key;
     
-    @Override
-    public String getType() {
-        return "assistedTest";
-    }
-    
-    @Override
-    public Object encrypt(final Object plaintext) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final Object ciphertext) {
-        return "decryptValue";
-    }
-    
-    @Override
-    public String queryAssistedEncrypt(final String plaintext) {
-        return "assistedEncryptValue";
-    }
+    private final String value;
 }

@@ -397,7 +397,8 @@ public final class InsertOptimizeEngineTest {
         assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("a"));
         assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
         assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(3), CoreMatchers.<Object>is("assistedEncryptValue"));
-        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).toString(), is("user_id = ?, status = ?, order_id = ?, assisted_user_id = ?"));
+        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).toString(), 
+                is("user_id = ?, status = ?, order_id = ?, assisted_user_id = ?"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
     }
     

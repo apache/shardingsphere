@@ -20,8 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.common.codec;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodec;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.PostgreSQLPacketCodec;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 /**
  * Database packet codec factory.
@@ -29,22 +28,24 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.Postgr
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PacketCodecFactory {
+public final class DatabasePacketCodecEngineFactory {
+    
+    static {
+        NewInstanceServiceLoader.register(DatabasePacketCodecEngine.class);
+    }
     
     /**
-     * Create new instance of packet codec instance.
+     * Create new instance of database packet codec engine instance.
      * 
      * @param databaseType database type
      * @return packet codec instance
      */
-    public static PacketCodec newInstance(final DatabaseType databaseType) {
-        switch (databaseType) {
-            case MySQL:
-                return new MySQLPacketCodec();
-            case PostgreSQL:
-                return new PostgreSQLPacketCodec();
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+    public static DatabasePacketCodecEngine newInstance(final DatabaseType databaseType) {
+        for (DatabasePacketCodecEngine each : NewInstanceServiceLoader.newServiceInstances(DatabasePacketCodecEngine.class)) {
+            if (DatabaseType.valueFrom(each.getDatabaseType()) == databaseType) {
+                return each;
+            }
         }
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
 }

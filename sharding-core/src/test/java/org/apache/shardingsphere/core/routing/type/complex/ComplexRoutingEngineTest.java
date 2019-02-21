@@ -70,7 +70,8 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new ShardingConditions(shardingConditions));
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(
+                mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new ShardingConditions(shardingConditions));
         RoutingResult routingResult = complexRoutingEngine.route();
         List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));

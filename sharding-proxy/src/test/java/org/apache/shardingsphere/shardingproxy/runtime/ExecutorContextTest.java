@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl;
+package org.apache.shardingsphere.shardingproxy.runtime;
 
-import com.google.common.base.Optional;
+import org.junit.Test;
 
-/**
- * Sharding CTL parser interface.
- *
- * @author zhaojun
- */
-public interface ShardingCTLParser<T> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ExecutorContextTest {
     
-    /**
-     * Do sharding CTL parse.
-     *
-     * @return sharding CTL statement.
-     */
-    Optional<T> doParse();
+    @Test
+    public void assertGetInstance() {
+        assertThat(ExecutorContext.getInstance().getExecuteEngine(), is(ExecutorContext.getInstance().getExecuteEngine()));
+    }
 }
-

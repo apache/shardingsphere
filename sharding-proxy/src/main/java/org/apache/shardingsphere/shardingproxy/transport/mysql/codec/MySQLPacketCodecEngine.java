@@ -19,7 +19,9 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodec;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.transport.common.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 
@@ -30,15 +32,20 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
-public final class MySQLPacketCodec extends PacketCodec<MySQLPacket> {
+public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
     
     @Override
-    protected boolean isValidHeader(final int readableBytes) {
+    public String getDatabaseType() {
+        return DatabaseType.MySQL.name();
+    }
+    
+    @Override
+    public boolean isValidHeader(final int readableBytes) {
         return readableBytes > MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
     }
     
     @Override
-    protected void doDecode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
+    public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
         int payloadLength = in.markReaderIndex().readMediumLE();
         int realPacketLength = payloadLength + MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
         if (readableBytes < realPacketLength) {
@@ -49,9 +56,9 @@ public final class MySQLPacketCodec extends PacketCodec<MySQLPacket> {
     }
     
     @Override
-    protected void doEncode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
+    public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer())) {
-            message.write(payload);
+            ((MySQLPacket) message).write(payload);
             out.writeMediumLE(payload.getByteBuf().readableBytes());
             out.writeByte(message.getSequenceId());
             out.writeBytes(payload.getByteBuf());

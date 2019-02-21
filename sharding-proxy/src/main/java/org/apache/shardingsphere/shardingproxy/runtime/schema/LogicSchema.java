@@ -56,7 +56,6 @@ public abstract class LogicSchema {
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
         eventBus.register(this);
