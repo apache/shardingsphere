@@ -253,7 +253,7 @@ public final class StreamQueryResult implements QueryResult {
     
     @SneakyThrows
     private Object decrypt(final int columnIndex, final Object value) {
-        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine(getLogicTableName(columnIndex), metaData.getColumnName(columnIndex));
+        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(getLogicTableName(columnIndex), metaData.getColumnName(columnIndex));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
     
@@ -267,7 +267,7 @@ public final class StreamQueryResult implements QueryResult {
         return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
     }
     
-    private Optional<ShardingEncryptor> getShardingEncryptorEngine(final String logicTableName, final String columnName) {
+    private Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
         return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
     }
 }
