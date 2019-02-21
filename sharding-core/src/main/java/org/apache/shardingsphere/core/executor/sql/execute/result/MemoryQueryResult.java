@@ -65,7 +65,7 @@ public final class MemoryQueryResult implements QueryResult {
     private Iterator<QueryRow> getResultData(final ResultSet resultSet) {
         Collection<QueryRow> result = new LinkedList<>();
         while (resultSet.next()) {
-            List<Object> rowData = new ArrayList<>(columnLabelAndIndexes.size());
+            List<Object> rowData = new ArrayList<>(metaData.getColumnCount());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
                 rowData.add(resultSet.getObject(columnIndex));
             }
@@ -131,17 +131,12 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public int getColumnCount() {
-        return columnLabelAndIndexes.size();
+        return metaData.getColumnCount();
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
-        for (Entry<String, Integer> entry : columnLabelAndIndexes.entries()) {
-            if (columnIndex == entry.getValue()) {
-                return entry.getKey();
-            }
-        }
-        throw new SQLException("Column index out of range", "9999");
+    public String getColumnLabel(final int columnIndex) {
+        return metaData.getColumnLabel(columnIndex);
     }
     
     private Integer getColumnIndex(final String columnLabel) {
