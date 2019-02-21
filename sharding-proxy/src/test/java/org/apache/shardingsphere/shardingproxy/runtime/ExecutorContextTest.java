@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.runtime;
 
-import org.apache.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManagerTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        ProxyTableMetaDataConnectionManagerTest.class,
-        ExecutorContextTest.class
-})
-public final class AllRuntimeTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ExecutorContextTest {
+    
+    @Test
+    public void assertGetInstance() {
+        assertThat(ExecutorContext.getInstance().getExecuteEngine(), is(ExecutorContext.getInstance().getExecuteEngine()));
+    }
 }

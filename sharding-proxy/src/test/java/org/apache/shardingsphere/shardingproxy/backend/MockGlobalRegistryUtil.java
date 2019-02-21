@@ -27,11 +27,6 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
-/**
- * Mock global registry util.
- *
- * @author zhaojun
- */
 public final class MockGlobalRegistryUtil {
     
     /**
