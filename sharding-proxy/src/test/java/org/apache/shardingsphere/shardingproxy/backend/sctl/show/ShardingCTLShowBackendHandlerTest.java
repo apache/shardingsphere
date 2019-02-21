@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl;
+package org.apache.shardingsphere.shardingproxy.backend.sctl.show;
 
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;

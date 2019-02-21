@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Use
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.sctl.set.ShardingCTLSetBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.GUICompatibilityBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;

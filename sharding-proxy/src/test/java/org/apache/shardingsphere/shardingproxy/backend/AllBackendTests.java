@@ -23,8 +23,8 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceTest;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCXABackendDataSourceFactoryTest;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.AllRecognizerTests;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.sctl.set.ShardingCTLSetBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.sctl.show.ShardingCTLShowBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandlerTest;

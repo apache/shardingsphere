@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.sctl;
 
 /**
- * Backend data source.
+ * Sharding CTL statement.
  *
  * @author zhangliang
  */
-public interface BackendDataSource {
+public interface ShardingCTLStatement {
 }

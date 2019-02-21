@@ -15,37 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl;
+package org.apache.shardingsphere.shardingproxy.backend.sctl.show;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLParser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Sharding CTL set parser.
+ * Sharding CTL show parser.
  *
  * @author zhaojun
  */
-public final class ShardingCTLSetParser implements ShardingCTLParser<ShardingCTLSetStatement> {
+public final class ShardingCTLShowParser implements ShardingCTLParser<ShardingCTLShowStatement> {
     
-    private final String regex = "sctl:set\\s+(\\S*)=(\\S*)";
+    private final String regex = "sctl:show\\s+(\\S*)";
     
     private Matcher matcher;
     
-    ShardingCTLSetParser(final String sql) {
+    ShardingCTLShowParser(final String sql) {
         this.matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
     }
     
     @Override
-    public Optional<ShardingCTLSetStatement> doParse() {
+    public Optional<ShardingCTLShowStatement> doParse() {
         if (matcher.find()) {
-            String key = matcher.group(1);
-            String value = matcher.group(2);
-            Preconditions.checkNotNull(key, "sctl key cannot be null.");
-            Preconditions.checkNotNull(value, "sctl value cannot be null.");
-            return Optional.of(new ShardingCTLSetStatement(key, value));
+            String value = matcher.group(1);
+            Preconditions.checkNotNull(value, "sctl show value cannot be null.");
+            return Optional.of(new ShardingCTLShowStatement(value));
         }
         return Optional.absent();
     }

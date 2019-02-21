@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStateHandler;
-import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.sctl.set.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.ComQueryBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
