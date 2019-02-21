@@ -204,79 +204,74 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnLabel, Date.class, cal), columnLabel), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Date.class, cal), Date.class);
     }
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, Time.class), columnIndex), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Time.class), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, Time.class), columnLabel), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Time.class), Time.class);
     }
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), columnIndex), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnLabel, Time.class, cal), columnLabel), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Time.class, cal), Time.class);
     }
             
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, Timestamp.class), columnIndex), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, Timestamp.class), columnLabel), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Timestamp.class), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), columnIndex), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnLabel, Timestamp.class, cal), columnLabel), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
     public InputStream getAsciiStream(final int columnIndex) throws SQLException {
-        Object result = decode(convert(mergeResultSet.getInputStream(columnIndex, "Ascii")), columnIndex);
-        return convert(String.valueOf(result));
+        return mergeResultSet.getInputStream(columnIndex, "Ascii");
     }
     
     @Override
     public InputStream getAsciiStream(final String columnLabel) throws SQLException {
-        Object result = decode(convert(mergeResultSet.getInputStream(columnLabel, "Ascii")), columnLabel);
-        return convert(String.valueOf(result));
+        return mergeResultSet.getInputStream(columnLabel, "Ascii");
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
-        Object result = decode(convert(mergeResultSet.getInputStream(columnIndex, "Unicode")), columnIndex);
-        return convert(String.valueOf(result));
+        return mergeResultSet.getInputStream(columnIndex, "Unicode");
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
-        Object result = decode(convert(mergeResultSet.getInputStream(columnLabel, "Unicode")), columnLabel);
-        return convert(String.valueOf(result));
+        return mergeResultSet.getInputStream(columnLabel, "Unicode");
     }
     
     @Override
     public InputStream getBinaryStream(final int columnIndex) throws SQLException {
-        Object result = decode(convert(mergeResultSet.getInputStream(columnIndex, "Binary")), columnIndex);
-        return convert(String.valueOf(result));
+        return mergeResultSet.getInputStream(columnIndex, "Binary");
     }
     
     @Override
