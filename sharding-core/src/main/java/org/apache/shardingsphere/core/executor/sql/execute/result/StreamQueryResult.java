@@ -130,25 +130,25 @@ public final class StreamQueryResult implements QueryResult {
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
         Object result;
         if (Object.class == type) {
-            result = decode(columnLabel, resultSet.getObject(columnLabel));
+            result = decrypt(columnLabel, resultSet.getObject(columnLabel));
         } else if (boolean.class == type) {
-            result = decode(columnLabel, resultSet.getBoolean(columnLabel));
+            result = decrypt(columnLabel, resultSet.getBoolean(columnLabel));
         } else if (byte.class == type) {
-            result = decode(columnLabel, resultSet.getByte(columnLabel));
+            result = decrypt(columnLabel, resultSet.getByte(columnLabel));
         } else if (short.class == type) {
-            result = decode(columnLabel, resultSet.getShort(columnLabel));
+            result = decrypt(columnLabel, resultSet.getShort(columnLabel));
         } else if (int.class == type) {
-            result = decode(columnLabel, resultSet.getInt(columnLabel));
+            result = decrypt(columnLabel, resultSet.getInt(columnLabel));
         } else if (long.class == type) {
-            result = decode(columnLabel, resultSet.getLong(columnLabel));
+            result = decrypt(columnLabel, resultSet.getLong(columnLabel));
         } else if (float.class == type) {
-            result = decode(columnLabel, resultSet.getFloat(columnLabel));
+            result = decrypt(columnLabel, resultSet.getFloat(columnLabel));
         } else if (double.class == type) {
-            result = decode(columnLabel, resultSet.getDouble(columnLabel));
+            result = decrypt(columnLabel, resultSet.getDouble(columnLabel));
         } else if (String.class == type) {
-            result = decode(columnLabel, resultSet.getString(columnLabel));
+            result = decrypt(columnLabel, resultSet.getString(columnLabel));
         } else if (BigDecimal.class == type) {
-            result = decode(columnLabel, resultSet.getBigDecimal(columnLabel));
+            result = decrypt(columnLabel, resultSet.getBigDecimal(columnLabel));
         } else if (byte[].class == type) {
             result = resultSet.getBytes(columnLabel);
         } else if (Date.class == type) {
@@ -168,7 +168,7 @@ public final class StreamQueryResult implements QueryResult {
         } else if (Reader.class == type) {
             result = resultSet.getCharacterStream(columnLabel);
         } else {
-            result = decode(columnLabel, resultSet.getObject(columnLabel));
+            result = decrypt(columnLabel, resultSet.getObject(columnLabel));
         }
         return result;
     }
@@ -247,12 +247,12 @@ public final class StreamQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Object decode(final String columnLabel, final Object value) {
-        return decode(getColumnIndex(columnLabel), value);
+    private Object decrypt(final String columnLabel, final Object value) {
+        return decrypt(getColumnIndex(columnLabel), value);
     }
     
     @SneakyThrows
-    private Object decode(final int columnIndex, final Object value) {
+    private Object decrypt(final int columnIndex, final Object value) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine(getLogicTableName(columnIndex), metaData.getColumnName(columnIndex));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
