@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.executor.ShardingExecuteGroup;
@@ -72,7 +73,9 @@ import java.util.List;
 @Setter
 public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
-    private static final Integer MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    private static final Integer MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
+    private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
     private final BackendConnection backendConnection;
     
@@ -176,7 +179,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
             Statement statement = getJdbcExecutorWrapper().createStatement(connection, routeUnit.getSqlUnit(), isReturnGeneratedKeys);
             if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
-                statement.setFetchSize(MEMORY_FETCH_ONE_ROW_A_TIME);
+                if (DatabaseType.MySQL == GlobalRegistry.getInstance().getDatabaseType()) {
+                    statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+                } else if (DatabaseType.PostgreSQL == GlobalRegistry.getInstance().getDatabaseType()) {
+                    statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+                }
             }
             return new StatementExecuteUnit(routeUnit, statement, connectionMode);
         }
