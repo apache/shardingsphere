@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,15 +49,21 @@ import java.util.Map.Entry;
  */
 public final class MemoryQueryResult implements QueryResult {
     
-    private final Multimap<String, Integer> columnLabelAndIndexMap;
+    private final Multimap<String, Integer> columnLabelAndIndexes;
     
     private final Iterator<QueryRow> resultData;
     
     private QueryRow currentRow;
     
-    public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
-        columnLabelAndIndexMap = getColumnLabelAndIndexMap(resultSet.getMetaData());
+    private final ResultSetMetaData metaData;
+    
+    private final ShardingRule shardingRule;
+    
+    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
+        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSet.getMetaData());
         resultData = getResultData(resultSet);
+        this.metaData = resultSet.getMetaData();
+        this.shardingRule = shardingRule;
     }
     
     private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
@@ -68,7 +77,7 @@ public final class MemoryQueryResult implements QueryResult {
     private Iterator<QueryRow> getResultData(final ResultSet resultSet) throws SQLException {
         Collection<QueryRow> result = new LinkedList<>();
         while (resultSet.next()) {
-            List<Object> rowData = new ArrayList<>(columnLabelAndIndexMap.size());
+            List<Object> rowData = new ArrayList<>(columnLabelAndIndexes.size());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
                 rowData.add(resultSet.getObject(columnIndex));
             }
@@ -134,12 +143,12 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public int getColumnCount() {
-        return columnLabelAndIndexMap.size();
+        return columnLabelAndIndexes.size();
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        for (Entry<String, Integer> entry : columnLabelAndIndexMap.entries()) {
+        for (Entry<String, Integer> entry : columnLabelAndIndexes.entries()) {
             if (columnIndex == entry.getValue()) {
                 return entry.getKey();
             }
@@ -148,6 +157,22 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     private Integer getColumnIndex(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0);
+        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
+    }
+    
+    @SneakyThrows
+    private Object decode(final Object value, final String columnLabel) {
+        Integer index = columnLabelIndexMap.get(columnLabel);
+        if (null == index) {
+            return value;
+        }
+        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(index), getMetaData().getColumnName(index));
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
+    }
+    
+    @SneakyThrows
+    private Object decode(final Object value, final int columnIndex) {
+        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(columnIndex), getMetaData().getColumnName(columnIndex));
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
 }
