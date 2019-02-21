@@ -49,20 +49,14 @@ import java.util.Calendar;
  */
 public final class StreamQueryResult implements QueryResult {
     
-    private final Multimap<String, Integer> columnLabelAndIndexes;
+    private final QueryResultMetaData metaData;
     
     private final ResultSet resultSet;
     
-    private final ResultSetMetaData metaData;
-    
-    private final ShardingRule shardingRule;
-    
     @SneakyThrows
     public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
-        columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSet.getMetaData());
         this.resultSet = resultSet;
-        this.metaData = resultSet.getMetaData();
-        this.shardingRule = shardingRule;
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
     @SneakyThrows
