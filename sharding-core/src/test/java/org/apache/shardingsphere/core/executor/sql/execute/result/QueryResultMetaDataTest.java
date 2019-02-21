@@ -17,14 +17,20 @@
 
 package org.apache.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +41,17 @@ public class QueryResultMetaDataTest {
     @Before
     @SneakyThrows
     public void setUp() {
-        getResultMetaData();
+        ResultSetMetaData resultSetMetaData = getResultMetaData();
+        ShardingRule shardingRule = getShardingRule();
+    }
+    
+    private ShardingRule getShardingRule() {
+        ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
+        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        ShardingRule result = mock(ShardingRule.class);
+        when(result.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        when(result.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
     }
     
     private ResultSetMetaData getResultMetaData() throws SQLException {
