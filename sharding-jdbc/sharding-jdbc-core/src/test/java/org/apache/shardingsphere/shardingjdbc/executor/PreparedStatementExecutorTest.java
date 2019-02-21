@@ -103,6 +103,13 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = getPreparedStatement();
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
+        
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("column");
+        when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSet1.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSet2.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet1.getInt(1)).thenReturn(1);
         when(resultSet2.getInt(1)).thenReturn(2);
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
@@ -111,7 +118,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         List<QueryResult> result = actual.executeQuery();
         List<ResultSet> resultSets = Arrays.asList(resultSet1, resultSet2);
         for (int i = 0; i < result.size(); i++) {
-            assertThat((int) result.get(i).getValue(1, int.class), is(resultSets.get(i).getInt(1)));
+            assertThat(String.valueOf(result.get(i).getValue(1, int.class)), is("decryptValue"));
         }
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
