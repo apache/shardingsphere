@@ -38,8 +38,8 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 
 /**
  * Query result for stream loading.
@@ -130,15 +130,15 @@ public final class StreamQueryResult implements QueryResult {
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
         Object result;
         if (Object.class == type) {
-            result = resultSet.getObject(columnLabel);
+            result = decode(columnLabel, resultSet.getObject(columnLabel));
         } else if (boolean.class == type) {
             result = resultSet.getBoolean(columnLabel);
         } else if (byte.class == type) {
             result = resultSet.getByte(columnLabel);
         } else if (short.class == type) {
-            result = resultSet.getShort(columnLabel);
+            result = decode(columnLabel, resultSet.getShort(columnLabel));
         } else if (int.class == type) {
-            result = resultSet.getInt(columnLabel);
+            result = decode(columnLabel, resultSet.getInt(columnLabel));
         } else if (long.class == type) {
             result = resultSet.getLong(columnLabel);
         } else if (float.class == type) {
@@ -246,13 +246,13 @@ public final class StreamQueryResult implements QueryResult {
         return resultSet.getMetaData().getColumnLabel(columnIndex);
     }
     
+    private Integer getColumnIndex(final String columnLabel) {
+        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
+    }
+    
     @SneakyThrows
     private Object decode(final String columnLabel, final Object value) {
-        Collection<Integer> index = columnLabelAndIndexes.get(columnLabel);
-        if (index.isEmpty()) {
-            return value;
-        }
-        return decode(index.iterator().next(), value);
+        return decode(getColumnIndex(columnLabel), value);
     }
     
     @SneakyThrows
