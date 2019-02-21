@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -160,9 +161,13 @@ public final class MemoryQueryResult implements QueryResult {
         return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
     }
     
+    private Optional<ShardingEncryptor> getShardingEncryptorEngine(final String logicTableName, final String columnName) {
+        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
+    }
+    
     @SneakyThrows
     private Object decode(final Object value, final String columnLabel) {
-        Integer index = columnLabelIndexMap.get(columnLabel);
+        Integer index = columnLabelAndIndexes.get(columnLabel).iterator().next();
         if (null == index) {
             return value;
         }
