@@ -83,25 +83,25 @@ public final class StreamQueryResult implements QueryResult {
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         Object result;
         if (Object.class == type) {
-            result = resultSet.getObject(columnIndex);
+            result = decrypt(columnIndex, resultSet.getObject(columnIndex));
         } else if (boolean.class == type) {
-            result = resultSet.getBoolean(columnIndex);
+            result = decrypt(columnIndex, resultSet.getBoolean(columnIndex));
         } else if (byte.class == type) {
-            result = resultSet.getByte(columnIndex);
+            result = decrypt(columnIndex, resultSet.getByte(columnIndex));
         } else if (short.class == type) {
-            result = resultSet.getShort(columnIndex);
+            result = decrypt(columnIndex, resultSet.getShort(columnIndex));
         } else if (int.class == type) {
-            result = resultSet.getInt(columnIndex);
+            result = decrypt(columnIndex, resultSet.getInt(columnIndex));
         } else if (long.class == type) {
-            result = resultSet.getLong(columnIndex);
+            result = decrypt(columnIndex, resultSet.getLong(columnIndex));
         } else if (float.class == type) {
-            result = resultSet.getFloat(columnIndex);
+            result = decrypt(columnIndex, resultSet.getFloat(columnIndex));
         } else if (double.class == type) {
-            result = resultSet.getDouble(columnIndex);
+            result = decrypt(columnIndex, resultSet.getDouble(columnIndex));
         } else if (String.class == type) {
-            result = resultSet.getString(columnIndex);
+            result = decrypt(columnIndex, resultSet.getString(columnIndex));
         } else if (BigDecimal.class == type) {
-            result = resultSet.getBigDecimal(columnIndex);
+            result = decrypt(columnIndex, resultSet.getBigDecimal(columnIndex));
         } else if (byte[].class == type) {
             result = resultSet.getBytes(columnIndex);
         } else if (Date.class == type) {
@@ -121,7 +121,7 @@ public final class StreamQueryResult implements QueryResult {
         } else if (Reader.class == type) {
             result = resultSet.getCharacterStream(columnIndex);
         } else {
-            result = resultSet.getObject(columnIndex);
+            result = decrypt(columnIndex, resultSet.getObject(columnIndex));
         }
         return result;
     }
