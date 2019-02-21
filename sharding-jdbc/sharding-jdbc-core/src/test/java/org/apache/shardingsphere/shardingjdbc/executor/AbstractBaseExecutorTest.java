@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -35,10 +36,12 @@ import org.mockito.MockitoAnnotations;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,10 +62,12 @@ public abstract class AbstractBaseExecutorTest {
     
     private void setConnection() throws SQLException {
         ShardingContext shardingContext = mock(ShardingContext.class);
-        
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
         when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
+        when(shardingContext.getShardingRule()).thenReturn(shardingRule);
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
