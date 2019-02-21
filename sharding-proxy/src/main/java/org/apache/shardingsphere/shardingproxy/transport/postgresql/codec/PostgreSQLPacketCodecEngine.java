@@ -19,7 +19,9 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodec;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.transport.common.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
@@ -31,15 +33,20 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLPacketCodec extends PacketCodec<PostgreSQLPacket> {
+public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine {
     
     @Override
-    protected boolean isValidHeader(final int readableBytes) {
+    public String getDatabaseType() {
+        return DatabaseType.PostgreSQL.name();
+    }
+    
+    @Override
+    public boolean isValidHeader(final int readableBytes) {
         return readableBytes > PostgreSQLPacket.MESSAGE_TYPE_LENGTH + PostgreSQLPacket.PAYLOAD_LENGTH;
     }
     
     @Override
-    protected void doDecode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
+    public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
         int messageTypeLength = 0;
         if ('\0' == in.markReaderIndex().readByte()) {
             in.resetReaderIndex();
@@ -57,12 +64,12 @@ public final class PostgreSQLPacketCodec extends PacketCodec<PostgreSQLPacket> {
     }
     
     @Override
-    protected void doEncode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
+    public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer())) {
-            message.write(payload);
+            ((PostgreSQLPacket) message).write(payload);
             if (!(message instanceof PostgreSQLSSLNegativePacket)) {
-                out.writeByte(message.getMessageType());
-                out.writeInt(payload.getByteBuf().readableBytes() + message.PAYLOAD_LENGTH);
+                out.writeByte(((PostgreSQLPacket) message).getMessageType());
+                out.writeInt(payload.getByteBuf().readableBytes() + ((PostgreSQLPacket) message).PAYLOAD_LENGTH);
             }
             out.writeBytes(payload.getByteBuf());
         }

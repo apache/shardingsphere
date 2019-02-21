@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 
@@ -31,32 +32,29 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
+@RequiredArgsConstructor
 @Slf4j
-public abstract class PacketCodec<T extends DatabasePacket> extends ByteToMessageCodec<T> {
+public final class PacketCodec extends ByteToMessageCodec<DatabasePacket> {
+    
+    private final DatabasePacketCodecEngine databasePacketCodecEngine;
     
     @Override
-    protected final void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+    protected void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         int readableBytes = in.readableBytes();
-        if (!isValidHeader(readableBytes)) {
+        if (!databasePacketCodecEngine.isValidHeader(readableBytes)) {
             return;
         }
         if (log.isDebugEnabled()) {
             log.debug("Read from client {} : \n {}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(in));
         }
-        doDecode(context, in, out, readableBytes);
+        databasePacketCodecEngine.decode(context, in, out, readableBytes);
     }
     
-    protected abstract boolean isValidHeader(int readableBytes);
-    
-    protected abstract void doDecode(ChannelHandlerContext context, ByteBuf in, List<Object> out, int readableBytes);
-    
     @Override
-    protected final void encode(final ChannelHandlerContext context, final T message, final ByteBuf out) {
-        doEncode(context, message, out);
+    protected void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
+        databasePacketCodecEngine.encode(context, message, out);
         if (log.isDebugEnabled()) {
             log.debug("Write to client {} : \n {}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(out));
         }
     }
-    
-    protected abstract void doEncode(ChannelHandlerContext context, T message, ByteBuf out);
 }

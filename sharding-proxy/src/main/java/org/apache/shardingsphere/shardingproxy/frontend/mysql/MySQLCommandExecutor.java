@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -59,7 +58,7 @@ public final class MySQLCommandExecutor implements Runnable {
     
     private final ByteBuf message;
     
-    private final FrontendHandler frontendHandler;
+    private final BackendConnection backendConnection;
     
     private int currentSequenceId;
     
@@ -70,9 +69,9 @@ public final class MySQLCommandExecutor implements Runnable {
         rootInvokeHook.start();
         int connectionSize = 0;
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-             BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
+             BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            MySQLCommandPacket mySQLCommandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
+            MySQLCommandPacket mySQLCommandPacket = getCommandPacket(payload, backendConnection);
             Optional<CommandResponsePackets> responsePackets = mySQLCommandPacket.execute();
             if (!responsePackets.isPresent()) {
                 return;
@@ -111,7 +110,7 @@ public final class MySQLCommandExecutor implements Runnable {
         }
     }
     
-    private MySQLCommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
+    private MySQLCommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int sequenceId = payload.readInt1();
         return MySQLCommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
     }
@@ -127,9 +126,9 @@ public final class MySQLCommandExecutor implements Runnable {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                synchronized (frontendHandler) {
+                synchronized (backendConnection) {
                     try {
-                        frontendHandler.wait();
+                        backendConnection.wait();
                     } catch (final InterruptedException ignored) {
                     }
                 }

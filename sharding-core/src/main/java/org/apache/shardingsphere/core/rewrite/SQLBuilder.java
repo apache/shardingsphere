@@ -19,8 +19,7 @@ package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -110,7 +109,7 @@ public final class SQLBuilder {
             } else if (each instanceof IndexPlaceholder) {
                 appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
             } else if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(tableUnit, insertParameters, (InsertValuesPlaceholder) each, result);
+                appendInsertValuesPlaceholder(tableUnit, (InsertValuesPlaceholder) each, insertParameters, result);
             } else {
                 result.append(each);
             }
@@ -161,32 +160,27 @@ public final class SQLBuilder {
         }
     }
     
-    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final List<Object> parameters, final InsertValuesPlaceholder insertValuesPlaceholder, final StringBuilder stringBuilder) {
-        List<String> expressions = new LinkedList<>();
-        for (ShardingCondition each : insertValuesPlaceholder.getShardingConditions().getShardingConditions()) {
-            processInsertShardingCondition(tableUnit, (InsertShardingCondition) each, expressions, parameters);
+    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, 
+                                               final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
+            appendInsertColumnValue(tableUnit, each, insertParameters, stringBuilder);
         }
-        int count = 0;
-        for (String each : expressions) {
-            if (0 != count) {
-                stringBuilder.append(", ");
-            }
-            stringBuilder.append(each);
-            count++;
+        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+    }
+    
+    private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        if (insertColumnValue.getDataNodes().isEmpty() || isToAppendInsertColumnValue(tableUnit, insertColumnValue)) {
+            stringBuilder.append(insertColumnValue).append(", ");
+            insertParameters.addAll(insertColumnValue.getParameters());
         }
     }
     
-    private void processInsertShardingCondition(final TableUnit tableUnit, final InsertShardingCondition shardingCondition, final List<String> expressions, final List<Object> parameters) {
-        for (DataNode each : shardingCondition.getDataNodes()) {
-            if (each.getDataSourceName().equals(tableUnit.getDataSourceName()) && each.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
-                expressions.add(shardingCondition.getInsertValueExpression());
-                parameters.addAll(shardingCondition.getParameters());
-                return;
+    private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {
+        for (DataNode each : insertColumnValue.getDataNodes()) {
+            if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
+                return true;
             }
         }
-        if (shardingCondition.getDataNodes().isEmpty()) {
-            expressions.add(shardingCondition.getInsertValueExpression());
-            parameters.addAll(shardingCondition.getParameters());
-        }
+        return false;
     }
 }

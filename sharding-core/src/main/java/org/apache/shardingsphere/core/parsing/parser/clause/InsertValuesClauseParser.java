@@ -90,7 +90,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         int endPosition;
         int startParametersIndex;
-        insertStatement.addSQLToken(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
+        insertStatement.addSQLToken(new InsertValuesToken(beginPosition, DefaultKeyword.VALUES));
         do {
             beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             startParametersIndex = insertStatement.getParametersIndex();

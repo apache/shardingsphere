@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.codec;
+package org.apache.shardingsphere.core.parsing.integrate.jaxb.token;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodec;
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.junit.Assert.assertThat;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
-public final class PacketCodecFactoryTest {
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedInsertValueToken {
     
-    @Test
-    public void assertNewInstanceForMySQL() {
-        assertThat(PacketCodecFactory.newInstance(DatabaseType.MySQL), CoreMatchers.<PacketCodec>instanceOf(MySQLPacketCodec.class));
-    }
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertNewInstanceForUnsupportedType() {
-        PacketCodecFactory.newInstance(DatabaseType.H2);
-    }
+    @XmlElement(name = "values")
+    private String values;
 }

@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @Setter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 public final class TestDataSource extends AbstractDataSourceAdapter {
     
     private final String name;

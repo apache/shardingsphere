@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.common;
+package org.apache.shardingsphere.shardingproxy.transport.common.codec;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandler;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodecEngine;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class FrontendHandlerFactoryTest {
+public final class DatabasePacketCodecEngineFactoryTest {
     
     @Test
-    public void assertCreateFrontendHandlerInstanceWithMySQL() {
-        assertThat(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL), instanceOf(MySQLFrontendHandler.class));
+    public void assertNewInstanceForMySQL() {
+        assertThat(DatabasePacketCodecEngineFactory.newInstance(DatabaseType.MySQL), CoreMatchers.<DatabasePacketCodecEngine>instanceOf(MySQLPacketCodecEngine.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
-    public void assertCreateFrontendHandlerInstanceWhenUnsupported() {
-        FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.Oracle);
+    public void assertNewInstanceForUnsupportedType() {
+        DatabasePacketCodecEngineFactory.newInstance(DatabaseType.H2);
     }
 }

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend;
 
-import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandlerFactoryTest;
+import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngineFactoryTest;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroupTest;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroupTest;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendEngineTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        FrontendHandlerFactoryTest.class,
-        MySQLFrontendHandlerTest.class, 
+        DatabaseFrontendEngineFactoryTest.class,
+        MySQLFrontendEngineTest.class, 
         ExecutorGroupTest.class, 
         ChannelThreadExecutorGroupTest.class
 })

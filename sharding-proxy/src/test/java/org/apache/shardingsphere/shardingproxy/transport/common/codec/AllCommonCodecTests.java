@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        PacketCodecFactoryTest.class,
+        DatabasePacketCodecEngineFactoryTest.class,
         PacketCodecTest.class 
 })
 public final class AllCommonCodecTests {

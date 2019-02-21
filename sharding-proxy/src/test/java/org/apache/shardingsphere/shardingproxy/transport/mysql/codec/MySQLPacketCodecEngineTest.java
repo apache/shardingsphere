@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLPacketCodecTest {
+public final class MySQLPacketCodecEngineTest {
     
     @Mock
     private ChannelHandlerContext context;
@@ -50,35 +50,35 @@ public final class MySQLPacketCodecTest {
     
     @Test
     public void assertIsValidHeader() {
-        assertTrue(new MySQLPacketCodec().isValidHeader(50));
+        assertTrue(new MySQLPacketCodecEngine().isValidHeader(50));
     }
     
     @Test
     public void assertIsInvalidHeader() {
-        assertFalse(new MySQLPacketCodec().isValidHeader(3));
+        assertFalse(new MySQLPacketCodecEngine().isValidHeader(3));
     }
     
     @Test
-    public void assertDoDecode() {
+    public void assertDecode() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readMediumLE()).thenReturn(50);
         when(byteBuf.readRetainedSlice(51)).thenReturn(byteBuf);
         List<Object> out = new LinkedList<>();
-        new MySQLPacketCodec().doDecode(context, byteBuf, out, 54);
+        new MySQLPacketCodecEngine().decode(context, byteBuf, out, 54);
         assertThat(out.size(), is(1));
     }
     
     @Test
-    public void assertDoDecodeWithStickyPacket() {
+    public void assertDecodeWithStickyPacket() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readMediumLE()).thenReturn(50);
         List<Object> out = new LinkedList<>();
-        new MySQLPacketCodec().doDecode(context, byteBuf, out, 40);
+        new MySQLPacketCodecEngine().decode(context, byteBuf, out, 40);
         assertTrue(out.isEmpty());
     }
     
     @Test
-    public void assertDoEncode() {
+    public void assertEncode() {
         ByteBufAllocator byteBufAllocator = mock(ByteBufAllocator.class);
         when(context.alloc()).thenReturn(byteBufAllocator);
         ByteBuf payloadByteBuf = mock(ByteBuf.class);
@@ -86,7 +86,7 @@ public final class MySQLPacketCodecTest {
         when(payloadByteBuf.readableBytes()).thenReturn(50);
         MySQLPacket actualMessage = mock(MySQLPacket.class);
         when(actualMessage.getSequenceId()).thenReturn(1);
-        new MySQLPacketCodec().doEncode(context, actualMessage, byteBuf);
+        new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(actualMessage).write(ArgumentMatchers.<MySQLPacketPayload>any());
         verify(byteBuf).writeMediumLE(50);
         verify(byteBuf).writeByte(1);

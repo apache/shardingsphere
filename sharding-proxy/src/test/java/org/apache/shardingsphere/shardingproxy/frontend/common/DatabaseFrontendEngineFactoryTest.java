@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.insert;
+package org.apache.shardingsphere.shardingproxy.frontend.common;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendEngine;
+import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.List;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
-/**
- * Sharding condition.
- * 
- * @author maxiaoguang
- */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public class InsertShardingCondition extends ShardingCondition {
+public final class DatabaseFrontendEngineFactoryTest {
     
-    private final String insertValueExpression;
+    @Test
+    public void assertNewInstanceWithMySQL() {
+        assertThat(DatabaseFrontendEngineFactory.newInstance(DatabaseType.MySQL), instanceOf(MySQLFrontendEngine.class));
+    }
     
-    private final List<Object> parameters;
-    
-    private final List<DataNode> dataNodes = new LinkedList<>();
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertNewInstanceWhenUnsupported() {
+        DatabaseFrontendEngineFactory.newInstance(DatabaseType.Oracle);
+    }
 }

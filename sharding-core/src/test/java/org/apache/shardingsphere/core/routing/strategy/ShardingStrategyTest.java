@@ -51,7 +51,8 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
-        StandardShardingStrategy strategy = new StandardShardingStrategy(new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture(), new RangeShardingAlgorithmFixture()));
+        StandardShardingStrategy strategy = new StandardShardingStrategy(
+                new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture(), new RangeShardingAlgorithmFixture()));
         assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new BetweenRouteValue<>(new Column("column", "logicTable"), Range.open(1, 3)))), 
                 is((Collection<String>) Sets.newHashSet("1")));
     }
