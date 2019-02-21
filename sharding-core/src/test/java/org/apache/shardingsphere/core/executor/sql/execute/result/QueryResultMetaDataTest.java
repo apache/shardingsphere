@@ -29,6 +29,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -66,7 +68,8 @@ public class QueryResultMetaDataTest {
     }
     
     @Test
-    public void testGetColumnCount() {
+    public void assertGetColumnCount() {
+        assertThat(queryResultMetaData.getColumnCount(), is(1));
     }
     
     @Test
