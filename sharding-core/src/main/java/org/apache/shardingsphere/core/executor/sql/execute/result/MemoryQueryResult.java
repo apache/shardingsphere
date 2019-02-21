@@ -86,7 +86,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return decrypt(columnLabel, currentRow.getColumnValue(getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, currentRow.getColumnValue(metaData.getColumnIndex(columnLabel)));
     }
     
     @Override
@@ -96,7 +96,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(getColumnIndex(columnLabel));
+        return currentRow.getColumnValue(metaData.getColumnIndex(columnLabel));
     }
     
     @Override
@@ -106,7 +106,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return getInputStream(currentRow.getColumnValue(getColumnIndex(columnLabel)));
+        return getInputStream(currentRow.getColumnValue(metaData.getColumnIndex(columnLabel)));
     }
     
     @SneakyThrows
@@ -134,13 +134,9 @@ public final class MemoryQueryResult implements QueryResult {
         return metaData.getColumnLabel(columnIndex);
     }
     
-    private Integer getColumnIndex(final String columnLabel) {
-        return metaData.getColumnIndex(columnLabel);
-    }
-    
     @SneakyThrows
     private Object decrypt(final String columnLabel, final Object value) {
-        return decrypt(getColumnIndex(columnLabel), value);
+        return decrypt(metaData.getColumnIndex(columnLabel), value);
     }
     
     @SneakyThrows
