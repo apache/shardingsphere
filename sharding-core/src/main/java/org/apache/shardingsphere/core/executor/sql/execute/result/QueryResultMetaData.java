@@ -83,19 +83,14 @@ public final class QueryResultMetaData {
         throw new SQLException("Column index out of range", "9999");
     }
     
+    /**
+     * Get column index.
+     * 
+     * @param columnLabel column label
+     * @return column name
+     */
     private Integer getColumnIndex(final String columnLabel) {
         return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
-    }
-    
-    @SneakyThrows
-    private Object decrypt(final String columnLabel, final Object value) {
-        return decrypt(getColumnIndex(columnLabel), value);
-    }
-    
-    @SneakyThrows
-    private Object decrypt(final int columnIndex, final Object value) {
-        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(getLogicTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
     
     @SneakyThrows
