@@ -121,7 +121,7 @@ public final class QueryResultMetaData {
      * 
      * @param logicTableName logic table name
      * @param columnName column name
-     * @return
+     * @return sharding encryptor optional
      */
     public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
         return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
