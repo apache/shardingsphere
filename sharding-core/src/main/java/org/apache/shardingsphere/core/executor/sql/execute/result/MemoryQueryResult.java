@@ -101,12 +101,12 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return decode(columnIndex, currentRow.getColumnValue(columnIndex));
+        return decrypt(columnIndex, currentRow.getColumnValue(columnIndex));
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return decode(columnLabel, currentRow.getColumnValue(getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, currentRow.getColumnValue(getColumnIndex(columnLabel)));
     }
     
     @Override
@@ -164,12 +164,12 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Object decode(final String columnLabel, final Object value) {
-        return decode(getColumnIndex(columnLabel), value);
+    private Object decrypt(final String columnLabel, final Object value) {
+        return decrypt(getColumnIndex(columnLabel), value);
     }
     
     @SneakyThrows
-    private Object decode(final int columnIndex, final Object value) {
+    private Object decrypt(final int columnIndex, final Object value) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine(getLogicTableName(columnIndex), metaData.getColumnName(columnIndex));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
