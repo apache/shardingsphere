@@ -246,10 +246,6 @@ public final class StreamQueryResult implements QueryResult {
         return resultSet.getMetaData().getColumnLabel(columnIndex);
     }
     
-    private Integer getColumnIndex(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
-    }
-    
     @SneakyThrows
     private Object decode(final String columnLabel, final Object value) {
         return decode(getColumnIndex(columnLabel), value);
@@ -259,6 +255,10 @@ public final class StreamQueryResult implements QueryResult {
     private Object decode(final int columnIndex, final Object value) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine(getLogicTableName(columnIndex), metaData.getColumnName(columnIndex));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
+    }
+    
+    private Integer getColumnIndex(final String columnLabel) {
+        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
     }
     
     @SneakyThrows
