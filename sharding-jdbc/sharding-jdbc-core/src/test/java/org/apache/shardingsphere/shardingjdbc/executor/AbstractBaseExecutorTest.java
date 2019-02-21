@@ -68,10 +68,7 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingContext.getExecuteEngine()).thenReturn(executeEngine);
         when(shardingContext.getShardingProperties()).thenReturn(getShardingProperties());
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
-    
-        ShardingRule shardingRule = getShardingRule();
-        
-        when(shardingContext.getShardingRule()).thenReturn(shardingRule);
+        when(shardingContext.getShardingRule()).thenReturn(getShardingRule());
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
