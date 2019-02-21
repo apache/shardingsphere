@@ -281,95 +281,66 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
-        Object result = decode(convert(mergeResultSet.getInputStream(columnLabel, "Binary")), columnLabel);
-        return convert(String.valueOf(result));
-    }
-    
-    @SneakyThrows
-    @SuppressWarnings("all")
-    private String convert(final InputStream value) {
-        byte[] bytes = new byte[value.available()];
-        value.read(bytes);
-        return new String(bytes);
-    }
-    
-    private InputStream convert(final String value) {
-        return new ByteArrayInputStream(value.getBytes());
+        return mergeResultSet.getInputStream(columnLabel, "Binary");
     }
     
     @Override
     public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        return (Reader) decode(mergeResultSet.getValue(columnIndex, Reader.class), columnIndex);
+        return (Reader) mergeResultSet.getValue(columnIndex, Reader.class);
     }
     
     @Override
     public Reader getCharacterStream(final String columnLabel) throws SQLException {
-        return (Reader) decode(mergeResultSet.getValue(columnLabel, Reader.class), columnLabel);
+        return (Reader) mergeResultSet.getValue(columnLabel, Reader.class);
     }
     
     @Override
     public Blob getBlob(final int columnIndex) throws SQLException {
-        return (Blob) decode(mergeResultSet.getValue(columnIndex, Blob.class), columnIndex);
+        return (Blob) mergeResultSet.getValue(columnIndex, Blob.class);
     }
     
     @Override
     public Blob getBlob(final String columnLabel) throws SQLException {
-        return (Blob) decode(mergeResultSet.getValue(columnLabel, Blob.class), columnLabel);
+        return (Blob) mergeResultSet.getValue(columnLabel, Blob.class);
     }
     
     @Override
     public Clob getClob(final int columnIndex) throws SQLException {
-        return (Clob) decode(mergeResultSet.getValue(columnIndex, Clob.class), columnIndex);
+        return (Clob) mergeResultSet.getValue(columnIndex, Clob.class);
     }
         
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
-        return (Clob) decode(mergeResultSet.getValue(columnLabel, Clob.class), columnLabel);
+        return (Clob) mergeResultSet.getValue(columnLabel, Clob.class);
     }
     
     @Override
     public URL getURL(final int columnIndex) throws SQLException {
-        return (URL) decode(mergeResultSet.getValue(columnIndex, URL.class), columnIndex);
+        return (URL) mergeResultSet.getValue(columnIndex, URL.class);
     }
     
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
-        return (URL) decode(mergeResultSet.getValue(columnLabel, URL.class), columnLabel);
+        return (URL) mergeResultSet.getValue(columnLabel, URL.class);
     }
     
     @Override
     public SQLXML getSQLXML(final int columnIndex) throws SQLException {
-        return (SQLXML) decode(mergeResultSet.getValue(columnIndex, SQLXML.class), columnIndex);
+        return (SQLXML) mergeResultSet.getValue(columnIndex, SQLXML.class);
     }
     
     @Override
     public SQLXML getSQLXML(final String columnLabel) throws SQLException {
-        return (SQLXML) decode(mergeResultSet.getValue(columnLabel, SQLXML.class), columnLabel);
+        return (SQLXML) mergeResultSet.getValue(columnLabel, SQLXML.class);
     }
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
-        return decode(mergeResultSet.getValue(columnIndex, Object.class), columnIndex);
+        return mergeResultSet.getValue(columnIndex, Object.class;
     }
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
-        return decode(mergeResultSet.getValue(columnLabel, Object.class), columnLabel);
-    }
-    
-    @SneakyThrows
-    private Object decode(final Object value, final String columnLabel) {
-        Integer index = columnLabelIndexMap.get(columnLabel);
-        if (null == index) {
-            return value;
-        }
-        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(index), getMetaData().getColumnName(index));
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
-    }
-    
-    @SneakyThrows
-    private Object decode(final Object value, final int columnIndex) {
-        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(columnIndex), getMetaData().getColumnName(columnIndex));
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
+        return mergeResultSet.getValue(columnLabel, Object.class);
     }
 }
