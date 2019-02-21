@@ -115,8 +115,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
         List<QueryResult> result = actual.executeQuery();
-        for (QueryResult aResult : result) {
-            assertThat(String.valueOf(aResult.getValue(1, int.class)), is("decryptValue"));
+        for (QueryResult each : result) {
+            assertThat(String.valueOf(each.getValue(1, int.class)), is("decryptValue"));
         }
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
