@@ -20,8 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,7 +49,7 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
      * 
      * @return merged packet.
      */
-    public CommandResponsePackets merge() {
+    public BackendResponse merge() {
         int affectedRows = 0;
         long lastInsertId = 0;
         for (DatabaseSuccessPacket each : packets) {
@@ -57,6 +58,6 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
                 lastInsertId = each.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new DatabaseSuccessPacket(1, affectedRows, lastInsertId));
+        return new SuccessResponse(1, affectedRows, lastInsertId);
     }
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -37,14 +36,18 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -52,7 +55,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -79,25 +81,23 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private int currentSequenceId;
     
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         try {
             return execute(executeEngine.getJdbcExecutorWrapper().route(sql, GlobalRegistry.getInstance().getDatabaseType()));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return new CommandResponsePackets(ex);
+        } catch (final SQLException ex) {
+            return new FailureResponse(1, ex);
         }
     }
     
-    private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
+    private BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
+            return new SuccessResponse(1, 0L, 0L);
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
             MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE;
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
-                ? String.format(mySQLServerErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(mySQLServerErrorCode.getErrorMessage(), "unknown_table")));
+            return new FailureResponse(1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
+                    ? String.format(mySQLServerErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(mySQLServerErrorCode.getErrorMessage(), "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
@@ -116,10 +116,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return TransactionType.BASE == connection.getTransactionType() && SQLType.DML != sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
+    private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {
         if (executeResponse instanceof ExecuteUpdateResponse) {
             if (logicSchema instanceof ShardingSchema && ((ShardingSchema) logicSchema).getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames())) {
-                return new CommandResponsePackets(((ExecuteUpdateResponse) executeResponse).getPackets().get(0));
+                DatabaseSuccessPacket successPacket = ((ExecuteUpdateResponse) executeResponse).getPackets().get(0);
+                return new SuccessResponse(successPacket.getSequenceId(), successPacket.getAffectedRows(), successPacket.getLastInsertId());
             }
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
@@ -128,7 +129,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }
-        QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
+        QueryHeaderResponse result = getQueryHeaderResponseWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getSequenceId();
         return result;
     }
@@ -137,16 +138,18 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
     }
     
-    private QueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
-        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(queryResponsePackets.getFieldCount());
+    private QueryHeaderResponse getQueryHeaderResponseWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
+        List<QueryHeader> dataHeaderPackets = new ArrayList<>(queryResponsePackets.getFieldCount());
         int columnCount = 0;
         for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
             if (!DerivedColumn.isDerivedColumn(each.getName())) {
-                dataHeaderPackets.add(each);
+                QueryHeader queryHeader = new QueryHeader(each.getSequenceId(), each.getSchema(), each.getTable(), each.getOrgTable(), each.getName(), each.getOrgName(),
+                        each.getColumnLength(), each.getColumnType(), each.getDecimals());
+                dataHeaderPackets.add(queryHeader);
                 columnCount++;
             }
         }
-        return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), columnCount, dataHeaderPackets, columnCount + 2);
+        return new QueryHeaderResponse(queryResponsePackets.getColumnTypes(), columnCount, dataHeaderPackets, columnCount + 2);
     }
     
     @Override

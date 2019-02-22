@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.result;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Result packet.
+ * Backend response.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ResultPacket {
+public interface BackendResponse {
     
-    private final int sequenceId;
+    /**
+     * Get head packet.
+     *
+     * @return head packet
+     */
+    DatabasePacket getHeadPacket();
     
-    private final List<Object> data;
-    
-    private final int columnCount;
-    
-    private final List<Integer> columnTypes;
+    /**
+     * Get database packets.
+     * 
+     * @return database packets
+     */
+    Collection<DatabasePacket> getPackets();
 }

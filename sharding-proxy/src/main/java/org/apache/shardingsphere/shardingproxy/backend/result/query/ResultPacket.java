@@ -15,40 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text;
+package org.apache.shardingsphere.shardingproxy.backend.result.query;
 
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
+import java.util.List;
 
 /**
- * Text protocol backend handler.
+ * Result packet.
  *
  * @author zhangliang
  */
-public interface TextProtocolBackendHandler {
+@RequiredArgsConstructor
+@Getter
+public final class ResultPacket {
     
-    /**
-     * Execute command.
-     *
-     * @return result packets to be sent
-     */
-    CommandResponsePackets execute();
+    private final int sequenceId;
     
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
+    private final List<Object> data;
     
-    /**
-     * Get result value.
-     *
-     * @return result packet
-     * @throws SQLException SQL exception
-     */
-    ResultPacket getResultValue() throws SQLException;
+    private final int columnCount;
+    
+    private final List<Integer> columnTypes;
 }

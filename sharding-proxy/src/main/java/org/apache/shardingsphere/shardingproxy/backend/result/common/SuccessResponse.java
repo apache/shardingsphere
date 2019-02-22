@@ -15,40 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication;
+package org.apache.shardingsphere.shardingproxy.backend.result.common;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Database communication engine.
+ * Success response.
  *
  * @author zhangliang
  */
-public interface DatabaseCommunicationEngine {
+@RequiredArgsConstructor
+@Getter
+public final class SuccessResponse implements BackendResponse {
     
-    /**
-     * Execute command.
-     *
-     * @return backend response
-     */
-    BackendResponse execute();
+    private final int sequenceId;
     
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
+    private final long affectedRows;
     
-    /**
-     * Get result value.
-     *
-     * @return result packet
-     * @throws SQLException SQL exception
-     */
-    ResultPacket getResultValue() throws SQLException;
+    private final long lastInsertId;
+    
+    @Override
+    public DatabasePacket getHeadPacket() {
+        return new DatabaseSuccessPacket(sequenceId, affectedRows, lastInsertId);
+    }
+    
+    @Override
+    public Collection<DatabasePacket> getPackets() {
+        return Collections.singletonList(getHeadPacket());
+    }
 }

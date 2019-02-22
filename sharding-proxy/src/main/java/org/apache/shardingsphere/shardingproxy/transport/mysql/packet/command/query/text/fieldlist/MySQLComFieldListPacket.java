@@ -77,7 +77,7 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        CommandResponsePackets responsePackets = databaseCommunicationEngine.execute();
+        CommandResponsePackets responsePackets = new CommandResponsePackets(databaseCommunicationEngine.execute().getPackets());
         return Optional.of(responsePackets.getHeadPacket() instanceof MySQLErrPacket ? responsePackets : getColumnDefinition41Packets());
     }
     
