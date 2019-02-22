@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.set;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLStatement;
 
 /**
- * Backend data source.
+ * Sharding CTL set statement.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-public interface BackendDataSource {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingCTLSetStatement implements ShardingCTLStatement {
+    
+    private final String key;
+    
+    private final String value;
 }

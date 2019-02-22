@@ -34,8 +34,8 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
+import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
 
 /**
  * Sharding-Proxy.
@@ -51,7 +51,7 @@ public final class ShardingProxy {
     
     private static final ShardingProxy INSTANCE = new ShardingProxy();
     
-    private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
+    private final ExecutorContext backendExecutorContext = ExecutorContext.getInstance();
     
     private EventLoopGroup bossGroup;
     
