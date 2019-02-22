@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.cache;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -31,21 +29,9 @@ import java.util.Map;
  * @author zhangliang
  * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.NONE)
 public final class ParsingResultCache {
     
-    private static final ParsingResultCache INSTANCE = new ParsingResultCache();
-    
     private final Map<String, SQLStatement> cache = new ReferenceMap<>(AbstractReferenceMap.ReferenceStrength.SOFT, AbstractReferenceMap.ReferenceStrength.SOFT, 65535, 1);
-    
-    /**
-     * Get parsing result cache instance.
-     * 
-     * @return parsing result cache instance
-     */
-    public static ParsingResultCache getInstance() {
-        return INSTANCE;
-    }
     
     /**
      * Put SQL and parsing result into cache.
