@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -75,11 +76,15 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getInt(1)).thenReturn(1);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("column");
+        when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSet.getString(1)).thenReturn("value");
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
-        assertThat((int) actual.executeQuery().iterator().next().getValue(1, int.class), is(resultSet.getInt(1)));
-        verify(preparedStatement).executeQuery();
+        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("decryptValue"));
     }
     
     private PreparedStatement getPreparedStatement() throws SQLException {
@@ -98,15 +103,20 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement2 = getPreparedStatement();
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("column");
+        when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSet1.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSet2.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSet1.getInt(1)).thenReturn(1);
         when(resultSet2.getInt(1)).thenReturn(2);
         when(preparedStatement1.executeQuery()).thenReturn(resultSet1);
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), SQLType.DQL);
         List<QueryResult> result = actual.executeQuery();
-        List<ResultSet> resultSets = Arrays.asList(resultSet1, resultSet2);
-        for (int i = 0; i < result.size(); i++) {
-            assertThat((int) result.get(i).getValue(1, int.class), is(resultSets.get(i).getInt(1)));
+        for (QueryResult each : result) {
+            assertThat(String.valueOf(each.getValue(1, int.class)), is("decryptValue"));
         }
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();

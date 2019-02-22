@@ -54,14 +54,14 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     
     @Override
     @SneakyThrows
-    public Object encrypt(final Object plaintext) {
+    public String encrypt(final Object plaintext) {
         byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
         return Base64.encodeBase64String(result);
     }
     
     @Override
     @SneakyThrows
-    public Object decrypt(final Object ciphertext) {
+    public Object decrypt(final String ciphertext) {
         byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(String.valueOf(ciphertext)));
         return new String(result);
     }
