@@ -55,6 +55,12 @@ public final class MemoryQueryResult implements QueryResult {
         resultData = getResultData(resultSet);
         metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
+    
+    @SneakyThrows
+    public MemoryQueryResult(final ResultSet resultSet) {
+        resultData = getResultData(resultSet);
+        metaData = new QueryResultMetaData(resultSet.getMetaData());
+    }
         
     @SneakyThrows
     private Iterator<QueryRow> getResultData(final ResultSet resultSet) {
