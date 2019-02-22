@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.merger.MergeEngineFactory;
@@ -44,13 +42,11 @@ import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderR
 import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -163,17 +159,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         int columnCount = queryResponsePackets.getFieldCount();
         List<Object> row = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            DataHeaderPacket dataHeaderPacket = queryResponsePackets.getDataHeaderPackets().iterator().next();
-            Object data = logicSchema instanceof MasterSlaveSchema ? mergedResult.getValue(columnIndex, Object.class) : decode(columnIndex, dataHeaderPacket.getTable(), dataHeaderPacket.getOrgName());
-            row.add(data);
+            row.add(mergedResult.getValue(columnIndex, Object.class));
         }
         return new ResultPacket(++currentSequenceId, row, columnCount, queryResponsePackets.getColumnTypes());
-    }
-    
-    @SneakyThrows
-    private Object decode(final int columnIndex, final String tableName, final String columnName) {
-        Object value = mergedResult.getValue(columnIndex, Object.class);
-        Optional<ShardingEncryptor> shardingEncryptor = ((ShardingSchema) logicSchema).getShardingRule().getShardingEncryptorEngine().getShardingEncryptor(tableName, columnName);
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
 }

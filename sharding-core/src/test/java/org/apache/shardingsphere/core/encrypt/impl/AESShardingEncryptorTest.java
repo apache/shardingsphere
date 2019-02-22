@@ -43,14 +43,14 @@ public final class AESShardingEncryptorTest {
     
     @Test
     public void assertEncode() {
-        assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encryptor.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertEncodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
-        assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encryptor.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test

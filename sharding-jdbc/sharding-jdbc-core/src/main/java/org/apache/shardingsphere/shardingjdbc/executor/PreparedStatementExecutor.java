@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCall
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 
 import java.sql.Connection;
@@ -112,8 +113,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private QueryResult getQueryResult(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statementExecuteUnit.getStatement();
         ResultSet resultSet = preparedStatement.executeQuery();
+        ShardingRule shardingRule = getConnection().getShardingContext().getShardingRule();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == statementExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+        return ConnectionMode.MEMORY_STRICTLY == statementExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
     }
     
     /**

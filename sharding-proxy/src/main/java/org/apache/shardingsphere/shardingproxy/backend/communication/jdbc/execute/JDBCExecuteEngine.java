@@ -36,6 +36,7 @@ import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
@@ -46,6 +47,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
@@ -158,8 +162,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         return new QueryResponsePackets(columnTypes, columnCount, dataHeaderPackets, ++currentSequenceId);
     }
     
-    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) {
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
+        if (logicSchema instanceof MasterSlaveSchema) {
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+        }
+        ShardingRule shardingRule = ((ShardingSchema) logicSchema).getShardingRule();
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
     }
     
     @RequiredArgsConstructor
