@@ -101,10 +101,10 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void clearCacheColumnValues(final InsertValuesToken result) {
-        if (!result.getColumnNames().isEmpty() && !result.getColumnValues().isEmpty()) {
-            result.getColumnNames().clear();
-            result.getColumnValues().clear();
+    private void clearCacheColumnValues(final InsertValuesToken insertValuesToken) {
+        if (!insertValuesToken.getColumnNames().isEmpty() && !insertValuesToken.getColumnValues().isEmpty()) {
+            insertValuesToken.getColumnNames().clear();
+            insertValuesToken.getColumnValues().clear();
         }
     }
     
