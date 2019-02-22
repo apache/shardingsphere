@@ -94,23 +94,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return new ShardingConditions(result);
     }
     
-    private ShardingCondition createShardingCondition(final AndCondition andCondition) {
-        ShardingCondition result = new ShardingCondition();
-        result.getShardingValues().addAll(getShardingValues(andCondition));
-        return result;
-    }
-    
     private InsertValuesToken getInsertValuesToken() {
         InsertValuesToken result = insertStatement.getInsertValuesToken();
         result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
-        return result;
-    }
-    
-    private Collection<ListRouteValue> getShardingValues(final AndCondition andCondition) {
-        Collection<ListRouteValue> result = new LinkedList<>();
-        for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn(), each.getConditionValues(parameters)));
-        }
         return result;
     }
     
@@ -121,6 +107,20 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private List<Object> getCurrentParameters(final int beginCount, final int increment) {
         List<Object> result = new ArrayList<>(increment + 1);
         result.addAll(parameters.subList(beginCount, beginCount + increment));
+        return result;
+    }
+    
+    private ShardingCondition createShardingCondition(final AndCondition andCondition) {
+        ShardingCondition result = new ShardingCondition();
+        result.getShardingValues().addAll(getShardingValues(andCondition));
+        return result;
+    }
+    
+    private Collection<ListRouteValue> getShardingValues(final AndCondition andCondition) {
+        Collection<ListRouteValue> result = new LinkedList<>();
+        for (Condition each : andCondition.getConditions()) {
+            result.add(new ListRouteValue<>(each.getColumn(), each.getConditionValues(parameters)));
+        }
         return result;
     }
     
