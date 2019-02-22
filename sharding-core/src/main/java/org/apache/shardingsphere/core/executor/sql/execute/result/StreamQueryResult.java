@@ -55,6 +55,12 @@ public final class StreamQueryResult implements QueryResult {
         metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
     }
     
+    @SneakyThrows
+    public StreamQueryResult(final ResultSet resultSet) {
+        this.resultSet = resultSet;
+        metaData = new QueryResultMetaData(resultSet.getMetaData());
+    }
+    
     @Override
     public boolean next() throws SQLException {
         return resultSet.next();
