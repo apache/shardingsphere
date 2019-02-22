@@ -84,7 +84,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
-                insertValuesToken.getColumnNames().add(shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName());
+                fillInsertValuesWithGeneratedKeyName(insertValuesToken);
                 fillInsertValuesTokenWithColumnValue(insertValuesToken.getColumnValues().get(i), currentGeneratedKey);
                 fillShardingValue(shardingCondition, currentGeneratedKey);
             }
@@ -104,11 +104,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private boolean isNeededToAppendGeneratedKey() {
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
-        return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(generateKeyColumn.get());
-    }
-    
     private Iterator<Comparable<?>> createGeneratedKeys() {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
@@ -117,6 +112,15 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<Object> result = new ArrayList<>(increment + 1);
         result.addAll(parameters.subList(beginCount, beginCount + increment));
         return result;
+    }
+    
+    private boolean isNeededToAppendGeneratedKey() {
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
+        return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(generateKeyColumn.get());
+    }
+    
+    private void fillInsertValuesWithGeneratedKeyName(final InsertValuesToken insertValuesToken) {
+        insertValuesToken.getColumnNames().add(shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName());
     }
     
     private boolean isNeededToEncrypt() {
