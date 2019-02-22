@@ -124,6 +124,9 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
+        if (null == shardingRule) {
+            return Optional.absent();
+        }
         return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
     }
 }
