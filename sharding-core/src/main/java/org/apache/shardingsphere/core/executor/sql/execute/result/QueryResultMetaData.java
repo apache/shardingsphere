@@ -50,6 +50,11 @@ public final class QueryResultMetaData {
     }
     
     @SneakyThrows
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
+        this(resultSetMetaData, null);
+    }
+    
+    @SneakyThrows
     private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
         Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
@@ -67,6 +72,9 @@ public final class QueryResultMetaData {
     @SneakyThrows
     private String getTableName(final int columnIndex) {
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
+        if (null == shardingRule) {
+            return actualTableName;
+        }
         return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
     }
     
