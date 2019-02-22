@@ -96,8 +96,16 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private InsertValuesToken getInsertValuesToken() {
         InsertValuesToken result = insertStatement.getInsertValuesToken();
+        clearCacheColumnValues(result);
         result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
         return result;
+    }
+    
+    private void clearCacheColumnValues(final InsertValuesToken result) {
+        if (!result.getColumnNames().isEmpty() && !result.getColumnValues().isEmpty()) {
+            result.getColumnNames().clear();
+            result.getColumnValues().clear();
+        }
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {
