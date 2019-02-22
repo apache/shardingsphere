@@ -23,7 +23,7 @@ import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -36,44 +36,58 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private final JDBCOrderTransactionRepositoryImpl orderRepository;
     
-    private final JDBCOrderItemTransactionRepositotyImpl orderItemRepository;
+    private final JDBCOrderItemTransactionRepositoryImpl orderItemRepository;
     
-    private Connection insertConnection;
+    private Connection connection;
     
-    public RawPojoTransactionService(final JDBCOrderTransactionRepositoryImpl orderRepository,
-        final JDBCOrderItemTransactionRepositotyImpl orderItemRepository, final DataSource dataSource) throws SQLException {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.insertConnection = dataSource.getConnection();
-        orderRepository.setInsertConnection(insertConnection);
-        orderItemRepository.setInsertConnection(insertConnection);
+    private DataSource dataSource;
+    
+    public RawPojoTransactionService(final DataSource dataSource) throws SQLException {
+        this.dataSource = dataSource;
+        this.connection = dataSource.getConnection();
+        this.orderRepository = new JDBCOrderTransactionRepositoryImpl(connection);
+        this.orderItemRepository = new JDBCOrderItemTransactionRepositoryImpl(connection);
     }
     
     @Override
     public void processFailureWithLocal() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        printTransactionType();
-        executeFailure();
+        doInTransactionWithFailure();
     }
     
     @Override
-    public void processFailureWithXa() {
+    public void processFailureWithXA() {
         TransactionTypeHolder.set(TransactionType.XA);
-        printTransactionType();
-        executeFailure();
+        doInTransactionWithFailure();
     }
     
     @Override
     public void processFailureWithBase() {
         TransactionTypeHolder.set(TransactionType.BASE);
-        printTransactionType();
-        executeFailure();
+        doInTransactionWithFailure();
+    }
+    
+    @Override
+    public void processSuccessWithLocal() {
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+        doInTransactionWithSuccess();
+    }
+    
+    @Override
+    public void processSuccessWithXA() {
+        TransactionTypeHolder.set(TransactionType.XA);
+        doInTransactionWithSuccess();
+    }
+    
+    @Override
+    public void processSuccessWithBase() {
+        TransactionTypeHolder.set(TransactionType.BASE);
+        doInTransactionWithSuccess();
     }
     
     @Override
     public void printTransactionType() {
         System.out.println(String.format("-------------- Process With Transaction %s ---------------", TransactionTypeHolder.get()));
-    
     }
     
     @Override
@@ -96,22 +110,48 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
         return new OrderItem();
     }
     
-    private void executeFailure() {
+    private void doInTransactionWithFailure() {
         try {
+            createNewConnection();
             beginTransaction();
             super.processFailure();
-            commitTransaction();
-        } catch (RuntimeException ex) {
+        } catch (final Exception ex) {
             System.out.println(ex.getMessage());
             rollbackTransaction();
             super.printData();
+            closeConnection();
+        }
+    }
+    
+    private void doInTransactionWithSuccess() {
+        try {
+            createNewConnection();
+            beginTransaction();
+            super.processSuccess();
+            commitTransaction();
+            closeConnection();
+        } catch (final SQLException ignore) {
+        }
+    }
+    
+    private void createNewConnection() throws SQLException {
+        printTransactionType();
+        connection = dataSource.getConnection();
+        orderRepository.setConnection(connection);
+        orderItemRepository.setConnection(connection);
+    }
+    
+    private void closeConnection() {
+        try {
+            connection.close();
+        } catch (final SQLException ignore ) {
         }
     }
     
     private void beginTransaction() {
         try {
-            if (null != this.insertConnection && !this.insertConnection.isClosed()) {
-                this.insertConnection.setAutoCommit(false);
+            if (null != this.connection && !this.connection.isClosed()) {
+                this.connection.setAutoCommit(false);
             }
         } catch (SQLException ignored) {
         }
@@ -119,8 +159,8 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private void commitTransaction() {
         try {
-            if (null != this.insertConnection && !this.insertConnection.isClosed()) {
-                this.insertConnection.commit();
+            if (null != this.connection && !this.connection.isClosed()) {
+                this.connection.commit();
             }
         } catch (SQLException ignored) {
         }
@@ -128,8 +168,8 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private void rollbackTransaction() {
         try {
-            if (null != this.insertConnection && !this.insertConnection.isClosed()) {
-                this.insertConnection.rollback();
+            if (null != this.connection && !this.connection.isClosed()) {
+                this.connection.rollback();
             }
         } catch (SQLException ignored) {
         }

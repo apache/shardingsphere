@@ -17,22 +17,13 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
+import io.shardingsphere.example.jdbc.orche.factory.YamlOrchestrationDataSourceFactory;
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -54,79 +45,13 @@ public class YamlConfigurationTransactionExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
-        process(getDataSource());
-    }
-    
-    private static DataSource getDataSource() throws IOException, SQLException {
-        return ShardingType.MASTER_SLAVE == shardingType
-                ? YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile()) : YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
-    }
-    
-    private static File getYamlFile() {
-        String result;
-        switch (shardingType) {
-            case SHARDING_DATABASES:
-                result = String.format("/META-INF/%s/%s/sharding-databases.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case SHARDING_TABLES:
-                result = String.format("/META-INF/%s/%s/sharding-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case SHARDING_DATABASES_AND_TABLES:
-                result = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case MASTER_SLAVE:
-                result = String.format("/META-INF/%s/%s/master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case SHARDING_MASTER_SLAVE:
-                result = String.format("/META-INF/%s/%s/sharding-master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            default:
-                throw new UnsupportedOperationException(shardingType.name());
-        }
-        return new File(YamlConfigurationTransactionExample.class.getResource(result).getFile());
-    }
-    
-    private static void process(final DataSource dataSource) throws Exception {
-        TransactionService transactionService = getTransactionService(dataSource);
+        DataSource dataSource = YamlOrchestrationDataSourceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        TransactionService transactionService = new RawPojoTransactionService(dataSource);
         transactionService.initEnvironment();
-        transactionService.processSuccess();
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
+        transactionService.processSuccessWithLocal();
+        transactionService.processSuccessWithXA();
+        transactionService.processFailureWithLocal();
+        transactionService.processFailureWithXA();
         transactionService.cleanEnvironment();
-        closeDataSource(dataSource);
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
-        try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXa();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData();
-        }
-    }
-    
-    private static TransactionService getTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
-    }
-    
-    private static void closeDataSource(final DataSource dataSource) throws Exception {
-        if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
-            ((OrchestrationMasterSlaveDataSource) dataSource).close();
-        } else {
-            ((OrchestrationShardingDataSource) dataSource).close();
-        }
     }
 }

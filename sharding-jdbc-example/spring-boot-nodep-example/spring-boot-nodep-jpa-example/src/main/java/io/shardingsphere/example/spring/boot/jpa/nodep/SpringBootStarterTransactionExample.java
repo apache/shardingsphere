@@ -17,9 +17,9 @@
 
 package io.shardingsphere.example.spring.boot.jpa.nodep;
 
+import io.shardingsphere.example.repository.api.senario.JPATransactionServiceScenario;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jpa.service.SpringEntityTransactionService;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -39,31 +39,8 @@ public class SpringBootStarterTransactionExample {
     
     private static void process(final ConfigurableApplicationContext applicationContext) {
         TransactionService transactionService = getTransactionService(applicationContext);
-        transactionService.processSuccess();
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
-        try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXa();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData();
-        }
+        JPATransactionServiceScenario scenario = new JPATransactionServiceScenario(transactionService);
+        scenario.process();
     }
     
     private static TransactionService getTransactionService(final ConfigurableApplicationContext applicationContext) {

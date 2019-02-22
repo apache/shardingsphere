@@ -17,49 +17,57 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.factory.YamlCommonServiceFactory;
+import io.shardingsphere.example.jdbc.nodep.factory.YamlDataSourceFactory;
 import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
+import io.shardingsphere.example.repository.api.trace.ResultAssertUtils;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.ShardingType;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class YamlConfigurationExampleTest extends BaseConfigurationExample {
+public class YamlConfigurationExampleTest {
     
     @Test
     public void assertShardingDatabasePrecise() throws SQLException, IOException {
-        CommonServiceScenario scenario = new CommonServiceScenario(YamlCommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES));
-        scenario.executeShardingCRUDSuccess();
-        assertShardingDatabaseResult(scenario.getCommonService(), false);
+        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
+        scenario.process();
+        ResultAssertUtils.assertShardingDatabaseResult(scenario.getCommonService());
     }
     
     @Test
     public void assertShardingTablesPrecise() throws SQLException, IOException {
-        CommonServiceScenario scenario = new CommonServiceScenario(YamlCommonServiceFactory.newInstance(ShardingType.SHARDING_TABLES));
-        scenario.executeShardingCRUDSuccess();
-        assertShardingTableResult(scenario.getCommonService(), false);
+        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.SHARDING_TABLES);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
+        scenario.process();
+        ResultAssertUtils.assertShardingTableResult(scenario.getCommonService());
     }
     
     @Test
     public void assertShardingDatabaseAndTablesPrecise() throws SQLException, IOException {
-        CommonServiceScenario scenario = new CommonServiceScenario(YamlCommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES));
-        scenario.executeShardingCRUDSuccess();
-        assertShardingDatabaseAndTableResult(scenario.getCommonService(), false);
+        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
+        scenario.process();
+        ResultAssertUtils.assertShardingDatabaseAndTableResult(scenario.getCommonService());
     }
     
     @Test
     public void assertMasterSlave() throws SQLException, IOException {
-        CommonServiceScenario scenario = new CommonServiceScenario(YamlCommonServiceFactory.newInstance(ShardingType.MASTER_SLAVE));
-        scenario.executeShardingCRUDSuccess();
-        assertMasterSlaveResult(scenario.getCommonService());
+        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.MASTER_SLAVE);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
+        scenario.process();
+        ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
     
     @Test
     public void assertShardingMasterSlavePrecise() throws SQLException, IOException {
-        CommonServiceScenario scenario = new CommonServiceScenario(YamlCommonServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE));
-        scenario.executeShardingCRUDSuccess();
-        assertMasterSlaveResult(scenario.getCommonService());
+        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE);
+        CommonServiceScenario scenario = new CommonServiceScenario(new RawPojoService(dataSource));
+        scenario.process();
+        ResultAssertUtils.assertMasterSlaveResult(scenario.getCommonService());
     }
 }
 

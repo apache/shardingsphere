@@ -19,7 +19,5 @@ package io.shardingsphere.example.repository.api.senario;
 
 public interface Scenario {
     
-    void executeShardingCRUDSuccess();
-    
-    void executeShardingCRUDFailure();
+    void process();
 }

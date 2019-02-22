@@ -20,6 +20,7 @@ shardingRule:
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
         column: order_id
+        type: SNOWFLAKE
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -35,8 +36,6 @@ shardingRule:
       algorithmExpression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
-    type: SNOWFLAKE
 
 props:
   sql.show: true

@@ -20,10 +20,13 @@ package io.shardingsphere.example.repository.api.senario;
 import io.shardingsphere.example.repository.api.service.CommonService;
 
 public final class CommonServiceScenario implements Scenario {
+
+//    private final DataSource dataSource;
     
     private final CommonService commonService;
     
     public CommonServiceScenario(final CommonService commonService) {
+//        this.dataSource = dataSource;
         this.commonService = commonService;
     }
     
@@ -32,14 +35,12 @@ public final class CommonServiceScenario implements Scenario {
     }
     
     @Override
-    public void executeShardingCRUDSuccess() {
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
-    }
-    
-    @Override
-    public void executeShardingCRUDFailure() {
-    
+    public void process() {
+        try {
+            commonService.initEnvironment();
+            commonService.processSuccess();
+        } finally {
+            commonService.cleanEnvironment();
+        }
     }
 }

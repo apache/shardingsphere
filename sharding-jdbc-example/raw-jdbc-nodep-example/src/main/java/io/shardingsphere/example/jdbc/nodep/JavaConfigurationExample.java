@@ -17,11 +17,12 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
-import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
-import io.shardingsphere.example.repository.api.senario.Scenario;
+import io.shardingsphere.example.jdbc.nodep.factory.DataSourceFactory;
+import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.ShardingType;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
@@ -29,14 +30,17 @@ import java.sql.SQLException;
  */
 public class JavaConfigurationExample {
     
-//    private static ShardingType type = ShardingType.SHARDING_DATABASES;
-//    private static ShardingType type = ShardingType.SHARDING_TABLES;
-    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType type = ShardingType.MASTER_SLAVE;
-//    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
+    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
+//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) throws SQLException {
-        Scenario scenario = new CommonServiceScenario(CommonServiceFactory.newInstance(type));
-        scenario.executeShardingCRUDSuccess();
+        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
+        CommonService commonService = new RawPojoService(dataSource);
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        commonService.cleanEnvironment();
     }
 }

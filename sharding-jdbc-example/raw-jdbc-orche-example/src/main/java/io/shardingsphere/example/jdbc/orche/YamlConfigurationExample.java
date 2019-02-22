@@ -17,21 +17,13 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
+import io.shardingsphere.example.jdbc.orche.factory.YamlOrchestrationDataSourceFactory;
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -53,55 +45,10 @@ public class YamlConfigurationExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
-        process(getDataSource());
-    }
-    
-    private static DataSource getDataSource() throws IOException, SQLException {
-        return ShardingType.MASTER_SLAVE == shardingType
-                ? YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(getYamlFile()) : YamlOrchestrationShardingDataSourceFactory.createDataSource(getYamlFile());
-    }
-    
-    private static File getYamlFile() {
-        String result;
-        switch (shardingType) {
-            case SHARDING_DATABASES:
-                result = String.format("/META-INF/%s/%s/sharding-databases.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case SHARDING_TABLES:
-                result = String.format("/META-INF/%s/%s/sharding-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case SHARDING_DATABASES_AND_TABLES:
-                result = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case MASTER_SLAVE:
-                result = String.format("/META-INF/%s/%s/master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            case SHARDING_MASTER_SLAVE:
-                result = String.format("/META-INF/%s/%s/sharding-master-slave.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-                break;
-            default:
-                throw new UnsupportedOperationException(shardingType.name());
-        }
-        return new File(YamlConfigurationExample.class.getResource(result).getFile());
-    }
-    
-    private static void process(final DataSource dataSource) throws Exception {
-        CommonService commonService = getCommonService(dataSource);
+        DataSource dataSource = YamlOrchestrationDataSourceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
+        CommonService commonService = new RawPojoService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
-        closeDataSource(dataSource);
-    }
-    
-    private static CommonService getCommonService(final DataSource dataSource) {
-        return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-    }
-    
-    private static void closeDataSource(final DataSource dataSource) throws Exception {
-        if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
-            ((OrchestrationMasterSlaveDataSource) dataSource).close();
-        } else {
-            ((OrchestrationShardingDataSource) dataSource).close();
-        }
     }
 }

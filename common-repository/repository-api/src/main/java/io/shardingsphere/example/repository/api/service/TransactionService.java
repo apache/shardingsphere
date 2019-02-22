@@ -21,9 +21,15 @@ public interface TransactionService extends CommonService {
     
     void processFailureWithLocal();
     
-    void processFailureWithXa();
+    void processFailureWithXA();
     
     void processFailureWithBase();
+    
+    void processSuccessWithLocal();
+    
+    void processSuccessWithXA();
+    
+    void processSuccessWithBase();
     
     void printTransactionType();
 }

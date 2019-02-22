@@ -25,15 +25,17 @@ import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 
+import javax.sql.DataSource;
+
 public class RawPojoService extends CommonServiceImpl {
     
     private final OrderRepository orderRepository;
     
     private final OrderItemRepository orderItemRepository;
     
-    public RawPojoService(final JDBCOrderRepositoryImpl orderRepository, final JDBCOrderItemRepositoryImpl orderItemRepository) {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
+    public RawPojoService(final DataSource dataSource) {
+        this.orderRepository = new JDBCOrderRepositoryImpl(dataSource);
+        this.orderItemRepository = new JDBCOrderItemRepositoryImpl(dataSource);
     }
     
     @Override

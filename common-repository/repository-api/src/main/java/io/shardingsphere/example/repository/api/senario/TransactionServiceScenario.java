@@ -18,9 +18,8 @@
 package io.shardingsphere.example.repository.api.senario;
 
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
-public class TransactionServiceScenario implements Scenario {
+public final class TransactionServiceScenario implements Scenario {
     
     private final TransactionService transactionService;
     
@@ -33,39 +32,15 @@ public class TransactionServiceScenario implements Scenario {
     }
     
     @Override
-    public void executeShardingCRUDSuccess() {
-        transactionService.initEnvironment();
-        transactionService.processSuccess();
-        transactionService.cleanEnvironment();
-    }
-    
-    @Override
-    public void executeShardingCRUDFailure() {
-        transactionService.initEnvironment();
-        processFailure(transactionService, TransactionType.LOCAL);
-        processFailure(transactionService, TransactionType.XA);
-//        processFailure(transactionService, TransactionType.BASE);
-        processFailure(transactionService, TransactionType.LOCAL);
-        transactionService.cleanEnvironment();
-    }
-    
-    private void processFailure(final TransactionService transactionService, final TransactionType type) {
+    public void process() {
         try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXa();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData();
+            transactionService.initEnvironment();
+            transactionService.processSuccessWithLocal();
+            transactionService.processSuccessWithXA();
+            transactionService.processFailureWithLocal();
+            transactionService.processFailureWithXA();
+        } finally {
+            transactionService.cleanEnvironment();
         }
     }
 }
