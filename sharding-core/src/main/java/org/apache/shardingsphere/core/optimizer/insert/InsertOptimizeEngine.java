@@ -84,7 +84,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
                 fillInsertValuesWithGeneratedKeyName(insertValuesToken);
                 fillInsertValuesTokenWithColumnValue(insertValuesToken.getColumnValues().get(i), currentGeneratedKey);
-                fillShardingValue(shardingCondition, currentGeneratedKey);
+                fillShardingCondition(shardingCondition, currentGeneratedKey);
             }
             if (isNeededToEncrypt()) {
                 encryptInsertColumnValues(insertValuesToken, i);
@@ -177,7 +177,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         }
     }
     
-    private void fillShardingValue(final ShardingCondition shardingCondition, final Comparable<?> currentGeneratedKey) {
+    private void fillShardingCondition(final ShardingCondition shardingCondition, final Comparable<?> currentGeneratedKey) {
         Column generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
         shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn, new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters)));
         insertStatement.setContainGenerateKey(true);
