@@ -67,7 +67,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     public ShardingConditions optimize() {
         List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
-        InsertValuesToken insertValuesToken = createInsertValuesToken();
+        InsertValuesToken insertValuesToken = getInsertValuesToken();
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
         int parametersCount = 0;
@@ -78,8 +78,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
                 parametersCount = parametersCount + insertValue.getParametersCount();
             }
-            ShardingCondition shardingCondition = new ShardingCondition();
-            shardingCondition.getShardingValues().addAll(getShardingValues(andConditions.get(i)));
+            ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
@@ -95,7 +94,13 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return new ShardingConditions(result);
     }
     
-    private InsertValuesToken createInsertValuesToken() {
+    private ShardingCondition createShardingCondition(final AndCondition andCondition) {
+        ShardingCondition result = new ShardingCondition();
+        result.getShardingValues().addAll(getShardingValues(andCondition));
+        return result;
+    }
+    
+    private InsertValuesToken getInsertValuesToken() {
         InsertValuesToken result = insertStatement.getInsertValuesToken();
         result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
         return result;
