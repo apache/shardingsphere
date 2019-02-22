@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
 
-import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,29 +33,40 @@ import java.util.List;
  */
 public final class ExecuteUpdateResponse implements ExecuteResponse {
     
-    @Getter
-    private final List<DatabaseSuccessPacket> packets = new LinkedList<>();
+    private final List<Integer> updateCounts = new LinkedList<>();
+    
+    private final List<Long> lastInsertIds = new LinkedList<>();
     
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
-            packets.add(((ExecuteUpdateResponseUnit) each).getDatabaseSuccessPacket());
+            updateCounts.add(((ExecuteUpdateResponseUnit) each).getUpdateCount());
+            lastInsertIds.add(((ExecuteUpdateResponseUnit) each).getLastInsertId());
         }
     }
     
     /**
-     * Merge packets.
+     * Get backend response.
      * 
-     * @return merged packet.
+     * @param isMerge is need merge
+     * @return backend response
      */
-    public BackendResponse merge() {
-        int affectedRows = 0;
-        long lastInsertId = 0;
-        for (DatabaseSuccessPacket each : packets) {
-            affectedRows += each.getAffectedRows();
-            if (each.getLastInsertId() > lastInsertId) {
-                lastInsertId = each.getLastInsertId();
-            }
+    public BackendResponse getBackendResponse(final boolean isMerge) {
+        return isMerge ? new SuccessResponse(1, mergeUpdateCount(), mergeLastInsertId()) : new SuccessResponse(1, updateCounts.get(0), lastInsertIds.get(0));
+    }
+    
+    private int mergeUpdateCount() {
+        int result = 0;
+        for (int each : updateCounts) {
+            result += each;
         }
-        return new SuccessResponse(1, affectedRows, lastInsertId);
+        return result;
+    }
+    
+    private long mergeLastInsertId() {
+        long result = 0;
+        for (long each : lastInsertIds) {
+            result = Math.max(result, each);
+        }
+        return result;
     }
 }

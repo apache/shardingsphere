@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.result.common;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
@@ -34,7 +33,7 @@ import java.util.Collections;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class FailureResponse implements BackendResponse {
     

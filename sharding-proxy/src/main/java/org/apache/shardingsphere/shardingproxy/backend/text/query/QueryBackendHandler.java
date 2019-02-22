@@ -21,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
@@ -29,6 +32,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
@@ -58,6 +62,16 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
             return new CommandResponsePackets(new DatabaseFailurePacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), "")));
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sql, backendConnection);
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
+        if (backendResponse instanceof SuccessResponse) {
+            SuccessResponse successResponse = (SuccessResponse) backendResponse;
+            return new CommandResponsePackets(new DatabaseSuccessPacket(successResponse.getSequenceId(), successResponse.getAffectedRows(), successResponse.getLastInsertId()));
+        }
+        if (backendResponse instanceof FailureResponse) {
+            FailureResponse failureResponse = (FailureResponse) backendResponse;
+            return new CommandResponsePackets(
+                    new DatabaseFailurePacket(failureResponse.getSequenceId(), failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage()));
+        }
         QueryHeaderResponse headerResponse = (QueryHeaderResponse) databaseCommunicationEngine.execute();
         Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(headerResponse.getQueryHeaders().size());
         for (QueryHeader each : headerResponse.getQueryHeaders()) {

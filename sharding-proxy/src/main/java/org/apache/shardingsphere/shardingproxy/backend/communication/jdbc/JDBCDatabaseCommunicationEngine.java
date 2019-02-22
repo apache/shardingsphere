@@ -46,7 +46,6 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -117,11 +116,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {
         if (executeResponse instanceof ExecuteUpdateResponse) {
-            if (logicSchema instanceof ShardingSchema && ((ShardingSchema) logicSchema).getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames())) {
-                DatabaseSuccessPacket successPacket = ((ExecuteUpdateResponse) executeResponse).getPackets().get(0);
-                return new SuccessResponse(successPacket.getSequenceId(), successPacket.getAffectedRows(), successPacket.getLastInsertId());
-            }
-            return ((ExecuteUpdateResponse) executeResponse).merge();
+            return ((ExecuteUpdateResponse) executeResponse).getBackendResponse(!isAllBroadcastTables(sqlStatement));
         }
         mergedResult = MergeEngineFactory.newInstance(
             databaseType, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
@@ -131,6 +126,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         QueryHeaderResponse result = getQueryHeaderResponseWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getSequenceId();
         return result;
+    }
+    
+    private boolean isAllBroadcastTables(final SQLStatement sqlStatement) {
+        return logicSchema instanceof ShardingSchema && ((ShardingSchema) logicSchema).getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames());
     }
     
     private ShardingRule getShardingRule() {
