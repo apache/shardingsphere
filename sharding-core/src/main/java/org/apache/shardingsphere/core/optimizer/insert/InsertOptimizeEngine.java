@@ -67,8 +67,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     public ShardingConditions optimize() {
         List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
-        InsertValuesToken insertValuesToken = insertStatement.getInsertValuesToken();
-        insertValuesToken.getColumnNames().addAll(insertStatement.getInsertColumnNames());
+        InsertValuesToken insertValuesToken = createInsertValuesToken();
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
         int parametersCount = 0;
@@ -94,6 +93,12 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             result.add(shardingCondition);
         }
         return new ShardingConditions(result);
+    }
+    
+    private InsertValuesToken createInsertValuesToken() {
+        InsertValuesToken result = insertStatement.getInsertValuesToken();
+        result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
+        return result;
     }
     
     private Collection<ListRouteValue> getShardingValues(final AndCondition andCondition) {
