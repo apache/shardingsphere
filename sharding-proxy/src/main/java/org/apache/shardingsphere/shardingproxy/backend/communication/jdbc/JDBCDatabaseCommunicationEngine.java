@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.merger.MergeEngineFactory;
 import org.apache.shardingsphere.core.merger.MergedResult;
@@ -70,6 +71,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final JDBCExecuteEngine executeEngine;
     
+    private final DatabaseType databaseType = GlobalRegistry.getInstance().getDatabaseType();
+    
     private ExecuteResponse executeResponse;
     
     private MergedResult mergedResult;
@@ -79,7 +82,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            return execute(executeEngine.getJdbcExecutorWrapper().route(sql, GlobalRegistry.getInstance().getDatabaseType()));
+            SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql, databaseType);
+            return execute(routeResult);
         } catch (final SQLException ex) {
             return new FailureResponse(1, ex);
         }
@@ -91,9 +95,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
-            MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE;
-            return new FailureResponse(1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
-                    ? String.format(mySQLServerErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(mySQLServerErrorCode.getErrorMessage(), "unknown_table"));
+            return new FailureResponse(1, 
+                    MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table");
         }
         executeResponse = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
@@ -121,7 +124,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
-            GlobalRegistry.getInstance().getDatabaseType(), getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
+            databaseType, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }

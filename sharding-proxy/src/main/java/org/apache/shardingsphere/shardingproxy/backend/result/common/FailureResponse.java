@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.result.common;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
@@ -33,7 +34,7 @@ import java.util.Collections;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class FailureResponse implements BackendResponse {
     
@@ -45,8 +46,8 @@ public final class FailureResponse implements BackendResponse {
     
     private final String errorMessage;
     
-    public FailureResponse(final int sequenceId, final MySQLServerErrorCode mySQLServerErrorCode, final Object... errorMessageArguments) {
-        this(sequenceId, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), errorMessageArguments));
+    public FailureResponse(final int sequenceId, final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
+        this(sequenceId, errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
     }
     
     public FailureResponse(final int sequenceId, final SQLException cause) {
