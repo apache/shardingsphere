@@ -39,8 +39,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * SQL execute callback for Sharding-Proxy.
@@ -88,8 +88,8 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         return new ExecuteUpdateResponseUnit(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
-    private Collection<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        Collection<QueryHeader> result = new LinkedList<>();
+    private List<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
+        List<QueryHeader> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             result.add(new QueryHeader(resultSetMetaData, backendConnection.getLogicSchema(), columnIndex));
         }

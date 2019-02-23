@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.q
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Execute query response unit.
@@ -36,7 +37,7 @@ import java.util.LinkedList;
 @Getter
 public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
     
-    private final Collection<QueryHeader> queryHeaders;
+    private final List<QueryHeader> queryHeaders;
     
     private final QueryResult queryResult;
     
