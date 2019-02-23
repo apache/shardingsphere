@@ -90,9 +90,8 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     
     private Collection<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
         Collection<QueryHeader> result = new LinkedList<>();
-        int currentSequenceId = 0;
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.add(new QueryHeader(++currentSequenceId, resultSetMetaData, backendConnection.getLogicSchema(), columnIndex));
+            result.add(new QueryHeader(resultSetMetaData, backendConnection.getLogicSchema(), columnIndex));
         }
         return result;
     }

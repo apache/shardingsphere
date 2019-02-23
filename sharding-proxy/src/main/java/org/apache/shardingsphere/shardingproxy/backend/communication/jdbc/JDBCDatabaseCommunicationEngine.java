@@ -137,17 +137,16 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private QueryHeaderResponse getQueryHeaderResponseWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
-        List<QueryHeader> dataHeaderPackets = new ArrayList<>(queryResponsePackets.getFieldCount());
+        List<QueryHeader> queryHeaders = new ArrayList<>(queryResponsePackets.getFieldCount());
         int columnCount = 0;
         for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
             if (!DerivedColumn.isDerivedColumn(each.getName())) {
-                QueryHeader queryHeader = new QueryHeader(each.getSequenceId(), each.getSchema(), each.getTable(), each.getOrgTable(), each.getName(), each.getOrgName(),
-                        each.getColumnLength(), each.getColumnType(), each.getDecimals());
-                dataHeaderPackets.add(queryHeader);
+                QueryHeader queryHeader = new QueryHeader(each.getSchema(), each.getTable(), each.getName(), each.getOrgName(), each.getColumnLength(), each.getColumnType(), each.getDecimals());
+                queryHeaders.add(queryHeader);
                 columnCount++;
             }
         }
-        return new QueryHeaderResponse(queryResponsePackets.getColumnTypes(), columnCount, dataHeaderPackets, columnCount + 2);
+        return new QueryHeaderResponse(queryResponsePackets.getColumnTypes(), columnCount, queryHeaders, columnCount + 2);
     }
     
     @Override

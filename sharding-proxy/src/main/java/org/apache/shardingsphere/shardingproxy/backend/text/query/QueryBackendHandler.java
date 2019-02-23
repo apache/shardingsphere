@@ -64,10 +64,10 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
         }
         QueryHeaderResponse headerResponse = (QueryHeaderResponse) backendResponse;
         Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(headerResponse.getQueryHeaders().size());
+        int sequenceId = 1;
         for (QueryHeader each : headerResponse.getQueryHeaders()) {
-            dataHeaderPackets.add(
-                    new DataHeaderPacket(each.getSequenceId(), each.getSchema(), each.getTable(), each.getOrgTable(), each.getName(), each.getOrgName(),
-                            each.getColumnLength(), each.getColumnType(), each.getDecimals()));
+            dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, each.getSchema(), each.getTable(), each.getTable(), 
+                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
         }
         return new QueryResponsePackets(headerResponse.getColumnTypes(), headerResponse.getFieldCount(), dataHeaderPackets, headerResponse.getSequenceId());
     }

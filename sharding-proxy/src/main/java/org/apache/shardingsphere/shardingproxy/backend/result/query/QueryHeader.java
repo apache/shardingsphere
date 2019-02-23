@@ -33,17 +33,13 @@ import java.util.Collection;
 @Getter
 public final class QueryHeader {
     
-    private final int sequenceId;
-    
     private final String schema;
     
     private final String table;
     
-    private final String orgTable;
+    private final String columnLabel;
     
-    private final String name;
-    
-    private final String orgName;
+    private final String columnName;
     
     private final int columnLength;
     
@@ -51,8 +47,7 @@ public final class QueryHeader {
     
     private final int decimals;
     
-    public QueryHeader(final int sequenceId, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
-        this.sequenceId = sequenceId;
+    public QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
         this.schema = logicSchema.getName();
         if (logicSchema instanceof ShardingSchema) {
             Collection<String> tableNames = ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex));
@@ -60,22 +55,18 @@ public final class QueryHeader {
         } else {
             this.table = resultSetMetaData.getTableName(columnIndex);
         }
-        this.orgTable = table;
-        this.name = resultSetMetaData.getColumnLabel(columnIndex);
-        this.orgName = resultSetMetaData.getColumnName(columnIndex);
+        this.columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
+        this.columnName = resultSetMetaData.getColumnName(columnIndex);
         this.columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
         this.columnType = resultSetMetaData.getColumnType(columnIndex);
         this.decimals = resultSetMetaData.getScale(columnIndex);
     }
     
-    public QueryHeader(final int sequenceId, final String schema, final String table, final String orgTable,
-                       final String name, final String orgName, final int columnLength, final Integer columnType, final int decimals) {
-        this.sequenceId = sequenceId;
+    public QueryHeader(final String schema, final String table, final String columnLabel, final String columnName, final int columnLength, final Integer columnType, final int decimals) {
         this.schema = schema;
         this.table = table;
-        this.orgTable = orgTable;
-        this.name = name;
-        this.orgName = orgName;
+        this.columnLabel = columnLabel;
+        this.columnName = columnName;
         this.columnLength = columnLength;
         this.columnType = columnType;
         this.decimals = decimals;

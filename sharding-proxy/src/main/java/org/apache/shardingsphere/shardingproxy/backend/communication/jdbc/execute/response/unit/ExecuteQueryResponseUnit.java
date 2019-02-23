@@ -52,8 +52,8 @@ public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
         int sequenceId = 1;
         for (QueryHeader each : queryHeaders) {
             columnTypes.add(each.getColumnType());
-            dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, each.getSchema(), each.getTable(), each.getOrgTable(), each.getName(), each.getOrgName(),
-                    each.getColumnLength(), each.getColumnType(), each.getDecimals()));
+            dataHeaderPackets.add(new DataHeaderPacket(
+                    ++sequenceId, each.getSchema(), each.getTable(), each.getTable(), each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
         }
         return new QueryResponsePackets(columnTypes, queryHeaders.size(), dataHeaderPackets, ++sequenceId);
     }
