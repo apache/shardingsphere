@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.gener
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 
 /**
@@ -75,6 +76,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             backendConnection.setCurrentSchema(databaseName);
             // TODO send a md5 authentication request message
             context.write(new PostgreSQLAuthenticationOKPacket(true));
+            context.write(new PostgreSQLParameterStatusPacket("server_version", "10.4"));
+            context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
+            context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
             context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
             return true;
         }
