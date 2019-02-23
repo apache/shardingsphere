@@ -84,17 +84,17 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql, databaseType);
             return execute(routeResult);
         } catch (final SQLException ex) {
-            return new FailureResponse(1, ex);
+            return new FailureResponse(ex);
         }
     }
     
     private BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new SuccessResponse(1, 0L, 0L);
+            return new SuccessResponse();
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
-            return new FailureResponse(1, 
+            return new FailureResponse(
                     MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table");
         }
         executeResponse = executeEngine.execute(routeResult);

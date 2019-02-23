@@ -54,7 +54,7 @@ public final class UnicastBackendHandlerTest {
     @Before
     public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        setUnderlyingHandler(new SuccessResponse(1, 0, 0));
+        setUnderlyingHandler(new SuccessResponse(0L, 0L));
     }
     
     @Test

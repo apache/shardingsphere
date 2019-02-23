@@ -37,25 +37,23 @@ import java.util.Collections;
 @Getter
 public final class FailureResponse implements BackendResponse {
     
-    private final int sequenceId;
-    
     private final int errorCode;
     
     private final String sqlState;
     
     private final String errorMessage;
     
-    public FailureResponse(final int sequenceId, final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
-        this(sequenceId, errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
+    public FailureResponse(final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
+        this(errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
     }
     
-    public FailureResponse(final int sequenceId, final SQLException cause) {
-        this(sequenceId, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
+    public FailureResponse(final SQLException cause) {
+        this(cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
     
     @Override
     public DatabasePacket getHeadPacket() {
-        return new DatabaseFailurePacket(sequenceId, errorCode, sqlState, errorMessage);
+        return new DatabaseFailurePacket(1, errorCode, sqlState, errorMessage);
     }
     
     @Override

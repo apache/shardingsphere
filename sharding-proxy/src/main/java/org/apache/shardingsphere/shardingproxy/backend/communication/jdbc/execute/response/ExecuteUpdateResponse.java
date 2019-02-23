@@ -51,7 +51,7 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
      * @return backend response
      */
     public BackendResponse getBackendResponse(final boolean isMerge) {
-        return isMerge ? new SuccessResponse(1, mergeUpdateCount(), mergeLastInsertId()) : new SuccessResponse(1, updateCounts.get(0), lastInsertIds.get(0));
+        return isMerge ? new SuccessResponse(mergeUpdateCount(), mergeLastInsertId()) : new SuccessResponse(updateCounts.get(0), lastInsertIds.get(0));
     }
     
     private int mergeUpdateCount() {

@@ -60,7 +60,7 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteSuccess() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        mockDatabaseCommunicationEngine(new SuccessResponse(1, 0, 0));
+        mockDatabaseCommunicationEngine(new SuccessResponse(0L, 0L));
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         DatabaseSuccessPacket actual = (DatabaseSuccessPacket) broadcastBackendHandler.execute().getHeadPacket();
@@ -73,7 +73,7 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteFailure() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        FailureResponse failureResponse = new FailureResponse(1, new SQLException("no reason", "X999", -1));
+        FailureResponse failureResponse = new FailureResponse(new SQLException("no reason", "X999", -1));
         mockDatabaseCommunicationEngine(failureResponse);
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);

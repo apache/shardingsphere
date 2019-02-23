@@ -35,15 +35,17 @@ import java.util.Collections;
 @Getter
 public final class SuccessResponse implements BackendResponse {
     
-    private final int sequenceId;
-    
     private final long affectedRows;
     
     private final long lastInsertId;
     
+    public SuccessResponse() {
+        this(0L, 0L);
+    }
+    
     @Override
     public DatabasePacket getHeadPacket() {
-        return new DatabaseSuccessPacket(sequenceId, affectedRows, lastInsertId);
+        return new DatabaseSuccessPacket(1, affectedRows, lastInsertId);
     }
     
     @Override

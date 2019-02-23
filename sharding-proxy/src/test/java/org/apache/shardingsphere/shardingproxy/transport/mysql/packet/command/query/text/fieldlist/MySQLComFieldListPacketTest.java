@@ -127,7 +127,7 @@ public final class MySQLComFieldListPacketTest {
     public void assertExecuteWhenFailure() throws SQLException {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        BackendResponse expected = new FailureResponse(1, MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown");
+        BackendResponse expected = new FailureResponse(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown");
         when(databaseCommunicationEngine.execute()).thenReturn(expected);
         MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
