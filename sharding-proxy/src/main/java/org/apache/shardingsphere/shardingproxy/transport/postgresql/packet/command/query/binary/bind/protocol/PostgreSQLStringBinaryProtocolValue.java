@@ -41,7 +41,7 @@ public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBina
         if (value instanceof byte[]) {
             payload.writeBytes((byte[]) value);
         } else {
-            payload.writeStringNul(value.toString());
+            payload.writeStringEOF(value.toString());
         }
     }
 }
