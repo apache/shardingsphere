@@ -188,14 +188,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
         
         @Override
-        public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
+        public ExecuteResponseUnit executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
             boolean withMetaData = false;
             if (fetchMetaData && !hasMetaData) {
                 hasMetaData = true;
                 withMetaData = true;
             }
-            return createExecuteResponseUnit(
-                    statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys, withMetaData);
+            return createExecuteResponseUnit(statement, routeUnit.getSqlUnit().getSql(), connectionMode, isReturnGeneratedKeys, withMetaData);
         }
     }
 }

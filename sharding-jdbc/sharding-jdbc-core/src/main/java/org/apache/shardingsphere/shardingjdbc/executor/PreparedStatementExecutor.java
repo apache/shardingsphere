@@ -103,19 +103,19 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return getQueryResult(statementExecuteUnit);
+            protected QueryResult executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return getQueryResult(statement, connectionMode);
             }
         };
         return executeCallback(executeCallback);
     }
     
-    private QueryResult getQueryResult(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-        PreparedStatement preparedStatement = (PreparedStatement) statementExecuteUnit.getStatement();
+    private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+        PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
         ShardingRule shardingRule = getConnection().getShardingContext().getShardingRule();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == statementExecuteUnit.getConnectionMode() ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
     }
     
     /**
