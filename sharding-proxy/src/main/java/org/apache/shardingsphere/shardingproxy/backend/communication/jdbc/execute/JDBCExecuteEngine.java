@@ -100,8 +100,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
-        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = new FirstProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
-        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = new ProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = new ProxySQLExecuteCallback(isExceptionThrown, isReturnGeneratedKeys, true);
+        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = new ProxySQLExecuteCallback(isExceptionThrown, isReturnGeneratedKeys, false);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups, firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
@@ -116,7 +116,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         return result;
     }
     
-    private ExecuteResponseUnit executeSQL(
+    private ExecuteResponseUnit createExecuteResponseUnit(
             final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean isReturnGeneratedKeys, final boolean withMetadata) throws SQLException {
         backendConnection.add(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
@@ -173,43 +173,29 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private final class FirstProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
+    private final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
-    
+        
+        private final boolean fetchMetaData;
+        
         private boolean hasMetaData;
         
-        private FirstProxyJDBCExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
+        private ProxySQLExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
             super(databaseType, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+            this.fetchMetaData = fetchMetaData;
         }
         
         @Override
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-            if (hasMetaData) {
-                return JDBCExecuteEngine.this.executeSQL(
-                        statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys, false);
-            } else {
+            boolean withMetaData = false;
+            if (fetchMetaData && !hasMetaData) {
                 hasMetaData = true;
-                return JDBCExecuteEngine.this.executeSQL(
-                        statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys, true);
+                withMetaData = true;
             }
-        }
-    }
-    
-    private final class ProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
-        
-        private final boolean isReturnGeneratedKeys;
-        
-        private ProxyJDBCExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
-            super(databaseType, isExceptionThrown);
-            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
-        }
-        
-        @Override
-        public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-            return JDBCExecuteEngine.this.executeSQL(
-                    statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys, false);
+            return createExecuteResponseUnit(
+                    statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys, withMetaData);
         }
     }
 }
