@@ -36,6 +36,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
@@ -95,7 +96,9 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             }
             if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
                 && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket) && postgreSQLColumnDescriptions.size() > 0) {
-                context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
+                if (!(commandPacket instanceof PostgreSQLComBindPacket && (((PostgreSQLComBindPacket) commandPacket).isBinaryRowData()))) {
+                    context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
+                }
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             if (commandPacket instanceof PostgreSQLComQueryPacket) {

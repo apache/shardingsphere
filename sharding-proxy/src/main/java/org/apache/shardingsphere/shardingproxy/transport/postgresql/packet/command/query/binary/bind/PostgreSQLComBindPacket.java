@@ -34,6 +34,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 import java.sql.SQLException;
@@ -57,11 +58,15 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
+    @Getter
+    private final boolean binaryRowData;
+    
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         payload.readInt4();
         payload.readStringNul();
         statementId = payload.readStringNul();
-        for (int i = 0; i < payload.readInt2(); i++) {
+        int parameterFormatsLength = payload.readInt2();
+        for (int i = 0; i < parameterFormatsLength; i++) {
             payload.readInt2();
         }
         binaryStatement = backendConnection.getConnectionScopeBinaryStatementRegistry().getBinaryStatement(statementId);
@@ -69,7 +74,9 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
                 backendConnection.getLogicSchema(), binaryStatement.getSql(), getParameters(payload), backendConnection);
         }
-        for (int i = 0; i < payload.readInt2(); i++) {
+        int resultFormatsLength = payload.readInt2();
+        binaryRowData = resultFormatsLength > 0;
+        for (int i = 0; i < resultFormatsLength; i++) {
             payload.readInt2();
         }
     }
@@ -116,7 +123,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         for (int i = 0; i < columnCount; i++) {
             columnTypes.add(PostgreSQLColumnType.valueOfJDBCType(jdbcColumnTypes.get(i)));
         }
-        return new PostgreSQLBinaryResultSetRowPacket(resultPacket.getColumnCount(), resultPacket.getData(), columnTypes);
+        return binaryRowData ? new PostgreSQLBinaryResultSetRowPacket(resultPacket.getColumnCount(), resultPacket.getData(), columnTypes) : new PostgreSQLDataRowPacket(resultPacket.getData());
     }
     
     @Override
