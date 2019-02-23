@@ -52,8 +52,6 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private int currentSequenceId;
     
-    private int columnCount;
-    
     private final List<Integer> columnTypes = new LinkedList<>();
     
     public ShardingCTLShowBackendHandler(final String sql, final BackendConnection backendConnection) {
@@ -82,10 +80,8 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
         int sequenceId = 1;
         Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
         dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, "", "", "", columnName, "", 100, Types.VARCHAR, 0));
-        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), 1, dataHeaderPackets, ++sequenceId);
+        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(dataHeaderPackets, ++sequenceId);
         currentSequenceId = queryResponsePackets.getPackets().size() + 2;
-        columnCount = queryResponsePackets.getFieldCount();
-        columnTypes.addAll(queryResponsePackets.getColumnTypes());
         return queryResponsePackets;
     }
     
@@ -96,10 +92,6 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        List<Object> data = new ArrayList<>(columnCount);
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            data.add(mergedResult.getValue(columnIndex, Object.class));
-        }
-        return new ResultPacket(++currentSequenceId, data, columnCount, columnTypes);
+        return new ResultPacket(++currentSequenceId, Collections.singletonList(mergedResult.getValue(1, Object.class)), 1, Collections.singletonList(Types.VARCHAR));
     }
 }

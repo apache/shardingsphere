@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Query response packets.
@@ -32,17 +31,11 @@ import java.util.List;
 @Getter
 public final class QueryResponsePackets extends CommandResponsePackets {
     
-    private final List<Integer> columnTypes;
-    
-    private final int fieldCount;
-    
     private final Collection<DataHeaderPacket> dataHeaderPackets;
     
-    private int sequenceId;
+    private final int sequenceId;
     
-    public QueryResponsePackets(final List<Integer> columnTypes, final int fieldCount, final Collection<DataHeaderPacket> dataHeaderPackets, final int sequenceId) {
-        this.columnTypes = columnTypes;
-        this.fieldCount = fieldCount;
+    public QueryResponsePackets(final Collection<DataHeaderPacket> dataHeaderPackets, final int sequenceId) {
         getPackets().addAll(dataHeaderPackets);
         this.dataHeaderPackets = dataHeaderPackets;
         this.sequenceId = sequenceId;

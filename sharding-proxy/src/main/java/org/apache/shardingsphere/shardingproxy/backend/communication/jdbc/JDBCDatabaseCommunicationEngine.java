@@ -51,6 +51,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -137,7 +138,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private QueryHeaderResponse getQueryHeaderResponseWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
-        List<QueryHeader> queryHeaders = new ArrayList<>(queryResponsePackets.getFieldCount());
+        List<QueryHeader> queryHeaders = new ArrayList<>(queryResponsePackets.getDataHeaderPackets().size());
         int columnCount = 0;
         for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
             if (!DerivedColumn.isDerivedColumn(each.getName())) {
@@ -146,7 +147,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
                 columnCount++;
             }
         }
-        return new QueryHeaderResponse(queryResponsePackets.getColumnTypes(), columnCount, queryHeaders, columnCount + 2);
+        return new QueryHeaderResponse(queryHeaders, columnCount + 2);
     }
     
     @Override
@@ -157,11 +158,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public ResultPacket getResultValue() throws SQLException {
         QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        int columnCount = queryResponsePackets.getFieldCount();
+        int columnCount = queryResponsePackets.getDataHeaderPackets().size();
         List<Object> row = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new ResultPacket(++currentSequenceId, row, columnCount, queryResponsePackets.getColumnTypes());
+        List<Integer> columnTypes = new LinkedList<>();
+        for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
+            columnTypes.add(each.getColumnType());
+        }
+        return new ResultPacket(++currentSequenceId, row, columnCount, columnTypes);
     }
 }

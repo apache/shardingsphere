@@ -31,8 +31,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Show databases backend handler.
@@ -46,19 +44,12 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private int currentSequenceId = 1;
     
-    private int columnCount;
-    
-    private final List<Integer> columnTypes = new LinkedList<>();
-    
     @Override
     public CommandResponsePackets execute() {
         mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
         Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
         dataHeaderPackets.add(new DataHeaderPacket(++currentSequenceId, "", "", "", "Database", "", 100, Types.VARCHAR, 0));
-        QueryResponsePackets result = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), 1, dataHeaderPackets, ++currentSequenceId);
-        columnCount = result.getFieldCount();
-        columnTypes.addAll(result.getColumnTypes());
-        return result;
+        return new QueryResponsePackets(dataHeaderPackets, ++currentSequenceId);
     }
     
     @Override
@@ -68,10 +59,6 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        List<Object> data = new ArrayList<>(columnCount);
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            data.add(mergedResult.getValue(columnIndex, Object.class));
-        }
-        return new ResultPacket(++currentSequenceId, data, columnCount, columnTypes);
+        return new ResultPacket(++currentSequenceId, Collections.singletonList(mergedResult.getValue(1, Object.class)), 1, Collections.singletonList(Types.VARCHAR));
     }
 }

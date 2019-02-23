@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.q
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Execute query response unit.
@@ -47,14 +46,12 @@ public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
      * @return query response packets
      */
     public QueryResponsePackets getQueryResponsePackets() {
-        List<Integer> columnTypes = new LinkedList<>();
         Collection<DataHeaderPacket> dataHeaderPackets = new LinkedList<>();
         int sequenceId = 1;
         for (QueryHeader each : queryHeaders) {
-            columnTypes.add(each.getColumnType());
             dataHeaderPackets.add(new DataHeaderPacket(
                     ++sequenceId, each.getSchema(), each.getTable(), each.getTable(), each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
         }
-        return new QueryResponsePackets(columnTypes, queryHeaders.size(), dataHeaderPackets, ++sequenceId);
+        return new QueryResponsePackets(dataHeaderPackets, ++sequenceId);
     }
 }

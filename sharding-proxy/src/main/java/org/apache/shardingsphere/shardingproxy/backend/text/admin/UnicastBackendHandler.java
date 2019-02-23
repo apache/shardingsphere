@@ -63,7 +63,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
                 dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, each.getSchema(), each.getTable(), each.getTable(), 
                         each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
             }
-            return new QueryResponsePackets(headerResponse.getColumnTypes(), headerResponse.getFieldCount(), dataHeaderPackets, headerResponse.getSequenceId());
+            return new QueryResponsePackets(dataHeaderPackets, headerResponse.getSequenceId());
         }
         return new CommandResponsePackets(databaseCommunicationEngine.execute().getPackets());
     }

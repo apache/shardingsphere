@@ -34,17 +34,11 @@ import java.util.List;
 @Getter
 public final class QueryHeaderResponse implements BackendResponse {
     
-    private final List<Integer> columnTypes;
-    
-    private final int fieldCount;
-    
     private final List<QueryHeader> queryHeaders;
     
     private int sequenceId;
     
-    public QueryHeaderResponse(final List<Integer> columnTypes, final int fieldCount, final List<QueryHeader> queryHeaders, final int sequenceId) {
-        this.columnTypes = columnTypes;
-        this.fieldCount = fieldCount;
+    public QueryHeaderResponse(final List<QueryHeader> queryHeaders, final int sequenceId) {
         this.queryHeaders = queryHeaders;
         this.sequenceId = sequenceId;
     }

@@ -40,19 +40,9 @@ public final class QueryResponsePacketsTest {
         assertThat(actualDataHeaderPackets.next().getSequenceId(), is(3));
     }
     
-    @Test
-    public void assertGetColumnCount() {
-        assertThat(createQueryResponsePackets().getFieldCount(), is(2));
-    }
-    
-    @Test
-    public void assertGetColumnTypes() {
-        assertThat(createQueryResponsePackets().getColumnTypes(), is(Arrays.asList(Types.BIGINT, Types.VARCHAR)));
-    }
-    
     private QueryResponsePackets createQueryResponsePackets() {
         DataHeaderPacket dataHeaderPacket1 = new DataHeaderPacket(2, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id", 10, Types.BIGINT, 0);
         DataHeaderPacket dataHeaderPacket2 = new DataHeaderPacket(3, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "value", "value", 20, Types.VARCHAR, 0);
-        return new QueryResponsePackets(Arrays.asList(Types.BIGINT, Types.VARCHAR), 2, Arrays.asList(dataHeaderPacket1, dataHeaderPacket2), 4);
+        return new QueryResponsePackets(Arrays.asList(dataHeaderPacket1, dataHeaderPacket2), 4);
     }
 }

@@ -77,7 +77,7 @@ public final class MySQLCommandExecutor implements Runnable {
                 return;
             }
             if (responsePackets.get() instanceof QueryResponsePackets) {
-                context.write(new MySQLFieldCountPacket(1, ((QueryResponsePackets) responsePackets.get()).getFieldCount()));
+                context.write(new MySQLFieldCountPacket(1, ((QueryResponsePackets) responsePackets.get()).getDataHeaderPackets().size()));
             }
             for (DatabasePacket each : responsePackets.get().getPackets()) {
                 if (each instanceof DatabaseSuccessPacket) {
