@@ -30,13 +30,10 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 import java.sql.SQLException;
@@ -100,26 +97,14 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         }
         CommandResponsePackets result = new CommandResponsePackets(new PostgreSQLBindCompletePacket());
         if (null != databaseCommunicationEngine) {
-            if ("SHOW TRANSACTION ISOLATION LEVEL".equals(binaryStatement.getSql())) {
-                PostgreSQLColumnDescription postgreSQLColumnDescription = new PostgreSQLColumnDescription("transaction_isolation", 0, 0, -1);
-                List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(16);
-                postgreSQLColumnDescriptions.add(postgreSQLColumnDescription);
-                PostgreSQLRowDescriptionPacket postgreSQLRowDescriptionPacket = new PostgreSQLRowDescriptionPacket(1, postgreSQLColumnDescriptions);
-                List<Object> data = new ArrayList<>(1);
-                data.add("read committed");
-                PostgreSQLDataRowPacket postgreSQLDataRowPacket = new PostgreSQLDataRowPacket(data);
-                result.getPackets().add(postgreSQLRowDescriptionPacket);
-                result.getPackets().add(postgreSQLDataRowPacket);
-            } else {
-                result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
-            }
+            result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
         }
         return Optional.of(result);
     }
     
     @Override
     public boolean next() throws SQLException {
-        return databaseCommunicationEngine.next();
+        return null != databaseCommunicationEngine && databaseCommunicationEngine.next();
     }
     
     @Override
