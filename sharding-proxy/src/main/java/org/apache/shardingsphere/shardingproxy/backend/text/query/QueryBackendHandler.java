@@ -18,16 +18,23 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Backend handler with query.
@@ -48,12 +55,21 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     @Override
     public CommandResponsePackets execute() {
         if (null == backendConnection.getLogicSchema()) {
-            MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_NO_DB_ERROR;
-            return new CommandResponsePackets(new DatabaseFailurePacket(
-                1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), "")));
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR));
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sql, backendConnection);
-        return databaseCommunicationEngine.execute();
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
+        if (!(backendResponse instanceof QueryHeaderResponse)) {
+            return new CommandResponsePackets(backendResponse.getHeadPacket());
+        }
+        QueryHeaderResponse headerResponse = (QueryHeaderResponse) backendResponse;
+        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(headerResponse.getQueryHeaders().size());
+        for (QueryHeader each : headerResponse.getQueryHeaders()) {
+            dataHeaderPackets.add(
+                    new DataHeaderPacket(each.getSequenceId(), each.getSchema(), each.getTable(), each.getOrgTable(), each.getName(), each.getOrgName(),
+                            each.getColumnLength(), each.getColumnType(), each.getDecimals()));
+        }
+        return new QueryResponsePackets(headerResponse.getColumnTypes(), headerResponse.getFieldCount(), dataHeaderPackets, headerResponse.getSequenceId());
     }
     
     @Override

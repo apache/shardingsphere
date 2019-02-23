@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl;
+package org.apache.shardingsphere.shardingproxy.backend.result.query;
 
-import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
- * Sharding CTL parser interface.
+ * Result packet.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public interface ShardingCTLParser<T> {
+@RequiredArgsConstructor
+@Getter
+public final class ResultPacket {
     
-    /**
-     * Do sharding CTL parse.
-     *
-     * @return sharding CTL statement.
-     */
-    Optional<T> doParse();
+    private final int sequenceId;
+    
+    private final List<Object> data;
+    
+    private final int columnCount;
+    
+    private final List<Integer> columnTypes;
 }
-

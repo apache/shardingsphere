@@ -43,6 +43,10 @@ public class CommandResponsePackets {
         packets.add(databasePacket);
     }
     
+    public CommandResponsePackets(final Collection<DatabasePacket> databasePackets) {
+        packets.addAll(databasePackets);
+    }
+    
     public CommandResponsePackets(final Exception exception) {
         Optional<SQLException> sqlException = findSQLException(exception);
         packets.add(sqlException.isPresent() ? new DatabaseFailurePacket(1, sqlException.get().getErrorCode(), sqlException.get().getSQLState(), sqlException.get().getMessage())

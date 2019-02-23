@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.sctl;
+package org.apache.shardingsphere.shardingproxy.runtime;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-/**
- * Sharding CTL set statement.
- *
- * @author zhaojun
- */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingCTLSetStatement {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ExecutorContextTest {
     
-    private final String key;
-    
-    private final String value;
+    @Test
+    public void assertGetInstance() {
+        assertThat(ExecutorContext.getInstance().getExecuteEngine(), is(ExecutorContext.getInstance().getExecuteEngine()));
+    }
 }

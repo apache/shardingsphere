@@ -19,11 +19,9 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.executor.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -37,7 +35,7 @@ import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
-import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
@@ -46,9 +44,12 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 
 import java.sql.Connection;
@@ -70,7 +71,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private static final Integer MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
@@ -81,19 +81,18 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
-    private int columnCount;
-    
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
+    
+    private final DatabaseType databaseType = GlobalRegistry.getInstance().getDatabaseType();
     
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         int maxConnectionsSizePerQuery = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, backendConnection.isSerialExecute());
+        sqlExecuteTemplate = new SQLExecuteTemplate(ExecutorContext.getInstance().getExecuteEngine(), backendConnection.isSerialExecute());
     }
     
     @SuppressWarnings("unchecked")
@@ -103,10 +102,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
-        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = new FirstProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
-        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = new ProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
-        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                firstProxySQLExecuteCallback, proxySQLExecuteCallback);
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = new ProxySQLExecuteCallback(isExceptionThrown, isReturnGeneratedKeys, true);
+        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = new ProxySQLExecuteCallback(isExceptionThrown, isReturnGeneratedKeys, false);
+        Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups, firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
                 ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
@@ -120,28 +118,15 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         return result;
     }
     
-    private ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean isReturnGeneratedKeys) throws SQLException {
+    private ExecuteResponseUnit createExecuteResponseUnit(
+            final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean isReturnGeneratedKeys, final boolean withMetadata) throws SQLException {
         backendConnection.add(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
-            return new ExecuteUpdateResponseUnit(new DatabaseSuccessPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L));
+            return new ExecuteUpdateResponseUnit(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
         }
         ResultSet resultSet = statement.getResultSet();
         backendConnection.add(resultSet);
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        if (0 == resultSetMetaData.getColumnCount()) {
-            return new ExecuteUpdateResponseUnit(new DatabaseSuccessPacket(1, 0L, 0L));
-        }
-        return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet, connectionMode));
-    }
-    
-    private ExecuteResponseUnit executeWithoutMetadata(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean isReturnGeneratedKeys) throws SQLException {
-        backendConnection.add(statement);
-        if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
-            return new ExecuteUpdateResponseUnit(new DatabaseSuccessPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
-        }
-        ResultSet resultSet = statement.getResultSet();
-        backendConnection.add(resultSet);
-        return new ExecuteQueryResponseUnit(null, createQueryResult(resultSet, connectionMode));
+        return new ExecuteQueryResponseUnit(withMetadata ? getHeaderPackets(resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
@@ -161,8 +146,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         return new QueryResponsePackets(columnTypes, columnCount, dataHeaderPackets, ++currentSequenceId);
     }
     
-    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+    private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) {
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
+        if (logicSchema instanceof MasterSlaveSchema) {
+            return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
+        }
+        ShardingRule shardingRule = ((ShardingSchema) logicSchema).getShardingRule();
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
     }
     
     @RequiredArgsConstructor
@@ -189,43 +179,29 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private final class FirstProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
+    private final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
         
         private final boolean isReturnGeneratedKeys;
+        
+        private final boolean fetchMetaData;
         
         private boolean hasMetaData;
         
-        private FirstProxyJDBCExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
-            super(GlobalRegistry.getInstance().getDatabaseType(), isExceptionThrown);
+        private ProxySQLExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+            super(databaseType, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
+            this.fetchMetaData = fetchMetaData;
         }
         
         @Override
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-            if (hasMetaData) {
-                return executeWithoutMetadata(
-                        statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
-            } else {
+            boolean withMetaData = false;
+            if (fetchMetaData && !hasMetaData) {
                 hasMetaData = true;
-                return executeWithMetadata(
-                        statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
+                withMetaData = true;
             }
-        }
-    }
-    
-    private final class ProxyJDBCExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
-        
-        private final boolean isReturnGeneratedKeys;
-        
-        private ProxyJDBCExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
-            super(GlobalRegistry.getInstance().getDatabaseType(), isExceptionThrown);
-            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
-        }
-        
-        @Override
-        public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-            return executeWithoutMetadata(
-                    statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
+            return createExecuteResponseUnit(
+                    statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys, withMetaData);
         }
     }
 }

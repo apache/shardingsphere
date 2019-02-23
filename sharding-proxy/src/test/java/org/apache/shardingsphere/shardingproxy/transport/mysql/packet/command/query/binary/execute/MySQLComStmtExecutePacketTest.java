@@ -19,12 +19,13 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
 import org.junit.After;
@@ -83,15 +84,13 @@ public final class MySQLComStmtExecutePacketTest {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
-        CommandResponsePackets expectedCommandResponsePackets = new CommandResponsePackets();
-        when(databaseCommunicationEngine.execute()).thenReturn(expectedCommandResponsePackets);
+        when(databaseCommunicationEngine.execute()).thenReturn(mock(BackendResponse.class));
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
         when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(Types.BIGINT)));
         MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
         setBackendHandler(packet, databaseCommunicationEngine);
         Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();
         assertTrue(actualCommandResponsePackets.isPresent());
-        assertThat(actualCommandResponsePackets.get(), is(expectedCommandResponsePackets));
         assertTrue(packet.next());
         DatabasePacket actualResultValue = packet.getResultValue();
         assertThat(actualResultValue.getSequenceId(), is(2));

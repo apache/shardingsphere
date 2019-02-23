@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text;
 
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.sql.SQLException;
 
 /**
- * Backend handler.
+ * Text protocol backend handler.
  *
  * @author zhangliang
  */

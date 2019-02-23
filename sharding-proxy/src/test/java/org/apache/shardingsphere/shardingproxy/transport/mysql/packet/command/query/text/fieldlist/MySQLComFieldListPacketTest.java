@@ -21,20 +21,21 @@ import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,9 +49,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -97,7 +100,9 @@ public final class MySQLComFieldListPacketTest {
         when(payload.readStringEOF()).thenReturn("-");
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
         when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
-        when(databaseCommunicationEngine.execute()).thenReturn(new CommandResponsePackets(new MySQLFieldCountPacket(1, 1)));
+        BackendResponse backendResponse = mock(BackendResponse.class);
+        when(backendResponse.getPackets()).thenReturn(Collections.<DatabasePacket>singletonList(new MySQLFieldCountPacket(1, 1)));
+        when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -122,13 +127,13 @@ public final class MySQLComFieldListPacketTest {
     public void assertExecuteWhenFailure() throws SQLException {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        CommandResponsePackets expected = new CommandResponsePackets(new MySQLErrPacket(1, MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown"));
+        BackendResponse expected = new FailureResponse(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown");
         when(databaseCommunicationEngine.execute()).thenReturn(expected);
         MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(expected));
+        assertThat(actual.get().getHeadPacket(), instanceOf(MySQLEofPacket.class));
     }
     
     @SneakyThrows
