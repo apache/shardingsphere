@@ -36,6 +36,8 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
@@ -70,6 +72,11 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             PostgreSQLCommandPacket commandPacket = getCommandPacket(payload, backendConnection);
             Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
+            if (commandPacket instanceof PostgreSQLComSyncPacket) {
+                context.write(new PostgreSQLCommandCompletePacket());
+                context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
+                return;
+            }
             if (!responsePackets.isPresent()) {
                 return;
             }
@@ -87,20 +94,22 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 }
             }
             if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
-                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket)) {
+                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket) && postgreSQLColumnDescriptions.size() > 0) {
                 context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
+            if (commandPacket instanceof PostgreSQLComQueryPacket) {
+                context.write(new PostgreSQLCommandCompletePacket());
+                context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
+            }
             connectionSize = backendConnection.getConnectionSize();
-            context.write(new PostgreSQLCommandCompletePacket());
         } catch (final SQLException ex) {
-            context.write(new PostgreSQLErrorResponsePacket());
+            context.writeAndFlush(new PostgreSQLErrorResponsePacket());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.write(new PostgreSQLErrorResponsePacket());
+            context.writeAndFlush(new PostgreSQLErrorResponsePacket());
         } finally {
-            context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
             rootInvokeHook.finish(connectionSize);
         }
     }
