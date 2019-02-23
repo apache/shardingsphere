@@ -63,7 +63,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     private boolean hasMetaData;
     
     public ProxySQLExecuteCallback(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper, 
-                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+                                   final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(GlobalRegistry.getInstance().getDatabaseType(), isExceptionThrown);
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
@@ -78,23 +78,17 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
             hasMetaData = true;
             withMetaData = true;
         }
-        return createExecuteResponseUnit(statement, routeUnit.getSqlUnit().getSql(), connectionMode, isReturnGeneratedKeys, withMetaData);
+        return executeSQL(statement, routeUnit.getSqlUnit().getSql(), connectionMode, withMetaData);
     }
     
-    private ExecuteResponseUnit createExecuteResponseUnit(
-            final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean isReturnGeneratedKeys, final boolean withMetadata) throws SQLException {
+    private ExecuteResponseUnit executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
         backendConnection.add(statement);
-        if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
-            return new ExecuteUpdateResponseUnit(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
+        if (jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
+            ResultSet resultSet = statement.getResultSet();
+            backendConnection.add(resultSet);
+            return new ExecuteQueryResponseUnit(withMetadata ? getHeaderPackets(resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
         }
-        ResultSet resultSet = statement.getResultSet();
-        backendConnection.add(resultSet);
-        return new ExecuteQueryResponseUnit(withMetadata ? getHeaderPackets(resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
-    }
-    
-    private long getGeneratedKey(final Statement statement) throws SQLException {
-        ResultSet resultSet = statement.getGeneratedKeys();
-        return resultSet.next() ? resultSet.getLong(1) : 0L;
+        return new ExecuteUpdateResponseUnit(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
     private QueryResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
@@ -116,5 +110,10 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         }
         ShardingRule shardingRule = ((ShardingSchema) logicSchema).getShardingRule();
         return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
+    }
+    
+    private long getGeneratedKey(final Statement statement) throws SQLException {
+        ResultSet resultSet = statement.getGeneratedKeys();
+        return resultSet.next() ? resultSet.getLong(1) : 0L;
     }
 }
