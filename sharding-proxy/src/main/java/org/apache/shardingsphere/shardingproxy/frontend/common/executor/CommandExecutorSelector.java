@@ -41,6 +41,6 @@ public final class CommandExecutorSelector {
      */
     public static ExecutorService getExecutor(final TransactionType transactionType, final ChannelId channelId) {
         return (TransactionType.XA == transactionType || TransactionType.BASE == transactionType)
-                ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
+            ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
     }
 }

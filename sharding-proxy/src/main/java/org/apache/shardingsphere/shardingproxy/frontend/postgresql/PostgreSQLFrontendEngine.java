@@ -24,13 +24,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
+import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 
 /**
@@ -75,6 +76,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             backendConnection.setCurrentSchema(databaseName);
             // TODO send a md5 authentication request message
             context.write(new PostgreSQLAuthenticationOKPacket(true));
+            context.write(new PostgreSQLParameterStatusPacket("server_version", "10.4"));
+            context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
+            context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
             context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
             return true;
         }
@@ -82,6 +86,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Override
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        CommandExecutorSelector.getExecutor(backendConnection.getTransactionType(), context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
+        ChannelThreadExecutorGroup.getInstance().get(context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
     }
 }

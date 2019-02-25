@@ -39,9 +39,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.D
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
@@ -71,11 +69,15 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
+    @Getter
+    private final boolean binaryRowData;
+    
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         payload.readInt4();
         payload.readStringNul();
         statementId = payload.readStringNul();
-        for (int i = 0; i < payload.readInt2(); i++) {
+        int parameterFormatsLength = payload.readInt2();
+        for (int i = 0; i < parameterFormatsLength; i++) {
             payload.readInt2();
         }
         binaryStatement = backendConnection.getConnectionScopeBinaryStatementRegistry().getBinaryStatement(statementId);
@@ -83,7 +85,9 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
                 backendConnection.getLogicSchema(), binaryStatement.getSql(), getParameters(payload), backendConnection);
         }
-        for (int i = 0; i < payload.readInt2(); i++) {
+        int resultFormatsLength = payload.readInt2();
+        binaryRowData = resultFormatsLength > 0;
+        for (int i = 0; i < resultFormatsLength; i++) {
             payload.readInt2();
         }
     }
@@ -111,27 +115,15 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         }
         CommandResponsePackets result = new CommandResponsePackets(new PostgreSQLBindCompletePacket());
         if (null != databaseCommunicationEngine) {
-            if ("SHOW TRANSACTION ISOLATION LEVEL".equals(binaryStatement.getSql())) {
-                PostgreSQLColumnDescription postgreSQLColumnDescription = new PostgreSQLColumnDescription("transaction_isolation", 0, 0, -1);
-                List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(16);
-                postgreSQLColumnDescriptions.add(postgreSQLColumnDescription);
-                PostgreSQLRowDescriptionPacket postgreSQLRowDescriptionPacket = new PostgreSQLRowDescriptionPacket(1, postgreSQLColumnDescriptions);
-                List<Object> data = new ArrayList<>(1);
-                data.add("read committed");
-                PostgreSQLDataRowPacket postgreSQLDataRowPacket = new PostgreSQLDataRowPacket(data);
-                result.getPackets().add(postgreSQLRowDescriptionPacket);
-                result.getPackets().add(postgreSQLDataRowPacket);
-            } else {
-                BackendResponse backendResponse = databaseCommunicationEngine.execute();
-                if (backendResponse instanceof SuccessResponse) {
-                    return Optional.of(new CommandResponsePackets(createDatabaseSuccessPacket((SuccessResponse) backendResponse)));
-                }
-                if (backendResponse instanceof FailureResponse) {
-                    return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
-                }
-                Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryHeaderResponse) backendResponse).getQueryHeaders());
-                return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
+            BackendResponse backendResponse = databaseCommunicationEngine.execute();
+            if (backendResponse instanceof SuccessResponse) {
+                return Optional.of(new CommandResponsePackets(createDatabaseSuccessPacket((SuccessResponse) backendResponse)));
             }
+            if (backendResponse instanceof FailureResponse) {
+                return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
+            }
+            Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryHeaderResponse) backendResponse).getQueryHeaders());
+            return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
         }
         return Optional.of(result);
     }
@@ -155,12 +147,12 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     private DataHeaderPacket createDataHeaderPacket(final int sequenceId, final QueryHeader queryHeader) {
         return new DataHeaderPacket(sequenceId, queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
-                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
+            queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
     }
-
+    
     @Override
     public boolean next() throws SQLException {
-        return databaseCommunicationEngine.next();
+        return null != databaseCommunicationEngine && databaseCommunicationEngine.next();
     }
     
     @Override
@@ -172,7 +164,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         for (int i = 0; i < columnCount; i++) {
             columnTypes.add(PostgreSQLColumnType.valueOfJDBCType(jdbcColumnTypes.get(i)));
         }
-        return new PostgreSQLBinaryResultSetRowPacket(queryData.getColumnCount(), queryData.getData(), columnTypes);
+        return binaryRowData ? new PostgreSQLBinaryResultSetRowPacket(queryData.getColumnCount(), queryData.getData(), columnTypes) : new PostgreSQLDataRowPacket(queryData.getData());
     }
     
     @Override

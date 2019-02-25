@@ -51,17 +51,35 @@ public enum PostgreSQLCommandPacketType {
     
     AUTHENTICATION_SASL_FINAL('R'),
     
-    BACKEND_KEY_DATA('K'),
+    QUERY('Q'),
+    
+    PARSE('P'),
     
     BIND('B'),
     
+    DESCRIBE('D'),
+    
+    EXECUTE('E'),
+    
+    SYNC('S'),
+    
+    PARSE_COMPLETE('1'),
+    
     BIND_COMPLETE('2'),
+    
+    ROW_DESCRIPTION('T'),
+    
+    DATA_ROW('D'),
+    
+    COMMAND_COMPLETE('C'),
+    
+    READY_FOR_QUERY('Z'),
     
     CLOSE('C'),
     
     CLOSE_COMPLETE('3'),
     
-    COMMAND_COMPLETE('C'),
+    BACKEND_KEY_DATA('K'),
     
     COPY_DATA('d'),
     
@@ -75,15 +93,9 @@ public enum PostgreSQLCommandPacketType {
     
     COPY_BOTH_RESPONSE('W'),
     
-    DATA_ROW('D'),
-    
-    DESCRIBE('D'),
-    
     EMPTY_QUERY_RESPONSE('I'),
     
     ERROR_RESPONSE('E'),
-    
-    EXECUTE('E'),
     
     FLUSH('H'),
     
@@ -105,25 +117,13 @@ public enum PostgreSQLCommandPacketType {
     
     PARAMETER_STATUS('S'),
     
-    PARSE('P'),
-    
-    PARSE_COMPLETE('1'),
-    
     PASSWORD_MESSAGE('p'),
     
     PORTAL_SUSPENDED('s'),
-    
-    QUERY('Q'),
-    
-    READY_FOR_QUERY('Z'),
-    
-    ROW_DESCRIPTION('T'),
-    
+
     SASL_INITIAL_RESPONSE('p'),
     
     SASL_RESPONSE('p'),
-    
-    SYNC('S'),
     
     TERMINATE('X');
     
