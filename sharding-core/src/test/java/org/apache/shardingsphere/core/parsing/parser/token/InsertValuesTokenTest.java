@@ -17,8 +17,18 @@
 
 package org.apache.shardingsphere.core.parsing.parser.token;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InsertValuesTokenTest {
     
@@ -26,8 +36,19 @@ public class InsertValuesTokenTest {
     
     private InsertValuesToken insertValuesTokeWithValue = new InsertValuesToken(1, DefaultKeyword.VALUES);
     
+    @Before
+    public void setUp() {
+        insertValuesTokeWithSet.getColumnNames().addAll(Lists.newArrayList("id", "value", "status"));
+        insertValuesTokeWithValue.getColumnNames().addAll(Lists.newArrayList("id", "value", "status"));
+    }
+    
     @Test
-    public void assertAddInsertColumnValue() {
+    public void assertAddInsertColumnValueWithSet() {
+        List<SQLExpression> expressions = new LinkedList<>();
+        expressions.add(new SQLNumberExpression(1));
+        expressions.add(new SQLPlaceholderExpression(1));
+        expressions.add(new SQLTextExpression("test"));
+        insertValuesTokeWithSet.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
         
     }
     
