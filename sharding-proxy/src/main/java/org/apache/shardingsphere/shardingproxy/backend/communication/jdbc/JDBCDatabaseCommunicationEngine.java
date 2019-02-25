@@ -111,7 +111,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {
         if (response instanceof UpdateResponse) {
-            return ((UpdateResponse) response).getResponse(!isAllBroadcastTables(sqlStatement));
+            if (!isAllBroadcastTables(sqlStatement)) {
+                ((UpdateResponse) response).mergeUpdateCount();
+            }
+            return response;
         }
         mergedResult = MergeEngineFactory.newInstance(
             databaseType, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();

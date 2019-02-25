@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.result.update;
 
+import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,38 +35,35 @@ public final class UpdateResponse implements BackendResponse {
     
     private final List<Integer> updateCounts = new LinkedList<>();
     
-    private final List<Long> lastInsertIds = new LinkedList<>();
+    @Getter
+    private final long lastInsertId;
+    
+    @Getter
+    private long updateCount;
     
     public UpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
+            updateCount = ((ExecuteUpdateResponseUnit) each).getUpdateCount();
             updateCounts.add(((ExecuteUpdateResponseUnit) each).getUpdateCount());
-            lastInsertIds.add(((ExecuteUpdateResponseUnit) each).getLastInsertId());
         }
+        lastInsertId = getLastInsertId(responseUnits);
+    }
+    
+    private long getLastInsertId(final Collection<ExecuteResponseUnit> responseUnits) {
+        long result = 0;
+        for (ExecuteResponseUnit each : responseUnits) {
+            result = Math.max(result, ((ExecuteUpdateResponseUnit) each).getLastInsertId());
+        }
+        return result;
     }
     
     /**
-     * Get response.
-     * 
-     * @param isMerge is need merge
-     * @return backend response
+     * Merge updated counts.
      */
-    public BackendResponse getResponse(final boolean isMerge) {
-        return isMerge ? new SuccessResponse(mergeUpdateCount(), mergeLastInsertId()) : new SuccessResponse(updateCounts.get(0), lastInsertIds.get(0));
-    }
-    
-    private int mergeUpdateCount() {
-        int result = 0;
+    public void mergeUpdateCount() {
+        updateCount = 0;
         for (int each : updateCounts) {
-            result += each;
+            updateCount += each;
         }
-        return result;
-    }
-    
-    private long mergeLastInsertId() {
-        long result = 0;
-        for (long each : lastInsertIds) {
-            result = Math.max(result, each);
-        }
-        return result;
     }
 }

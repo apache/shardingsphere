@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResp
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -78,21 +79,28 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof SuccessResponse) {
-            return Optional.of(new CommandResponsePackets(createDatabaseSuccessPacket((SuccessResponse) backendResponse)));
+            return Optional.of(new CommandResponsePackets(createDatabaseSuccessPacket()));
         }
         if (backendResponse instanceof FailureResponse) {
             return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
+        }
+        if (backendResponse instanceof UpdateResponse) {
+            return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
         }
         Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets((QueryResponse) backendResponse);
         return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
     }
     
-    private DatabaseSuccessPacket createDatabaseSuccessPacket(final SuccessResponse successResponse) {
-        return new DatabaseSuccessPacket(1, successResponse.getAffectedRows(), successResponse.getLastInsertId());
+    private DatabaseSuccessPacket createDatabaseSuccessPacket() {
+        return new DatabaseSuccessPacket(1, 0, 0);
     }
     
     private DatabaseFailurePacket createDatabaseFailurePacket(final FailureResponse failureResponse) {
         return new DatabaseFailurePacket(1, failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage());
+    }
+    
+    private DatabaseSuccessPacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new DatabaseSuccessPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
     }
     
     private Collection<DataHeaderPacket> createDataHeaderPackets(final QueryResponse queryResponse) {
