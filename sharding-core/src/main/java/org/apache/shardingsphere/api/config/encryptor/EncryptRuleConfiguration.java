@@ -31,7 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class EncryptorRuleConfiguration implements RuleConfiguration {
+public final class EncryptRuleConfiguration implements RuleConfiguration {
     
     private Collection<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
 }
