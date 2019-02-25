@@ -48,7 +48,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final List<Object> data;
     
-    private final List<MySQLColumnType> mySQLColumnTypes;
+    private final List<MySQLColumnType> columnTypes;
     
     @Override
     public void write(final MySQLPacketPayload payload) {
@@ -77,7 +77,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
         for (int i = 0; i < columnsCount; i++) {
             Object value = data.get(i);
             if (null != value) {
-                MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(mySQLColumnTypes.get(i)).write(payload, value);
+                MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i)).write(payload, value);
             }
         }
     }

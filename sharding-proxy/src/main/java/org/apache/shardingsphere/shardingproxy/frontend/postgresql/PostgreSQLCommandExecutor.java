@@ -81,7 +81,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             if (!responsePackets.isPresent()) {
                 return;
             }
-            List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(128);
+            List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(responsePackets.get().getPackets().size());
             int columnIndex = 1;
             for (DatabasePacket each : responsePackets.get().getPackets()) {
                 if (each instanceof DatabaseSuccessPacket) {
