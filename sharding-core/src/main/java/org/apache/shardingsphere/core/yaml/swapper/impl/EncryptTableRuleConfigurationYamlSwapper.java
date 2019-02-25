@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * Encrypt rule configuration yaml swapper.
@@ -37,6 +33,14 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapp
         YamlEncryptTableRuleConfiguration result = new YamlEncryptTableRuleConfiguration();
         result.setTable(encryptTableRuleConfiguration.getTable());
         result.setEncryptor(new EncryptorConfigurationYamlSwapper().swap(encryptTableRuleConfiguration.getEncryptorConfig()));
+        return result;
+    }
+    
+    @Override
+    public EncryptTableRuleConfiguration swap(final YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfiguration) {
+        EncryptTableRuleConfiguration result = new EncryptTableRuleConfiguration();
+        result.setTable(yamlEncryptTableRuleConfiguration.getTable());
+        result.setEncryptorConfig(new EncryptorConfigurationYamlSwapper().swap(yamlEncryptTableRuleConfiguration.getEncryptor()));
         return result;
     }
 }
