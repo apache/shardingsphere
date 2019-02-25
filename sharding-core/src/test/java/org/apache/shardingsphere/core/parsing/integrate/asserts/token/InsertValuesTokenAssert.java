@@ -68,7 +68,7 @@ final class InsertValuesTokenAssert {
     private String getInsertValues(final InsertColumnValue insertColumnValue, final int columnSize) {
         List<String> result = new LinkedList<>();
         for (int i = 0; i < columnSize; i++) {
-            result.add(insertColumnValue.getColumnValue(0));
+            result.add(insertColumnValue.getColumnValue(0).toString());
         }
         return Joiner.on(", ").join(result);
     }
