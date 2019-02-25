@@ -27,6 +27,7 @@ import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import io.shardingsphere.core.keygen.KeyGenerator;
+import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
@@ -66,6 +67,8 @@ public class ShardingRule {
     private final KeyGenerator defaultKeyGenerator;
     
     private final Collection<MasterSlaveRule> masterSlaveRules = new LinkedList<>();
+    
+    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkNotNull(dataSourceNames, "Data sources cannot be null.");

@@ -26,14 +26,12 @@ import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import lombok.RequiredArgsConstructor;
 
 /**
  * SQL parsing engine.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class SQLParsingEngine {
     
     private final DatabaseType dbType;
@@ -44,9 +42,19 @@ public final class SQLParsingEngine {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
+    private final ParsingResultCache parsingResultCache;
+    
+    public SQLParsingEngine(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        this.dbType = dbType;
+        this.sql = sql;
+        this.shardingRule = shardingRule;
+        this.shardingTableMetaData = shardingTableMetaData;
+        parsingResultCache = shardingRule.getParsingResultCache();
+    }
+    
     /**
      * Parse SQL.
-     * 
+     *
      * @param useCache use cache or not
      * @return parsed SQL statement
      */
@@ -58,12 +66,12 @@ public final class SQLParsingEngine {
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData, sql).parse();
         if (useCache) {
-            ParsingResultCache.getInstance().put(sql, result);
+            parsingResultCache.put(sql, result);
         }
         return result;
     }
     
     private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
-        return useCache ? Optional.fromNullable(ParsingResultCache.getInstance().getSQLStatement(sql)) : Optional.<SQLStatement>absent();
+        return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }

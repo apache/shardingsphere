@@ -21,6 +21,8 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.parsing.cache.ParsingResultCache;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -65,16 +67,20 @@ public final class CommandPacketFactoryTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setShardingSchemas();
+        setShardingSchemaMap();
         backendConnection.setCurrentSchema(ShardingConstant.LOGIC_SCHEMA_NAME);
         setMaxConnectionsSizePerQuery();
     }
     
     @SneakyThrows
-    private void setShardingSchemas() {
+    private void setShardingSchemaMap() {
         ShardingSchema shardingSchema = mock(ShardingSchema.class);
         ShardingMetaData metaData = mock(ShardingMetaData.class);
         when(shardingSchema.getMetaData()).thenReturn(metaData);
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        ParsingResultCache parsingResultCache = mock(ParsingResultCache.class);
+        when(shardingRule.getParsingResultCache()).thenReturn(parsingResultCache);
+        when(shardingSchema.getShardingRule()).thenReturn(shardingRule);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
         Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
