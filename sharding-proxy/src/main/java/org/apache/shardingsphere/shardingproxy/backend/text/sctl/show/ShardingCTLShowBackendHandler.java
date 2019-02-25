@@ -69,7 +69,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private BackendResponse createResponsePackets(final String columnName, final Object... values) {
         mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
-        return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0)), 2);
+        return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0)));
     }
     
     @Override

@@ -40,15 +40,10 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private MergedResult mergedResult;
     
-    private int currentSequenceId = 1;
-    
     @Override
     public BackendResponse execute() {
         mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
-        QueryHeaderResponse result = new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", "", "Database", 100, Types.VARCHAR, 0)), ++currentSequenceId);
-        // TODO for EOF packet, should move to mysql packet
-        ++currentSequenceId;
-        return result;
+        return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", "", "Database", 100, Types.VARCHAR, 0)));
     }
     
     @Override

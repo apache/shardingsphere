@@ -139,7 +139,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
         }
         queryHeaders.removeAll(derivedColumnQueryHeaders);
-        return new QueryHeaderResponse(queryHeaders, queryHeaders.size() + 2);
+        return new QueryHeaderResponse(queryHeaders);
     }
     
     @Override

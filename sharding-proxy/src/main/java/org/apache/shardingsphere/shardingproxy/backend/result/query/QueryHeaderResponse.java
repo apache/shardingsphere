@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.result.query;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 
 import java.util.List;
@@ -27,15 +28,9 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 public final class QueryHeaderResponse implements BackendResponse {
     
     private final List<QueryHeader> queryHeaders;
-    
-    private int sequenceId;
-    
-    public QueryHeaderResponse(final List<QueryHeader> queryHeaders, final int sequenceId) {
-        this.queryHeaders = queryHeaders;
-        this.sequenceId = sequenceId;
-    }
 }
