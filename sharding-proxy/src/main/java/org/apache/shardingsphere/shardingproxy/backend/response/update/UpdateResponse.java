@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.response.update;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponseUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponseUnit;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 
 import java.util.Collection;
@@ -43,21 +43,21 @@ public final class UpdateResponse implements BackendResponse {
     private long updateCount;
     
     public UpdateResponse() {
-        this(Collections.<ExecuteResponseUnit>emptyList());
+        this(Collections.<ExecuteResponse>emptyList());
     }
     
-    public UpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
-        for (ExecuteResponseUnit each : responseUnits) {
-            updateCount = ((ExecuteUpdateResponseUnit) each).getUpdateCount();
-            updateCounts.add(((ExecuteUpdateResponseUnit) each).getUpdateCount());
+    public UpdateResponse(final Collection<ExecuteResponse> responseUnits) {
+        for (ExecuteResponse each : responseUnits) {
+            updateCount = ((ExecuteUpdateResponse) each).getUpdateCount();
+            updateCounts.add(((ExecuteUpdateResponse) each).getUpdateCount());
         }
         lastInsertId = getLastInsertId(responseUnits);
     }
     
-    private long getLastInsertId(final Collection<ExecuteResponseUnit> responseUnits) {
+    private long getLastInsertId(final Collection<ExecuteResponse> responseUnits) {
         long result = 0;
-        for (ExecuteResponseUnit each : responseUnits) {
-            result = Math.max(result, ((ExecuteUpdateResponseUnit) each).getLastInsertId());
+        for (ExecuteResponse each : responseUnits) {
+            result = Math.max(result, ((ExecuteUpdateResponse) each).getLastInsertId());
         }
         return result;
     }

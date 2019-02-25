@@ -17,23 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-
-import java.util.List;
-
 /**
- * Execute query response unit.
+ * Execute response.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
-    
-    private final List<QueryHeader> queryHeaders;
-    
-    private final QueryResult queryResult;
+public interface ExecuteResponse {
 }

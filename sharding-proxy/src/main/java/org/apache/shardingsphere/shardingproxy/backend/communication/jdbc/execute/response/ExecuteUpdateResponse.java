@@ -17,10 +17,19 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Execute response unit.
+ * Execute update response.
  * 
  * @author zhangliang
  */
-public interface ExecuteResponseUnit {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteUpdateResponse implements ExecuteResponse {
+    
+    private final int updateCount;
+    
+    private final long lastInsertId;
 }
