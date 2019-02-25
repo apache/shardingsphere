@@ -23,7 +23,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
-import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
@@ -210,7 +209,6 @@ public abstract class BaseIntegrateTest {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).getShardingContext().getExecuteEngine().close();
         }
-        ParsingResultCache.getInstance().clear();
     }
 }
 
