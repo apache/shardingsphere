@@ -43,6 +43,11 @@ public class EncryptWhereColumnPlaceholderTest {
         indexValues.put(0, "a");
         encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x = 'a'"));
+        assertThat(encryptWhereColumnPlaceholder.getLogicTableName(), is("table_x"));
+        assertThat(encryptWhereColumnPlaceholder.getColumnName(), is("column_x"));
+        assertThat(encryptWhereColumnPlaceholder.getOperator(), is(ShardingOperator.EQUAL));
+        assertThat(encryptWhereColumnPlaceholder.getIndexValues(), is(indexValues));
+        assertThat(encryptWhereColumnPlaceholder.getPlaceholderIndexes().size(), is(0));
     }
     
     @Test
