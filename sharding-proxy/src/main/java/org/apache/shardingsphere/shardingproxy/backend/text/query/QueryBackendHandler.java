@@ -22,9 +22,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
@@ -64,12 +64,12 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
         }
         QueryHeaderResponse headerResponse = (QueryHeaderResponse) backendResponse;
         Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(headerResponse.getQueryHeaders().size());
+        int sequenceId = 1;
         for (QueryHeader each : headerResponse.getQueryHeaders()) {
-            dataHeaderPackets.add(
-                    new DataHeaderPacket(each.getSequenceId(), each.getSchema(), each.getTable(), each.getOrgTable(), each.getName(), each.getOrgName(),
-                            each.getColumnLength(), each.getColumnType(), each.getDecimals()));
+            dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, each.getSchema(), each.getTable(), each.getTable(), 
+                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
         }
-        return new QueryResponsePackets(headerResponse.getColumnTypes(), headerResponse.getFieldCount(), dataHeaderPackets, headerResponse.getSequenceId());
+        return new QueryResponsePackets(dataHeaderPackets, headerResponse.getSequenceId());
     }
     
     @Override
@@ -78,7 +78,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     }
     
     @Override
-    public ResultPacket getResultValue() throws SQLException {
-        return databaseCommunicationEngine.getResultValue();
+    public QueryData getQueryData() throws SQLException {
+        return databaseCommunicationEngine.getQueryData();
     }
 }

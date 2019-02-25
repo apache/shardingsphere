@@ -39,10 +39,10 @@ public interface MySQLQueryCommandPacket extends MySQLCommandPacket {
     boolean next() throws SQLException;
     
     /**
-     * Get result value.
+     * Get query data.
      *
-     * @return database packet of result value
+     * @return database packet of query data
      * @throws SQLException SQL exception
      */
-    DatabasePacket getResultValue() throws SQLException;
+    DatabasePacket getQueryData() throws SQLException;
 }

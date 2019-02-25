@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.result.query;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -35,39 +34,32 @@ import java.util.List;
 @Getter
 public final class QueryHeaderResponse implements BackendResponse {
     
-    private final List<Integer> columnTypes;
-    
-    private final int fieldCount;
-    
     private final List<QueryHeader> queryHeaders;
     
     private int sequenceId;
     
-    public QueryHeaderResponse(final List<Integer> columnTypes, final int fieldCount, final List<QueryHeader> queryHeaders, final int sequenceId) {
-        this.columnTypes = columnTypes;
-        this.fieldCount = fieldCount;
+    public QueryHeaderResponse(final List<QueryHeader> queryHeaders, final int sequenceId) {
         this.queryHeaders = queryHeaders;
         this.sequenceId = sequenceId;
     }
     
     @Override
     public DatabasePacket getHeadPacket() {
-        return getPacket(queryHeaders.iterator().next());
+        return getPacket(2, queryHeaders.iterator().next());
     }
     
     @Override
     public Collection<DatabasePacket> getPackets() {
-        return Lists.transform(queryHeaders, new Function<QueryHeader, DatabasePacket>() {
-    
-            @Override
-            public DatabasePacket apply(final QueryHeader input) {
-                return getPacket(input);
-            }
-        });
+        Collection<DatabasePacket> result = new LinkedList<>();
+        int sequenceId = 1;
+        for (QueryHeader each : queryHeaders) {
+            result.add(getPacket(++sequenceId, each));
+        }
+        return result;
     }
     
-    private DatabasePacket getPacket(final QueryHeader queryHeader) {
-        return new DataHeaderPacket(queryHeader.getSequenceId(), queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getOrgTable(),
-                queryHeader.getName(), queryHeader.getOrgName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
+    private DatabasePacket getPacket(final int sequenceId, final QueryHeader queryHeader) {
+        return new DataHeaderPacket(sequenceId, queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
+                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
     }
 }

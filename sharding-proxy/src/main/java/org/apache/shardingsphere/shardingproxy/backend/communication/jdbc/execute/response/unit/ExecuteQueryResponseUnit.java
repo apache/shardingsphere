@@ -20,7 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+
+import java.util.List;
 
 /**
  * Execute query response unit.
@@ -31,7 +33,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.q
 @Getter
 public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
     
-    private final QueryResponsePackets queryResponsePackets;
+    private final List<QueryHeader> queryHeaders;
     
     private final QueryResult queryResult;
 }

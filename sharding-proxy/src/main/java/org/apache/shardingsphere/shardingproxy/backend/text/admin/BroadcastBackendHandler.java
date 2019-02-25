@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -66,7 +66,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     }
     
     @Override
-    public ResultPacket getResultValue() {
+    public QueryData getQueryData() {
         return null;
     }
 }

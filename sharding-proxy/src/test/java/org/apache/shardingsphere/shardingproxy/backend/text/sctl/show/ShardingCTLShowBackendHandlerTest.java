@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
@@ -47,8 +47,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         assertThat(actual.getHeadPacket(), instanceOf(DataHeaderPacket.class));
         assertThat(actual.getPackets().size(), is(1));
         backendHandler.next();
-        ResultPacket resultPacket = backendHandler.getResultValue();
-        assertThat(resultPacket.getData().iterator().next(), CoreMatchers.<Object>is("LOCAL"));
+        QueryData queryData = backendHandler.getQueryData();
+        assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is("LOCAL"));
     }
     
     @Test
@@ -60,8 +60,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         assertThat(actual.getHeadPacket(), instanceOf(DataHeaderPacket.class));
         assertThat(actual.getPackets().size(), is(1));
         backendHandler.next();
-        ResultPacket resultPacket = backendHandler.getResultValue();
-        assertThat(resultPacket.getData().iterator().next(), CoreMatchers.<Object>is(0));
+        QueryData queryData = backendHandler.getQueryData();
+        assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is(0));
     }
     
     @Test

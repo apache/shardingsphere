@@ -38,19 +38,18 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -123,7 +122,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }
-        QueryHeaderResponse result = getQueryHeaderResponseWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
+        QueryHeaderResponse result = getQueryHeaderResponseWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryHeaders());
         currentSequenceId = result.getSequenceId();
         return result;
     }
@@ -136,18 +135,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
     }
     
-    private QueryHeaderResponse getQueryHeaderResponseWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
-        List<QueryHeader> dataHeaderPackets = new ArrayList<>(queryResponsePackets.getFieldCount());
-        int columnCount = 0;
-        for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
-            if (!DerivedColumn.isDerivedColumn(each.getName())) {
-                QueryHeader queryHeader = new QueryHeader(each.getSequenceId(), each.getSchema(), each.getTable(), each.getOrgTable(), each.getName(), each.getOrgName(),
-                        each.getColumnLength(), each.getColumnType(), each.getDecimals());
-                dataHeaderPackets.add(queryHeader);
-                columnCount++;
+    private QueryHeaderResponse getQueryHeaderResponseWithoutDerivedColumns(final List<QueryHeader> queryHeaders) {
+        List<QueryHeader> derivedColumnQueryHeaders = new LinkedList<>();
+        for (QueryHeader each : queryHeaders) {
+            if (DerivedColumn.isDerivedColumn(each.getColumnLabel())) {
+                derivedColumnQueryHeaders.add(each);
             }
         }
-        return new QueryHeaderResponse(queryResponsePackets.getColumnTypes(), columnCount, dataHeaderPackets, columnCount + 2);
+        queryHeaders.removeAll(derivedColumnQueryHeaders);
+        return new QueryHeaderResponse(queryHeaders, queryHeaders.size() + 2);
     }
     
     @Override
@@ -156,13 +152,21 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     @Override
-    public ResultPacket getResultValue() throws SQLException {
-        QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        int columnCount = queryResponsePackets.getFieldCount();
+    public QueryData getQueryData() throws SQLException {
+        List<QueryHeader> queryHeaders = ((ExecuteQueryResponse) executeResponse).getQueryHeaders();
+        int columnCount = queryHeaders.size();
         List<Object> row = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new ResultPacket(++currentSequenceId, row, columnCount, queryResponsePackets.getColumnTypes());
+        return new QueryData(++currentSequenceId, row, columnCount, getColumnTypes(queryHeaders));
+    }
+    
+    private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {
+        List<Integer> result = new ArrayList<>(queryHeaders.size());
+        for (QueryHeader each : queryHeaders) {
+            result.add(each.getColumnType());
+        }
+        return result;
     }
 }

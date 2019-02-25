@@ -85,7 +85,7 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
         while (databaseCommunicationEngine.next()) {
-            String columnName = databaseCommunicationEngine.getResultValue().getData().get(0).toString();
+            String columnName = databaseCommunicationEngine.getQueryData().getData().get(0).toString();
             result.getPackets().add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName, table, table, columnName, columnName, 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.getPackets().add(new MySQLEofPacket(++currentSequenceId));

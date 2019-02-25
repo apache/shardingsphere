@@ -161,8 +161,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return statementExecuteUnit.getStatement().executeBatch();
+            protected int[] executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return statement.executeBatch();
             }
         };
         List<int[]> results = executeCallback(callback);

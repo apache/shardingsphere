@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -72,9 +71,8 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     }
     
     @Override
-    public DatabasePacket getResultValue() throws SQLException {
-        ResultPacket resultPacket = textProtocolBackendHandler.getResultValue();
-        return new PostgreSQLDataRowPacket(resultPacket.getData());
+    public DatabasePacket getQueryData() throws SQLException {
+        return new PostgreSQLDataRowPacket(textProtocolBackendHandler.getQueryData().getData());
     }
     
     @Override

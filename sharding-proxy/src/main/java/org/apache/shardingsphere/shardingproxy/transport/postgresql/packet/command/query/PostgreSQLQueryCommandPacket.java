@@ -38,10 +38,10 @@ public interface PostgreSQLQueryCommandPacket extends PostgreSQLCommandPacket {
     boolean next() throws SQLException;
     
     /**
-     * Get result value.
+     * Get query data.
      *
      * @return database packet of result value
      * @throws SQLException SQL exception
      */
-    DatabasePacket getResultValue() throws SQLException;
+    DatabasePacket getQueryData() throws SQLException;
 }

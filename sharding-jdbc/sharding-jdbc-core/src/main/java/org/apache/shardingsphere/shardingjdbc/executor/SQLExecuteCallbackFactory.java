@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
+import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.core.routing.RouteUnit;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * SQL execute callback factory.
@@ -42,8 +44,8 @@ public final class SQLExecuteCallbackFactory {
         return new SQLExecuteCallback<Integer>(databaseType, isExceptionThrown) {
             
             @Override
-            protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return ((PreparedStatement) statementExecuteUnit.getStatement()).executeUpdate();
+            protected Integer executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return ((PreparedStatement) statement).executeUpdate();
             }
         };
     }
@@ -59,8 +61,8 @@ public final class SQLExecuteCallbackFactory {
         return new SQLExecuteCallback<Boolean>(databaseType, isExceptionThrown) {
             
             @Override
-            protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return ((PreparedStatement) statementExecuteUnit.getStatement()).execute();
+            protected Boolean executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return ((PreparedStatement) statement).execute();
             }
         };
     }

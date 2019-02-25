@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -108,8 +108,8 @@ public final class MySQLComQueryPacketTest {
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getPackets().iterator().next(), is((DatabasePacket) expectedMySQLFieldCountPacket));
         assertTrue(packet.next());
-        assertThat(packet.getResultValue().getSequenceId(), is(2));
-        assertThat(((MySQLTextResultSetRowPacket) packet.getResultValue()).getData(), is(Collections.<Object>singletonList(99999L)));
+        assertThat(packet.getQueryData().getSequenceId(), is(2));
+        assertThat(((MySQLTextResultSetRowPacket) packet.getQueryData()).getData(), is(Collections.<Object>singletonList(99999L)));
         assertFalse(packet.next());
     }
     
@@ -117,10 +117,10 @@ public final class MySQLComQueryPacketTest {
     private void setBackendHandler(final MySQLComPacketQuery packet, final MySQLFieldCountPacket expectedMySQLFieldCountPacket) {
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
-        when(textProtocolBackendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
+        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
         when(textProtocolBackendHandler.execute()).thenReturn(new CommandResponsePackets(expectedMySQLFieldCountPacket));
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
-        when(textProtocolBackendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(Types.BIGINT)));
+        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(Types.BIGINT)));
         Field field = MySQLComPacketQuery.class.getDeclaredField("textProtocolBackendHandler");
         field.setAccessible(true);
         field.set(packet, textProtocolBackendHandler);
