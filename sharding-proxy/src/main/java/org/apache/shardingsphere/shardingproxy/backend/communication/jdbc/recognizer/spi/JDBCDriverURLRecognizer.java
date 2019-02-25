@@ -20,11 +20,11 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recog
 import java.util.Collection;
 
 /**
- * JDBC URL recognizer.
+ * JDBC driver URL recognizer.
  *
  * @author zhangliang
  */
-public interface JDBCURLRecognizer {
+public interface JDBCDriverURLRecognizer {
     
     /**
      * Get JDBC URL prefixes.

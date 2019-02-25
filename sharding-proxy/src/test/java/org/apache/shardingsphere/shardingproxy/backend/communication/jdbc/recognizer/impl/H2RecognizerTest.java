@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCURLRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public final class H2RecognizerTest {
     
-    private final JDBCURLRecognizer recognizer = new H2Recognizer();
+    private final JDBCDriverURLRecognizer recognizer = new H2Recognizer();
     
     @Test
     public void assertGetURLPrefixes() {

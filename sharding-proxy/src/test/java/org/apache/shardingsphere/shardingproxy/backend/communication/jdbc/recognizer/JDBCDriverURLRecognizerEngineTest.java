@@ -24,45 +24,45 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class JDBCURLRecognizerEngineTest {
+public final class JDBCDriverURLRecognizerEngineTest {
     
     @Test
     public void assertGetDriverClassName() {
-        assertThat(JDBCURLRecognizerEngine.getDriverClassName("jdbc:h2:xxx"), is("org.h2.Driver"));
+        assertThat(JDBCDriverURLRecognizerEngine.getDriverClassName("jdbc:h2:xxx"), is("org.h2.Driver"));
     }
     
     @Test(expected = ShardingException.class)
     public void assertGetDriverClassNameFailure() {
-        JDBCURLRecognizerEngine.getDriverClassName("xxx");
+        JDBCDriverURLRecognizerEngine.getDriverClassName("xxx");
     }
     
     @Test
     public void assertGetDatabaseTypeForMySQL() {
-        assertThat(JDBCURLRecognizerEngine.getDatabaseType("jdbc:mysql:xxx"), is(DatabaseType.MySQL));
+        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:mysql:xxx"), is(DatabaseType.MySQL));
     }
     
     @Test
     public void assertGetDatabaseTypeForPostgreSQL() {
-        assertThat(JDBCURLRecognizerEngine.getDatabaseType("jdbc:postgresql:xxx"), is(DatabaseType.PostgreSQL));
+        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:postgresql:xxx"), is(DatabaseType.PostgreSQL));
     }
     
     @Test
     public void assertGetDatabaseTypeForOracle() {
-        assertThat(JDBCURLRecognizerEngine.getDatabaseType("jdbc:oracle:xxx"), is(DatabaseType.Oracle));
+        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:oracle:xxx"), is(DatabaseType.Oracle));
     }
     
     @Test
     public void assertGetDatabaseTypeForSQLServer() {
-        assertThat(JDBCURLRecognizerEngine.getDatabaseType("jdbc:sqlserver:xxx"), is(DatabaseType.SQLServer));
+        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:sqlserver:xxx"), is(DatabaseType.SQLServer));
     }
     
     @Test
     public void assertGetDatabaseTypeForH2() {
-        assertThat(JDBCURLRecognizerEngine.getDatabaseType("jdbc:h2:xxx"), is(DatabaseType.H2));
+        assertThat(JDBCDriverURLRecognizerEngine.getDatabaseType("jdbc:h2:xxx"), is(DatabaseType.H2));
     }
     
     @Test(expected = ShardingException.class)
     public void assertGetDatabaseTypeFailure() {
-        JDBCURLRecognizerEngine.getDatabaseType("xxx");
+        JDBCDriverURLRecognizerEngine.getDatabaseType("xxx");
     }
 }

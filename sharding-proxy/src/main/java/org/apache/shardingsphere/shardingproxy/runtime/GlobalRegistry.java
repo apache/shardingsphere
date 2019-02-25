@@ -36,7 +36,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Pr
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCURLRecognizerEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
@@ -122,7 +122,7 @@ public final class GlobalRegistry {
         if (null != props) {
             shardingProperties = new ShardingProperties(props);
         }
-        databaseType = JDBCURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
+        databaseType = JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
         this.authentication = authentication;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
     }
