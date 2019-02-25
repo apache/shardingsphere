@@ -20,16 +20,15 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Backend handler for broadcast.
@@ -47,17 +46,17 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     private final BackendConnection backendConnection;
     
     @Override
-    public CommandResponsePackets execute() {
-        List<DatabasePacket> packets = new LinkedList<>();
+    public BackendResponse execute() {
+        Collection<BackendResponse> responses = new LinkedList<>();
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
-            packets.addAll(databaseCommunicationEngineFactory.newTextProtocolInstance(GlobalRegistry.getInstance().getLogicSchema(each), sql, backendConnection).execute().getPackets());
+            responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(GlobalRegistry.getInstance().getLogicSchema(each), sql, backendConnection).execute());
         }
-        for (DatabasePacket each : packets) {
-            if (each instanceof DatabaseFailurePacket) {
-                return new CommandResponsePackets(each);
+        for (BackendResponse each : responses) {
+            if (each instanceof FailureResponse) {
+                return each;
             }
         }
-        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
+        return new SuccessResponse();
     }
     
     @Override

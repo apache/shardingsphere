@@ -39,6 +39,8 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.gener
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -104,11 +106,41 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         }
         CommandResponsePackets result = new CommandResponsePackets(new PostgreSQLBindCompletePacket());
         if (null != databaseCommunicationEngine) {
-            result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
+                BackendResponse backendResponse = databaseCommunicationEngine.execute();
+                if (backendResponse instanceof SuccessResponse) {
+                    return Optional.of(new CommandResponsePackets(createDatabaseSuccessPacket((SuccessResponse) backendResponse)));
+                }
+                if (backendResponse instanceof FailureResponse) {
+                    return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
+                }
+                Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryHeaderResponse) backendResponse).getQueryHeaders());
+                return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
         }
         return Optional.of(result);
     }
     
+    private DatabaseSuccessPacket createDatabaseSuccessPacket(final SuccessResponse successResponse) {
+        return new DatabaseSuccessPacket(1, successResponse.getAffectedRows(), successResponse.getLastInsertId());
+    }
+    
+    private DatabaseFailurePacket createDatabaseFailurePacket(final FailureResponse failureResponse) {
+        return new DatabaseFailurePacket(1, failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage());
+    }
+    
+    private Collection<DataHeaderPacket> createDataHeaderPackets(final List<QueryHeader> queryHeaders) {
+        Collection<DataHeaderPacket> result = new LinkedList<>();
+        int sequenceId = 1;
+        for (QueryHeader each : queryHeaders) {
+            result.add(createDataHeaderPacket(++sequenceId, each));
+        }
+        return result;
+    }
+    
+    private DataHeaderPacket createDataHeaderPacket(final int sequenceId, final QueryHeader queryHeader) {
+        return new DataHeaderPacket(sequenceId, queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
+                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
+    }
+
     @Override
     public boolean next() throws SQLException {
         return null != databaseCommunicationEngine && databaseCommunicationEngine.next();

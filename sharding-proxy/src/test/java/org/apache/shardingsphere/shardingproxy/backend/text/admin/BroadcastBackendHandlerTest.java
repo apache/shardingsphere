@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -63,10 +61,10 @@ public final class BroadcastBackendHandlerTest {
         mockDatabaseCommunicationEngine(new SuccessResponse(0L, 0L));
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
-        DatabaseSuccessPacket actual = (DatabaseSuccessPacket) broadcastBackendHandler.execute().getHeadPacket();
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getAffectedRows(), is(0L));
-        assertThat(actual.getLastInsertId(), is(0L));
+        BackendResponse actual = broadcastBackendHandler.execute();
+        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(((SuccessResponse) actual).getAffectedRows(), is(0L));
+        assertThat(((SuccessResponse) actual).getLastInsertId(), is(0L));
         verify(databaseCommunicationEngine, times(10)).execute();
     }
     
@@ -77,7 +75,7 @@ public final class BroadcastBackendHandlerTest {
         mockDatabaseCommunicationEngine(failureResponse);
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
-        assertThat(broadcastBackendHandler.execute().getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
+        assertThat(broadcastBackendHandler.execute(), instanceOf(FailureResponse.class));
         verify(databaseCommunicationEngine, times(10)).execute();
     }
     

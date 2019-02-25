@@ -19,11 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.result.query;
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,25 +37,5 @@ public final class QueryHeaderResponse implements BackendResponse {
     public QueryHeaderResponse(final List<QueryHeader> queryHeaders, final int sequenceId) {
         this.queryHeaders = queryHeaders;
         this.sequenceId = sequenceId;
-    }
-    
-    @Override
-    public DatabasePacket getHeadPacket() {
-        return getPacket(2, queryHeaders.iterator().next());
-    }
-    
-    @Override
-    public Collection<DatabasePacket> getPackets() {
-        Collection<DatabasePacket> result = new LinkedList<>();
-        int sequenceId = 1;
-        for (QueryHeader each : queryHeaders) {
-            result.add(getPacket(++sequenceId, each));
-        }
-        return result;
-    }
-    
-    private DatabasePacket getPacket(final int sequenceId, final QueryHeader queryHeader) {
-        return new DataHeaderPacket(sequenceId, queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
-                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
     }
 }

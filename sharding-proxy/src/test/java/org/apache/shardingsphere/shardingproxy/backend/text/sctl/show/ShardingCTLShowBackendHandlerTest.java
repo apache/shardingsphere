@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -42,10 +41,9 @@ public final class ShardingCTLShowBackendHandlerTest {
     public void assertShowTransactionType() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show transaction_type", backendConnection);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponsePackets.class));
-        assertThat(actual.getHeadPacket(), instanceOf(DataHeaderPacket.class));
-        assertThat(actual.getPackets().size(), is(1));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(QueryHeaderResponse.class));
+        assertThat(((QueryHeaderResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         QueryData queryData = backendHandler.getQueryData();
         assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is("LOCAL"));
@@ -55,10 +53,9 @@ public final class ShardingCTLShowBackendHandlerTest {
     public void assertShowCachedConnections() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connections", backendConnection);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponsePackets.class));
-        assertThat(actual.getHeadPacket(), instanceOf(DataHeaderPacket.class));
-        assertThat(actual.getPackets().size(), is(1));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(QueryHeaderResponse.class));
+        assertThat(((QueryHeaderResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         QueryData queryData = backendHandler.getQueryData();
         assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is(0));
@@ -68,19 +65,17 @@ public final class ShardingCTLShowBackendHandlerTest {
     public void assertShowCachedConnectionFailed() {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connectionss", backendConnection);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
-        DatabaseFailurePacket databaseFailurePacket = (DatabaseFailurePacket) actual.getHeadPacket();
-        assertThat(databaseFailurePacket.getErrorMessage(), containsString(" could not support this sctl grammar "));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(FailureResponse.class));
+        assertThat(((FailureResponse) actual).getErrorMessage(), containsString("Could not support this sctl grammar "));
     }
     
     @Test
     public void assertShowCTLFormatError() {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show=xx", backendConnection);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
-        DatabaseFailurePacket databaseFailurePacket = (DatabaseFailurePacket) actual.getHeadPacket();
-        assertThat(databaseFailurePacket.getErrorMessage(), containsString(" please review your sctl format"));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(FailureResponse.class));
+        assertThat(((FailureResponse) actual).getErrorMessage(), containsString("Please review your sctl format"));
     }
 }

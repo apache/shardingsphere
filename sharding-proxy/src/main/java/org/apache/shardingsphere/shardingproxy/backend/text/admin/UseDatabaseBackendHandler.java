@@ -21,12 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 /**
@@ -43,15 +43,13 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     private final BackendConnection backendConnection;
     
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GlobalRegistry.getInstance().schemaExists(schema)) {
-            MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_BAD_DB_ERROR;
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, mySQLServerErrorCode.getErrorCode(),
-                mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), schema)));
+            return new FailureResponse(MySQLServerErrorCode.ER_BAD_DB_ERROR, schema);
         }
         backendConnection.setCurrentSchema(schema);
-        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
+        return new SuccessResponse();
     }
     
     @Override

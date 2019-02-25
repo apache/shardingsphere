@@ -20,11 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.result.common;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Success response.
@@ -41,15 +36,5 @@ public final class SuccessResponse implements BackendResponse {
     
     public SuccessResponse() {
         this(0L, 0L);
-    }
-    
-    @Override
-    public DatabasePacket getHeadPacket() {
-        return new DatabaseSuccessPacket(1, affectedRows, lastInsertId);
-    }
-    
-    @Override
-    public Collection<DatabasePacket> getPackets() {
-        return Collections.singletonList(getHeadPacket());
     }
 }

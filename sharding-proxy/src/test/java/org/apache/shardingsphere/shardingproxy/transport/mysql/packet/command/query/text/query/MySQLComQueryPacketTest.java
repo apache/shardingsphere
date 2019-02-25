@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
@@ -101,12 +101,10 @@ public final class MySQLComQueryPacketTest {
     public void assertExecuteWithoutTransaction() throws SQLException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
         MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
-        MySQLFieldCountPacket expectedMySQLFieldCountPacket = new MySQLFieldCountPacket(1, 1);
-        setBackendHandler(packet, expectedMySQLFieldCountPacket);
+        QueryHeaderResponse queryHeaderResponse = mock(QueryHeaderResponse.class);
+        setBackendHandler(packet, queryHeaderResponse);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(actual.get().getPackets().iterator().next(), is((DatabasePacket) expectedMySQLFieldCountPacket));
         assertTrue(packet.next());
         assertThat(packet.getQueryData().getSequenceId(), is(2));
         assertThat(((MySQLTextResultSetRowPacket) packet.getQueryData()).getData(), is(Collections.<Object>singletonList(99999L)));
@@ -114,11 +112,11 @@ public final class MySQLComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setBackendHandler(final MySQLComPacketQuery packet, final MySQLFieldCountPacket expectedMySQLFieldCountPacket) {
+    private void setBackendHandler(final MySQLComPacketQuery packet, final QueryHeaderResponse queryHeaderResponse) {
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
         when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
-        when(textProtocolBackendHandler.execute()).thenReturn(new CommandResponsePackets(expectedMySQLFieldCountPacket));
+        when(textProtocolBackendHandler.execute()).thenReturn(queryHeaderResponse);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
         when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(Types.BIGINT)));
         Field field = MySQLComPacketQuery.class.getDeclaredField("textProtocolBackendHandler");
