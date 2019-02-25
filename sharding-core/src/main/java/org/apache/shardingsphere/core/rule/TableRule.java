@@ -230,8 +230,12 @@ public final class TableRule {
      */
     public Collection<String> getAllShardingColumns() {
         Collection<String> result = new LinkedList<>();
-        result.addAll(databaseShardingStrategy.getShardingColumns());
-        result.addAll(tableShardingStrategy.getShardingColumns());
+        if (null != databaseShardingStrategy) {
+            result.addAll(databaseShardingStrategy.getShardingColumns());
+        }
+        if (null != tableShardingStrategy) {
+            result.addAll(tableShardingStrategy.getShardingColumns());
+        }
         return result;
     }
 }
