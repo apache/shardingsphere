@@ -20,7 +20,10 @@ package org.apache.shardingsphere.core.yaml.swapper.impl;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+
+import java.util.Map.Entry;
 
 /**
  * Encrypt rule configuration yaml swapper.
@@ -35,6 +38,18 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlSwapper<Ya
         result.setDefaultEncryptor(new EncryptorConfigurationYamlSwapper().swap(encryptRuleConfiguration.getDefaultEncryptorConfig()));
         for (EncryptTableRuleConfiguration each : encryptRuleConfiguration.getTableRuleConfigs()) {
             result.getTables().put(each.getTable(), new EncryptTableRuleConfigurationYamlSwapper().swap(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration) {
+        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
+        result.setDefaultEncryptorConfig(new EncryptorConfigurationYamlSwapper().swap(yamlEncryptRuleConfiguration.getDefaultEncryptor()));
+        for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlEncryptRuleConfiguration.getTables().entrySet()) {
+            YamlEncryptTableRuleConfiguration tableRuleConfig = entry.getValue();
+            tableRuleConfig.setTable(entry.getKey());
+            result.getTableRuleConfigs().add(new EncryptTableRuleConfigurationYamlSwapper().swap(tableRuleConfig));
         }
         return result;
     }
