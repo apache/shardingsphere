@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.set;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 

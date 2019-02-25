@@ -15,35 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.result.error;
+package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 
-import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Error response.
- * 
+ * Query response.
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ErrorResponse implements BackendResponse {
+public final class QueryResponse implements BackendResponse {
     
-    private final int errorCode;
+    private final List<QueryHeader> queryHeaders;
     
-    private final String sqlState;
-    
-    private final String errorMessage;
-    
-    public ErrorResponse(final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
-        this(errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
-    }
-    
-    public ErrorResponse(final SQLException cause) {
-        this(cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
-    }
+    private final List<QueryResult> queryResults = new LinkedList<>();
 }
