@@ -46,7 +46,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Standard routing engine.
@@ -209,32 +208,21 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
-            Set<InsertColumnValue> columnValuesFromDbRule = new LinkedHashSet<>();
-            
-            
-            Set<InsertColumnValue> columnValuesFromTbRule = new LinkedHashSet<>();
-            
-            
-            
-            
-            Set<InsertColumnValue> result = new LinkedHashSet<>();
-            for (RouteValue each : shardingCondition.getShardingValues()) {
-                getTargetInsertColumnValues((ListRouteValue) each, result);
-            }
-            if (1 == result.size()) {
-                result.iterator().next().getDataNodes().addAll(dataNodes);
+            for (InsertColumnValue each : ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues()) {
+                if (isQualifiedInsertColumnValue(each, shardingCondition)) {
+                    each.getDataNodes().addAll(dataNodes);
+                }
             }
         }
     }
     
-    private Set<InsertColumnValue> getTargetInsertColumnValues(final ListRouteValue listRouteValue) {
-        Set<InsertColumnValue> result = new LinkedHashSet<>();
-        for (InsertColumnValue each : ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues()) {
-            Optional<Object> columnValue = each.getColumnValue(listRouteValue.getColumn().getName());
-            if (columnValue.isPresent() && columnValue.get().equals(listRouteValue.getValues().iterator().next())) {
-                result.add(each);
+    private boolean isQualifiedInsertColumnValue(final InsertColumnValue insertColumnValue, final ShardingCondition shardingCondition) {
+        for (RouteValue each : shardingCondition.getShardingValues()) {
+            Optional<Object> columnValue = insertColumnValue.getColumnValue(each.getColumn().getName());
+            if (!columnValue.isPresent() || !columnValue.get().equals(((ListRouteValue) each).getValues().iterator().next())) {
+                return false;
             }
         }
-        return result;
+        return true;
     }
 }
