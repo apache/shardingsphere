@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.yaml.config.encrypt;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlEncryptorConfiguration;
 
 /**
  * Encrypt rule configuration for YAML.
