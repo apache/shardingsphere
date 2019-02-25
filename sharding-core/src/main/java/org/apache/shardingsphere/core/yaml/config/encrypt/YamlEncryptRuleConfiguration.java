@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlEncryptRuleConfiguration {
+public final class YamlEncryptRuleConfiguration {
     
     private Map<String, YamlTableEncryptRuleConfiguration> tables;
     

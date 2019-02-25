@@ -27,7 +27,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class YamlTableEncryptRuleConfiguration {
+public final class YamlTableEncryptRuleConfiguration {
     
     private YamlEncryptorConfiguration encryptor;
 }
