@@ -22,19 +22,12 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Backend handler with query.
@@ -53,23 +46,12 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         if (null == backendConnection.getLogicSchema()) {
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR));
+            return new FailureResponse(MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sql, backendConnection);
-        BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (!(backendResponse instanceof QueryHeaderResponse)) {
-            return new CommandResponsePackets(backendResponse.getHeadPacket());
-        }
-        QueryHeaderResponse headerResponse = (QueryHeaderResponse) backendResponse;
-        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(headerResponse.getQueryHeaders().size());
-        int sequenceId = 1;
-        for (QueryHeader each : headerResponse.getQueryHeaders()) {
-            dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, each.getSchema(), each.getTable(), each.getTable(), 
-                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
-        }
-        return new QueryResponsePackets(dataHeaderPackets, headerResponse.getSequenceId());
+        return databaseCommunicationEngine.execute();
     }
     
     @Override

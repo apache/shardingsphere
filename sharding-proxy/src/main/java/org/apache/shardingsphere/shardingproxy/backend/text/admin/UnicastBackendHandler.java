@@ -23,17 +23,10 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Backend handler for unicast.
@@ -52,20 +45,9 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sql, backendConnection);
-        BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof QueryHeaderResponse) {
-            QueryHeaderResponse headerResponse = (QueryHeaderResponse) backendResponse;
-            Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(headerResponse.getQueryHeaders().size());
-            int sequenceId = 1;
-            for (QueryHeader each : headerResponse.getQueryHeaders()) {
-                dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, each.getSchema(), each.getTable(), each.getTable(), 
-                        each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
-            }
-            return new QueryResponsePackets(dataHeaderPackets, headerResponse.getSequenceId());
-        }
-        return new CommandResponsePackets(databaseCommunicationEngine.execute().getPackets());
+        return databaseCommunicationEngine.execute();
     }
     
     @Override

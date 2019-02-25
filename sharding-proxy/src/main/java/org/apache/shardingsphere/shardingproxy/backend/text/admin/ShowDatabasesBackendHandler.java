@@ -19,17 +19,15 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -42,14 +40,10 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private MergedResult mergedResult;
     
-    private int currentSequenceId = 1;
-    
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
-        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
-        dataHeaderPackets.add(new DataHeaderPacket(++currentSequenceId, "", "", "", "Database", "", 100, Types.VARCHAR, 0));
-        return new QueryResponsePackets(dataHeaderPackets, ++currentSequenceId);
+        return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", "", "Database", 100, Types.VARCHAR, 0)));
     }
     
     @Override
@@ -59,6 +53,6 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public QueryData getQueryData() throws SQLException {
-        return new QueryData(++currentSequenceId, Collections.singletonList(mergedResult.getValue(1, Object.class)), 1, Collections.singletonList(Types.VARCHAR));
+        return new QueryData(Collections.singletonList(Types.VARCHAR), Collections.singletonList(mergedResult.getValue(1, Object.class)));
     }
 }

@@ -34,8 +34,8 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLSer
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,9 +99,8 @@ public final class MySQLComFieldListPacketTest {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
+        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.VARCHAR), Collections.<Object>singletonList("id")));
         BackendResponse backendResponse = mock(BackendResponse.class);
-        when(backendResponse.getPackets()).thenReturn(Collections.<DatabasePacket>singletonList(new MySQLFieldCountPacket(1, 1)));
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
@@ -133,7 +132,7 @@ public final class MySQLComFieldListPacketTest {
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getHeadPacket(), instanceOf(MySQLEofPacket.class));
+        assertThat(actual.get().getHeadPacket(), instanceOf(MySQLErrPacket.class));
     }
     
     @SneakyThrows

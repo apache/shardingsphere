@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text;
 
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.sql.SQLException;
 
@@ -32,9 +32,9 @@ public interface TextProtocolBackendHandler {
     /**
      * Execute command.
      *
-     * @return result packets to be sent
+     * @return backend response
      */
-    CommandResponsePackets execute();
+    BackendResponse execute();
     
     /**
      * Goto next result value.

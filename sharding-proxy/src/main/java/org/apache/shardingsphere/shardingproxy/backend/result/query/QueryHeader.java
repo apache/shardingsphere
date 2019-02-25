@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.result.query;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 
@@ -30,6 +31,7 @@ import java.util.Collection;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 public final class QueryHeader {
     
@@ -60,15 +62,5 @@ public final class QueryHeader {
         this.columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
         this.columnType = resultSetMetaData.getColumnType(columnIndex);
         this.decimals = resultSetMetaData.getScale(columnIndex);
-    }
-    
-    public QueryHeader(final String schema, final String table, final String columnLabel, final String columnName, final int columnLength, final Integer columnType, final int decimals) {
-        this.schema = schema;
-        this.table = table;
-        this.columnLabel = columnLabel;
-        this.columnName = columnName;
-        this.columnLength = columnLength;
-        this.columnType = columnType;
-        this.decimals = decimals;
     }
 }

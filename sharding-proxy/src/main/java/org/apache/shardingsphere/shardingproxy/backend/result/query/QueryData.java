@@ -31,11 +31,7 @@ import java.util.List;
 @Getter
 public final class QueryData {
     
-    private final int sequenceId;
+    private final List<Integer> columnTypes;
     
     private final List<Object> data;
-    
-    private final int columnCount;
-    
-    private final List<Integer> columnTypes;
 }

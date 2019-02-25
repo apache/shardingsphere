@@ -46,8 +46,8 @@ public final class MySQLCommandPacketFactory {
     /**
      * Create new instance of command packet.
      *
-     * @param sequenceId        sequence id
-     * @param payload           MySQL packet payload
+     * @param sequenceId sequence id
+     * @param payload MySQL packet payload
      * @param backendConnection backend connection
      * @return command packet
      * @throws SQLException SQL exception

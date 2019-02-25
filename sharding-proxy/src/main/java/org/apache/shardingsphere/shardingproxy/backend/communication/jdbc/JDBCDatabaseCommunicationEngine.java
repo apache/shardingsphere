@@ -75,8 +75,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private MergedResult mergedResult;
     
-    private int currentSequenceId;
-    
     @Override
     public BackendResponse execute() {
         try {
@@ -122,9 +120,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }
-        QueryHeaderResponse result = getQueryHeaderResponseWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryHeaders());
-        currentSequenceId = result.getSequenceId();
-        return result;
+        return getQueryHeaderResponseWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryHeaders());
     }
     
     private boolean isAllBroadcastTables(final SQLStatement sqlStatement) {
@@ -143,7 +139,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
         }
         queryHeaders.removeAll(derivedColumnQueryHeaders);
-        return new QueryHeaderResponse(queryHeaders, queryHeaders.size() + 2);
+        return new QueryHeaderResponse(queryHeaders);
     }
     
     @Override
@@ -154,12 +150,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public QueryData getQueryData() throws SQLException {
         List<QueryHeader> queryHeaders = ((ExecuteQueryResponse) executeResponse).getQueryHeaders();
-        int columnCount = queryHeaders.size();
-        List<Object> row = new ArrayList<>(columnCount);
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+        List<Object> row = new ArrayList<>(queryHeaders.size());
+        for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new QueryData(++currentSequenceId, row, columnCount, getColumnTypes(queryHeaders));
+        return new QueryData(getColumnTypes(queryHeaders), row);
     }
     
     private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {

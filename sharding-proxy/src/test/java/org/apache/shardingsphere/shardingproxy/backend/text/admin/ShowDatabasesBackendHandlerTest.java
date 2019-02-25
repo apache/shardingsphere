@@ -19,8 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,24 +44,19 @@ public final class ShowDatabasesBackendHandlerTest {
     
     @Test
     public void assertExecuteShowDatabaseBackendHandler() {
-        CommandResponsePackets actual = showDatabasesBackendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponsePackets.class));
-        QueryResponsePackets responsePackets = (QueryResponsePackets) actual;
-        assertThat(responsePackets.getDataHeaderPackets().size(), is(1));
+        QueryHeaderResponse actual = (QueryHeaderResponse) showDatabasesBackendHandler.execute();
+        assertThat(actual, instanceOf(QueryHeaderResponse.class));
+        assertThat(actual.getQueryHeaders().size(), is(1));
     }
     
     @Test
     public void assertShowDatabaseUsingStream() throws SQLException {
         showDatabasesBackendHandler.execute();
-        int sequenceId = 4;
         while (showDatabasesBackendHandler.next()) {
             QueryData queryData = showDatabasesBackendHandler.getQueryData();
-            assertThat(queryData.getColumnCount(), is(1));
             assertThat(queryData.getColumnTypes().size(), is(1));
             assertThat(queryData.getColumnTypes().iterator().next(), is(Types.VARCHAR));
-            assertThat(queryData.getSequenceId(), is(sequenceId));
             assertThat(queryData.getData().size(), is(1));
-            ++sequenceId;
         }
     }
 }

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,8 +59,8 @@ public final class UnicastBackendHandlerTest {
     public void assertExecuteWhileSchemaIsNull() {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(DatabaseSuccessPacket.class));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(SuccessResponse.class));
         backendHandler.execute();
     }
     
@@ -71,8 +69,8 @@ public final class UnicastBackendHandlerTest {
         backendConnection.setCurrentSchema("schema_0");
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(DatabaseSuccessPacket.class));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(SuccessResponse.class));
         backendHandler.execute();
     }
     

@@ -15,46 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text;
+package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 
-import java.util.List;
-
 /**
- * PostgreSQL data row packet.
+ * PostgreSQL parameter status packet.
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
+public final class PostgreSQLParameterStatusPacket implements PostgreSQLPacket {
     
-    private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
+    @Getter
+    private final char messageType = PostgreSQLCommandPacketType.PARAMETER_STATUS.getValue();
     
-    private final List<Object> data;
+    private final String key;
+    
+    private final String value;
+    
+    public PostgreSQLParameterStatusPacket(final String key, final String value) {
+        this.key = key;
+        this.value = value;
+    }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt2(data.size());
-        for (Object each : data) {
-            if (null == each) {
-                payload.writeInt4(0xFFFFFFFF);
-            } else {
-                if (each instanceof byte[]) {
-                    payload.writeInt4(((byte[]) each).length);
-                    payload.writeBytes((byte[]) each);
-                } else {
-                    String columnData = each.toString();
-                    payload.writeInt4(columnData.length());
-                    payload.writeStringEOF(columnData);
-                }
-            }
-        }
+        payload.writeStringNul(key);
+        payload.writeStringNul(value);
     }
     
     @Override

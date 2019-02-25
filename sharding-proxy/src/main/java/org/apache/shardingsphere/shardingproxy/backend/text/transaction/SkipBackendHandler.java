@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 
 /**
  * Skip backend handler.
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.D
 public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
     @Override
-    public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
+    public BackendResponse execute() {
+        return new SuccessResponse();
     }
     
     @Override

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public final class TransactionBackendHandlerTest {
     @Test
     public void assertExecute() {
         TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
-        CommandResponsePackets actual = transactionBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(DatabaseSuccessPacket.class));
+        BackendResponse actual = transactionBackendHandler.execute();
+        assertThat(actual, instanceOf(SuccessResponse.class));
     }
 }

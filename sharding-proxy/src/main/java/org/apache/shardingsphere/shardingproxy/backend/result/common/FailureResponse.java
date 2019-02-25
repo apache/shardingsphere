@@ -20,13 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.result.common;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Failure response.
@@ -49,15 +45,5 @@ public final class FailureResponse implements BackendResponse {
     
     public FailureResponse(final SQLException cause) {
         this(cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
-    }
-    
-    @Override
-    public DatabasePacket getHeadPacket() {
-        return new DatabaseFailurePacket(1, errorCode, sqlState, errorMessage);
-    }
-    
-    @Override
-    public Collection<DatabasePacket> getPackets() {
-        return Collections.singletonList(getHeadPacket());
     }
 }
