@@ -209,9 +209,17 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
+            Set<InsertColumnValue> columnValuesFromDbRule = new LinkedHashSet<>();
+            
+            
+            Set<InsertColumnValue> columnValuesFromTbRule = new LinkedHashSet<>();
+            
+            
+            
+            
             Set<InsertColumnValue> result = new LinkedHashSet<>();
             for (RouteValue each : shardingCondition.getShardingValues()) {
-                fillTargetInsertColumnValues((ListRouteValue) each, result);
+                getTargetInsertColumnValues((ListRouteValue) each, result);
             }
             if (1 == result.size()) {
                 result.iterator().next().getDataNodes().addAll(dataNodes);
@@ -219,13 +227,14 @@ public final class StandardRoutingEngine implements RoutingEngine {
         }
     }
     
-    private void fillTargetInsertColumnValues(final ListRouteValue listRouteValue, final Set<InsertColumnValue> targetInsertColumnValues) {
+    private Set<InsertColumnValue> getTargetInsertColumnValues(final ListRouteValue listRouteValue) {
+        Set<InsertColumnValue> result = new LinkedHashSet<>();
         for (InsertColumnValue each : ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues()) {
-            Optional<String> columnValue = each.getColumnValue(listRouteValue.getColumn().getName());
-            if (columnValue.isPresent() && columnValue.get().equals(listRouteValue.getValues().iterator().next().toString())) {
-                targetInsertColumnValues.add(each);
-                return;
+            Optional<Object> columnValue = each.getColumnValue(listRouteValue.getColumn().getName());
+            if (columnValue.isPresent() && columnValue.get().equals(listRouteValue.getValues().iterator().next())) {
+                result.add(each);
             }
         }
+        return result;
     }
 }
