@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.executor;
 
+import org.apache.shardingsphere.core.executor.sql.execute.AllExecuteTests;
+import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplateTest;
 import org.apache.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -24,8 +26,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    ExecutorExceptionHandlerTest.class,
-    ShardingExecuteEngineTest.class
+        SQLExecutePrepareTemplateTest.class, 
+        ExecutorExceptionHandlerTest.class, 
+        ShardingExecuteEngineTest.class,
+        AllExecuteTests.class
 })
 public final class AllExecutorTests {
 }
