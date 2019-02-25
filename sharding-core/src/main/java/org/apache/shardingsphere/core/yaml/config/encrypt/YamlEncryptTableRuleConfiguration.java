@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.yaml.config.encrypt;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
  * Table Encrypt rule configuration for YAML.
@@ -27,7 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class YamlEncryptTableRuleConfiguration {
+public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
     
     private String table;
     
