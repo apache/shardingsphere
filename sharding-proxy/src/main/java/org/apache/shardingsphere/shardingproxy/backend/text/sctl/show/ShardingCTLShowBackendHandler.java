@@ -21,21 +21,17 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Sharding CTL show backend handler.
@@ -52,18 +48,16 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private int currentSequenceId;
     
-    private final List<Integer> columnTypes = new LinkedList<>();
-    
     public ShardingCTLShowBackendHandler(final String sql, final BackendConnection backendConnection) {
         this.sql = sql.toUpperCase().trim();
         this.backendConnection = backendConnection;
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, 0, "", " please review your sctl format, should be sctl:show xxxx."));
+            return new FailureResponse(0, "", "Please review your sctl format, should be sctl:show xxx.");
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -71,18 +65,14 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new CommandResponsePackets(new DatabaseFailurePacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
+                return new FailureResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
         }
     }
     
-    private CommandResponsePackets createResponsePackets(final String columnName, final Object... values) {
+    private BackendResponse createResponsePackets(final String columnName, final Object... values) {
         mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
-        int sequenceId = 1;
-        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
-        dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, "", "", "", columnName, "", 100, Types.VARCHAR, 0));
-        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(dataHeaderPackets, ++sequenceId);
-        currentSequenceId = queryResponsePackets.getPackets().size() + 2;
-        return queryResponsePackets;
+        currentSequenceId = 3;
+        return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0)), 2);
     }
     
     @Override

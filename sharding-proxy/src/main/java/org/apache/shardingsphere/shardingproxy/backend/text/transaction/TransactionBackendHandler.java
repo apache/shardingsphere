@@ -19,11 +19,15 @@ package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendTransactionManager;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
+
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * Do transaction operation.
@@ -42,17 +46,15 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         try {
             return doTransaction();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return new CommandResponsePackets(ex);
+        } catch (final SQLException ex) {
+            return new FailureResponse(ex);
         }
     }
     
-    private CommandResponsePackets doTransaction() throws Exception {
+    private BackendResponse doTransaction() throws SQLException {
         switch (operationType) {
             case BEGIN:
                 backendTransactionManager.begin();
@@ -64,9 +66,9 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 backendTransactionManager.rollback();
                 break;
             default:
-                throw new UnsupportedOperationException(operationType.name());
+                throw new SQLFeatureNotSupportedException(operationType.name());
         }
-        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
+        return new SuccessResponse();
     }
     
     @Override
