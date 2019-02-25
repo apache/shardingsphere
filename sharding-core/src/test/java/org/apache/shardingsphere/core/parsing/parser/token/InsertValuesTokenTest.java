@@ -55,6 +55,7 @@ public class InsertValuesTokenTest {
         insertValuesTokeWithSet.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
         assertThat(insertValuesTokeWithSet.getColumnName(0), is("id"));
         assertThat(insertValuesTokeWithSet.getColumnNames().size(), is(3));
+        assertThat(insertValuesTokeWithSet.getType(), is(DefaultKeyword.SET));
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getValues(), is(expressions));
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getParameters().get(0), is((Object) "parameter"));
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getDataNodes().size(), is(0));
@@ -65,5 +66,15 @@ public class InsertValuesTokenTest {
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue(0), is("2"));
         insertValuesTokeWithSet.getColumnValues().get(0).setColumnValue(1, "parameter1");
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue(1), is("parameter1"));
+    }
+    
+    @Test
+    public void assertAddInsertColumnValueWithValues() {
+        List<SQLExpression> expressions = new LinkedList<>();
+        expressions.add(new SQLNumberExpression(1));
+        expressions.add(new SQLPlaceholderExpression(1));
+        expressions.add(new SQLTextExpression("test"));
+        insertValuesTokeWithValue.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
+        assertThat(insertValuesTokeWithValue.getColumnValues().get(0).toString(), is("(1, ?, 'test')"));
     }
 }
