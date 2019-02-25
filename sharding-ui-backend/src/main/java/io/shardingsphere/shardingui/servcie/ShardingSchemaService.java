@@ -28,14 +28,14 @@ public interface ShardingSchemaService {
     
     /**
      * Get all schema names.
-     * 
+     *
      * @return all schema names
      */
     Collection<String> getAllSchemaNames();
     
     /**
      * Get rule configuration.
-     * 
+     *
      * @param schemaName schema name
      * @return rule configuration
      */
@@ -43,7 +43,7 @@ public interface ShardingSchemaService {
     
     /**
      * Get data source configuration.
-     * 
+     *
      * @param schemaName schema name
      * @return data source configuration
      */
@@ -51,7 +51,7 @@ public interface ShardingSchemaService {
     
     /**
      * Update rule configuration.
-     * 
+     *
      * @param schemaName schema name
      * @param configData config data
      */
@@ -59,9 +59,18 @@ public interface ShardingSchemaService {
     
     /**
      * Update data source configuration.
-     * 
+     *
      * @param schemaName schema name
      * @param configData config data
      */
     void updateDataSourceConfiguration(String schemaName, String configData);
+    
+    /**
+     * Add schema configuration.
+     *
+     * @param schemaName schema name
+     * @param ruleConfiguration rule configuration
+     * @param dataSourceConfiguration data source configuration
+     */
+    void addSchemaConfiguration(String schemaName, String ruleConfiguration, String dataSourceConfiguration);
 }

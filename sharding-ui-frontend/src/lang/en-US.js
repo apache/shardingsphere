@@ -78,5 +78,12 @@ export default {
       instanceId: 'Instance Id',
       serverIp: 'Server Ip'
     }
+  },
+  configManage: {
+    schemaRules: {
+      name: 'Please enter the name of the schema',
+      ruleConfig: 'Please enter the rule config of the schema',
+      dataSourceConfig: 'Please enter the data source config of the schema'
+    }
   }
 }

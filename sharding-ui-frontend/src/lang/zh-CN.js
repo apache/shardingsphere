@@ -78,5 +78,12 @@ export default {
       instanceId: '节点标识',
       serverIp: '服务ip'
     }
+  },
+  configManage: {
+    schemaRules: {
+      name: '请输入名称',
+      ruleConfig: '请输入数据分片配置规则',
+      dataSourceConfig: '请输入数据源配置规则'
+    }
   }
 }

@@ -4,7 +4,11 @@
       <el-col
         v-for="(item, index) in schemaData"
         :key="index"
-        :span="Math.ceil(24 / schemaData.length)"
+        :xs="24"
+        :sm="12"
+        :md="6"
+        :lg="4"
+        :xl="3"
       >
         <el-card class="box-card">
           <div slot="header" class="clearfix">
@@ -13,20 +17,15 @@
           <div v-for="(itm, idex) in item.children" :key="idex" class="coll-item">
             <div :class="'itm icon-' + idex"/>
             <div class="txt">{{ itm }}</div>
-            <!-- <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              circle
-              class="edit-btn"
-              @click="handlerClick(item.title, itm)"
-            />-->
             <i class="icon-edit" @click="handlerClick(item.title, itm)"/>
           </div>
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog :visible.sync="centerDialogVisible" :title="type" width="80%">
+    <el-row>
+      <el-button type="primary" icon="el-icon-plus" @click="add" />
+    </el-row>
+    <el-dialog :visible.sync="centerDialogVisible" :title="type" width="80%" top="3vh">
       <el-row :gutter="20">
         <el-col :span="12">
           <span style="font-size: 18px; font-weight: bold;">Edit source here:</span>
@@ -55,6 +54,35 @@
         <el-button type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
       </span>
     </el-dialog>
+    <el-dialog :visible.sync="addSchemaDialogVisible" title="Add Schema" width="80%" top="3vh">
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+        <el-form-item label="name" prop="name">
+          <el-input v-model="form.name" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="ruleConfig" prop="ruleConfig">
+          <el-input
+            :rows="8"
+            v-model="form.ruleConfig"
+            autocomplete="off"
+            type="textarea"
+            class="edit-text"
+          />
+        </el-form-item>
+        <el-form-item label="dataSourceConfig" prop="dataSourceConfig">
+          <el-input
+            :rows="8"
+            v-model="form.dataSourceConfig"
+            autocomplete="off"
+            type="textarea"
+            class="edit-text"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addSchemaDialogVisible = false">{{ $t('btn.cancel') }}</el-button>
+        <el-button type="primary" @click="addSchema('form')">{{ $t('btn.submit') }}</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -71,7 +99,39 @@ export default {
       centerDialogVisible: false,
       type: null,
       sname: '',
-      scname: ''
+      scname: '',
+      addSchemaDialogVisible: false,
+      schemaName: ``,
+      rueleConfigTextArea: ``,
+      dataSourceConfigTextArea: ``,
+      form: {
+        name: '',
+        ruleConfig: '',
+        dataSourceConfig: ''
+      },
+      rules: {
+        name: [
+          {
+            required: true,
+            message: this.$t('configManage').schemaRules.name,
+            trigger: 'change'
+          }
+        ],
+        ruleConfig: [
+          {
+            required: true,
+            message: this.$t('configManage').schemaRules.ruleConfig,
+            trigger: 'change'
+          }
+        ],
+        dataSourceConfig: [
+          {
+            required: true,
+            message: this.$t('configManage').schemaRules.dataSourceConfig,
+            trigger: 'change'
+          }
+        ]
+      }
     }
   },
   computed: {
@@ -97,6 +157,9 @@ export default {
     this.getSchema()
   },
   methods: {
+    add() {
+      this.addSchemaDialogVisible = true
+    },
     handlerClick(parent, child) {
       if (child === 'rule') {
         API.getSchemaRule(parent).then(res => {
@@ -150,7 +213,7 @@ export default {
         })
       }
     },
-    _onConfirm(res) {
+    _onConfirm(res, type) {
       if (res.success) {
         this.$notify({
           title: this.$t('common').notify.title,
@@ -158,6 +221,10 @@ export default {
           type: 'success'
         })
         this.centerDialogVisible = false
+        if (type === 'ADD_SCHEMA') {
+          this.addSchemaDialogVisible = false
+          this.getSchema()
+        }
       } else {
         this.$notify({
           title: this.$t('common').notify.title,
@@ -165,6 +232,22 @@ export default {
           type: 'error'
         })
       }
+    },
+    addSchema(form) {
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          API.addSchema({
+            name: this.form.name,
+            ruleConfiguration: this.form.ruleConfig,
+            dataSourceConfiguration: this.form.dataSourceConfig
+          }).then(res => {
+            this._onConfirm(res, 'ADD_SCHEMA')
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   }
 }
@@ -201,6 +284,9 @@ export default {
       float: right;
     }
   }
+  .el-row {
+    margin-bottom: 20px;
+  }
   .el-collapse-item__header {
     font-size: 16px;
   }
@@ -223,6 +309,16 @@ export default {
     display: inline-block;
     float: right;
     cursor: pointer;
+  }
+  .el-dialog__body {
+    padding: 10px 20px
+  }
+  .el-input {
+    width: 30%;
+  }
+  .el-input__inner {
+    height: 35px;
+    line-height: 35px;
   }
 }
 </style>

@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingui.servcie.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
@@ -58,13 +59,22 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     @Override
     public void updateRuleConfiguration(final String schemaName, final String configData) {
         checkRuleConfiguration(configData);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), configData);
+        persistRuleConfiguration(schemaName, configData);
     }
     
     @Override
     public void updateDataSourceConfiguration(final String schemaName, final String configData) {
         checkDataSourceConfiguration(configData);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), configData);
+        persistDataSourceConfiguration(schemaName, configData);
+    }
+    
+    @Override
+    public void addSchemaConfiguration(final String schemaName, final String ruleConfiguration, final String dataSourceConfiguration) {
+        checkSchemaName(schemaName, getAllSchemaNames());
+        checkRuleConfiguration(ruleConfiguration);
+        checkDataSourceConfiguration(dataSourceConfiguration);
+        persistRuleConfiguration(schemaName, ruleConfiguration);
+        persistDataSourceConfiguration(schemaName, dataSourceConfiguration);
     }
     
     private void checkRuleConfiguration(final String configData) {
@@ -79,6 +89,10 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         }
     }
     
+    private void persistRuleConfiguration(final String schemaName, final String ruleConfiguration) {
+        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), ruleConfiguration);
+    }
+    
     private void checkDataSourceConfiguration(final String configData) {
         try {
             Map<String, DataSourceConfiguration> dataSourceConfigs = ConfigurationYamlConverter.loadDataSourceConfigurations(configData);
@@ -89,4 +103,14 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
             throw new IllegalArgumentException("data source configuration is invalid.");
         }
     }
+    
+    private void persistDataSourceConfiguration(final String schemaName, final String dataSourceConfiguration) {
+        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), dataSourceConfiguration);
+    }
+    
+    private void checkSchemaName(final String schemaName, final Collection<String> existedSchemaNames) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(schemaName), "schema name is invalid.");
+        Preconditions.checkArgument(!existedSchemaNames.contains(schemaName), "schema name already exists.");
+    }
+    
 }
