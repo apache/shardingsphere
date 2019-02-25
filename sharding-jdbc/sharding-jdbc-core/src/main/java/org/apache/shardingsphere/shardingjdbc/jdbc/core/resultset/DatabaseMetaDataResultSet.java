@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import com.google.common.collect.Lists;
+import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Database meta data result set.
@@ -34,20 +41,67 @@ import java.sql.Timestamp;
  */
 public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabaseMetaDataResultSet {
     
+    private static final String TABLE_NAME = "TABLE_NAME";
+    
     private final int type;
     
     private final int concurrency;
     
+    private final ShardingRule shardingRule;
+    
+    private final ResultSetMetaData resultSetMetaData;
+    
+    private final Map<String, Integer> columnLableIndexMap;
+    
+    private final Iterator<DatabaseMetaDataObject> databaseMetaDataObjectIterator;
+    
     private volatile boolean closed;
     
-    public DatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
+    private DatabaseMetaDataObject currentDatabaseMetaDataObject;
+    
+    public DatabaseMetaDataResultSet(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
         this.type = resultSet.getType();
         this.concurrency = resultSet.getConcurrency();
+        this.shardingRule = shardingRule;
+        this.resultSetMetaData = resultSet.getMetaData();
+        this.columnLableIndexMap = initIndexMap();
+        this.databaseMetaDataObjectIterator = initIterator(resultSet);
+    }
+    
+    private Map<String, Integer> initIndexMap() throws SQLException {
+        Map<String, Integer> result = new HashMap<>(resultSetMetaData.getColumnCount());
+        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+            result.put(resultSetMetaData.getColumnLabel(i), i);
+        }
+        return result;
+    }
+    
+    private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
+        ArrayList<DatabaseMetaDataObject> result = Lists.newArrayList();
+        int tableNameColumnIndex = columnLableIndexMap.containsKey(TABLE_NAME) ? columnLableIndexMap.get(TABLE_NAME) : -1;
+        while (resultSet.next()) {
+            DatabaseMetaDataObject databaseMetaDataObject = new DatabaseMetaDataObject();
+            for (int i = 1; i <= columnLableIndexMap.size(); i++) {
+                if (tableNameColumnIndex == i) {
+                    String tableName = resultSet.getString(i);
+                    Collection<String> logicTableNames = shardingRule.getLogicTableNames(tableName);
+                    databaseMetaDataObject.setObject(i, 0 == logicTableNames.size() ? tableName : logicTableNames.iterator().next());
+                } else {
+                    databaseMetaDataObject.setObject(i, resultSet.getObject(i));
+                }
+            }
+            result.add(databaseMetaDataObject);
+        }
+        return result.iterator();
     }
     
     @Override
     public boolean next() throws SQLException {
         checkClosed();
+        if (databaseMetaDataObjectIterator.hasNext()) {
+            currentDatabaseMetaDataObject = databaseMetaDataObjectIterator.next();
+            return true;
+        }
         return false;
     }
     
@@ -66,180 +120,172 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public String getString(final int columnIndex) throws SQLException {
         checkClosed();
-        return null;
+        checkColumnIndex(columnIndex);
+        return (String) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), String.class);
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        checkClosed();
-        return null;
+        return getString(findColumn(columnLabel));
     }
     
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
         checkClosed();
-        return false;
+        checkColumnIndex(columnIndex);
+        return (boolean) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), boolean.class);
     }
     
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
-        checkClosed();
-        return false;
+        return getBoolean(findColumn(columnLabel));
     }
     
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
         checkClosed();
-        return 0;
+        checkColumnIndex(columnIndex);
+        return (byte) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), byte.class);
     }
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
-        checkClosed();
-        return 0;
+        return getByte(findColumn(columnLabel));
     }
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
         checkClosed();
-        return 0;
+        checkColumnIndex(columnIndex);
+        return (short) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), short.class);
     }
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
-        checkClosed();
-        return 0;
+        return getShort(findColumn(columnLabel));
     }
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
         checkClosed();
-        return 0;
+        checkColumnIndex(columnIndex);
+        return (int) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), int.class);
     }
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
-        checkClosed();
-        return 0;
+        return getInt(findColumn(columnLabel));
     }
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
         checkClosed();
-        return 0;
+        checkColumnIndex(columnIndex);
+        return (long) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), long.class);
     }
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
-        checkClosed();
-        return 0;
+        return getLong(findColumn(columnLabel));
     }
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
         checkClosed();
-        return 0;
+        checkColumnIndex(columnIndex);
+        return (float) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), float.class);
     }
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
-        checkClosed();
-        return 0;
+        return getFloat(findColumn(columnLabel));
     }
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
         checkClosed();
-        return 0;
+        checkColumnIndex(columnIndex);
+        return (double) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), double.class);
     }
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
-        checkClosed();
-        return 0;
+        return getDouble(findColumn(columnLabel));
     }
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
         checkClosed();
-        return new byte[0];
+        checkColumnIndex(columnIndex);
+        return (byte[]) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), byte[].class);
     }
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        checkClosed();
-        return new byte[0];
+        return getBytes(findColumn(columnLabel));
     }
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
         checkClosed();
-        return null;
+        checkColumnIndex(columnIndex);
+        return (Date) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        checkClosed();
-        return null;
+        return getDate(findColumn(columnLabel));
     }
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
         checkClosed();
-        return null;
+        checkColumnIndex(columnIndex);
+        return (Time) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
-        checkClosed();
-        return null;
+        return getTime(findColumn(columnLabel));
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
         checkClosed();
-        return null;
+        checkColumnIndex(columnIndex);
+        return (Timestamp) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        checkClosed();
-        return null;
-    }
-    
-    @Override
-    public SQLWarning getWarnings() throws SQLException {
-        checkClosed();
-        return null;
-    }
-    
-    @Override
-    public void clearWarnings() throws SQLException {
-        checkClosed();
+        return getTimestamp(findColumn(columnLabel));
     }
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
         checkClosed();
-        return null;
+        return resultSetMetaData;
     }
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
         checkClosed();
-        return null;
+        checkColumnIndex(columnIndex);
+        return currentDatabaseMetaDataObject.getObject(columnIndex);
     }
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
-        checkClosed();
-        return null;
+        return getObject(findColumn(columnLabel));
     }
     
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
-        return 0;
+        if (columnLableIndexMap.containsKey(columnLabel)) {
+            throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
+        }
+        return columnLableIndexMap.get(columnLabel);
     }
     
     @Override
@@ -262,6 +308,26 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     private void checkClosed() throws SQLException {
         if (closed) {
             throw new SQLException("ResultSet has closed.");
+        }
+    }
+    
+    private void checkColumnIndex(final int columnIndex) throws SQLException {
+        if (columnIndex < 1 || columnIndex > resultSetMetaData.getColumnCount()) {
+            throw new SQLException(String.format("ColumnIndex %d out of range from %d to %d", columnIndex, 1, resultSetMetaData.getColumnCount()));
+        }
+    }
+    
+    @EqualsAndHashCode
+    private final class DatabaseMetaDataObject {
+        
+        private final ArrayList<Object> objects = Lists.newArrayList();
+        
+        public void setObject(final int index, final Object object) {
+            objects.set(index, object);
+        }
+        
+        public Object getObject(final int index) {
+            return objects.get(index);
         }
     }
 }

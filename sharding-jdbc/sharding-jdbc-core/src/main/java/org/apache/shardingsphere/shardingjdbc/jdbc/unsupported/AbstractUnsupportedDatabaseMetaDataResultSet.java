@@ -26,6 +26,7 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
@@ -87,6 +88,16 @@ public abstract class AbstractUnsupportedDatabaseMetaDataResultSet extends Abstr
     @Override
     public final InputStream getBinaryStream(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getBinaryStream");
+    }
+    
+    @Override
+    public final SQLWarning getWarnings() throws SQLException {
+        throw new SQLFeatureNotSupportedException("getWarnings");
+    }
+    
+    @Override
+    public final void clearWarnings() throws SQLException {
+        throw new SQLFeatureNotSupportedException("clearWarnings");
     }
     
     @Override
