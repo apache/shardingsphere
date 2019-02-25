@@ -76,7 +76,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             backendConnection.setCurrentSchema(databaseName);
             // TODO send a md5 authentication request message
             context.write(new PostgreSQLAuthenticationOKPacket(true));
-            context.write(new PostgreSQLParameterStatusPacket("server_version", "10.4"));
+            context.write(new PostgreSQLParameterStatusPacket("server_version", "8.4"));
             context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
             context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
             context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
