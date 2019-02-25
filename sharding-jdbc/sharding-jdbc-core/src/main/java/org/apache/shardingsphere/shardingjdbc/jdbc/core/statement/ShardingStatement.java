@@ -307,4 +307,3 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         return Optional.absent();
     }
 }
-

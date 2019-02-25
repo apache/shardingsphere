@@ -40,7 +40,6 @@
         <netty.version>4.1.16.Final</netty.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-collections4.version>4.2</commons-collections4.version>
-
         
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>4.0.6</atomikos.version>
