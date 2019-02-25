@@ -75,4 +75,10 @@ public class EncryptWhereColumnPlaceholderTest {
         encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x IN ('a' AND 'b')"));
     }
+    
+    @Test
+    public void toStringWithPlaceholderWithIn() {
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x IN (?)"));
+    }
 }
