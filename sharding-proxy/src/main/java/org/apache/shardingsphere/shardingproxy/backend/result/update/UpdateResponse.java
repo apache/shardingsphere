@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,6 +41,10 @@ public final class UpdateResponse implements BackendResponse {
     
     @Getter
     private long updateCount;
+    
+    public UpdateResponse() {
+        this(Collections.<ExecuteResponseUnit>emptyList());
+    }
     
     public UpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {

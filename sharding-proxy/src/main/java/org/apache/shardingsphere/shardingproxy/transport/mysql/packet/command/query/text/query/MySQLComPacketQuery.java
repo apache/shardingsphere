@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
@@ -95,9 +94,6 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
             return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, MySQLServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof SuccessResponse) {
-            return Optional.of(new CommandResponsePackets(createDatabaseSuccessPacket()));
-        }
         if (backendResponse instanceof FailureResponse) {
             return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
         }
@@ -107,10 +103,6 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets((QueryResponse) backendResponse);
         dataHeaderEofSequenceId = dataHeaderPackets.size() + 2;
         return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
-    }
-    
-    private DatabaseSuccessPacket createDatabaseSuccessPacket() {
-        return new DatabaseSuccessPacket(1, 0, 0);
     }
     
     private DatabaseFailurePacket createDatabaseFailurePacket(final FailureResponse failureResponse) {

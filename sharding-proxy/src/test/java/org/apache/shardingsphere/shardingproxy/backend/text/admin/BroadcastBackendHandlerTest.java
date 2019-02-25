@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,13 +58,13 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteSuccess() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        mockDatabaseCommunicationEngine(new SuccessResponse(0L, 0L));
+        mockDatabaseCommunicationEngine(new UpdateResponse());
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         BackendResponse actual = broadcastBackendHandler.execute();
-        assertThat(actual, instanceOf(SuccessResponse.class));
-        assertThat(((SuccessResponse) actual).getAffectedRows(), is(0L));
-        assertThat(((SuccessResponse) actual).getLastInsertId(), is(0L));
+        assertThat(actual, instanceOf(UpdateResponse.class));
+        assertThat(((UpdateResponse) actual).getUpdateCount(), is(0L));
+        assertThat(((UpdateResponse) actual).getLastInsertId(), is(0L));
         verify(databaseCommunicationEngine, times(10)).execute();
     }
     

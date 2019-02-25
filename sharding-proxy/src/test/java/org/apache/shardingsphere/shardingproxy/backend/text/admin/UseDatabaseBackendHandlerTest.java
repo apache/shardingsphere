@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public final class UseDatabaseBackendHandlerTest {
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         BackendResponse actual = useSchemaBackendHandler.execute();
         verify(backendConnection).setCurrentSchema(anyString());
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
     }
     
     @Test

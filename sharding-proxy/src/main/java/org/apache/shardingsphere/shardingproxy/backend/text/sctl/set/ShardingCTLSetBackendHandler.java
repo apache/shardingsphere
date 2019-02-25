@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -59,7 +59,7 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
             default:
                 return new FailureResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
         }
-        return new SuccessResponse();
+        return new UpdateResponse();
     }
     
     @Override

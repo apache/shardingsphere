@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.set;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XA", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
         assertThat(backendConnection.getTransactionType(), is(TransactionType.XA));
     }
     
@@ -46,7 +46,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set  transaction_type=BASE", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
         assertThat(backendConnection.getTransactionType(), is(TransactionType.BASE));
     }
     
@@ -55,7 +55,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=LOCAL", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
         assertThat(backendConnection.getTransactionType(), is(TransactionType.LOCAL));
     }
     

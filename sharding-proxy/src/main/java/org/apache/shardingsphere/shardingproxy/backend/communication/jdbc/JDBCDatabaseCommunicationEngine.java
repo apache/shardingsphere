@@ -34,7 +34,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
@@ -85,7 +84,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new SuccessResponse();
+            return new UpdateResponse();
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {

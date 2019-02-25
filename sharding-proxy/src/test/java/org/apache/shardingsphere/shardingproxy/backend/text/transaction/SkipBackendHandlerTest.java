@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -30,6 +30,6 @@ public final class SkipBackendHandlerTest {
     public void assertExecuteSkipBackendHandler() {
         SkipBackendHandler skipBackendHandler = new SkipBackendHandler();
         BackendResponse actual = skipBackendHandler.execute();
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
     }
 }

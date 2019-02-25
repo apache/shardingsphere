@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -116,9 +114,6 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         CommandResponsePackets result = new CommandResponsePackets(new PostgreSQLBindCompletePacket());
         if (null != databaseCommunicationEngine) {
             BackendResponse backendResponse = databaseCommunicationEngine.execute();
-            if (backendResponse instanceof SuccessResponse) {
-                return Optional.of(new CommandResponsePackets(createDatabaseSuccessPacket((SuccessResponse) backendResponse)));
-            }
             if (backendResponse instanceof FailureResponse) {
                 return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
             }
@@ -126,10 +121,6 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
         }
         return Optional.of(result);
-    }
-    
-    private DatabaseSuccessPacket createDatabaseSuccessPacket(final SuccessResponse successResponse) {
-        return new DatabaseSuccessPacket(1, successResponse.getAffectedRows(), successResponse.getLastInsertId());
     }
     
     private DatabaseFailurePacket createDatabaseFailurePacket(final FailureResponse failureResponse) {
