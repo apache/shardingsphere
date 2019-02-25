@@ -43,8 +43,6 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final int sequenceId;
     
-    private final int columnsCount;
-    
     @Getter
     private final List<Object> data;
     
@@ -64,8 +62,8 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private MySQLNullBitmap getNullBitmap() {
-        MySQLNullBitmap result = new MySQLNullBitmap(columnsCount, NULL_BITMAP_OFFSET);
-        for (int columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
+        MySQLNullBitmap result = new MySQLNullBitmap(columnTypes.size(), NULL_BITMAP_OFFSET);
+        for (int columnIndex = 0; columnIndex < columnTypes.size(); columnIndex++) {
             if (null == data.get(columnIndex)) {
                 result.setNullBit(columnIndex);
             }
@@ -74,7 +72,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private void writeValues(final MySQLPacketPayload payload) {
-        for (int i = 0; i < columnsCount; i++) {
+        for (int i = 0; i < columnTypes.size(); i++) {
             Object value = data.get(i);
             if (null != value) {
                 MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i)).write(payload, value);

@@ -35,7 +35,5 @@ public final class QueryData {
     
     private final List<Object> data;
     
-    private final int columnCount;
-    
     private final List<Integer> columnTypes;
 }

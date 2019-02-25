@@ -159,12 +159,12 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     public DatabasePacket getQueryData() throws SQLException {
         QueryData queryData = databaseCommunicationEngine.getQueryData();
         return binaryRowData
-                ? new PostgreSQLBinaryResultSetRowPacket(queryData.getColumnCount(), queryData.getData(), getPostgreSQLColumnTypes(queryData)) : new PostgreSQLDataRowPacket(queryData.getData());
+                ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), getPostgreSQLColumnTypes(queryData)) : new PostgreSQLDataRowPacket(queryData.getData());
     }
     
     private List<PostgreSQLColumnType> getPostgreSQLColumnTypes(final QueryData queryData) {
         List<PostgreSQLColumnType> result = new ArrayList<>(queryData.getColumnTypes().size());
-        for (int i = 0; i < queryData.getColumnCount(); i++) {
+        for (int i = 0; i < queryData.getColumnTypes().size(); i++) {
             result.add(PostgreSQLColumnType.valueOfJDBCType(queryData.getColumnTypes().get(i)));
         }
         return result;

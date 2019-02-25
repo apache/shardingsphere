@@ -192,12 +192,12 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     @Override
     public DatabasePacket getQueryData() throws SQLException {
         QueryData queryData = databaseCommunicationEngine.getQueryData();
-        return new MySQLBinaryResultSetRowPacket(queryData.getSequenceId(), queryData.getColumnCount(), queryData.getData(), getMySQLColumnTypes(queryData));
+        return new MySQLBinaryResultSetRowPacket(queryData.getSequenceId(), queryData.getData(), getMySQLColumnTypes(queryData));
     }
     
     private List<MySQLColumnType> getMySQLColumnTypes(final QueryData queryData) {
-        List<MySQLColumnType> result = new ArrayList<>(queryData.getColumnCount());
-        for (int i = 0; i < queryData.getColumnCount(); i++) {
+        List<MySQLColumnType> result = new ArrayList<>(queryData.getColumnTypes().size());
+        for (int i = 0; i < queryData.getColumnTypes().size(); i++) {
             result.add(MySQLColumnType.valueOfJDBCType(queryData.getColumnTypes().get(i)));
         }
         return result;

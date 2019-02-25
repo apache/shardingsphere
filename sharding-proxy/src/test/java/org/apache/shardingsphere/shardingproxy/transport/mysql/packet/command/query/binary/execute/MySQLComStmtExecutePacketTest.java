@@ -86,7 +86,7 @@ public final class MySQLComStmtExecutePacketTest {
         when(payload.readInt1()).thenReturn(0, 1);
         when(databaseCommunicationEngine.execute()).thenReturn(mock(QueryHeaderResponse.class));
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(Types.BIGINT)));
+        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), Collections.singletonList(Types.BIGINT)));
         MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
         setBackendHandler(packet, databaseCommunicationEngine);
         Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();

@@ -154,12 +154,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public QueryData getQueryData() throws SQLException {
         List<QueryHeader> queryHeaders = ((ExecuteQueryResponse) executeResponse).getQueryHeaders();
-        int columnCount = queryHeaders.size();
-        List<Object> row = new ArrayList<>(columnCount);
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+        List<Object> row = new ArrayList<>(queryHeaders.size());
+        for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new QueryData(++currentSequenceId, row, columnCount, getColumnTypes(queryHeaders));
+        return new QueryData(++currentSequenceId, row, getColumnTypes(queryHeaders));
     }
     
     private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {

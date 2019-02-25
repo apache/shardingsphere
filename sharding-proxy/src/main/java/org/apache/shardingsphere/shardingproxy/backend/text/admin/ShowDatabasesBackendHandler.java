@@ -58,6 +58,6 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public QueryData getQueryData() throws SQLException {
-        return new QueryData(++currentSequenceId, Collections.singletonList(mergedResult.getValue(1, Object.class)), 1, Collections.singletonList(Types.VARCHAR));
+        return new QueryData(++currentSequenceId, Collections.singletonList(mergedResult.getValue(1, Object.class)), Collections.singletonList(Types.VARCHAR));
     }
 }

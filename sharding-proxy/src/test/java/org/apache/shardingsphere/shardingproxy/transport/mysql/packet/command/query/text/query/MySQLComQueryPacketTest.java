@@ -115,10 +115,10 @@ public final class MySQLComQueryPacketTest {
     private void setBackendHandler(final MySQLComPacketQuery packet, final QueryHeaderResponse queryHeaderResponse) {
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
-        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
+        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(1, Collections.<Object>singletonList("id"), Collections.singletonList(Types.VARCHAR)));
         when(textProtocolBackendHandler.execute()).thenReturn(queryHeaderResponse);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
-        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(Types.BIGINT)));
+        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), Collections.singletonList(Types.BIGINT)));
         Field field = MySQLComPacketQuery.class.getDeclaredField("textProtocolBackendHandler");
         field.setAccessible(true);
         field.set(packet, textProtocolBackendHandler);
