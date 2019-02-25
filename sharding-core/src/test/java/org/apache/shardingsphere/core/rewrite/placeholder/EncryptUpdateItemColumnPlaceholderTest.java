@@ -31,4 +31,10 @@ public class EncryptUpdateItemColumnPlaceholderTest {
         encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x");
         assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = ?"));
     }
+    
+    @Test
+    public void assertToStringWithoutPlaceholderWithoutAssistedColumn() {
+        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x", 1);
+        assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = 1"));
+    }
 }
