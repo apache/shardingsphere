@@ -23,7 +23,7 @@ import lombok.Setter;
 import javax.sql.DataSource;
 
 /**
- * Yaml root encrypt rule configuration for YAML.
+ * Root encrypt rule configuration for YAML.
  *
  * @author panjuan
  */
