@@ -60,10 +60,10 @@ public class InsertValuesTokenTest {
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getDataNodes().size(), is(0));
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue(1), is("parameter"));
         assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue("status"), is(Optional.of("test")));
-    }
-    
-    @Test
-    public void assertGetColumnName() {
-        
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).toString(), is("id = 1, value = ?, status = 'test'"));
+        insertValuesTokeWithSet.getColumnValues().get(0).setColumnValue(0, 2);
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue(0), is("2"));
+        insertValuesTokeWithSet.getColumnValues().get(0).setColumnValue(1, "parameter1");
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue(1), is("parameter1"));
     }
 }
