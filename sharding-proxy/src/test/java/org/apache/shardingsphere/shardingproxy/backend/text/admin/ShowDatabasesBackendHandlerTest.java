@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.junit.Before;
@@ -56,12 +56,12 @@ public final class ShowDatabasesBackendHandlerTest {
         showDatabasesBackendHandler.execute();
         int sequenceId = 4;
         while (showDatabasesBackendHandler.next()) {
-            ResultPacket resultPacket = showDatabasesBackendHandler.getResultValue();
-            assertThat(resultPacket.getColumnCount(), is(1));
-            assertThat(resultPacket.getColumnTypes().size(), is(1));
-            assertThat(resultPacket.getColumnTypes().iterator().next(), is(Types.VARCHAR));
-            assertThat(resultPacket.getSequenceId(), is(sequenceId));
-            assertThat(resultPacket.getData().size(), is(1));
+            QueryData queryData = showDatabasesBackendHandler.getQueryData();
+            assertThat(queryData.getColumnCount(), is(1));
+            assertThat(queryData.getColumnTypes().size(), is(1));
+            assertThat(queryData.getColumnTypes().iterator().next(), is(Types.VARCHAR));
+            assertThat(queryData.getSequenceId(), is(sequenceId));
+            assertThat(queryData.getData().size(), is(1));
             ++sequenceId;
         }
     }

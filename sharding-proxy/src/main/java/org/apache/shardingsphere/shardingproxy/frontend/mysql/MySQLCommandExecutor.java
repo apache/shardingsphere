@@ -133,7 +133,7 @@ public final class MySQLCommandExecutor implements Runnable {
                     }
                 }
             }
-            DatabasePacket resultValue = mysqlQueryCommandPacket.getResultValue();
+            DatabasePacket resultValue = mysqlQueryCommandPacket.getQueryData();
             currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {

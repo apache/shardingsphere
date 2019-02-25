@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -123,15 +123,15 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     }
     
     @Override
-    public DatabasePacket getResultValue() throws SQLException {
-        ResultPacket resultPacket = databaseCommunicationEngine.getResultValue();
-        int columnCount = resultPacket.getColumnCount();
-        List<Integer> jdbcColumnTypes = resultPacket.getColumnTypes();
+    public DatabasePacket getQueryData() throws SQLException {
+        QueryData queryData = databaseCommunicationEngine.getQueryData();
+        int columnCount = queryData.getColumnCount();
+        List<Integer> jdbcColumnTypes = queryData.getColumnTypes();
         List<PostgreSQLColumnType> columnTypes = new ArrayList<>(128);
         for (int i = 0; i < columnCount; i++) {
             columnTypes.add(PostgreSQLColumnType.valueOfJDBCType(jdbcColumnTypes.get(i)));
         }
-        return new PostgreSQLBinaryResultSetRowPacket(resultPacket.getColumnCount(), resultPacket.getData(), columnTypes);
+        return new PostgreSQLBinaryResultSetRowPacket(queryData.getColumnCount(), queryData.getData(), columnTypes);
     }
     
     @Override

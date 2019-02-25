@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Result packet.
+ * Query data.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ResultPacket {
+public final class QueryData {
     
     private final int sequenceId;
     

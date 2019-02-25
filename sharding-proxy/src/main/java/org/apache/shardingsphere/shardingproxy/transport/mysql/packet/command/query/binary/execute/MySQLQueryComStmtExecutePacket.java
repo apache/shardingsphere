@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -149,14 +149,14 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     }
     
     @Override
-    public DatabasePacket getResultValue() throws SQLException {
-        ResultPacket resultPacket = databaseCommunicationEngine.getResultValue();
-        int columnCount = resultPacket.getColumnCount();
-        List<Integer> jdbcColumnTypes = resultPacket.getColumnTypes();
+    public DatabasePacket getQueryData() throws SQLException {
+        QueryData queryData = databaseCommunicationEngine.getQueryData();
+        int columnCount = queryData.getColumnCount();
+        List<Integer> jdbcColumnTypes = queryData.getColumnTypes();
         List<MySQLColumnType> mySQLColumnTypes = new ArrayList<>(128);
         for (int i = 0; i < columnCount; i++) {
             mySQLColumnTypes.add(MySQLColumnType.valueOfJDBCType(jdbcColumnTypes.get(i)));
         }
-        return new MySQLBinaryResultSetRowPacket(resultPacket.getSequenceId(), columnCount, resultPacket.getData(), mySQLColumnTypes);
+        return new MySQLBinaryResultSetRowPacket(queryData.getSequenceId(), columnCount, queryData.getData(), mySQLColumnTypes);
     }
 }

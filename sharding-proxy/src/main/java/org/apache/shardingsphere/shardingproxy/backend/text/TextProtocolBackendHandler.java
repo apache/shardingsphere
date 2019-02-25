@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text;
 
-import org.apache.shardingsphere.shardingproxy.backend.result.query.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.sql.SQLException;
@@ -45,10 +45,10 @@ public interface TextProtocolBackendHandler {
     boolean next() throws SQLException;
     
     /**
-     * Get result value.
+     * Get query data.
      *
-     * @return result packet
+     * @return query data
      * @throws SQLException SQL exception
      */
-    ResultPacket getResultValue() throws SQLException;
+    QueryData getQueryData() throws SQLException;
 }

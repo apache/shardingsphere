@@ -126,7 +126,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                     }
                 }
             }
-            DatabasePacket resultValue = queryCommandPacket.getResultValue();
+            DatabasePacket resultValue = queryCommandPacket.getQueryData();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
                 context.flush();
