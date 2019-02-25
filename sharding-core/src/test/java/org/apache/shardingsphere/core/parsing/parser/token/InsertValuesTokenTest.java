@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.parser.token;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
@@ -29,6 +30,9 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class InsertValuesTokenTest {
     
@@ -49,7 +53,13 @@ public class InsertValuesTokenTest {
         expressions.add(new SQLPlaceholderExpression(1));
         expressions.add(new SQLTextExpression("test"));
         insertValuesTokeWithSet.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
-        
+        assertThat(insertValuesTokeWithSet.getColumnName(0), is("id"));
+        assertThat(insertValuesTokeWithSet.getColumnNames().size(), is(3));
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getValues(), is(expressions));
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getParameters().get(0), is((Object) "parameter"));
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getDataNodes().size(), is(0));
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue(1), is("parameter"));
+        assertThat(insertValuesTokeWithSet.getColumnValues().get(0).getColumnValue("status"), is(Optional.of("test")));
     }
     
     @Test
