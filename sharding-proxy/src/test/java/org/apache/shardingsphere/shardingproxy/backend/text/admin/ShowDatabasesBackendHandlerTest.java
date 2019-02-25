@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,8 +44,8 @@ public final class ShowDatabasesBackendHandlerTest {
     
     @Test
     public void assertExecuteShowDatabaseBackendHandler() {
-        QueryHeaderResponse actual = (QueryHeaderResponse) showDatabasesBackendHandler.execute();
-        assertThat(actual, instanceOf(QueryHeaderResponse.class));
+        QueryResponse actual = (QueryResponse) showDatabasesBackendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponse.class));
         assertThat(actual.getQueryHeaders().size(), is(1));
     }
     

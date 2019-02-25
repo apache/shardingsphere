@@ -29,13 +29,13 @@ import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxyJDBCExecutePrepareCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecuteCallback;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponseUnit;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
@@ -72,7 +72,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     @SuppressWarnings("unchecked")
     @Override
-    public ExecuteResponse execute(final SQLRouteResult routeResult) throws SQLException {
+    public BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
         boolean isReturnGeneratedKeys = routeResult.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(
@@ -82,11 +82,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 new ProxySQLExecuteCallback(backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
-                ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryHeaders(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
+                ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryHeaders(), executeResponseUnits) : new UpdateResponse(executeResponseUnits);
     }
     
-    private ExecuteResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResponseUnit> executeResponseUnits) {
-        ExecuteQueryResponse result = new ExecuteQueryResponse(queryHeaders);
+    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResponseUnit> executeResponseUnits) {
+        QueryResponse result = new QueryResponse(queryHeaders);
         for (ExecuteResponseUnit each : executeResponseUnits) {
             result.getQueryResults().add(((ExecuteQueryResponseUnit) each).getQueryResult());
         }

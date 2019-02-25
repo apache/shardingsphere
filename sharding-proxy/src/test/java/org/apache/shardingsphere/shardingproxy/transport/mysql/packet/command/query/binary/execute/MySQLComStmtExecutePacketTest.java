@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -84,7 +84,7 @@ public final class MySQLComStmtExecutePacketTest {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
-        when(databaseCommunicationEngine.execute()).thenReturn(mock(QueryHeaderResponse.class));
+        when(databaseCommunicationEngine.execute()).thenReturn(mock(QueryResponse.class));
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
         when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
         MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);

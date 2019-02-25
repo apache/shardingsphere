@@ -19,22 +19,17 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Execute query response.
+ * Execute update response unit.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteQueryResponse implements ExecuteResponse {
+public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
     
-    private final List<QueryHeader> queryHeaders;
+    private final int updateCount;
     
-    private final List<QueryResult> queryResults = new LinkedList<>();
+    private final long lastInsertId;
 }

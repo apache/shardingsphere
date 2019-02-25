@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
+package org.apache.shardingsphere.shardingproxy.backend.result.update;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponseUnit;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 
@@ -27,17 +27,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Execute update response.
+ * Update response.
  * 
  * @author zhangliang
  */
-public final class ExecuteUpdateResponse implements ExecuteResponse {
+public final class UpdateResponse implements BackendResponse {
     
     private final List<Integer> updateCounts = new LinkedList<>();
     
     private final List<Long> lastInsertIds = new LinkedList<>();
     
-    public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
+    public UpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
             updateCounts.add(((ExecuteUpdateResponseUnit) each).getUpdateCount());
             lastInsertIds.add(((ExecuteUpdateResponseUnit) each).getLastInsertId());
@@ -45,12 +45,12 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
     }
     
     /**
-     * Get backend response.
+     * Get response.
      * 
      * @param isMerge is need merge
      * @return backend response
      */
-    public BackendResponse getBackendResponse(final boolean isMerge) {
+    public BackendResponse getResponse(final boolean isMerge) {
         return isMerge ? new SuccessResponse(mergeUpdateCount(), mergeLastInsertId()) : new SuccessResponse(updateCounts.get(0), lastInsertIds.get(0));
     }
     

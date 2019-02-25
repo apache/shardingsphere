@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit;
+package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+
+import java.util.List;
 
 /**
- * Execute response unit.
+ * Execute query response unit.
  * 
  * @author zhangliang
  */
-public interface ExecuteResponseUnit {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
+    
+    private final List<QueryHeader> queryHeaders;
+    
+    private final QueryResult queryResult;
 }

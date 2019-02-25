@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResp
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -122,7 +122,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             if (backendResponse instanceof FailureResponse) {
                 return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
             }
-            Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryHeaderResponse) backendResponse).getQueryHeaders());
+            Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryResponse) backendResponse).getQueryHeaders());
             return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
         }
         return Optional.of(result);

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -69,7 +69,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private BackendResponse createResponsePackets(final String columnName, final Object... values) {
         mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
-        return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0)));
+        return new QueryResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0)));
     }
     
     @Override

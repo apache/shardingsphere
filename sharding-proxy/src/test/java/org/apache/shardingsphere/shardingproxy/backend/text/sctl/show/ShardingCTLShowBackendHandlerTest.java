@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -42,8 +42,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show transaction_type", backendConnection);
         BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryHeaderResponse.class));
-        assertThat(((QueryHeaderResponse) actual).getQueryHeaders().size(), is(1));
+        assertThat(actual, instanceOf(QueryResponse.class));
+        assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         QueryData queryData = backendHandler.getQueryData();
         assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is("LOCAL"));
@@ -54,8 +54,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connections", backendConnection);
         BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryHeaderResponse.class));
-        assertThat(((QueryHeaderResponse) actual).getQueryHeaders().size(), is(1));
+        assertThat(actual, instanceOf(QueryResponse.class));
+        assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         QueryData queryData = backendHandler.getQueryData();
         assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is(0));

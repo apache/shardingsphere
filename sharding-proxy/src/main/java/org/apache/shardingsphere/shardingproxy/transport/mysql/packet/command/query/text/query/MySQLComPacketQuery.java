@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResp
 import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -100,7 +100,7 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         if (backendResponse instanceof FailureResponse) {
             return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
         }
-        Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets((QueryHeaderResponse) backendResponse);
+        Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets((QueryResponse) backendResponse);
         dataHeaderEofSequenceId = dataHeaderPackets.size() + 2;
         return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
     }
@@ -113,10 +113,10 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         return new DatabaseFailurePacket(1, failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage());
     }
     
-    private Collection<DataHeaderPacket> createDataHeaderPackets(final QueryHeaderResponse queryHeaderResponse) {
+    private Collection<DataHeaderPacket> createDataHeaderPackets(final QueryResponse queryResponse) {
         Collection<DataHeaderPacket> result = new LinkedList<>();
         int sequenceId = 1;
-        for (QueryHeader each : queryHeaderResponse.getQueryHeaders()) {
+        for (QueryHeader each : queryResponse.getQueryHeaders()) {
             result.add(new DataHeaderPacket(
                     ++sequenceId, each.getSchema(), each.getTable(), each.getTable(), each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
         }

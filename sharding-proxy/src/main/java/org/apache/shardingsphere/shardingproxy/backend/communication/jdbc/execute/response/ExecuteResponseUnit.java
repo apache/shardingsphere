@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
 
 /**
- * Execute update response unit.
+ * Execute response unit.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
-    
-    private final int updateCount;
-    
-    private final long lastInsertId;
+public interface ExecuteResponseUnit {
 }
