@@ -19,6 +19,7 @@ package org.apache.shardingsphere.api.config.encryptor;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class EncryptorRuleConfiguration {
+public final class EncryptorRuleConfiguration implements RuleConfiguration {
     
     private Collection<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
 }

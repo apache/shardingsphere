@@ -19,6 +19,7 @@ package org.apache.shardingsphere.api.config.encryptor;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 
 /**
  * Encryptor table rule configuration.
@@ -27,7 +28,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class TableRuleConfiguration {
+public final class TableRuleConfiguration implements RuleConfiguration {
     
     private String table;
     
