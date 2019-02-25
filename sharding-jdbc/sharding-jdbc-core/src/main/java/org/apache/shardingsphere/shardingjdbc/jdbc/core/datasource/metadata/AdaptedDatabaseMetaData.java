@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public abstract class AdaptedDatabaseMetaData extends ConnectionRequiredDatabaseMetaData {
+public abstract class AdaptedDatabaseMetaData extends ResultSetReturnedDatabaseMetaData {
     
     public AdaptedDatabaseMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
         super(dataSourceMap, shardingRule);
