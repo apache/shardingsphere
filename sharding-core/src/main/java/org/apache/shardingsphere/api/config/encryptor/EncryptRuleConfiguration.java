@@ -33,7 +33,7 @@ import java.util.LinkedList;
 @Setter
 public final class EncryptRuleConfiguration implements RuleConfiguration {
     
-    private Collection<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
+    private Collection<EncryptTableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
     
     private EncryptorConfiguration defaultEncryptorConfig;
 }
