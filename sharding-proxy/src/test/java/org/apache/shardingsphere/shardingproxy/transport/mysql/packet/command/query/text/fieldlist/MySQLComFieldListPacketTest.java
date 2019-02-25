@@ -99,7 +99,7 @@ public final class MySQLComFieldListPacketTest {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(1, Collections.<Object>singletonList("id"), Collections.singletonList(Types.VARCHAR)));
+        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.VARCHAR), Collections.<Object>singletonList("id")));
         BackendResponse backendResponse = mock(BackendResponse.class);
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);

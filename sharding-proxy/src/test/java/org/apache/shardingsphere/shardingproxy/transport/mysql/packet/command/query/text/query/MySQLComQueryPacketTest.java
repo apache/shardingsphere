@@ -106,7 +106,7 @@ public final class MySQLComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertTrue(packet.next());
-        assertThat(packet.getQueryData().getSequenceId(), is(2));
+        assertThat(packet.getQueryData().getSequenceId(), is(3));
         assertThat(((MySQLTextResultSetRowPacket) packet.getQueryData()).getData(), is(Collections.<Object>singletonList(99999L)));
         assertFalse(packet.next());
     }
@@ -115,10 +115,10 @@ public final class MySQLComQueryPacketTest {
     private void setBackendHandler(final MySQLComPacketQuery packet, final QueryHeaderResponse queryHeaderResponse) {
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
-        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(1, Collections.<Object>singletonList("id"), Collections.singletonList(Types.VARCHAR)));
+        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.VARCHAR), Collections.<Object>singletonList("id")));
         when(textProtocolBackendHandler.execute()).thenReturn(queryHeaderResponse);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
-        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), Collections.singletonList(Types.BIGINT)));
+        when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
         Field field = MySQLComPacketQuery.class.getDeclaredField("textProtocolBackendHandler");
         field.setAccessible(true);
         field.set(packet, textProtocolBackendHandler);

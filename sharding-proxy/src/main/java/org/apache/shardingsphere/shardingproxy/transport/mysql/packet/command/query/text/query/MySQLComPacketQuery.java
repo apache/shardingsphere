@@ -65,6 +65,10 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
+    private int dataHeaderEofSequenceId;
+    
+    private int currentQueryDataSequenceId;
+    
     public MySQLComPacketQuery(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
@@ -97,7 +101,8 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
             return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
         }
         Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets((QueryHeaderResponse) backendResponse);
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
+        dataHeaderEofSequenceId = dataHeaderPackets.size() + 2;
+        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
     }
     
     private DatabaseSuccessPacket createDatabaseSuccessPacket(final SuccessResponse successResponse) {
@@ -126,6 +131,6 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     @Override
     public DatabasePacket getQueryData() throws SQLException {
         QueryData queryData = textProtocolBackendHandler.getQueryData();
-        return new MySQLTextResultSetRowPacket(queryData.getSequenceId(), queryData.getData());
+        return new MySQLTextResultSetRowPacket(++currentQueryDataSequenceId + dataHeaderEofSequenceId, queryData.getData());
     }
 }

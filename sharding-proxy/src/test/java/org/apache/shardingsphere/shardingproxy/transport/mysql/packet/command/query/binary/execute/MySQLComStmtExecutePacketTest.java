@@ -86,15 +86,15 @@ public final class MySQLComStmtExecutePacketTest {
         when(payload.readInt1()).thenReturn(0, 1);
         when(databaseCommunicationEngine.execute()).thenReturn(mock(QueryHeaderResponse.class));
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(2, Collections.<Object>singletonList(99999L), Collections.singletonList(Types.BIGINT)));
+        when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
         MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
         setBackendHandler(packet, databaseCommunicationEngine);
         Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();
         assertTrue(actualCommandResponsePackets.isPresent());
         assertTrue(packet.next());
-        DatabasePacket actualResultValue = packet.getQueryData();
-        assertThat(actualResultValue.getSequenceId(), is(2));
-        assertThat(((MySQLBinaryResultSetRowPacket) actualResultValue).getData(), is(Collections.<Object>singletonList(99999L)));
+        DatabasePacket actual = packet.getQueryData();
+        assertThat(actual.getSequenceId(), is(3));
+        assertThat(((MySQLBinaryResultSetRowPacket) actual).getData(), is(Collections.<Object>singletonList(99999L)));
         assertFalse(packet.next());
     }
     

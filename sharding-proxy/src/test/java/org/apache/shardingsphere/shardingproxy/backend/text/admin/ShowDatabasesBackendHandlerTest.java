@@ -52,14 +52,11 @@ public final class ShowDatabasesBackendHandlerTest {
     @Test
     public void assertShowDatabaseUsingStream() throws SQLException {
         showDatabasesBackendHandler.execute();
-        int sequenceId = 4;
         while (showDatabasesBackendHandler.next()) {
             QueryData queryData = showDatabasesBackendHandler.getQueryData();
             assertThat(queryData.getColumnTypes().size(), is(1));
             assertThat(queryData.getColumnTypes().iterator().next(), is(Types.VARCHAR));
-            assertThat(queryData.getSequenceId(), is(sequenceId));
             assertThat(queryData.getData().size(), is(1));
-            ++sequenceId;
         }
     }
 }

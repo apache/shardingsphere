@@ -46,8 +46,6 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private MergedResult mergedResult;
     
-    private int currentSequenceId;
-    
     public ShardingCTLShowBackendHandler(final String sql, final BackendConnection backendConnection) {
         this.sql = sql.toUpperCase().trim();
         this.backendConnection = backendConnection;
@@ -71,7 +69,6 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private BackendResponse createResponsePackets(final String columnName, final Object... values) {
         mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
-        currentSequenceId = 3;
         return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0)), 2);
     }
     
@@ -82,6 +79,6 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     @Override
     public QueryData getQueryData() throws SQLException {
-        return new QueryData(++currentSequenceId, Collections.singletonList(mergedResult.getValue(1, Object.class)), Collections.singletonList(Types.VARCHAR));
+        return new QueryData(Collections.singletonList(Types.VARCHAR), Collections.singletonList(mergedResult.getValue(1, Object.class)));
     }
 }

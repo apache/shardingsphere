@@ -86,6 +86,10 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
+    private int dataHeaderEofSequenceId;
+    
+    private int currentQueryDataSequenceId;
+    
     public MySQLQueryComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
@@ -159,7 +163,8 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
             return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
         }
         Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryHeaderResponse) backendResponse).getQueryHeaders());
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
+        dataHeaderEofSequenceId = dataHeaderPackets.size() + 2;
+        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
     }
     
     private DatabaseSuccessPacket createDatabaseSuccessPacket(final SuccessResponse successResponse) {
@@ -192,7 +197,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     @Override
     public DatabasePacket getQueryData() throws SQLException {
         QueryData queryData = databaseCommunicationEngine.getQueryData();
-        return new MySQLBinaryResultSetRowPacket(queryData.getSequenceId(), queryData.getData(), getMySQLColumnTypes(queryData));
+        return new MySQLBinaryResultSetRowPacket(++currentQueryDataSequenceId + dataHeaderEofSequenceId, queryData.getData(), getMySQLColumnTypes(queryData));
     }
     
     private List<MySQLColumnType> getMySQLColumnTypes(final QueryData queryData) {
