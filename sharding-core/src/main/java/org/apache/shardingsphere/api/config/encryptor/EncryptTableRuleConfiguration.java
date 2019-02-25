@@ -28,7 +28,7 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
  */
 @Getter
 @Setter
-public final class TableRuleConfiguration implements RuleConfiguration {
+public final class EncryptTableRuleConfiguration implements RuleConfiguration {
     
     private String table;
     
