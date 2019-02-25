@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -77,8 +79,15 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        CommandResponsePackets responsePackets = new CommandResponsePackets(databaseCommunicationEngine.execute().getPackets());
-        return Optional.of(responsePackets.getHeadPacket() instanceof MySQLErrPacket ? responsePackets : getColumnDefinition41Packets());
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
+        if (backendResponse instanceof FailureResponse) {
+            return Optional.of(new CommandResponsePackets(createMySQLErrPacket((FailureResponse) backendResponse)));
+        }
+        return Optional.of(getColumnDefinition41Packets());
+    }
+    
+    private MySQLErrPacket createMySQLErrPacket(final FailureResponse failureResponse) {
+        return new MySQLErrPacket(1, failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage());
     }
     
     private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {

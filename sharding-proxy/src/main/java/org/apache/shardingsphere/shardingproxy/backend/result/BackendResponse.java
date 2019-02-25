@@ -17,28 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.result;
 
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-
-import java.util.Collection;
-
 /**
  * Backend response.
  *
  * @author zhangliang
  */
 public interface BackendResponse {
-    
-    /**
-     * Get head packet.
-     *
-     * @return head packet
-     */
-    DatabasePacket getHeadPacket();
-    
-    /**
-     * Get database packets.
-     * 
-     * @return database packets
-     */
-    Collection<DatabasePacket> getPackets();
 }

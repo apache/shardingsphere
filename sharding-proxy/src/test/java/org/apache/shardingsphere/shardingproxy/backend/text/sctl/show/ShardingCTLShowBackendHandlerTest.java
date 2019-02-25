@@ -22,7 +22,6 @@ import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -68,8 +67,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connectionss", backendConnection);
         BackendResponse actual = backendHandler.execute();
         assertThat(actual, instanceOf(FailureResponse.class));
-        DatabaseFailurePacket databaseFailurePacket = (DatabaseFailurePacket) actual.getHeadPacket();
-        assertThat(databaseFailurePacket.getErrorMessage(), containsString("Could not support this sctl grammar "));
+        assertThat(((FailureResponse) actual).getErrorMessage(), containsString("Could not support this sctl grammar "));
     }
     
     @Test
@@ -78,7 +76,6 @@ public final class ShardingCTLShowBackendHandlerTest {
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show=xx", backendConnection);
         BackendResponse actual = backendHandler.execute();
         assertThat(actual, instanceOf(FailureResponse.class));
-        DatabaseFailurePacket databaseFailurePacket = (DatabaseFailurePacket) actual.getHeadPacket();
-        assertThat(databaseFailurePacket.getErrorMessage(), containsString("Please review your sctl format"));
+        assertThat(((FailureResponse) actual).getErrorMessage(), containsString("Please review your sctl format"));
     }
 }
