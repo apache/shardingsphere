@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -66,8 +66,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connectionss", backendConnection);
         BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(FailureResponse.class));
-        assertThat(((FailureResponse) actual).getErrorMessage(), containsString("Could not support this sctl grammar "));
+        assertThat(actual, instanceOf(ErrorResponse.class));
+        assertThat(((ErrorResponse) actual).getErrorMessage(), containsString("Could not support this sctl grammar "));
     }
     
     @Test
@@ -75,7 +75,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show=xx", backendConnection);
         BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(FailureResponse.class));
-        assertThat(((FailureResponse) actual).getErrorMessage(), containsString("Please review your sctl format"));
+        assertThat(actual, instanceOf(ErrorResponse.class));
+        assertThat(((ErrorResponse) actual).getErrorMessage(), containsString("Please review your sctl format"));
     }
 }

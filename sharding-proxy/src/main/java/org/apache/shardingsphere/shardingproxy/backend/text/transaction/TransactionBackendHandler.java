@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendTransactionManager;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
@@ -50,7 +50,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
         try {
             return doTransaction();
         } catch (final SQLException ex) {
-            return new FailureResponse(ex);
+            return new ErrorResponse(ex);
         }
     }
     

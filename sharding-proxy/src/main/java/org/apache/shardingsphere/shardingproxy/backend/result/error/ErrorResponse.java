@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.result.common;
+package org.apache.shardingsphere.shardingproxy.backend.result.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,13 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLSer
 import java.sql.SQLException;
 
 /**
- * Failure response.
+ * Error response.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class FailureResponse implements BackendResponse {
+public final class ErrorResponse implements BackendResponse {
     
     private final int errorCode;
     
@@ -39,11 +39,11 @@ public final class FailureResponse implements BackendResponse {
     
     private final String errorMessage;
     
-    public FailureResponse(final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
+    public ErrorResponse(final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
         this(errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
     }
     
-    public FailureResponse(final SQLException cause) {
+    public ErrorResponse(final SQLException cause) {
         this(cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
 }

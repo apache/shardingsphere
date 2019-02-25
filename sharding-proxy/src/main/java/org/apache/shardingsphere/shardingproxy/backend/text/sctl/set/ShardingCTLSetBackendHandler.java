@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.set;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
@@ -46,18 +46,18 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     public BackendResponse execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new FailureResponse(0, "", "Please review your sctl format, should be sctl:set xxx=yyy.");
+            return new ErrorResponse(0, "", "Please review your sctl format, should be sctl:set xxx=yyy.");
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
                 try {
                     backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
                 } catch (final IllegalArgumentException ex) {
-                    return new FailureResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
+                    return new ErrorResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
                 }
                 break;
             default:
-                return new FailureResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
+                return new ErrorResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
         }
         return new UpdateResponse();
     }

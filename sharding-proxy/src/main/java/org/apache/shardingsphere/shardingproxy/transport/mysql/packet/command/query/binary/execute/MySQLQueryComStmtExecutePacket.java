@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
@@ -154,16 +154,16 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
             return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, MySQLServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof FailureResponse) {
-            return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
+        if (backendResponse instanceof ErrorResponse) {
+            return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((ErrorResponse) backendResponse)));
         }
         Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryResponse) backendResponse).getQueryHeaders());
         dataHeaderEofSequenceId = dataHeaderPackets.size() + 2;
         return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
     }
     
-    private DatabaseFailurePacket createDatabaseFailurePacket(final FailureResponse failureResponse) {
-        return new DatabaseFailurePacket(1, failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage());
+    private DatabaseFailurePacket createDatabaseFailurePacket(final ErrorResponse errorResponse) {
+        return new DatabaseFailurePacket(1, errorResponse.getErrorCode(), errorResponse.getSqlState(), errorResponse.getErrorMessage());
     }
     
     private Collection<DataHeaderPacket> createDataHeaderPackets(final List<QueryHeader> queryHeaders) {

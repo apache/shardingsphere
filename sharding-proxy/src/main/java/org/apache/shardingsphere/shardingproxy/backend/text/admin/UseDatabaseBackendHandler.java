@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Use
 import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
@@ -46,7 +46,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GlobalRegistry.getInstance().schemaExists(schema)) {
-            return new FailureResponse(MySQLServerErrorCode.ER_BAD_DB_ERROR, schema);
+            return new ErrorResponse(MySQLServerErrorCode.ER_BAD_DB_ERROR, schema);
         }
         backendConnection.setCurrentSchema(schema);
         return new UpdateResponse();

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.junit.Test;
@@ -71,11 +71,11 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteFailure() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        FailureResponse failureResponse = new FailureResponse(new SQLException("no reason", "X999", -1));
-        mockDatabaseCommunicationEngine(failureResponse);
+        ErrorResponse errorResponse = new ErrorResponse(new SQLException("no reason", "X999", -1));
+        mockDatabaseCommunicationEngine(errorResponse);
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
-        assertThat(broadcastBackendHandler.execute(), instanceOf(FailureResponse.class));
+        assertThat(broadcastBackendHandler.execute(), instanceOf(ErrorResponse.class));
         verify(databaseCommunicationEngine, times(10)).execute();
     }
     

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -80,14 +80,14 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        if (backendResponse instanceof FailureResponse) {
-            return Optional.of(new CommandResponsePackets(createMySQLErrPacket((FailureResponse) backendResponse)));
+        if (backendResponse instanceof ErrorResponse) {
+            return Optional.of(new CommandResponsePackets(createMySQLErrPacket((ErrorResponse) backendResponse)));
         }
         return Optional.of(getColumnDefinition41Packets());
     }
     
-    private MySQLErrPacket createMySQLErrPacket(final FailureResponse failureResponse) {
-        return new MySQLErrPacket(1, failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage());
+    private MySQLErrPacket createMySQLErrPacket(final ErrorResponse errorResponse) {
+        return new MySQLErrPacket(1, errorResponse.getErrorCode(), errorResponse.getSqlState(), errorResponse.getErrorMessage());
     }
     
     private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {

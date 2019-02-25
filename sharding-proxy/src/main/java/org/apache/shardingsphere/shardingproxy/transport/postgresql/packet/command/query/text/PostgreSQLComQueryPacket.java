@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
@@ -77,8 +77,8 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
             return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, MySQLServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof FailureResponse) {
-            return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((FailureResponse) backendResponse)));
+        if (backendResponse instanceof ErrorResponse) {
+            return Optional.of(new CommandResponsePackets(createDatabaseFailurePacket((ErrorResponse) backendResponse)));
         }
         if (backendResponse instanceof UpdateResponse) {
             return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
@@ -87,8 +87,8 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
         return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
     }
     
-    private DatabaseFailurePacket createDatabaseFailurePacket(final FailureResponse failureResponse) {
-        return new DatabaseFailurePacket(1, failureResponse.getErrorCode(), failureResponse.getSqlState(), failureResponse.getErrorMessage());
+    private DatabaseFailurePacket createDatabaseFailurePacket(final ErrorResponse errorResponse) {
+        return new DatabaseFailurePacket(1, errorResponse.getErrorCode(), errorResponse.getSqlState(), errorResponse.getErrorMessage());
     }
     
     private DatabaseSuccessPacket createUpdatePacket(final UpdateResponse updateResponse) {

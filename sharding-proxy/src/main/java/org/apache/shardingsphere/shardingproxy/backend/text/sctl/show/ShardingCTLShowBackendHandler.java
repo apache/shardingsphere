@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
@@ -55,7 +55,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     public BackendResponse execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new FailureResponse(0, "", "Please review your sctl format, should be sctl:show xxx.");
+            return new ErrorResponse(0, "", "Please review your sctl format, should be sctl:show xxx.");
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -63,7 +63,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new FailureResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
+                return new ErrorResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
         }
     }
     
