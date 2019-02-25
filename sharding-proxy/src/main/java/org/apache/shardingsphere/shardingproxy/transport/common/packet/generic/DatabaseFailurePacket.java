@@ -41,8 +41,8 @@ public final class DatabaseFailurePacket implements DatabasePacket {
     
     private final String errorMessage;
     
-    public DatabaseFailurePacket(final int sequenceId, final MySQLServerErrorCode mySQLServerErrorCode, final Object... errorMessageArguments) {
-        this(sequenceId, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), errorMessageArguments));
+    public DatabaseFailurePacket(final int sequenceId, final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
+        this(sequenceId, errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
     }
     
     public DatabaseFailurePacket(final int sequenceId, final SQLException cause) {

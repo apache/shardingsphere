@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.result.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
 
 /**
- * Result packet.
+ * Success response.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ResultPacket {
+public final class SuccessResponse implements BackendResponse {
     
-    private final int sequenceId;
+    private final long affectedRows;
     
-    private final List<Object> data;
+    private final long lastInsertId;
     
-    private final int columnCount;
-    
-    private final List<Integer> columnTypes;
+    public SuccessResponse() {
+        this(0L, 0L);
+    }
 }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 
 /**
  * GUI compatibility backend handler.
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.D
 public final class GUICompatibilityBackendHandler implements TextProtocolBackendHandler {
     
     @Override
-    public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
+    public BackendResponse execute() {
+        return new SuccessResponse();
     }
     
     @Override
@@ -40,7 +40,7 @@ public final class GUICompatibilityBackendHandler implements TextProtocolBackend
     }
     
     @Override
-    public ResultPacket getResultValue() {
+    public QueryData getQueryData() {
         return null;
     }
 }

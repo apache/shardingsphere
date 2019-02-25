@@ -22,10 +22,10 @@ import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,30 +58,29 @@ public final class BroadcastBackendHandlerTest {
     @Test
     public void assertExecuteSuccess() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        mockDatabaseCommunicationEngine(new CommandResponsePackets(new DatabaseSuccessPacket(1, 0, 0)));
+        mockDatabaseCommunicationEngine(new SuccessResponse(0L, 0L));
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
-        DatabaseSuccessPacket actual = (DatabaseSuccessPacket) broadcastBackendHandler.execute().getHeadPacket();
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getAffectedRows(), is(0L));
-        assertThat(actual.getLastInsertId(), is(0L));
+        BackendResponse actual = broadcastBackendHandler.execute();
+        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(((SuccessResponse) actual).getAffectedRows(), is(0L));
+        assertThat(((SuccessResponse) actual).getLastInsertId(), is(0L));
         verify(databaseCommunicationEngine, times(10)).execute();
     }
     
     @Test
     public void assertExecuteFailure() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        DatabaseFailurePacket databaseFailurePacket = new DatabaseFailurePacket(1, new SQLException("no reason", "X999", -1));
-        mockDatabaseCommunicationEngine(new CommandResponsePackets(databaseFailurePacket));
+        FailureResponse failureResponse = new FailureResponse(new SQLException("no reason", "X999", -1));
+        mockDatabaseCommunicationEngine(failureResponse);
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
-        DatabaseFailurePacket actual = (DatabaseFailurePacket) broadcastBackendHandler.execute().getHeadPacket();
-        assertThat(actual, is(databaseFailurePacket));
+        assertThat(broadcastBackendHandler.execute(), instanceOf(FailureResponse.class));
         verify(databaseCommunicationEngine, times(10)).execute();
     }
     
-    private void mockDatabaseCommunicationEngine(final CommandResponsePackets commandResponsePackets) {
-        when(databaseCommunicationEngine.execute()).thenReturn(commandResponsePackets);
+    private void mockDatabaseCommunicationEngine(final BackendResponse backendResponse) {
+        when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance((LogicSchema) any(), anyString(), (BackendConnection) any())).thenReturn(databaseCommunicationEngine);
     }
     

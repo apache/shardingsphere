@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.core.executor.sql.execute.result;
 
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Optional;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -40,10 +43,23 @@ import java.util.Calendar;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class StreamQueryResult implements QueryResult {
     
+    private final QueryResultMetaData metaData;
+    
     private final ResultSet resultSet;
+    
+    @SneakyThrows
+    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
+        this.resultSet = resultSet;
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+    }
+    
+    @SneakyThrows
+    public StreamQueryResult(final ResultSet resultSet) {
+        this.resultSet = resultSet;
+        metaData = new QueryResultMetaData(resultSet.getMetaData());
+    }
     
     @Override
     public boolean next() throws SQLException {
@@ -54,25 +70,25 @@ public final class StreamQueryResult implements QueryResult {
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         Object result;
         if (Object.class == type) {
-            result = resultSet.getObject(columnIndex);
+            result = decrypt(columnIndex, resultSet.getObject(columnIndex));
         } else if (boolean.class == type) {
-            result = resultSet.getBoolean(columnIndex);
+            result = decrypt(columnIndex, resultSet.getBoolean(columnIndex));
         } else if (byte.class == type) {
-            result = resultSet.getByte(columnIndex);
+            result = decrypt(columnIndex, resultSet.getByte(columnIndex));
         } else if (short.class == type) {
-            result = resultSet.getShort(columnIndex);
+            result = decrypt(columnIndex, resultSet.getShort(columnIndex));
         } else if (int.class == type) {
-            result = resultSet.getInt(columnIndex);
+            result = decrypt(columnIndex, resultSet.getInt(columnIndex));
         } else if (long.class == type) {
-            result = resultSet.getLong(columnIndex);
+            result = decrypt(columnIndex, resultSet.getLong(columnIndex));
         } else if (float.class == type) {
-            result = resultSet.getFloat(columnIndex);
+            result = decrypt(columnIndex, resultSet.getFloat(columnIndex));
         } else if (double.class == type) {
-            result = resultSet.getDouble(columnIndex);
+            result = decrypt(columnIndex, resultSet.getDouble(columnIndex));
         } else if (String.class == type) {
-            result = resultSet.getString(columnIndex);
+            result = decrypt(columnIndex, resultSet.getString(columnIndex));
         } else if (BigDecimal.class == type) {
-            result = resultSet.getBigDecimal(columnIndex);
+            result = decrypt(columnIndex, resultSet.getBigDecimal(columnIndex));
         } else if (byte[].class == type) {
             result = resultSet.getBytes(columnIndex);
         } else if (Date.class == type) {
@@ -92,7 +108,7 @@ public final class StreamQueryResult implements QueryResult {
         } else if (Reader.class == type) {
             result = resultSet.getCharacterStream(columnIndex);
         } else {
-            result = resultSet.getObject(columnIndex);
+            result = decrypt(columnIndex, resultSet.getObject(columnIndex));
         }
         return result;
     }
@@ -101,25 +117,25 @@ public final class StreamQueryResult implements QueryResult {
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
         Object result;
         if (Object.class == type) {
-            result = resultSet.getObject(columnLabel);
+            result = decrypt(columnLabel, resultSet.getObject(columnLabel));
         } else if (boolean.class == type) {
-            result = resultSet.getBoolean(columnLabel);
+            result = decrypt(columnLabel, resultSet.getBoolean(columnLabel));
         } else if (byte.class == type) {
-            result = resultSet.getByte(columnLabel);
+            result = decrypt(columnLabel, resultSet.getByte(columnLabel));
         } else if (short.class == type) {
-            result = resultSet.getShort(columnLabel);
+            result = decrypt(columnLabel, resultSet.getShort(columnLabel));
         } else if (int.class == type) {
-            result = resultSet.getInt(columnLabel);
+            result = decrypt(columnLabel, resultSet.getInt(columnLabel));
         } else if (long.class == type) {
-            result = resultSet.getLong(columnLabel);
+            result = decrypt(columnLabel, resultSet.getLong(columnLabel));
         } else if (float.class == type) {
-            result = resultSet.getFloat(columnLabel);
+            result = decrypt(columnLabel, resultSet.getFloat(columnLabel));
         } else if (double.class == type) {
-            result = resultSet.getDouble(columnLabel);
+            result = decrypt(columnLabel, resultSet.getDouble(columnLabel));
         } else if (String.class == type) {
-            result = resultSet.getString(columnLabel);
+            result = decrypt(columnLabel, resultSet.getString(columnLabel));
         } else if (BigDecimal.class == type) {
-            result = resultSet.getBigDecimal(columnLabel);
+            result = decrypt(columnLabel, resultSet.getBigDecimal(columnLabel));
         } else if (byte[].class == type) {
             result = resultSet.getBytes(columnLabel);
         } else if (Date.class == type) {
@@ -139,7 +155,7 @@ public final class StreamQueryResult implements QueryResult {
         } else if (Reader.class == type) {
             result = resultSet.getCharacterStream(columnLabel);
         } else {
-            result = resultSet.getObject(columnLabel);
+            result = decrypt(columnLabel, resultSet.getObject(columnLabel));
         }
         return result;
     }
@@ -208,12 +224,23 @@ public final class StreamQueryResult implements QueryResult {
     }
     
     @Override
-    public int getColumnCount() throws SQLException {
-        return resultSet.getMetaData().getColumnCount();
+    public int getColumnCount() {
+        return metaData.getColumnCount();
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
-        return resultSet.getMetaData().getColumnLabel(columnIndex);
+    public String getColumnLabel(final int columnIndex) {
+        return metaData.getColumnLabel(columnIndex);
+    }
+    
+    @SneakyThrows
+    private Object decrypt(final String columnLabel, final Object value) {
+        return decrypt(metaData.getColumnIndex(columnLabel), value);
+    }
+    
+    @SneakyThrows
+    private Object decrypt(final int columnIndex, final Object value) {
+        Optional<ShardingEncryptor> shardingEncryptor = metaData.getShardingEncryptor(columnIndex);
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value.toString()) : value;
     }
 }

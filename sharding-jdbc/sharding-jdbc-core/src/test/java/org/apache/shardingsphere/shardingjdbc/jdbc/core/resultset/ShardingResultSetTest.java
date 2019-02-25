@@ -63,13 +63,10 @@ public final class ShardingResultSetTest {
     
     private ShardingResultSet shardingResultSet;
     
-    private ShardingResultSet shardingResultSet1;
-    
     @Before
     public void setUp() {
         mergeResultSet = mock(MergedResult.class);
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement());
-        shardingResultSet1 = new ShardingResultSet(getResultSets(), mergeResultSet, Collections.singletonMap("label", 1), getShardingStatement());
     }
     
     @SneakyThrows
@@ -201,7 +198,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetDoubleWithColumnLabelWithColumnLabelIndexMap() throws SQLException {
         when(mergeResultSet.getValue("label", double.class)).thenReturn(1D);
-        assertThat(shardingResultSet1.getDouble("label"), is(1D));
+        assertThat(shardingResultSet.getDouble("label"), is(1D));
     }
     
     @Test

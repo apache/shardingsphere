@@ -71,13 +71,13 @@ public final class MySQLCommandExecutor implements Runnable {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            MySQLCommandPacket mySQLCommandPacket = getCommandPacket(payload, backendConnection);
-            Optional<CommandResponsePackets> responsePackets = mySQLCommandPacket.execute();
+            MySQLCommandPacket mysqlCommandPacket = getCommandPacket(payload, backendConnection);
+            Optional<CommandResponsePackets> responsePackets = mysqlCommandPacket.execute();
             if (!responsePackets.isPresent()) {
                 return;
             }
             if (responsePackets.get() instanceof QueryResponsePackets) {
-                context.write(new MySQLFieldCountPacket(1, ((QueryResponsePackets) responsePackets.get()).getFieldCount()));
+                context.write(new MySQLFieldCountPacket(1, ((QueryResponsePackets) responsePackets.get()).getDataHeaderPackets().size()));
             }
             for (DatabasePacket each : responsePackets.get().getPackets()) {
                 if (each instanceof DatabaseSuccessPacket) {
@@ -93,9 +93,9 @@ public final class MySQLCommandExecutor implements Runnable {
             if (responsePackets.get() instanceof QueryResponsePackets) {
                 context.write(new MySQLEofPacket(((QueryResponsePackets) responsePackets.get()).getSequenceId()));
             }
-            if (mySQLCommandPacket instanceof MySQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
+            if (mysqlCommandPacket instanceof MySQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
                 && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket)) {
-                writeMoreResults((MySQLQueryCommandPacket) mySQLCommandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
+                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
@@ -115,14 +115,14 @@ public final class MySQLCommandExecutor implements Runnable {
         return MySQLCommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
     }
     
-    private void writeMoreResults(final MySQLQueryCommandPacket mySQLQueryCommandPacket, final int headPacketsCount) throws SQLException {
+    private void writeMoreResults(final MySQLQueryCommandPacket mysqlQueryCommandPacket, final int headPacketsCount) throws SQLException {
         if (!context.channel().isActive()) {
             return;
         }
         currentSequenceId = headPacketsCount;
         int count = 0;
         int proxyFrontendFlushThreshold = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
-        while (mySQLQueryCommandPacket.next()) {
+        while (mysqlQueryCommandPacket.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
@@ -133,7 +133,7 @@ public final class MySQLCommandExecutor implements Runnable {
                     }
                 }
             }
-            DatabasePacket resultValue = mySQLQueryCommandPacket.getResultValue();
+            DatabasePacket resultValue = mysqlQueryCommandPacket.getQueryData();
             currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {

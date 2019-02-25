@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStateme
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
+import org.apache.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.TokenType;
@@ -89,6 +90,9 @@ public final class SQLParserFactory {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DALStatement.isDAL(tokenType)) {
+            if (DatabaseType.PostgreSQL == dbType && PostgreSQLKeyword.SHOW == tokenType) {
+                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+            }
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
         lexerEngine.nextToken();

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication;
 
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 
 import java.sql.SQLException;
 
@@ -32,9 +32,9 @@ public interface DatabaseCommunicationEngine {
     /**
      * Execute command.
      *
-     * @return result packets to be sent
+     * @return backend response
      */
-    CommandResponsePackets execute();
+    BackendResponse execute();
     
     /**
      * Goto next result value.
@@ -45,10 +45,10 @@ public interface DatabaseCommunicationEngine {
     boolean next() throws SQLException;
     
     /**
-     * Get result value.
+     * Get query data.
      *
-     * @return result packet
+     * @return query data
      * @throws SQLException SQL exception
      */
-    ResultPacket getResultValue() throws SQLException;
+    QueryData getQueryData() throws SQLException;
 }

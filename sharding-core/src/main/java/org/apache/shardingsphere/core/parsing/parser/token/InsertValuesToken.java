@@ -92,12 +92,13 @@ public final class InsertValuesToken extends SQLToken {
          * @param columnValueIndex column value index
          * @param columnValue column value
          */
-        public void setColumnValue(final int columnValueIndex, final String columnValue) {
+        public void setColumnValue(final int columnValueIndex, final Object columnValue) {
             SQLExpression sqlExpression = values.get(columnValueIndex);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parameters.set(getParameterIndex(sqlExpression), columnValue);
             } else {
-                values.set(columnValueIndex, new SQLTextExpression(columnValue));
+                SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
+                values.set(columnValueIndex, columnExpression);
             }
         }
     
@@ -114,29 +115,29 @@ public final class InsertValuesToken extends SQLToken {
     
         /**
          * Get column value.
-         * 
-         * @param columnValueIndex column value index
-         * @return column value
-         */
-        public String getColumnValue(final int columnValueIndex) {
-            SQLExpression sqlExpression = values.get(columnValueIndex);
-            if (sqlExpression instanceof SQLPlaceholderExpression) {
-                return parameters.get(getParameterIndex(sqlExpression)).toString();
-            } else if (sqlExpression instanceof SQLTextExpression) {
-                return ((SQLTextExpression) sqlExpression).getText();
-            } else {
-                return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
-            }
-        }
-    
-        /**
-         * Get column value.
          *
          * @param columnName column Name
          * @return column value
          */
-        public Optional<String> getColumnValue(final String columnName) {
-            return columnNames.contains(columnName) ? Optional.of(getColumnValue(new ArrayList<>(columnNames).indexOf(columnName))) : Optional.<String>absent();
+        public Optional<Object> getColumnValue(final String columnName) {
+            return columnNames.contains(columnName) ? Optional.of(getColumnValue(new ArrayList<>(columnNames).indexOf(columnName))) : Optional.absent();
+        }
+    
+        /**
+         * Get column value.
+         * 
+         * @param columnValueIndex column value index
+         * @return column value
+         */
+        public Object getColumnValue(final int columnValueIndex) {
+            SQLExpression sqlExpression = values.get(columnValueIndex);
+            if (sqlExpression instanceof SQLPlaceholderExpression) {
+                return parameters.get(getParameterIndex(sqlExpression));
+            } else if (sqlExpression instanceof SQLTextExpression) {
+                return ((SQLTextExpression) sqlExpression).getText();
+            } else {
+                return ((SQLNumberExpression) sqlExpression).getNumber();
+            }
         }
     
         @Override

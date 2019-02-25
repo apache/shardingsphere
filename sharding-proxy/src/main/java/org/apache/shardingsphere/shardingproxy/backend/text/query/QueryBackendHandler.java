@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
@@ -46,10 +46,9 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public CommandResponsePackets execute() {
+    public BackendResponse execute() {
         if (null == backendConnection.getLogicSchema()) {
-            MySQLServerErrorCode serverErrorCode = MySQLServerErrorCode.ER_NO_DB_ERROR;
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), "")));
+            return new FailureResponse(MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sql, backendConnection);
         return databaseCommunicationEngine.execute();
@@ -61,7 +60,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     }
     
     @Override
-    public ResultPacket getResultValue() throws SQLException {
-        return databaseCommunicationEngine.getResultValue();
+    public QueryData getQueryData() throws SQLException {
+        return databaseCommunicationEngine.getQueryData();
     }
 }

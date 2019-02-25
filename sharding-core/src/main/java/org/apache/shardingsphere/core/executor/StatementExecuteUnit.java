@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.core.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -31,6 +30,7 @@ import java.sql.Statement;
  * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 public final class StatementExecuteUnit {
     
@@ -39,13 +39,4 @@ public final class StatementExecuteUnit {
     private final Statement statement;
     
     private final ConnectionMode connectionMode;
-    
-    private final DatabaseMetaData databaseMetaData;
-    
-    public StatementExecuteUnit(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        this.routeUnit = routeUnit;
-        this.statement = statement;
-        this.connectionMode = connectionMode;
-        this.databaseMetaData = statement.getConnection().getMetaData();
-    }
 }

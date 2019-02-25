@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import org.apache.shardingsphere.core.rewrite.placeholder.AllPlaceholderTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -24,7 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         SQLBuilderTest.class, 
-        SQLRewriteEngineTest.class
+        SQLRewriteEngineTest.class,
+        AllPlaceholderTests.class
     })
 public final class AllRewriteTests {
 }

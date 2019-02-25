@@ -42,7 +42,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes > PostgreSQLPacket.MESSAGE_TYPE_LENGTH + PostgreSQLPacket.PAYLOAD_LENGTH;
+        return readableBytes >= PostgreSQLPacket.MESSAGE_TYPE_LENGTH + PostgreSQLPacket.PAYLOAD_LENGTH;
     }
     
     @Override

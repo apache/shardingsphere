@@ -22,9 +22,9 @@ import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,15 +52,15 @@ public final class UnicastBackendHandlerTest {
     @Before
     public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        setUnderlyingHandler(new CommandResponsePackets(new MySQLOKPacket(1)));
+        setUnderlyingHandler(new SuccessResponse(0L, 0L));
     }
     
     @Test
     public void assertExecuteWhileSchemaIsNull() {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(MySQLOKPacket.class));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(SuccessResponse.class));
         backendHandler.execute();
     }
     
@@ -69,14 +69,14 @@ public final class UnicastBackendHandlerTest {
         backendConnection.setCurrentSchema("schema_0");
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
-        CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(MySQLOKPacket.class));
+        BackendResponse actual = backendHandler.execute();
+        assertThat(actual, instanceOf(SuccessResponse.class));
         backendHandler.execute();
     }
     
-    private void setUnderlyingHandler(final CommandResponsePackets commandResponsePackets) {
+    private void setUnderlyingHandler(final BackendResponse backendResponse) {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
-        when(databaseCommunicationEngine.execute()).thenReturn(commandResponsePackets);
+        when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance((LogicSchema) any(), anyString(), (BackendConnection) any())).thenReturn(databaseCommunicationEngine);
     }
     
