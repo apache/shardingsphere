@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptTableRuleCo
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
 /**
- * Encrypt rule configuration yaml swapper.
+ * Encrypt table rule configuration yaml swapper.
  *
  * @author panjuan
  */
