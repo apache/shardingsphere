@@ -161,7 +161,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             String columnName = insertValuesToken.getColumnName(columnIndex);
             String assistedColumnName = shardingRule.getTableRule(insertStatement.getTables().getSingleTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(columnName).get();
             insertValuesToken.getColumnNames().add(assistedColumnName);
-            fillInsertValuesTokenWithColumnValue(insertColumnValue, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(insertColumnValue.getColumnValue(columnIndex)));
+            fillInsertValuesTokenWithColumnValue(insertColumnValue, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(insertColumnValue.getColumnValue(columnIndex).toString()));
         }
         insertColumnValue.setColumnValue(columnIndex, shardingEncryptor.encrypt(insertColumnValue.getColumnValue(columnIndex)));
     }
@@ -179,7 +179,13 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void fillShardingCondition(final ShardingCondition shardingCondition, final Comparable<?> currentGeneratedKey) {
         Column generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
-        shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn, new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters)));
+        if (isShardingColumn(generateKeyColumn)) {
+            shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn, new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters)));
+        }
         insertStatement.setContainGenerateKey(true);
+    }
+    
+    private boolean isShardingColumn(final Column generateKeyColumn) {
+        return shardingRule.getTableRule(generateKeyColumn.getTableName()).getAllShardingColumns().contains(generateKeyColumn.getName());
     }
 }
