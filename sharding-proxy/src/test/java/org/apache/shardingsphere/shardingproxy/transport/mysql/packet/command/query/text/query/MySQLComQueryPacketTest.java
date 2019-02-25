@@ -29,11 +29,11 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionManagerFixture;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.hamcrest.CoreMatchers;
@@ -161,6 +161,6 @@ public final class MySQLComQueryPacketTest {
     private void assertOKPacket(final CommandResponsePackets actual) {
         assertThat(actual.getPackets().size(), is(1));
         assertThat((actual.getPackets().iterator().next()).getSequenceId(), is(1));
-        assertThat(actual.getPackets().iterator().next(), CoreMatchers.<DatabasePacket>instanceOf(DatabaseSuccessPacket.class));
+        assertThat(actual.getPackets().iterator().next(), CoreMatchers.<DatabasePacket>instanceOf(MySQLOKPacket.class));
     }
 }

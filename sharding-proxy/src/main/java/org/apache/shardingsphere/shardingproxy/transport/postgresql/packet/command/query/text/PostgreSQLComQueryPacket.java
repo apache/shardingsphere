@@ -34,12 +34,12 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -91,8 +91,8 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
         return new DatabaseFailurePacket(1, errorResponse.getErrorCode(), errorResponse.getSqlState(), errorResponse.getErrorMessage());
     }
     
-    private DatabaseSuccessPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new DatabaseSuccessPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new PostgreSQLCommandCompletePacket();
     }
     
     private Collection<DataHeaderPacket> createDataHeaderPackets(final QueryResponse queryResponse) {

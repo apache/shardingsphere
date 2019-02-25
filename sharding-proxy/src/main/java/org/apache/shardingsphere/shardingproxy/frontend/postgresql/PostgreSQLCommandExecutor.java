@@ -29,7 +29,6 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabaseP
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
@@ -84,8 +83,8 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(responsePackets.get().getPackets().size());
             int columnIndex = 1;
             for (DatabasePacket each : responsePackets.get().getPackets()) {
-                if (each instanceof DatabaseSuccessPacket) {
-                    context.write(new PostgreSQLCommandCompletePacket());
+                if (each instanceof PostgreSQLCommandCompletePacket) {
+                    context.write(each);
                 } else if (each instanceof DatabaseFailurePacket) {
                     context.write(new PostgreSQLErrorResponsePacket());
                 } else if (each instanceof DataHeaderPacket) {
@@ -94,8 +93,8 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                     context.write(each);
                 }
             }
-            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
-                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket) && postgreSQLColumnDescriptions.size() > 0) {
+            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLCommandCompletePacket)
+                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket) && !postgreSQLColumnDescriptions.isEmpty()) {
                 if (!(commandPacket instanceof PostgreSQLComBindPacket && (((PostgreSQLComBindPacket) commandPacket).isBinaryRowData()))) {
                     context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
                 }

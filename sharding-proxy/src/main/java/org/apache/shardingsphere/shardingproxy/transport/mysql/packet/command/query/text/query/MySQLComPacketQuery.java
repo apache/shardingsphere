@@ -35,13 +35,13 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -109,8 +109,8 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         return new DatabaseFailurePacket(1, errorResponse.getErrorCode(), errorResponse.getSqlState(), errorResponse.getErrorMessage());
     }
     
-    private DatabaseSuccessPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new DatabaseSuccessPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
+    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
+        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
     }
     
     private Collection<DataHeaderPacket> createDataHeaderPackets(final QueryResponse queryResponse) {
