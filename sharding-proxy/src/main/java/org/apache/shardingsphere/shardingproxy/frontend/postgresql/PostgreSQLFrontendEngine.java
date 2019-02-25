@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
+import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
@@ -86,6 +86,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Override
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        CommandExecutorSelector.getExecutor(backendConnection.getTransactionType(), context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
+        ChannelThreadExecutorGroup.getInstance().get(context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
     }
 }
