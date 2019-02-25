@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing;
+package org.apache.shardingsphere.core.executor.sql.execute;
 
-import org.apache.shardingsphere.core.parsing.integrate.AllParsingIntegrateTests;
-import org.apache.shardingsphere.core.parsing.lexer.AllLexerTests;
-import org.apache.shardingsphere.core.parsing.parser.constant.AllConstantTests;
-import org.apache.shardingsphere.core.parsing.parser.context.AllContextTests;
-import org.apache.shardingsphere.core.parsing.parser.sql.AllSQLTests;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesTokenTest;
+import org.apache.shardingsphere.core.executor.sql.execute.result.AggregationDistinctQueryMetaDataTest;
+import org.apache.shardingsphere.core.executor.sql.execute.result.AggregationDistinctQueryResultTest;
+import org.apache.shardingsphere.core.executor.sql.execute.result.DistinctQueryResultTest;
+import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResultMetaDataTest;
+import org.apache.shardingsphere.core.executor.sql.execute.row.QueryRowTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllLexerTests.class, 
-        AllSQLTests.class, 
-        SQLJudgeEngineTest.class,
-        AllContextTests.class,
-        AllConstantTests.class,
-        InsertValuesTokenTest.class,
-        AllParsingIntegrateTests.class
+        QueryRowTest.class,
+        AggregationDistinctQueryMetaDataTest.class,
+        AggregationDistinctQueryResultTest.class,
+        DistinctQueryResultTest.class,
+        QueryResultMetaDataTest.class
 })
-public final class AllParsingTests {
+public final class AllExecuteTests {
 }

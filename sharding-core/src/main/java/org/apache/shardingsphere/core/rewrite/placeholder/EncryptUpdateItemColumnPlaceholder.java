@@ -46,7 +46,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         columnValue = null;
         this.assistedColumnName = null;
         assistedColumnValue = null;
-        placeholderIndex = -1;
+        placeholderIndex = 0;
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final Comparable<?> columnValue) {
@@ -55,7 +55,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         this.columnValue = columnValue;
         this.assistedColumnName = null;
         this.assistedColumnValue = null;
-        placeholderIndex = 0;
+        placeholderIndex = -1;
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final String assistedColumnName) {
@@ -64,7 +64,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         columnValue = null;
         this.assistedColumnName = assistedColumnName;
         assistedColumnValue = null;
-        placeholderIndex = -1;
+        placeholderIndex = 0;
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName,
@@ -74,15 +74,20 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         this.columnValue = columnValue;
         this.assistedColumnName = assistedColumnName;
         this.assistedColumnValue = assistedColumnValue;
-        placeholderIndex = 0;
+        placeholderIndex = -1;
     }
     
     @Override
+    @SuppressWarnings("all")
     public String toString() {
         if (Strings.isNullOrEmpty(assistedColumnName)) {
-            return -1 == placeholderIndex ? String.format("%s = ?", columnName) : String.format("%s = '%s'", columnName, columnValue);
+            return -1 != placeholderIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
         }
-        return -1 == placeholderIndex 
-                ? String.format("%s = ?, %s = ?", columnName, assistedColumnName) : String.format("%s = '%s', %s = '%s'", columnName, columnValue, assistedColumnName, assistedColumnValue);
+        return -1 != placeholderIndex 
+                ? String.format("%s = ?, %s = ?", columnName, assistedColumnName) : String.format("%s = %s, %s = %s", columnName, toStringForColumnValue(columnValue), assistedColumnName, toStringForColumnValue(assistedColumnValue));
+    }
+    
+    private String toStringForColumnValue(final Comparable<?> columnValue) {
+        return String.class == columnValue.getClass() ? String.format("'%s'", columnValue) : columnValue.toString();
     }
 }

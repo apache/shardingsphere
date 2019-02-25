@@ -92,12 +92,13 @@ public final class InsertValuesToken extends SQLToken {
          * @param columnValueIndex column value index
          * @param columnValue column value
          */
-        public void setColumnValue(final int columnValueIndex, final String columnValue) {
+        public void setColumnValue(final int columnValueIndex, final Object columnValue) {
             SQLExpression sqlExpression = values.get(columnValueIndex);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parameters.set(getParameterIndex(sqlExpression), columnValue);
             } else {
-                values.set(columnValueIndex, new SQLTextExpression(columnValue));
+                SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
+                values.set(columnValueIndex, columnExpression);
             }
         }
     
