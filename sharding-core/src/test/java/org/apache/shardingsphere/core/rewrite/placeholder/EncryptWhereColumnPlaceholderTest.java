@@ -58,4 +58,12 @@ public class EncryptWhereColumnPlaceholderTest {
         encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.BETWEEN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN 'a' AND 'b'"));
     }
+    
+    @Test
+    public void toStringWithPlaceholderWithBetween() {
+        Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
+        indexValues.put(0, "a");
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.singletonList(1), ShardingOperator.EQUAL);
+        assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN 'a' AND ?"));
+    }
 }
