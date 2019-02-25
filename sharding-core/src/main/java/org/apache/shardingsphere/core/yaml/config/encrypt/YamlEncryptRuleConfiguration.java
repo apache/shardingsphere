@@ -32,7 +32,7 @@ import java.util.Map;
 @Setter
 public final class YamlEncryptRuleConfiguration {
     
-    private Map<String, YamlTableEncryptRuleConfiguration> tables = new LinkedHashMap<>();
+    private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     
     private YamlEncryptorConfiguration defaultEncryptor;
 }
