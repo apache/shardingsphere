@@ -51,7 +51,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final Map<String, Integer> columnLableIndexMap;
+    private final Map<String, Integer> columnLabelIndexMap;
     
     private final Iterator<DatabaseMetaDataObject> databaseMetaDataObjectIterator;
     
@@ -64,7 +64,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         this.concurrency = resultSet.getConcurrency();
         this.shardingRule = shardingRule;
         this.resultSetMetaData = resultSet.getMetaData();
-        this.columnLableIndexMap = initIndexMap();
+        this.columnLabelIndexMap = initIndexMap();
         this.databaseMetaDataObjectIterator = initIterator(resultSet);
     }
     
@@ -78,16 +78,16 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
         ArrayList<DatabaseMetaDataObject> result = Lists.newArrayList();
-        int tableNameColumnIndex = columnLableIndexMap.containsKey(TABLE_NAME) ? columnLableIndexMap.get(TABLE_NAME) : -1;
+        int tableNameColumnIndex = columnLabelIndexMap.containsKey(TABLE_NAME) ? columnLabelIndexMap.get(TABLE_NAME) : -1;
         while (resultSet.next()) {
-            DatabaseMetaDataObject databaseMetaDataObject = new DatabaseMetaDataObject();
-            for (int i = 1; i <= columnLableIndexMap.size(); i++) {
+            DatabaseMetaDataObject databaseMetaDataObject = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
+            for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
                 if (tableNameColumnIndex == i) {
                     String tableName = resultSet.getString(i);
                     Collection<String> logicTableNames = shardingRule.getLogicTableNames(tableName);
-                    databaseMetaDataObject.setObject(i, 0 == logicTableNames.size() ? tableName : logicTableNames.iterator().next());
+                    databaseMetaDataObject.addObject(0 == logicTableNames.size() ? tableName : logicTableNames.iterator().next());
                 } else {
-                    databaseMetaDataObject.setObject(i, resultSet.getObject(i));
+                    databaseMetaDataObject.addObject(resultSet.getObject(i));
                 }
             }
             result.add(databaseMetaDataObject);
@@ -282,10 +282,10 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
-        if (columnLableIndexMap.containsKey(columnLabel)) {
+        if (columnLabelIndexMap.containsKey(columnLabel)) {
             throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
         }
-        return columnLableIndexMap.get(columnLabel);
+        return columnLabelIndexMap.get(columnLabel);
     }
     
     @Override
@@ -319,15 +319,19 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     @EqualsAndHashCode
     private final class DatabaseMetaDataObject {
-        
-        private final ArrayList<Object> objects = Lists.newArrayList();
-        
-        public void setObject(final int index, final Object object) {
-            objects.set(index, object);
+    
+        private final ArrayList<Object> objects;
+    
+        private DatabaseMetaDataObject(final int columnCount) {
+            this.objects = new ArrayList<>(columnCount);
+        }
+    
+        public void addObject(final Object object) {
+            objects.add(object);
         }
         
         public Object getObject(final int index) {
-            return objects.get(index);
+            return objects.get(index - 1);
         }
     }
 }

@@ -34,8 +34,6 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     
     private final ShardingRule shardingRule;
     
-    private ResultSet tablesResultSet;
-    
     public ResultSetReturnedDatabaseMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
         super(dataSourceMap, shardingRule);
         this.shardingRule = shardingRule;
@@ -43,10 +41,9 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     
     @Override
     public final ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
-        if (null == tablesResultSet) {
-            tablesResultSet = new DatabaseMetaDataResultSet(getConnection().getMetaData().getTables(catalog, schemaPattern, tableNamePattern, types), shardingRule);
-            getConnection().close();
-        }
-        return tablesResultSet;
+        String shardingTableNamePattern = null == tableNamePattern ? tableNamePattern : (shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern);
+        ResultSet result = new DatabaseMetaDataResultSet(getConnection().getMetaData().getTables(catalog, schemaPattern, shardingTableNamePattern, types), shardingRule);
+        getConnection().close();
+        return result;
     }
 }

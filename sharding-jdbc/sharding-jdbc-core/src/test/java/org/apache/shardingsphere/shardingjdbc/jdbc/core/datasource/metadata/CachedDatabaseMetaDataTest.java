@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,14 +28,17 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -833,7 +837,8 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetTables() throws SQLException {
         when(databaseMetaData.getTables("test", null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getTables("test", null, null, null), is(resultSet));
+        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
+        assertThat(cachedDatabaseMetaData.getTables("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

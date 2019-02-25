@@ -58,8 +58,8 @@ public final class ShardingContext implements AutoCloseable {
     private final ShardingMetaData metaData;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
-        this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.shardingRule = shardingRule;
+        this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.databaseType = databaseType;
         
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
