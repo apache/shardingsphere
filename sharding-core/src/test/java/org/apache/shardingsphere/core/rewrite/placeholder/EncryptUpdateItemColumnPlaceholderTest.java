@@ -46,7 +46,13 @@ public class EncryptUpdateItemColumnPlaceholderTest {
     
     @Test
     public void assertToStringWithoutPlaceholderWithAssistedColumn() {
-        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x", "a", "column_assist", "b");
-        assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = a, column_assist = b"));
+        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x", "a", "column_assist", 1);
+        assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = 'a', column_assist = 1"));
+        assertThat(encryptUpdateItemColumnPlaceholder.getLogicTableName(), is("table_x"));
+        assertThat(encryptUpdateItemColumnPlaceholder.getColumnName(), is("column_x"));
+        assertThat(encryptUpdateItemColumnPlaceholder.getAssistedColumnName(), is("column_assist"));
+        assertThat(encryptUpdateItemColumnPlaceholder.getColumnValue(), is((Comparable) "a"));
+        assertThat(encryptUpdateItemColumnPlaceholder.getAssistedColumnValue(), is((Comparable) 1));
+        assertThat(encryptUpdateItemColumnPlaceholder.getPlaceholderIndex(), is(-1));
     }
 }
