@@ -19,16 +19,19 @@ package org.apache.shardingsphere.core.yaml.config.encrypt;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfiguration;
+
+import javax.sql.DataSource;
 
 /**
- * Encrypt rule configuration for YAML.
+ * Yaml root encrypt rule configuration for YAML.
  *
  * @author panjuan
  */
 @Getter
 @Setter
-public class YamlRootEncryptRuleConfiguration extends YamlRootRuleConfiguration {
+public class YamlRootEncryptRuleConfiguration {
     
-    private YamlEncryptorConfiguration encryptor;
+    private DataSource dataSource;
+    
+    private YamlEncryptRuleConfiguration encryptRule;
 }
