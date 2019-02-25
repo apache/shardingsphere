@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
@@ -83,18 +82,14 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(responsePackets.get().getPackets().size());
             int columnIndex = 1;
             for (DatabasePacket each : responsePackets.get().getPackets()) {
-                if (each instanceof PostgreSQLCommandCompletePacket) {
-                    context.write(each);
-                } else if (each instanceof DatabaseFailurePacket) {
-                    context.write(new PostgreSQLErrorResponsePacket());
-                } else if (each instanceof DataHeaderPacket) {
+                if (each instanceof DataHeaderPacket) {
                     postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription((DataHeaderPacket) each, columnIndex++));
                 } else {
                     context.write(each);
                 }
             }
             if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLCommandCompletePacket)
-                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket) && !postgreSQLColumnDescriptions.isEmpty()) {
+                && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLErrorResponsePacket) && !postgreSQLColumnDescriptions.isEmpty()) {
                 if (!(commandPacket instanceof PostgreSQLComBindPacket && (((PostgreSQLComBindPacket) commandPacket).isBinaryRowData()))) {
                     context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
                 }
