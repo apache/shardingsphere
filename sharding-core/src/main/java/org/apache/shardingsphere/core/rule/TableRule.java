@@ -222,4 +222,16 @@ public final class TableRule {
         }
         return false;
     }
+    
+    /**
+     * Get all sharding columns.
+     * 
+     * @return all sharding columns
+     */
+    public Collection<String> getAllShardingColumns() {
+        Collection<String> result = new LinkedList<>();
+        result.addAll(databaseShardingStrategy.getShardingColumns());
+        result.addAll(tableShardingStrategy.getShardingColumns());
+        return result;
+    }
 }
