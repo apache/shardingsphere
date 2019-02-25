@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,11 +61,25 @@ public class EncryptWhereColumnPlaceholderTest {
     }
     
     @Test
-    public void toStringWithPlaceholderWithBetween() {
+    public void toStringWithFirstPlaceholderWithBetween() {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.singletonList(1), ShardingOperator.BETWEEN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN 'a' AND ?"));
+    }
+    
+    @Test
+    public void toStringWithSecondPlaceholderWithBetween() {
+        Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
+        indexValues.put(0, "a");
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.singletonList(0), ShardingOperator.BETWEEN);
+        assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN ? AND 'a'"));
+    }
+    
+    @Test
+    public void toStringWithTwoPlaceholderWithBetween() {
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Lists.newArrayList(0, 1), ShardingOperator.BETWEEN);
+        assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN ? AND ?"));
     }
     
     @Test
