@@ -19,11 +19,13 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,7 +40,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareCallback {
     
-    private static final Integer MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    private static final Integer MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
+    private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
     private final BackendConnection backendConnection;
     
@@ -55,7 +59,11 @@ public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareC
     public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
         Statement statement = jdbcExecutorWrapper.createStatement(connection, routeUnit.getSqlUnit(), isReturnGeneratedKeys);
         if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
-            statement.setFetchSize(MEMORY_FETCH_ONE_ROW_A_TIME);
+            if (DatabaseType.MySQL == GlobalRegistry.getInstance().getDatabaseType()) {
+                statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+            } else if (DatabaseType.PostgreSQL == GlobalRegistry.getInstance().getDatabaseType()) {
+                statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+            }
         }
         return new StatementExecuteUnit(routeUnit, statement, connectionMode);
     }
