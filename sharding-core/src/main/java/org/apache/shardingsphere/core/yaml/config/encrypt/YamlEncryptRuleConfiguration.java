@@ -32,4 +32,6 @@ import java.util.Map;
 public class YamlEncryptRuleConfiguration {
     
     private Map<String, YamlTableEncryptRuleConfiguration> tables;
+    
+    private YamlEncryptorConfiguration defaultEncryptor;
 }
