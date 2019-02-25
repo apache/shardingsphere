@@ -80,6 +80,11 @@ public final class SQLParserFactory {
             }
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
         }
+        if (MySQLKeyword.REPLACE == tokenType) {
+            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
+                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+            }
+        }
         if (TCLStatement.isTCL(tokenType)) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }

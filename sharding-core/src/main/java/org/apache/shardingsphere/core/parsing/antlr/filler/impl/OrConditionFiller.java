@@ -34,12 +34,12 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.OrCond
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
@@ -61,10 +61,10 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     /**
      * Build condition.
      *
-     * @param sqlSegment            SQL segment
-     * @param sqlStatement          SQL statement
-     * @param sql                   SQL
-     * @param shardingRule          databases and tables sharding rule
+     * @param sqlSegment SQL segment
+     * @param sqlStatement SQL statement
+     * @param sql SQL
+     * @param shardingRule databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      * @return or condition
      */
@@ -164,6 +164,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
         andCondition.getConditions().add(condition.getExpression().buildCondition(column, sql));
+        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getColumn().getStopIndex(), column, true));
     }
     
     private boolean isShardingCondition(final String operator) {
