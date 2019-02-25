@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.core.exception.ShardingException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -53,7 +54,7 @@ public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder 
             case IN:
                 return toStringFromIn();
             default:
-                return "";
+                throw new ShardingException("Sharding operator is incorrect.");
         }
     }
     
