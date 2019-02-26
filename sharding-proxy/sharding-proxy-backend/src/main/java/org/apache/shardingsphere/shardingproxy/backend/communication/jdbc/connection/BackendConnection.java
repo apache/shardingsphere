@@ -47,8 +47,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author zhaojun
  * @author zhangliang
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class BackendConnection implements AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
