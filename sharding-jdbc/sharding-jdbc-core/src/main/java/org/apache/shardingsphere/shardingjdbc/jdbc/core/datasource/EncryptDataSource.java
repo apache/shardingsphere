@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 
@@ -107,6 +108,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
 
     @Override
     @SneakyThrows
-    public final Connection getConnection() {
+    public final EncryptConnection getConnection() {
+        return new EncryptConnection(dataSource.getConnection(), encryptRule, cachedDatabaseMetaData, encryptTableMetaData);
     }
 }
