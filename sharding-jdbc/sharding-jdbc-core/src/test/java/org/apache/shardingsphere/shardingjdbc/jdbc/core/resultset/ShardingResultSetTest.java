@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.EncryptorEngine;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -84,9 +84,9 @@ public final class ShardingResultSetTest {
         ShardingContext shardingContext = mock(ShardingContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
-        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
-        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
-        when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
+        EncryptorEngine encryptorEngine = mock(EncryptorEngine.class);
+        when(encryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(shardingRule.getEncryptorEngine()).thenReturn(encryptorEngine);
         when(shardingContext.getShardingRule()).thenReturn(shardingRule);
         when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
         ShardingStatement statement = mock(ShardingStatement.class);

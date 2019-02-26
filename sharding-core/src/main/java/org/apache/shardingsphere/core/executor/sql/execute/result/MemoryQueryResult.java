@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.EncryptorEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -52,9 +52,9 @@ public final class MemoryQueryResult implements QueryResult {
     private final QueryResultMetaData metaData;
     
     @SneakyThrows 
-    public MemoryQueryResult(final ResultSet resultSet, final Map<String, Collection<String>> logicAndActualTables, final ShardingEncryptorEngine shardingEncryptorEngine) {
+    public MemoryQueryResult(final ResultSet resultSet, final Map<String, Collection<String>> logicAndActualTables, final EncryptorEngine encryptorEngine) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), logicAndActualTables, shardingEncryptorEngine);
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), logicAndActualTables, encryptorEngine);
     }
     
     @SneakyThrows

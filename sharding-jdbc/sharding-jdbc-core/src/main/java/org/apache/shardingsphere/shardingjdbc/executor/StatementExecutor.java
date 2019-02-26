@@ -103,8 +103,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         ResultSet resultSet = statement.executeQuery(routeUnit.getSqlUnit().getSql());
         ShardingRule shardingRule = getConnection().getShardingContext().getShardingRule();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine()) 
-                : new MemoryQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine());
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getEncryptorEngine()) 
+                : new MemoryQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getEncryptorEngine());
     }
     
     /**

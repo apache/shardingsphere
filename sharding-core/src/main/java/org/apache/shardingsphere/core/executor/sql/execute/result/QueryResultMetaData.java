@@ -23,7 +23,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.EncryptorEngine;
 import org.apache.shardingsphere.core.encrypt.EncryptorStrategy;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
@@ -48,19 +48,19 @@ public final class QueryResultMetaData {
     
     private final Map<String, Collection<String>> logicAndActualTables;
     
-    private final ShardingEncryptorEngine shardingEncryptorEngine;
+    private final EncryptorEngine encryptorEngine;
     
     @SneakyThrows 
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final Map<String, Collection<String>> logicAndActualTables, final ShardingEncryptorEngine shardingEncryptorEngine) {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final Map<String, Collection<String>> logicAndActualTables, final EncryptorEngine encryptorEngine) {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
         this.logicAndActualTables = logicAndActualTables;
-        this.shardingEncryptorEngine = shardingEncryptorEngine;
+        this.encryptorEngine = encryptorEngine;
     }
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        this(resultSetMetaData, Collections.<String, Collection<String>>emptyMap(), new ShardingEncryptorEngine(Collections.<String, EncryptorStrategy>emptyMap()));
+        this(resultSetMetaData, Collections.<String, Collection<String>>emptyMap(), new EncryptorEngine(Collections.<String, EncryptorStrategy>emptyMap()));
     }
     
     @SneakyThrows
@@ -148,9 +148,9 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
-        if (null == shardingEncryptorEngine) {
+        if (null == encryptorEngine) {
             return Optional.absent();
         }
-        return shardingEncryptorEngine.getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
+        return encryptorEngine.getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
     }
 }

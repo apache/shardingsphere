@@ -114,7 +114,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             ShardingRule shardingRule = connection.getShardingContext().getShardingRule();
-            queryResults.add(new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine()));
+            queryResults.add(new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getEncryptorEngine()));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(),
