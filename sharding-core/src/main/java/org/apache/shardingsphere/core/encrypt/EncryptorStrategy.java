@@ -49,7 +49,7 @@ public final class EncryptorStrategy {
         checkEncryptorConfiguration(columns, assistedQueryColumns);
         this.columns = columns;
         this.assistedQueryColumns = assistedQueryColumns;
-        this.shardingEncryptor = ShardingEncryptorFactory.getInstance().newAlgorithm(encryptorConfiguration.getType(), encryptorConfiguration.getProperties());
+        this.shardingEncryptor = EncryptorFactory.getInstance().newAlgorithm(encryptorConfiguration.getType(), encryptorConfiguration.getProperties());
     }
     
     private void checkEncryptorConfiguration(final List<String> columns, final List<String> assistedQueryColumns) {
