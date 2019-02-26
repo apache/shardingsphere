@@ -59,12 +59,11 @@ public final class YamlEncryptDataSourceFactory {
      *
      * @param yamlBytes YAML bytes for encrypt rule configuration with data sources
      * @return encrypt data source
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
-        YamlRootMasterSlaveConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootMasterSlaveConfiguration.class);
-        return MasterSlaveDataSourceFactory.createDataSource(config.getDataSources(), new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), config.getProps());
+    @SneakyThrows
+    public static DataSource createDataSource(final byte[] yamlBytes) {
+        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfiguration.class);
+        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
     }
     
     /**
