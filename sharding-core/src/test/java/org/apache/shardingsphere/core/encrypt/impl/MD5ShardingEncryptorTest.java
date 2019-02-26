@@ -24,9 +24,9 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MD5EncryptorTest {
+public final class MD5ShardingEncryptorTest {
     
-    private final MD5Encryptor encryptor = new MD5Encryptor();
+    private final MD5ShardingEncryptor encryptor = new MD5ShardingEncryptor();
     
     @Test
     public void assertGetType() {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.encrypt;
 
 import org.apache.shardingsphere.core.encrypt.impl.AESEncryptorTest;
-import org.apache.shardingsphere.core.encrypt.impl.MD5EncryptorTest;
+import org.apache.shardingsphere.core.encrypt.impl.MD5ShardingEncryptorTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,7 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
         EncryptorStrategyTest.class, 
         EncryptorFactoryTest.class, 
         AESEncryptorTest.class, 
-        MD5EncryptorTest.class
+        MD5ShardingEncryptorTest.class
 })
 public final class AllEncryptorTests {
 }
