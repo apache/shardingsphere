@@ -21,8 +21,7 @@ import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public final class DataNodeTest {
     
@@ -50,7 +49,11 @@ public final class DataNodeTest {
     
     @Test
     public void assertEquals() {
-        assertTrue(new DataNode("ds_0.tbl_0").equals(new DataNode("ds_0.tbl_0")));
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        assertTrue(dataNode.equals(new DataNode("ds_0.tbl_0")));
+        assertTrue(dataNode.equals(dataNode));
+        assertFalse(dataNode.equals(new DataNode("ds_0.tbl_1")));
+        assertFalse(dataNode.equals(null));
     }
     
     @Test
