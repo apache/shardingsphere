@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
@@ -40,4 +41,10 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     private final DatabaseMetaData cachedDatabaseMetaData;
     
     private final ShardingTableMetaData encryptTableMetaData;
+    
+    @Override
+    @SneakyThrows
+    public boolean getAutoCommit() {
+        return connection.getAutoCommit();
+    }
 }
