@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.io.InputStream;
@@ -36,6 +36,8 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Query result for stream loading.
@@ -50,9 +52,9 @@ public final class StreamQueryResult implements QueryResult {
     private final ResultSet resultSet;
     
     @SneakyThrows
-    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
+    public StreamQueryResult(final ResultSet resultSet, final Map<String, Collection<String>> logicAndActualTables, final ShardingEncryptorEngine shardingEncryptorEngine) {
         this.resultSet = resultSet;
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), logicAndActualTables, shardingEncryptorEngine);
     }
     
     @SneakyThrows
