@@ -18,15 +18,22 @@
 package org.apache.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -40,18 +47,21 @@ public final class QueryResultMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final ShardingRule shardingRule;
+    private final Map<String, Collection<String>> logicAndActualTables;
+    
+    private final ShardingEncryptorEngine shardingEncryptorEngine;
     
     @SneakyThrows 
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final Map<String, Collection<String>> logicAndActualTables, final ShardingEncryptorEngine shardingEncryptorEngine) {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
-        this.shardingRule = shardingRule;
+        this.logicAndActualTables = logicAndActualTables;
+        this.shardingEncryptorEngine = shardingEncryptorEngine;
     }
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        this(resultSetMetaData, null);
+        this(resultSetMetaData, Collections.<String, Collection<String>>emptyMap(), new ShardingEncryptorEngine(Collections.<String, ShardingEncryptorStrategy>emptyMap()));
     }
     
     @SneakyThrows
@@ -71,11 +81,18 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     private String getTableName(final int columnIndex) {
-        String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        if (null == shardingRule) {
+        final String actualTableName = resultSetMetaData.getTableName(columnIndex);
+        if (logicAndActualTables.isEmpty()) {
             return actualTableName;
         }
-        return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
+        Collection<String> logicTableNames = Maps.filterEntries(logicAndActualTables, new Predicate<Entry<String, Collection<String>>>() {
+            
+            @Override
+            public boolean apply(final Entry<String, Collection<String>> input) {
+                return input.getValue().contains(actualTableName);
+            }
+        }).keySet();
+        return logicTableNames.isEmpty() ? actualTableName : logicTableNames.iterator().next();
     }
     
     /**
