@@ -21,11 +21,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
 
 /**
@@ -40,9 +43,13 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     
     private final EncryptRule encryptRule;
     
-    private final DatabaseMetaData cachedDatabaseMetaData;
-    
     private final ShardingTableMetaData encryptTableMetaData;
+    
+    @Override
+    @SneakyThrows
+    public DatabaseMetaData getMetaData() {
+        return connection.getMetaData();
+    }
     
     @Override
     @SneakyThrows
