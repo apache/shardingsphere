@@ -159,7 +159,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         InsertColumnValue insertColumnValue = insertValuesToken.getColumnValues().get(insertColumnValueIndex);
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             String columnName = insertValuesToken.getColumnName(columnIndex);
-            String assistedColumnName = shardingRule.getTableRule(insertStatement.getTables().getSingleTableName()).getEncryptorStrategy().getAssistedQueryColumn(columnName).get();
+            String assistedColumnName = shardingRule.getTableRule(insertStatement.getTables().getSingleTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(columnName).get();
             insertValuesToken.getColumnNames().add(assistedColumnName);
             fillInsertValuesTokenWithColumnValue(insertColumnValue, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(insertColumnValue.getColumnValue(columnIndex).toString()));
         }

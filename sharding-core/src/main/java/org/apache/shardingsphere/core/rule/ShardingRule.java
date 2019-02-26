@@ -30,7 +30,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.core.encrypt.EncryptorStrategy;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
@@ -144,10 +144,10 @@ public class ShardingRule {
         return result;
     }
     
-    private Map<String, EncryptorStrategy> getShardingEncryptorStrategies() {
-        Map<String, EncryptorStrategy> result = new LinkedHashMap<>();
+    private Map<String, ShardingEncryptorStrategy> getShardingEncryptorStrategies() {
+        Map<String, ShardingEncryptorStrategy> result = new LinkedHashMap<>();
         for (TableRule each : tableRules) {
-            result.put(each.getLogicTable(), each.getEncryptorStrategy());
+            result.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
         }
         return result;
     }

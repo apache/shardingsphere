@@ -24,7 +24,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.core.encrypt.EncryptorStrategy;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
@@ -60,7 +60,7 @@ public final class QueryResultMetaData {
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        this(resultSetMetaData, Collections.<String, Collection<String>>emptyMap(), new ShardingEncryptorEngine(Collections.<String, EncryptorStrategy>emptyMap()));
+        this(resultSetMetaData, Collections.<String, Collection<String>>emptyMap(), new ShardingEncryptorEngine(Collections.<String, ShardingEncryptorStrategy>emptyMap()));
     }
     
     @SneakyThrows
