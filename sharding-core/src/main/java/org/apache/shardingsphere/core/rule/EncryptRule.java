@@ -19,10 +19,13 @@ package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Encrypt rule.
@@ -35,11 +38,17 @@ public final class EncryptRule {
 
     private final ShardingEncryptorStrategy defaultEncryptorStrategy;
     
+    private final ShardingEncryptorEngine encryptorEngine;
+    
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
         tableRules = new LinkedList<>();
+        Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
         for (EncryptTableRuleConfiguration each : encryptRuleConfiguration.getTableRuleConfigs()) {
-            tableRules.add(new EncryptTableRule(each));
+            EncryptTableRule tableRule = new EncryptTableRule(each);
+            tableRules.add(tableRule);
+            shardingEncryptorStrategies.put(tableRule.getTable(), tableRule.getShardingEncryptorStrategy());
         }
         defaultEncryptorStrategy = new ShardingEncryptorStrategy(encryptRuleConfiguration.getDefaultEncryptorConfig());
+        encryptorEngine = new ShardingEncryptorEngine(shardingEncryptorStrategies, defaultEncryptorStrategy);
     }
 }
