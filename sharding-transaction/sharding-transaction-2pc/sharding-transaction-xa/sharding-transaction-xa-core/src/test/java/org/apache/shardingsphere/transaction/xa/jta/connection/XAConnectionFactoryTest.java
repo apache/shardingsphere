@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.postgresql.xa.PGXAConnection;
 
 import javax.sql.XADataSource;
 import java.sql.Connection;
@@ -48,5 +49,15 @@ public final class XAConnectionFactoryTest {
     @Test
     public void assertCreateH2XAConnection() {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseType.H2, xaDataSource, connection), instanceOf(JdbcXAConnection.class));
+    }
+
+    @Test
+    public void assertCreatePostgreSQLXAConnection() {
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseType.PostgreSQL, xaDataSource, connection), instanceOf(PGXAConnection.class));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertCreateUnknownXAConnectionThrowsUnsupportedOperationException() {
+        XAConnectionFactory.createXAConnection(DatabaseType.Oracle, xaDataSource, connection);
     }
 }
