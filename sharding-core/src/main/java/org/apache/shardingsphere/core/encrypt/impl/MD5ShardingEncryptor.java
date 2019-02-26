@@ -31,7 +31,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class MD5Encryptor implements ShardingEncryptor {
+public final class MD5ShardingEncryptor implements ShardingEncryptor {
     
     private Properties properties = new Properties();
     
