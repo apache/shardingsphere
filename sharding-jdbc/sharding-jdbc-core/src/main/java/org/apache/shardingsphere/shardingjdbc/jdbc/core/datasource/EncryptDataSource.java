@@ -69,6 +69,39 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
             return new CachedDatabaseMetaData(connection.getMetaData());
         }
     }
+    
+    @SneakyThrows
+    private ShardingTableMetaData createEncryptTableMetaData() {
+        Map<String, TableMetaData> tables = new LinkedHashMap<>();
+        for (String each : encryptRule.getEncryptTableNames()) {
+            try (Connection connection = dataSource.getConnection()) {
+                tables.put(each, new TableMetaData(getColumnMetaDataList(connection, )))
+            }
+        }
+    }
+    
+    private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String tableName) throws SQLException {
+        List<ColumnMetaData> result = new LinkedList<>();
+        Collection<String> primaryKeys = getPrimaryKeys(connection, tableName);
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, tableName, "%")) {
+            while (resultSet.next()) {
+                String columnName = resultSet.getString("COLUMN_NAME");
+                String columnType = resultSet.getString("TYPE_NAME");
+                result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getPrimaryKeys(final Connection connection, final String tableName) throws SQLException {
+        Collection<String> result = new HashSet<>();
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(catalog, null, tableName)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString("COLUMN_NAME"));
+            }
+        }
+        return result;
+    }
 
     @Override
     @SneakyThrows
