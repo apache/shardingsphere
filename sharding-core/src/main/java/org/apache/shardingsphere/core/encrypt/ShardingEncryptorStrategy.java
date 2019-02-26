@@ -42,13 +42,6 @@ public final class ShardingEncryptorStrategy {
     
     private final ShardingEncryptor shardingEncryptor;
     
-    public ShardingEncryptorStrategy(final List<String> columns, final List<String> assistedQueryColumns, final ShardingEncryptor shardingEncryptor) {
-        checkEncryptorConfiguration(columns, assistedQueryColumns);
-        this.columns = columns;
-        this.assistedQueryColumns = assistedQueryColumns;
-        this.shardingEncryptor = shardingEncryptor;
-    }
-    
     public ShardingEncryptorStrategy(final EncryptorConfiguration encryptorConfiguration) {
         List<String> columns = Splitter.on(",").trimResults().splitToList(encryptorConfiguration.getColumns());
         List<String> assistedQueryColumns = Strings.isNullOrEmpty(encryptorConfiguration.getAssistedQueryColumns())
