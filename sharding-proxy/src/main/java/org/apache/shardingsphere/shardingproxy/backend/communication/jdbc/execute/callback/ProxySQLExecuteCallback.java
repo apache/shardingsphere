@@ -25,11 +25,11 @@ import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteQueryResponseUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
@@ -47,7 +47,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponseUnit> {
+public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponse> {
     
     private final BackendConnection backendConnection;
     
@@ -69,7 +69,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     }
     
     @Override
-    public ExecuteResponseUnit executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+    public ExecuteResponse executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         boolean withMetaData = false;
         if (fetchMetaData && !hasMetaData) {
             hasMetaData = true;
@@ -78,14 +78,14 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         return executeSQL(statement, routeUnit.getSqlUnit().getSql(), connectionMode, withMetaData);
     }
     
-    private ExecuteResponseUnit executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
+    private ExecuteResponse executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
         backendConnection.add(statement);
         if (jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
-            return new ExecuteQueryResponseUnit(withMetadata ? getQueryHeaders(resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
+            return new ExecuteQueryResponse(withMetadata ? getQueryHeaders(resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
         }
-        return new ExecuteUpdateResponseUnit(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
+        return new ExecuteUpdateResponse(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
     
     private List<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {

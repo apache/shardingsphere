@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
@@ -43,7 +43,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     @Override
     public BackendResponse execute() {
         mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
-        return new QueryHeaderResponse(Collections.singletonList(new QueryHeader("", "", "", "Database", 100, Types.VARCHAR, 0)));
+        return new QueryResponse(Collections.singletonList(new QueryHeader("", "", "", "Database", 100, Types.VARCHAR, 0)));
     }
     
     @Override

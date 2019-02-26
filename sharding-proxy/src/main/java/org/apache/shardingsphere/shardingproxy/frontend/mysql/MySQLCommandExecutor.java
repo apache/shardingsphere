@@ -29,8 +29,6 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabaseP
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
@@ -80,11 +78,7 @@ public final class MySQLCommandExecutor implements Runnable {
                 context.write(new MySQLFieldCountPacket(1, ((QueryResponsePackets) responsePackets.get()).getDataHeaderPackets().size()));
             }
             for (DatabasePacket each : responsePackets.get().getPackets()) {
-                if (each instanceof DatabaseSuccessPacket) {
-                    context.write(new MySQLOKPacket((DatabaseSuccessPacket) each));
-                } else if (each instanceof DatabaseFailurePacket) {
-                    context.write(new MySQLErrPacket((DatabaseFailurePacket) each));
-                } else if (each instanceof DataHeaderPacket) {
+                if (each instanceof DataHeaderPacket) {
                     context.write(new MySQLColumnDefinition41Packet((DataHeaderPacket) each));
                 } else {
                     context.write(each);
@@ -93,8 +87,8 @@ public final class MySQLCommandExecutor implements Runnable {
             if (responsePackets.get() instanceof QueryResponsePackets) {
                 context.write(new MySQLEofPacket(((QueryResponsePackets) responsePackets.get()).getSequenceId()));
             }
-            if (mysqlCommandPacket instanceof MySQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
-                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket)) {
+            if (mysqlCommandPacket instanceof MySQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof MySQLOKPacket)
+                && !(responsePackets.get().getHeadPacket() instanceof MySQLErrPacket)) {
                 writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
             }
             connectionSize = backendConnection.getConnectionSize();

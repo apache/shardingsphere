@@ -32,15 +32,12 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeaderResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -71,7 +68,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private final DatabaseType databaseType = GlobalRegistry.getInstance().getDatabaseType();
     
-    private ExecuteResponse executeResponse;
+    private BackendResponse response;
     
     private MergedResult mergedResult;
     
@@ -81,20 +78,20 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql, databaseType);
             return execute(routeResult);
         } catch (final SQLException ex) {
-            return new FailureResponse(ex);
+            return new ErrorResponse(ex);
         }
     }
     
     private BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new SuccessResponse();
+            return new UpdateResponse();
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
-            return new FailureResponse(
+            return new ErrorResponse(
                     MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table");
         }
-        executeResponse = executeEngine.execute(routeResult);
+        response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
             logicSchema.refreshTableMetaData(routeResult.getSqlStatement());
         }
@@ -112,15 +109,18 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {
-        if (executeResponse instanceof ExecuteUpdateResponse) {
-            return ((ExecuteUpdateResponse) executeResponse).getBackendResponse(!isAllBroadcastTables(sqlStatement));
+        if (response instanceof UpdateResponse) {
+            if (!isAllBroadcastTables(sqlStatement)) {
+                ((UpdateResponse) response).mergeUpdateCount();
+            }
+            return response;
         }
         mergedResult = MergeEngineFactory.newInstance(
-            databaseType, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
+            databaseType, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }
-        return getQueryHeaderResponseWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryHeaders());
+        return getQueryHeaderResponseWithoutDerivedColumns(((QueryResponse) response).getQueryHeaders());
     }
     
     private boolean isAllBroadcastTables(final SQLStatement sqlStatement) {
@@ -131,7 +131,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
     }
     
-    private QueryHeaderResponse getQueryHeaderResponseWithoutDerivedColumns(final List<QueryHeader> queryHeaders) {
+    private QueryResponse getQueryHeaderResponseWithoutDerivedColumns(final List<QueryHeader> queryHeaders) {
         List<QueryHeader> derivedColumnQueryHeaders = new LinkedList<>();
         for (QueryHeader each : queryHeaders) {
             if (DerivedColumn.isDerivedColumn(each.getColumnLabel())) {
@@ -139,7 +139,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
         }
         queryHeaders.removeAll(derivedColumnQueryHeaders);
-        return new QueryHeaderResponse(queryHeaders);
+        return new QueryResponse(queryHeaders);
     }
     
     @Override
@@ -149,7 +149,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     @Override
     public QueryData getQueryData() throws SQLException {
-        List<QueryHeader> queryHeaders = ((ExecuteQueryResponse) executeResponse).getQueryHeaders();
+        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             row.add(mergedResult.getValue(columnIndex, Object.class));

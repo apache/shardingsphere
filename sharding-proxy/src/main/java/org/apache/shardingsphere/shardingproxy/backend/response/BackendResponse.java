@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit;
+package org.apache.shardingsphere.shardingproxy.backend.response;
 
 /**
- * Execute response unit.
- * 
+ * Backend response.
+ *
  * @author zhangliang
  */
-public interface ExecuteResponseUnit {
+public interface BackendResponse {
 }

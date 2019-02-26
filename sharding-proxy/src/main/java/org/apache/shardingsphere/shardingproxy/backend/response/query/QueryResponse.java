@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit;
+package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Execute update response unit.
- * 
+ * Query response.
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
+public final class QueryResponse implements BackendResponse {
     
-    private final int updateCount;
+    private final List<QueryHeader> queryHeaders;
     
-    private final long lastInsertId;
+    private final List<QueryResult> queryResults = new LinkedList<>();
 }

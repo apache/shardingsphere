@@ -17,34 +17,21 @@
 
 package org.apache.shardingsphere.core.parsing.cache;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.map.AbstractReferenceMap;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-import java.lang.ref.SoftReference;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Parsing result cache.
  *
  * @author zhangliang
+ * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.NONE)
 public final class ParsingResultCache {
     
-    private static final ParsingResultCache INSTANCE = new ParsingResultCache();
-    
-    private final Map<String, SoftReference<SQLStatement>> cache = new HashMap<>(65535, 1);
-    
-    /**
-     * Get parsing result cache instance.
-     * 
-     * @return parsing result cache instance
-     */
-    public static ParsingResultCache getInstance() {
-        return INSTANCE;
-    }
+    private final Map<String, SQLStatement> cache = new ReferenceMap<>(AbstractReferenceMap.ReferenceStrength.SOFT, AbstractReferenceMap.ReferenceStrength.SOFT, 65535, 1);
     
     /**
      * Put SQL and parsing result into cache.
@@ -53,7 +40,7 @@ public final class ParsingResultCache {
      * @param sqlStatement SQL statement
      */
     public void put(final String sql, final SQLStatement sqlStatement) {
-        cache.put(sql, new SoftReference<>(sqlStatement));
+        cache.put(sql, sqlStatement);
     }
     
     /**
@@ -63,8 +50,7 @@ public final class ParsingResultCache {
      * @return SQL statement
      */
     public SQLStatement getSQLStatement(final String sql) {
-        SoftReference<SQLStatement> result = cache.get(sql);
-        return null == result ? null : result.get();
+        return cache.get(sql);
     }
     
     /**

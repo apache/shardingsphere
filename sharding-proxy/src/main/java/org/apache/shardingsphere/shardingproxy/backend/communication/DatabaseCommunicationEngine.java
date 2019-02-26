@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication;
 
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 
 import java.sql.SQLException;
 

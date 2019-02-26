@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.result.common;
+package org.apache.shardingsphere.shardingproxy.backend.response.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
+
+import java.sql.SQLException;
 
 /**
- * Success response.
- *
+ * Error response.
+ * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SuccessResponse implements BackendResponse {
+public final class ErrorResponse implements BackendResponse {
     
-    private final long affectedRows;
+    private final int errorCode;
     
-    private final long lastInsertId;
+    private final String sqlState;
     
-    public SuccessResponse() {
-        this(0L, 0L);
+    private final String errorMessage;
+    
+    public ErrorResponse(final MySQLServerErrorCode errorCode, final Object... errorMessageArguments) {
+        this(errorCode.getErrorCode(), errorCode.getSqlState(), String.format(errorCode.getErrorMessage(), errorMessageArguments));
+    }
+    
+    public ErrorResponse(final SQLException cause) {
+        this(cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
 }

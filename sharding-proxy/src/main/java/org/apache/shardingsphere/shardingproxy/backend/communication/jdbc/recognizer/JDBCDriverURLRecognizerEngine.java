@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCURLRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +29,12 @@ import java.util.Map.Entry;
 import java.util.ServiceLoader;
 
 /**
- * JDBC URL recognizer engine.
+ * JDBC driver URL recognizer engine.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCURLRecognizerEngine {
+public final class JDBCDriverURLRecognizerEngine {
     
     private static final Map<String, String> URL_PREFIX_AND_DRIVER_CLASS_NAME_MAPPER = new HashMap<>();
     
@@ -43,7 +43,7 @@ public final class JDBCURLRecognizerEngine {
     }
     
     private static void load() {
-        for (JDBCURLRecognizer each : ServiceLoader.load(JDBCURLRecognizer.class)) {
+        for (JDBCDriverURLRecognizer each : ServiceLoader.load(JDBCDriverURLRecognizer.class)) {
             for (String prefix : each.getURLPrefixes()) {
                 URL_PREFIX_AND_DRIVER_CLASS_NAME_MAPPER.put(prefix, each.getDriverClassName());
             }
@@ -62,7 +62,7 @@ public final class JDBCURLRecognizerEngine {
                 return entry.getValue();
             }
         }
-        throw new ShardingException("Cannot resolve JDBC url `%s`. Please implements `%s` and add to SPI.", url, JDBCURLRecognizer.class.getName());
+        throw new ShardingException("Cannot resolve JDBC url `%s`. Please implements `%s` and add to SPI.", url, JDBCDriverURLRecognizer.class.getName());
     }
     
     /**

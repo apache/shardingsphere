@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCURLRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +27,7 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
-public final class PostgreSQLRecognizer implements JDBCURLRecognizer {
+public final class PostgreSQLRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
     public Collection<String> getURLPrefixes() {

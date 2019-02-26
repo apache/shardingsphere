@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public final class UseDatabaseBackendHandlerTest {
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         BackendResponse actual = useSchemaBackendHandler.execute();
         verify(backendConnection).setCurrentSchema(anyString());
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
     }
     
     @Test
@@ -64,7 +64,7 @@ public final class UseDatabaseBackendHandlerTest {
         when(useStatement.getSchema()).thenReturn("not_exist");
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         BackendResponse actual = useSchemaBackendHandler.execute();
-        assertThat(actual, instanceOf(FailureResponse.class));
+        assertThat(actual, instanceOf(ErrorResponse.class));
         verify(backendConnection, times(0)).setCurrentSchema(anyString());
     }
 }

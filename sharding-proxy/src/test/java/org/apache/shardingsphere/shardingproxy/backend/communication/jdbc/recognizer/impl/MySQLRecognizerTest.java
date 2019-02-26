@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCURLRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public final class MySQLRecognizerTest {
     
-    private final JDBCURLRecognizer recognizer = new MySQLRecognizer();
+    private final JDBCDriverURLRecognizer recognizer = new MySQLRecognizer();
     
     @Test
     public void assertGetURLPrefixes() {

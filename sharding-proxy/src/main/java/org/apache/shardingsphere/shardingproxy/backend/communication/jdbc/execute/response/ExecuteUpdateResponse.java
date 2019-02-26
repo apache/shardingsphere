@@ -17,56 +17,19 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Execute update response.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
+@Getter
 public final class ExecuteUpdateResponse implements ExecuteResponse {
     
-    private final List<Integer> updateCounts = new LinkedList<>();
+    private final int updateCount;
     
-    private final List<Long> lastInsertIds = new LinkedList<>();
-    
-    public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
-        for (ExecuteResponseUnit each : responseUnits) {
-            updateCounts.add(((ExecuteUpdateResponseUnit) each).getUpdateCount());
-            lastInsertIds.add(((ExecuteUpdateResponseUnit) each).getLastInsertId());
-        }
-    }
-    
-    /**
-     * Get backend response.
-     * 
-     * @param isMerge is need merge
-     * @return backend response
-     */
-    public BackendResponse getBackendResponse(final boolean isMerge) {
-        return isMerge ? new SuccessResponse(mergeUpdateCount(), mergeLastInsertId()) : new SuccessResponse(updateCounts.get(0), lastInsertIds.get(0));
-    }
-    
-    private int mergeUpdateCount() {
-        int result = 0;
-        for (int each : updateCounts) {
-            result += each;
-        }
-        return result;
-    }
-    
-    private long mergeLastInsertId() {
-        long result = 0;
-        for (long each : lastInsertIds) {
-            result = Math.max(result, each);
-        }
-        return result;
-    }
+    private final long lastInsertId;
 }
