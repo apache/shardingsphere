@@ -29,7 +29,7 @@ import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.encrypt.EncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.encrypt.EncryptorStrategy;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
@@ -77,7 +77,7 @@ public class ShardingRule {
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
-    private final EncryptorEngine encryptorEngine;
+    private final ShardingEncryptorEngine shardingEncryptorEngine;
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
@@ -90,7 +90,7 @@ public class ShardingRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        encryptorEngine = new EncryptorEngine(getShardingEncryptorStrategies());
+        shardingEncryptorEngine = new ShardingEncryptorEngine(getShardingEncryptorStrategies());
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {

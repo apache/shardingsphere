@@ -23,7 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.encrypt.EncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -84,9 +84,9 @@ public abstract class AbstractBaseExecutorTest {
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
         ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
         when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
-        EncryptorEngine encryptorEngine = mock(EncryptorEngine.class);
-        when(encryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
-        when(shardingRule.getEncryptorEngine()).thenReturn(encryptorEngine);
+        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
+        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
         return shardingRule;
     }
     

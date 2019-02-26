@@ -102,8 +102,8 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
             return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
         }
         ShardingRule shardingRule = ((ShardingSchema) logicSchema).getShardingRule();
-        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getEncryptorEngine()) 
-                : new MemoryQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getEncryptorEngine());
+        return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine()) 
+                : new MemoryQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine());
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {

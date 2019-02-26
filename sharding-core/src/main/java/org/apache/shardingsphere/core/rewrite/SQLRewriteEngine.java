@@ -346,7 +346,7 @@ public final class SQLRewriteEngine {
     }
     
     private ShardingEncryptor getShardingEncryptor(final EncryptColumnToken encryptColumnToken) {
-        return shardingRule.getEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
     }
     
     private List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {

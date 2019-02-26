@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.encrypt.EncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.junit.Before;
@@ -47,15 +47,15 @@ public class QueryResultMetaDataTest {
     public void setUp() {
         ResultSetMetaData resultSetMetaData = getResultMetaData();
         ShardingRule shardingRule = getShardingRule();
-        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule.getAllActualTableNames(), shardingRule.getEncryptorEngine());
+        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine());
     }
     
     private ShardingRule getShardingRule() {
         shardingEncryptor = mock(ShardingEncryptor.class);
-        EncryptorEngine encryptorEngine = mock(EncryptorEngine.class);
-        when(encryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
+        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
         ShardingRule result = mock(ShardingRule.class);
-        when(result.getEncryptorEngine()).thenReturn(encryptorEngine);
+        when(result.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
         when(result.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
         return result;
     }
