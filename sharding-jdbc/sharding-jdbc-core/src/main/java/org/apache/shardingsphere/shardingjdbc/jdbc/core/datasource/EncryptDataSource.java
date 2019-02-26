@@ -24,6 +24,7 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -75,9 +76,10 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         Map<String, TableMetaData> tables = new LinkedHashMap<>();
         for (String each : encryptRule.getEncryptTableNames()) {
             try (Connection connection = dataSource.getConnection()) {
-                tables.put(each, new TableMetaData(getColumnMetaDataList(connection, )))
+                tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each)));
             }
         }
+        return new ShardingTableMetaData(tables);
     }
     
     private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String tableName) throws SQLException {
