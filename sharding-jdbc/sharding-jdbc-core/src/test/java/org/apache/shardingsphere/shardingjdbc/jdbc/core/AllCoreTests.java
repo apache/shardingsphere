@@ -21,6 +21,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConne
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSourceTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSourceTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaDataTest;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSetTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSetTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ResultSetUtilTest;
@@ -40,9 +41,10 @@ import org.junit.runners.Suite.SuiteClasses;
         ShardingStatementTest.class, 
         ShardingPreparedStatementTest.class, 
         ShardingResultSetTest.class,
-        ResultSetUtilTest.class, 
+        ResultSetUtilTest.class,
         GeneratedKeysResultSetTest.class, 
-        GeneratedKeysResultSetMetaDataTest.class 
+        GeneratedKeysResultSetMetaDataTest.class,
+        DatabaseMetaDataResultSetTest.class
     })
 public final class AllCoreTests {
 }

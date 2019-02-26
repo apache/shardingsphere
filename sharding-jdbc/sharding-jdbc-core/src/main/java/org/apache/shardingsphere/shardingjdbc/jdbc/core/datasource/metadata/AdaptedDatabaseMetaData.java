@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import javax.sql.DataSource;
+import java.util.Map;
+
 /**
- * Cached database meta data adapter.
+ * Adapted database meta data.
  *
  * @author zhangliang
  */
-public abstract class CachedDatabaseMetaDataAdapter extends UnsupportedOperationCachedMetaData {
+public abstract class AdaptedDatabaseMetaData extends ResultSetReturnedDatabaseMetaData {
+    
+    public AdaptedDatabaseMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+        super(dataSourceMap, shardingRule);
+    }
     
     @Override
     public final boolean ownInsertsAreVisible(final int type) {
