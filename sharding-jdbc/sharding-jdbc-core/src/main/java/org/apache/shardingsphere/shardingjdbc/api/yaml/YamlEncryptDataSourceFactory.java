@@ -27,8 +27,6 @@ import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 
 /**
  * Encrypt data source factory for YAML.
