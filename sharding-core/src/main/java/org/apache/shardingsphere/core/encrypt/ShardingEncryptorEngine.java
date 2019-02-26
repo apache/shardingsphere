@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.core.encrypt;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Sharding encryptor engine.
@@ -34,13 +33,24 @@ public final class ShardingEncryptorEngine {
     
     private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
     
-    public ShardingEncryptorEngine(final Collection<TableRule> tableRules) {
-        for (TableRule each : tableRules) {
-            if (null != each.getShardingEncryptorStrategy()) {
-                shardingEncryptorStrategies.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
+    public ShardingEncryptorEngine(final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies) {
+        for (Entry<String, ShardingEncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
+            if (null != entry.getValue()) {
+                this.shardingEncryptorStrategies.put(entry.getKey(), entry.getValue());
             }
         }
     }
+    
+    public ShardingEncryptorEngine(final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies, final ShardingEncryptorStrategy defaultEncryptorStrategy) {
+        for (Entry<String, ShardingEncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
+            if (null != entry.getValue()) {
+                this.shardingEncryptorStrategies.put(entry.getKey(), entry.getValue());
+            } else {
+                this.shardingEncryptorStrategies.put(entry.getKey(), defaultEncryptorStrategy);
+            }
+        }
+    }
+    
     
     /**
      * Get sharding encryptor.

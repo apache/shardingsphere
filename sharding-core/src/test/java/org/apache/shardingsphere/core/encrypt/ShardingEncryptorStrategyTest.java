@@ -18,24 +18,24 @@
 package org.apache.shardingsphere.core.encrypt;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class ShardingEncryptorStrategyTest {
     
     @Test
     public void assertValidConstructor() {
-        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Collections.<String>emptyList(), mock(ShardingEncryptor.class));
+        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("test", "pwd1, pwd2", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorConfiguration);
         assertThat(actual.getColumns().iterator().next(), is("pwd1"));
         assertTrue(actual.getAssistedQueryColumns().isEmpty());
         assertThat(actual.getShardingEncryptor(), instanceOf(ShardingEncryptor.class));
@@ -43,12 +43,14 @@ public final class ShardingEncryptorStrategyTest {
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertInvalidConstructor() {
-        new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Collections.singletonList("pwd1_index"), mock(ShardingEncryptor.class));
+        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("test", "pwd1, pwd2", "pwd1_index", new Properties());
+        new ShardingEncryptorStrategy(encryptorConfiguration);
     }
     
     @Test
     public void assertGetAssistedQueryColumn() {
-        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Arrays.asList("pwd1_index", "pwd2_index"), mock(ShardingEncryptor.class));
+        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("test", "pwd1, pwd2", "pwd1_index,pwd2_index", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorConfiguration);
         assertThat(actual.getAssistedQueryColumn("pwd1"), is(Optional.of("pwd1_index")));
     }
 }

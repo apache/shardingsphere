@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.sharding;
+package org.apache.shardingsphere.api.config.encryptor;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorConfiguration;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Table rule configuration for YAML.
+ * Encryptor rule configuration.
  *
- * @author caohao
  * @author panjuan
  */
 @Getter
 @Setter
-public class YamlTableRuleConfiguration implements YamlConfiguration {
+public final class EncryptRuleConfiguration implements RuleConfiguration {
     
-    private String logicTable;
+    private Collection<EncryptTableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
     
-    private String actualDataNodes;
-    
-    private YamlShardingStrategyConfiguration databaseStrategy;
-    
-    private YamlShardingStrategyConfiguration tableStrategy;
-    
-    private YamlKeyGeneratorConfiguration keyGenerator;
-    
-    private YamlEncryptorConfiguration encryptor;
-    
-    private String logicIndex;
+    private EncryptorConfiguration defaultEncryptorConfig;
 }
