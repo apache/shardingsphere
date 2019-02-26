@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -51,18 +50,19 @@ import java.util.Map;
 public class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
 
     private final DataSource dataSource;
-
-    private final DatabaseMetaData cachedDatabaseMetaData;
-
+    
     private final EncryptRule encryptRule;
+    
+    private final DatabaseMetaData cachedDatabaseMetaData;
     
     private final ShardingTableMetaData encryptTableMetaData;
 
     @SneakyThrows
     public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.dataSource = dataSource;
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSource);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSource);
+        encryptTableMetaData = createEncryptTableMetaData();
     }
 
     private DatabaseMetaData createCachedDatabaseMetaData(final DataSource dataSource) throws SQLException {
@@ -74,8 +74,8 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @SneakyThrows
     private ShardingTableMetaData createEncryptTableMetaData() {
         Map<String, TableMetaData> tables = new LinkedHashMap<>();
-        for (String each : encryptRule.getEncryptTableNames()) {
-            try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
+            for (String each : encryptRule.getEncryptTableNames()) {
                 tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each)));
             }
         }
@@ -108,7 +108,5 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @Override
     @SneakyThrows
     public final Connection getConnection() {
-        cachedDatabaseMetaData.getColumns()
-        return dataSource.getConnection();
     }
 }
