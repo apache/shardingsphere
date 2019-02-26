@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.core.encrypt;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,12 +43,26 @@ public final class ShardingEncryptorStrategy {
     private final ShardingEncryptor shardingEncryptor;
     
     public ShardingEncryptorStrategy(final List<String> columns, final List<String> assistedQueryColumns, final ShardingEncryptor shardingEncryptor) {
-        if (!assistedQueryColumns.isEmpty() && assistedQueryColumns.size() != columns.size()) {
-            throw new ShardingConfigurationException("The size of `columns` and `assistedQueryColumns` is not same.");
-        }
+        checkEncryptorConfiguration(columns, assistedQueryColumns);
         this.columns = columns;
         this.assistedQueryColumns = assistedQueryColumns;
         this.shardingEncryptor = shardingEncryptor;
+    }
+    
+    public ShardingEncryptorStrategy(final EncryptorConfiguration encryptorConfiguration) {
+        List<String> columns = Splitter.on(",").trimResults().splitToList(encryptorConfiguration.getColumns());
+        List<String> assistedQueryColumns = Strings.isNullOrEmpty(encryptorConfiguration.getAssistedQueryColumns())
+                ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(encryptorConfiguration.getAssistedQueryColumns());
+        checkEncryptorConfiguration(columns, assistedQueryColumns);
+        this.columns = columns;
+        this.assistedQueryColumns = assistedQueryColumns;
+        this.shardingEncryptor = ShardingEncryptorFactory.getInstance().newAlgorithm(encryptorConfiguration.getType(), encryptorConfiguration.getProperties());
+    }
+    
+    private void checkEncryptorConfiguration(final List<String> columns, final List<String> assistedQueryColumns) {
+        if (!assistedQueryColumns.isEmpty() && assistedQueryColumns.size() != columns.size()) {
+            throw new ShardingConfigurationException("The size of `columns` and `assistedQueryColumns` is not same.");
+        }
     }
     
     /**
