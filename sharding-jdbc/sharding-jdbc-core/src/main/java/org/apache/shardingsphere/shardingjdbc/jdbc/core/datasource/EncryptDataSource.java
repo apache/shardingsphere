@@ -45,7 +45,8 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
 
     private final EncryptRule encryptRule;
 
-    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) throws SQLException {
+    @SneakyThrows
+    public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.dataSource = dataSource;
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSource);
         encryptRule = new EncryptRule(encryptRuleConfiguration);
