@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactory;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Encrypt table rule.
@@ -43,14 +35,6 @@ public final class EncryptTableRule {
     
     public EncryptTableRule(final EncryptTableRuleConfiguration tableRuleConfig) {
         table = tableRuleConfig.getTable();
-        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : getShardingEncryptorStrategy(tableRuleConfig.getEncryptorConfig());
-    }
-    
-    private ShardingEncryptorStrategy getShardingEncryptorStrategy(final EncryptorConfiguration encryptorConfiguration) {
-        ShardingEncryptor shardingEncryptor = ShardingEncryptorFactory.getInstance().newAlgorithm(encryptorConfiguration.getType(), encryptorConfiguration.getProperties());
-        List<String> columns = Splitter.on(",").trimResults().splitToList(encryptorConfiguration.getColumns());
-        List<String> assistedQueryColumns = Strings.isNullOrEmpty(encryptorConfiguration.getAssistedQueryColumns())
-                ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(encryptorConfiguration.getAssistedQueryColumns());
-        return new ShardingEncryptorStrategy(columns, assistedQueryColumns, shardingEncryptor);
+        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : new ShardingEncryptorStrategy(tableRuleConfig.getEncryptorConfig());
     }
 }
