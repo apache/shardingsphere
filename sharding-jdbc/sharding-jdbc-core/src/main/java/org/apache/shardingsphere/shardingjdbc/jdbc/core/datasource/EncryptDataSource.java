@@ -114,23 +114,23 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
 
     @Override
     @SneakyThrows
-    public final EncryptConnection getConnection() {
+    public EncryptConnection getConnection() {
         return new EncryptConnection(dataSource.getConnection(), encryptRule, cachedDatabaseMetaData, encryptTableMetaData);
     }
     
     @Override
     @SneakyThrows
-    public final Connection getConnection(final String username, final String password) {
+    public Connection getConnection(final String username, final String password) {
         return getConnection();
     }
     
     @Override
-    public final Logger getParentLogger() {
+    public Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     }
     
     @Override
-    public final void close() {
+    public void close() {
         try {
             Method method = dataSource.getClass().getDeclaredMethod("close");
             method.setAccessible(true);
