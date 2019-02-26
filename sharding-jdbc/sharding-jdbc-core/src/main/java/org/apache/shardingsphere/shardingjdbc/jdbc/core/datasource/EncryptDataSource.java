@@ -56,8 +56,6 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     
     private final EncryptRule encryptRule;
     
-    private final DatabaseMetaData cachedDatabaseMetaData;
-    
     private final ShardingTableMetaData encryptTableMetaData;
     
     @Getter
@@ -68,7 +66,6 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.dataSource = dataSource;
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSource);
         encryptTableMetaData = createEncryptTableMetaData();
     }
 
@@ -115,7 +112,7 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(dataSource.getConnection(), encryptRule, cachedDatabaseMetaData, encryptTableMetaData);
+        return new EncryptConnection(dataSource.getConnection(), encryptRule, encryptTableMetaData);
     }
     
     @Override
