@@ -60,4 +60,10 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     public void commit() {
         connection.commit();
     }
+    
+    @Override
+    @SneakyThrows
+    public void rollback() {
+        connection.rollback();
+    }
 }
