@@ -31,8 +31,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Database meta data result set.
@@ -78,21 +80,30 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
         ArrayList<DatabaseMetaDataObject> result = Lists.newArrayList();
+        Set<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
         int tableNameColumnIndex = columnLabelIndexMap.containsKey(TABLE_NAME) ? columnLabelIndexMap.get(TABLE_NAME) : -1;
         while (resultSet.next()) {
-            DatabaseMetaDataObject databaseMetaDataObject = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
-            for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
-                if (tableNameColumnIndex == i) {
-                    String tableName = resultSet.getString(i);
-                    Collection<String> logicTableNames = shardingRule.getLogicTableNames(tableName);
-                    databaseMetaDataObject.addObject(0 == logicTableNames.size() ? tableName : logicTableNames.iterator().next());
-                } else {
-                    databaseMetaDataObject.addObject(resultSet.getObject(i));
-                }
+            DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(tableNameColumnIndex, resultSet);
+            if (!removeDuplicationSet.contains(databaseMetaDataObject)) {
+                result.add(databaseMetaDataObject);
+                removeDuplicationSet.add(databaseMetaDataObject);
             }
-            result.add(databaseMetaDataObject);
         }
         return result.iterator();
+    }
+    
+    private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final ResultSet resultSet) throws SQLException {
+        DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
+        for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
+            if (tableNameColumnIndex == i) {
+                String tableName = resultSet.getString(i);
+                Collection<String> logicTableNames = shardingRule.getLogicTableNames(tableName);
+                result.addObject(0 == logicTableNames.size() ? tableName : logicTableNames.iterator().next());
+            } else {
+                result.addObject(resultSet.getObject(i));
+            }
+        }
+        return result;
     }
     
     @Override
@@ -282,7 +293,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
-        if (columnLabelIndexMap.containsKey(columnLabel)) {
+        if (!columnLabelIndexMap.containsKey(columnLabel)) {
             throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
         }
         return columnLabelIndexMap.get(columnLabel);
