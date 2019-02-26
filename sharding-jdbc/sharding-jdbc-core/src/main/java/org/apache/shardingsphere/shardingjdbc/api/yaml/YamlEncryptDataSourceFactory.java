@@ -31,18 +31,18 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Master-slave data source factory for YAML.
+ * Encrypt data source factory for YAML.
  * 
- * @author zhangliang 
+ * @author panjuan 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlEncryptDataSourceFactory {
     
     /**
-     * Create master-slave data source.
+     * Create encrypt data source.
      *
-     * @param yamlFile YAML file for master-slave rule configuration with data sources
-     * @return master-slave data source
+     * @param yamlFile YAML file for encrypt rule configuration with data sources
+     * @return encrypt data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
@@ -52,10 +52,10 @@ public final class YamlEncryptDataSourceFactory {
     }
     
     /**
-     * Create master-slave data source.
+     * Create encrypt data source.
      *
-     * @param yamlBytes YAML bytes for master-slave rule configuration with data sources
-     * @return master-slave data source
+     * @param yamlBytes YAML bytes for encrypt rule configuration with data sources
+     * @return encrypt data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
@@ -65,11 +65,11 @@ public final class YamlEncryptDataSourceFactory {
     }
     
     /**
-     * Create master-slave data source.
+     * Create encrypt data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlFile YAML file for master-slave rule configuration without data sources
-     * @return master-slave data source
+     * @param yamlFile YAML file for encrypt rule configuration without data sources
+     * @return encrypt data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
@@ -79,11 +79,11 @@ public final class YamlEncryptDataSourceFactory {
     }
     
     /**
-     * Create master-slave data source.
+     * Create encrypt data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlBytes YAML bytes for master-slave rule configuration without data sources
-     * @return master-slave data source
+     * @param yamlBytes YAML bytes for encrypt rule configuration without data sources
+     * @return encrypt data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
