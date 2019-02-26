@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -40,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Encrypt data source.
@@ -110,5 +112,21 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @SneakyThrows
     public final EncryptConnection getConnection() {
         return new EncryptConnection(dataSource.getConnection(), encryptRule, cachedDatabaseMetaData, encryptTableMetaData);
+    }
+    
+    @Override
+    @SneakyThrows
+    public final Connection getConnection(final String username, final String password) {
+        return getConnection();
+    }
+    
+    @Override
+    public final Logger getParentLogger() {
+        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    }
+    
+    @Override
+    public final void close() throws Exception {
+        ((AbstractDataSourceAdapter) getDataSource()).close();
     }
 }
