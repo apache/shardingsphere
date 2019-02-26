@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 
 /**
  * Encrypt connection.
@@ -32,14 +34,10 @@ import java.sql.Connection;
 public final class EncryptConnection extends AbstractUnsupportedOperationConnection {
 
     private final Connection connection;
-
-    @Override
-    @SneakyThrows
-    public boolean getAutoCommit() {
-        try (Connection connection = encryptDataSource.getDataSource().getConnection()) {
-            return connection.getAutoCommit();
-        }
-    }
-
-
+    
+    private final EncryptRule encryptRule;
+    
+    private final DatabaseMetaData cachedDatabaseMetaData;
+    
+    private final ShardingTableMetaData encryptTableMetaData;
 }
