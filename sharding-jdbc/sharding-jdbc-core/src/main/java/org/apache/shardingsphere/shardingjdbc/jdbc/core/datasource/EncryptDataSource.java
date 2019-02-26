@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.Cach
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 
 import javax.sql.DataSource;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -49,7 +51,6 @@ import java.util.logging.Logger;
  * @author panjuan
  */
 @Getter
-@Slf4j
 public class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
 
     private final DataSource dataSource;
@@ -59,6 +60,10 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     private final DatabaseMetaData cachedDatabaseMetaData;
     
     private final ShardingTableMetaData encryptTableMetaData;
+    
+    @Getter
+    @Setter
+    private PrintWriter logWriter = new PrintWriter(System.out);
 
     @SneakyThrows
     public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
