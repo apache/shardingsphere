@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
@@ -50,5 +52,20 @@ public final class EncryptRule {
         }
         defaultEncryptorStrategy = new ShardingEncryptorStrategy(encryptRuleConfiguration.getDefaultEncryptorConfig());
         encryptorEngine = new ShardingEncryptorEngine(shardingEncryptorStrategies, defaultEncryptorStrategy);
+    }
+    
+    /**
+     * Get encrypt table names.
+     * 
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        return Collections2.transform(tableRules, new Function<EncryptTableRule, String>() {
+            
+            @Override
+            public String apply(final EncryptTableRule input) {
+                return input.getTable();
+            }
+        });
     }
 }
