@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
+import org.apache.shardingsphere.core.encrypt.EncryptorStrategy;
 
 /**
  * Encrypt table rule.
@@ -31,10 +31,10 @@ public final class EncryptTableRule {
     
     private final String table;
     
-    private final ShardingEncryptorStrategy shardingEncryptorStrategy;
+    private final EncryptorStrategy encryptorStrategy;
     
     public EncryptTableRule(final EncryptTableRuleConfiguration tableRuleConfig) {
         table = tableRuleConfig.getTable();
-        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : new ShardingEncryptorStrategy(tableRuleConfig.getEncryptorConfig());
+        encryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : new EncryptorStrategy(tableRuleConfig.getEncryptorConfig());
     }
 }

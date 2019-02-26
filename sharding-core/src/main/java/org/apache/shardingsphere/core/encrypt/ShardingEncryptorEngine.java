@@ -31,18 +31,18 @@ import java.util.Map.Entry;
  */
 public final class ShardingEncryptorEngine {
     
-    private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
+    private final Map<String, EncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
     
-    public ShardingEncryptorEngine(final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies) {
-        for (Entry<String, ShardingEncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
+    public ShardingEncryptorEngine(final Map<String, EncryptorStrategy> shardingEncryptorStrategies) {
+        for (Entry<String, EncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
             if (null != entry.getValue()) {
                 this.shardingEncryptorStrategies.put(entry.getKey(), entry.getValue());
             }
         }
     }
     
-    public ShardingEncryptorEngine(final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies, final ShardingEncryptorStrategy defaultEncryptorStrategy) {
-        for (Entry<String, ShardingEncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
+    public ShardingEncryptorEngine(final Map<String, EncryptorStrategy> shardingEncryptorStrategies, final EncryptorStrategy defaultEncryptorStrategy) {
+        for (Entry<String, EncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
             if (null != entry.getValue()) {
                 this.shardingEncryptorStrategies.put(entry.getKey(), entry.getValue());
             } else {
