@@ -95,7 +95,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private Collection<String> getPrimaryKeys(final Connection connection, final String tableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(catalog, null, tableName)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString("COLUMN_NAME"));
             }
