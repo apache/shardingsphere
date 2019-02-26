@@ -25,7 +25,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.SQLWarning;
 
 /**
  * Encrypt connection.
@@ -83,5 +84,35 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     @SneakyThrows
     public void setReadOnly(final boolean readOnly) {
         connection.setReadOnly(readOnly);
+    }
+    
+    @Override
+    @SneakyThrows
+    public int getTransactionIsolation() {
+        return connection.getTransactionIsolation();
+    }
+    
+    @Override
+    @SneakyThrows
+    public void setTransactionIsolation(final int level) {
+        connection.setTransactionIsolation(level);
+    }
+    
+    @Override
+    public SQLWarning getWarnings() {
+        return null;
+    }
+    
+    @Override
+    public void clearWarnings() {
+    }
+    
+    @Override
+    public int getHoldability() {
+        return ResultSet.CLOSE_CURSORS_AT_COMMIT;
+    }
+    
+    @Override
+    public void setHoldability(final int holdability) {
     }
 }
