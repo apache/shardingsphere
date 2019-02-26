@@ -17,13 +17,30 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+
+import java.sql.Connection;
 
 /**
  * Encrypt connection.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class EncryptConnection extends AbstractUnsupportedOperationConnection {
+    
+    private final EncryptDataSource encryptDataSource;
+    
+    @Override
+    @SneakyThrows
+    public boolean getAutoCommit() {
+        try (Connection connection = encryptDataSource.getDataSource().getConnection()) {
+            return connection.getAutoCommit();
+        }
+    }
+    
     
 }
