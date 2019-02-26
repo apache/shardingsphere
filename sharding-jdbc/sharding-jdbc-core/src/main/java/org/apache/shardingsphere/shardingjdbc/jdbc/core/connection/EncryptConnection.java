@@ -66,4 +66,22 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     public void rollback() {
         connection.rollback();
     }
+    
+    @Override
+    @SneakyThrows
+    public void close() {
+        connection.close();
+    }
+    
+    @Override
+    @SneakyThrows
+    public boolean isReadOnly() {
+        return connection.isReadOnly();
+    }
+    
+    @Override
+    @SneakyThrows
+    public void setReadOnly(final boolean readOnly) {
+        connection.setReadOnly(readOnly);
+    }
 }
