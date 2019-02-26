@@ -25,10 +25,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
@@ -52,6 +54,8 @@ public final class LogicSchemas {
     private static final LogicSchemas INSTANCE = new LogicSchemas();
     
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
+    
+    private DatabaseType databaseType;
     
     /**
      * Get instance of logic schemas.
@@ -88,6 +92,7 @@ public final class LogicSchemas {
      */
     public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
                      final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+        databaseType = JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
         initSchemas(schemaDataSources, schemaRules, isUsingRegistry);
     }
     

@@ -21,8 +21,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngineFactory;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.codec.DatabasePacketCodecEngineFactory;
 import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodec;
 
@@ -38,7 +38,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
-        pipeline.addLast(new PacketCodec(DatabasePacketCodecEngineFactory.newInstance(GlobalRegistry.getInstance().getDatabaseType())));
-        pipeline.addLast(new FrontendChannelInboundHandler(DatabaseFrontendEngineFactory.newInstance(GlobalRegistry.getInstance().getDatabaseType())));
+        pipeline.addLast(new PacketCodec(DatabasePacketCodecEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType())));
+        pipeline.addLast(new FrontendChannelInboundHandler(DatabaseFrontendEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType())));
     }
 }

@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -73,7 +74,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         this.dataSources = dataSourceMap;
-        shardingTransactionManagerEngine.init(GlobalRegistry.getInstance().getDatabaseType(), dataSourceMap);
+        shardingTransactionManagerEngine.init(LogicSchemas.getInstance().getDatabaseType(), dataSourceMap);
     }
     
     /**

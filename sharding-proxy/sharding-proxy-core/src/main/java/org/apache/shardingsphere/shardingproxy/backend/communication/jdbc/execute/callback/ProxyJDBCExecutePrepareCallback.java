@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCall
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,9 +59,9 @@ public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareC
     public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
         Statement statement = jdbcExecutorWrapper.createStatement(connection, routeUnit.getSqlUnit(), isReturnGeneratedKeys);
         if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
-            if (DatabaseType.MySQL == GlobalRegistry.getInstance().getDatabaseType()) {
+            if (DatabaseType.MySQL == LogicSchemas.getInstance().getDatabaseType()) {
                 statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-            } else if (DatabaseType.PostgreSQL == GlobalRegistry.getInstance().getDatabaseType()) {
+            } else if (DatabaseType.PostgreSQL == LogicSchemas.getInstance().getDatabaseType()) {
                 statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
             }
         }

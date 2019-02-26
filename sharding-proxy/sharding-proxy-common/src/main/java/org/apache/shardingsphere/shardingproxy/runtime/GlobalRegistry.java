@@ -22,7 +22,6 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchest
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -51,8 +49,6 @@ public final class GlobalRegistry {
     private static final GlobalRegistry INSTANCE = new GlobalRegistry();
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
-    
-    private DatabaseType databaseType;
     
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
@@ -87,7 +83,6 @@ public final class GlobalRegistry {
      */
     public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Authentication authentication, final Properties props) {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-        databaseType = JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
         this.authentication = authentication;
     }
     

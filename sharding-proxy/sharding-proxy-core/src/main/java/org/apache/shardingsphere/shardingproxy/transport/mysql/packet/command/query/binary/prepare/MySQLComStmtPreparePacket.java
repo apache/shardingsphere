@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatem
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -64,7 +64,7 @@ public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
         sql = payload.readStringEOF();
         schemaName = backendConnection.getSchemaName();
         LogicSchema logicSchema = backendConnection.getLogicSchema();
-        sqlParsingEngine = new SQLParsingEngine(GlobalRegistry.getInstance().getDatabaseType(), sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+        sqlParsingEngine = new SQLParsingEngine(LogicSchemas.getInstance().getDatabaseType(), sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
     }
     
     private ShardingRule getShardingRule(final LogicSchema logicSchema) {

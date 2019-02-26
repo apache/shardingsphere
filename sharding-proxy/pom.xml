@@ -13,6 +13,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>sharding-proxy-common</module>
         <module>sharding-proxy-core</module>
     </modules>
 </project>

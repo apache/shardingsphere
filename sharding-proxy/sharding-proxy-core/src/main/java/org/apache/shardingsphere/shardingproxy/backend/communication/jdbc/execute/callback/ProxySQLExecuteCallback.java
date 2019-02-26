@@ -31,9 +31,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -61,7 +61,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     
     public ProxySQLExecuteCallback(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper, 
                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(GlobalRegistry.getInstance().getDatabaseType(), isExceptionThrown);
+        super(LogicSchemas.getInstance().getDatabaseType(), isExceptionThrown);
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;

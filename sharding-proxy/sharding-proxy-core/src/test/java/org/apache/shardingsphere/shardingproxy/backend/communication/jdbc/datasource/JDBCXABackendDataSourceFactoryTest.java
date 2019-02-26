@@ -21,8 +21,8 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Before;
@@ -43,9 +43,9 @@ public final class JDBCXABackendDataSourceFactoryTest {
     
     @SneakyThrows
     private void setDatabaseType() {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("databaseType");
+        Field field = LogicSchemas.getInstance().getClass().getDeclaredField("databaseType");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), DatabaseType.MySQL);
+        field.set(LogicSchemas.getInstance(), DatabaseType.MySQL);
     }
     
     @Test
