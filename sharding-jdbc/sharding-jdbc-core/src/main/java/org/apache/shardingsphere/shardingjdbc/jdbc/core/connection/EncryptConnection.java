@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 /**
  * Encrypt connection.
@@ -46,5 +47,11 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     @SneakyThrows
     public boolean getAutoCommit() {
         return connection.getAutoCommit();
+    }
+    
+    @Override
+    @SneakyThrows
+    public void setAutoCommit(final boolean autoCommit) {
+        connection.setAutoCommit(autoCommit);
     }
 }
