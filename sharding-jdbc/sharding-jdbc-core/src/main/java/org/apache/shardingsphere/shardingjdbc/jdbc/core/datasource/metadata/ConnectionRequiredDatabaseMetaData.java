@@ -93,11 +93,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        return getCurrentConnection().getMetaData().getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
-    }
-    
-    @Override
     public final ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
         return getCurrentConnection().getMetaData().getColumnPrivileges(catalog, schema, table, columnNamePattern);
     }
