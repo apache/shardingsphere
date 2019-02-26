@@ -26,15 +26,15 @@ import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
  * 
  * @author panjuan
  */
-public final class EncryptorFactory extends BaseAlgorithmFactory<ShardingEncryptor> {
+public final class ShardingEncryptorFactory extends BaseAlgorithmFactory<ShardingEncryptor> {
     
-    private static final EncryptorFactory INSTANCE = new EncryptorFactory();
+    private static final ShardingEncryptorFactory INSTANCE = new ShardingEncryptorFactory();
     
     static {
         NewInstanceServiceLoader.register(ShardingEncryptor.class);
     }
     
-    private EncryptorFactory() {
+    private ShardingEncryptorFactory() {
         super(ShardingEncryptor.class);
     }
     
@@ -43,7 +43,7 @@ public final class EncryptorFactory extends BaseAlgorithmFactory<ShardingEncrypt
      *
      * @return instance of encryptor factory
      */
-    public static EncryptorFactory getInstance() {
+    public static ShardingEncryptorFactory getInstance() {
         return INSTANCE;
     }
 }
