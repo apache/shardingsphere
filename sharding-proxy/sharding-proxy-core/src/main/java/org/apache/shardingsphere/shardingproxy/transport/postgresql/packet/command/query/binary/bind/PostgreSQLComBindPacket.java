@@ -38,6 +38,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.Pos
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
@@ -79,7 +80,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         for (int i = 0; i < parameterFormatsLength; i++) {
             payload.readInt2();
         }
-        binaryStatement = backendConnection.getConnectionScopeBinaryStatementRegistry().getBinaryStatement(statementId);
+        binaryStatement = BinaryStatementRegistry.getInstance().get(backendConnection).getBinaryStatement(statementId);
         if (null != binaryStatement && null != binaryStatement.getSql()) {
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
                 backendConnection.getLogicSchema(), binaryStatement.getSql(), getParameters(payload), backendConnection);

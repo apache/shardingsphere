@@ -54,9 +54,9 @@ public final class LogicSchemas {
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
     /**
-     * Get instance of proxy context.
+     * Get instance of logic schemas.
      *
-     * @return instance of proxy context.
+     * @return instance of logic schemas.
      */
     public static LogicSchemas getInstance() {
         return INSTANCE;

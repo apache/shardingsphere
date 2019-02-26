@@ -33,6 +33,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.Pos
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
 
@@ -61,7 +62,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     private SQLParsingEngine sqlParsingEngine;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
-        postgreSQLBinaryStatementRegistry = backendConnection.getConnectionScopeBinaryStatementRegistry();
+        postgreSQLBinaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection);
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());

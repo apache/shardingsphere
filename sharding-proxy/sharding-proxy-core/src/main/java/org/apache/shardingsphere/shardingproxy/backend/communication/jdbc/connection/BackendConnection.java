@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
@@ -74,8 +73,6 @@ public final class BackendConnection implements AutoCloseable {
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
-    
-    private final ConnectionScopeBinaryStatementRegistry connectionScopeBinaryStatementRegistry = new ConnectionScopeBinaryStatementRegistry();
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;

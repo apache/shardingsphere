@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
@@ -57,6 +58,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
+        BinaryStatementRegistry.getInstance().register(backendConnection);
     }
     
     @Override
