@@ -21,18 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Encrypt data source factory for YAML.
@@ -69,28 +65,27 @@ public final class YamlEncryptDataSourceFactory {
     /**
      * Create encrypt data source.
      *
-     * @param dataSourceMap data source map
+     * @param dataSource data source
      * @param yamlFile YAML file for encrypt rule configuration without data sources
      * @return encrypt data source
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
-        YamlRootMasterSlaveConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootMasterSlaveConfiguration.class);
-        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), config.getProps());
+    @SneakyThrows
+    public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) {
+        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
+    
     }
     
     /**
      * Create encrypt data source.
      *
-     * @param dataSourceMap data source map
+     * @param dataSource data source
      * @param yamlBytes YAML bytes for encrypt rule configuration without data sources
      * @return encrypt data source
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
-        YamlRootMasterSlaveConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootMasterSlaveConfiguration.class);
-        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), config.getProps());
+    @SneakyThrows
+    public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) {
+        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootEncryptRuleConfiguration.class);
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
     }
 }
