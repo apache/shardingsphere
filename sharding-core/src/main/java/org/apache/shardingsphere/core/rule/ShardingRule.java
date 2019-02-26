@@ -28,6 +28,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
@@ -40,8 +41,10 @@ import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -85,7 +88,7 @@ public class ShardingRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        shardingEncryptorEngine = new ShardingEncryptorEngine(tableRules);
+        shardingEncryptorEngine = new ShardingEncryptorEngine(getShardingEncryptorStrategies());
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -135,6 +138,14 @@ public class ShardingRule {
         Collection<MasterSlaveRule> result = new ArrayList<>(masterSlaveRuleConfigurations.size());
         for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigurations) {
             result.add(new MasterSlaveRule(each));
+        }
+        return result;
+    }
+    
+    private Map<String, ShardingEncryptorStrategy> getShardingEncryptorStrategies() {
+        Map<String, ShardingEncryptorStrategy> result = new LinkedHashMap<>();
+        for (TableRule each : tableRules) {
+            result.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
         }
         return result;
     }
