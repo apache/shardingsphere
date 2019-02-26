@@ -27,20 +27,20 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingEncryptorFactoryTest {
+public final class EncryptorFactoryTest {
     
     @Test
     public void assertNewMD5Encryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("MD5", new Properties()), instanceOf(MD5ShardingEncryptor.class));
+        assertThat(EncryptorFactory.getInstance().newAlgorithm("MD5", new Properties()), instanceOf(MD5ShardingEncryptor.class));
     }
     
     @Test
     public void assertNewAESEncryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("AES", new Properties()), instanceOf(AESShardingEncryptor.class));
+        assertThat(EncryptorFactory.getInstance().newAlgorithm("AES", new Properties()), instanceOf(AESShardingEncryptor.class));
     }
     
     @Test
     public void assertNewDefaultEncryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm(), instanceOf(TestShardingEncryptor.class));
+        assertThat(EncryptorFactory.getInstance().newAlgorithm(), instanceOf(TestShardingEncryptor.class));
     }
 }
