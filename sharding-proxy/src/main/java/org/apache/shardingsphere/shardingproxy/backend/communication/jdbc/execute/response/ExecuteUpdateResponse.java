@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.result.query;
+package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 /**
- * Query data.
- *
+ * Execute update response.
+ * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryData {
+public final class ExecuteUpdateResponse implements ExecuteResponse {
     
-    private final List<Integer> columnTypes;
+    private final int updateCount;
     
-    private final List<Object> data;
+    private final long lastInsertId;
 }

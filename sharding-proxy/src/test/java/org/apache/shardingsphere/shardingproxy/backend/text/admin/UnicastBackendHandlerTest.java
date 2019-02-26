@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -52,7 +52,7 @@ public final class UnicastBackendHandlerTest {
     @Before
     public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        setUnderlyingHandler(new SuccessResponse(0L, 0L));
+        setUnderlyingHandler(new UpdateResponse());
     }
     
     @Test
@@ -60,7 +60,7 @@ public final class UnicastBackendHandlerTest {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
         backendHandler.execute();
     }
     
@@ -70,7 +70,7 @@ public final class UnicastBackendHandlerTest {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler("show variable like %s", backendConnection);
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
-        assertThat(actual, instanceOf(SuccessResponse.class));
+        assertThat(actual, instanceOf(UpdateResponse.class));
         backendHandler.execute();
     }
     

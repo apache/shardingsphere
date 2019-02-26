@@ -28,7 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        JDBCURLRecognizerEngineTest.class,
+        JDBCDriverURLRecognizerEngineTest.class,
         MySQLRecognizerTest.class,
         PostgreSQLRecognizerTest.class,
         OracleRecognizerTest.class,

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendTransactionManager;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
@@ -50,7 +50,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
         try {
             return doTransaction();
         } catch (final SQLException ex) {
-            return new FailureResponse(ex);
+            return new ErrorResponse(ex);
         }
     }
     
@@ -68,7 +68,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             default:
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
-        return new SuccessResponse();
+        return new UpdateResponse();
     }
     
     @Override

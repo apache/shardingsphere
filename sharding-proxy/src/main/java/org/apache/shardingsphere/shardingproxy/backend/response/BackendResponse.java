@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.result;
+package org.apache.shardingsphere.shardingproxy.backend.response;
 
 /**
  * Backend response.

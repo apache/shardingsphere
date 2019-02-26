@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.packet.generic;
+package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+
+import java.util.List;
 
 /**
- * Database success packet.
+ * Query data.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseSuccessPacket implements DatabasePacket {
+public final class QueryData {
     
-    private final int sequenceId;
+    private final List<Integer> columnTypes;
     
-    private final long affectedRows;
-    
-    private final long lastInsertId;
-    
-    private final int warnings;
-    
-    private final String info;
-    
-    public DatabaseSuccessPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
-        this(sequenceId, affectedRows, lastInsertId, 0, "");
-    }
+    private final List<Object> data;
 }

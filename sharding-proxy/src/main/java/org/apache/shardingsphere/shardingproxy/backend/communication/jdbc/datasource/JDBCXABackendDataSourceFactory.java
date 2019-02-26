@@ -23,11 +23,12 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCURLRecognizerEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
+
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.util.Properties;
@@ -73,7 +74,7 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
                                  final String dataSourceName, final XADataSource xaDataSource, final YamlDataSourceParameter dataSourceParameter) throws PropertyException {
         dataSourceBean.setXaDataSourceClassName(xaDataSource.getClass().getName());
         dataSourceBean.setUniqueResourceName(dataSourceName);
-        Properties xaProperties = XAPropertiesFactory.createXAProperties(JDBCURLRecognizerEngine.getDatabaseType(dataSourceParameter.getUrl())).build(
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(JDBCDriverURLRecognizerEngine.getDatabaseType(dataSourceParameter.getUrl())).build(
                 new DatabaseAccessConfiguration(dataSourceParameter.getUrl(), dataSourceParameter.getUsername(), dataSourceParameter.getPassword()));
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         dataSourceBean.setXaProperties(xaProperties);

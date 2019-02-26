@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 
 /**
@@ -31,7 +31,7 @@ public final class GUICompatibilityBackendHandler implements TextProtocolBackend
     
     @Override
     public BackendResponse execute() {
-        return new SuccessResponse();
+        return new UpdateResponse();
     }
     
     @Override

@@ -32,13 +32,12 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.SuccessResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.update.UpdateResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -79,17 +78,17 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql, databaseType);
             return execute(routeResult);
         } catch (final SQLException ex) {
-            return new FailureResponse(ex);
+            return new ErrorResponse(ex);
         }
     }
     
     private BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new SuccessResponse();
+            return new UpdateResponse();
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
-            return new FailureResponse(
+            return new ErrorResponse(
                     MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table");
         }
         response = executeEngine.execute(routeResult);
@@ -111,7 +110,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {
         if (response instanceof UpdateResponse) {
-            return ((UpdateResponse) response).getResponse(!isAllBroadcastTables(sqlStatement));
+            if (!isAllBroadcastTables(sqlStatement)) {
+                ((UpdateResponse) response).mergeUpdateCount();
+            }
+            return response;
         }
         mergedResult = MergeEngineFactory.newInstance(
             databaseType, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();

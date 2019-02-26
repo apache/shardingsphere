@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCURLRecognizer;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public final class OracleRecognizerTest {
     
-    private final JDBCURLRecognizer recognizer = new OracleRecognizer();
+    private final JDBCDriverURLRecognizer recognizer = new OracleRecognizer();
     
     @Test
     public void assertGetURLPrefixes() {

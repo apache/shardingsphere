@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.result.query;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-
-import java.util.LinkedList;
-import java.util.List;
+package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
 
 /**
- * Query response.
- *
+ * Execute response.
+ * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class QueryResponse implements BackendResponse {
-    
-    private final List<QueryHeader> queryHeaders;
-    
-    private final List<QueryResult> queryResults = new LinkedList<>();
+public interface ExecuteResponse {
 }

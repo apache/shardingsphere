@@ -23,9 +23,9 @@ import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.result.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.common.FailureResponse;
-import org.apache.shardingsphere.shardingproxy.backend.result.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -126,7 +126,7 @@ public final class MySQLComFieldListPacketTest {
     public void assertExecuteWhenFailure() throws SQLException {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        BackendResponse expected = new FailureResponse(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown");
+        BackendResponse expected = new ErrorResponse(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown");
         when(databaseCommunicationEngine.execute()).thenReturn(expected);
         MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
