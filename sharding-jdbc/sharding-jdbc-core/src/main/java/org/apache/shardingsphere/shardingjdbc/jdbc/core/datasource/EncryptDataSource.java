@@ -26,14 +26,12 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -67,12 +65,6 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
         this.dataSource = dataSource;
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         encryptTableMetaData = createEncryptTableMetaData();
-    }
-
-    private DatabaseMetaData createCachedDatabaseMetaData(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
-        }
     }
     
     @SneakyThrows
