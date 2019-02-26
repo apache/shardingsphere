@@ -41,7 +41,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class AESEncryptor implements ShardingEncryptor {
+public final class AESShardingEncryptor implements ShardingEncryptor {
     
     private static final String AES_KEY = "aes.key.value";
     
@@ -67,7 +67,7 @@ public final class AESEncryptor implements ShardingEncryptor {
     }
     
     private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptor.class.getName());
+        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESShardingEncryptor.class.getName());
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(createSecretKey(), getType()));
         return result;
