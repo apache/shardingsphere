@@ -54,4 +54,10 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     public void setAutoCommit(final boolean autoCommit) {
         connection.setAutoCommit(autoCommit);
     }
+    
+    @Override
+    @SneakyThrows
+    public void commit() {
+        connection.commit();
+    }
 }
