@@ -61,6 +61,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @Override
     @SneakyThrows
     public final Connection getConnection() {
+        cachedDatabaseMetaData.getColumns()
         return dataSource.getConnection();
     }
 }
