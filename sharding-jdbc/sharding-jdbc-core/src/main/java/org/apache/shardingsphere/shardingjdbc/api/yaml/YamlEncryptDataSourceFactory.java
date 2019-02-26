@@ -19,9 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -43,12 +47,11 @@ public final class YamlEncryptDataSourceFactory {
      *
      * @param yamlFile YAML file for encrypt rule configuration with data sources
      * @return encrypt data source
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
-        YamlRootMasterSlaveConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootMasterSlaveConfiguration.class);
-        return MasterSlaveDataSourceFactory.createDataSource(config.getDataSources(), new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), config.getProps());
+    @SneakyThrows
+    public static DataSource createDataSource(final File yamlFile) {
+        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
+        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()));
     }
     
     /**
