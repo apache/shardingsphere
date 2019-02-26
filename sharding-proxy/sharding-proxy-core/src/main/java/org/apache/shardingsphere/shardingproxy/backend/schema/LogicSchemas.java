@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -52,8 +51,6 @@ public final class LogicSchemas {
     
     private static final LogicSchemas INSTANCE = new LogicSchemas();
     
-    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
-    
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
     /**
@@ -69,7 +66,7 @@ public final class LogicSchemas {
      * Register listener.
      */
     public void register() {
-        eventBus.register(this);
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**

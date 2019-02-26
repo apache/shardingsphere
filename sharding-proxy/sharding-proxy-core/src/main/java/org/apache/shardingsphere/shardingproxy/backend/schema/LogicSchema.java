@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
@@ -50,15 +49,13 @@ public abstract class LogicSchema {
     
     private final Map<String, YamlDataSourceParameter> dataSources;
     
-    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
-    
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        eventBus.register(this);
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
