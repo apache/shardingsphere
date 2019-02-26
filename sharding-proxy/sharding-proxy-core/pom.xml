@@ -74,7 +74,7 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
+                    <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
                     <descriptors>
                         <descriptor>src/main/resources/assembly/assembly.xml</descriptor>
                     </descriptors>
