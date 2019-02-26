@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 
 import java.util.List;
 

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -42,7 +42,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public BackendResponse execute() {
-        mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
+        mergedResult = new ShowDatabasesMergedResult(LogicSchemas.getInstance().getSchemaNames());
         return new QueryResponse(Collections.singletonList(new QueryHeader("", "", "", "Database", 100, Types.VARCHAR, 0)));
     }
     

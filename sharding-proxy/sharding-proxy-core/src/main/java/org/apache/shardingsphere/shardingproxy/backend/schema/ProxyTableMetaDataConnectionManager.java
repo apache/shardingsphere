@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.listener;
+package org.apache.shardingsphere.shardingproxy.backend.schema;
 
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * Listener register for Proxy.
+ * Manager of connection which for table meta data loader of proxy.
  *
  * @author zhangliang
- * @author panjuan
  */
-public final class ProxyListenerRegister {
+@RequiredArgsConstructor
+public final class ProxyTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
     
-    private final GlobalRegistry globalRegistry = GlobalRegistry.getInstance();
+    private final JDBCBackendDataSource backendDataSource;
     
-    private final LogicSchemas logicSchemas = LogicSchemas.getInstance();
-    
-    /**
-     * Register all listeners.
-     */
-    public void register() {
-        globalRegistry.register();
-        logicSchemas.register();
+    @Override
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        return backendDataSource.getConnection(dataSourceName);
     }
 }

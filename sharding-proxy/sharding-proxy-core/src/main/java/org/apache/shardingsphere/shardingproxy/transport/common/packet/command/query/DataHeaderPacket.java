@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 
 import java.sql.ResultSetMetaData;

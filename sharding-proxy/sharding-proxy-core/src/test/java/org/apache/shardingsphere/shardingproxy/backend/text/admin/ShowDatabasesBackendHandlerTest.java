@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
-import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.junit.Before;
@@ -39,7 +39,7 @@ public final class ShowDatabasesBackendHandlerTest {
     
     @Before
     public void setUp() {
-        MockGlobalRegistryUtil.setLogicSchemas("schema", 5);
+        MockLogicSchemasUtil.setLogicSchemas("schema", 5);
     }
     
     @Test

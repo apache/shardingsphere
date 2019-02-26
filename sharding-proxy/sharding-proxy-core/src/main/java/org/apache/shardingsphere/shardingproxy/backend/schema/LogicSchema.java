@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.runtime.schema;
+package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;

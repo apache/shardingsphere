@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

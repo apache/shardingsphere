@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public final class UnicastBackendHandlerTest {
     
     @Before
     public void setUp() {
-        MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
+        MockLogicSchemasUtil.setLogicSchemas("schema", 10);
         setUnderlyingHandler(new UpdateResponse());
     }
     

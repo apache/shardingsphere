@@ -27,8 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -107,7 +107,7 @@ public final class BackendConnection implements AutoCloseable {
             throw new ShardingException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
-        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(schemaName);
+        this.logicSchema = LogicSchemas.getInstance().getLogicSchema(schemaName);
     }
     
     @SneakyThrows

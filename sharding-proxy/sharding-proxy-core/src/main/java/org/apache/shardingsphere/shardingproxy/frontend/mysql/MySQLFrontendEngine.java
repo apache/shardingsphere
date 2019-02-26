@@ -23,9 +23,9 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
@@ -65,7 +65,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
             MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet(payload);
             if (mysqlAuthenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
-                if (!Strings.isNullOrEmpty(response41.getDatabase()) && !GlobalRegistry.getInstance().schemaExists(response41.getDatabase())) {
+                if (!Strings.isNullOrEmpty(response41.getDatabase()) && !LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {
                     context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return true;
                 }

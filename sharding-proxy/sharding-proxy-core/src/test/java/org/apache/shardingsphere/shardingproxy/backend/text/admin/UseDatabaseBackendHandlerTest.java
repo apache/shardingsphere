@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -45,7 +45,7 @@ public final class UseDatabaseBackendHandlerTest {
     
     @Before
     public void setUp() {
-        MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
+        MockLogicSchemasUtil.setLogicSchemas("schema", 10);
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.conne
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -62,7 +62,7 @@ public final class BackendConnectionTest {
     @Before
     @SneakyThrows
     public void setUp() {
-        MockGlobalRegistryUtil.setLogicSchemas("schema", 2);
+        MockLogicSchemasUtil.setLogicSchemas("schema", 2);
         backendConnection.setCurrentSchema("schema_0");
         when(backendConnection.getLogicSchema().getBackendDataSource()).thenReturn(backendDataSource);
     }

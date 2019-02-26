@@ -23,9 +23,9 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
@@ -69,7 +69,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
             PostgreSQLComStartupPacket postgreSQLComStartupPacket = new PostgreSQLComStartupPacket(payload);
             String databaseName = postgreSQLComStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
-            if (!Strings.isNullOrEmpty(databaseName) && !GlobalRegistry.getInstance().schemaExists(databaseName)) {
+            if (!Strings.isNullOrEmpty(databaseName) && !LogicSchemas.getInstance().schemaExists(databaseName)) {
                 // TODO send an error message
                 return true;
             }

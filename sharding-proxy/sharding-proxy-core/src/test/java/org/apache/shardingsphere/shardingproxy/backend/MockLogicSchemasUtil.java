@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
-public final class MockGlobalRegistryUtil {
+public final class MockLogicSchemasUtil {
     
     /**
      * set logic schemas for global registry.
@@ -36,9 +36,9 @@ public final class MockGlobalRegistryUtil {
      */
     @SneakyThrows
     public static void setLogicSchemas(final String prefix, final int size) {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("logicSchemas");
+        Field field = LogicSchemas.getInstance().getClass().getDeclaredField("logicSchemas");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), mockLogicSchemas(prefix, size));
+        field.set(LogicSchemas.getInstance(), mockLogicSchemas(prefix, size));
     }
     
     private static Map<String, LogicSchema> mockLogicSchemas(final String prefix, final int size) {

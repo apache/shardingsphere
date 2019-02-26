@@ -25,8 +25,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 /**
@@ -45,7 +45,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     @Override
     public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!GlobalRegistry.getInstance().schemaExists(schema)) {
+        if (!LogicSchemas.getInstance().schemaExists(schema)) {
             return new ErrorResponse(MySQLServerErrorCode.ER_BAD_DB_ERROR, schema);
         }
         backendConnection.setCurrentSchema(schema);

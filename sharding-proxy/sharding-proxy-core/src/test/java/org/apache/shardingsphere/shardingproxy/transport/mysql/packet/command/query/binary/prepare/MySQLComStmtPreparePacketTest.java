@@ -31,8 +31,8 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatem
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
@@ -94,9 +94,9 @@ public final class MySQLComStmtPreparePacketTest {
         when(shardingSchema.getShardingRule()).thenReturn(shardingRule);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
-        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
+        Field field = LogicSchemas.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), shardingSchemas);
+        field.set(LogicSchemas.getInstance(), shardingSchemas);
     }
     
     @Test

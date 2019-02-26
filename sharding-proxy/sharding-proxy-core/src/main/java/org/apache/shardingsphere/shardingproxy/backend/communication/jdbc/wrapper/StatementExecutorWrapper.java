@@ -28,10 +28,10 @@ import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.StatementRoutingEngine;
 import org.apache.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 
 import java.sql.Connection;
 import java.sql.SQLException;

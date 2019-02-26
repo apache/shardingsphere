@@ -24,9 +24,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -83,9 +83,9 @@ public final class MySQLComQueryPacketTest {
         ShardingSchema shardingSchema = mock(ShardingSchema.class);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
-        Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
+        Field field = LogicSchemas.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), shardingSchemas);
+        field.set(LogicSchemas.getInstance(), shardingSchemas);
     }
     
     @Test
