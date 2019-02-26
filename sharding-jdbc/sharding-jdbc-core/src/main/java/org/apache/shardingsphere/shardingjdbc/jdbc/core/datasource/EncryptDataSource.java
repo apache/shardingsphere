@@ -50,7 +50,7 @@ import java.util.logging.Logger;
  * @author panjuan
  */
 @Getter
-public class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
+public final class EncryptDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
 
     private final DataSource dataSource;
     
