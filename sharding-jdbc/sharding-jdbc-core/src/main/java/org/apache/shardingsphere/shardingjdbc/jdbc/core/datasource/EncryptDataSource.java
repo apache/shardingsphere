@@ -21,9 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.parsing.EncryptSQLParsingEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -54,9 +56,8 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     
     private final EncryptRule encryptRule;
     
-    private final ShardingTableMetaData encryptTableMetaData;
+    private final EncryptSQLParsingEngine encryptSQLParsingEngine;
     
-    @Getter
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
 
@@ -64,7 +65,7 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.dataSource = dataSource;
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        encryptTableMetaData = createEncryptTableMetaData();
+        encryptSQLParsingEngine = new EncryptSQLParsingEngine(getDatabaseType(), encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows
@@ -100,11 +101,17 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
         }
         return result;
     }
+    
+    private DatabaseType getDatabaseType() throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+        }
+    }
 
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(dataSource.getConnection(), encryptRule, encryptTableMetaData);
+        return new EncryptConnection(dataSource.getConnection(), encryptRule);
     }
     
     @Override
