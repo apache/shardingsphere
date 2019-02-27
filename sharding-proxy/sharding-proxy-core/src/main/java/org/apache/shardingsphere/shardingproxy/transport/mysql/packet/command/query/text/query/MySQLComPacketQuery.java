@@ -21,9 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
-import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
+import org.apache.shardingsphere.shardingproxy.backend.exception.BackendException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
@@ -32,7 +30,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -40,7 +37,6 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabaseP
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
@@ -115,17 +111,10 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
             return new MySQLErrPacket(1, (SQLException) cause);
         }
         if (cause instanceof ShardingCTLException) {
-            ShardingCTLException shardingCTLException = (ShardingCTLException) cause;
-            return new MySQLErrPacket(1, ShardingCTLErrorCode.valueOf(shardingCTLException), shardingCTLException.getShardingCTL());
+            return new MySQLErrPacket(1, (ShardingCTLException) cause);
         }
-        if (cause instanceof TableModifyInTransactionException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
-        }
-        if (cause instanceof UnknownDatabaseException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
-        }
-        if (cause instanceof NoDatabaseSelectedException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
+        if (cause instanceof BackendException) {
+            return new MySQLErrPacket(1, (BackendException) cause);
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
