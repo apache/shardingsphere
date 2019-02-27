@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
 import java.sql.Connection;
@@ -44,6 +45,8 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     private final EncryptConnection connection;
     
+    private EncryptResultSet resultSet;
+    
     @SneakyThrows
     public EncryptStatement(final EncryptConnection connection) {
         statement = connection.getConnection().createStatement();
@@ -53,7 +56,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet resultSet = statement.executeQuery(getSqlUnit(sql).getSql());
-        return null;
+        return new EncryptResultSet(this, resultSet, connection.getEncryptRule());
     }
     
     private SQLUnit getSqlUnit(final String sql) {
@@ -74,8 +77,8 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     @Override
-    public ResultSet getResultSet() throws SQLException {
-        return null;
+    public ResultSet getResultSet() {
+        return resultSet;
     }
     
     @Override
