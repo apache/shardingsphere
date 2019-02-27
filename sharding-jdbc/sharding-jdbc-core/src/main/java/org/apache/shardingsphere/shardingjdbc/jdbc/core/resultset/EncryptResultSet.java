@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+
+import java.sql.ResultSet;
 
 /**
  * Encrypt result set.
@@ -26,4 +29,9 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
+    private final StreamQueryResult queryResult;
+    
+    public EncryptResultSet(final ResultSet resultSet) {
+        queryResult = new StreamQueryResult(resultSet);
+    }
 }
