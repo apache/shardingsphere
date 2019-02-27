@@ -22,10 +22,7 @@ import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryRes
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
@@ -40,6 +37,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -52,11 +50,14 @@ import java.util.Collections;
  */
 public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
+    private final EncryptStatement encryptStatement;
+    
     private ResultSet originalResultSet;
     
     private IteratorStreamMergedResult resultSet;
     
-    public EncryptResultSet(ResultSet resultSet, EncryptRule encryptRule, ShardingEncryptorEngine encryptorEngine) {
+    public EncryptResultSet(final EncryptStatement encryptStatement, final ResultSet resultSet, final EncryptRule encryptRule, final ShardingEncryptorEngine encryptorEngine) {
+        this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
         QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule.getAllEncryptTableNames(), encryptorEngine);
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
@@ -384,6 +385,11 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     @Override
     public int getConcurrency() throws SQLException {
         return originalResultSet.getConcurrency();
+    }
+    
+    @Override
+    public Statement getStatement() throws SQLException {
+        return null;
     }
     
     @Override
