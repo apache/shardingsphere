@@ -73,6 +73,12 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         this.connection = connection;
     }
     
+    @SneakyThrows
+    public EncryptPreparedStatement(final EncryptConnection connection, final String sql, final String[] columnNames) {
+        statement = connection.getConnection().prepareStatement(getRewriteSQL(sql), columnNames);
+        this.connection = connection;
+    }
+    
     @Override
     public ResultSet getResultSet() {
         return resultSet;
