@@ -18,6 +18,11 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
@@ -26,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.LinkedList;
 
 /**
  * Encrypt statement.
@@ -47,6 +53,13 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         return null;
+    }
+    
+    private SQLUnit getSqlUnit(final String sql) {
+        SQLStatement sqlStatement = connection.getEncryptSQLParsingEngine().parse(false, sql);
+        OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
+        SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, new LinkedList<>()).rewrite();
+        return sqlBuilder.toSQL();
     }
     
     @Override
@@ -196,21 +209,21 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     @Override
     public int getResultSetHoldability() throws SQLException {
-        return 0;
+        return statement.getResultSetHoldability();
     }
     
     @Override
     public boolean isClosed() throws SQLException {
-        return false;
+        return statement.isClosed();
     }
     
     @Override
     public void setPoolable(final boolean poolable) throws SQLException {
-        
+        statement.setPoolable(poolable);
     }
     
     @Override
     public boolean isPoolable() throws SQLException {
-        return false;
+        return statement.isPoolable();
     }
 }
