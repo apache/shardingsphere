@@ -10,6 +10,18 @@ tableName
     : ID | ID DOT_ASTERISK | ASTERISK
     ;
     
+assignmentValueList
+    : LP_ assignmentValues RP_
+    ;
+
+assignmentValues
+    : assignmentValue (COMMA assignmentValue)*
+    ;
+
+assignmentValue
+    : DEFAULT | MAXVALUE | expr
+    ;
+    
 characterSet
     : (CHARACTER | CHAR) SET EQ_? charsetName | CHARSET EQ_? charsetName
     ;
@@ -118,4 +130,12 @@ frameEnd
     
 variable
     : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT? ID
+    ;
+    
+assignmentList
+    : assignment (COMMA assignment)*
+    ;
+
+assignment
+    : columnName EQ_ assignmentValue
     ;

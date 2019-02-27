@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -170,16 +170,21 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (BatchRouteUnit each : routeUnits) {
-            for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
-                int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                if (DatabaseType.Oracle == getDatabaseType()) {
-                    result[entry.getKey()] = value;
-                } else {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+            for (StatementExecuteUnit eachUnit : each.getInputs()) {
+                Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = null;
+                for (BatchRouteUnit eachRouteUnit : routeUnits) {
+                    if (eachRouteUnit.getRouteUnit().equals(eachUnit.getRouteUnit())) {
+                        jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
+                        break;
+                    }
+                }
+                for (Entry<Integer, Integer> entry : jdbcAndActualAddBatchCallTimesMap.entrySet()) {
+                    int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
                     result[entry.getKey()] += value;
                 }
+                count++;
             }
-            count++;
         }
         return result;
     }

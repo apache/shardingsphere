@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases db-types="MySQL" namespace="mysql.dml.replace">
+    <sql-case id="replace_with_all_placeholders" value="REPLACE INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
+    <sql-case id="replace_set_with_all_placeholders" value="replace INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" />
+    <sql-case id="replace_with_batch" value="replace INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" />
+</sql-cases>
