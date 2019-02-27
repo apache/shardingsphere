@@ -1,0 +1,3 @@
+name: min_config
+registry:
+  serverLists: localhost:3181

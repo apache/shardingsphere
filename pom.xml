@@ -3,12 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-sphere</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0.M1-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
+        <module>sharding-parser</module>
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
@@ -30,14 +32,17 @@
         <guava.version>18.0</guava.version>
         <slf4j.version>1.7.7</slf4j.version>
         
+        <antlr4.version>4.7.1</antlr4.version>
+        
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
         <netty.version>4.1.16.Final</netty.version>
         <commons-codec.version>1.10</commons-codec.version>
+        <commons-collections4.version>4.2</commons-collections4.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
-        <atomikos.version>4.0.4</atomikos.version>
+        <atomikos.version>4.0.6</atomikos.version>
         
         <curator.version>2.10.0</curator.version>
         <grpc.version>1.7.0</grpc.version>
@@ -48,21 +53,20 @@
         
         <lombok.version>1.16.4</lombok.version>
         
-        <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
-        <spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
-        
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
         <mockito.version>2.7.21</mockito.version>
         <logback.version>1.2.0</logback.version>
         
-        <h2.version>1.4.196</h2.version>
-        <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
-        <postgresql.version>9.4.1212</postgresql.version>
-        <mssql.version>6.1.7.jre7-preview</mssql.version>
         <hikari-cp.version>2.4.11</hikari-cp.version>
+        <alibaba.druid.version>1.1.11</alibaba.druid.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
+        <tomcat-dbcp.version>9.0.14</tomcat-dbcp.version>
         <commons-pool.version>1.6</commons-pool.version>
+        <h2.version>1.4.196</h2.version>
+        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <postgresql.version>42.2.5</postgresql.version>
+        <mssql.version>6.1.7.jre7-preview</mssql.version>
         
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -112,6 +116,12 @@
             </dependency>
             
             <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4</artifactId>
+                <version>${antlr4.version}</version>
+            </dependency>
+            
+            <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
@@ -132,6 +142,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
             </dependency>
             
             <dependency>
@@ -154,7 +169,7 @@
                 <artifactId>transactions-jdbc</artifactId>
                 <version>${atomikos.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-framework</artifactId>
@@ -209,24 +224,6 @@
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context-support</artifactId>
-                <version>${springframework.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
-                <version>${spring-boot.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-configuration-processor</artifactId>
-                <version>${spring-boot.version}</version>
-                <optional>true</optional>
-            </dependency>
             
             <dependency>
                 <groupId>junit</groupId>
@@ -278,6 +275,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${alibaba.druid.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons-pool.version}</version>
@@ -293,6 +296,12 @@
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-dbcp</artifactId>
+                <version>${tomcat-dbcp.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -320,21 +329,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${springframework.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-test</artifactId>
                 <version>${curator.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring-boot.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -498,6 +495,11 @@
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>${antlr4.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -603,13 +605,14 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>io/shardingsphere/**/*Test.class</exclude>
-                            <exclude>io/shardingsphere/**/Test*.class</exclude>
+                            <exclude>org/apache/shardingsphere/core/parsing/antlr/autogen/*.class</exclude>
                             <exclude>authpb/*.class</exclude>
                             <exclude>mvccpb/*.class</exclude>
                             <exclude>etcdserverpb/*.class</exclude>
-                            <exclude>io/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
-                            <exclude>io/shardingsphere/orchestration/reg/etcd/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/orchestration/reg/etcd/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
+                            <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>

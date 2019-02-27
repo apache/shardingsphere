@@ -7,28 +7,29 @@ shardingRule:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
-          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+          preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
-          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+          preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       logicIndex: order_index
     t_order_item:
       actualDataNodes: db_ms_${0..9}.t_order_item_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
-          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+          preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
-          rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
-      keyGeneratorColumnName: item_id
-      keyGeneratorClassName: io.shardingsphere.dbtest.fixture.ConstantKeyGenerator
+          preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
+          rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+      keyGenerator:
+        type: Constant
+        column: item_id
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_ms_0
@@ -84,5 +85,3 @@ shardingRule:
       slaveDataSourceNames:
         - slave_db_9
       loadBalanceAlgorithmType: ROUND_ROBIN
-  configMap:
-    key1: value1

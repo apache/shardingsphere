@@ -22,6 +22,42 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
       logicIndex: order_index
+    t_encrypt:
+      actualDataNodes: ds_${0..1}.t_encrypt_${0..1}
+      databaseStrategy:
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: t_encrypt_${user_id % 2}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_encrypt_${order_id % 2}
+      encryptor:
+        type: test
+        columns: order_id
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+    t_encrypt_query:
+      actualDataNodes: ds_${0..1}.t_encrypt_query${0..1}
+      databaseStrategy:
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: t_encrypt_query${user_id % 2}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_encrypt_query${order_id % 2}
+      encryptor:
+        type: assistedTest
+        columns: user_id
+        assistedQueryColumns: assisted_user_id
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+        
+        

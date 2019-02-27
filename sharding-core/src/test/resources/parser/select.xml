@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
     <parser-result sql-case-id="select_constant_without_table" />
-
-    <parser-result sql-case-id="select_with_alias" parameters="1, 1">
+    
+    <parser-result sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
         <tables>
             <table name="t_order" alias="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="7" original-literals="t_order" />
-            <table-token begin-position="22" original-literals="t_order" />
-            <table-token begin-position="30" original-literals="t_order" />
+            <table-token start-index="22" table-name="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
+        <tables>
+            <table name="t_order" alias="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="52" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -28,7 +45,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -40,7 +57,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -52,7 +69,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -64,7 +81,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -76,7 +93,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -95,7 +112,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -114,7 +131,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -139,7 +156,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -165,7 +182,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -189,7 +206,7 @@
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-token begin-position="37" original-literals="t_order" />
+            <table-token start-index="37" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -203,9 +220,11 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
@@ -214,8 +233,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -240,8 +259,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
@@ -254,8 +273,8 @@
             <table name="T_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="T_ORDER" />
-            <table-token begin-position="31" original-literals="T_order_item" />
+            <table-token start-index="16" table-name="T_ORDER" />
+            <table-token start-index="31" table-name="T_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -280,8 +299,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -306,8 +325,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -332,8 +351,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -358,8 +377,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -383,7 +402,7 @@
             <table name="t_order_item" alias="length" />
         </tables>
         <tokens>
-            <table-token begin-position="36" original-literals="t_order_item" />
+            <table-token start-index="36" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -400,9 +419,9 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="56" original-literals="t_order_item" />
-            <index-token begin-position="38" original-literals="order_index" table-name="t_order" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="56" table-name="t_order_item" />
+            <index-token start-index="38" stop-index="48" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -418,7 +437,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -437,7 +456,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -456,7 +475,7 @@
             <table name="t_place" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
+            <table-token start-index="14" table-name="t_place" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -472,11 +491,290 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="&quot;t_order_item&quot;" />
+            <table-token start-index="14" table-name="t_order_item" left-delimiter="&quot;" right-delimiter="&quot;" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
+    <parser-result sql-case-id="select_distinct_with_single_column" >
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>item_id</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token start-index="29" table-name="t_order_item" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_multi_column" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>order_id</distinct-column>
+                    <distinct-column>user_id</distinct-column>
+                    <distinct-column>status</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token start-index="47" table-name="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_star" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token start-index="23" table-name="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_sum" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="s" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token start-index="37" table-name="t_order" />
+            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="s" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="select_distinct_with_count" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token start-index="39" table-name="t_order" />
+            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
+        </tokens>
+    </parser-result>
+        
+    <parser-result sql-case-id="select_distinct_with_avg" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="AVG" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0">
+                    <derived-column type="COUNT" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_COUNT_0" />
+                    <derived-column type="SUM" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_SUM_0" />
+                </aggregation-select-item>
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token start-index="35" table-name="t_order" />
+            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_count_sum" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token start-index="61" table-name="t_order" />
+            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+            <aggregation-distinct-token start-index="33" stop-index="54" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+        </tokens>
+    </parser-result>
+    
+     <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
+         <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="order_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+        <tokens>
+            <table-token start-index="49" table-name="t_order" />
+            <aggregation-distinct-token start-index="17" stop-index="40" column-name="order_id" alias="c" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_count_group_by" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="order_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+        <tokens>
+            <table-token start-index="49" table-name="t_order" />
+            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_function" >
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>item_id</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token start-index="30" table-name="t_order_item" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_count_calculation" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT user_id+order_id)" distinct-column="user_id+order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token start-index="49" table-name="t_order" />
+            <aggregation-distinct-token start-index="7" stop-index="40" column-name="user_id+order_id" alias="c" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_aggregation_functions" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+                <aggregation-select-item type="COUNT" inner-expression="(order_id)" distinct-column="order_id"  />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token start-index="77" table-name="t_order" />
+            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+            <aggregation-distinct-token start-index="30" stop-index="53" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_schema" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="14" skipped-schema-name-length = "4" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_escape_with_single_quota" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="14" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_escape_with_double_quota" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="14" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_block_comment" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="83" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_single_comment" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="77" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_alias_as_single_quote_string">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="31" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_alias_as_string_double_quote">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="31" table-name="t_order" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>

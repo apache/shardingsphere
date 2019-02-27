@@ -25,11 +25,6 @@ masterSlaveRule:
     - db_slave_0
     - db_slave_1
 
-  props:
-    sql.show: true
-  configMap:
-    key1: value1
-
 orchestration:
   name: demo_ds_ms
   overwrite: true

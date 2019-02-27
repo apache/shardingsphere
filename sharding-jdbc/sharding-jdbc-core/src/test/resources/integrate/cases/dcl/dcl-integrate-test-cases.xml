@@ -56,9 +56,6 @@
     <dcl-test-case sql-case-id="alter_user_passwd_without_equality">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_user_passwd_set">
-        <assertion />
-    </dcl-test-case>
     <dcl-test-case sql-case-id="alter_role_add_member">
         <assertion />
     </dcl-test-case>
@@ -101,6 +98,12 @@
     <dcl-test-case sql-case-id="grant_user_on_db">
         <assertion />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="grant_user_on_table">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="grant_user_on_db_and_table">
+        <assertion />
+    </dcl-test-case>
     <dcl-test-case sql-case-id="grant_user_with_hostname">
         <assertion />
     </dcl-test-case>
@@ -117,6 +120,12 @@
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_with_hostname_on_db">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_user_with_hostname_on_table">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_user_with_hostname_on_db_and_table">
         <assertion />
     </dcl-test-case>
 </integrate-test-cases>

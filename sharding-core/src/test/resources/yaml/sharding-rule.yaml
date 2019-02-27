@@ -61,8 +61,9 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
       logicIndex: order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
@@ -73,6 +74,8 @@ shardingRule:
           rangeAlgorithmClassName: TestRangeAlgorithmClassName
   bindingTables:
     - t_order, t_order_item
+  broadcastTables:
+    - t_config
   defaultDataSourceName: default_ds
   defaultDatabaseStrategy: 
     inline:
@@ -80,8 +83,6 @@ shardingRule:
       algorithmExpression: ds_${order_id % 2}
   defaultTableStrategy: 
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
-  
   masterSlaveRules:
     ds_0:
       masterDataSourceName: master_ds_0
@@ -89,20 +90,12 @@ shardingRule:
         - master_ds_0_slave_0
         - master_ds_0_slave_1
       loadBalanceAlgorithmType: ROUND_ROBIN
-      configMap:
-        master-slave-key0: master-slave-value0
     ds_1:
       masterDataSourceName: master_ds_1
       slaveDataSourceNames: 
         - master_ds_1_slave_0
         - master_ds_1_slave_1
-      loadBalanceAlgorithmClassName: TestAlgorithmClass
-      configMap:
-        master-slave-key1: master-slave-value1
-  
-  configMap:
-    sharding-key1: sharding-value1
-    sharding-key2: sharding-value2
-  
-  props:
-    sql.show: true
+      loadBalanceAlgorithmType: RANDOM
+
+props:
+  sql.show: true

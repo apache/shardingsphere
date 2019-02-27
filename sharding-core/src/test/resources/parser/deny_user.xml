@@ -5,7 +5,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="15" original-literals="t_order" />
+            <table-token start-index="15" table-name="t_order" />
         </tokens>
     </parser-result>
 

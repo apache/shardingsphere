@@ -14,10 +14,23 @@ shardingRule:
   tables:
     table_x:
       actualDataNodes: db${0..1}.table_x
-      keyGeneratorColumnName: id
+      keyGenerator:
+        type: SNOWFLAKE
+        column: id
       logicIndex: logic_index
     table_y:
-          actualDataNodes: db${0..1}.table_y
-          logicIndex: logic_index
+      actualDataNodes: db${0..1}.table_y
+      logicIndex: logic_index
+    table_z:
+      actualDataNodes: db${0..1}.table_z
+      encryptor:
+        type: TEST
+        columns: id
+    table_k:
+      actualDataNodes: db${0..1}.table_k
+      encryptor:
+        type: ASSISTEDTEST
+        columns: id, id1
+        assistedQueryColumns: query_id, query_id1
   bindingTables:
     - table_x, table_y

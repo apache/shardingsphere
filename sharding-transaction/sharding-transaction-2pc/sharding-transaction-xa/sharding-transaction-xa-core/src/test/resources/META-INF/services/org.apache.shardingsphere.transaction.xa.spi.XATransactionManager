@@ -1,0 +1,2 @@
+org.apache.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager
+org.apache.shardingsphere.transaction.xa.fixture.FixtureXATransactionManager

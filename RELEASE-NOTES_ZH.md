@@ -1,8 +1,28 @@
+## 3.1.0
+
+### API调整
+
+1. 调整数据库治理模块的注册中心存储结构。
+1. 调整Sharding-JDBC的配置相关API。
+
+### 新功能
+
+1. 支持XA强一致事务。
+1. 路由至单一数据节点的SQL 100%全兼容（仅MySQL）。
+1. 支持DISTINCT语句。
+1. 支持广播表。
+1. 解决使用默认分布式自增主键在TPS不高的情况下可能导致数据倾斜的问题。
+
+###  更新日志
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+
+
 ## 3.0.0
 
 ### 里程碑
 
-1. Sharding-Proxy发布. 支持以数据库的形式使用Sharding-Sphere, 全面提供对MySQL命令行以及图形化客户端的支持
+1. Sharding-Proxy发布. 支持以数据库的形式使用ShardingSphere, 全面提供对MySQL命令行以及图形化客户端的支持
 
 ### 新功能
 

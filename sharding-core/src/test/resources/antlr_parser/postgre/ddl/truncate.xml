@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="postgre.ddl.truncate">
+    <parser-result sql-case-id="truncate_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="15" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="truncate_table_with_space">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="27" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="truncate_table_with_back_quota">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="15" table-name="t_order" left-delimiter="`" right-delimiter="`" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="truncate_tables">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="15" table-name="t_order_item" />
+            <table-token start-index="29" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="truncate_table_with_asterisk">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="15" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="truncate_table_only">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="20" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="truncate_table_simple">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="9" table-name="t_order" />
+        </tokens>
+    </parser-result>
+</parser-result-sets>

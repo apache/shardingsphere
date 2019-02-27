@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="sqlserver.ddl.drop">
+    <parser-result sql-case-id="drop_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="11" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_table_with_space">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="23" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_table_with_bracket">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="11" table-name="t_order" left-delimiter="[" right-delimiter="]" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_tables">
+        <tables>
+            <table name="t_order_item" />
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="11" table-name="t_order_item" />
+            <table-token start-index="25" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_table_if_exists">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="21" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_index">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="11" stop-index="22" table-name="t_order" />
+            <table-token start-index="27" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_index_with_space">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="23" stop-index="34" table-name="t_order" />
+            <table-token start-index="51" table-name="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_index_with_bracket">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="11" stop-index="24" table-name="t_order"/>
+            <table-token start-index="29" table-name="t_order" left-delimiter="[" right-delimiter="]" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="drop_index_if_exists">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="21" stop-index="32" table-name="t_order" />
+            <table-token start-index="37" table-name="t_order" />
+        </tokens>
+    </parser-result>
+</parser-result-sets>
