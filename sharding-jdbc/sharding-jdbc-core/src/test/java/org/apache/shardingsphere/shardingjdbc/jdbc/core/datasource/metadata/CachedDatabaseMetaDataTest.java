@@ -834,7 +834,8 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetProcedureColumns() throws SQLException {
         when(databaseMetaData.getProcedureColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getProcedureColumns("test", null, null, null), is(resultSet));
+        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
+        assertThat(cachedDatabaseMetaData.getProcedureColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

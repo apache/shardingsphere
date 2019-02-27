@@ -55,6 +55,11 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     }
     
     @Override
+    public final ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
+        return new DatabaseMetaDataResultSet(getConnection().getMetaData().getProcedureColumns(catalog, schemaPattern, procedureNamePattern, columnNamePattern), shardingRule);
+    }
+    
+    @Override
     public final ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
         String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
         ResultSet result = new DatabaseMetaDataResultSet(getConnection().getMetaData().getTables(catalog, schemaPattern, shardingTableNamePattern, types), shardingRule);
