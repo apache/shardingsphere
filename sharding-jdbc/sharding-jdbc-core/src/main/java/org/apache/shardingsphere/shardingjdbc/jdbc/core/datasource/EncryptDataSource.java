@@ -111,7 +111,7 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(dataSource.getConnection(), encryptRule);
+        return new EncryptConnection(dataSource.getConnection(), encryptRule, encryptSQLParsingEngine);
     }
     
     @Override
