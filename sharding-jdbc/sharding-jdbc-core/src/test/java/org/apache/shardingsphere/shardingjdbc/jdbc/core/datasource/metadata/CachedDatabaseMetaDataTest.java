@@ -807,7 +807,8 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetSuperTypes() throws SQLException {
         when(databaseMetaData.getSuperTypes("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getSuperTypes("test", null, null), is(resultSet));
+        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
+        assertThat(cachedDatabaseMetaData.getSuperTypes("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

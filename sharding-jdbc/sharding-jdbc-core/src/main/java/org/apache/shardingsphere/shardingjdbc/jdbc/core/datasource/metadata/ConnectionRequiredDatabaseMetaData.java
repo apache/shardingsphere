@@ -48,11 +48,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
-        return getCurrentConnection().getMetaData().getSuperTypes(catalog, schemaPattern, typeNamePattern);
-    }
-    
-    @Override
     public final ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
         return getCurrentConnection().getMetaData().getSuperTables(catalog, schemaPattern, tableNamePattern);
     }
