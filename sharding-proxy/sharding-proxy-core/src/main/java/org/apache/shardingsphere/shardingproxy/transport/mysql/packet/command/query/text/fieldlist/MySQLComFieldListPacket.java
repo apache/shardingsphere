@@ -29,8 +29,7 @@ import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabase
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLErrorCode;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
@@ -98,11 +97,9 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
         if (cause instanceof SQLException) {
             return new MySQLErrPacket(1, (SQLException) cause);
         }
-        if (cause instanceof InvalidShardingCTLFormatException) {
-            return new MySQLErrPacket(1, ShardingCTLErrorCode.INVALID_FORMAT, ((InvalidShardingCTLFormatException) cause).getShardingCTL());
-        }
-        if (cause instanceof UnsupportedShardingCTLTypeException) {
-            return new MySQLErrPacket(1, ShardingCTLErrorCode.UNSUPPORTED_TYPE, ((UnsupportedShardingCTLTypeException) cause).getShardingCTL());
+        if (cause instanceof ShardingCTLException) {
+            ShardingCTLException shardingCTLException = (ShardingCTLException) cause;
+            return new MySQLErrPacket(1, ShardingCTLErrorCode.valueOf(shardingCTLException), shardingCTLException.getShardingCTL());
         }
         if (cause instanceof TableModifyInTransactionException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
