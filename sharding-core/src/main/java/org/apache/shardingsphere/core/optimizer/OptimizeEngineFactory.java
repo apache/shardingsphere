@@ -64,12 +64,12 @@ public final class OptimizeEngineFactory {
     }
     
     /**
+     * Create encrypt optimize engine instance.
      * 
-     * 
-     * @param encryptRule
-     * @param sqlStatement
-     * @param parameters
-     * @return
+     * @param encryptRule encrypt rule
+     * @param sqlStatement sql statement
+     * @param parameters parameters
+     * @return encrypt optimize engine instance
      */
     public static EncryptOptimizeEngine newInstance(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof InsertStatement) {
