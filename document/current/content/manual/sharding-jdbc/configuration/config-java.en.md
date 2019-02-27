@@ -6,7 +6,7 @@ weight = 1
 
 ## Configuration Instance
 
-### Data Sharding
+### Sharding
 
 ```java
      DataSource getShardingDataSource() throws SQLException {

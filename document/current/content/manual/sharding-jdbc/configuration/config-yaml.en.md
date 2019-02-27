@@ -4,7 +4,7 @@ title = "Yaml"
 weight = 2
 +++
 
-## Example
+## Configuration Instance
 
 ### Sharding
 
@@ -56,7 +56,7 @@ props:
   sql.show: true
 ```
 
-### Read-write splitting
+### Read-Write Split
 
 ```yaml
 dataSources:
@@ -87,7 +87,7 @@ props:
   sql.show: true
 ```
 
-### Sharding + Read-write splitting
+### Sharding + Read-Write Split
 
 ```yaml
 dataSources:
@@ -311,10 +311,10 @@ orchestration:
     timeToLiveSeconds: #Time to live in seconds of ephemeral keys, default value is 60 seconds
 ```
 
-## Yaml syntax
+## Yaml Syntax Explanation
 
-`!!` means class instantiation
+`!!` means instantiation of that class
 
-`-` means one or multiple available
+`-` means one or multiple can be included
 
-`[]` means array, can replace `-` each other
+`[]` means array, substitutable with `-` 
