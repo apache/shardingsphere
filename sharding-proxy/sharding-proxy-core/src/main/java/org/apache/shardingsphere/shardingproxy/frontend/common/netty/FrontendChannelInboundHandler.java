@@ -23,9 +23,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 /**
  * Frontend channel inbound handler.
@@ -39,7 +39,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private volatile boolean authorized;
     
-    private final BackendConnection backendConnection = new BackendConnection(GlobalRegistry.getInstance().getTransactionType());
+    private final BackendConnection backendConnection = new BackendConnection(GlobalContext.getInstance().getTransactionType());
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {

@@ -29,8 +29,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
@@ -90,7 +90,7 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        if (GlobalRegistry.getInstance().isCircuitBreak()) {
+        if (GlobalContext.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE)));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();

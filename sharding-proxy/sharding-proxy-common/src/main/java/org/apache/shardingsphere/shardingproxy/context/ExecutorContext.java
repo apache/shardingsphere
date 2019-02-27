@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.runtime;
+package org.apache.shardingsphere.shardingproxy.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public final class ExecutorContext {
     private static final ExecutorContext INSTANCE = new ExecutorContext();
     
     @Getter
-    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
+    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
     
     /**
      * Get executor context instance.

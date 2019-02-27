@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLConnectionIdGenerator;
@@ -95,15 +95,15 @@ public final class MySQLFrontendEngineTest {
     }
     
     private void setAuthentication(final Object value) throws ReflectiveOperationException {
-        Field field = GlobalRegistry.class.getDeclaredField("authentication");
+        Field field = GlobalContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), value);
+        field.set(GlobalContext.getInstance(), value);
     }
     
     private void setTransactionType() throws ReflectiveOperationException {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        Field field = GlobalContext.getInstance().getClass().getDeclaredField("shardingProperties");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), getShardingProperties());
+        field.set(GlobalContext.getInstance(), getShardingProperties());
     }
     
     private ShardingProperties getShardingProperties() {

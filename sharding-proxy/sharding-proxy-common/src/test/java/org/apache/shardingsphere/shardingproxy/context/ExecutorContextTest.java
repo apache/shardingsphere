@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.runtime;
+package org.apache.shardingsphere.shardingproxy.context;
 
 import org.junit.Test;
 

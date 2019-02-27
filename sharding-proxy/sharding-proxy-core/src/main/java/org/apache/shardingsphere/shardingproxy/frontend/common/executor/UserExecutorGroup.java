@@ -21,7 +21,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.executor.ShardingExecutorService;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 
 /**
  * Command execute engine.
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
  */
 public final class UserExecutorGroup implements AutoCloseable {
     
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    private static final GlobalContext GLOBAL_REGISTRY = GlobalContext.getInstance();
     
     private static final String NAME_FORMAT = "Command-%d";
     

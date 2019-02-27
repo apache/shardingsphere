@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.MySQLUnsupportedCommandPacket;
@@ -90,11 +90,11 @@ public final class MySQLMySQLCommandPacketFactoryTest {
     }
     
     private void setMaxConnectionsSizePerQuery() throws ReflectiveOperationException {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        Field field = GlobalContext.getInstance().getClass().getDeclaredField("shardingProperties");
         field.setAccessible(true);
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), String.valueOf(1));
-        field.set(GlobalRegistry.getInstance(), new ShardingProperties(props));
+        field.set(GlobalContext.getInstance(), new ShardingProperties(props));
     }
     
     @Test

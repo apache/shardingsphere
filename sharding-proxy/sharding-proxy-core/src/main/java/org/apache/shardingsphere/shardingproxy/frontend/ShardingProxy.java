@@ -34,8 +34,8 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingproxy.context.ExecutorContext;
 import org.apache.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
-import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
 
 /**
  * Sharding-Proxy.

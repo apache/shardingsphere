@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 
 import java.util.Arrays;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
 @Getter
 public final class MySQLAuthenticationHandler {
     
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    private static final GlobalContext GLOBAL_REGISTRY = GlobalContext.getInstance();
     
     private final MySQLAuthPluginData mySQLAuthPluginData = new MySQLAuthPluginData();
     
