@@ -112,6 +112,13 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
         }
     }
     
+    @Override
+    public final ResultSet getTypeInfo() throws SQLException {
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getTypeInfo(), shardingRule);
+        }
+    }
+    
     private String getShardingTableNamePattern(final String tableNamePattern) {
         return null == tableNamePattern ? tableNamePattern : (shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern);
     }

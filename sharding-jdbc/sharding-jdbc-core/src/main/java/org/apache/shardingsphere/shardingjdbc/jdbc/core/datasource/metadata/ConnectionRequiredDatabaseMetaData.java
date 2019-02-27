@@ -94,11 +94,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getTypeInfo() throws SQLException {
-        return getCurrentConnection().getMetaData().getTypeInfo();
-    }
-    
-    @Override
     public final ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
         return getCurrentConnection().getMetaData().getIndexInfo(catalog, schema, table, unique, approximate);
     }
