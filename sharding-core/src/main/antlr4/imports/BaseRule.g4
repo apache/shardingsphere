@@ -14,6 +14,14 @@ SL_COMMENT
     : MINUS MINUS ~[\r\n]* -> channel(HIDDEN)
     ;
     
+ignoredIdentifier_
+    : ID
+    ;
+
+ignoredIdentifiers_
+    : ignoredIdentifier_ (COMMA ignoredIdentifier_)*
+    ;
+    
 schemaName
     : ID
     ;
