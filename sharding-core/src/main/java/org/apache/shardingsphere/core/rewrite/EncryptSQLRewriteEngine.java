@@ -133,7 +133,6 @@ public final class EncryptSQLRewriteEngine {
         if (sqlTokens.isEmpty()) {
             return appendOriginalLiterals(result);
         }
-        appendInitialLiterals(!isSingleRouting, result);
         appendTokensAndPlaceholders(!isSingleRouting, result);
         return result;
     }
@@ -143,33 +142,9 @@ public final class EncryptSQLRewriteEngine {
         return sqlBuilder;
     }
     
-    private void appendInitialLiterals(final boolean isRewrite, final SQLBuilder sqlBuilder) {
-        if (isRewrite && isContainsAggregationDistinctToken()) {
-            appendAggregationDistinctLiteral(sqlBuilder);
-        } else {
-            sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
-        }
-    }
-    
-    private boolean isContainsAggregationDistinctToken() {
-        return Iterators.tryFind(sqlTokens.iterator(), new Predicate<SQLToken>() {
-            
-            @Override
-            public boolean apply(final SQLToken input) {
-                return input instanceof AggregationDistinctToken;
-            }
-        }).isPresent();
-    }
-    
-    private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
-        int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(0, firstSelectItemStartIndex));
-        sqlBuilder.appendLiterals("DISTINCT ");
-        sqlBuilder.appendLiterals(originalSQL.substring(firstSelectItemStartIndex, sqlTokens.get(0).getStartIndex()));
-    }
-    
     private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder sqlBuilder) {
         int count = 0;
+        sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
             if (each instanceof TableToken) {
                 appendTablePlaceholder(sqlBuilder, (TableToken) each, count);
