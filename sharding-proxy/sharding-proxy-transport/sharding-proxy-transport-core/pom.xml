@@ -5,21 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-proxy-frontend</artifactId>
+        <artifactId>sharding-proxy-transport</artifactId>
         <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-proxy-frontend-mysql</artifactId>
+    <artifactId>sharding-proxy-transport-core</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-frontend-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-frontend-core</artifactId>
+            <artifactId>sharding-proxy-transport-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -29,18 +24,22 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-transport-mysql</artifactId>
+            <artifactId>sharding-proxy-backend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-backend</artifactId>
+            <artifactId>sharding-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
         </dependency>
     </dependencies>
 </project>

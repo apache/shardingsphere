@@ -9,32 +9,13 @@
         <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy-transport</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-backend</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-opentracing</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>sharding-proxy-transport-spi</module>
+        <module>sharding-proxy-transport-core</module>
+        <module>sharding-proxy-transport-mysql</module>
+        <module>sharding-proxy-transport-postgresql</module>
+    </modules>
 </project>
