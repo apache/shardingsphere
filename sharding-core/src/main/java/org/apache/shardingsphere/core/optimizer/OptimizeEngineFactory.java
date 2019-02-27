@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.optimizer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptDefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptOptimizeEngine;
