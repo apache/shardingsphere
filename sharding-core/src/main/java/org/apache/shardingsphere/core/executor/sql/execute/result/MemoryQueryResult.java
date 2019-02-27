@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.io.ByteArrayInputStream;
@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Query result for memory loading.
@@ -51,9 +52,9 @@ public final class MemoryQueryResult implements QueryResult {
     private final QueryResultMetaData metaData;
     
     @SneakyThrows 
-    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) {
+    public MemoryQueryResult(final ResultSet resultSet, final Map<String, Collection<String>> logicAndActualTables, final ShardingEncryptorEngine shardingEncryptorEngine) {
         resultData = getResultData(resultSet);
-        metaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        metaData = new QueryResultMetaData(resultSet.getMetaData(), logicAndActualTables, shardingEncryptorEngine);
     }
     
     @SneakyThrows

@@ -115,7 +115,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         ResultSet resultSet = preparedStatement.executeQuery();
         ShardingRule shardingRule = getConnection().getShardingContext().getShardingRule();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule) : new MemoryQueryResult(resultSet, shardingRule);
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine()) 
+                : new MemoryQueryResult(resultSet, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine());
     }
     
     /**

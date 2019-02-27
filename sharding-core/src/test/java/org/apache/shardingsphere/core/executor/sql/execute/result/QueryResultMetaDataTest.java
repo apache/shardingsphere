@@ -47,7 +47,7 @@ public class QueryResultMetaDataTest {
     public void setUp() {
         ResultSetMetaData resultSetMetaData = getResultMetaData();
         ShardingRule shardingRule = getShardingRule();
-        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule.getAllActualTableNames(), shardingRule.getShardingEncryptorEngine());
     }
     
     private ShardingRule getShardingRule() {
