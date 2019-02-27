@@ -14,6 +14,8 @@
     
     <modules>
         <module>sharding-proxy-common</module>
+        <module>sharding-proxy-transport</module>
+        <module>sharding-proxy-frontend</module>
         <module>sharding-proxy-backend</module>
         <module>sharding-proxy-bootstrap</module>
     </modules>
