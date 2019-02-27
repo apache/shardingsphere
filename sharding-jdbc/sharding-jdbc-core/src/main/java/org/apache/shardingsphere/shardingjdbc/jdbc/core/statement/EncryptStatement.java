@@ -17,19 +17,30 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Statement;
 
 /**
  * Encrypt statement.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {
+    
+    private final Statement statement;
+    
+    private final EncryptRule encryptRule;
+    
+    private final ShardingTableMetaData encryptTableMetaData;
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
