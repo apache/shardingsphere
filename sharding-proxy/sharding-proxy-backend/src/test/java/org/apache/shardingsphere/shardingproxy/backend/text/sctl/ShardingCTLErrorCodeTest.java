@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl;
 
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingCTLErrorCodeTest {
     
@@ -36,5 +40,20 @@ public final class ShardingCTLErrorCodeTest {
         assertThat(ShardingCTLErrorCode.UNSUPPORTED_TYPE.getErrorCode(), is(11001));
         assertThat(ShardingCTLErrorCode.UNSUPPORTED_TYPE.getSqlState(), is("S11001"));
         assertThat(ShardingCTLErrorCode.UNSUPPORTED_TYPE.getErrorMessage(), is("Could not support sctl type [%s]."));
+    }
+    
+    @Test
+    public void assertValueOfWithInvalidFormat() {
+        assertThat(ShardingCTLErrorCode.valueOf(new InvalidShardingCTLFormatException("test")), is(ShardingCTLErrorCode.INVALID_FORMAT));
+    }
+    
+    @Test
+    public void assertValueOfWithUnsupportedType() {
+        assertThat(ShardingCTLErrorCode.valueOf(new UnsupportedShardingCTLTypeException("test")), is(ShardingCTLErrorCode.UNSUPPORTED_TYPE));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertValueOfWithUnsupportedUnsupportedOperationException() {
+        ShardingCTLErrorCode.valueOf(mock(ShardingCTLException.class));
     }
 }

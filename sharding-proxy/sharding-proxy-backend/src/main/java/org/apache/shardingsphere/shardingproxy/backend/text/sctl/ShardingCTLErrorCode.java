@@ -19,6 +19,9 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.shardingproxy.error.SQLErrorCode;
 
 /**
@@ -39,4 +42,20 @@ public enum ShardingCTLErrorCode implements SQLErrorCode {
     private final String sqlState;
     
     private final String errorMessage;
+    
+    /**
+     * Value of sharding CTL error code.
+     * 
+     * @param exception exception
+     * @return sharding CTL error code
+     */
+    public static ShardingCTLErrorCode valueOf(final ShardingCTLException exception) {
+        if (exception instanceof InvalidShardingCTLFormatException) {
+            return ShardingCTLErrorCode.INVALID_FORMAT;
+        }
+        if (exception instanceof UnsupportedShardingCTLTypeException) {
+            return ShardingCTLErrorCode.UNSUPPORTED_TYPE;
+        }
+        throw new UnsupportedOperationException("Cannot find sharding CTL error code from exception: %s", exception);
+    }
 }

@@ -87,7 +87,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new UpdateResponse();
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
-        if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
+        if (isExecuteDDLInXATransaction(sqlStatement.getType())) {
             return new ErrorResponse(new TableModifyInTransactionException(sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
@@ -97,14 +97,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return merge(sqlStatement);
     }
     
-    private boolean isUnsupportedXA(final SQLType sqlType) {
+    private boolean isExecuteDDLInXATransaction(final SQLType sqlType) {
         BackendConnection connection = executeEngine.getBackendConnection();
         return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
-    }
-    
-    private boolean isUnsupportedBASE(final SQLType sqlType) {
-        BackendConnection connection = executeEngine.getBackendConnection();
-        return TransactionType.BASE == connection.getTransactionType() && SQLType.DML != sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
     private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {
