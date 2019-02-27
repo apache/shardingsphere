@@ -357,30 +357,18 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     @Override
-    public final void setFetchDirection(final int direction) throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.setFetchDirection(direction);
-            }
-        });
+    public void setFetchDirection(final int direction) throws SQLException {
+        originalResultSet.setFetchDirection(direction);
     }
     
     @Override
-    public final int getFetchDirection() throws SQLException {
-        return resultSets.get(0).getFetchDirection();
+    public int getFetchDirection() throws SQLException {
+        return originalResultSet.getFetchDirection();
     }
     
     @Override
-    public final void setFetchSize(final int rows) throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.setFetchSize(rows);
-            }
-        });
+    public void setFetchSize(final int rows) throws SQLException {
+        originalResultSet.setFetchSize(rows);
     }
     
     @Override
