@@ -21,17 +21,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
-import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
-import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
@@ -39,44 +33,26 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpressio
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
-import org.apache.shardingsphere.core.parsing.parser.token.OffsetToken;
-import org.apache.shardingsphere.core.parsing.parser.token.OrderByToken;
 import org.apache.shardingsphere.core.parsing.parser.token.RemoveToken;
-import org.apache.shardingsphere.core.parsing.parser.token.RowCountToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
-import org.apache.shardingsphere.core.parsing.parser.token.SchemaToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
-import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptUpdateItemColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
-import org.apache.shardingsphere.core.routing.SQLUnit;
-import org.apache.shardingsphere.core.routing.type.RoutingTable;
-import org.apache.shardingsphere.core.routing.type.TableUnit;
-import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
-import org.apache.shardingsphere.spi.hook.RewriteHook;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -105,7 +81,7 @@ public final class EncryptSQLRewriteEngine {
     private final List<Object> parameters;
     
     /**
-     * Constructs SQL rewrite engine.
+     * Constructs encrypt SQL rewrite engine.
      * 
      * @param encryptRule encrypt rule
      * @param originalSQL original SQL
@@ -148,8 +124,6 @@ public final class EncryptSQLRewriteEngine {
         for (SQLToken each : sqlTokens) {
             if (each instanceof TableToken) {
                 appendTablePlaceholder(sqlBuilder, (TableToken) each, count);
-            } else if (each instanceof SchemaToken) {
-                appendSchemaPlaceholder(sqlBuilder, (SchemaToken) each, count);
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
@@ -169,12 +143,6 @@ public final class EncryptSQLRewriteEngine {
         sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getLeftDelimiter(), tableToken.getRightDelimiter()));
         int beginPosition = tableToken.getStartIndex() + tableToken.getLength();
         appendRest(sqlBuilder, count, beginPosition);
-    }
-    
-    private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase()));
-        appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
@@ -351,7 +319,7 @@ public final class EncryptSQLRewriteEngine {
     
     private String getEncryptAssistedColumnName(final EncryptColumnToken encryptColumnToken) {
         Column column = encryptColumnToken.getColumn();
-        Optional<String> result = encryptRule.getEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName()));
+        Optional<String> result = encryptRule.getEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName());
         Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
         return result.get();
     }
@@ -367,22 +335,5 @@ public final class EncryptSQLRewriteEngine {
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
-    }
-    
-    /**
-     * Generate SQL string.
-     * 
-     * @param tableUnit route table unit
-     * @param sqlBuilder SQL builder
-     * @param shardingDataSourceMetaData sharding data source meta data
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        try {
-            SQLUnit result = sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
-            return result;
-        } catch (final Exception ex) {
-            throw ex;
-        }
     }
 }
