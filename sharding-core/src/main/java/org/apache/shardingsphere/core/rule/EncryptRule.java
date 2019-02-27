@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rule;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
@@ -41,8 +42,10 @@ public final class EncryptRule {
 
     private final ShardingEncryptorStrategy defaultEncryptorStrategy;
     
+    @Getter
     private final ShardingEncryptorEngine encryptorEngine;
     
+    @Getter
     private final ParsingResultCache parsingResultCache;
     
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
