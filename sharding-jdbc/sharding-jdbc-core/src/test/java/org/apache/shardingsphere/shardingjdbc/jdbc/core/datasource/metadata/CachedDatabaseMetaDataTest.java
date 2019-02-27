@@ -934,7 +934,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetUDTs() throws SQLException {
         when(databaseMetaData.getUDTs("test", null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getUDTs("test", null, null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getUDTs("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
