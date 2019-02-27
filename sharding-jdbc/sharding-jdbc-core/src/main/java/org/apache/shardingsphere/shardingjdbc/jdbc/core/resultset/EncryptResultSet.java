@@ -48,7 +48,7 @@ import java.util.Collections;
  *
  * @author panjuan
  */
-public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
+public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
     private final EncryptStatement encryptStatement;
     
