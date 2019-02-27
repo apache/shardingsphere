@@ -140,12 +140,9 @@ public final class SQLBuilder {
     /**
      * Convert to SQL unit.
      *
-     * @param logicAndActualTableMap logic and actual map
-     * @param shardingRule sharding rule
-     * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit toSQL(final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    public SQLUnit toSQL() {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
@@ -154,7 +151,7 @@ public final class SQLBuilder {
                 continue;
             }
             if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(tableUnit, (InsertValuesPlaceholder) each, insertParameters, result);
+                appendInsertValuesPlaceholder(null, (InsertValuesPlaceholder) each, insertParameters, result);
             } else {
                 result.append(each);
             }
