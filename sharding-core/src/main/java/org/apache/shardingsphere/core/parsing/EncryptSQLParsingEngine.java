@@ -52,6 +52,7 @@ public final class EncryptSQLParsingEngine {
      * Parse SQL.
      *
      * @param useCache use cache or not
+     * @param sql sql
      * @return parsed SQL statement
      */
     public SQLStatement parse(final boolean useCache, final String sql) {
