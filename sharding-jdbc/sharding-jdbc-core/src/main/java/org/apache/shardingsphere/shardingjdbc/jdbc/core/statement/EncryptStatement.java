@@ -59,6 +59,11 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         return resultSet;
     }
     
+    @Override
+    public ResultSet getResultSet() {
+        return resultSet;
+    }
+    
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getEncryptSQLParsingEngine().parse(false, sql);
         OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
@@ -69,16 +74,6 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public int executeUpdate(final String sql) throws SQLException {
         return statement.executeUpdate(getRewriteSQL(sql));
-    }
-    
-    @Override
-    public boolean execute(final String sql) throws SQLException {
-        return statement.execute(getRewriteSQL(sql));
-    }
-    
-    @Override
-    public ResultSet getResultSet() {
-        return resultSet;
     }
     
     @Override
@@ -94,6 +89,11 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public int executeUpdate(final String sql, final String[] columnNames) throws SQLException {
         return statement.executeUpdate(getRewriteSQL(sql), columnNames);
+    }
+    
+    @Override
+    public boolean execute(final String sql) throws SQLException {
+        return statement.execute(getRewriteSQL(sql));
     }
     
     @Override
