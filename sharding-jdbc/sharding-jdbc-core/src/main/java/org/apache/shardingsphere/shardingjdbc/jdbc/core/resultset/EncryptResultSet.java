@@ -165,13 +165,13 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
     @SuppressWarnings("deprecation")
     @Override
-    public BigDecimal getBigDecimal(final int columnIndex, int scale) throws SQLException {
+    public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
-    public BigDecimal getBigDecimal(final String columnLabel, int scale) throws SQLException {
+    public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
     }
     
@@ -196,12 +196,12 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public Date getDate(final int columnIndex, Calendar cal) throws SQLException {
+    public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
         return (Date) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
-    public Date getDate(final String columnLabel, Calendar cal) throws SQLException {
+    public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
         return (Date) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnLabel, Date.class, cal), Date.class);
     }
     
@@ -216,7 +216,7 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public Time getTime(final int columnIndex, Calendar cal) throws SQLException {
+    public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
         return (Time) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
