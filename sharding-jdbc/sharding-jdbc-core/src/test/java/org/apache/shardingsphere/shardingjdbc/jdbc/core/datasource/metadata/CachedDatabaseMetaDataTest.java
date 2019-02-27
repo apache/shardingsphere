@@ -827,7 +827,8 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetProcedures() throws SQLException {
         when(databaseMetaData.getProcedures("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getProcedures("test", null, null), is(resultSet));
+        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
+        assertThat(cachedDatabaseMetaData.getProcedures("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

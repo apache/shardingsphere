@@ -44,10 +44,14 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
         return new DatabaseMetaDataResultSet(getConnection().getMetaData().getSuperTypes(catalog, schemaPattern, typeNamePattern), shardingRule);
     }
     
-    
     @Override
     public final ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
         return new DatabaseMetaDataResultSet(getConnection().getMetaData().getAttributes(catalog, schemaPattern, typeNamePattern, attributeNamePattern), shardingRule);
+    }
+    
+    @Override
+    public final ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
+        return new DatabaseMetaDataResultSet(getConnection().getMetaData().getProcedures(catalog, schemaPattern, procedureNamePattern), shardingRule);
     }
     
     @Override
