@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimizer.condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimizer.query.AlwaysFalseShardingCondition;
+import org.apache.shardingsphere.core.optimizer.engine.sharding.query.AlwaysFalseShardingCondition;
 
 import java.util.List;
 
