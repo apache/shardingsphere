@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -74,5 +75,18 @@ public final class EncryptRule {
                 return input.getTable();
             }
         });
+    }
+    
+    /**
+     * Get all actual table names.
+     *
+     * @return all actual table names
+     */
+    public Map<String, Collection<String>> getAllEncryptTableNames() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        for (EncryptTableRule each : tableRules) {
+            result.put(each.getTable(), Collections.singletonList(each.getTable()));
+        }
+        return result;
     }
 }
