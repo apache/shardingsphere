@@ -24,8 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -46,21 +44,12 @@ public final class MySQLErrPacketTest {
     }
     
     @Test
-    public void assertNewErrPacketWithException() {
-        MySQLErrPacket actual = new MySQLErrPacket(1, new SQLException("no reason", "X999", -1));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(-1));
-        assertThat(actual.getSqlState(), is("X999"));
-        assertThat(actual.getErrorMessage(), is("no reason"));
-    }
-    
-    @Test
     public void assertWrite() {
-        new MySQLErrPacket(1, new SQLException("no reason", "X999", -1)).write(payload);
+        new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR).write(payload);
         verify(payload).writeInt1(MySQLErrPacket.HEADER);
-        verify(payload).writeInt2(-1);
+        verify(payload).writeInt2(1046);
         verify(payload).writeStringFix("#");
-        verify(payload).writeStringFix("X999");
-        verify(payload).writeStringEOF("no reason");
+        verify(payload).writeStringFix("3D000");
+        verify(payload).writeStringEOF("No database selected");
     }
 }

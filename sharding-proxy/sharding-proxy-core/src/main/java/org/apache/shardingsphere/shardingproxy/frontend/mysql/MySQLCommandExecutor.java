@@ -38,6 +38,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
@@ -93,7 +94,7 @@ public final class MySQLCommandExecutor implements Runnable {
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
-            context.write(new MySQLErrPacket(++currentSequenceId, ex));
+            context.write(MySQLErrPacketFactory.newInstance(++currentSequenceId, ex));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

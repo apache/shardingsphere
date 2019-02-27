@@ -19,19 +19,9 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.exception.BackendException;
-import org.apache.shardingsphere.shardingproxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
-import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLErrorCode;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.error.SQLErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-
-import java.sql.SQLException;
 
 /**
  * MySQL ERR packet protocol.
@@ -62,57 +52,6 @@ public final class MySQLErrPacket implements MySQLPacket {
     
     public MySQLErrPacket(final int sequenceId, final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
         this(sequenceId, sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
-    }
-    
-    public MySQLErrPacket(final int sequenceId, final ShardingCTLException cause) {
-        this(sequenceId, ShardingCTLErrorCode.valueOf(cause), cause.getShardingCTL());
-    }
-    
-    public MySQLErrPacket(final int sequenceId, final SQLException cause) {
-        this(sequenceId, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
-    }
-    
-    public MySQLErrPacket(final int sequenceId, final BackendException cause) {
-        this(sequenceId, getErrorCode(cause), getSQLState(cause), getErrorMessage(cause));
-    }
-    
-    private static int getErrorCode(final BackendException cause) {
-        if (cause instanceof TableModifyInTransactionException) {
-            return MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getErrorCode();
-        }
-        if (cause instanceof UnknownDatabaseException) {
-            return MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode();
-        }
-        if (cause instanceof NoDatabaseSelectedException) {
-            return MySQLServerErrorCode.ER_NO_DB_ERROR.getErrorCode();
-        }
-        return CommonErrorCode.UNKNOWN_EXCEPTION.getErrorCode();
-    }
-    
-    private static String getSQLState(final BackendException cause) {
-        if (cause instanceof TableModifyInTransactionException) {
-            return MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState();
-        }
-        if (cause instanceof UnknownDatabaseException) {
-            return MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState();
-        }
-        if (cause instanceof NoDatabaseSelectedException) {
-            return MySQLServerErrorCode.ER_NO_DB_ERROR.getSqlState();
-        }
-        return CommonErrorCode.UNKNOWN_EXCEPTION.getSqlState();
-    }
-    
-    private static String getErrorMessage(final BackendException cause) {
-        if (cause instanceof TableModifyInTransactionException) {
-            return String.format(MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getErrorMessage(), ((TableModifyInTransactionException) cause).getTableName());
-        }
-        if (cause instanceof UnknownDatabaseException) {
-            return String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), ((UnknownDatabaseException) cause).getDatabaseName());
-        }
-        if (cause instanceof NoDatabaseSelectedException) {
-            return MySQLServerErrorCode.ER_NO_DB_ERROR.getErrorMessage();
-        }
-        return String.format(CommonErrorCode.UNKNOWN_EXCEPTION.getErrorMessage(), cause.getMessage());
     }
     
     @Override

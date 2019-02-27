@@ -23,11 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.exception.BackendException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -36,6 +33,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
 
 import java.sql.SQLException;
 
@@ -90,16 +88,7 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
     }
     
     private MySQLErrPacket createMySQLErrPacket(final Exception cause) {
-        if (cause instanceof SQLException) {
-            return new MySQLErrPacket(1, (SQLException) cause);
-        }
-        if (cause instanceof ShardingCTLException) {
-            return new MySQLErrPacket(1, (ShardingCTLException) cause);
-        }
-        if (cause instanceof BackendException) {
-            return new MySQLErrPacket(1, (BackendException) cause);
-        }
-        return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
+        return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {
