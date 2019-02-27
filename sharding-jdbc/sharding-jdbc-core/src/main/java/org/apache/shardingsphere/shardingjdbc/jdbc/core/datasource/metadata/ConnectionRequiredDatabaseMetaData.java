@@ -99,11 +99,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
-        return getCurrentConnection().getMetaData().getUDTs(catalog, schemaPattern, typeNamePattern, types);
-    }
-    
-    @Override
     public final ResultSet getClientInfoProperties() throws SQLException {
         return getCurrentConnection().getMetaData().getClientInfoProperties();
     }
