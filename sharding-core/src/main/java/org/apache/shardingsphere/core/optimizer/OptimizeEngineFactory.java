@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptDefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptOptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.query.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
