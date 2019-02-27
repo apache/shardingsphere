@@ -99,15 +99,14 @@ public final class EncryptSQLRewriteEngine {
     /**
      * rewrite SQL.
      *
-     * @param isSingleRouting is rewrite
      * @return SQL builder
      */
-    public SQLBuilder rewrite(final boolean isSingleRouting) {
+    public SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder(parameters);
         if (sqlTokens.isEmpty()) {
             return appendOriginalLiterals(result);
         }
-        appendTokensAndPlaceholders(!isSingleRouting, result);
+        appendTokensAndPlaceholders(result);
         return result;
     }
     
@@ -116,12 +115,12 @@ public final class EncryptSQLRewriteEngine {
         return sqlBuilder;
     }
     
-    private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder sqlBuilder) {
+    private void appendTokensAndPlaceholders(final SQLBuilder sqlBuilder) {
         int count = 0;
         sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
             if (each instanceof ItemsToken) {
-                appendItemsToken(sqlBuilder, (ItemsToken) each, count, isRewrite);
+                appendItemsToken(sqlBuilder, (ItemsToken) each, count);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count);
             } else if (each instanceof InsertColumnToken) {
@@ -135,9 +134,11 @@ public final class EncryptSQLRewriteEngine {
         }
     }
     
-    private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
-        boolean isRewriteItem = isRewrite || sqlStatement instanceof InsertStatement;
-        for (int i = 0; i < itemsToken.getItems().size() && isRewriteItem; i++) {
+    private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count) {
+        if (!(sqlStatement instanceof InsertStatement)) {
+            return;
+        }
+        for (int i = 0; i < itemsToken.getItems().size(); i++) {
             if (itemsToken.isFirstOfItemsSpecial() && 0 == i) {
                 sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
             } else {
