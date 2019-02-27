@@ -23,6 +23,7 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
+import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -42,6 +43,8 @@ public final class EncryptRule {
     
     private final ShardingEncryptorEngine encryptorEngine;
     
+    private final ParsingResultCache parsingResultCache;
+    
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
         tableRules = new LinkedList<>();
         Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
@@ -52,6 +55,7 @@ public final class EncryptRule {
         }
         defaultEncryptorStrategy = new ShardingEncryptorStrategy(encryptRuleConfiguration.getDefaultEncryptorConfig());
         encryptorEngine = new ShardingEncryptorEngine(shardingEncryptorStrategies, defaultEncryptorStrategy);
+        parsingResultCache = new ParsingResultCache();
     }
     
     /**
