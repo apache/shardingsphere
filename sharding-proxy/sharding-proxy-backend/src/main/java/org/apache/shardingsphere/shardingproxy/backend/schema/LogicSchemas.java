@@ -19,9 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -47,7 +45,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class LogicSchemas {
     
@@ -57,6 +54,10 @@ public final class LogicSchemas {
     
     private DatabaseType databaseType;
     
+    private LogicSchemas() {
+        ShardingOrchestrationEventBus.getInstance().register(this);
+    }
+    
     /**
      * Get instance of logic schemas.
      *
@@ -64,13 +65,6 @@ public final class LogicSchemas {
      */
     public static LogicSchemas getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * Register listener.
-     */
-    public void register() {
-        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**

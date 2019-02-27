@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.runtime;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -29,11 +26,9 @@ import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchest
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -42,13 +37,10 @@ import java.util.Properties;
  * @author chenqingyang
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class GlobalRegistry {
     
     private static final GlobalRegistry INSTANCE = new GlobalRegistry();
-    
-    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
@@ -57,6 +49,10 @@ public final class GlobalRegistry {
     private Authentication authentication;
     
     private boolean isCircuitBreak;
+    
+    private GlobalRegistry() {
+        ShardingOrchestrationEventBus.getInstance().register(this);
+    }
     
     /**
      * Get instance of proxy context.
@@ -68,20 +64,12 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Register listener.
-     */
-    public void register() {
-        eventBus.register(this);
-    }
-    
-    /**
      * Initialize proxy context.
      *
-     * @param schemaDataSources data source map
      * @param authentication authentication
      * @param props properties
      */
-    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Authentication authentication, final Properties props) {
+    public void init(final Authentication authentication, final Properties props) {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.authentication = authentication;
     }

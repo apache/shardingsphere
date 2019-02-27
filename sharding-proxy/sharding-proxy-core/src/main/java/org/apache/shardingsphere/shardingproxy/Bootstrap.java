@@ -35,7 +35,6 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.ShardingProxy;
-import org.apache.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 
@@ -68,7 +67,6 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException {
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load();
         int port = getPort(args);
-        new ProxyListenerRegister().register();
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), 
                     new Authentication(shardingConfig.getServerConfiguration().getAuthentication().getUsername(), shardingConfig.getServerConfiguration().getAuthentication().getPassword()),
@@ -90,9 +88,8 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final Authentication authentication, final Properties prop, final int port) {
-        Map<String, Map<String, YamlDataSourceParameter>> dataSourceParameterMap = getDataSourceParameterMap(ruleConfigs);
-        GlobalRegistry.getInstance().init(dataSourceParameterMap, authentication, prop);
-        LogicSchemas.getInstance().init(dataSourceParameterMap, getRuleConfiguration(ruleConfigs));
+        GlobalRegistry.getInstance().init(authentication, prop);
+        LogicSchemas.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         initOpenTracing();
         ShardingProxy.getInstance().start(port);
     }
@@ -102,10 +99,8 @@ public final class Bootstrap {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
                 new OrchestrationConfigurationYamlSwapper().swap(serverConfig.getOrchestration()), shardingSchemaNames)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
-            Map<String, Map<String, YamlDataSourceParameter>> dataSourceParameterMap = getSchemaDataSourceParameterMap(shardingOrchestrationFacade);
-            GlobalRegistry.getInstance().init(
-                    dataSourceParameterMap, shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadProperties());
-            LogicSchemas.getInstance().init(dataSourceParameterMap, getSchemaRules(shardingOrchestrationFacade), true);
+            GlobalRegistry.getInstance().init(shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadProperties());
+            LogicSchemas.getInstance().init(getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
             initOpenTracing();
             ShardingProxy.getInstance().start(port);
         }

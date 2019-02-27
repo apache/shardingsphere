@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy;
 
 import org.apache.shardingsphere.shardingproxy.frontend.AllFrontendTests;
-import org.apache.shardingsphere.shardingproxy.listener.AllListenerTests;
 import org.apache.shardingsphere.shardingproxy.transport.AllTransportTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -26,7 +25,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllListenerTests.class, 
         AllTransportTests.class, 
         AllFrontendTests.class 
 })
