@@ -52,6 +52,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
+        ResultSet resultSet = statement.executeQuery(getSqlUnit(sql).getSql());
         return null;
     }
     
