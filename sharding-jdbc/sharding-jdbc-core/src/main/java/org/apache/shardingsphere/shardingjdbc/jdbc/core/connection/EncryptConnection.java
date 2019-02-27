@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parsing.EncryptSQLParsingEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 
 import java.sql.Connection;
@@ -35,6 +38,7 @@ import java.sql.Statement;
  *
  * @author panjuan
  */
+@Getter
 @RequiredArgsConstructor
 public final class EncryptConnection extends AbstractUnsupportedOperationConnection {
 
@@ -42,7 +46,9 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     
     private final EncryptRule encryptRule;
     
-    private final ShardingTableMetaData encryptTableMetaData;
+    private final DatabaseType databaseType;
+    
+    private final EncryptSQLParsingEngine encryptSQLParsingEngine;
     
     @Override
     @SneakyThrows
@@ -52,14 +58,17 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     
     @Override
     public Statement createStatement() {
+        return new EncryptStatement(this);
     }
     
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency) {
+        return new EncryptStatement(this, resultSetType, resultSetConcurrency);
     }
     
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+        return new EncryptStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override
