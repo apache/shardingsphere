@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.query;
+package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;

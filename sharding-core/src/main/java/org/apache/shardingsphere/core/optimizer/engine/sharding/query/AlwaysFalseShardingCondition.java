@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.query;
+package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
 
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 
