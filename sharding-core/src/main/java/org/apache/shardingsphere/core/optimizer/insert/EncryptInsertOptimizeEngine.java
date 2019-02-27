@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpressio
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
 
@@ -43,7 +43,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine {
     
-    private final ShardingRule shardingRule;
+    private final EncryptRule encryptRule;
     
     private final InsertStatement insertStatement;
     
@@ -90,12 +90,12 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
     }
         
     private boolean isNeededToEncrypt() {
-        return shardingRule.getShardingEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
+        return encryptRule.getEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
     }
     
     private void encryptInsertColumnValues(final InsertValuesToken insertValuesToken, final int insertColumnValueIndex) {
         for (int i = 0; i < insertValuesToken.getColumnNames().size(); i++) {
-            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(
+            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getEncryptorEngine().getShardingEncryptor(
                     insertStatement.getTables().getSingleTableName(), insertValuesToken.getColumnName(i));
             if (shardingEncryptor.isPresent()) {
                 reviseInsertValuesToken(insertValuesToken, insertColumnValueIndex, i, shardingEncryptor.get());
@@ -107,7 +107,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
         InsertColumnValue insertColumnValue = insertValuesToken.getColumnValues().get(insertColumnValueIndex);
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             String columnName = insertValuesToken.getColumnName(columnIndex);
-            String assistedColumnName = shardingRule.getTableRule(insertStatement.getTables().getSingleTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(columnName).get();
+            String assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), columnName).get();
             insertValuesToken.getColumnNames().add(assistedColumnName);
             fillInsertValuesTokenWithColumnValue(insertColumnValue, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(insertColumnValue.getColumnValue(columnIndex).toString()));
         }
