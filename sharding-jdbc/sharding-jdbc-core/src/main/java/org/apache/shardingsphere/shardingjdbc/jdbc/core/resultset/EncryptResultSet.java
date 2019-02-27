@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;
@@ -56,10 +55,10 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private IteratorStreamMergedResult resultSet;
     
-    public EncryptResultSet(final EncryptStatement encryptStatement, final ResultSet resultSet, final EncryptRule encryptRule, final ShardingEncryptorEngine encryptorEngine) {
+    public EncryptResultSet(final EncryptStatement encryptStatement, final ResultSet resultSet, final EncryptRule encryptRule) {
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
-        QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule.getAllEncryptTableNames(), encryptorEngine);
+        QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule.getAllEncryptTableNames(), encryptRule.getEncryptorEngine());
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
     }
     
