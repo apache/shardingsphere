@@ -61,4 +61,11 @@ public interface DatabaseFrontendEngine {
      * @param backendConnection backend connection
      */
     void executeCommand(ChannelHandlerContext context, ByteBuf message, BackendConnection backendConnection);
+    
+    /**
+     * Release resource.
+     * 
+     * @param backendConnection backend connection
+     */
+    void release(BackendConnection backendConnection);
 }

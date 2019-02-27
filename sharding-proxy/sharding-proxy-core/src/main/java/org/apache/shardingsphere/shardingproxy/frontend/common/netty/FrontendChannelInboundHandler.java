@@ -60,6 +60,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @SneakyThrows
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
+        databaseFrontendEngine.release(backendConnection);
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }

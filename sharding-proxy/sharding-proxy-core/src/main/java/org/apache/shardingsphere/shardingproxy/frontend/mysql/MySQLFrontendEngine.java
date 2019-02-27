@@ -84,4 +84,8 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
         CommandExecutorSelector.getExecutor(backendConnection.getTransactionType(), context.channel().id()).execute(new MySQLCommandExecutor(context, message, backendConnection));
     }
+    
+    @Override
+    public void release(final BackendConnection backendConnection) {
+    }
 }

@@ -55,6 +55,15 @@ public final class BinaryStatementRegistry {
     }
     
     /**
+     * Unregister.
+     *
+     * @param backendConnection backend connection
+     */
+    public void unregister(final BackendConnection backendConnection) {
+        registries.remove(backendConnection);
+    }
+    
+    /**
      * Get connection scope binary statement registry.
      *
      * @param backendConnection backend connection

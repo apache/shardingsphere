@@ -90,4 +90,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
         ChannelThreadExecutorGroup.getInstance().get(context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
     }
+    
+    @Override
+    public void release(final BackendConnection backendConnection) {
+        BinaryStatementRegistry.getInstance().unregister(backendConnection);
+    }
 }
