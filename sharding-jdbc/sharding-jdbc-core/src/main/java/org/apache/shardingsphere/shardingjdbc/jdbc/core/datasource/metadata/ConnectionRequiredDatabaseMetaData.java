@@ -53,16 +53,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getSchemas() throws SQLException {
-        return getCurrentConnection().getMetaData().getSchemas();
-    }
-    
-    @Override
-    public final ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
-        return getCurrentConnection().getMetaData().getSchemas(catalog, schemaPattern);
-    }
-    
-    @Override
     public final ResultSet getCatalogs() throws SQLException {
         return getCurrentConnection().getMetaData().getCatalogs();
     }
