@@ -333,6 +333,11 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     @Override
+    public Object getObject(final String columnLabel) throws SQLException {
+        return resultSet.getValue(columnLabel, Object.class);
+    }
+    
+    @Override
     public Object getObjectfinal(final String columnLabel) throws SQLException {
         return resultSet.getValue(columnLabel, Object.class);
     }
