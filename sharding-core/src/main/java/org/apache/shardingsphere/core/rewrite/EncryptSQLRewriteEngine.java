@@ -65,6 +65,7 @@ import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.type.RoutingTable;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.util.SQLUtil;
@@ -91,7 +92,7 @@ import java.util.Map.Entry;
  */
 public final class EncryptSQLRewriteEngine {
     
-    private final ShardingRule shardingRule;
+    private final EncryptRule encryptRule;
     
     private final String originalSQL;
     
@@ -103,19 +104,17 @@ public final class EncryptSQLRewriteEngine {
     
     private final List<Object> parameters;
     
-    private final RewriteHook rewriteHook = new SPIRewriteHook();
-    
     /**
      * Constructs SQL rewrite engine.
      * 
-     * @param shardingRule databases and tables sharding rule
+     * @param encryptRule encrypt rule
      * @param originalSQL original SQL
      * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param parameters parameters
      */
-    public EncryptSQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters) {
-        this.shardingRule = shardingRule;
+    public EncryptSQLRewriteEngine(final EncryptRule encryptRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters) {
+        this.encryptRule = encryptRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
@@ -176,22 +175,12 @@ public final class EncryptSQLRewriteEngine {
                 appendTablePlaceholder(sqlBuilder, (TableToken) each, count);
             } else if (each instanceof SchemaToken) {
                 appendSchemaPlaceholder(sqlBuilder, (SchemaToken) each, count);
-            } else if (each instanceof IndexToken) {
-                appendIndexPlaceholder(sqlBuilder, (IndexToken) each, count);
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count);
-            } else if (each instanceof RowCountToken) {
-                appendLimitRowCount(sqlBuilder, (RowCountToken) each, count, isRewrite);
-            } else if (each instanceof OffsetToken) {
-                appendLimitOffsetToken(sqlBuilder, (OffsetToken) each, count, isRewrite);
-            } else if (each instanceof OrderByToken) {
-                appendOrderByToken(sqlBuilder, count, isRewrite);
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(sqlBuilder, (InsertColumnToken) each, count);
-            } else if (each instanceof AggregationDistinctToken) {
-                appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) each, count, isRewrite);
             } else if (each instanceof EncryptColumnToken) {
                 appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
@@ -213,16 +202,6 @@ public final class EncryptSQLRewriteEngine {
         appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
-    private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {
-        String indexName = originalSQL.substring(indexToken.getStartIndex(), indexToken.getStopIndex() + 1);
-        String logicTableName = indexToken.getTableName().toLowerCase();
-        if (Strings.isNullOrEmpty(logicTableName)) {
-            logicTableName = shardingRule.getLogicTableName(indexName);
-        }
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
-        appendRest(sqlBuilder, count, indexToken.getStopIndex() + 1);
-    }
-    
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
         boolean isRewriteItem = isRewrite || sqlStatement instanceof InsertStatement;
         for (int i = 0; i < itemsToken.getItems().size() && isRewriteItem; i++) {
@@ -242,61 +221,9 @@ public final class EncryptSQLRewriteEngine {
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
     }
     
-    private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        Limit limit = selectStatement.getLimit();
-        if (!isRewrite) {
-            sqlBuilder.appendLiterals(String.valueOf(rowCountToken.getRowCount()));
-        } else if ((!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems()) {
-            sqlBuilder.appendLiterals(String.valueOf(Integer.MAX_VALUE));
-        } else {
-            sqlBuilder.appendLiterals(String.valueOf(limit.isNeedRewriteRowCount(databaseType) ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount()));
-        }
-        int beginPosition = rowCountToken.getStartIndex() + String.valueOf(rowCountToken.getRowCount()).length();
-        appendRest(sqlBuilder, count, beginPosition);
-    }
-    
-    private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
-        sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetToken.getOffset()));
-        int beginPosition = offsetToken.getStartIndex() + String.valueOf(offsetToken.getOffset()).length();
-        appendRest(sqlBuilder, count, beginPosition);
-    }
-    
-    private void appendOrderByToken(final SQLBuilder sqlBuilder, final int count, final boolean isRewrite) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (isRewrite) {
-            StringBuilder orderByLiterals = new StringBuilder();
-            orderByLiterals.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
-            int i = 0;
-            for (OrderItem each : selectStatement.getOrderByItems()) {
-                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex())
-                    : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
-                if (0 == i) {
-                    orderByLiterals.append(columnLabel).append(" ").append(each.getOrderDirection().name());
-                } else {
-                    orderByLiterals.append(",").append(columnLabel).append(" ").append(each.getOrderDirection().name());
-                }
-                i++;
-            }
-            orderByLiterals.append(" ");
-            sqlBuilder.appendLiterals(orderByLiterals.toString());
-        }
-        int beginPosition = selectStatement.getGroupByLastIndex() + 1;
-        appendRest(sqlBuilder, count, beginPosition);
-    }
-    
     private void appendSymbolToken(final SQLBuilder sqlBuilder, final InsertColumnToken insertColumnToken, final int count) {
         sqlBuilder.appendLiterals(insertColumnToken.getColumnName());
         appendRest(sqlBuilder, count, insertColumnToken.getStartIndex());
-    }
-    
-    private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
-        if (!isRewrite) {
-            sqlBuilder.appendLiterals(originalSQL.substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1)); 
-        } else {
-            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), null, distinctToken.getAlias()));
-        }
-        appendRest(sqlBuilder, count, distinctToken.getStopIndex() + 1);
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
@@ -344,7 +271,7 @@ public final class EncryptSQLRewriteEngine {
     }
     
     private ShardingEncryptor getShardingEncryptor(final EncryptColumnToken encryptColumnToken) {
-        return shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        return encryptRule.getEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
     }
     
     private List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
@@ -449,7 +376,7 @@ public final class EncryptSQLRewriteEngine {
     
     private String getEncryptAssistedColumnName(final EncryptColumnToken encryptColumnToken) {
         Column column = encryptColumnToken.getColumn();
-        Optional<String> result = shardingRule.getTableRule(column.getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(column.getName());
+        Optional<String> result = encryptRule.getEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName()));
         Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
         return result.get();
     }
@@ -476,40 +403,11 @@ public final class EncryptSQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        rewriteHook.start(tableUnit);
         try {
             SQLUnit result = sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
-            rewriteHook.finishSuccess(result);
             return result;
-            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            rewriteHook.finishFailure(ex);
             throw ex;
         }
-    }
-   
-    private Map<String, String> getTableTokens(final TableUnit tableUnit) {
-        Map<String, String> result = new HashMap<>();
-        for (RoutingTable each : tableUnit.getRoutingTables()) {
-            String logicTableName = each.getLogicTableName().toLowerCase();
-            result.put(logicTableName, each.getActualTableName());
-            Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
-            if (bindingTableRule.isPresent()) {
-                result.putAll(getBindingTableTokens(tableUnit.getDataSourceName(), each, bindingTableRule.get()));
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, String> getBindingTableTokens(final String dataSourceName, final RoutingTable routingTable, final BindingTableRule bindingTableRule) {
-        Map<String, String> result = new HashMap<>();
-        for (String each : sqlStatement.getTables().getTableNames()) {
-            String tableName = each.toLowerCase();
-            if (!tableName.equals(routingTable.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, routingTable.getActualTableName()));
-            }
-        }
-        return result;
     }
 }
