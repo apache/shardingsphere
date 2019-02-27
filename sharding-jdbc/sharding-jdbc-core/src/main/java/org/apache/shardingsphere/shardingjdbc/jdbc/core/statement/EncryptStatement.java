@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
 import java.sql.Connection;
@@ -33,14 +32,17 @@ import java.sql.Statement;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {
     
     private final Statement statement;
     
-    private final EncryptRule encryptRule;
+    private final EncryptConnection connection;
     
-    private final ShardingTableMetaData encryptTableMetaData;
+    @SneakyThrows
+    public EncryptStatement(final EncryptConnection connection) {
+        statement = connection.getConnection().createStatement();
+        this.connection = connection;
+    }
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
@@ -50,61 +52,6 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public int executeUpdate(final String sql) throws SQLException {
         return 0;
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        
-    }
-    
-    @Override
-    public int getMaxFieldSize() throws SQLException {
-        return 0;
-    }
-    
-    @Override
-    public void setMaxFieldSize(final int max) throws SQLException {
-        
-    }
-    
-    @Override
-    public int getMaxRows() throws SQLException {
-        return 0;
-    }
-    
-    @Override
-    public void setMaxRows(final int max) throws SQLException {
-        
-    }
-    
-    @Override
-    public void setEscapeProcessing(final boolean enable) throws SQLException {
-        
-    }
-    
-    @Override
-    public int getQueryTimeout() throws SQLException {
-        return 0;
-    }
-    
-    @Override
-    public void setQueryTimeout(final int seconds) throws SQLException {
-        
-    }
-    
-    @Override
-    public void cancel() throws SQLException {
-        
-    }
-    
-    @Override
-    public SQLWarning getWarnings() throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public void clearWarnings() throws SQLException {
-        
     }
     
     @Override
@@ -118,33 +65,88 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     @Override
+    public void close() throws SQLException {
+        statement.close();
+    }
+    
+    @Override
+    public int getMaxFieldSize() throws SQLException {
+        return statement.getMaxFieldSize();
+    }
+    
+    @Override
+    public void setMaxFieldSize(final int max) throws SQLException {
+        statement.setMaxFieldSize(max);
+    }
+    
+    @Override
+    public int getMaxRows() throws SQLException {
+        return statement.getMaxRows();
+    }
+    
+    @Override
+    public void setMaxRows(final int max) throws SQLException {
+        statement.setMaxRows(max);
+    }
+    
+    @Override
+    public void setEscapeProcessing(final boolean enable) throws SQLException {
+        statement.setEscapeProcessing(enable);
+    }
+    
+    @Override
+    public int getQueryTimeout() throws SQLException {
+        return statement.getQueryTimeout();
+    }
+    
+    @Override
+    public void setQueryTimeout(final int seconds) throws SQLException {
+        statement.setQueryTimeout(seconds);
+    }
+    
+    @Override
+    public void cancel() throws SQLException {
+        statement.cancel();
+    }
+    
+    @Override
+    public SQLWarning getWarnings() throws SQLException {
+        return statement.getWarnings();
+    }
+    
+    @Override
+    public void clearWarnings() throws SQLException {
+        statement.clearWarnings();
+    }
+    
+    @Override
     public int getUpdateCount() throws SQLException {
-        return 0;
+        return statement.getUpdateCount();
     }
     
     @Override
     public boolean getMoreResults() throws SQLException {
-        return false;
+        return statement.getMoreResults();
     }
     
     @Override
     public void setFetchSize(final int rows) throws SQLException {
-        
+        statement.setFetchSize(rows);
     }
     
     @Override
     public int getFetchSize() throws SQLException {
-        return 0;
+        return statement.getFetchSize();
     }
     
     @Override
     public int getResultSetConcurrency() throws SQLException {
-        return 0;
+        return statement.getResultSetConcurrency();
     }
     
     @Override
     public int getResultSetType() throws SQLException {
-        return 0;
+        return statement.getResultSetType();
     }
     
     @Override
