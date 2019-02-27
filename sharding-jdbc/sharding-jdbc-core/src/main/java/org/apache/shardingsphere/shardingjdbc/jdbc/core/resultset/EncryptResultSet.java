@@ -19,6 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
@@ -38,9 +40,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 
 /**
  * Encrypt result set.
@@ -49,20 +49,24 @@ import java.util.Map;
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
-    private final StreamQueryResult queryResult;
+    private final ResultSet originalResultSet;
+    
+    private final IteratorStreamMergedResult resultSet;
     
     public EncryptResultSet(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingEncryptorEngine encryptorEngine) {
-        queryResult = new StreamQueryResult(resultSet, encryptRule.getAllEncryptTableNames(), encryptorEngine);
+        originalResultSet = resultSet;
+        QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule.getAllEncryptTableNames(), encryptorEngine);
+        this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
     }
     
     @Override
     public boolean next() throws SQLException {
-        return queryResult.next();
+        return resultSet.next();
     }
     
     @Override
     public void close() throws SQLException {
-        queryResult.close();
+        
     }
     
     @Override
