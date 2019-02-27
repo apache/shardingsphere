@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.parsing.SQLParsingEngine;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
@@ -64,11 +64,12 @@ public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
         sql = payload.readStringEOF();
         schemaName = backendConnection.getSchemaName();
         LogicSchema logicSchema = backendConnection.getLogicSchema();
+        // TODO we should use none-sharding parsing engine in future.
         sqlParsingEngine = new SQLParsingEngine(LogicSchemas.getInstance().getDatabaseType(), sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
     }
     
     private ShardingRule getShardingRule(final LogicSchema logicSchema) {
-        return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
+        return logicSchema instanceof MasterSlaveSchema ? ((MasterSlaveSchema) logicSchema).getDefaultShardingRule() : ((ShardingSchema) logicSchema).getShardingRule();
     }
     
     @Override
