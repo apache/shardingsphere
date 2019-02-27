@@ -8,7 +8,7 @@
         <artifactId>sharding-proxy</artifactId>
         <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-proxy-core</artifactId>
+    <artifactId>sharding-proxy-bootstrap</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
