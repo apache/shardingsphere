@@ -10,6 +10,7 @@ execute
     | insert
     | update
     | delete
+    | replace
     | createIndex
     | dropIndex
     | createTable

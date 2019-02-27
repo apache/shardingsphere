@@ -57,3 +57,7 @@ fromMultiTables
 fromMultiTable
     : tableName DOT_ASTERISK?
     ;
+    
+replace
+    : REPLACE (LOW_PRIORITY | DELAYED)? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | selectClause) 
+    ;

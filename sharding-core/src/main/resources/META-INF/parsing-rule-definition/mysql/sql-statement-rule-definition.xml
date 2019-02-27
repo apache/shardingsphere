@@ -22,6 +22,7 @@
     <sql-statement-rule context="Delete" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,deleteFromWhere"/>
     <sql-statement-rule context="Update" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,updateWhere"/>
     <sql-statement-rule context="Insert" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement" extractor-rule-refs="tableNames,insert"/>
+    <sql-statement-rule context="Replace" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement" extractor-rule-refs="tableNames,insert"/>
 
     <sql-statement-rule context="grant" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement" extractor-rule-refs="tableNames" />
     <sql-statement-rule context="grantProxy" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement" />
