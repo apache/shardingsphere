@@ -21,7 +21,6 @@ import com.google.common.base.Joiner;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
-import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import io.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
@@ -210,7 +209,6 @@ public abstract class BaseIntegrateTest {
         if (dataSource instanceof ShardingDataSource) {
             ((ShardingDataSource) dataSource).getShardingContext().getExecuteEngine().close();
         }
-        ParsingResultCache.getInstance().clear();
     }
 }
 
