@@ -35,20 +35,17 @@ public final class EncryptSQLParsingEngine {
     
     private final DatabaseType dbType;
     
-    private final String sql;
-    
     private final EncryptRule encryptRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
     private final ParsingResultCache parsingResultCache;
     
-    public EncryptSQLParsingEngine(final DatabaseType dbType, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public EncryptSQLParsingEngine(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         this.dbType = dbType;
-        this.sql = sql;
         this.encryptRule = encryptRule;
         this.shardingTableMetaData = shardingTableMetaData;
-        parsingResultCache = encryptRule.getParsingResultCache();
+        parsingResultCache = new ParsingResultCache();
     }
     
     /**
@@ -57,8 +54,8 @@ public final class EncryptSQLParsingEngine {
      * @param useCache use cache or not
      * @return parsed SQL statement
      */
-    public SQLStatement parse(final boolean useCache) {
-        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache);
+    public SQLStatement parse(final boolean useCache, final String sql) {
+        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache, sql);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
@@ -72,7 +69,7 @@ public final class EncryptSQLParsingEngine {
         return result;
     }
     
-    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
+    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache, final String sql) {
         return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }
