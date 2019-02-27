@@ -39,12 +39,10 @@ import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.RemoveToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
-import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptUpdateItemColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -122,9 +120,7 @@ public final class EncryptSQLRewriteEngine {
         int count = 0;
         sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
-            if (each instanceof TableToken) {
-                appendTablePlaceholder(sqlBuilder, (TableToken) each, count);
-            } else if (each instanceof ItemsToken) {
+            if (each instanceof ItemsToken) {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count);
@@ -137,12 +133,6 @@ public final class EncryptSQLRewriteEngine {
             }
             count++;
         }
-    }
-    
-    private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count) {
-        sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getLeftDelimiter(), tableToken.getRightDelimiter()));
-        int beginPosition = tableToken.getStartIndex() + tableToken.getLength();
-        appendRest(sqlBuilder, count, beginPosition);
     }
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
