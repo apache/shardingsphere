@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimizer.EncryptOptimizeEngine;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
