@@ -5,7 +5,7 @@
     <extractor-rule id="changeColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.dialect.mysql.MySQLChangeColumnDefinitionExtractor" />
     <extractor-rule id="dropPrimaryKey" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.constraint.dialect.mysql.MySQLDropPrimaryKeyExtractor" />
     <extractor-rule id="setAutoCommit" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.SetAutoCommitExtractor" />
-    <extractor-rule id="deleteFromWhere" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.DeleteFromWhereExtractor" />
-    <extractor-rule id="updateWhere" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.UpdateWhereExtractor" />
-    <extractor-rule id="insert" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.InsertExtractor" />
+    <extractor-rule id="deleteFromWhere" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.dml.DeleteFromWhereExtractor" />
+    <extractor-rule id="updateWhere" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.dml.UpdateWhereExtractor" />
+    <extractor-rule id="insert" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.dml.InsertExtractor" />
 </extractor-rule-definition>

@@ -18,5 +18,5 @@
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.LimitFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.ShowParamFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.tcl.SetAutoCommitSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.tcl.SetAutoCommitFiller" />
-    <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.InsertFiller" />
+    <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dml.InsertFiller" />
 </filler-rule-definition>

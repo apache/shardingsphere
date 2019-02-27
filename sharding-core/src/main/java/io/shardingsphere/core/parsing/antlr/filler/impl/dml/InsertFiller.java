@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +25,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import io.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.InsertValuesSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;

@@ -15,9 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.impl.AbstractFromWhereExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
