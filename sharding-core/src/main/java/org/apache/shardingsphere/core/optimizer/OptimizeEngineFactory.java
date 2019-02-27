@@ -20,12 +20,16 @@ package org.apache.shardingsphere.core.optimizer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptDefaultOptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptInsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.query.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;
@@ -57,5 +61,20 @@ public final class OptimizeEngineFactory {
         }
         // TODO do with DDL and DAL
         return new QueryOptimizeEngine(sqlStatement.getRouteConditions().getOrCondition(), parameters);
+    }
+    
+    /**
+     * 
+     * 
+     * @param encryptRule
+     * @param sqlStatement
+     * @param parameters
+     * @return
+     */
+    public static EncryptOptimizeEngine newInstance(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
+        if (sqlStatement instanceof InsertStatement) {
+            return new EncryptInsertOptimizeEngine(encryptRule, (InsertStatement) sqlStatement, parameters);
+        }
+        return new EncryptDefaultOptimizeEngine();
     }
 }
