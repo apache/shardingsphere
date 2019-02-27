@@ -922,7 +922,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetTypeInfo() throws SQLException {
         when(databaseMetaData.getTypeInfo()).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getTypeInfo(), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getTypeInfo(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
