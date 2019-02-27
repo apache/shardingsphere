@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -41,38 +42,46 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     
     @Override
     public final ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
-        return new DatabaseMetaDataResultSet(getConnection().getMetaData().getSuperTypes(catalog, schemaPattern, typeNamePattern), shardingRule);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getSuperTypes(catalog, schemaPattern, typeNamePattern), shardingRule);
+        }
     }
     
     @Override
     public final ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
-        return new DatabaseMetaDataResultSet(getConnection().getMetaData().getAttributes(catalog, schemaPattern, typeNamePattern, attributeNamePattern), shardingRule);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getAttributes(catalog, schemaPattern, typeNamePattern, attributeNamePattern), shardingRule);
+        }
     }
     
     @Override
     public final ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
-        return new DatabaseMetaDataResultSet(getConnection().getMetaData().getProcedures(catalog, schemaPattern, procedureNamePattern), shardingRule);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getProcedures(catalog, schemaPattern, procedureNamePattern), shardingRule);
+        }
     }
     
     @Override
     public final ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
-        return new DatabaseMetaDataResultSet(getConnection().getMetaData().getProcedureColumns(catalog, schemaPattern, procedureNamePattern, columnNamePattern), shardingRule);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getProcedureColumns(catalog, schemaPattern, procedureNamePattern, columnNamePattern), shardingRule);
+        }
     }
     
     @Override
     public final ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
         String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
-        ResultSet result = new DatabaseMetaDataResultSet(getConnection().getMetaData().getTables(catalog, schemaPattern, shardingTableNamePattern, types), shardingRule);
-        getConnection().close();
-        return result;
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getTables(catalog, schemaPattern, shardingTableNamePattern, types), shardingRule);
+        }
     }
     
     @Override
     public final ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
-        ResultSet result = new DatabaseMetaDataResultSet(getConnection().getMetaData().getColumns(catalog, schemaPattern, shardingTableNamePattern, columnNamePattern), shardingRule);
-        getConnection().close();
-        return result;
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getColumns(catalog, schemaPattern, shardingTableNamePattern, columnNamePattern), shardingRule);
+        }
     }
     
     private String getShardingTableNamePattern(final String tableNamePattern) {
