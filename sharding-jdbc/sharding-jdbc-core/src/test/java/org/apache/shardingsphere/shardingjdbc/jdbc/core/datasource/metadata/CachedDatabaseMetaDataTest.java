@@ -65,6 +65,7 @@ public final class CachedDatabaseMetaDataTest {
         dataSourceMap.put("ds", dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData, dataSourceMap, null);
     }
     
@@ -807,7 +808,6 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetSuperTypes() throws SQLException {
         when(databaseMetaData.getSuperTypes("test", null, null)).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         assertThat(cachedDatabaseMetaData.getSuperTypes("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
@@ -820,41 +820,37 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetAttributes() throws SQLException {
         when(databaseMetaData.getAttributes("test", null, null, null)).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         assertThat(cachedDatabaseMetaData.getAttributes("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetProcedures() throws SQLException {
         when(databaseMetaData.getProcedures("test", null, null)).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         assertThat(cachedDatabaseMetaData.getProcedures("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetProcedureColumns() throws SQLException {
         when(databaseMetaData.getProcedureColumns("test", null, null, null)).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         assertThat(cachedDatabaseMetaData.getProcedureColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetTables() throws SQLException {
         when(databaseMetaData.getTables("test", null, null, null)).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         assertThat(cachedDatabaseMetaData.getTables("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetSchemas() throws SQLException {
         when(databaseMetaData.getSchemas()).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getSchemas(), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getSchemas(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetSchemasForCatalogAndSchemaPattern() throws SQLException {
         when(databaseMetaData.getSchemas("test", null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getSchemas("test", null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getSchemas("test", null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
@@ -872,7 +868,6 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetColumns() throws SQLException {
         when(databaseMetaData.getColumns("test", null, null, null)).thenReturn(resultSet);
-        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         assertThat(cachedDatabaseMetaData.getColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
