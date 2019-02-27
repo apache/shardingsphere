@@ -63,11 +63,6 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     @Override
-    public void close() throws SQLException {
-        originalResultSet.close();
-    }
-    
-    @Override
     public boolean next() throws SQLException {
         return resultSet.next();
     }
@@ -342,40 +337,23 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     @Override
-    public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule());
-    }
-    
-    private ShardingRule getShardingRule() {
-        return statement instanceof ShardingPreparedStatement
-                ? ((ShardingPreparedStatement) statement).getConnection().getShardingContext().getShardingRule()
-                : ((ShardingStatement) statement).getConnection().getShardingContext().getShardingRule();
-    }
-    
-    protected final ShardingEncryptorEngine getShardingEncryptorEngine() {
-        return getShardingRule().getShardingEncryptorEngine();
+    public ResultSetMetaData getMetaData() throws SQLException {
+        return originalResultSet.getMetaData();
     }
     
     @Override
-    public final int findColumn(final String columnLabel) throws SQLException {
-        return resultSets.get(0).findColumn(columnLabel);
+    public int findColumn(final String columnLabel) throws SQLException {
+        return originalResultSet.findColumn(columnLabel);
     }
     
     @Override
-    public final void close() throws SQLException {
-        closed = true;
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.close();
-            }
-        });
+    public void close() throws SQLException {
+        originalResultSet.close();
     }
     
     @Override
-    public final boolean isClosed() {
-        return closed;
+    public boolean isClosed() throws SQLException {
+        return originalResultSet.isClosed();
     }
     
     @Override
