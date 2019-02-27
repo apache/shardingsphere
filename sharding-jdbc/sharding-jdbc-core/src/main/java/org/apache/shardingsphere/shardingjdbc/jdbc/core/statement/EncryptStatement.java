@@ -151,12 +151,12 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     @Override
     public Connection getConnection() throws SQLException {
-        return null;
+        return connection;
     }
     
     @Override
     public boolean getMoreResults(final int current) throws SQLException {
-        return false;
+        return statement.getMoreResults(current);
     }
     
     @Override
