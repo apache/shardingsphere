@@ -74,266 +74,266 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public boolean getBoolean(int columnIndex) throws SQLException {
+    public boolean getBoolean(final int columnIndex) throws SQLException {
         return (boolean) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, boolean.class), boolean.class);
     }
     
     @Override
-    public boolean getBoolean(String columnLabel) throws SQLException {
+    public boolean getBoolean(final String columnLabel) throws SQLException {
         return (boolean) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, boolean.class), boolean.class);
     }
     
     @Override
-    public byte getByte(int columnIndex) throws SQLException {
+    public byte getByte(final int columnIndex) throws SQLException {
         return (byte) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, byte.class), byte.class);
     }
     
     @Override
-    public byte getByte(String columnLabel) throws SQLException {
+    public byte getByte(final String columnLabel) throws SQLException {
         return (byte) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, byte.class), byte.class);
     }
     
     @Override
-    public short getShort(int columnIndex) throws SQLException {
+    public short getShort(final int columnIndex) throws SQLException {
         return (short) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, short.class), short.class);
     }
     
     @Override
-    public short getShort(String columnLabel) throws SQLException {
+    public short getShort(final String columnLabel) throws SQLException {
         return (short) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, short.class), short.class);
     }
     
     @Override
-    public int getInt(int columnIndex) throws SQLException {
+    public int getInt(final int columnIndex) throws SQLException {
         return (int) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, int.class), int.class);
     }
     
     @Override
-    public int getInt(String columnLabel) throws SQLException {
+    public int getInt(final String columnLabel) throws SQLException {
         return (int) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, int.class), int.class);
     }
     
     @Override
-    public long getLong(int columnIndex) throws SQLException {
+    public long getLong(final int columnIndex) throws SQLException {
         return (long) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, long.class), long.class);
     }
     
     @Override
-    public long getLong(String columnLabel) throws SQLException {
+    public long getLong(final String columnLabel) throws SQLException {
         return (long) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, long.class), long.class);
     }
     
     @Override
-    public float getFloat(int columnIndex) throws SQLException {
+    public float getFloat(final int columnIndex) throws SQLException {
         return (float) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, float.class), float.class);
     }
     
     @Override
-    public float getFloat(String columnLabel) throws SQLException {
+    public float getFloat(final String columnLabel) throws SQLException {
         return (float) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, float.class), float.class);
     }
     
     @Override
-    public double getDouble(int columnIndex) throws SQLException {
+    public double getDouble(final int columnIndex) throws SQLException {
         return (double) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, double.class), double.class);
     }
     
     @Override
-    public double getDouble(String columnLabel) throws SQLException {
+    public double getDouble(final String columnLabel) throws SQLException {
         return (double) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, double.class), double.class);
     }
     
     @Override
-    public String getString(int columnIndex) throws SQLException {
+    public String getString(final int columnIndex) throws SQLException {
         return (String) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, String.class), String.class);
     }
     
     @Override
-    public String getString(String columnLabel) throws SQLException {
+    public String getString(final String columnLabel) throws SQLException {
         return (String) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, String.class), String.class);
     }
     
     @Override
-    public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
+    public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
-    public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
+    public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
-    public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
+    public BigDecimal getBigDecimal(final int columnIndex, int scale) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
-    public BigDecimal getBigDecimal(String columnLabel, int scale) throws SQLException {
+    public BigDecimal getBigDecimal(final String columnLabel, int scale) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
-    public byte[] getBytes(int columnIndex) throws SQLException {
+    public byte[] getBytes(final int columnIndex) throws SQLException {
         return (byte[]) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, byte[].class), byte[].class);
     }
     
     @Override
-    public byte[] getBytes(String columnLabel) throws SQLException {
+    public byte[] getBytes(final String columnLabel) throws SQLException {
         return (byte[]) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, byte[].class), byte[].class);
     }
     
     @Override
-    public Date getDate(int columnIndex) throws SQLException {
+    public Date getDate(final int columnIndex) throws SQLException {
         return (Date) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
-    public Date getDate(String columnLabel) throws SQLException {
+    public Date getDate(final String columnLabel) throws SQLException {
         return (Date) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, Date.class), Date.class);
     }
     
     @Override
-    public Date getDate(int columnIndex, Calendar cal) throws SQLException {
+    public Date getDate(final int columnIndex, Calendar cal) throws SQLException {
         return (Date) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
-    public Date getDate(String columnLabel, Calendar cal) throws SQLException {
+    public Date getDate(final String columnLabel, Calendar cal) throws SQLException {
         return (Date) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnLabel, Date.class, cal), Date.class);
     }
     
     @Override
-    public Time getTime(int columnIndex) throws SQLException {
+    public Time getTime(final int columnIndex) throws SQLException {
         return (Time) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Time.class), Time.class);
     }
     
     @Override
-    public Time getTime(String columnLabel) throws SQLException {
+    public Time getTime(final String columnLabel) throws SQLException {
         return (Time) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, Time.class), Time.class);
     }
     
     @Override
-    public Time getTime(int columnIndex, Calendar cal) throws SQLException {
+    public Time getTime(final int columnIndex, Calendar cal) throws SQLException {
         return (Time) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
     @Override
-    public Time getTime(String columnLabel, Calendar cal) throws SQLException {
+    public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
         return (Time) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnLabel, Time.class, cal), Time.class);
     }
     
     @Override
-    public Timestamp getTimestamp(int columnIndex) throws SQLException {
+    public Timestamp getTimestamp(final int columnIndex) throws SQLException {
         return (Timestamp) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
     @Override
-    public Timestamp getTimestamp(String columnLabel) throws SQLException {
+    public Timestamp getTimestamp(final String columnLabel) throws SQLException {
         return (Timestamp) ResultSetUtil.convertValue(resultSet.getValue(columnLabel, Timestamp.class), Timestamp.class);
     }
     
     @Override
-    public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
+    public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
         return (Timestamp) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
-    public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException {
+    public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
         return (Timestamp) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnLabel, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
-    public InputStream getAsciiStream(int columnIndex) throws SQLException {
+    public InputStream getAsciiStream(final int columnIndex) throws SQLException {
         return resultSet.getInputStream(columnIndex, "Ascii");
     }
     
     @Override
-    public InputStream getAsciiStream(String columnLabel) throws SQLException {
+    public InputStream getAsciiStream(final String columnLabel) throws SQLException {
         return resultSet.getInputStream(columnLabel, "Ascii");
     }
     
     @SuppressWarnings("deprecation")
     @Override
-    public InputStream getUnicodeStream(int columnIndex) throws SQLException {
+    public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
         return resultSet.getInputStream(columnIndex, "Unicode");
     }
     
     @SuppressWarnings("deprecation")
     @Override
-    public InputStream getUnicodeStream(String columnLabel) throws SQLException {
+    public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         return resultSet.getInputStream(columnLabel, "Unicode");
     }
     
     @Override
-    public InputStream getBinaryStream(int columnIndex) throws SQLException {
+    public InputStream getBinaryStream(final int columnIndex) throws SQLException {
         return resultSet.getInputStream(columnIndex, "Binary");
     }
     
     @Override
-    public InputStream getBinaryStream(String columnLabel) throws SQLException {
+    public InputStream getBinaryStream(final String columnLabel) throws SQLException {
         return resultSet.getInputStream(columnLabel, "Binary");
     }
     
     @Override
-    public Reader getCharacterStream(int columnIndex) throws SQLException {
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
         return (Reader) resultSet.getValue(columnIndex, Reader.class);
     }
     
     @Override
-    public Reader getCharacterStream(String columnLabel) throws SQLException {
+    public Reader getCharacterStream(final String columnLabel) throws SQLException {
         return (Reader) resultSet.getValue(columnLabel, Reader.class);
     }
     
     @Override
-    public Blob getBlob(int columnIndex) throws SQLException {
+    public Blob getBlob(final int columnIndex) throws SQLException {
         return (Blob) resultSet.getValue(columnIndex, Blob.class);
     }
     
     @Override
-    public Blob getBlob(String columnLabel) throws SQLException {
+    public Blob getBlob(final String columnLabel) throws SQLException {
         return (Blob) resultSet.getValue(columnLabel, Blob.class);
     }
     
     @Override
-    public Clob getClob(int columnIndex) throws SQLException {
+    public Clob getClob(final int columnIndex) throws SQLException {
         return (Clob) resultSet.getValue(columnIndex, Clob.class);
     }
     
     @Override
-    public Clob getClob(String columnLabel) throws SQLException {
+    public Clob getClob(final String columnLabel) throws SQLException {
         return (Clob) resultSet.getValue(columnLabel, Clob.class);
     }
     
     @Override
-    public URL getURL(int columnIndex) throws SQLException {
+    public URL getURL(final int columnIndex) throws SQLException {
         return (URL) resultSet.getValue(columnIndex, URL.class);
     }
     
     @Override
-    public URL getURL(String columnLabel) throws SQLException {
+    public URL getURL(final String columnLabel) throws SQLException {
         return (URL) resultSet.getValue(columnLabel, URL.class);
     }
     
     @Override
-    public SQLXML getSQLXML(int columnIndex) throws SQLException {
+    public SQLXML getSQLXML(final int columnIndex) throws SQLException {
         return (SQLXML) resultSet.getValue(columnIndex, SQLXML.class);
     }
     
     @Override
-    public SQLXML getSQLXML(String columnLabel) throws SQLException {
+    public SQLXML getSQLXML(final String columnLabel) throws SQLException {
         return (SQLXML) resultSet.getValue(columnLabel, SQLXML.class);
     }
     
     @Override
-    public Object getObject(int columnIndex) throws SQLException {
+    public Object getObject(final int columnIndex) throws SQLException {
         return resultSet.getValue(columnIndex, Object.class);
     }
     
     @Override
-    public Object getObject(String columnLabel) throws SQLException {
+    public Object getObjectfinal(final String columnLabel) throws SQLException {
         return resultSet.getValue(columnLabel, Object.class);
     }
     
@@ -343,7 +343,7 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public int findColumn(String columnLabel) throws SQLException {
+    public int findColumn(final String columnLabel) throws SQLException {
         return originalResultSet.findColumn(columnLabel);
     }
     
@@ -358,7 +358,7 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public void setFetchDirection(int direction) throws SQLException {
+    public void setFetchDirection(final int direction) throws SQLException {
         originalResultSet.setFetchDirection(direction);
     }
     
@@ -368,7 +368,7 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public void setFetchSize(int rows) throws SQLException {
+    public void setFetchSize(final int rows) throws SQLException {
         originalResultSet.setFetchSize(rows);
     }
     
