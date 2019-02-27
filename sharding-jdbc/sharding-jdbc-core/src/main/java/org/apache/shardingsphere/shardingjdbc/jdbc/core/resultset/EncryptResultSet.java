@@ -22,6 +22,10 @@ import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryRes
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
@@ -32,7 +36,9 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -333,5 +339,94 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
         return resultSet.getValue(columnLabel, Object.class);
+    }
+    
+    @Override
+    public final ResultSetMetaData getMetaData() throws SQLException {
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule());
+    }
+    
+    private ShardingRule getShardingRule() {
+        return statement instanceof ShardingPreparedStatement
+                ? ((ShardingPreparedStatement) statement).getConnection().getShardingContext().getShardingRule()
+                : ((ShardingStatement) statement).getConnection().getShardingContext().getShardingRule();
+    }
+    
+    protected final ShardingEncryptorEngine getShardingEncryptorEngine() {
+        return getShardingRule().getShardingEncryptorEngine();
+    }
+    
+    @Override
+    public final int findColumn(final String columnLabel) throws SQLException {
+        return resultSets.get(0).findColumn(columnLabel);
+    }
+    
+    @Override
+    public final void close() throws SQLException {
+        closed = true;
+        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
+            
+            @Override
+            public void execute(final ResultSet resultSet) throws SQLException {
+                resultSet.close();
+            }
+        });
+    }
+    
+    @Override
+    public final boolean isClosed() {
+        return closed;
+    }
+    
+    @Override
+    public final void setFetchDirection(final int direction) throws SQLException {
+        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
+            
+            @Override
+            public void execute(final ResultSet resultSet) throws SQLException {
+                resultSet.setFetchDirection(direction);
+            }
+        });
+    }
+    
+    @Override
+    public final int getFetchDirection() throws SQLException {
+        return resultSets.get(0).getFetchDirection();
+    }
+    
+    @Override
+    public final void setFetchSize(final int rows) throws SQLException {
+        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
+            
+            @Override
+            public void execute(final ResultSet resultSet) throws SQLException {
+                resultSet.setFetchSize(rows);
+            }
+        });
+    }
+    
+    @Override
+    public final int getFetchSize() throws SQLException {
+        return resultSets.get(0).getFetchSize();
+    }
+    
+    @Override
+    public final int getType() throws SQLException {
+        return resultSets.get(0).getType();
+    }
+    
+    @Override
+    public final int getConcurrency() throws SQLException {
+        return resultSets.get(0).getConcurrency();
+    }
+    
+    @Override
+    public final SQLWarning getWarnings() throws SQLException {
+        return resultSets.get(0).getWarnings();
+    }
+    
+    @Override
+    public void clearWarnings() throws SQLException {
+        originalResultSet.clearWarnings();
     }
 }
