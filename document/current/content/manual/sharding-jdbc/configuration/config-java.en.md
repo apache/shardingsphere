@@ -4,9 +4,9 @@ title = "Java"
 weight = 1
 +++
 
-## Example
+## Configuration Instance
 
-### Sharding 
+### Data Sharding
 
 ```java
      DataSource getShardingDataSource() throws SQLException {
@@ -49,7 +49,7 @@ weight = 1
      }
 ```
 
-### Read-write splitting
+### Read-Write Split
  
 ```java
      DataSource getMasterSlaveDataSource() throws SQLException {
@@ -69,7 +69,7 @@ weight = 1
      }
 ```
 
-### Sharding + Read-write splitting 
+### Sharding + Read-Write Split 
 
 ```java
     DataSource getDataSource() throws SQLException {
