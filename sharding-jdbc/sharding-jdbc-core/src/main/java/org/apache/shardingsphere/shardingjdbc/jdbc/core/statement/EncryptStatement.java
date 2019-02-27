@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
-import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
@@ -55,25 +54,26 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
-        ResultSet resultSet = statement.executeQuery(getSqlUnit(sql).getSql());
-        return new EncryptResultSet(this, resultSet, connection.getEncryptRule());
+        ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
+        this.resultSet = new EncryptResultSet(this, resultSet, connection.getEncryptRule());
+        return resultSet;
     }
     
-    private SQLUnit getSqlUnit(final String sql) {
+    private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getEncryptSQLParsingEngine().parse(false, sql);
         OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
         SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, new LinkedList<>()).rewrite();
-        return sqlBuilder.toSQL();
+        return sqlBuilder.toSQL().getSql();
     }
     
     @Override
     public int executeUpdate(final String sql) throws SQLException {
-        return 0;
+        return statement.executeUpdate(getRewriteSQL(sql));
     }
     
     @Override
     public boolean execute(final String sql) throws SQLException {
-        return false;
+        return statement.execute(getRewriteSQL(sql));
     }
     
     @Override
