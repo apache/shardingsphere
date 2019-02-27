@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +59,8 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
             } else {
                 if (each instanceof byte[]) {
                     payload.writeBytesLenenc((byte[]) each);
+                } else if(each instanceof BigDecimal) {
+                    payload.writeStringLenenc(((BigDecimal) each).toPlainString());
                 } else {
                     payload.writeStringLenenc(each.toString());
                 }
