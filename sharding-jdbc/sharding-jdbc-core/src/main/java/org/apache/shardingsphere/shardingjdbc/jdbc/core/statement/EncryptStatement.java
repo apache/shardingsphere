@@ -58,6 +58,12 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         this.connection = connection;
     }
     
+    @SneakyThrows
+    public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+        statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+        this.connection = connection;
+    }
+    
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
