@@ -15,13 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config;
+package org.apache.shardingsphere.shardingproxy.error;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@RunWith(Suite.class)
-@SuiteClasses(ShardingConfigurationLoaderTest.class)
-public final class AllConfigTests {
+/**
+ * Common error code.
+ *
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public enum CommonErrorCode implements SQLErrorCode {
+    
+    CIRCUIT_BREAK_MODE(10000, "C10000", "Circuit break mode is ON."),
+    
+    UNSUPPORTED_COMMAND(10001, "C10001", "Unsupported command: [%s]"),
+    
+    UNKNOWN_EXCEPTION(10002, "C10002", "Unknown exception: [%s]");
+    
+    private final int errorCode;
+    
+    private final String sqlState;
+    
+    private final String errorMessage;
 }

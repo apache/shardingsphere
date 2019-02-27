@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl;
 
-import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoaderTest;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCodeTest;
-import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContextTest;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceConverterTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.set.ShardingCTLSetBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.show.ShardingCTLShowBackendHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingConfigurationLoaderTest.class, 
-        CommonErrorCodeTest.class, 
-        ExecutorContextTest.class, 
-        DataSourceConverterTest.class
+        ShardingCTLErrorCodeTest.class, 
+        ShardingCTLSetBackendHandlerTest.class, 
+        ShardingCTLShowBackendHandlerTest.class 
 })
-public final class AllTests {
+public final class AllSCTLTests {
 }

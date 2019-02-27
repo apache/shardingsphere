@@ -27,6 +27,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -55,7 +57,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     public BackendResponse execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new ErrorResponse(0, "", "Please review your sctl format, should be sctl:show xxx.");
+            return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -63,7 +65,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new ErrorResponse(0, "", String.format("Could not support this sctl grammar [%s].", sql));
+                return new ErrorResponse(new UnsupportedShardingCTLTypeException(sql));
         }
     }
     

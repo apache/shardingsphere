@@ -46,18 +46,4 @@ public final class MySQLServerErrorCodeTest {
                 + "This is an internal system table used to store GTIDs for committed transactions. "
                 + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction."));
     }
-    
-    @Test
-    public void assertStdUnknownException() {
-        assertThat(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION.getErrorCode(), is(3054));
-        assertThat(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION.getSqlState(), is("HY000"));
-        assertThat(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION.getErrorMessage(), is("Unknown exception: %s"));
-    }
-    
-    @Test
-    public void assertUnsupportedCommand() {
-        assertThat(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorCode(), is(9999));
-        assertThat(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getSqlState(), is("X9999"));
-        assertThat(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorMessage(), is("Unsupported command packet: '%s'"));
-    }
 }

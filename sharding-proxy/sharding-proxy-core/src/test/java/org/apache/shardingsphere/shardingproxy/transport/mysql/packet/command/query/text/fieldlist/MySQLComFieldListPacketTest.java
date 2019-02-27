@@ -30,7 +30,6 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -126,7 +125,7 @@ public final class MySQLComFieldListPacketTest {
     public void assertExecuteWhenFailure() throws SQLException {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        BackendResponse expected = new ErrorResponse(MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown");
+        BackendResponse expected = new ErrorResponse(new RuntimeException("unknown"));
         when(databaseCommunicationEngine.execute()).thenReturn(expected);
         MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);

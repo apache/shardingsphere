@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.runtime;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
-@RunWith(Suite.class)
-@SuiteClasses(ExecutorContextTest.class)
-public final class AllRuntimeTests {
+/**
+ * Unsupported sharding CTL type exception.
+ *
+ * @author zhangliang
+ */
+public final class UnsupportedShardingCTLTypeException extends ShardingCTLException {
+    
+    public UnsupportedShardingCTLTypeException(final String shardingCTL) {
+        super(shardingCTL);
+    }
 }

@@ -21,6 +21,9 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
+import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
@@ -29,6 +32,10 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLErrorCode;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
+import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -90,11 +97,11 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         if (GlobalRegistry.getInstance().isCircuitBreak()) {
-            return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, MySQLServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
+            return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE)));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Optional.of(new CommandResponsePackets(createErrorPacket((ErrorResponse) backendResponse)));
+            return Optional.of(new CommandResponsePackets(createErrorPacket(((ErrorResponse) backendResponse).getCause())));
         }
         if (backendResponse instanceof UpdateResponse) {
             return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
@@ -104,8 +111,26 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
     }
     
-    private MySQLErrPacket createErrorPacket(final ErrorResponse errorResponse) {
-        return new MySQLErrPacket(1, errorResponse.getErrorCode(), errorResponse.getSqlState(), errorResponse.getErrorMessage());
+    private MySQLErrPacket createErrorPacket(final Exception cause) {
+        if (cause instanceof SQLException) {
+            return new MySQLErrPacket(1, (SQLException) cause);
+        }
+        if (cause instanceof InvalidShardingCTLFormatException) {
+            return new MySQLErrPacket(1, ShardingCTLErrorCode.INVALID_FORMAT, ((InvalidShardingCTLFormatException) cause).getShardingCTL());
+        }
+        if (cause instanceof UnsupportedShardingCTLTypeException) {
+            return new MySQLErrPacket(1, ShardingCTLErrorCode.UNSUPPORTED_TYPE, ((UnsupportedShardingCTLTypeException) cause).getShardingCTL());
+        }
+        if (cause instanceof TableModifyInTransactionException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
+        }
+        if (cause instanceof UnknownDatabaseException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
+        }
+        if (cause instanceof NoDatabaseSelectedException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
+        }
+        return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
     
     private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {

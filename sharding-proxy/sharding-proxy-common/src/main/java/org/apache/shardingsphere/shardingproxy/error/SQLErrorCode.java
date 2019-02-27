@@ -15,22 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy;
+package org.apache.shardingsphere.shardingproxy.error;
 
-import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoaderTest;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCodeTest;
-import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContextTest;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceConverterTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
-@RunWith(Suite.class)
-@SuiteClasses({
-        ShardingConfigurationLoaderTest.class, 
-        CommonErrorCodeTest.class, 
-        ExecutorContextTest.class, 
-        DataSourceConverterTest.class
-})
-public final class AllTests {
+/**
+ * SQL error code.
+ *
+ * @author zhangliang
+ */
+public interface SQLErrorCode {
+    
+    /**
+     * Get error code.
+     * 
+     * @return error code
+     */
+    int getErrorCode();
+    
+    /**
+     * Get SQL state.
+     * 
+     * @return SQL state
+     */
+    String getSqlState();
+    
+    /**
+     * Get error message.
+     * 
+     * @return error message
+     */
+    String getErrorMessage();
 }

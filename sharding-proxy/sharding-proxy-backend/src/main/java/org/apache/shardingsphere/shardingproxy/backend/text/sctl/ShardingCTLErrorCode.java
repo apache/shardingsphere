@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl;
 
-import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoaderTest;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCodeTest;
-import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContextTest;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceConverterTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.error.SQLErrorCode;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        ShardingConfigurationLoaderTest.class, 
-        CommonErrorCodeTest.class, 
-        ExecutorContextTest.class, 
-        DataSourceConverterTest.class
-})
-public final class AllTests {
+/**
+ * Sharding CTL error code.
+ *
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public enum ShardingCTLErrorCode implements SQLErrorCode {
+    
+    INVALID_FORMAT(11000, "S11000", "Invalid format for sharding ctl [%s], should be [sctl:set key=value]."),
+    
+    UNSUPPORTED_TYPE(11001, "S11001", "Could not support sctl type [%s].");
+    
+    private final int errorCode;
+    
+    private final String sqlState;
+    
+    private final String errorMessage;
 }

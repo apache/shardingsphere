@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.error.SQLErrorCode;
 
 /**
  * MySQL server error code of MySQL.
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLServerErrorCode {
+public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_ACCESS_DENIED_ERROR(1045, "28000", "Access denied for user '%s'@'%s' (using password: %s)"),
     
@@ -39,13 +40,7 @@ public enum MySQLServerErrorCode {
     
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000", 
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. " 
-                    + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction."),
-    
-    ER_STD_UNKNOWN_EXCEPTION(3054, "HY000", "Unknown exception: %s"),
-    
-    ER_CIRCUIT_BREAK_MODE(9998, "X9998", "Circuit break mode is ON"),
-    
-    ER_UNSUPPORTED_COMMAND(9999, "X9999", "Unsupported command packet: '%s'");
+                    + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction.");
     
     private final int errorCode;
     
