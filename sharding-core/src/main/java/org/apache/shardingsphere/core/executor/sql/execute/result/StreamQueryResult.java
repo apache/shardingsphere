@@ -249,9 +249,9 @@ public final class StreamQueryResult implements QueryResult {
     /**
      * Close query result.
      * 
+     * @throws SQLException sql exception
      */
-    @SneakyThrows
-    public void close() {
+    public void close() throws SQLException {
         resultSet.close();
     }
 }
