@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
@@ -36,6 +38,9 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Encrypt result set.
@@ -46,8 +51,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final StreamQueryResult queryResult;
     
-    public EncryptResultSet(final ResultSet resultSet) {
-        queryResult = new StreamQueryResult(resultSet);
+    public EncryptResultSet(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingEncryptorEngine encryptorEngine) {
+        queryResult = new StreamQueryResult(resultSet, encryptRule.getAllEncryptTableNames(), encryptorEngine);
     }
     
     @Override
@@ -57,17 +62,17 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public void close() throws SQLException {
-        
+        queryResult.close();
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return false;
+        return queryResult.wasNull();
     }
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return null;
+        return queryResult.g;
     }
     
     @Override
