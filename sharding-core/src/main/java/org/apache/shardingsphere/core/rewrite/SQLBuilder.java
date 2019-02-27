@@ -190,19 +190,19 @@ public final class SQLBuilder {
                                                final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
             if (isToAppendInsertColumnValue(tableUnit, each)) {
-                appendInsertColumnValue(tableUnit, each, insertParameters, stringBuilder);
+                appendInsertColumnValue(each, insertParameters, stringBuilder);
             }
         }
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
     }
     
-    private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+    private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         stringBuilder.append(insertColumnValue).append(", ");
         insertParameters.addAll(insertColumnValue.getParameters());
     }
     
     private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {
-        if (insertColumnValue.getDataNodes().isEmpty()) {
+        if (insertColumnValue.getDataNodes().isEmpty() || null == tableUnit) {
             return true;
         }
         for (DataNode each : insertColumnValue.getDataNodes()) {
