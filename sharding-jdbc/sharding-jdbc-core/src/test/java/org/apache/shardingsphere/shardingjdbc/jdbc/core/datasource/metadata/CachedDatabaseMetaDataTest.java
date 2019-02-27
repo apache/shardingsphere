@@ -820,7 +820,8 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetAttributes() throws SQLException {
         when(databaseMetaData.getAttributes("test", null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getAttributes("test", null, null, null), is(resultSet));
+        when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
+        assertThat(cachedDatabaseMetaData.getAttributes("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
