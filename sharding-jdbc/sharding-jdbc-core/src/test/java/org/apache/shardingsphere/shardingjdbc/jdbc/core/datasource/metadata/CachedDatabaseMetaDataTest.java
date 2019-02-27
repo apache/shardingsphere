@@ -856,7 +856,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetCatalogs() throws SQLException {
         when(databaseMetaData.getCatalogs()).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getCatalogs(), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getCatalogs(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
