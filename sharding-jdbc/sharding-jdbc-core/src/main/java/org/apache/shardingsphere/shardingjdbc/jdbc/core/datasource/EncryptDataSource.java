@@ -56,6 +56,8 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     
     private final EncryptRule encryptRule;
     
+    private final DatabaseType databaseType;
+    
     private final EncryptSQLParsingEngine encryptSQLParsingEngine;
     
     @Setter
@@ -65,7 +67,8 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     public EncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration) {
         this.dataSource = dataSource;
         encryptRule = new EncryptRule(encryptRuleConfiguration);
-        encryptSQLParsingEngine = new EncryptSQLParsingEngine(getDatabaseType(), encryptRule, createEncryptTableMetaData());
+        databaseType = getDatabaseType();
+        encryptSQLParsingEngine = new EncryptSQLParsingEngine(databaseType, encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows
@@ -111,7 +114,7 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(dataSource.getConnection(), encryptRule, encryptSQLParsingEngine);
+        return new EncryptConnection(dataSource.getConnection(), encryptRule, databaseType, encryptSQLParsingEngine);
     }
     
     @Override
