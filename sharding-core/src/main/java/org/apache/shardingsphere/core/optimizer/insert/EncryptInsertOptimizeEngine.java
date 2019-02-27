@@ -20,10 +20,7 @@ package org.apache.shardingsphere.core.optimizer.insert;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimizer.EncryptOptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
@@ -31,14 +28,11 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpressio
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -68,14 +62,11 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
                 currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
                 parametersCount = parametersCount + insertValue.getParametersCount();
             }
-            ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToEncrypt()) {
                 encryptInsertColumnValues(insertValuesToken, i);
             }
-            result.add(shardingCondition);
         }
-        return new ShardingConditions(result);
     }
     
     private InsertValuesToken getInsertValuesToken() {
@@ -97,21 +88,7 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
         result.addAll(parameters.subList(beginCount, beginCount + increment));
         return result;
     }
-    
-    private ShardingCondition createShardingCondition(final AndCondition andCondition) {
-        ShardingCondition result = new ShardingCondition();
-        result.getShardingValues().addAll(getShardingValues(andCondition));
-        return result;
-    }
-    
-    private Collection<ListRouteValue> getShardingValues(final AndCondition andCondition) {
-        Collection<ListRouteValue> result = new LinkedList<>();
-        for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn(), each.getConditionValues(parameters)));
-        }
-        return result;
-    }
-    
+        
     private boolean isNeededToEncrypt() {
         return shardingRule.getShardingEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
     }
