@@ -388,8 +388,8 @@ public class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public Statement getStatement() throws SQLException {
-        return null;
+    public Statement getStatement() {
+        return encryptStatement;
     }
     
     @Override
