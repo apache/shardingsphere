@@ -87,7 +87,6 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                     postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription(each, columnIndex++));
                 }
                 if (!postgreSQLColumnDescriptions.isEmpty()) {
-                    writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
                     if (!(commandPacket instanceof PostgreSQLComBindPacket && (((PostgreSQLComBindPacket) commandPacket).isBinaryRowData()))) {
                         context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
                     }
