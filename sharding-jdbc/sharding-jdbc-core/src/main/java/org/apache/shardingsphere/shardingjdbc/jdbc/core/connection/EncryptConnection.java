@@ -31,6 +31,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -108,62 +109,58 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     }
 
     @Override
-    @SneakyThrows
-    public boolean getAutoCommit() {
+    public boolean getAutoCommit() throws SQLException {
         return connection.getAutoCommit();
     }
 
     @Override
     @SneakyThrows
-    public void setAutoCommit(final boolean autoCommit) {
+    public void setAutoCommit(final boolean autoCommit) throws SQLException {
         connection.setAutoCommit(autoCommit);
     }
 
     @Override
     @SneakyThrows
-    public void commit() {
+    public void commit() throws SQLException {
         connection.commit();
     }
 
     @Override
     @SneakyThrows
-    public void rollback() {
+    public void rollback() throws SQLException {
         connection.rollback();
     }
 
     @Override
     @SneakyThrows
-    public void close() {
+    public void close() throws SQLException {
         connection.close();
     }
 
     @Override
     @SneakyThrows
-    public boolean isClosed() {
+    public boolean isClosed() throws SQLException {
         return connection.isClosed();
     }
 
     @Override
     @SneakyThrows
-    public boolean isReadOnly() {
+    public boolean isReadOnly() throws SQLException {
         return connection.isReadOnly();
     }
 
     @Override
-    @SneakyThrows
-    public void setReadOnly(final boolean readOnly) {
+    public void setReadOnly(final boolean readOnly) throws SQLException {
         connection.setReadOnly(readOnly);
     }
 
     @Override
-    @SneakyThrows
-    public int getTransactionIsolation() {
+    public int getTransactionIsolation() throws SQLException {
         return connection.getTransactionIsolation();
     }
 
     @Override
-    @SneakyThrows
-    public void setTransactionIsolation(final int level) {
+    public void setTransactionIsolation(final int level) throws SQLException {
         connection.setTransactionIsolation(level);
     }
 
