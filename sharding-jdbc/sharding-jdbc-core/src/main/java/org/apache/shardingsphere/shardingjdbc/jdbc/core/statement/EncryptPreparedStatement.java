@@ -40,15 +40,17 @@ import java.util.LinkedList;
  */
 public final class EncryptPreparedStatement extends AbstractShardingPreparedStatementAdapter {
     
-    private final PreparedStatement statement;
-    
     private final EncryptConnection connection;
+    
+    private final EncryptPreparedStatementMetaData preparedStatementMetaData;
+    
+    private PreparedStatement statement;
     
     private EncryptResultSet resultSet;
     
+    
     @SneakyThrows
     public EncryptPreparedStatement(final EncryptConnection connection, final String sql) {
-        statement = connection.getConnection().prepareStatement(getRewriteSQL(sql));
         this.connection = connection;
     }
     
