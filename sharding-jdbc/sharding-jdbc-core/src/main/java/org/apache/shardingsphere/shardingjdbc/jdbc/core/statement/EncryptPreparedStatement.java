@@ -128,7 +128,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    public void addBatch() throws SQLException {
+    public void addBatch() {
+        sqlUnits.add(getSQLUnit(sql));
+        clearParameters();
     }
     
     @Override
