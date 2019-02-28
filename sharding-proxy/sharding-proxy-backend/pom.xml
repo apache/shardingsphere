@@ -17,11 +17,6 @@
             <artifactId>sharding-proxy-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>com.zaxxer</groupId>

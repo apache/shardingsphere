@@ -28,8 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBacke
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.set.ShardingCTLSetBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.show.ShardingCTLShowBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.AllSCTLTests;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandlerTest;
 import org.junit.runner.RunWith;
@@ -44,15 +43,14 @@ import org.junit.runners.Suite.SuiteClasses;
         SkipBackendHandlerTest.class, 
         TransactionBackendHandlerTest.class, 
         UnicastBackendHandlerTest.class, 
-        UseDatabaseBackendHandlerTest.class, 
-        ShardingCTLSetBackendHandlerTest.class, 
-        ShardingCTLShowBackendHandlerTest.class, 
+        UseDatabaseBackendHandlerTest.class,
         JDBCXABackendDataSourceFactoryTest.class, 
         JDBCBackendDataSourceTest.class, 
         BackendConnectionTest.class, 
         BackendTransactionManagerTest.class, 
         ConnectionStateHandlerTest.class, 
         ProxyTableMetaDataConnectionManagerTest.class, 
+        AllSCTLTests.class, 
         AllRecognizerTests.class
 })
 public final class AllBackendTests {

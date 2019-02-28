@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
+import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
@@ -41,7 +42,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -87,9 +87,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new UpdateResponse();
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
-        if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
-            return new ErrorResponse(
-                    MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table");
+        if (isExecuteDDLInXATransaction(sqlStatement.getType())) {
+            return new ErrorResponse(new TableModifyInTransactionException(sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
@@ -98,14 +97,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return merge(sqlStatement);
     }
     
-    private boolean isUnsupportedXA(final SQLType sqlType) {
+    private boolean isExecuteDDLInXATransaction(final SQLType sqlType) {
         BackendConnection connection = executeEngine.getBackendConnection();
         return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
-    }
-    
-    private boolean isUnsupportedBASE(final SQLType sqlType) {
-        BackendConnection connection = executeEngine.getBackendConnection();
-        return TransactionType.BASE == connection.getTransactionType() && SQLType.DML != sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
     private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {

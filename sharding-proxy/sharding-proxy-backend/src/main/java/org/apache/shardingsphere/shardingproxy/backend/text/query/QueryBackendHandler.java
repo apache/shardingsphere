@@ -21,11 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
 
@@ -48,7 +48,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     @Override
     public BackendResponse execute() {
         if (null == backendConnection.getLogicSchema()) {
-            return new ErrorResponse(MySQLServerErrorCode.ER_NO_DB_ERROR);
+            return new ErrorResponse(new NoDatabaseSelectedException());
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sql, backendConnection);
         return databaseCommunicationEngine.execute();

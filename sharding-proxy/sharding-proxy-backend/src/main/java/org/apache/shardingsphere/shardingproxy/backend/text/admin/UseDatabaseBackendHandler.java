@@ -21,13 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 /**
  * Use database backend handler.
@@ -46,7 +46,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!LogicSchemas.getInstance().schemaExists(schema)) {
-            return new ErrorResponse(MySQLServerErrorCode.ER_BAD_DB_ERROR, schema);
+            return new ErrorResponse(new UnknownDatabaseException(schema));
         }
         backendConnection.setCurrentSchema(schema);
         return new UpdateResponse();

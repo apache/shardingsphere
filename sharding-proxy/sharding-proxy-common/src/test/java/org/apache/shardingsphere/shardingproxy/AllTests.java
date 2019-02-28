@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.shardingproxy;
 
-import org.apache.shardingsphere.shardingproxy.config.AllConfigTests;
-import org.apache.shardingsphere.shardingproxy.runtime.AllRuntimeTests;
-import org.apache.shardingsphere.shardingproxy.util.AllUtilTests;
+import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoaderTest;
+import org.apache.shardingsphere.shardingproxy.context.ExecutorContextTest;
+import org.apache.shardingsphere.shardingproxy.error.CommonErrorCodeTest;
+import org.apache.shardingsphere.shardingproxy.util.DataSourceConverterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllRuntimeTests.class, 
-        AllConfigTests.class, 
-        AllUtilTests.class
+        ShardingConfigurationLoaderTest.class, 
+        CommonErrorCodeTest.class, 
+        ExecutorContextTest.class, 
+        DataSourceConverterTest.class
 })
 public final class AllTests {
 }

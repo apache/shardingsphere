@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -54,7 +54,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private JDBCBackendDataSourceFactory hikariDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = GlobalRegistry.getInstance().getShardingTransactionManagerEngine();
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = GlobalContext.getInstance().getShardingTransactionManagerEngine();
     
     public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         createDataSourceMap(dataSourceParameters);

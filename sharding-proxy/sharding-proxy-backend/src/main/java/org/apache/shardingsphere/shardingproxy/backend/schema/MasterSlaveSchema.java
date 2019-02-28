@@ -30,8 +30,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.event.Dis
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.runtime.ExecutorContext;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.context.ExecutorContext;
+import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 
 import java.util.Map;
 
@@ -47,9 +47,13 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private final ShardingMetaData metaData;
     
+    private final ShardingRule defaultShardingRule;
+    
     public MasterSlaveSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
         masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
+        // TODO we should remove it after none-sharding parsingEngine completed.
+        defaultShardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
         metaData = createShardingMetaData();
     }
     
@@ -58,10 +62,10 @@ public final class MasterSlaveSchema extends LogicSchema {
     }
     
     private ShardingMetaData createShardingMetaData() {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet()),
+        return new ShardingMetaData(getDataSourceURLs(getDataSources()), defaultShardingRule,
                 LogicSchemas.getInstance().getDatabaseType(), ExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
-                GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                GlobalRegistry.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+                GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), 
+                GlobalContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
     
     /**
