@@ -92,7 +92,7 @@ public final class TableMetaDataInitializer {
         DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
         String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(catalog, null, null, new String[]{"TABLE"})) {
+             ResultSet resultSet = connection.getMetaData().getTables(catalog, connection.getSchema(), null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 if (!tableName.contains("$") && !tableName.contains("/")) {
