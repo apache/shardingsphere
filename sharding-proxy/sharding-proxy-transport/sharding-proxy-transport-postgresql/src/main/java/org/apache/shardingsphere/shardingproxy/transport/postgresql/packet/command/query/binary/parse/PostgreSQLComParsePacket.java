@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
@@ -102,10 +102,5 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
             postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex, postgreSQLBinaryStatementParameterTypes);
         }
         return Optional.of(new CommandResponsePackets(new PostgreSQLParseCompletePacket()));
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

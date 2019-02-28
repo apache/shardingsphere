@@ -58,9 +58,4 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
             postgreSQLBinaryProtocolValue.write(payload, value);
         }
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

@@ -23,11 +23,11 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,7 +92,7 @@ public final class MySQLComStmtExecutePacketTest {
         Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();
         assertTrue(actualCommandResponsePackets.isPresent());
         assertTrue(packet.next());
-        DatabasePacket actual = packet.getQueryData();
+        MySQLPacket actual = packet.getQueryData();
         assertThat(actual.getSequenceId(), is(3));
         assertThat(((MySQLBinaryResultSetRowPacket) actual).getData(), is(Collections.<Object>singletonList(99999L)));
         assertFalse(packet.next());

@@ -60,7 +60,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer())) {
             ((MySQLPacket) message).write(payload);
             out.writeMediumLE(payload.getByteBuf().readableBytes());
-            out.writeByte(message.getSequenceId());
+            out.writeByte(((MySQLPacket) message).getSequenceId());
             out.writeBytes(payload.getByteBuf());
         }
     }

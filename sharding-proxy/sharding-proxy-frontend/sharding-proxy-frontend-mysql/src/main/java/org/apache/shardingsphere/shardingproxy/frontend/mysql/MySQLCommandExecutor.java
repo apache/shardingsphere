@@ -26,9 +26,10 @@ import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketFactory;
@@ -128,7 +129,7 @@ public final class MySQLCommandExecutor implements Runnable {
                     }
                 }
             }
-            DatabasePacket resultValue = mysqlQueryCommandPacket.getQueryData();
+            MySQLPacket resultValue = mysqlQueryCommandPacket.getQueryData();
             currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {

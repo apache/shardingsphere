@@ -27,7 +27,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
@@ -160,7 +161,7 @@ public final class MySQLComQueryPacketTest {
     
     private void assertOKPacket(final CommandResponsePackets actual) {
         assertThat(actual.getPackets().size(), is(1));
-        assertThat((actual.getPackets().iterator().next()).getSequenceId(), is(1));
+        assertThat(((MySQLPacket) (actual.getPackets().iterator().next())).getSequenceId(), is(1));
         assertThat(actual.getPackets().iterator().next(), CoreMatchers.<DatabasePacket>instanceOf(MySQLOKPacket.class));
     }
 }

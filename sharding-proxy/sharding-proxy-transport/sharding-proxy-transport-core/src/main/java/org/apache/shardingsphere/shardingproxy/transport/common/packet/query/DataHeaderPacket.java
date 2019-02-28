@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query;
+package org.apache.shardingsphere.shardingproxy.transport.common.packet.query;
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;

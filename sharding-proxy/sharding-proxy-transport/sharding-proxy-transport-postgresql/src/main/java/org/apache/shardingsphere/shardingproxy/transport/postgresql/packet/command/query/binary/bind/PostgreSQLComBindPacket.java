@@ -30,9 +30,9 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -113,7 +113,6 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         if (GlobalContext.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket()));
         }
-        CommandResponsePackets result = new CommandResponsePackets(new PostgreSQLBindCompletePacket());
         if (null != databaseCommunicationEngine) {
             BackendResponse backendResponse = databaseCommunicationEngine.execute();
             if (backendResponse instanceof ErrorResponse) {
@@ -125,7 +124,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryResponse) backendResponse).getQueryHeaders());
             return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
         }
-        return Optional.of(result);
+        return Optional.of(new CommandResponsePackets(new PostgreSQLBindCompletePacket()));
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
@@ -168,10 +167,5 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             result.add(PostgreSQLColumnType.valueOfJDBCType(queryData.getColumnTypes().get(i)));
         }
         return result;
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

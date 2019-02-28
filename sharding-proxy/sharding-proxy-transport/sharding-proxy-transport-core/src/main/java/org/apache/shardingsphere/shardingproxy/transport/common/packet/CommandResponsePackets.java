@@ -17,17 +17,38 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
- * Database packet.
+ * Command response packets.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public interface DatabasePacket {
+@NoArgsConstructor
+@Getter
+public class CommandResponsePackets {
+    
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
+    
+    public CommandResponsePackets(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
+    }
+    
+    public CommandResponsePackets(final Collection<DatabasePacket> databasePackets) {
+        packets.addAll(databasePackets);
+    }
     
     /**
-     * Get sequence ID.
-     * 
-     * @return sequence ID
+     * Get head packet.
+     *
+     * @return head packet
      */
-    int getSequenceId();
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
+    }
 }

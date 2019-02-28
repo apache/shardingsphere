@@ -42,9 +42,4 @@ public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLPacket 
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(success);
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

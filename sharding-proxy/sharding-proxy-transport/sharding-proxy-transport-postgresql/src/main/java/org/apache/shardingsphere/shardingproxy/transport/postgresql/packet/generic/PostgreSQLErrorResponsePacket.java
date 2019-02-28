@@ -38,9 +38,4 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLPacket {
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt1(errorCode);
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

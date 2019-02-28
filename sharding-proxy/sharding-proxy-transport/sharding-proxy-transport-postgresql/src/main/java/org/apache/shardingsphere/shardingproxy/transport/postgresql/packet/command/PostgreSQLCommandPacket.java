@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
 import java.sql.SQLException;

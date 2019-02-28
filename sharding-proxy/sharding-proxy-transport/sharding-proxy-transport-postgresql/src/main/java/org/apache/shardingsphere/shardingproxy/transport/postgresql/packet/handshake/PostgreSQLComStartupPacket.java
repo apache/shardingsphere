@@ -47,9 +47,4 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

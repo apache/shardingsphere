@@ -38,9 +38,4 @@ public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt1(status);
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

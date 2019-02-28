@@ -41,9 +41,4 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
         // TODO payload.writeStringNul(sqlCommand + " " + rowCount);
         payload.writeStringNul("");
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

@@ -19,8 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -30,10 +29,9 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
  *
  * @author zhangyonglun
  */
-@Slf4j
+@Getter
 public final class PostgreSQLComExecutePacket implements PostgreSQLCommandPacket {
     
-    @Getter
     private final char messageType = PostgreSQLCommandPacketType.EXECUTE.getValue();
     
     public PostgreSQLComExecutePacket(final PostgreSQLPacketPayload payload) {
@@ -49,10 +47,5 @@ public final class PostgreSQLComExecutePacket implements PostgreSQLCommandPacket
     @Override
     public Optional<CommandResponsePackets> execute() {
         return Optional.absent();
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

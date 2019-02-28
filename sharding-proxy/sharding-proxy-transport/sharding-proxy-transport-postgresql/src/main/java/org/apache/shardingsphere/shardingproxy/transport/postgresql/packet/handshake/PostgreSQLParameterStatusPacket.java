@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
  *
  * @author zhangyonglun
  */
+@RequiredArgsConstructor
 public final class PostgreSQLParameterStatusPacket implements PostgreSQLPacket {
     
     @Getter
@@ -36,19 +38,9 @@ public final class PostgreSQLParameterStatusPacket implements PostgreSQLPacket {
     
     private final String value;
     
-    public PostgreSQLParameterStatusPacket(final String key, final String value) {
-        this.key = key;
-        this.value = value;
-    }
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeStringNul(key);
         payload.writeStringNul(value);
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }
