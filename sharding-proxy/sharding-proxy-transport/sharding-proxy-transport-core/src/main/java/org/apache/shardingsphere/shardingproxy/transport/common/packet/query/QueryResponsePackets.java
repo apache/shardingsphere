@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet.query;
 
 import lombok.Getter;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 
 import java.util.Collection;
@@ -31,13 +32,12 @@ import java.util.Collection;
 @Getter
 public final class QueryResponsePackets extends CommandResponsePackets {
     
-    private final Collection<DataHeaderPacket> dataHeaderPackets;
+    private final Collection<QueryHeader> queryHeaders;
     
     private final int sequenceId;
     
-    public QueryResponsePackets(final Collection<DataHeaderPacket> dataHeaderPackets, final int sequenceId) {
-        getPackets().addAll(dataHeaderPackets);
-        this.dataHeaderPackets = dataHeaderPackets;
+    public QueryResponsePackets(final Collection<QueryHeader> queryHeaders, final int sequenceId) {
+        this.queryHeaders = queryHeaders;
         this.sequenceId = sequenceId;
     }
 }

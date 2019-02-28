@@ -31,7 +31,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
@@ -48,8 +47,6 @@ import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -121,8 +118,8 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             if (backendResponse instanceof UpdateResponse) {
                 return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
             }
-            Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryResponse) backendResponse).getQueryHeaders());
-            return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
+            List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
+            return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders, queryHeaders.size() + 2));
         }
         return Optional.of(new CommandResponsePackets(new PostgreSQLBindCompletePacket()));
     }
@@ -133,20 +130,6 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
         return new PostgreSQLCommandCompletePacket();
-    }
-    
-    private Collection<DataHeaderPacket> createDataHeaderPackets(final List<QueryHeader> queryHeaders) {
-        Collection<DataHeaderPacket> result = new LinkedList<>();
-        int sequenceId = 1;
-        for (QueryHeader each : queryHeaders) {
-            result.add(createDataHeaderPacket(++sequenceId, each));
-        }
-        return result;
-    }
-    
-    private DataHeaderPacket createDataHeaderPacket(final int sequenceId, final QueryHeader queryHeader) {
-        return new DataHeaderPacket(sequenceId, queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
-            queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
     }
     
     @Override

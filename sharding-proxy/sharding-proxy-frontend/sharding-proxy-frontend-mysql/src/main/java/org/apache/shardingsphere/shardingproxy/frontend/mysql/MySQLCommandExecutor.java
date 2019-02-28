@@ -24,10 +24,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -39,7 +39,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
@@ -77,21 +76,16 @@ public final class MySQLCommandExecutor implements Runnable {
                 return;
             }
             if (responsePackets.get() instanceof QueryResponsePackets) {
-                context.write(new MySQLFieldCountPacket(1, ((QueryResponsePackets) responsePackets.get()).getDataHeaderPackets().size()));
-            }
-            for (DatabasePacket each : responsePackets.get().getPackets()) {
-                if (each instanceof DataHeaderPacket) {
-                    context.write(new MySQLColumnDefinition41Packet((DataHeaderPacket) each));
-                } else {
+                context.write(new MySQLFieldCountPacket(++currentSequenceId, ((QueryResponsePackets) responsePackets.get()).getQueryHeaders().size()));
+                for (QueryHeader each : ((QueryResponsePackets) responsePackets.get()).getQueryHeaders()) {
+                    context.write(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
+                }
+                context.write(new MySQLEofPacket(++currentSequenceId));
+                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
+            } else {
+                for (DatabasePacket each : responsePackets.get().getPackets()) {
                     context.write(each);
                 }
-            }
-            if (responsePackets.get() instanceof QueryResponsePackets) {
-                context.write(new MySQLEofPacket(((QueryResponsePackets) responsePackets.get()).getSequenceId()));
-            }
-            if (mysqlCommandPacket instanceof MySQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof MySQLOKPacket)
-                && !(responsePackets.get().getHeadPacket() instanceof MySQLErrPacket)) {
-                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {

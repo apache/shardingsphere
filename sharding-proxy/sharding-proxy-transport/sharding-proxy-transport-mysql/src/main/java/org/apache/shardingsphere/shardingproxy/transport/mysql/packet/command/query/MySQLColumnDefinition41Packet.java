@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -90,18 +90,18 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
         this.decimals = decimals;
     }
     
-    public MySQLColumnDefinition41Packet(final DataHeaderPacket dataHeaderPacket) {
-        this.sequenceId = dataHeaderPacket.getSequenceId();
+    public MySQLColumnDefinition41Packet(final int sequenceId, final QueryHeader queryHeader) {
+        this.sequenceId = sequenceId;
         this.characterSet = MySQLServerInfo.CHARSET;
         this.flags = 0;
-        this.schema = dataHeaderPacket.getSchema();
-        this.table = dataHeaderPacket.getTable();
-        this.orgTable = dataHeaderPacket.getOrgTable();
-        this.name = dataHeaderPacket.getName();
-        this.orgName = dataHeaderPacket.getOrgName();
-        this.columnLength = dataHeaderPacket.getColumnLength();
-        this.mySQLColumnType = MySQLColumnType.valueOfJDBCType(dataHeaderPacket.getColumnType());
-        this.decimals = dataHeaderPacket.getDecimals();
+        this.schema = queryHeader.getSchema();
+        this.table = queryHeader.getTable();
+        this.orgTable = queryHeader.getTable();
+        this.name = queryHeader.getColumnLabel();
+        this.orgName = queryHeader.getColumnName();
+        this.columnLength = queryHeader.getColumnLength();
+        this.mySQLColumnType = MySQLColumnType.valueOfJDBCType(queryHeader.getColumnType());
+        this.decimals = queryHeader.getDecimals();
     }
     
     public MySQLColumnDefinition41Packet(final MySQLPacketPayload payload) {
