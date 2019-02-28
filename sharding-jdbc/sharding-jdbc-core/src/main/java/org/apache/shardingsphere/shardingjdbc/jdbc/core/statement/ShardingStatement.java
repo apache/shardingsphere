@@ -138,9 +138,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             clearPrevious();
             sqlRoute(sql);
             initStatementExecutor();
-            int result = statementExecutor.executeUpdate();
-            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
-            return result;
+            return statementExecutor.executeUpdate();
         } finally {
             currentResultSet = null;
         }
@@ -193,9 +191,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             clearPrevious();
             sqlRoute(sql);
             initStatementExecutor();
-            boolean result = statementExecutor.execute();
-            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
-            return result;
+            return statementExecutor.execute();
         } finally {
             currentResultSet = null;
         }
