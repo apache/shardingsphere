@@ -137,6 +137,29 @@ public final class SQLBuilder {
         return result.toString();
     }
     
+    /**
+     * Convert to SQL unit.
+     *
+     * @return SQL unit
+     */
+    public SQLUnit toSQL() {
+        StringBuilder result = new StringBuilder();
+        List<Object> insertParameters = new LinkedList<>();
+        for (Object each : segments) {
+            if (!(each instanceof ShardingPlaceholder)) {
+                result.append(each);
+                continue;
+            }
+            if (each instanceof InsertValuesPlaceholder) {
+                appendInsertValuesPlaceholder(null, (InsertValuesPlaceholder) each, insertParameters, result);
+            } else {
+                result.append(each);
+            }
+        }
+        List<List<Object>> parameterSets = insertParameters.isEmpty() ? new ArrayList<>(Collections.singleton(parameters)) : new ArrayList<>(Collections.singleton(insertParameters));
+        return new SQLUnit(result.toString(), parameterSets);
+    }
+    
     private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
         if (null == actualTableName) {
             stringBuilder.append(tablePlaceholder.toString());
@@ -163,19 +186,22 @@ public final class SQLBuilder {
     private void appendInsertValuesPlaceholder(final TableUnit tableUnit, 
                                                final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
-            appendInsertColumnValue(tableUnit, each, insertParameters, stringBuilder);
+            if (isToAppendInsertColumnValue(tableUnit, each)) {
+                appendInsertColumnValue(each, insertParameters, stringBuilder);
+            }
         }
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
     }
     
-    private void appendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        if (insertColumnValue.getDataNodes().isEmpty() || isToAppendInsertColumnValue(tableUnit, insertColumnValue)) {
-            stringBuilder.append(insertColumnValue).append(", ");
-            insertParameters.addAll(insertColumnValue.getParameters());
-        }
+    private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        stringBuilder.append(insertColumnValue).append(", ");
+        insertParameters.addAll(insertColumnValue.getParameters());
     }
     
     private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {
+        if (insertColumnValue.getDataNodes().isEmpty() || null == tableUnit) {
+            return true;
+        }
         for (DataNode each : insertColumnValue.getDataNodes()) {
             if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;

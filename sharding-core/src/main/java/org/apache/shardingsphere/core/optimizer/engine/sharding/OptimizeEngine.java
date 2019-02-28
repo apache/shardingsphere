@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.query;
+package org.apache.shardingsphere.core.optimizer.engine.sharding;
 
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 
 /**
- * Always false sharding value.
+ * Optimize engine.
  *
- * @author zhangliang
+ * @author maxiaoguang
  */
-public final class AlwaysFalseShardingValue implements RouteValue {
+public interface OptimizeEngine {
     
-    @Override
-    public Column getColumn() {
-        return new Column("", "");
-    }
+    /**
+     * Optimize sharding conditions.
+     *
+     * @return sharding conditions
+     */
+    ShardingConditions optimize();
 }

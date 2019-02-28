@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer;
-
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
+package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
 /**
- * Optimize engine.
+ * Encrypt optimize engine.
  *
- * @author maxiaoguang
+ * @author panjuan
  */
-public interface OptimizeEngine {
+public interface EncryptOptimizeEngine {
     
     /**
-     * Optimize sharding conditions.
+     * Optimize.
      *
-     * @return sharding conditions
      */
-    ShardingConditions optimize();
+    void optimize();
 }

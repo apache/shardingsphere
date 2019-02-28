@@ -126,6 +126,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private void handleOldRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
         for (final BatchRouteUnit each : newRouteUnits) {
             Optional<BatchRouteUnit> batchRouteUnitOptional = Iterators.tryFind(routeUnits.iterator(), new Predicate<BatchRouteUnit>() {
+                
                 @Override
                 public boolean apply(final BatchRouteUnit input) {
                     return input.equals(each);
@@ -217,6 +218,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         List<List<Object>> result = new LinkedList<>();
         for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
             target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
+                
                 @Override
                 public boolean apply(final StatementExecuteUnit input) {
                     return input.getStatement().equals(statement);
