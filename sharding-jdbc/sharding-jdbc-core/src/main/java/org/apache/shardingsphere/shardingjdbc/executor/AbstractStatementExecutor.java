@@ -126,7 +126,7 @@ public class AbstractStatementExecutor {
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         List<T> result = sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
-        refreshTableMetaData(connection.getShardingContext(), sqlStatement);
+        refreshShardingMetaDataIfNeeded(connection.getShardingContext(), sqlStatement);
         return result;
     }
     
@@ -154,7 +154,7 @@ public class AbstractStatementExecutor {
         }
     }
     
-    private void refreshTableMetaData(final ShardingContext shardingContext, final SQLStatement sqlStatement) {
+    private void refreshShardingMetaDataIfNeeded(final ShardingContext shardingContext, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
             refreshTableMetaData(shardingContext, (CreateTableStatement) sqlStatement);
         } else if (sqlStatement instanceof AlterTableStatement) {
