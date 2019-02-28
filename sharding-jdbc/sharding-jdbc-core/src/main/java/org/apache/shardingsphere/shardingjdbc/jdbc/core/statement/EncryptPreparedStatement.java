@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultS
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -44,9 +45,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     private final EncryptConnection connection;
     
-    private final EncryptPreparedStatementMetaData preparedStatementMetaData;
+    private final String sql;
     
-    private PreparedStatement statement;
+    private final EncryptPreparedStatementMetaData preparedStatementMetaData;
     
     private EncryptResultSet resultSet;
     
@@ -174,6 +175,12 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
         private EncryptPreparedStatementMetaData(final String[] columnNames) {
             this(-1, -1, -1, -1, null, columnNames);
+        }
+        
+        private PreparedStatement setMetaDataForEncryptPreparedStatement(final String sql) {
+            if (-1 != resultSetType && -1 != resultSetConcurrency && -1 != resultSetHoldability) {
+                return connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+            }
         }
     }
 }
