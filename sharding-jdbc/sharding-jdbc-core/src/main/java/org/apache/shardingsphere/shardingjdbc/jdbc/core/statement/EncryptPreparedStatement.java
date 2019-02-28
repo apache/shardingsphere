@@ -35,7 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Encrypt prepared statement.
@@ -49,6 +48,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private final EncryptPreparedStatementGenerator preparedStatementGenerator;
     
     private final Collection<SQLUnit> sqlUnits = new LinkedList<>();
+    
+    private PreparedStatement originalPreparedStatement;
     
     private EncryptResultSet resultSet;
     
@@ -91,8 +92,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @Override
     public ResultSet executeQuery() {
         SQLUnit sqlUnit = getSQLUnit(sql);
-        PreparedStatement preparedStatement = preparedStatementGenerator.createEncryptPreparedStatement(sqlUnit.getSql());
-        replaySetParameter(preparedStatement, sqlUnit.getParameterSets().get(0));
+        originalPreparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+        replaySetParameter(originalPreparedStatement, sqlUnit.getParameterSets().get(0));
+        clearParameters();
         this.resultSet = new EncryptResultSet(this, resultSet, preparedStatementGenerator.connection.getEncryptRule());
         return resultSet;
     }
@@ -111,16 +113,6 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    public int getResultSetConcurrency() throws SQLException {
-        return 0;
-    }
-    
-    @Override
-    public int getResultSetType() throws SQLException {
-        return 0;
-    }
-    
-    @Override
     public int executeUpdate() throws SQLException {
         return 0;
     }
@@ -132,12 +124,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public int getResultSetHoldability() throws SQLException {
-        return 0;
+        return originalPreparedStatement.getGeneratedKeys();
     }
     
     @Override
@@ -155,8 +142,23 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
-        return null;
+    public Connection getConnection() {
+        return preparedStatementGenerator.connection;
+    }
+    
+    @Override
+    public int getResultSetConcurrency() {
+        return preparedStatementGenerator.resultSetConcurrency;
+    }
+    
+    @Override
+    public int getResultSetType() {
+        return preparedStatementGenerator.resultSetType;
+    }
+    
+    @Override
+    public int getResultSetHoldability() {
+        return preparedStatementGenerator.resultSetHoldability;
     }
     
     @Override
@@ -210,7 +212,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
             this(connection, -1, -1, -1, -1, null, columnNames);
         }
         
-        private PreparedStatement createEncryptPreparedStatement(final String sql) {
+        private PreparedStatement createPreparedStatement(final String sql) {
             if (-1 != resultSetType && -1 != resultSetConcurrency && -1 != resultSetHoldability) {
                 return connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
             }
