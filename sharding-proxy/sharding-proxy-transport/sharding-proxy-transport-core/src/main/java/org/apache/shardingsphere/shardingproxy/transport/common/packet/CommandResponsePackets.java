@@ -15,29 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query;
+package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Query response packets.
+ * Command response packets.
  *
- * @author zhangliang
  * @author zhangyonglun
  */
+@NoArgsConstructor
 @Getter
-public final class QueryResponsePackets extends CommandResponsePackets {
+public class CommandResponsePackets {
     
-    private final Collection<DataHeaderPacket> dataHeaderPackets;
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
     
-    private final int sequenceId;
+    public CommandResponsePackets(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
+    }
     
-    public QueryResponsePackets(final Collection<DataHeaderPacket> dataHeaderPackets, final int sequenceId) {
-        getPackets().addAll(dataHeaderPackets);
-        this.dataHeaderPackets = dataHeaderPackets;
-        this.sequenceId = sequenceId;
+    public CommandResponsePackets(final Collection<DatabasePacket> databasePackets) {
+        packets.addAll(databasePackets);
+    }
+    
+    /**
+     * Get head packet.
+     *
+     * @return head packet
+     */
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
     }
 }
