@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.merger.MergeEngine;
-import org.apache.shardingsphere.core.merger.MergeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
@@ -100,4 +98,16 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     public ResultSet getResultSet() {
         return resultSet;
     }
+    
+    @Override
+    public int executeUpdate() throws SQLException {
+        return statement.executeUpdate();
+    }
+    
+    @Override
+    public boolean execute() throws SQLException {
+        return statement.execute();
+    }
+    
+    
 }
