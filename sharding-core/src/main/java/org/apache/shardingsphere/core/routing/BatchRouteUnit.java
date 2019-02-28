@@ -55,4 +55,3 @@ public final class BatchRouteUnit {
         jdbcAndActualAddBatchCallTimesMap.put(jdbcAddBatchTimes, actualCallAddBatchTimes++);
     }
 }
-
