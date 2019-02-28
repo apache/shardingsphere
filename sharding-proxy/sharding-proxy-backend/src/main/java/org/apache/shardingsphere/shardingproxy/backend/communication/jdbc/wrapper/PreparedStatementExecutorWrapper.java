@@ -38,8 +38,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -68,7 +66,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         for (String each : new MasterSlaveRouter(
                 ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
-            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, new ArrayList<>(Collections.singleton(parameters)))));
+            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, new ArrayList<>())));
         }
         return result;
     }
@@ -81,8 +79,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sqlUnit.getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlUnit.getSql());
-        List<Object> parameters = getRoutedParameters(sqlUnit);
-        for (int i = 0; i < parameters.size(); i++) {
+        for (int i = 0; i < sqlUnit.getParameterSets().size(); i++) {
             result.setObject(i + 1, parameters.get(i));
         }
         return result;
@@ -91,13 +88,5 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public boolean executeSQL(final Statement statement, final String sql, final boolean isReturnGeneratedKeys) throws SQLException {
         return ((PreparedStatement) statement).execute();
-    }
-    
-    private List<Object> getRoutedParameters(final SQLUnit sqlUnit) {
-        List<Object> result = new LinkedList<>();
-        for (List<Object> each : sqlUnit.getParameterSets()) {
-            result.addAll(each);
-        }
-        return result;
     }
 }
