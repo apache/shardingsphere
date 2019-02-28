@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -201,7 +202,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @Override
     protected Collection<? extends Statement> getRoutedStatements() {
-        return null;
+        return Collections.singleton(preparedStatement);
     }
     
     @RequiredArgsConstructor
