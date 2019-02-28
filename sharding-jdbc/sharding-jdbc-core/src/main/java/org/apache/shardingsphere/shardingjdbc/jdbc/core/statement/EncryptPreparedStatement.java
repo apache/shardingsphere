@@ -103,14 +103,6 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         }
     }
     
-    private SQLUnit getSQLUnit(final String sql) {
-        EncryptConnection connection = preparedStatementGenerator.connection;
-        SQLStatement sqlStatement = connection.getEncryptSQLParsingEngine().parse(false, sql);
-        OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
-        SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, getParameters()).rewrite();
-        return sqlBuilder.toSQL();
-    }
-    
     @Override
     public ResultSet getResultSet() {
         return resultSet;
@@ -121,6 +113,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replaySetParameter(preparedStatement, sqlUnit.getParameterSets().get(0));
             return preparedStatement.executeUpdate();
         } finally {
             clearBatch();
@@ -146,6 +139,14 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         clearParameters();
     }
     
+    private SQLUnit getSQLUnit(final String sql) {
+        EncryptConnection connection = preparedStatementGenerator.connection;
+        SQLStatement sqlStatement = connection.getEncryptSQLParsingEngine().parse(false, sql);
+        OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
+        SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, getParameters()).rewrite();
+        return sqlBuilder.toSQL();
+    }
+    
     @Override
     public int[] executeBatch() throws SQLException {
         try {
@@ -165,9 +166,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    public void clearBatch() {
-        resultSet = null;
-        preparedStatement = null;
+    public void clearBatch() throws SQLException {
+        preparedStatement.clearBatch();
         sqlUnits.clear();
         clearParameters();
     }
