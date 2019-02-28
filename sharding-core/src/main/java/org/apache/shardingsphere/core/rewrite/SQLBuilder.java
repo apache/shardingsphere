@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,8 +113,7 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        List<List<Object>> parameterSets = insertParameters.isEmpty() ? new ArrayList<>(Collections.singleton(parameters)) : new ArrayList<>(Collections.singleton(insertParameters));
-        return new SQLUnit(result.toString(), parameterSets);
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), parameters) : new SQLUnit(result.toString(), insertParameters);
     }
     
     /**
@@ -156,8 +154,7 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        List<List<Object>> parameterSets = insertParameters.isEmpty() ? new ArrayList<>(Collections.singleton(parameters)) : new ArrayList<>(Collections.singleton(insertParameters));
-        return new SQLUnit(result.toString(), parameterSets);
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), parameters) : new SQLUnit(result.toString(), insertParameters);
     }
     
     private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
