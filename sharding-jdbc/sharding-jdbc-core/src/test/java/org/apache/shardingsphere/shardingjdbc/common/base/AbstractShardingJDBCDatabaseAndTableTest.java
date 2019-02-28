@@ -50,7 +50,6 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         if (null != shardingDataSource) {
             return;
         }
-        
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
