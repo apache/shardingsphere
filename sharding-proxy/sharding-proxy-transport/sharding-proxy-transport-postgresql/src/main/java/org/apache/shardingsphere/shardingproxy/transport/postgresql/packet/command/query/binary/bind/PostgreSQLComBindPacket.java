@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
@@ -118,8 +117,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             if (backendResponse instanceof UpdateResponse) {
                 return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
             }
-            List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
-            return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders, queryHeaders.size() + 2));
+            return Optional.<CommandResponsePackets>of(new QueryResponsePackets(((QueryResponse) backendResponse).getQueryHeaders()));
         }
         return Optional.of(new CommandResponsePackets(new PostgreSQLBindCompletePacket()));
     }

@@ -100,7 +100,7 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         }
         List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
         dataHeaderEofSequenceId = queryHeaders.size() + 2;
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders, dataHeaderEofSequenceId));
+        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders));
     }
     
     private MySQLErrPacket createErrorPacket(final Exception cause) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 
 import java.util.Collection;
@@ -28,15 +29,9 @@ import java.util.Collection;
  * @author zhangliang
  * @author zhangyonglun
  */
+@RequiredArgsConstructor
 @Getter
 public final class QueryResponsePackets extends CommandResponsePackets {
     
     private final Collection<QueryHeader> queryHeaders;
-    
-    private final int sequenceId;
-    
-    public QueryResponsePackets(final Collection<QueryHeader> queryHeaders, final int sequenceId) {
-        this.queryHeaders = queryHeaders;
-        this.sequenceId = sequenceId;
-    }
 }

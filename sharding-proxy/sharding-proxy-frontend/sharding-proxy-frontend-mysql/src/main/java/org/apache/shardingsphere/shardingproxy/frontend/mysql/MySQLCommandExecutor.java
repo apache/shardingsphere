@@ -81,7 +81,7 @@ public final class MySQLCommandExecutor implements Runnable {
                     context.write(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
                 }
                 context.write(new MySQLEofPacket(++currentSequenceId));
-                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
+                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ++currentSequenceId);
             } else {
                 for (DatabasePacket each : responsePackets.get().getPackets()) {
                     context.write(each);
