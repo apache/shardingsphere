@@ -135,6 +135,20 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @Override
     public int[] executeBatch() throws SQLException {
+        try {
+            originalPreparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnits.iterator().next().getSql());
+            replayBatchPreparedStatement();
+            return originalPreparedStatement.executeBatch();
+        } finally {
+            clearBatch();
+        }
+    }
+    
+    private void replayBatchPreparedStatement() throws SQLException {
+        for (SQLUnit each : sqlUnits) {
+            replaySetParameter(originalPreparedStatement, each.getParameterSets().get(0));
+            originalPreparedStatement.addBatch();
+        }
     }
     
     @Override
