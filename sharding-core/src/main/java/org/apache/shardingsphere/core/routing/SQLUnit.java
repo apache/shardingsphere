@@ -28,6 +28,7 @@ import java.util.List;
  * SQL unit.
  *
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -37,5 +38,5 @@ public final class SQLUnit {
     
     private final String sql;
     
-    private final List<List<Object>> parameterSets;
+    private final List<Object> parameterSets;
 }
