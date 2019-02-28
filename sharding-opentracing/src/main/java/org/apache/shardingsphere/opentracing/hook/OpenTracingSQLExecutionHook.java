@@ -27,7 +27,6 @@ import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.spi.hook.SQLExecutionHook;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,16 +60,8 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
         
     }
     
-    private String toString(final List<List<Object>> parameterSets) {
-        return parameterSets.isEmpty() ? "" : Joiner.on(", ").join(toStringList(parameterSets));
-    }
-    
-    private List<String> toStringList(final List<List<Object>> parameterSets) {
-        List<String> result = new LinkedList<>();
-        for (List<Object> each : parameterSets) {
-            result.add(String.format("[%s]", Joiner.on(", ").join(each)));
-        }
-        return result;
+    private String toString(final List<Object> parameterSets) {
+        return parameterSets.isEmpty() ? "" : Joiner.on(", ").join(parameterSets);
     }
     
     @Override
