@@ -21,7 +21,6 @@ import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryRes
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.io.InputStream;
@@ -49,13 +48,13 @@ import java.util.Collections;
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
-    private final EncryptStatement encryptStatement;
+    private final Statement encryptStatement;
     
     private ResultSet originalResultSet;
     
     private IteratorStreamMergedResult resultSet;
     
-    public EncryptResultSet(final EncryptStatement encryptStatement, final ResultSet resultSet, final EncryptRule encryptRule) {
+    public EncryptResultSet(final Statement encryptStatement, final ResultSet resultSet, final EncryptRule encryptRule) {
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
         QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule.getAllEncryptTableNames(), encryptRule.getEncryptorEngine());
