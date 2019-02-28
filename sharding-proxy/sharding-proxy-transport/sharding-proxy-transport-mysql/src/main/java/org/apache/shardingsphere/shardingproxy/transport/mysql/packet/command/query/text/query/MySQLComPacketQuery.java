@@ -32,7 +32,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -44,8 +43,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * MySQL COM_QUERY command packet.
@@ -100,9 +98,9 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         if (backendResponse instanceof UpdateResponse) {
             return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
         }
-        Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets((QueryResponse) backendResponse);
-        dataHeaderEofSequenceId = dataHeaderPackets.size() + 2;
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
+        List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
+        dataHeaderEofSequenceId = queryHeaders.size() + 2;
+        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders, dataHeaderEofSequenceId));
     }
     
     private MySQLErrPacket createErrorPacket(final Exception cause) {
@@ -111,16 +109,6 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     
     private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
         return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
-    }
-    
-    private Collection<DataHeaderPacket> createDataHeaderPackets(final QueryResponse queryResponse) {
-        Collection<DataHeaderPacket> result = new LinkedList<>();
-        int sequenceId = 1;
-        for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            result.add(new DataHeaderPacket(
-                    ++sequenceId, each.getSchema(), each.getTable(), each.getTable(), each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
-        }
-        return result;
     }
     
     @Override

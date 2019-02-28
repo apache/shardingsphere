@@ -31,11 +31,12 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-@Getter
 public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
     
+    @Getter
     private final char messageType = PostgreSQLCommandPacketType.ROW_DESCRIPTION.getValue();
     
+    @Getter
     private final int fieldCount;
     
     private final List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions;

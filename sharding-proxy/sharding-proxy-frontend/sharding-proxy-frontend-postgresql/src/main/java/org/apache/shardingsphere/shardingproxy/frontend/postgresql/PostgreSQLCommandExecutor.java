@@ -24,9 +24,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
@@ -43,7 +44,7 @@ import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -79,21 +80,23 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             if (!responsePackets.isPresent()) {
                 return;
             }
-            List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(responsePackets.get().getPackets().size());
+            List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new LinkedList<>();
             int columnIndex = 1;
-            for (DatabasePacket each : responsePackets.get().getPackets()) {
-                if (each instanceof DataHeaderPacket) {
-                    postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription((DataHeaderPacket) each, columnIndex++));
-                } else {
+            if (responsePackets.get() instanceof QueryResponsePackets) {
+                for (QueryHeader each : ((QueryResponsePackets) responsePackets.get()).getQueryHeaders()) {
+                    postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription(each, columnIndex++));
+                }
+                if (!postgreSQLColumnDescriptions.isEmpty()) {
+                    writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
+                    if (!(commandPacket instanceof PostgreSQLComBindPacket && (((PostgreSQLComBindPacket) commandPacket).isBinaryRowData()))) {
+                        context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
+                    }
+                    writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
+                }
+            } else {
+                for (DatabasePacket each : responsePackets.get().getPackets()) {
                     context.write(each);
                 }
-            }
-            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLCommandCompletePacket)
-                && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLErrorResponsePacket) && !postgreSQLColumnDescriptions.isEmpty()) {
-                if (!(commandPacket instanceof PostgreSQLComBindPacket && (((PostgreSQLComBindPacket) commandPacket).isBinaryRowData()))) {
-                    context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
-                }
-                writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             if (commandPacket instanceof PostgreSQLComQueryPacket) {
                 context.write(new PostgreSQLCommandCompletePacket());
