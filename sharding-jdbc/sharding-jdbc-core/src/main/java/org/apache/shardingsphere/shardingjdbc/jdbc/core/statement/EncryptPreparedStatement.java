@@ -101,12 +101,16 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @Override
     public int executeUpdate() throws SQLException {
-        return statement.executeUpdate();
+        int result = statement.executeUpdate();
+        clearBatch();
+        return result;
     }
     
     @Override
     public boolean execute() throws SQLException {
-        return statement.execute();
+        boolean result = statement.execute();
+        clearBatch();
+        return result;
     }
     
     @Override
@@ -114,5 +118,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         return statement.getGeneratedKeys();
     }
     
-    
+    @Override
+    public void clearBatch() {
+        resultSet = null;
+        clearParameters();
+    }
 }
