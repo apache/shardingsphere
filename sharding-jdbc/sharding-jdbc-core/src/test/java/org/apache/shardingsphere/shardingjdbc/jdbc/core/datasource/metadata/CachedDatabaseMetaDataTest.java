@@ -814,7 +814,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetSuperTables() throws SQLException {
         when(databaseMetaData.getSuperTables("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getSuperTables("test", null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getSuperTables("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
