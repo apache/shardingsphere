@@ -112,9 +112,4 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     public DatabasePacket getQueryData() throws SQLException {
         return new PostgreSQLDataRowPacket(textProtocolBackendHandler.getQueryData().getData());
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

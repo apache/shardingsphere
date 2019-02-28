@@ -31,6 +31,13 @@ public interface MySQLPacket extends DatabasePacket {
     int SEQUENCE_LENGTH = 1;
     
     /**
+     * Get sequence ID.
+     *
+     * @return sequence ID
+     */
+    int getSequenceId();
+    
+    /**
      * Write packet to byte buffer.
      *
      * @param payload packet payload to be write

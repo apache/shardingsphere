@@ -56,9 +56,4 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
             }
         }
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

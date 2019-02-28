@@ -35,6 +35,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
@@ -137,7 +138,7 @@ public final class MySQLComStmtPreparePacketTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket(), CoreMatchers.<DatabasePacket>instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actual.get().getHeadPacket().getSequenceId(), is(1));
+        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(1));
     }
     
     @Test
@@ -148,7 +149,7 @@ public final class MySQLComStmtPreparePacketTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket(), CoreMatchers.<DatabasePacket>instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actual.get().getHeadPacket().getSequenceId(), is(1));
+        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(1));
     }
     
     @Test
@@ -158,7 +159,7 @@ public final class MySQLComStmtPreparePacketTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket(), CoreMatchers.<DatabasePacket>instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actual.get().getHeadPacket().getSequenceId(), is(1));
+        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(1));
     }
     
     @SneakyThrows

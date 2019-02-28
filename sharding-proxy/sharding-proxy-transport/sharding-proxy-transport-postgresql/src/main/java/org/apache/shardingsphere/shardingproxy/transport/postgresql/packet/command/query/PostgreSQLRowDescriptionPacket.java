@@ -53,9 +53,4 @@ public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
             payload.writeInt2(each.getDataFormat());
         }
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

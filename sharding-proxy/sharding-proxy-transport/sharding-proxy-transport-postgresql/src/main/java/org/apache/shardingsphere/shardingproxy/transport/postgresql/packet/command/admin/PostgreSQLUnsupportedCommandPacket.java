@@ -44,9 +44,4 @@ public final class PostgreSQLUnsupportedCommandPacket implements PostgreSQLComma
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

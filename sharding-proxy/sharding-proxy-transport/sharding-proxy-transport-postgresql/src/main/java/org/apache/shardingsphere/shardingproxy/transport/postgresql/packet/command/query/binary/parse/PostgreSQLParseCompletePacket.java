@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.parse;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -28,18 +27,12 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
  *
  * @author zhangyonglun
  */
-@Slf4j
+@Getter
 public final class PostgreSQLParseCompletePacket implements PostgreSQLPacket {
     
-    @Getter
     private final char messageType = PostgreSQLCommandPacketType.PARSE_COMPLETE.getValue();
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

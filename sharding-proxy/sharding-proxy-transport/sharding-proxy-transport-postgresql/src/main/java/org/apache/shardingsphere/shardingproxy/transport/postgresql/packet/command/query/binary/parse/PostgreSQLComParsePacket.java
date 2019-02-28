@@ -103,9 +103,4 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
         }
         return Optional.of(new CommandResponsePackets(new PostgreSQLParseCompletePacket()));
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

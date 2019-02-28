@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
@@ -70,7 +71,7 @@ public final class MySQLComInitDbPacketTest {
         Optional<CommandResponsePackets> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
+        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
         assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getAffectedRows(), is(0L));
         assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getLastInsertId(), is(0L));
         assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getWarnings(), is(0));
@@ -84,7 +85,7 @@ public final class MySQLComInitDbPacketTest {
         Optional<CommandResponsePackets> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
+        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
         assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
         assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getSqlState(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
         assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));

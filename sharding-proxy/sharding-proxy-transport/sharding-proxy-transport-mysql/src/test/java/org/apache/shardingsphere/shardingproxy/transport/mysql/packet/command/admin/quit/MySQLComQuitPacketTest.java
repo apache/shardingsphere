@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.a
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
@@ -43,7 +44,7 @@ public final class MySQLComQuitPacketTest {
         Optional<CommandResponsePackets> actual = new MySQLComQuitPacket(1).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
+        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
         assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getAffectedRows(), is(0L));
         assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getLastInsertId(), is(0L));
         assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getWarnings(), is(0));
