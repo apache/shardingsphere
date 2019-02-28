@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parsing.EncryptSQLParsingEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -53,8 +52,7 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     private final EncryptSQLParsingEngine encryptSQLParsingEngine;
 
     @Override
-    @SneakyThrows
-    public DatabaseMetaData getMetaData() {
+    public DatabaseMetaData getMetaData() throws SQLException {
         return connection.getMetaData();
     }
 
@@ -114,37 +112,31 @@ public final class EncryptConnection extends AbstractUnsupportedOperationConnect
     }
 
     @Override
-    @SneakyThrows
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
         connection.setAutoCommit(autoCommit);
     }
 
     @Override
-    @SneakyThrows
     public void commit() throws SQLException {
         connection.commit();
     }
 
     @Override
-    @SneakyThrows
     public void rollback() throws SQLException {
         connection.rollback();
     }
 
     @Override
-    @SneakyThrows
     public void close() throws SQLException {
         connection.close();
     }
 
     @Override
-    @SneakyThrows
     public boolean isClosed() throws SQLException {
         return connection.isClosed();
     }
 
     @Override
-    @SneakyThrows
     public boolean isReadOnly() throws SQLException {
         return connection.isReadOnly();
     }
