@@ -91,12 +91,15 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @Override
     public ResultSet executeQuery() {
-        SQLUnit sqlUnit = getSQLUnit(sql);
-        originalPreparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-        replaySetParameter(originalPreparedStatement, sqlUnit.getParameterSets().get(0));
-        clearParameters();
-        this.resultSet = new EncryptResultSet(this, resultSet, preparedStatementGenerator.connection.getEncryptRule());
-        return resultSet;
+        try {
+            SQLUnit sqlUnit = getSQLUnit(sql);
+            originalPreparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replaySetParameter(originalPreparedStatement, sqlUnit.getParameterSets().get(0));
+            this.resultSet = new EncryptResultSet(this, resultSet, preparedStatementGenerator.connection.getEncryptRule());
+            return resultSet;
+        } finally {
+            clearParameters();
+        }
     }
     
     private SQLUnit getSQLUnit(final String sql) {
