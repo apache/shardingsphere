@@ -958,6 +958,6 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetPseudoColumns() throws SQLException {
         when(databaseMetaData.getPseudoColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getPseudoColumns("test", null, null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getPseudoColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
 }

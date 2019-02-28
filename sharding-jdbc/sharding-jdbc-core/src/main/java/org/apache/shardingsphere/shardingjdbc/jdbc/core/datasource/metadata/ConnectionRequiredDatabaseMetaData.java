@@ -88,11 +88,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
         return getCurrentConnection().getMetaData().getIndexInfo(catalog, schema, table, unique, approximate);
     }
     
-    @Override
-    public final ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        return getCurrentConnection().getMetaData().getPseudoColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
-    }
-    
     private Connection getCurrentConnection() throws SQLException {
         if (null == currentConnection || currentConnection.isClosed()) {
             DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next() : dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
