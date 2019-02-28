@@ -880,7 +880,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetTablePrivileges() throws SQLException {
         when(databaseMetaData.getTablePrivileges("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getTablePrivileges("test", null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getTablePrivileges("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
