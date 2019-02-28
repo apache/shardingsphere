@@ -23,14 +23,19 @@ import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Encrypt prepared statement.
@@ -43,8 +48,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     private final EncryptPreparedStatementGenerator preparedStatementGenerator;
     
-    private EncryptResultSet resultSet;
+    private final Collection<SQLUnit> sqlUnits = new LinkedList<>();
     
+    private EncryptResultSet resultSet;
     
     @SneakyThrows
     public EncryptPreparedStatement(final EncryptConnection connection, final String sql) {
@@ -83,17 +89,20 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    public ResultSet executeQuery() throws SQLException {
-        ResultSet resultSet = statement.executeQuery();
-        this.resultSet = new EncryptResultSet(this, resultSet, connection.getEncryptRule());
+    public ResultSet executeQuery() {
+        SQLUnit sqlUnit = getSQLUnit(sql);
+        PreparedStatement preparedStatement = preparedStatementGenerator.createEncryptPreparedStatement(sqlUnit.getSql());
+        replaySetParameter(preparedStatement, sqlUnit.getParameterSets().get(0));
+        this.resultSet = new EncryptResultSet(this, resultSet, preparedStatementGenerator.connection.getEncryptRule());
         return resultSet;
     }
     
-    private String getRewriteSQL(final String sql) {
+    private SQLUnit getSQLUnit(final String sql) {
+        EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getEncryptSQLParsingEngine().parse(false, sql);
-        OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
-        SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, new LinkedList<>()).rewrite();
-        return sqlBuilder.toSQL().getSql();
+        OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
+        SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, getParameters()).rewrite();
+        return sqlBuilder.toSQL();
     }
     
     @Override
@@ -102,34 +111,62 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
+    public int getResultSetConcurrency() throws SQLException {
+        return 0;
+    }
+    
+    @Override
+    public int getResultSetType() throws SQLException {
+        return 0;
+    }
+    
+    @Override
     public int executeUpdate() throws SQLException {
-        int result = statement.executeUpdate();
-        clearBatch();
-        return result;
+        return 0;
     }
     
     @Override
     public boolean execute() throws SQLException {
-        boolean result = statement.execute();
-        clearBatch();
-        return result;
+        return false;
     }
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        return statement.getGeneratedKeys();
+        return null;
+    }
+    
+    @Override
+    public int getResultSetHoldability() throws SQLException {
+        return 0;
     }
     
     @Override
     public void addBatch() throws SQLException {
-        statement.addBatch();
-        
+    }
+    
+    @Override
+    public int[] executeBatch() throws SQLException {
     }
     
     @Override
     public void clearBatch() {
         resultSet = null;
         clearParameters();
+    }
+    
+    @Override
+    public Connection getConnection() throws SQLException {
+        return null;
+    }
+    
+    @Override
+    protected boolean isAccumulate() {
+        return false;
+    }
+    
+    @Override
+    protected Collection<? extends Statement> getRoutedStatements() {
+        return null;
     }
     
     @RequiredArgsConstructor
