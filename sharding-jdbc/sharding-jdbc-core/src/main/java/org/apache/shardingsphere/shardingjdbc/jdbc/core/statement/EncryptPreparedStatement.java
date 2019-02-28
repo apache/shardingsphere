@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.merger.MergeEngine;
+import org.apache.shardingsphere.core.merger.MergeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultS
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 /**
@@ -80,7 +83,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    public ResultSet getResultSet() {
+    public ResultSet executeQuery() throws SQLException {
+        ResultSet resultSet = statement.executeQuery();
+        this.resultSet = new EncryptResultSet(this, resultSet, connection.getEncryptRule());
         return resultSet;
     }
     
@@ -89,5 +94,10 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
         SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, new LinkedList<>()).rewrite();
         return sqlBuilder.toSQL().getSql();
+    }
+    
+    @Override
+    public ResultSet getResultSet() {
+        return resultSet;
     }
 }
