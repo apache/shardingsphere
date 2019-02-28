@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.admin.GUICompatibili
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.ExplainSQLBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
@@ -71,6 +72,9 @@ public final class TextProtocolBackendHandlerFactory {
         }
         if (sql.toUpperCase().contains(SET_AUTOCOMMIT_1)) {
             return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
+        }
+        if(sql.substring(0, 8).equalsIgnoreCase("explain ")) {
+            return new ExplainSQLBackendHandler(sql.substring(8), backendConnection);
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         return SQLType.DAL == sqlStatement.getType() ? createDALBackendHandler(sqlStatement, sql, backendConnection) : new QueryBackendHandler(sql, backendConnection);
