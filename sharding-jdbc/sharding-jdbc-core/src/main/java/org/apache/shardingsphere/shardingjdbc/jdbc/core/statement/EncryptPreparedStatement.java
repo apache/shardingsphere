@@ -49,7 +49,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     private final Collection<SQLUnit> sqlUnits = new LinkedList<>();
     
-    private PreparedStatement originalPreparedStatement;
+    private PreparedStatement preparedStatement;
     
     private EncryptResultSet resultSet;
     
@@ -90,12 +90,12 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     @Override
-    public ResultSet executeQuery() {
+    public ResultSet executeQuery() throws SQLException {
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
-            originalPreparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-            replaySetParameter(originalPreparedStatement, sqlUnit.getParameterSets().get(0));
-            this.resultSet = new EncryptResultSet(this, resultSet, preparedStatementGenerator.connection.getEncryptRule());
+            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replaySetParameter(preparedStatement, sqlUnit.getParameterSets().get(0));
+            this.resultSet = new EncryptResultSet(this, preparedStatement.executeQuery(), preparedStatementGenerator.connection.getEncryptRule());
             return resultSet;
         } finally {
             clearParameters();
@@ -117,17 +117,18 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @Override
     public int executeUpdate() throws SQLException {
-        return 0;
+        try {
+            SQLUnit sqlUnit = getSQLUnit(sql);
+            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            
+        } finally {
+            clearParameters();
+        }
     }
     
     @Override
     public boolean execute() throws SQLException {
         return false;
-    }
-    
-    @Override
-    public ResultSet getGeneratedKeys() throws SQLException {
-        return originalPreparedStatement.getGeneratedKeys();
     }
     
     @Override
@@ -139,9 +140,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            originalPreparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnits.iterator().next().getSql());
+            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnits.iterator().next().getSql());
             replayBatchPreparedStatement();
-            return originalPreparedStatement.executeBatch();
+            return preparedStatement.executeBatch();
         } finally {
             clearBatch();
         }
@@ -149,8 +150,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     private void replayBatchPreparedStatement() throws SQLException {
         for (SQLUnit each : sqlUnits) {
-            replaySetParameter(originalPreparedStatement, each.getParameterSets().get(0));
-            originalPreparedStatement.addBatch();
+            replaySetParameter(preparedStatement, each.getParameterSets().get(0));
+            preparedStatement.addBatch();
         }
     }
     
@@ -158,6 +159,11 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     public void clearBatch() {
         resultSet = null;
         clearParameters();
+    }
+    
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException {
+        return preparedStatement.getGeneratedKeys();
     }
     
     @Override
