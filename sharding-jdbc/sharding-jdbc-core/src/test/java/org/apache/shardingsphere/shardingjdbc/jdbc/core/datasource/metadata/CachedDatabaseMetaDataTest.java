@@ -952,7 +952,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetFunctionColumns() throws SQLException {
         when(databaseMetaData.getFunctionColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getFunctionColumns("test", null, null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getFunctionColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
