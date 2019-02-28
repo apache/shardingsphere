@@ -117,7 +117,6 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
             return preparedStatement.executeUpdate();
         } finally {
             clearParameters();
-            resultSet.close();
         }
     }
     
