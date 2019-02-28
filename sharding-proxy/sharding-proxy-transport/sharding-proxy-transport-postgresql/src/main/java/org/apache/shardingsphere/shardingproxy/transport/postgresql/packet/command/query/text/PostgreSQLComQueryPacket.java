@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;

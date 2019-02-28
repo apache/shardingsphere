@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
