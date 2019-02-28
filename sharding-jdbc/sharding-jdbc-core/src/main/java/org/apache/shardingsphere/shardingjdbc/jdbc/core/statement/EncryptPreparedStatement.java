@@ -109,5 +109,10 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         return statement.execute();
     }
     
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException {
+        return statement.getGeneratedKeys();
+    }
+    
     
 }
