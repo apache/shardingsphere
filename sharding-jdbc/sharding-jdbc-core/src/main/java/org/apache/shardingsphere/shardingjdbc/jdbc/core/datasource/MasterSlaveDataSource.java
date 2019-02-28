@@ -67,7 +67,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
+            return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, null);
         }
     }
     

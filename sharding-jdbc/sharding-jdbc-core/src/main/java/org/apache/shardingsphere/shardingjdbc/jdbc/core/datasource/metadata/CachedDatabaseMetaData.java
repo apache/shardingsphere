@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
 import java.sql.RowIdLifetime;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Cached database meta data.
  *
  * @author zhangliang
  */
-public final class CachedDatabaseMetaData extends CachedDatabaseMetaDataAdapter {
+public final class CachedDatabaseMetaData extends AdaptedDatabaseMetaData {
     
     private final String url;
     
@@ -292,7 +296,8 @@ public final class CachedDatabaseMetaData extends CachedDatabaseMetaDataAdapter 
     
     private final boolean generatedKeyAlwaysReturned;
     
-    public CachedDatabaseMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
+    public CachedDatabaseMetaData(final DatabaseMetaData databaseMetaData, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
+        super(dataSourceMap, shardingRule);
         url = databaseMetaData.getURL();
         userName = databaseMetaData.getUserName();
         databaseProductName = databaseMetaData.getDatabaseProductName();

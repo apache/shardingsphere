@@ -13,6 +13,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-proxy-core</module>
+        <module>sharding-proxy-common</module>
+        <module>sharding-proxy-transport</module>
+        <module>sharding-proxy-frontend</module>
+        <module>sharding-proxy-backend</module>
+        <module>sharding-proxy-bootstrap</module>
     </modules>
 </project>
