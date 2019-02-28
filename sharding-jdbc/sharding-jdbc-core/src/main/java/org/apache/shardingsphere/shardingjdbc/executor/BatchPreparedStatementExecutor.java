@@ -139,7 +139,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private void reviseBatchRouteUnit(final BatchRouteUnit oldBatchRouteUnit, final BatchRouteUnit newBatchRouteUnit) {
-        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().add(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().get(0));
+        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameters().add(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameters().get(0));
         oldBatchRouteUnit.mapAddBatchCount(batchCount);
     }
     
@@ -225,7 +225,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 }
             });
             if (target.isPresent()) {
-                result.addAll(target.get().getRouteUnit().getSqlUnit().getParameterSets());
+                result.addAll(target.get().getRouteUnit().getSqlUnit().getParameters());
                 break;
             }
         }

@@ -56,7 +56,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
                 .withTag(Tags.DB_TYPE.getKey(), "sql")
                 .withTag(Tags.DB_INSTANCE.getKey(), routeUnit.getDataSourceName())
                 .withTag(Tags.DB_STATEMENT.getKey(), routeUnit.getSqlUnit().getSql())
-                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), toString(routeUnit.getSqlUnit().getParameterSets())).startManual();
+                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), toString(routeUnit.getSqlUnit().getParameters())).startManual();
         
     }
     

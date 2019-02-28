@@ -95,7 +95,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-            replaySetParameter(preparedStatement, sqlUnit.getParameterSets().get(0));
+            replaySetParameter(preparedStatement, sqlUnit.getParameters().get(0));
             this.resultSet = new EncryptResultSet(this, preparedStatement.executeQuery(), preparedStatementGenerator.connection.getEncryptRule());
             return resultSet;
         } finally {
@@ -113,7 +113,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-            replaySetParameter(preparedStatement, sqlUnit.getParameterSets().get(0));
+            replaySetParameter(preparedStatement, sqlUnit.getParameters().get(0));
             return preparedStatement.executeUpdate();
         } finally {
             clearParameters();
@@ -125,7 +125,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-            replaySetParameter(preparedStatement, sqlUnit.getParameterSets().get(0));
+            replaySetParameter(preparedStatement, sqlUnit.getParameters().get(0));
             boolean result = preparedStatement.execute();
             this.resultSet = new EncryptResultSet(this, preparedStatement.getResultSet(), preparedStatementGenerator.connection.getEncryptRule());
             return result;
@@ -161,7 +161,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     private void replayBatchPreparedStatement() throws SQLException {
         for (SQLUnit each : sqlUnits) {
-            replaySetParameter(preparedStatement, each.getParameterSets().get(0));
+            replaySetParameter(preparedStatement, each.getParameters().get(0));
             preparedStatement.addBatch();
         }
     }

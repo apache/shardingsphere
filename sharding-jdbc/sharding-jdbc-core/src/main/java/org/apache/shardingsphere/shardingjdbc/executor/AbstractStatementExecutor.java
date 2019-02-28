@@ -110,7 +110,7 @@ public class AbstractStatementExecutor {
                 
                 @Override
                 public List<Object> apply(final StatementExecuteUnit input) {
-                    return input.getRouteUnit().getSqlUnit().getParameterSets().get(0);
+                    return input.getRouteUnit().getSqlUnit().getParameters().get(0);
                 }
             }));
         }
