@@ -940,7 +940,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetClientInfoProperties() throws SQLException {
         when(databaseMetaData.getClientInfoProperties()).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getClientInfoProperties(), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getClientInfoProperties(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
