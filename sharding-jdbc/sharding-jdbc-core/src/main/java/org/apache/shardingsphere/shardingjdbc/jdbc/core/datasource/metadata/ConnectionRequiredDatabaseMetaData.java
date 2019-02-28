@@ -53,11 +53,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
-        return getCurrentConnection().getMetaData().getTablePrivileges(catalog, schemaPattern, tableNamePattern);
-    }
-    
-    @Override
     public final ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
         return getCurrentConnection().getMetaData().getBestRowIdentifier(catalog, schema, table, scope, nullable);
     }
