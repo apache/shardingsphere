@@ -167,6 +167,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @Override
     public void clearBatch() {
         resultSet = null;
+        preparedStatement = null;
+        sqlUnits.clear();
         clearParameters();
     }
     
