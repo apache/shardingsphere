@@ -81,17 +81,19 @@ public final class LogicSchemas {
     /**
      * Initialize proxy context.
      *
+     * @param localSchemaNames local schema names
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Collection<String> localSchemaNames,  final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
+    public void init(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         databaseType = JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
         initSchemas(localSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
     }
     
-    private void initSchemas(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+    private void initSchemas(final Collection<String> localSchemaNames, 
+                             final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
                 logicSchemas.put(entry.getKey(), createLogicSchema(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
