@@ -177,6 +177,14 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     }
     
     @Override
+    public final ResultSet getCrossReference(final String parentCatalog,
+        final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getCrossReference(parentCatalog, parentSchema, parentTable, foreignCatalog, foreignSchema, foreignTable), shardingRule);
+        }
+    }
+    
+    @Override
     public final ResultSet getTypeInfo() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getTypeInfo(), shardingRule);

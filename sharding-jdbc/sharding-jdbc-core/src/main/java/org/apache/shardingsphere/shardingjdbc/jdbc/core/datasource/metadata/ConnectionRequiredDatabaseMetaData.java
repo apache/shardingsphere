@@ -51,12 +51,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
         return getCurrentConnection();
     }
     
-    @Override
-    public final ResultSet getCrossReference(final String parentCatalog,
-                                       final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
-        return getCurrentConnection().getMetaData().getCrossReference(parentCatalog, parentSchema, parentTable, foreignCatalog, foreignSchema, foreignTable);
-    }
-    
     private Connection getCurrentConnection() throws SQLException {
         if (null == currentConnection || currentConnection.isClosed()) {
             DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next()

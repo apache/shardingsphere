@@ -926,7 +926,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetCrossReference() throws SQLException {
         when(databaseMetaData.getCrossReference("test", null, null, null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getCrossReference("test", null, null, null, null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getCrossReference("test", null, null, null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
