@@ -429,11 +429,11 @@ public final class CachedDatabaseMetaData extends AdaptedDatabaseMetaData {
         supportsStatementPooling = databaseMetaData.supportsStatementPooling();
         supportsStoredFunctionsUsingCallSyntax = databaseMetaData.supportsStoredFunctionsUsingCallSyntax();
         autoCommitFailureClosesAllResultSets = databaseMetaData.autoCommitFailureClosesAllResultSets();
-        rowIdLifetime = getRowIdLifetime(databaseMetaData);
+        rowIdLifetime = getRowIdLifetimeFromOriginMetaData(databaseMetaData);
         generatedKeyAlwaysReturned = isGeneratedKeyAlwaysReturned(databaseMetaData);
     }
     
-    private RowIdLifetime getRowIdLifetime(final DatabaseMetaData databaseMetaData) throws SQLException {
+    private RowIdLifetime getRowIdLifetimeFromOriginMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
         try {
             return databaseMetaData.getRowIdLifetime();
         } catch (SQLFeatureNotSupportedException ignore) {
