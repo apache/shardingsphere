@@ -217,19 +217,22 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public List<List<Object>> getParameterSet(final Statement statement) {
         List<List<Object>> result = new LinkedList<>();
         for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
-            final Optional<StatementExecuteUnit> target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
-                
-                @Override
-                public boolean apply(final StatementExecuteUnit input) {
-                    return input.getStatement().equals(statement);
-                }
-            });
+            Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
                 result = getParameterSets(target.get());
                 break;
             }
         }
         return result;
+    }
+    
+    private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final ShardingExecuteGroup<StatementExecuteUnit> executeGroup) {
+        return Iterators.tryFind(executeGroup.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
+            @Override
+            public boolean apply(final StatementExecuteUnit input) {
+                return input.getStatement().equals(statement);
+                }
+        });
     }
     
     private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
