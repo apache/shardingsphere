@@ -23,8 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
@@ -44,7 +42,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * MySQL COM_QUERY command packet.
@@ -63,10 +60,6 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     private final String sql;
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
-    
-    private int dataHeaderEofSequenceId;
-    
-    private int currentQueryDataSequenceId;
     
     public MySQLComPacketQuery(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
@@ -99,9 +92,7 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         if (backendResponse instanceof UpdateResponse) {
             return Optional.<TransportResponse>of(new CommandTransportResponse(createUpdatePacket((UpdateResponse) backendResponse)));
         }
-        List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
-        dataHeaderEofSequenceId = queryHeaders.size() + 2;
-        return Optional.<TransportResponse>of(new QueryTransportResponse(queryHeaders));
+        return Optional.<TransportResponse>of(new QueryTransportResponse(((QueryResponse) backendResponse).getQueryHeaders()));
     }
     
     private MySQLErrPacket createErrorPacket(final Exception cause) {
@@ -118,8 +109,7 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     }
     
     @Override
-    public MySQLPacket getQueryData() throws SQLException {
-        QueryData queryData = textProtocolBackendHandler.getQueryData();
-        return new MySQLTextResultSetRowPacket(++currentQueryDataSequenceId + dataHeaderEofSequenceId, queryData.getData());
+    public MySQLPacket getQueryData(final int sequenceId) throws SQLException {
+        return new MySQLTextResultSetRowPacket(sequenceId, textProtocolBackendHandler.getQueryData().getData());
     }
 }

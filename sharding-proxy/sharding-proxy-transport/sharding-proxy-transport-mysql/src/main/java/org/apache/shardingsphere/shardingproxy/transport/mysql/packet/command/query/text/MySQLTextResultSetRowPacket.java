@@ -34,11 +34,11 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
 public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
     
+    @Getter
     private final int sequenceId;
     
     private final List<Object> data;

@@ -60,9 +60,9 @@ public final class MySQLCommandExecutor implements Runnable {
     
     private final BackendConnection backendConnection;
     
-    private int currentSequenceId;
-    
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
+    
+    private int currentSequenceId;
     
     @Override
     public void run() {
@@ -78,7 +78,7 @@ public final class MySQLCommandExecutor implements Runnable {
             }
             if (transportResponse.get() instanceof QueryTransportResponse) {
                 writeQueryHeaders((QueryTransportResponse) transportResponse.get());
-                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ++currentSequenceId);
+                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket);
             } else {
                 for (DatabasePacket each : ((CommandTransportResponse) transportResponse.get()).getPackets()) {
                     context.write(each);
@@ -110,23 +110,21 @@ public final class MySQLCommandExecutor implements Runnable {
         context.write(new MySQLEofPacket(++currentSequenceId));
     }
     
-    private void writeMoreResults(final MySQLQueryCommandPacket mysqlQueryCommandPacket, final int headPacketsCount) throws SQLException {
+    private void writeMoreResults(final MySQLQueryCommandPacket mysqlQueryCommandPacket) throws SQLException {
         if (!context.channel().isActive()) {
             return;
         }
-        currentSequenceId = headPacketsCount;
         int count = 0;
-        int proxyFrontendFlushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int flushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (mysqlQueryCommandPacket.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwait();
             }
-            MySQLPacket resultValue = mysqlQueryCommandPacket.getQueryData();
-            currentSequenceId = resultValue.getSequenceId();
+            MySQLPacket resultValue = mysqlQueryCommandPacket.getQueryData(++currentSequenceId);
             context.write(resultValue);
-            if (proxyFrontendFlushThreshold == count) {
+            if (flushThreshold == count) {
                 context.flush();
                 count = 0;
             }

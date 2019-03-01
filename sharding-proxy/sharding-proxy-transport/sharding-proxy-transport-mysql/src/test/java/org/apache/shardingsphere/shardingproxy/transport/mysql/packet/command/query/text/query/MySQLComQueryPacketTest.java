@@ -32,7 +32,6 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.Transport
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionManagerFixture;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
@@ -108,8 +107,7 @@ public final class MySQLComQueryPacketTest {
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertTrue(packet.next());
-        assertThat(packet.getQueryData().getSequenceId(), is(3));
-        assertThat(((MySQLTextResultSetRowPacket) packet.getQueryData()).getData(), is(Collections.<Object>singletonList(99999L)));
+        assertThat(packet.getQueryData(3).getSequenceId(), is(3));
         assertFalse(packet.next());
     }
     

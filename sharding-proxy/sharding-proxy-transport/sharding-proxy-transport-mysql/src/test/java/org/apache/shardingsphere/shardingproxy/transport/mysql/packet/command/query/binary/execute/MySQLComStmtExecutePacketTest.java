@@ -92,9 +92,8 @@ public final class MySQLComStmtExecutePacketTest {
         Optional<TransportResponse> actualCommandResponsePackets = packet.execute();
         assertTrue(actualCommandResponsePackets.isPresent());
         assertTrue(packet.next());
-        MySQLPacket actual = packet.getQueryData();
+        MySQLPacket actual = packet.getQueryData(3);
         assertThat(actual.getSequenceId(), is(3));
-        assertThat(((MySQLBinaryResultSetRowPacket) actual).getData(), is(Collections.<Object>singletonList(99999L)));
         assertFalse(packet.next());
     }
     
