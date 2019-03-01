@@ -116,12 +116,7 @@ public final class MySQLCommandExecutor implements Runnable {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                synchronized (backendConnection) {
-                    try {
-                        backendConnection.wait();
-                    } catch (final InterruptedException ignored) {
-                    }
-                }
+                backendConnection.getResourceSynchronizer().doAwait();
             }
             MySQLPacket resultValue = mysqlQueryCommandPacket.getQueryData();
             currentSequenceId = resultValue.getSequenceId();
