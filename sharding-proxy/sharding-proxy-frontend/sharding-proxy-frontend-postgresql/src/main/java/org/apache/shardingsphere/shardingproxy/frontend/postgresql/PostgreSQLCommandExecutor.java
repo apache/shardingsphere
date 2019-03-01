@@ -127,12 +127,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                synchronized (backendConnection) {
-                    try {
-                        backendConnection.wait();
-                    } catch (final InterruptedException ignored) {
-                    }
-                }
+                backendConnection.getResourceSynchronizer().doAwait();
             }
             DatabasePacket resultValue = queryCommandPacket.getQueryData();
             context.write(resultValue);
