@@ -260,13 +260,13 @@ shardingRule: # sharding的配置
   # 规则配置同样适合表sharding配置,同样是在这些算法中选择
     none: # 不配置任何规则,SQL会被发给所有节点去执行,这个规则没有子项目可以配置
     inline: # 行表达式分片
-      shardingColumn: test_id # 分片列名称
+      shardingColumn: test_id # 分片列名称，目前只支持单列分片，多字段使用 complex方式
       algorithmExpression: master_test_${test_id % 2} # 分片表达式,根据指定的表达式计算得到需要路由到的数据源名称 需要是合法的groovy表达式,示例配置中,取余为0则语句路由到master_test_0,取余为1则路由到master_test_1
     hint: #基于标记的sharding分片
       shardingAlgorithm: # 需要是HintShardingAlgorithm接口的实现,目前代码中,仅有为测试目的实现的OrderDatabaseHintShardingAlgorithm,没有生产环境可用的实现
     complex: # 支持多列的shariding,目前无生产可用实现
       shardingColumns: # 逗号切割的列
-      shardingAlgorithm: # ComplexKeysShardingAlgorithm接口的实现类
+      algorithmClassName: # ComplexKeysShardingAlgorithm接口的实现类，使用全路径类名
     standard: # 单列sharidng算法,需要配合对应的preciseShardingAlgorithm,rangeShardingAlgorithm接口的实现使用,目前无生产可用实现
       shardingColumn: # 列名,允许单列
       preciseShardingAlgorithm: # preciseShardingAlgorithm接口的实现类
