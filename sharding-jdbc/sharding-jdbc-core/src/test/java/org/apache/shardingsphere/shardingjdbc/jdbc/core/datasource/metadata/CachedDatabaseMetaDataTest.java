@@ -902,7 +902,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetVersionColumns() throws SQLException {
         when(databaseMetaData.getVersionColumns("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getVersionColumns("test", null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getVersionColumns("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
