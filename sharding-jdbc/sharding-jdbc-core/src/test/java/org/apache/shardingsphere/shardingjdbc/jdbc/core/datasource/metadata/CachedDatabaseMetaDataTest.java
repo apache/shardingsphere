@@ -896,7 +896,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetBestRowIdentifier() throws SQLException {
         when(databaseMetaData.getBestRowIdentifier("test", null, null, 1, true)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

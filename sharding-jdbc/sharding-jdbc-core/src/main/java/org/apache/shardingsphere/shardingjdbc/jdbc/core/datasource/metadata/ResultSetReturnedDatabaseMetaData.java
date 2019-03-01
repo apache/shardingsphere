@@ -137,6 +137,14 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     }
     
     @Override
+    public final ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
+        String actualTable = getActualTable(table);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getBestRowIdentifier(catalog, schema, actualTable, scope, nullable), shardingRule);
+        }
+    }
+    
+    @Override
     public final ResultSet getTypeInfo() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getTypeInfo(), shardingRule);

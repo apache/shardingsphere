@@ -52,11 +52,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
-        return getCurrentConnection().getMetaData().getBestRowIdentifier(catalog, schema, table, scope, nullable);
-    }
-    
-    @Override
     public final ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
         return getCurrentConnection().getMetaData().getVersionColumns(catalog, schema, table);
     }
