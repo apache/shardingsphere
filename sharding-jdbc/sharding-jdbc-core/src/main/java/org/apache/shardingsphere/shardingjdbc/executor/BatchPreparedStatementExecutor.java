@@ -225,12 +225,16 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 }
             });
             if (target.isPresent()) {
-                List<Object> parameters = target.get().getRouteUnit().getSqlUnit().getParameters();
-                result = Lists.partition(parameters, parameters.size() / batchCount);
+                result = getParameterSet(target.get());
                 break;
             }
         }
         return result;
+    }
+    
+    private List<List<Object>> getParameterSet(final StatementExecuteUnit target) {
+        List<Object> parameters = target.getRouteUnit().getSqlUnit().getParameters();
+        return Lists.partition(parameters, parameters.size() / batchCount);
     }
     
     @Override
