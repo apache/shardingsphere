@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Executor group.
+ * Command executor selector.
  * 
  * @author zhangliang
  * @author zhaojun
@@ -36,7 +36,7 @@ public final class CommandExecutorSelector {
      * Get executor service.
      *
      * @param transactionType transaction type
-     * @param channelId channel id
+     * @param channelId channel ID
      * @return executor service
      */
     public static ExecutorService getExecutor(final TransactionType transactionType, final ChannelId channelId) {
