@@ -18,42 +18,42 @@
     <import resource="classpath*:META-INF/etcd/registry-center.xml" />
     <import resource="classpath*:META-INF/shardingTransaction.xml" />
     <context:component-scan base-package="io.shardingsphere.example.repository.mybatis" />
-    <bean id="demo_ds_master_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_master_0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="demo_ds_master_0_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_master_0_slave_0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="demo_ds_master_0_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_master_0_slave_1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
 
-    <bean id="demo_ds_master_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_master_1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
 
-    <bean id="demo_ds_master_1_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_master_1_slave_0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
 
-    <bean id="demo_ds_master_1_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_master_1_slave_1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1"/>
         <property name="username" value="root"/>

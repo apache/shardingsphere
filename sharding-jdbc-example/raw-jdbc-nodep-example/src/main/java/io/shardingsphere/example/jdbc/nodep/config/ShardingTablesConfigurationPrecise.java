@@ -41,7 +41,9 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
+        Properties properties = new Properties();
+        properties.put("sql.show", true);
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, properties);
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

@@ -36,21 +36,21 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
 
-    <bean id="demo_ds_master" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_master" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_master"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="demo_ds_slave_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_slave_0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_slave_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
-    <bean id="demo_ds_slave_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds_slave_1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds_slave_1"/>
         <property name="username" value="root"/>
