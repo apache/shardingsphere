@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +64,12 @@ public final class BatchRouteUnit {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSets() {
-        return Lists.partition(routeUnit.getSqlUnit().getParameters(), routeUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes);
+        List<List<Object>> result = new LinkedList<>();
+        if (routeUnit.getSqlUnit().getParameters().isEmpty() || 0 == actualCallAddBatchTimes) {
+            result.add(new LinkedList<>());
+        } else {
+            result.addAll(Lists.partition(routeUnit.getSqlUnit().getParameters(), routeUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes));
+        }
+        return result;
     }
 }
