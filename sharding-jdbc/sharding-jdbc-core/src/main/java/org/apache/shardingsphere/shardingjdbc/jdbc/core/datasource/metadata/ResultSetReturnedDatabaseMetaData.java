@@ -169,9 +169,25 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     }
     
     @Override
+    public final ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
+        String actualTable = getActualTable(table);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getExportedKeys(catalog, schema, actualTable), shardingRule);
+        }
+    }
+    
+    @Override
     public final ResultSet getTypeInfo() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getTypeInfo(), shardingRule);
+        }
+    }
+    
+    @Override
+    public final ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
+        String actualTable = getActualTable(table);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getIndexInfo(catalog, schema, actualTable, unique, approximate), shardingRule);
         }
     }
     

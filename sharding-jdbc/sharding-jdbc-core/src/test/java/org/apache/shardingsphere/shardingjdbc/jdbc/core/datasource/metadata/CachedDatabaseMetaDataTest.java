@@ -920,7 +920,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetExportedKeys() throws SQLException {
         when(databaseMetaData.getExportedKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getExportedKeys("test", null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getExportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
@@ -938,7 +938,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetIndexInfo() throws SQLException {
         when(databaseMetaData.getIndexInfo("test", null, null, true, true)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getIndexInfo("test", null, null, true, true), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getIndexInfo("test", null, null, true, true), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

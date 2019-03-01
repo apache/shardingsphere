@@ -52,19 +52,9 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return getCurrentConnection().getMetaData().getExportedKeys(catalog, schema, table);
-    }
-    
-    @Override
     public final ResultSet getCrossReference(final String parentCatalog,
                                        final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
         return getCurrentConnection().getMetaData().getCrossReference(parentCatalog, parentSchema, parentTable, foreignCatalog, foreignSchema, foreignTable);
-    }
-    
-    @Override
-    public final ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
-        return getCurrentConnection().getMetaData().getIndexInfo(catalog, schema, table, unique, approximate);
     }
     
     private Connection getCurrentConnection() throws SQLException {
