@@ -914,7 +914,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetImportedKeys() throws SQLException {
         when(databaseMetaData.getImportedKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getImportedKeys("test", null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getImportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
