@@ -269,8 +269,8 @@ shardingRule: # sharding的配置
       algorithmClassName: # ComplexKeysShardingAlgorithm接口的实现类，使用全路径类名
     standard: # 单列sharidng算法,需要配合对应的preciseShardingAlgorithm,rangeShardingAlgorithm接口的实现使用,目前无生产可用实现
       shardingColumn: # 列名,允许单列
-      preciseShardingAlgorithm: # preciseShardingAlgorithm接口的实现类
-      rangeShardingAlgorithm: # rangeShardingAlgorithm接口的实现类
+      preciseAlgorithmClassName: # preciseShardingAlgorithm接口的实现类，用于 `=` and `IN` 情况下的分表算法
+      rangeAlgorithmClassName: # rangeShardingAlgorithm接口的实现类，用于 `BETWEEN` 情况下的分表算法
   defaultTableStrategy: #配置参考defaultDatabaseShardingStrategy,区别在于,inline算法的配置中,algorithmExpression的配置算法结果需要是实际的物理表名称,而非数据源名称
   defaultKeyGenerator: #默认的主键生成算法 如果没有设置,默认为SNOWFLAKE算法
     column: # 自增键对应的列名称
