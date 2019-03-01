@@ -29,6 +29,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLStat
 @RequiredArgsConstructor
 @Getter
 public final class ShardingCTLExplainStatement implements ShardingCTLStatement {
-
+    
     private final String sql;
 }

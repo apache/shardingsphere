@@ -30,15 +30,15 @@ import java.util.regex.Pattern;
  * @author Wen
  */
 public final class ShardingCTLExplainParser implements ShardingCTLParser<ShardingCTLExplainStatement> {
-
+    
     private final String regex = "sctl:explain\\s+([\\s\\S]*)";
-
+    
     private Matcher matcher;
-
-    public ShardingCTLExplainParser(final String sql) {
+    
+    ShardingCTLExplainParser(final String sql) {
         this.matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
     }
-
+    
     @Override
     public Optional<ShardingCTLExplainStatement> doParse() {
         if (matcher.find()) {

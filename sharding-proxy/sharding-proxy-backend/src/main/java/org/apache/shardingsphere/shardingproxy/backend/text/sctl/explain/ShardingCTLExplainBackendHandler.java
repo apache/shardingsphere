@@ -43,15 +43,15 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class ShardingCTLExplainBackendHandler implements TextProtocolBackendHandler {
-
+    
     private final String sql;
-
+    
     private final BackendConnection backendConnection;
-
+    
     private List<QueryHeader> queryHeaders;
-
+    
     private Iterator<RouteUnit> routeUnits;
-
+    
     @Override
     public BackendResponse execute() {
         Optional<ShardingCTLExplainStatement> explainStatement = new ShardingCTLExplainParser(sql).doParse();
@@ -65,12 +65,12 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0));
         return new QueryResponse(queryHeaders);
     }
-
+    
     @Override
     public boolean next() {
         return null != routeUnits && routeUnits.hasNext();
     }
-
+    
     @Override
     public QueryData getQueryData() {
         RouteUnit routeUnit = routeUnits.next();
