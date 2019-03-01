@@ -49,9 +49,9 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     
     @Override
     public final ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
-        String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
+        String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
-            return new DatabaseMetaDataResultSet(connection.getMetaData().getSuperTables(catalog, schemaPattern, shardingTableNamePattern), shardingRule);
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getSuperTables(catalog, schemaPattern, actualTableNamePattern), shardingRule);
         }
     }
     
@@ -78,9 +78,9 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     
     @Override
     public final ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
-        String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
+        String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
-            return new DatabaseMetaDataResultSet(connection.getMetaData().getTables(catalog, schemaPattern, shardingTableNamePattern, types), shardingRule);
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getTables(catalog, schemaPattern, actualTableNamePattern, types), shardingRule);
         }
     }
     
@@ -114,17 +114,25 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     
     @Override
     public final ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
+        String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
-            return new DatabaseMetaDataResultSet(connection.getMetaData().getColumns(catalog, schemaPattern, shardingTableNamePattern, columnNamePattern), shardingRule);
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getColumns(catalog, schemaPattern, actualTableNamePattern, columnNamePattern), shardingRule);
+        }
+    }
+    
+    @Override
+    public final ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
+        String actualTable = getActualTable(table);
+        try (Connection connection = getConnection()) {
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getColumnPrivileges(catalog, schema, actualTable, columnNamePattern), shardingRule);
         }
     }
     
     @Override
     public final ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
-        String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
+        String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
-            return new DatabaseMetaDataResultSet(connection.getMetaData().getTablePrivileges(catalog, schemaPattern, shardingTableNamePattern), shardingRule);
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getTablePrivileges(catalog, schemaPattern, actualTableNamePattern), shardingRule);
         }
     }
     
@@ -165,13 +173,17 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
     
     @Override
     public final ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        String shardingTableNamePattern = getShardingTableNamePattern(tableNamePattern);
+        String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
-            return new DatabaseMetaDataResultSet(connection.getMetaData().getPseudoColumns(catalog, schemaPattern, shardingTableNamePattern, columnNamePattern), shardingRule);
+            return new DatabaseMetaDataResultSet(connection.getMetaData().getPseudoColumns(catalog, schemaPattern, actualTableNamePattern, columnNamePattern), shardingRule);
         }
     }
     
-    private String getShardingTableNamePattern(final String tableNamePattern) {
+    private String getActualTableNamePattern(final String tableNamePattern) {
         return null == tableNamePattern ? tableNamePattern : (shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern);
+    }
+    
+    private String getActualTable(final String table) {
+        return null == table ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(getCurrentDataSourceName(), table).getTableName() : table);
     }
 }

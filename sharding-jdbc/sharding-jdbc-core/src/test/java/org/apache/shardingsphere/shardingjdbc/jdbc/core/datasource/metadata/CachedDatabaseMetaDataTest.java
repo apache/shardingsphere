@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +68,15 @@ public final class CachedDatabaseMetaDataTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
-        cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData, dataSourceMap, null);
+        cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData, dataSourceMap, mockShardingRule());
+    }
+    
+    private ShardingRule mockShardingRule() {
+        ShardingRule result = mock(ShardingRule.class);
+        ShardingDataSourceNames shardingDataSourceNames = mock(ShardingDataSourceNames.class);
+        when(shardingDataSourceNames.getRandomDataSourceName()).thenReturn("ds");
+        when(result.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
+        return result;
     }
     
     @Test
@@ -874,7 +884,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetColumnPrivileges() throws SQLException {
         when(databaseMetaData.getColumnPrivileges("test", null, null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getColumnPrivileges("test", null, null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getColumnPrivileges("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test

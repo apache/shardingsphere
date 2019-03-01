@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
@@ -42,14 +43,12 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     
     private Connection currentConnection;
     
+    @Getter
+    private String currentDataSourceName;
+    
     @Override
     public final Connection getConnection() throws SQLException {
         return getCurrentConnection();
-    }
-    
-    @Override
-    public final ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
-        return getCurrentConnection().getMetaData().getColumnPrivileges(catalog, schema, table, columnNamePattern);
     }
     
     @Override
@@ -90,7 +89,8 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     
     private Connection getCurrentConnection() throws SQLException {
         if (null == currentConnection || currentConnection.isClosed()) {
-            DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next() : dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
+            DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next()
+                : dataSourceMap.get(currentDataSourceName = shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
             currentConnection = dataSource.getConnection();
         }
         return currentConnection;
