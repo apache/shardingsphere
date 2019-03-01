@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,7 @@ public final class MySQLComStmtClosePacketTest {
     @Test
     public void assertExecute() {
         when(payload.readInt4()).thenReturn(1);
-        Optional<CommandResponsePackets> actual = new MySQLComStmtClosePacket(1, payload).execute();
+        Optional<TransportResponse> actual = new MySQLComStmtClosePacket(1, payload).execute();
         assertFalse(actual.isPresent());
     }
     

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -68,27 +69,28 @@ public final class MySQLComInitDbPacketTest {
     @Test
     public void assertExecuteWithValidSchemaName() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Optional<CommandResponsePackets> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
+        Optional<TransportResponse> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getAffectedRows(), is(0L));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getLastInsertId(), is(0L));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getWarnings(), is(0));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getInfo(), is(""));
+        assertThat(((CommandResponsePackets) actual.get()).getPackets().size(), is(1));
+        assertThat(((MySQLPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getSequenceId(), is(2));
+        assertThat(((MySQLOKPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getAffectedRows(), is(0L));
+        assertThat(((MySQLOKPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getLastInsertId(), is(0L));
+        assertThat(((MySQLOKPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getWarnings(), is(0));
+        assertThat(((MySQLOKPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getInfo(), is(""));
     }
     
     @Test
     public void assertExecuteWithInvalidSchemaName() {
         String invalidSchema = "invalid_schema";
         when(payload.readStringEOF()).thenReturn(invalidSchema);
-        Optional<CommandResponsePackets> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
+        Optional<TransportResponse> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
-        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getSqlState(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
-        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));
+        assertThat(((CommandResponsePackets) actual.get()).getPackets().size(), is(1));
+        assertThat(((MySQLPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getSequenceId(), is(2));
+        assertThat(((MySQLErrPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getErrorCode(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
+        assertThat(((MySQLErrPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getSqlState(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
+        assertThat(((MySQLErrPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getErrorMessage(), 
+                is(String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));
     }
     
     @Test

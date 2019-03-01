@@ -31,7 +31,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResponsePackets extends CommandResponsePackets {
+public final class QueryResponsePackets implements TransportResponse {
     
     private final Collection<QueryHeader> queryHeaders;
 }

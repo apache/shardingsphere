@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
@@ -71,7 +72,7 @@ public final class MySQLCommandExecutor implements Runnable {
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             MySQLCommandPacket mysqlCommandPacket = getCommandPacket(payload, backendConnection);
-            Optional<CommandResponsePackets> responsePackets = mysqlCommandPacket.execute();
+            Optional<TransportResponse> responsePackets = mysqlCommandPacket.execute();
             if (!responsePackets.isPresent()) {
                 return;
             }
@@ -83,7 +84,7 @@ public final class MySQLCommandExecutor implements Runnable {
                 context.write(new MySQLEofPacket(++currentSequenceId));
                 writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ++currentSequenceId);
             } else {
-                for (DatabasePacket each : responsePackets.get().getPackets()) {
+                for (DatabasePacket each : ((CommandResponsePackets) responsePackets.get()).getPackets()) {
                     context.write(each);
                 }
             }

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
@@ -86,21 +87,21 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Optional<TransportResponse> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE)));
+            return Optional.<TransportResponse>of(new CommandResponsePackets(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE)));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Optional.of(new CommandResponsePackets(createErrorPacket(((ErrorResponse) backendResponse).getCause())));
+            return Optional.<TransportResponse>of(new CommandResponsePackets(createErrorPacket(((ErrorResponse) backendResponse).getCause())));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
+            return Optional.<TransportResponse>of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
         }
         List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
         dataHeaderEofSequenceId = queryHeaders.size() + 2;
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders));
+        return Optional.<TransportResponse>of(new QueryResponsePackets(queryHeaders));
     }
     
     private MySQLErrPacket createErrorPacket(final Exception cause) {

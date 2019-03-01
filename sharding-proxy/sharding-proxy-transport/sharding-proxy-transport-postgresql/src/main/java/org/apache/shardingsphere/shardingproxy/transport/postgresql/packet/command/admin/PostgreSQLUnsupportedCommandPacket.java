@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
@@ -37,8 +38,8 @@ public final class PostgreSQLUnsupportedCommandPacket implements PostgreSQLComma
     private final char messageType;
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
-        return Optional.of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket()));
+    public Optional<TransportResponse> execute() {
+        return Optional.<TransportResponse>of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket()));
     }
     
     @Override

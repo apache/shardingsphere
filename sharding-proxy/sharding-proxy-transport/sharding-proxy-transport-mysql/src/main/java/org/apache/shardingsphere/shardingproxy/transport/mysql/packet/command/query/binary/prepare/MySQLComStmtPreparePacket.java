@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
@@ -78,7 +79,7 @@ public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Optional<TransportResponse> execute() {
         log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
         int currentSequenceId = 0;
         SQLStatement sqlStatement = sqlParsingEngine.parse(true);
@@ -94,7 +95,7 @@ public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
             result.getPackets().add(new MySQLEofPacket(++currentSequenceId));
         }
         // TODO add If numColumns > 0
-        return Optional.of(result);
+        return Optional.<TransportResponse>of(result);
     }
     
     private int getNumColumns(final SQLStatement sqlStatement) {

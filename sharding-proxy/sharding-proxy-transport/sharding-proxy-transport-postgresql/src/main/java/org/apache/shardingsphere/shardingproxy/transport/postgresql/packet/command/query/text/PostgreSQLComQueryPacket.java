@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
@@ -65,19 +66,19 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Optional<TransportResponse> execute() {
         log.debug("PostgreSQLComQueryPacket received for Sharding-Proxy: {}", sql);
         if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Optional.of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket()));
+            return Optional.<TransportResponse>of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket()));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Optional.of(new CommandResponsePackets(createErrorPacket((ErrorResponse) backendResponse)));
+            return Optional.<TransportResponse>of(new CommandResponsePackets(createErrorPacket((ErrorResponse) backendResponse)));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
+            return Optional.<TransportResponse>of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
         }
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(((QueryResponse) backendResponse).getQueryHeaders()));
+        return Optional.<TransportResponse>of(new QueryResponsePackets(((QueryResponse) backendResponse).getQueryHeaders()));
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {

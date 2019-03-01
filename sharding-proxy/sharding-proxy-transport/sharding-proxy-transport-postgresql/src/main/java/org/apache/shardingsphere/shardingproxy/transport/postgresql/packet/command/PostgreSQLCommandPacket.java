@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
 import java.sql.SQLException;
@@ -36,5 +36,5 @@ public interface PostgreSQLCommandPacket extends PostgreSQLPacket {
      * @return result packets to be sent
      * @throws SQLException SQL exception
      */
-    Optional<CommandResponsePackets> execute() throws SQLException;
+    Optional<TransportResponse> execute() throws SQLException;
 }

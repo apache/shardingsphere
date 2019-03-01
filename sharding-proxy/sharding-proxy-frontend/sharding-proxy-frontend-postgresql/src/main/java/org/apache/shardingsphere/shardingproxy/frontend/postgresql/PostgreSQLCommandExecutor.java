@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
@@ -71,7 +72,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             PostgreSQLCommandPacket commandPacket = getCommandPacket(payload, backendConnection);
-            Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
+            Optional<TransportResponse> responsePackets = commandPacket.execute();
             if (commandPacket instanceof PostgreSQLComSyncPacket) {
                 context.write(new PostgreSQLCommandCompletePacket());
                 context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
@@ -93,7 +94,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                     writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
                 }
             } else {
-                for (DatabasePacket each : responsePackets.get().getPackets()) {
+                for (DatabasePacket each : ((CommandResponsePackets) responsePackets.get()).getPackets()) {
                     context.write(each);
                 }
             }
