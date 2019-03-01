@@ -52,11 +52,6 @@ public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter 
     }
     
     @Override
-    public final ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return getCurrentConnection().getMetaData().getPrimaryKeys(catalog, schema, table);
-    }
-    
-    @Override
     public final ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
         return getCurrentConnection().getMetaData().getImportedKeys(catalog, schema, table);
     }

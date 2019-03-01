@@ -908,7 +908,7 @@ public final class CachedDatabaseMetaDataTest {
     @Test
     public void assertGetPrimaryKeys() throws SQLException {
         when(databaseMetaData.getPrimaryKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(cachedDatabaseMetaData.getPrimaryKeys("test", null, null), is(resultSet));
+        assertThat(cachedDatabaseMetaData.getPrimaryKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
