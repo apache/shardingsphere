@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  */
 public final class ShardingCTLExplainParser implements ShardingCTLParser<ShardingCTLExplainStatement> {
 
-    private final String regex = "sctl:explain\\s+(\\S*)";
+    private final String regex = "sctl:explain\\s+([\\s\\S]*)";
 
     private Matcher matcher;
 
