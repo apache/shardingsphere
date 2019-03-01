@@ -225,16 +225,22 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 }
             });
             if (target.isPresent()) {
-                result = Collections2.filter(routeUnits, new Predicate<BatchRouteUnit>() {
-    
-                    @Override
-                    public boolean apply(final BatchRouteUnit input) {
-                        return input.getRouteUnit().equals(target.get().getRouteUnit());
-                    }
-                }).iterator().next().getParameterSets();
+                result = getParameterSets(target.get());
                 break;
             }
         }
+        return result;
+    }
+    
+    private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
+        List<List<Object>> result;
+        result = Collections2.filter(routeUnits, new Predicate<BatchRouteUnit>() {
+
+            @Override
+            public boolean apply(final BatchRouteUnit input) {
+                return input.getRouteUnit().equals(executeUnit.getRouteUnit());
+            }
+        }).iterator().next().getParameterSets();
         return result;
     }
     
