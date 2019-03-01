@@ -25,21 +25,21 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Command response packets.
+ * Command transport response.
  *
  * @author zhangyonglun
  */
 @NoArgsConstructor
 @Getter
-public class CommandResponsePackets implements TransportResponse {
+public class CommandTransportResponse implements TransportResponse {
     
     private final Collection<DatabasePacket> packets = new LinkedList<>();
     
-    public CommandResponsePackets(final DatabasePacket databasePacket) {
+    public CommandTransportResponse(final DatabasePacket databasePacket) {
         packets.add(databasePacket);
     }
     
-    public CommandResponsePackets(final Collection<DatabasePacket> databasePackets) {
+    public CommandTransportResponse(final Collection<DatabasePacket> databasePackets) {
         packets.addAll(databasePackets);
     }
     

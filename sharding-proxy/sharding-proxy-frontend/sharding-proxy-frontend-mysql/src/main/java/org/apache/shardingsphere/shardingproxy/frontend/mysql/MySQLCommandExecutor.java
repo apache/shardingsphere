@@ -27,8 +27,8 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -76,15 +76,15 @@ public final class MySQLCommandExecutor implements Runnable {
             if (!responsePackets.isPresent()) {
                 return;
             }
-            if (responsePackets.get() instanceof QueryResponsePackets) {
-                context.write(new MySQLFieldCountPacket(++currentSequenceId, ((QueryResponsePackets) responsePackets.get()).getQueryHeaders().size()));
-                for (QueryHeader each : ((QueryResponsePackets) responsePackets.get()).getQueryHeaders()) {
+            if (responsePackets.get() instanceof QueryTransportResponse) {
+                context.write(new MySQLFieldCountPacket(++currentSequenceId, ((QueryTransportResponse) responsePackets.get()).getQueryHeaders().size()));
+                for (QueryHeader each : ((QueryTransportResponse) responsePackets.get()).getQueryHeaders()) {
                     context.write(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
                 }
                 context.write(new MySQLEofPacket(++currentSequenceId));
                 writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ++currentSequenceId);
             } else {
-                for (DatabasePacket each : ((CommandResponsePackets) responsePackets.get()).getPackets()) {
+                for (DatabasePacket each : ((CommandTransportResponse) responsePackets.get()).getPackets()) {
                     context.write(each);
                 }
             }

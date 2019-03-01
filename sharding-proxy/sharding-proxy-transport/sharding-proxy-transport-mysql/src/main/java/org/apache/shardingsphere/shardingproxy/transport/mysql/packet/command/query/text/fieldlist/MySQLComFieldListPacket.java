@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -83,7 +83,7 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Optional.<TransportResponse>of(new CommandResponsePackets(createMySQLErrPacket(((ErrorResponse) backendResponse).getCause())));
+            return Optional.<TransportResponse>of(new CommandTransportResponse(createMySQLErrPacket(((ErrorResponse) backendResponse).getCause())));
         }
         return Optional.<TransportResponse>of(getColumnDefinition41Packets());
     }
@@ -92,8 +92,8 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
         return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
-    private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {
-        CommandResponsePackets result = new CommandResponsePackets();
+    private CommandTransportResponse getColumnDefinition41Packets() throws SQLException {
+        CommandTransportResponse result = new CommandTransportResponse();
         int currentSequenceId = 0;
         while (databaseCommunicationEngine.next()) {
             String columnName = databaseCommunicationEngine.getQueryData().getData().get(0).toString();

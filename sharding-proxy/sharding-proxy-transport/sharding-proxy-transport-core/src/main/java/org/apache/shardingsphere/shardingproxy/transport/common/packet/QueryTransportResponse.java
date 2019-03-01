@@ -24,14 +24,14 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import java.util.Collection;
 
 /**
- * Query response packets.
+ * Query transport response.
  *
  * @author zhangliang
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
-public final class QueryResponsePackets implements TransportResponse {
+public final class QueryTransportResponse implements TransportResponse {
     
     private final Collection<QueryHeader> queryHeaders;
 }

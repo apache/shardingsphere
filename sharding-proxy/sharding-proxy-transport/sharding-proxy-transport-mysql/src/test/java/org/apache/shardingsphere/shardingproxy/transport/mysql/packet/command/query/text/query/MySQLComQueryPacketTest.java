@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -133,7 +133,7 @@ public final class MySQLComQueryPacketTest {
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertOKPacket((CommandResponsePackets) actual.get());
+        assertOKPacket((CommandTransportResponse) actual.get());
     }
     
     @Test
@@ -144,7 +144,7 @@ public final class MySQLComQueryPacketTest {
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertOKPacket((CommandResponsePackets) actual.get());
+        assertOKPacket((CommandTransportResponse) actual.get());
         assertTrue(ShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
     
@@ -156,11 +156,11 @@ public final class MySQLComQueryPacketTest {
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertOKPacket((CommandResponsePackets) actual.get());
+        assertOKPacket((CommandTransportResponse) actual.get());
         assertTrue(ShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
     }
     
-    private void assertOKPacket(final CommandResponsePackets actual) {
+    private void assertOKPacket(final CommandTransportResponse actual) {
         assertThat(actual.getPackets().size(), is(1));
         assertThat(((MySQLPacket) (actual.getPackets().iterator().next())).getSequenceId(), is(1));
         assertThat(actual.getPackets().iterator().next(), CoreMatchers.<DatabasePacket>instanceOf(MySQLOKPacket.class));

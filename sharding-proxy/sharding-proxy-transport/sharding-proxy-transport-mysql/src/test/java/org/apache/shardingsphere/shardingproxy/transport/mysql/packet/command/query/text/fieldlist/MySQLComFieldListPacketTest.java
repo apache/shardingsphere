@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -106,8 +106,8 @@ public final class MySQLComFieldListPacketTest {
         setBackendHandler(packet);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertThat(((CommandResponsePackets) actual.get()).getPackets().size(), is(2));
-        Iterator<DatabasePacket> databasePackets = ((CommandResponsePackets) actual.get()).getPackets().iterator();
+        assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(2));
+        Iterator<DatabasePacket> databasePackets = ((CommandTransportResponse) actual.get()).getPackets().iterator();
         assertColumnDefinition41Packet((MySQLColumnDefinition41Packet) databasePackets.next());
         assertEofPacket((MySQLEofPacket) databasePackets.next());
     }
@@ -132,7 +132,7 @@ public final class MySQLComFieldListPacketTest {
         setBackendHandler(packet);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertThat(((CommandResponsePackets) actual.get()).getHeadPacket(), instanceOf(MySQLErrPacket.class));
+        assertThat(((CommandTransportResponse) actual.get()).getHeadPacket(), instanceOf(MySQLErrPacket.class));
     }
     
     @SneakyThrows

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.a
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -45,11 +45,11 @@ public final class MySQLUnsupportedCommandPacketTest {
     public void assertExecute() {
         Optional<TransportResponse> actual = new MySQLUnsupportedCommandPacket(1, MySQLCommandPacketType.COM_SLEEP).execute();
         assertTrue(actual.isPresent());
-        assertThat(((CommandResponsePackets) actual.get()).getPackets().size(), is(1));
-        assertThat(((MySQLPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLErrPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
-        assertThat(((MySQLErrPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
-        assertThat(((MySQLErrPacket) ((CommandResponsePackets) actual.get()).getHeadPacket()).getErrorMessage(), 
+        assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
+        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(2));
+        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
+        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
+        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getErrorMessage(), 
                 is(String.format(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
     }
     

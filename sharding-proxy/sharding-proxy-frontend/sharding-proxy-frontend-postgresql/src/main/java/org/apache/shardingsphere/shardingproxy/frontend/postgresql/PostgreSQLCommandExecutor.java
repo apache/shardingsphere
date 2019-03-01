@@ -26,8 +26,8 @@ import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
@@ -83,8 +83,8 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             }
             List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new LinkedList<>();
             int columnIndex = 1;
-            if (responsePackets.get() instanceof QueryResponsePackets) {
-                for (QueryHeader each : ((QueryResponsePackets) responsePackets.get()).getQueryHeaders()) {
+            if (responsePackets.get() instanceof QueryTransportResponse) {
+                for (QueryHeader each : ((QueryTransportResponse) responsePackets.get()).getQueryHeaders()) {
                     postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription(each, columnIndex++));
                 }
                 if (!postgreSQLColumnDescriptions.isEmpty()) {
@@ -94,7 +94,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                     writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
                 }
             } else {
-                for (DatabasePacket each : ((CommandResponsePackets) responsePackets.get()).getPackets()) {
+                for (DatabasePacket each : ((CommandTransportResponse) responsePackets.get()).getPackets()) {
                     context.write(each);
                 }
             }

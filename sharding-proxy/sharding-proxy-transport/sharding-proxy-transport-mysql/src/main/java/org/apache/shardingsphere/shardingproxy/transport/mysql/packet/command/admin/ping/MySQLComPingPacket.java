@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.a
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
@@ -42,7 +42,7 @@ public final class MySQLComPingPacket implements MySQLCommandPacket {
     
     @Override
     public Optional<TransportResponse> execute() {
-        return Optional.<TransportResponse>of(new CommandResponsePackets(new MySQLOKPacket(getSequenceId() + 1)));
+        return Optional.<TransportResponse>of(new CommandTransportResponse(new MySQLOKPacket(getSequenceId() + 1)));
     }
     
     @Override
