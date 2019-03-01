@@ -225,7 +225,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 }
             });
             if (target.isPresent()) {
-                result = Lists.partition(target.get().getRouteUnit().getSqlUnit().getParameters(), batchCount);
+                List<Object> parameters = target.get().getRouteUnit().getSqlUnit().getParameters();
+                result = Lists.partition(parameters, parameters.size() / batchCount);
                 break;
             }
         }
