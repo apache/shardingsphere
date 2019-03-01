@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Logic schemas.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class LogicSchemas {
