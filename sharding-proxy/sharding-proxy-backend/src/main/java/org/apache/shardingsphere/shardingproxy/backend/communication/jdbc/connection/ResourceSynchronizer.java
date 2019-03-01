@@ -33,6 +33,8 @@ class ResourceSynchronizer {
     
     private final Condition condition = lock.newCondition();
     
+    private final long defaultTimeoutMilliseconds = 200;
+    
     /**
      * Do await.
      *
@@ -41,7 +43,21 @@ class ResourceSynchronizer {
     void doAwait() throws InterruptedException {
         lock.lock();
         try {
-            condition.await(200, TimeUnit.MILLISECONDS);
+            condition.await();
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    /**
+     * Do await until default timeout milliseconds.
+     *
+     * @throws InterruptedException interrupted exception
+     */
+    void doAwaitUntil() throws InterruptedException {
+        lock.lock();
+        try {
+            condition.await(defaultTimeoutMilliseconds, TimeUnit.MILLISECONDS);
         } finally {
             lock.unlock();
         }
