@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -214,10 +215,9 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        Optional<StatementExecuteUnit> target;
         List<List<Object>> result = new LinkedList<>();
         for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
-            target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
+            final Optional<StatementExecuteUnit> target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
                 
                 @Override
                 public boolean apply(final StatementExecuteUnit input) {
@@ -225,16 +225,17 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 }
             });
             if (target.isPresent()) {
-                result = getParameterSet(target.get());
+                result = Collections2.filter(routeUnits, new Predicate<BatchRouteUnit>() {
+    
+                    @Override
+                    public boolean apply(final BatchRouteUnit input) {
+                        return input.getRouteUnit().equals(target.get().getRouteUnit());
+                    }
+                }).iterator().next().getParameterSets();
                 break;
             }
         }
         return result;
-    }
-    
-    private List<List<Object>> getParameterSet(final StatementExecuteUnit target) {
-        List<Object> parameters = target.getRouteUnit().getSqlUnit().getParameters();
-        return Lists.partition(parameters, parameters.size() / batchCount);
     }
     
     @Override
