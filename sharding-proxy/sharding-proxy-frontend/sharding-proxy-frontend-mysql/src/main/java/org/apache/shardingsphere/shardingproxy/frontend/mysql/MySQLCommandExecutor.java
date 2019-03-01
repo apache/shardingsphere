@@ -72,19 +72,15 @@ public final class MySQLCommandExecutor implements Runnable {
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             MySQLCommandPacket mysqlCommandPacket = getCommandPacket(payload, backendConnection);
-            Optional<TransportResponse> responsePackets = mysqlCommandPacket.execute();
-            if (!responsePackets.isPresent()) {
+            Optional<TransportResponse> transportResponse = mysqlCommandPacket.execute();
+            if (!transportResponse.isPresent()) {
                 return;
             }
-            if (responsePackets.get() instanceof QueryTransportResponse) {
-                context.write(new MySQLFieldCountPacket(++currentSequenceId, ((QueryTransportResponse) responsePackets.get()).getQueryHeaders().size()));
-                for (QueryHeader each : ((QueryTransportResponse) responsePackets.get()).getQueryHeaders()) {
-                    context.write(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
-                }
-                context.write(new MySQLEofPacket(++currentSequenceId));
+            if (transportResponse.get() instanceof QueryTransportResponse) {
+                writeQueryHeaders((QueryTransportResponse) transportResponse.get());
                 writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ++currentSequenceId);
             } else {
-                for (DatabasePacket each : ((CommandTransportResponse) responsePackets.get()).getPackets()) {
+                for (DatabasePacket each : ((CommandTransportResponse) transportResponse.get()).getPackets()) {
                     context.write(each);
                 }
             }
@@ -104,6 +100,14 @@ public final class MySQLCommandExecutor implements Runnable {
     private MySQLCommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int sequenceId = payload.readInt1();
         return MySQLCommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
+    }
+    
+    private void writeQueryHeaders(final QueryTransportResponse queryTransportResponse) {
+        context.write(new MySQLFieldCountPacket(++currentSequenceId, queryTransportResponse.getQueryHeaders().size()));
+        for (QueryHeader each : queryTransportResponse.getQueryHeaders()) {
+            context.write(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
+        }
+        context.write(new MySQLEofPacket(++currentSequenceId));
     }
     
     private void writeMoreResults(final MySQLQueryCommandPacket mysqlQueryCommandPacket, final int headPacketsCount) throws SQLException {
