@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -31,13 +33,24 @@ import java.util.Map;
  *
  * @author yangyi
  */
-public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequiredDatabaseMetaData {
+public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter implements DatabaseMetaData {
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingRule shardingRule;
     
+    private Connection currentConnection;
+    
+    private String currentDataSourceName;
+    
     public ResultSetReturnedDatabaseMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
-        super(dataSourceMap, shardingRule);
+        this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
+    }
+    
+    @Override
+    public final Connection getConnection() throws SQLException {
+        return getCurrentConnection();
     }
     
     @Override
@@ -235,11 +248,20 @@ public abstract class ResultSetReturnedDatabaseMetaData extends ConnectionRequir
         }
     }
     
+    private Connection getCurrentConnection() throws SQLException {
+        if (null == currentConnection || currentConnection.isClosed()) {
+            DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next()
+                : dataSourceMap.get(currentDataSourceName = shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
+            currentConnection = dataSource.getConnection();
+        }
+        return currentConnection;
+    }
+    
     private String getActualTableNamePattern(final String tableNamePattern) {
         return null == tableNamePattern ? tableNamePattern : (shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern);
     }
     
     private String getActualTable(final String table) {
-        return null == table ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(getCurrentDataSourceName(), table).getTableName() : table);
+        return null == table ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(currentDataSourceName, table).getTableName() : table);
     }
 }

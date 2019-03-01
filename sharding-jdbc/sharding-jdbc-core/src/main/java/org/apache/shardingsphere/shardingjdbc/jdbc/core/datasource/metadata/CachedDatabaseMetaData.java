@@ -436,7 +436,7 @@ public final class CachedDatabaseMetaData extends AdaptedDatabaseMetaData {
     private RowIdLifetime getRowIdLifetimeFromOriginMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
         try {
             return databaseMetaData.getRowIdLifetime();
-        } catch (SQLFeatureNotSupportedException ignore) {
+        } catch (final SQLFeatureNotSupportedException ignore) {
             return RowIdLifetime.ROWID_UNSUPPORTED;
         }
     }
