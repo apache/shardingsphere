@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.core.routing;
 
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,5 +55,14 @@ public final class BatchRouteUnit {
      */
     public void mapAddBatchCount(final int jdbcAddBatchTimes) {
         jdbcAndActualAddBatchCallTimesMap.put(jdbcAddBatchTimes, actualCallAddBatchTimes++);
+    }
+    
+    /**
+     * Get parameter sets.
+     * 
+     * @return parameter sets
+     */
+    public List<List<Object>> getParameterSets() {
+        return Lists.partition(routeUnit.getSqlUnit().getParameters(), routeUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes);
     }
 }
