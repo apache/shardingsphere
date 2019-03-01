@@ -1,5 +1,5 @@
 dataSources:
-  ds: !!org.apache.commons.dbcp.BasicDataSource
+  ds: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/demo_ds
     username: root
