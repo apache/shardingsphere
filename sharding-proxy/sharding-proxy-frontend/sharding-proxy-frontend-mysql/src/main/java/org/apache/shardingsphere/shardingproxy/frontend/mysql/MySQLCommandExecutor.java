@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
@@ -81,7 +81,7 @@ public final class MySQLCommandExecutor implements Runnable {
                     context.write(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
                 }
                 context.write(new MySQLEofPacket(++currentSequenceId));
-                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
+                writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket, ++currentSequenceId);
             } else {
                 for (DatabasePacket each : responsePackets.get().getPackets()) {
                     context.write(each);

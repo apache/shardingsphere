@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -92,7 +93,7 @@ public final class TableMetaDataInitializer {
         DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
         String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(catalog, null, null, new String[]{"TABLE"})) {
+             ResultSet resultSet = connection.getMetaData().getTables(catalog, getCurrentSchemaName(connection), null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 if (!tableName.contains("$") && !tableName.contains("/")) {
@@ -101,5 +102,13 @@ public final class TableMetaDataInitializer {
             }
         }
         return result;
+    }
+    
+    private String getCurrentSchemaName(final Connection connection) throws SQLException {
+        try {
+            return connection.getSchema();
+        } catch (final AbstractMethodError | SQLFeatureNotSupportedException ignore) {
+            return null;
+        }
     }
 }

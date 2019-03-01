@@ -23,14 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
@@ -39,7 +38,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.gener
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * PostgreSQL command query packet.
@@ -79,8 +77,7 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
         if (backendResponse instanceof UpdateResponse) {
             return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
         }
-        List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders, queryHeaders.size() + 2));
+        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(((QueryResponse) backendResponse).getQueryHeaders()));
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {

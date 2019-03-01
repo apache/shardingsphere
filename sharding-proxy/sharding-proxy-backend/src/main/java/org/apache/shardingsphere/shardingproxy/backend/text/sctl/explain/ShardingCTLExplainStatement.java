@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.common.executor;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.explain;
 
-import io.netty.channel.ChannelId;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import java.util.concurrent.ExecutorService;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLStatement;
 
 /**
- * Command executor selector.
- * 
- * @author zhangliang
- * @author zhaojun
+ * Sharding CTL explain statement.
+ *
+ * @author Wen
  */
 @RequiredArgsConstructor
-public final class CommandExecutorSelector {
+@Getter
+public final class ShardingCTLExplainStatement implements ShardingCTLStatement {
     
-    /**
-     * Get executor service.
-     *
-     * @param transactionType transaction type
-     * @param channelId channel ID
-     * @return executor service
-     */
-    public static ExecutorService getExecutor(final TransactionType transactionType, final ChannelId channelId) {
-        return (TransactionType.XA == transactionType || TransactionType.BASE == transactionType)
-            ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
-    }
+    private final String sql;
 }

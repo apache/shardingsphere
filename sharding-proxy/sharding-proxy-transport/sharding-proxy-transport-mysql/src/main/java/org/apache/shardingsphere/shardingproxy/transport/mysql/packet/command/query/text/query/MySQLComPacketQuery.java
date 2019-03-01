@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
@@ -100,7 +100,7 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
         }
         List<QueryHeader> queryHeaders = ((QueryResponse) backendResponse).getQueryHeaders();
         dataHeaderEofSequenceId = queryHeaders.size() + 2;
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders, dataHeaderEofSequenceId));
+        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(queryHeaders));
     }
     
     private MySQLErrPacket createErrorPacket(final Exception cause) {
