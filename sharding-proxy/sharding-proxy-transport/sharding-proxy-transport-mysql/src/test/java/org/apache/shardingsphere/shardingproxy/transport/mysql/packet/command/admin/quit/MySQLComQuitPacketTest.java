@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.quit;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
@@ -41,14 +42,14 @@ public final class MySQLComQuitPacketTest {
     
     @Test
     public void assertExecute() {
-        Optional<CommandResponsePackets> actual = new MySQLComQuitPacket(1).execute();
+        Optional<TransportResponse> actual = new MySQLComQuitPacket(1).execute();
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getAffectedRows(), is(0L));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getLastInsertId(), is(0L));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getWarnings(), is(0));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getInfo(), is(""));
+        assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
+        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(2));
+        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getAffectedRows(), is(0L));
+        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getLastInsertId(), is(0L));
+        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getWarnings(), is(0));
+        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getInfo(), is(""));
     }
     
     @Test

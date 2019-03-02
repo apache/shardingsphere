@@ -43,7 +43,6 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final int sequenceId;
     
-    @Getter
     private final List<Object> data;
     
     private final List<MySQLColumnType> columnTypes;

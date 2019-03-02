@@ -26,8 +26,9 @@ import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryTransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
@@ -71,7 +72,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             PostgreSQLCommandPacket commandPacket = getCommandPacket(payload, backendConnection);
-            Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
+            Optional<TransportResponse> responsePackets = commandPacket.execute();
             if (commandPacket instanceof PostgreSQLComSyncPacket) {
                 context.write(new PostgreSQLCommandCompletePacket());
                 context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
@@ -82,8 +83,8 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             }
             List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new LinkedList<>();
             int columnIndex = 1;
-            if (responsePackets.get() instanceof QueryResponsePackets) {
-                for (QueryHeader each : ((QueryResponsePackets) responsePackets.get()).getQueryHeaders()) {
+            if (responsePackets.get() instanceof QueryTransportResponse) {
+                for (QueryHeader each : ((QueryTransportResponse) responsePackets.get()).getQueryHeaders()) {
                     postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription(each, columnIndex++));
                 }
                 if (!postgreSQLColumnDescriptions.isEmpty()) {
@@ -93,7 +94,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                     writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
                 }
             } else {
-                for (DatabasePacket each : responsePackets.get().getPackets()) {
+                for (DatabasePacket each : ((CommandTransportResponse) responsePackets.get()).getPackets()) {
                     context.write(each);
                 }
             }
@@ -127,12 +128,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                synchronized (backendConnection) {
-                    try {
-                        backendConnection.wait();
-                    } catch (final InterruptedException ignored) {
-                    }
-                }
+                backendConnection.getResourceSynchronizer().doAwait();
             }
             DatabasePacket resultValue = queryCommandPacket.getQueryData();
             context.write(resultValue);

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 
@@ -49,7 +49,7 @@ public final class MySQLComStmtClosePacket implements MySQLCommandPacket {
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Optional<TransportResponse> execute() {
         log.debug("COM_STMT_CLOSE received for Sharding-Proxy: {}", statementId);
         // TODO :yonglun need to clean PreparedStatementRegistry?
         return Optional.absent();

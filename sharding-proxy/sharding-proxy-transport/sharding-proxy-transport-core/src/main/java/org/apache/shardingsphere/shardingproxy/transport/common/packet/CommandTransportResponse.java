@@ -18,20 +18,37 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Query response packets.
+ * Command transport response.
  *
- * @author zhangliang
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
-public final class QueryResponsePackets extends CommandResponsePackets {
+public class CommandTransportResponse implements TransportResponse {
     
-    private final Collection<QueryHeader> queryHeaders;
+    private final Collection<DatabasePacket> packets = new LinkedList<>();
+    
+    public CommandTransportResponse(final DatabasePacket databasePacket) {
+        packets.add(databasePacket);
+    }
+    
+    public CommandTransportResponse(final Collection<DatabasePacket> databasePackets) {
+        packets.addAll(databasePackets);
+    }
+    
+    /**
+     * Get head packet.
+     *
+     * @return head packet
+     */
+    public DatabasePacket getHeadPacket() {
+        return packets.iterator().next();
+    }
 }

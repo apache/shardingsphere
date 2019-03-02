@@ -27,11 +27,11 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionManagerFixture;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
@@ -91,7 +91,7 @@ public final class MySQLComQueryPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComPacketQuery actual = new MySQLComPacketQuery(1, "SELECT id FROM tbl");
+        MySQLComQueryPacket actual = new MySQLComQueryPacket(1, "SELECT id FROM tbl");
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
@@ -101,26 +101,25 @@ public final class MySQLComQueryPacketTest {
     @Test
     public void assertExecuteWithoutTransaction() throws SQLException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         QueryResponse queryResponse = mock(QueryResponse.class);
         setBackendHandler(packet, queryResponse);
-        Optional<CommandResponsePackets> actual = packet.execute();
+        Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertTrue(packet.next());
-        assertThat(packet.getQueryData().getSequenceId(), is(3));
-        assertThat(((MySQLTextResultSetRowPacket) packet.getQueryData()).getData(), is(Collections.<Object>singletonList(99999L)));
+        assertThat(packet.getQueryData(3).getSequenceId(), is(3));
         assertFalse(packet.next());
     }
     
     @SneakyThrows
-    private void setBackendHandler(final MySQLComPacketQuery packet, final QueryResponse queryResponse) {
+    private void setBackendHandler(final MySQLComQueryPacket packet, final QueryResponse queryResponse) {
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
         when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.VARCHAR), Collections.<Object>singletonList("id")));
         when(textProtocolBackendHandler.execute()).thenReturn(queryResponse);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
         when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
-        Field field = MySQLComPacketQuery.class.getDeclaredField("textProtocolBackendHandler");
+        Field field = MySQLComQueryPacket.class.getDeclaredField("textProtocolBackendHandler");
         field.setAccessible(true);
         field.set(packet, textProtocolBackendHandler);
     }
@@ -128,22 +127,22 @@ public final class MySQLComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithLocalTransaction() {
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
-        Optional<CommandResponsePackets> actual = packet.execute();
+        Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertOKPacket(actual.get());
+        assertOKPacket((CommandTransportResponse) actual.get());
     }
     
     @Test
     public void assertExecuteTCLWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
-        Optional<CommandResponsePackets> actual = packet.execute();
+        Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertOKPacket(actual.get());
+        assertOKPacket((CommandTransportResponse) actual.get());
         assertTrue(ShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
     
@@ -151,15 +150,15 @@ public final class MySQLComQueryPacketTest {
     public void assertExecuteRollbackWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
-        Optional<CommandResponsePackets> actual = packet.execute();
+        Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertOKPacket(actual.get());
+        assertOKPacket((CommandTransportResponse) actual.get());
         assertTrue(ShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
     }
     
-    private void assertOKPacket(final CommandResponsePackets actual) {
+    private void assertOKPacket(final CommandTransportResponse actual) {
         assertThat(actual.getPackets().size(), is(1));
         assertThat(((MySQLPacket) (actual.getPackets().iterator().next())).getSequenceId(), is(1));
         assertThat(actual.getPackets().iterator().next(), CoreMatchers.<DatabasePacket>instanceOf(MySQLOKPacket.class));

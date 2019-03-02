@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
+package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 
-import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * PostgreSQL command packet.
+ * Query transport response.
  *
+ * @author zhangliang
  * @author zhangyonglun
  */
-public interface PostgreSQLCommandPacket extends PostgreSQLPacket {
+@RequiredArgsConstructor
+@Getter
+public final class QueryTransportResponse implements TransportResponse {
     
-    /**
-     * Execute command.
-     *
-     * @return result packets to be sent
-     * @throws SQLException SQL exception
-     */
-    Optional<TransportResponse> execute() throws SQLException;
+    private final Collection<QueryHeader> queryHeaders;
 }

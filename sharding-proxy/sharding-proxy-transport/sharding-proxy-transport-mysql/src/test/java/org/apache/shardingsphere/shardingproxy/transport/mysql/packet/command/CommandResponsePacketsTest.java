@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public final class CommandResponsePacketsTest {
     public void assertGetHeadPacket() {
         DatabasePacket packet1 = new MySQLOKPacket(1);
         DatabasePacket packet2 = new MySQLOKPacket(2);
-        CommandResponsePackets actual = new CommandResponsePackets(packet1);
+        CommandTransportResponse actual = new CommandTransportResponse(packet1);
         actual.getPackets().add(packet2);
         assertThat(actual.getHeadPacket(), is(packet1));
     }

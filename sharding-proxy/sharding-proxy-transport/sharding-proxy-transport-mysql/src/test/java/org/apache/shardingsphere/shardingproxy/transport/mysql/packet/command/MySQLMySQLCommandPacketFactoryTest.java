@@ -39,7 +39,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.MySQLQueryComStmtExecutePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComPacketQuery;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -119,7 +119,7 @@ public final class MySQLMySQLCommandPacketFactoryTest {
     public void assertNewInstanceWithComQueryPacket() throws SQLException {
         when(payload.readInt1()).thenReturn(MySQLCommandPacketType.COM_QUERY.getValue());
         when(payload.readStringEOF()).thenReturn("SHOW TABLES");
-        assertThat(MySQLCommandPacketFactory.newInstance(1, payload, backendConnection), instanceOf(MySQLComPacketQuery.class));
+        assertThat(MySQLCommandPacketFactory.newInstance(1, payload, backendConnection), instanceOf(MySQLComQueryPacket.class));
     }
     
     @Test
