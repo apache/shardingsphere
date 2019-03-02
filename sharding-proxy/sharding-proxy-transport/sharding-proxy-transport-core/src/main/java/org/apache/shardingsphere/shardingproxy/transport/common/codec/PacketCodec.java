@@ -23,8 +23,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.DatabasePacket;
 
 import java.util.List;
 

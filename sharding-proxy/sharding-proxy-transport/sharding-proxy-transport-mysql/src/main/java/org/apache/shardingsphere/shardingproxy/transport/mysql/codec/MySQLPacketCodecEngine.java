@@ -22,8 +22,8 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.DatabasePacket;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
     @Override
     public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer())) {
-            ((MySQLPacket) message).write(payload);
+            message.write(payload);
             out.writeMediumLE(payload.getByteBuf().readableBytes());
             out.writeByte(((MySQLPacket) message).getSequenceId());
             out.writeBytes(payload.getByteBuf());

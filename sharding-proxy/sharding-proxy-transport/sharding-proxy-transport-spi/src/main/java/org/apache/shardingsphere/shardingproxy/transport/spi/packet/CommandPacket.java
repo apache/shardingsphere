@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.packet;
+package org.apache.shardingsphere.shardingproxy.transport.spi.packet;
+
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * Transport response.
+ * Command packet.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of database packet
  */
-public interface TransportResponse {
+public interface CommandPacket<T extends DatabasePacket> {
+    
+    /**
+     * Execute command.
+     *
+     * @return database packets to be sent
+     * @throws SQLException SQL exception
+     */
+    Collection<T> execute() throws SQLException;
 }

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.quit;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
@@ -29,9 +26,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collection;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,10 +40,9 @@ public final class MySQLComQuitPacketTest {
     
     @Test
     public void assertExecute() {
-        Optional<TransportResponse> actual = new MySQLComQuitPacket(1).execute();
-        assertTrue(actual.isPresent());
-        assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        Collection<MySQLPacket> actual = new MySQLComQuitPacket(1).execute();
+        assertThat(actual.size(), is(1));
+        MySQLPacket mysqlPacket = actual.iterator().next();
         assertThat(mysqlPacket.getSequenceId(), is(2));
         assertThat(((MySQLOKPacket) mysqlPacket).getAffectedRows(), is(0L));
         assertThat(((MySQLOKPacket) mysqlPacket).getLastInsertId(), is(0L));

@@ -17,24 +17,13 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.CommandPacket;
 
 /**
  * PostgreSQL command packet.
  *
  * @author zhangyonglun
  */
-public interface PostgreSQLCommandPacket extends PostgreSQLPacket {
-    
-    /**
-     * Execute command.
-     *
-     * @return result packets to be sent
-     * @throws SQLException SQL exception
-     */
-    Optional<TransportResponse> execute() throws SQLException;
+public interface PostgreSQLCommandPacket extends PostgreSQLPacket, CommandPacket<PostgreSQLPacket> {
 }

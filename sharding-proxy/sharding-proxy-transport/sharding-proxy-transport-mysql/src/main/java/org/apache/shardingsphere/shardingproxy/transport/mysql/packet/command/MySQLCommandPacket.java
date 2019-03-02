@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.CommandPacket;
 
 /**
  * MySQL command packet.
@@ -29,13 +26,5 @@ import java.sql.SQLException;
  * @author zhangliang
  * @author wangkai
  */
-public interface MySQLCommandPacket extends MySQLPacket {
-    
-    /**
-     * Execute command.
-     * 
-     * @return transport response to be sent
-     * @throws SQLException SQL exception
-     */
-    Optional<TransportResponse> execute() throws SQLException;
+public interface MySQLCommandPacket extends MySQLPacket, CommandPacket<MySQLPacket> {
 }

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
@@ -38,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -89,8 +88,8 @@ public final class MySQLComStmtExecutePacketTest {
         when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
         MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
         setBackendHandler(packet, databaseCommunicationEngine);
-        Optional<TransportResponse> actualCommandResponsePackets = packet.execute();
-        assertTrue(actualCommandResponsePackets.isPresent());
+        Collection<MySQLPacket> mysqlPackets = packet.execute();
+        assertThat(mysqlPackets.size(), is(2));
         assertTrue(packet.next());
         MySQLPacket actual = packet.getQueryData();
         assertThat(actual.getSequenceId(), is(3));

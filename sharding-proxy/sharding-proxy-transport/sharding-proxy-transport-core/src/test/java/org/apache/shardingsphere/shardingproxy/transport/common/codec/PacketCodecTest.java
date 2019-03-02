@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.transport.common.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.DatabasePacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

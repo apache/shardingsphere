@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet;
 
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.DatabasePacket;
 
 /**
  * MySQL packet.

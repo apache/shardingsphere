@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
-import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
@@ -37,10 +35,11 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.DatabasePacket;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * PostgreSQL command executor.
@@ -67,16 +66,16 @@ public final class PostgreSQLCommandExecutor implements Runnable {
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(payload, backendConnection);
-            Optional<TransportResponse> responsePackets = commandPacket.execute();
+            Collection<PostgreSQLPacket> responsePackets = commandPacket.execute();
             if (commandPacket instanceof PostgreSQLComSyncPacket) {
                 context.write(new PostgreSQLCommandCompletePacket());
                 context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
                 return;
             }
-            if (!responsePackets.isPresent()) {
+            if (responsePackets.isEmpty()) {
                 return;
             }
-            for (DatabasePacket each : ((CommandTransportResponse) responsePackets.get()).getPackets()) {
+            for (PostgreSQLPacket each : responsePackets) {
                 context.write(each);
             }
             if (commandPacket instanceof PostgreSQLQueryCommandPacket) {

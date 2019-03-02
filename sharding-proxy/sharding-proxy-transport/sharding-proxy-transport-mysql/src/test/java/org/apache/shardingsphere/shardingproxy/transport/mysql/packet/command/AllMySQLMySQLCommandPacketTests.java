@@ -42,7 +42,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         MySQLMySQLCommandPacketTypeTest.class,
         MySQLMySQLCommandPacketFactoryTest.class,
-        CommandResponsePacketsTest.class, 
         MySQLMySQLBinaryStatementRegistryTest.class,
         MySQLNullBitmapTest.class,
         AllMySQLBinaryProtocolTests.class, 

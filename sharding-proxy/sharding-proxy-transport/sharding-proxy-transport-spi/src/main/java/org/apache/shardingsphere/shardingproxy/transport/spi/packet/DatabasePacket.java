@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.spi;
+package org.apache.shardingsphere.shardingproxy.transport.spi.packet;
+
+import org.apache.shardingsphere.shardingproxy.transport.spi.PacketPayload;
 
 /**
  * Database packet.
  *
  * @author zhangliang
+ * 
  * @param <T> type of packet payload
  */
 public interface DatabasePacket<T extends PacketPayload> {

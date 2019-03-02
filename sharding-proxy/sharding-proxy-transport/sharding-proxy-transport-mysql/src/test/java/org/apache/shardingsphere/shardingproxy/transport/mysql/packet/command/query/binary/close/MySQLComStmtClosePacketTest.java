@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collection;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,8 +40,8 @@ public final class MySQLComStmtClosePacketTest {
     @Test
     public void assertExecute() {
         when(payload.readInt4()).thenReturn(1);
-        Optional<TransportResponse> actual = new MySQLComStmtClosePacket(1, payload).execute();
-        assertFalse(actual.isPresent());
+        Collection<MySQLPacket> actual = new MySQLComStmtClosePacket(1, payload).execute();
+        assertTrue(actual.isEmpty());
     }
     
     @Test

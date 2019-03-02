@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
-import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +26,6 @@ import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
@@ -37,10 +34,10 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * MySQL command executor.
@@ -68,11 +65,11 @@ public final class MySQLCommandExecutor implements Runnable {
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             MySQLCommandPacket mysqlCommandPacket = MySQLCommandPacketFactory.newInstance(payload, backendConnection);
-            Optional<TransportResponse> transportResponse = mysqlCommandPacket.execute();
-            if (!transportResponse.isPresent()) {
+            Collection<MySQLPacket> responsePackets = mysqlCommandPacket.execute();
+            if (responsePackets.isEmpty()) {
                 return;
             }
-            for (DatabasePacket each : ((CommandTransportResponse) transportResponse.get()).getPackets()) {
+            for (MySQLPacket each : responsePackets) {
                 context.write(each);
             }
             if (mysqlCommandPacket instanceof MySQLQueryCommandPacket) {

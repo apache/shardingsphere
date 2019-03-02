@@ -17,38 +17,14 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query;
 
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.shardingproxy.transport.spi.packet.QueryCommandPacket;
 
 /**
  * PostgreSQL query command packet.
  *
  * @author zhangyonglun
  */
-public interface PostgreSQLQueryCommandPacket extends PostgreSQLCommandPacket {
-    
-    /**
-     * Judge is query SQL or not.
-     *
-     * @return is query SQL or not
-     */
-    boolean isQuery();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return database packet of result value
-     * @throws SQLException SQL exception
-     */
-    DatabasePacket getQueryData() throws SQLException;
+public interface PostgreSQLQueryCommandPacket extends PostgreSQLCommandPacket, QueryCommandPacket<PostgreSQLPacket> {
 }

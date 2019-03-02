@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * MySQL COM_INIT_DB command packet.
@@ -60,12 +61,12 @@ public final class MySQLComInitDbPacket implements MySQLCommandPacket {
     }
     
     @Override
-    public Optional<TransportResponse> execute() {
+    public Collection<MySQLPacket> execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schema);
         if (LogicSchemas.getInstance().schemaExists(schema)) {
             backendConnection.setCurrentSchema(schema);
-            return Optional.<TransportResponse>of(new CommandTransportResponse(new MySQLOKPacket(getSequenceId() + 1)));
+            return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(sequenceId + 1));
         }
-        return Optional.<TransportResponse>of(new CommandTransportResponse(new MySQLErrPacket(getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema)));
+        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(sequenceId + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema));
     }
 }

@@ -15,23 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.packet;
+package org.apache.shardingsphere.shardingproxy.transport.spi.packet;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-
-import java.util.Collection;
+import java.sql.SQLException;
 
 /**
- * Query transport response.
+ * Query command packet.
  *
  * @author zhangliang
- * @author zhangyonglun
+ * 
+ * @param <T> type of database packet
  */
-@RequiredArgsConstructor
-@Getter
-public final class QueryTransportResponse implements TransportResponse {
+public interface QueryCommandPacket<T extends DatabasePacket> extends CommandPacket<T> {
     
-    private final Collection<QueryHeader> queryHeaders;
+    /**
+     * Judge is query SQL or not.
+     *
+     * @return is query SQL or not
+     */
+    boolean isQuery();
+    
+    /**
+     * Goto next result value.
+     *
+     * @return has more result value or not
+     * @throws SQLException SQL exception
+     */
+    boolean next() throws SQLException;
+    
+    /**
+     * Get query data.
+     *
+     * @return database packet of query data
+     * @throws SQLException SQL exception
+     */
+    T getQueryData() throws SQLException;
 }
