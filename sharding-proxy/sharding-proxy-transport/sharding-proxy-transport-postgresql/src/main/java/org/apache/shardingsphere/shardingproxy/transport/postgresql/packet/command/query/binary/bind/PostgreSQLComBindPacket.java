@@ -113,22 +113,22 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         if (null != databaseCommunicationEngine) {
             BackendResponse backendResponse = databaseCommunicationEngine.execute();
             if (backendResponse instanceof ErrorResponse) {
-                return Optional.<TransportResponse>of(new CommandTransportResponse(createErrorPacket((ErrorResponse) backendResponse)));
+                return Optional.<TransportResponse>of(createErrorTransportResponse((ErrorResponse) backendResponse));
             }
             if (backendResponse instanceof UpdateResponse) {
-                return Optional.<TransportResponse>of(new CommandTransportResponse(createUpdatePacket((UpdateResponse) backendResponse)));
+                return Optional.<TransportResponse>of(createUpdateTransportResponse((UpdateResponse) backendResponse));
             }
             return Optional.<TransportResponse>of(new QueryTransportResponse(((QueryResponse) backendResponse).getQueryHeaders()));
         }
         return Optional.<TransportResponse>of(new CommandTransportResponse(new PostgreSQLBindCompletePacket()));
     }
     
-    private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return new PostgreSQLErrorResponsePacket();
+    private CommandTransportResponse createErrorTransportResponse(final ErrorResponse errorResponse) {
+        return new CommandTransportResponse(new PostgreSQLErrorResponsePacket());
     }
     
-    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new PostgreSQLCommandCompletePacket();
+    private CommandTransportResponse createUpdateTransportResponse(final UpdateResponse updateResponse) {
+        return new CommandTransportResponse(new PostgreSQLCommandCompletePacket());
     }
     
     @Override
