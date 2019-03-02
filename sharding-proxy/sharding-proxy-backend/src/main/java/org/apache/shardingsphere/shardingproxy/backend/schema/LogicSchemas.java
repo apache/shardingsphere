@@ -33,6 +33,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Logic schemas.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class LogicSchemas {
@@ -74,25 +76,29 @@ public final class LogicSchemas {
      * @param schemaRules schema rule map
      */
     public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules) {
-        init(schemaDataSources, schemaRules, false);
+        init(schemaRules.keySet(), schemaDataSources, schemaRules, false);
     }
     
     /**
      * Initialize proxy context.
      *
+     * @param localSchemaNames local schema names
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
+    public void init(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         databaseType = JDBCDriverURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
-        initSchemas(schemaDataSources, schemaRules, isUsingRegistry);
+        initSchemas(localSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
     }
     
-    private void initSchemas(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+    private void initSchemas(final Collection<String> localSchemaNames, 
+                             final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
-            logicSchemas.put(entry.getKey(), createLogicSchema(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
+            if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
+                logicSchemas.put(entry.getKey(), createLogicSchema(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
+            }
         }
     }
     

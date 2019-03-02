@@ -196,7 +196,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.setString(1, "init");
             preparedStatement.setString(2, "batch");
             preparedStatement.addBatch();
-            
             int[] result = preparedStatement.executeBatch();
             assertThat(result.length, is(3));
             assertThat(result[0], is(4));

@@ -114,8 +114,7 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        List<List<Object>> parameterSets = insertParameters.isEmpty() ? new ArrayList<>(Collections.singleton(parameters)) : new ArrayList<>(Collections.singleton(insertParameters));
-        return new SQLUnit(result.toString(), parameterSets);
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
     
     /**
@@ -156,8 +155,7 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        List<List<Object>> parameterSets = insertParameters.isEmpty() ? new ArrayList<>(Collections.singleton(parameters)) : new ArrayList<>(Collections.singleton(insertParameters));
-        return new SQLUnit(result.toString(), parameterSets);
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), parameters) : new SQLUnit(result.toString(), insertParameters);
     }
     
     private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
