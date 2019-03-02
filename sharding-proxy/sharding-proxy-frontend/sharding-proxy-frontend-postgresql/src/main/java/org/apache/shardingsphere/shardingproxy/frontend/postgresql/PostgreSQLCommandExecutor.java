@@ -21,21 +21,17 @@ import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
@@ -45,8 +41,6 @@ import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * PostgreSQL command executor.
@@ -54,6 +48,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class PostgreSQLCommandExecutor implements Runnable {
     
     private final ChannelHandlerContext context;
@@ -81,22 +76,11 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             if (!responsePackets.isPresent()) {
                 return;
             }
-            List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new LinkedList<>();
-            int columnIndex = 1;
-            if (responsePackets.get() instanceof QueryTransportResponse) {
-                for (QueryHeader each : ((QueryTransportResponse) responsePackets.get()).getQueryHeaders()) {
-                    postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription(each, columnIndex++));
-                }
-                if (!postgreSQLColumnDescriptions.isEmpty()) {
-                    if (!(commandPacket instanceof PostgreSQLComBindPacket && (((PostgreSQLComBindPacket) commandPacket).isBinaryRowData()))) {
-                        context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
-                    }
-                    writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
-                }
-            } else {
-                for (DatabasePacket each : ((CommandTransportResponse) responsePackets.get()).getPackets()) {
-                    context.write(each);
-                }
+            for (DatabasePacket each : ((CommandTransportResponse) responsePackets.get()).getPackets()) {
+                context.write(each);
+            }
+            if (commandPacket instanceof PostgreSQLQueryCommandPacket) {
+                writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             if (commandPacket instanceof PostgreSQLComQueryPacket) {
                 context.write(new PostgreSQLCommandCompletePacket());
@@ -108,6 +92,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            log.error("Exception occur:", ex);
             context.writeAndFlush(new PostgreSQLErrorResponsePacket());
         } finally {
             rootInvokeHook.finish(connectionSize);
@@ -119,7 +104,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
     }
     
     private void writeMoreResults(final PostgreSQLQueryCommandPacket queryCommandPacket) throws SQLException {
-        if (!context.channel().isActive()) {
+        if (queryCommandPacket.isQuery() && !context.channel().isActive()) {
             return;
         }
         int count = 0;

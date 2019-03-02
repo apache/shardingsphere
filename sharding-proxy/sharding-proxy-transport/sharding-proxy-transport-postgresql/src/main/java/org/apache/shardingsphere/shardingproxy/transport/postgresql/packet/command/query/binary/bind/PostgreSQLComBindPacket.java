@@ -26,16 +26,18 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -65,6 +68,8 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     private final PostgreSQLBinaryStatement binaryStatement;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
+    
+    private boolean isQuery;
     
     @Getter
     private final boolean binaryRowData;
@@ -118,7 +123,8 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             if (backendResponse instanceof UpdateResponse) {
                 return Optional.<TransportResponse>of(createUpdateTransportResponse((UpdateResponse) backendResponse));
             }
-            return Optional.<TransportResponse>of(new QueryTransportResponse(((QueryResponse) backendResponse).getQueryHeaders()));
+            CommandTransportResponse result = createQueryTransportResponse((QueryResponse) backendResponse);
+            return result.getPackets().isEmpty() ? Optional.<TransportResponse>absent() : Optional.<TransportResponse>of(result);
         }
         return Optional.<TransportResponse>of(new CommandTransportResponse(new PostgreSQLBindCompletePacket()));
     }
@@ -129,6 +135,29 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     private CommandTransportResponse createUpdateTransportResponse(final UpdateResponse updateResponse) {
         return new CommandTransportResponse(new PostgreSQLCommandCompletePacket());
+    }
+    
+    private CommandTransportResponse createQueryTransportResponse(final QueryResponse queryResponse) {
+        List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
+        isQuery = !postgreSQLColumnDescriptions.isEmpty();
+        if (postgreSQLColumnDescriptions.isEmpty() || !isBinaryRowData()) {
+            return new CommandTransportResponse();
+        }
+        return new CommandTransportResponse(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
+    }
+    
+    private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {
+        List<PostgreSQLColumnDescription> result = new LinkedList<>();
+        int columnIndex = 0;
+        for (QueryHeader each : queryResponse.getQueryHeaders()) {
+            result.add(new PostgreSQLColumnDescription(each, ++columnIndex));
+        }
+        return result;
+    }
+    
+    @Override
+    public boolean isQuery() {
+        return isQuery;
     }
     
     @Override
