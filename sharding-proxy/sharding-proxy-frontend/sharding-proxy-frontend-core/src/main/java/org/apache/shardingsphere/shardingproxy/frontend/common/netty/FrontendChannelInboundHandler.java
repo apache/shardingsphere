@@ -22,10 +22,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 /**
  * Frontend channel inbound handler.
@@ -33,6 +37,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngi
  * @author zhangliang 
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
     private final DatabaseFrontendEngine databaseFrontendEngine;
@@ -52,7 +57,25 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         if (!authorized) {
             authorized = databaseFrontendEngine.auth(context, (ByteBuf) message, backendConnection);
         } else {
-            databaseFrontendEngine.executeCommand(context, (ByteBuf) message, backendConnection);
+            CommandExecutorSelector.getExecutor(databaseFrontendEngine.isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id()).execute(new Runnable() {
+                
+                @Override
+                public void run() {
+                    RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
+                    rootInvokeHook.start();
+                    int connectionSize = 0;
+                    try (BackendConnection backendConnection = FrontendChannelInboundHandler.this.backendConnection) {
+                        databaseFrontendEngine.executeCommand(context, (ByteBuf) message, backendConnection);
+                        connectionSize = backendConnection.getConnectionSize();
+                        // CHECKSTYLE:OFF
+                    } catch (final Exception ex) {
+                        // CHECKSTYLE:ON
+                        log.error("Exception occur: ", ex);
+                    } finally {
+                        rootInvokeHook.finish(connectionSize);
+                    }
+                }
+            });
         }
     }
     
