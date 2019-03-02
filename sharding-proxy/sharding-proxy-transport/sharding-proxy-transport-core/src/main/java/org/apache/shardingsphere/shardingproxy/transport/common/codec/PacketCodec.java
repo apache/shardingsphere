@@ -51,6 +51,7 @@ public final class PacketCodec extends ByteToMessageCodec<DatabasePacket> {
         databasePacketCodecEngine.decode(context, in, out, readableBytes);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         databasePacketCodecEngine.encode(context, message, out);

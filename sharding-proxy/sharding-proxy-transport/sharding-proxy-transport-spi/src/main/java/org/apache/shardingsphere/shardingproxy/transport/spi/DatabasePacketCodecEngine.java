@@ -27,8 +27,10 @@ import java.util.List;
  * Database packet codec engine.
  * 
  * @author zhangliang
+ * 
+ * @param <T> type of database packet
  */
-public interface DatabasePacketCodecEngine {
+public interface DatabasePacketCodecEngine<T extends DatabasePacket> {
     
     /**
      * Get database type.
@@ -62,5 +64,5 @@ public interface DatabasePacketCodecEngine {
      * @param message message of database packet
      * @param out output
      */
-    void encode(ChannelHandlerContext context, DatabasePacket message, ByteBuf out);
+    void encode(ChannelHandlerContext context, T message, ByteBuf out);
 }
