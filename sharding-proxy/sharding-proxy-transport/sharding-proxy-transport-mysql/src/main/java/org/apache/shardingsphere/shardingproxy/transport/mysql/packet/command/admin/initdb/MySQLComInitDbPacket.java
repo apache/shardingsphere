@@ -22,11 +22,11 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.util.Collection;
 import java.util.Collections;

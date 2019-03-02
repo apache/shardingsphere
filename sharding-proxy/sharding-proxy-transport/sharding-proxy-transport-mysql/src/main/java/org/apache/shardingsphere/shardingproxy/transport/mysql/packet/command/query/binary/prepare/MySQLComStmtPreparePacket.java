@@ -30,11 +30,11 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.util.Collection;
 import java.util.LinkedList;

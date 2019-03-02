@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet;
+package org.apache.shardingsphere.shardingproxy.transport.mysql.payload;
 
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;

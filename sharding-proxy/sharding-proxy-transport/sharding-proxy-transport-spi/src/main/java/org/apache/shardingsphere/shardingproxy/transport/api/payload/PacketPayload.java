@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.spi;
+package org.apache.shardingsphere.shardingproxy.transport.api.payload;
 
 import io.netty.buffer.ByteBuf;
 

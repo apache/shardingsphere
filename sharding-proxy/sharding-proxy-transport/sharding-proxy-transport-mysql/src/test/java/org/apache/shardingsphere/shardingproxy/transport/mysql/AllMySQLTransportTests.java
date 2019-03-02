@@ -20,14 +20,16 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodecEngineTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.AllMySQLConstantTests;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.AllMySQLPacketTests;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayloadTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllMySQLConstantTests.class, 
         MySQLPacketCodecEngineTest.class, 
+        MySQLPacketPayloadTest.class, 
+        AllMySQLConstantTests.class, 
         AllMySQLPacketTests.class
 })
 public final class AllMySQLTransportTests {

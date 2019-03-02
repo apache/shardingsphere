@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.spi.packet;
+package org.apache.shardingsphere.shardingproxy.transport.api.packet;
 
 import java.sql.SQLException;
 

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.gene
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.Collection;
 import java.util.Collections;

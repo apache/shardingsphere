@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
 
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.spi.packet.CommandPacket;
 
 /**
  * PostgreSQL command packet.

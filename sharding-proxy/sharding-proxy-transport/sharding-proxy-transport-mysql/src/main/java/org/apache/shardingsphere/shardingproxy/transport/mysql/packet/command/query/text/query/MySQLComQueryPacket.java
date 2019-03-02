@@ -29,7 +29,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.sql.SQLException;
 import java.util.Collection;

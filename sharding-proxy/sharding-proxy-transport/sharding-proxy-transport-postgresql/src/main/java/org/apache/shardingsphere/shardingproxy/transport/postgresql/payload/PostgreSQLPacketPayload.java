@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet;
+package org.apache.shardingsphere.shardingproxy.transport.postgresql.payload;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.spi.PacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 
 /**
  * Payload operation for PostgreSQL packet data types.

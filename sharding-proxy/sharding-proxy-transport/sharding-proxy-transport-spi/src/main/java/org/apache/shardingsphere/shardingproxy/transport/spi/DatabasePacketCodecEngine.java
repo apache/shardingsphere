@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.spi;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.shardingproxy.transport.spi.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 
 import java.util.List;
 

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol;
 
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * PostgreSQL binary protocol value for double.

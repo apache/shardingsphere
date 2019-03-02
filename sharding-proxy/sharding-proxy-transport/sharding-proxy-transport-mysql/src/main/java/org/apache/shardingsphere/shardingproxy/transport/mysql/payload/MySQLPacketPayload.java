@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet;
+package org.apache.shardingsphere.shardingproxy.transport.mysql.payload;
 
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.spi.PacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 
 /**
  * MySQL payload operation for MySQL packet data types.

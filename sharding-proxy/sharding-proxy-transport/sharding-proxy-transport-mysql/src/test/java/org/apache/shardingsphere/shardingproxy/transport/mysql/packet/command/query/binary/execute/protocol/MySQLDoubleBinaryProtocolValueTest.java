@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.spi.packet;
+package org.apache.shardingsphere.shardingproxy.transport.api.packet;
 
-import org.apache.shardingsphere.shardingproxy.transport.spi.PacketPayload;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * Database packet.
+ * Command packet.
  *
  * @author zhangliang
  * 
- * @param <T> type of packet payload
+ * @param <T> type of database packet
  */
-public interface DatabasePacket<T extends PacketPayload> {
+public interface CommandPacket<T extends DatabasePacket> {
     
     /**
-     * Write packet to byte buffer.
+     * Execute command.
      *
-     * @param payload packet payload to be written
+     * @return database packets to be sent
+     * @throws SQLException SQL exception
      */
-    void write(T payload);
+    Collection<T> execute() throws SQLException;
 }

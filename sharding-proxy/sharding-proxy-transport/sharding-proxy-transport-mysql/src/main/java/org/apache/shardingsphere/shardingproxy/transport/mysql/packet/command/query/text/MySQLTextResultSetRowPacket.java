@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

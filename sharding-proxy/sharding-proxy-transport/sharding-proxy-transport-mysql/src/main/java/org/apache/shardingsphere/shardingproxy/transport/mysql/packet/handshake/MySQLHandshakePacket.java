@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCap
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
  * MySQL handshake packet protocol.

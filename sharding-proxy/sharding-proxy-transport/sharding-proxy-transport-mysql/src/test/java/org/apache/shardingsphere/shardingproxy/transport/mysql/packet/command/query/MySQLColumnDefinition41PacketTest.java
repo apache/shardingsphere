@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
