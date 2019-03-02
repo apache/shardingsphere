@@ -23,11 +23,4 @@ package org.apache.shardingsphere.shardingproxy.transport.common.packet;
  * @author zhangliang
  */
 public interface TransportResponse {
-    
-    /**
-     * Has more data or not.
-     * 
-     * @return has more data or not
-     */
-    boolean hasMoreData();
 }

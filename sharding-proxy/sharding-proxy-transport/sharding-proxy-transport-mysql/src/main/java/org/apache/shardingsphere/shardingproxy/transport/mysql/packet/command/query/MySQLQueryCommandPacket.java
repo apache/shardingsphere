@@ -31,6 +31,13 @@ import java.sql.SQLException;
 public interface MySQLQueryCommandPacket extends MySQLCommandPacket {
     
     /**
+     * Judge is query SQL or not.
+     *
+     * @return is query SQL or not
+     */
+    boolean isQuery();
+    
+    /**
      * Goto next result value.
      *
      * @return has more result value or not

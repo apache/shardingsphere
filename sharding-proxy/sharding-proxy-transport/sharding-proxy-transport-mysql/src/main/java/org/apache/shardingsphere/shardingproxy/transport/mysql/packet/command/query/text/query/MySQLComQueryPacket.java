@@ -68,6 +68,8 @@ public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
+    private boolean isQuery;
+    
     private int currentSequenceId;
     
     public MySQLComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
@@ -101,6 +103,7 @@ public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
         if (backendResponse instanceof UpdateResponse) {
             return Optional.<TransportResponse>of(createUpdateTransportResponse((UpdateResponse) backendResponse));
         }
+        isQuery = true;
         return Optional.<TransportResponse>of(createQueryTransportResponse((QueryResponse) backendResponse));
     }
     
@@ -120,7 +123,12 @@ public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
             databasePackets.add(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
         }
         databasePackets.add(new MySQLEofPacket(++currentSequenceId));
-        return new CommandTransportResponse(true, databasePackets);
+        return new CommandTransportResponse(databasePackets);
+    }
+    
+    @Override
+    public boolean isQuery() {
+        return isQuery;
     }
     
     @Override

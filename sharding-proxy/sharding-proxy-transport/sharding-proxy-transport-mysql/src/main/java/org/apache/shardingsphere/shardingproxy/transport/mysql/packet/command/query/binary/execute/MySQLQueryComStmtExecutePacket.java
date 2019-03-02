@@ -89,6 +89,8 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
+    private boolean isQuery;
+    
     private int currentSequenceId;
     
     public MySQLQueryComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
@@ -163,6 +165,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
         if (backendResponse instanceof UpdateResponse) {
             return Optional.<TransportResponse>of(createUpdateTransportResponse((UpdateResponse) backendResponse));
         }
+        isQuery = true;
         return Optional.<TransportResponse>of(createQueryTransportResponse((QueryResponse) backendResponse));
     }
     
@@ -182,7 +185,12 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
             databasePackets.add(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
         }
         databasePackets.add(new MySQLEofPacket(++currentSequenceId));
-        return new CommandTransportResponse(true, databasePackets);
+        return new CommandTransportResponse(databasePackets);
+    }
+    
+    @Override
+    public boolean isQuery() {
+        return isQuery;
     }
     
     @Override

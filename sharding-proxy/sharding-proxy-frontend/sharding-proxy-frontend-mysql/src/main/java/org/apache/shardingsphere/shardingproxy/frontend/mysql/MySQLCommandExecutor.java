@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -48,6 +49,7 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class MySQLCommandExecutor implements Runnable {
     
     private final ChannelHandlerContext context;
@@ -73,7 +75,7 @@ public final class MySQLCommandExecutor implements Runnable {
             for (DatabasePacket each : ((CommandTransportResponse) transportResponse.get()).getPackets()) {
                 context.write(each);
             }
-            if (mysqlCommandPacket instanceof MySQLQueryCommandPacket && transportResponse.get().hasMoreData()) {
+            if (mysqlCommandPacket instanceof MySQLQueryCommandPacket) {
                 writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
@@ -82,6 +84,7 @@ public final class MySQLCommandExecutor implements Runnable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            log.error("Exception occur:", ex);
             context.write(new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()));
         } finally {
             context.flush();
@@ -90,7 +93,7 @@ public final class MySQLCommandExecutor implements Runnable {
     }
     
     private void writeMoreResults(final MySQLQueryCommandPacket mysqlQueryCommandPacket) throws SQLException {
-        if (!context.channel().isActive()) {
+        if (!mysqlQueryCommandPacket.isQuery() || !context.channel().isActive()) {
             return;
         }
         int count = 0;

@@ -34,9 +34,4 @@ import java.util.Collection;
 public final class QueryTransportResponse implements TransportResponse {
     
     private final Collection<QueryHeader> queryHeaders;
-    
-    @Override
-    public boolean hasMoreData() {
-        return true;
-    }
 }
