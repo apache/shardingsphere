@@ -41,10 +41,10 @@ public final class MySQLUnsupportedCommandPacketTest {
     
     @Test
     public void assertExecute() {
-        Collection<MySQLPacket> actual = new MySQLUnsupportedCommandPacket(1, MySQLCommandPacketType.COM_SLEEP).execute();
+        Collection<MySQLPacket> actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_SLEEP).execute();
         assertThat(actual.size(), is(1));
         MySQLPacket mysqlPacket = actual.iterator().next();
-        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
         assertThat(((MySQLErrPacket) mysqlPacket).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
         assertThat(((MySQLErrPacket) mysqlPacket).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
         assertThat(((MySQLErrPacket) mysqlPacket).getErrorMessage(), is(String.format(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
@@ -52,8 +52,7 @@ public final class MySQLUnsupportedCommandPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(1, MySQLCommandPacketType.COM_SLEEP);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_SLEEP);
         actual.write(payload);
     }
 }

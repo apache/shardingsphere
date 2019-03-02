@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.parsing.SQLParsingEngine;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -52,17 +51,13 @@ public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
     
     private static final MySQLBinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = MySQLBinaryStatementRegistry.getInstance();
     
-    @Getter
-    private final int sequenceId;
-    
     private final String schemaName;
     
     private final String sql;
     
     private final SQLParsingEngine sqlParsingEngine;
     
-    public MySQLComStmtPreparePacket(final int sequenceId, final BackendConnection backendConnection, final MySQLPacketPayload payload) {
-        this.sequenceId = sequenceId;
+    public MySQLComStmtPreparePacket(final BackendConnection backendConnection, final MySQLPacketPayload payload) {
         sql = payload.readStringEOF();
         schemaName = backendConnection.getSchemaName();
         LogicSchema logicSchema = backendConnection.getLogicSchema();
@@ -106,6 +101,11 @@ public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
         if (sqlStatement instanceof InsertStatement) {
             return ((InsertStatement) sqlStatement).getColumns().size();
         }
+        return 0;
+    }
+    
+    @Override
+    public int getSequenceId() {
         return 0;
     }
 }

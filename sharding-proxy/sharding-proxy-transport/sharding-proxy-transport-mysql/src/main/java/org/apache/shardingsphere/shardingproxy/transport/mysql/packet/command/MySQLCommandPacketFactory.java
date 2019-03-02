@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -52,28 +53,28 @@ public final class MySQLCommandPacketFactory {
      * @throws SQLException SQL exception
      */
     public static MySQLCommandPacket newInstance(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        int sequenceId = payload.readInt1();
+        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL command packet must be `0`.");
         int commandPacketTypeValue = payload.readInt1();
         MySQLCommandPacketType type = MySQLCommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
-                return new MySQLComQuitPacket(sequenceId);
+                return new MySQLComQuitPacket();
             case COM_INIT_DB:
-                return new MySQLComInitDbPacket(sequenceId, payload, backendConnection);
+                return new MySQLComInitDbPacket(payload, backendConnection);
             case COM_FIELD_LIST:
-                return new MySQLComFieldListPacket(sequenceId, payload, backendConnection);
+                return new MySQLComFieldListPacket(payload, backendConnection);
             case COM_QUERY:
-                return new MySQLComQueryPacket(sequenceId, payload, backendConnection);
+                return new MySQLComQueryPacket(payload, backendConnection);
             case COM_STMT_PREPARE:
-                return new MySQLComStmtPreparePacket(sequenceId, backendConnection, payload);
+                return new MySQLComStmtPreparePacket(backendConnection, payload);
             case COM_STMT_EXECUTE:
-                return new MySQLQueryComStmtExecutePacket(sequenceId, payload, backendConnection);
+                return new MySQLQueryComStmtExecutePacket(payload, backendConnection);
             case COM_STMT_CLOSE:
-                return new MySQLComStmtClosePacket(sequenceId, payload);
+                return new MySQLComStmtClosePacket(payload);
             case COM_PING:
-                return new MySQLComPingPacket(sequenceId);
+                return new MySQLComPingPacket();
             default:
-                return new MySQLUnsupportedCommandPacket(sequenceId, type);
+                return new MySQLUnsupportedCommandPacket(type);
         }
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
@@ -58,9 +57,6 @@ import java.util.List;
 @Slf4j
 public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
     
-    @Getter
-    private final int sequenceId;
-    
     private final String sql;
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
@@ -69,14 +65,12 @@ public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
     
     private int currentSequenceId;
     
-    public MySQLComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
-        this.sequenceId = sequenceId;
+    public MySQLComQueryPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         sql = payload.readStringEOF();
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
     }
     
-    public MySQLComQueryPacket(final int sequenceId, final String sql) {
-        this.sequenceId = sequenceId;
+    public MySQLComQueryPacket(final String sql) {
         this.sql = sql;
         textProtocolBackendHandler = null;
     }
@@ -136,5 +130,10 @@ public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
     @Override
     public MySQLPacket getQueryData() throws SQLException {
         return new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getQueryData().getData());
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -51,9 +50,6 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
     
     private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
     
-    @Getter
-    private final int sequenceId;
-    
     private final String schemaName;
     
     private final String table;
@@ -62,8 +58,7 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    public MySQLComFieldListPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
-        this.sequenceId = sequenceId;
+    public MySQLComFieldListPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.schemaName = backendConnection.getSchemaName();
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
@@ -99,5 +94,10 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

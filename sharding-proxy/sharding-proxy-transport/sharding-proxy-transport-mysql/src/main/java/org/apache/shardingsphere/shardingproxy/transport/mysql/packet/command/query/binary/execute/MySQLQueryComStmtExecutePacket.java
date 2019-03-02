@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -69,9 +68,6 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     
     private static final int NULL_BITMAP_OFFSET = 0;
     
-    @Getter
-    private final int sequenceId;
-    
     private final int statementId;
     
     private final MySQLBinaryStatement mySQLBinaryStatement;
@@ -90,8 +86,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     
     private int currentSequenceId;
     
-    public MySQLQueryComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        this.sequenceId = sequenceId;
+    public MySQLQueryComStmtExecutePacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         statementId = payload.readInt4();
         mySQLBinaryStatement = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
         flags = payload.readInt1();
@@ -207,5 +202,10 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
             result.add(MySQLColumnType.valueOfJDBCType(queryData.getColumnTypes().get(i)));
         }
         return result;
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

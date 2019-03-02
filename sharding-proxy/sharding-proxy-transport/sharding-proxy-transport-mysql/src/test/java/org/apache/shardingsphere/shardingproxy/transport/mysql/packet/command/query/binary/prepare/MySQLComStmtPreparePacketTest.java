@@ -101,8 +101,7 @@ public final class MySQLComStmtPreparePacketTest {
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl WHERE id=?");
-        MySQLComStmtPreparePacket actual = new MySQLComStmtPreparePacket(1, backendConnection, payload);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComStmtPreparePacket actual = new MySQLComStmtPreparePacket(backendConnection, payload);
         actual.write(payload);
         verify(payload).writeStringEOF("SELECT id FROM tbl WHERE id=?");
     }
@@ -162,7 +161,7 @@ public final class MySQLComStmtPreparePacketTest {
     @SneakyThrows
     private MySQLComStmtPreparePacket getComStmtPreparePacketWithMockedSQLParsingEngine(final String sql, final SQLStatement sqlStatement) {
         when(payload.readStringEOF()).thenReturn(sql);
-        MySQLComStmtPreparePacket result = new MySQLComStmtPreparePacket(1, backendConnection, payload);
+        MySQLComStmtPreparePacket result = new MySQLComStmtPreparePacket(backendConnection, payload);
         SQLParsingEngine sqlParsingEngine = mock(SQLParsingEngine.class);
         when(sqlParsingEngine.parse(true)).thenReturn(sqlStatement);
         Field field = MySQLComStmtPreparePacket.class.getDeclaredField("sqlParsingEngine");

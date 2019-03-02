@@ -40,10 +40,10 @@ public final class MySQLComQuitPacketTest {
     
     @Test
     public void assertExecute() {
-        Collection<MySQLPacket> actual = new MySQLComQuitPacket(1).execute();
+        Collection<MySQLPacket> actual = new MySQLComQuitPacket().execute();
         assertThat(actual.size(), is(1));
         MySQLPacket mysqlPacket = actual.iterator().next();
-        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
         assertThat(((MySQLOKPacket) mysqlPacket).getAffectedRows(), is(0L));
         assertThat(((MySQLOKPacket) mysqlPacket).getLastInsertId(), is(0L));
         assertThat(((MySQLOKPacket) mysqlPacket).getWarnings(), is(0));
@@ -52,8 +52,7 @@ public final class MySQLComQuitPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComQuitPacket actual = new MySQLComQuitPacket(1);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComQuitPacket actual = new MySQLComQuitPacket();
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_QUIT.getValue());
     }

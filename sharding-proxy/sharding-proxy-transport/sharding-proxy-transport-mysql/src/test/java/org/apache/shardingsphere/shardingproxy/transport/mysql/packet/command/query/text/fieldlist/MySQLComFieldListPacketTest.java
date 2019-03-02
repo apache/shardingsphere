@@ -83,8 +83,7 @@ public final class MySQLComFieldListPacketTest {
     public void assertWrite() {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        MySQLComFieldListPacket actual = new MySQLComFieldListPacket(1, payload, backendConnection);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComFieldListPacket actual = new MySQLComFieldListPacket(payload, backendConnection);
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_FIELD_LIST.getValue());
         verify(payload).writeStringNul("tbl");
@@ -99,7 +98,7 @@ public final class MySQLComFieldListPacketTest {
         when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.VARCHAR), Collections.<Object>singletonList("id")));
         BackendResponse backendResponse = mock(BackendResponse.class);
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
-        MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
+        MySQLComFieldListPacket packet = new MySQLComFieldListPacket(payload, backendConnection);
         setBackendHandler(packet);
         Collection<MySQLPacket> actual = packet.execute();
         assertThat(actual.size(), is(2));
@@ -124,7 +123,7 @@ public final class MySQLComFieldListPacketTest {
         when(payload.readStringEOF()).thenReturn("-");
         BackendResponse expected = new ErrorResponse(new RuntimeException("unknown"));
         when(databaseCommunicationEngine.execute()).thenReturn(expected);
-        MySQLComFieldListPacket packet = new MySQLComFieldListPacket(1, payload, backendConnection);
+        MySQLComFieldListPacket packet = new MySQLComFieldListPacket(payload, backendConnection);
         setBackendHandler(packet);
         Collection<MySQLPacket> actual = packet.execute();
         assertThat(actual.size(), is(1));

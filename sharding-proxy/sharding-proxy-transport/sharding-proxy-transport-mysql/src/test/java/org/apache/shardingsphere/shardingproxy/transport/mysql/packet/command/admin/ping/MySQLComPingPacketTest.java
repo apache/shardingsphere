@@ -40,10 +40,10 @@ public final class MySQLComPingPacketTest {
     
     @Test
     public void assertExecute() {
-        Collection<MySQLPacket> actual = new MySQLComPingPacket(1).execute();
+        Collection<MySQLPacket> actual = new MySQLComPingPacket().execute();
         assertThat(actual.size(), is(1));
         MySQLPacket mysqlPacket = actual.iterator().next();
-        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
         assertThat(((MySQLOKPacket) mysqlPacket).getAffectedRows(), is(0L));
         assertThat(((MySQLOKPacket) mysqlPacket).getLastInsertId(), is(0L));
         assertThat(((MySQLOKPacket) mysqlPacket).getWarnings(), is(0));
@@ -52,8 +52,7 @@ public final class MySQLComPingPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComPingPacket actual = new MySQLComPingPacket(1);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComPingPacket actual = new MySQLComPingPacket();
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_PING.getValue());
     }

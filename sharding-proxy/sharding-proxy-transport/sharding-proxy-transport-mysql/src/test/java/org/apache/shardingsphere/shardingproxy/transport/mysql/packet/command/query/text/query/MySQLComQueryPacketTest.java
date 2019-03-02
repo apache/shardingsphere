@@ -88,8 +88,7 @@ public final class MySQLComQueryPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComQueryPacket actual = new MySQLComQueryPacket(1, "SELECT id FROM tbl");
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComQueryPacket actual = new MySQLComQueryPacket("SELECT id FROM tbl");
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
         verify(payload).writeStringEOF("SELECT id FROM tbl");
@@ -98,7 +97,7 @@ public final class MySQLComQueryPacketTest {
     @Test
     public void assertExecuteWithoutTransaction() throws SQLException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
-        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(payload, backendConnection);
         QueryResponse queryResponse = mock(QueryResponse.class);
         setBackendHandler(packet, queryResponse);
         Collection<MySQLPacket> actual = packet.execute();
@@ -124,7 +123,7 @@ public final class MySQLComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithLocalTransaction() {
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Collection<MySQLPacket> actual = packet.execute();
         assertThat(actual.size(), is(1));
@@ -135,7 +134,7 @@ public final class MySQLComQueryPacketTest {
     public void assertExecuteTCLWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");
-        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Collection<MySQLPacket> actual = packet.execute();
         assertThat(actual.size(), is(1));
@@ -147,7 +146,7 @@ public final class MySQLComQueryPacketTest {
     public void assertExecuteRollbackWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Collection<MySQLPacket> actual = packet.execute();
         assertThat(actual.size(), is(1));

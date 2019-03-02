@@ -68,8 +68,7 @@ public final class MySQLComStmtExecutePacketTest {
         MySQLBinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
-        MySQLQueryComStmtExecutePacket actual = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLQueryComStmtExecutePacket actual = new MySQLQueryComStmtExecutePacket(payload, backendConnection);
         actual.write(payload);
         verify(payload, times(2)).writeInt4(1);
         verify(payload, times(4)).writeInt1(1);
@@ -86,7 +85,7 @@ public final class MySQLComStmtExecutePacketTest {
         when(databaseCommunicationEngine.execute()).thenReturn(mock(QueryResponse.class));
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
         when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
-        MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
+        MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(payload, backendConnection);
         setBackendHandler(packet, databaseCommunicationEngine);
         Collection<MySQLPacket> mysqlPackets = packet.execute();
         assertThat(mysqlPackets.size(), is(2));

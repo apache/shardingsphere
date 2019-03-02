@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -37,17 +36,19 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class MySQLUnsupportedCommandPacket implements MySQLCommandPacket {
     
-    @Getter
-    private final int sequenceId;
-    
     private final MySQLCommandPacketType type;
     
     @Override
     public Collection<MySQLPacket> execute() {
-        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(sequenceId + 1, CommonErrorCode.UNSUPPORTED_COMMAND, type));
+        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, type));
     }
     
     @Override
     public void write(final MySQLPacketPayload payload) {
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

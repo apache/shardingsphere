@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -41,15 +40,11 @@ import java.util.Collections;
 @Slf4j
 public final class MySQLComInitDbPacket implements MySQLCommandPacket {
     
-    @Getter
-    private final int sequenceId;
-    
     private final String schema;
     
     private final BackendConnection backendConnection;
     
-    public MySQLComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
-        this.sequenceId = sequenceId;
+    public MySQLComInitDbPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         schema = payload.readStringEOF();
         this.backendConnection = backendConnection;
     }
@@ -65,8 +60,13 @@ public final class MySQLComInitDbPacket implements MySQLCommandPacket {
         log.debug("Schema name received for Sharding-Proxy: {}", schema);
         if (LogicSchemas.getInstance().schemaExists(schema)) {
             backendConnection.setCurrentSchema(schema);
-            return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(sequenceId + 1));
+            return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
         }
-        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(sequenceId + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema));
+        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema));
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

@@ -66,10 +66,10 @@ public final class MySQLComInitDbPacketTest {
     @Test
     public void assertExecuteWithValidSchemaName() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Collection<MySQLPacket> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
+        Collection<MySQLPacket> actual = new MySQLComInitDbPacket(payload, backendConnection).execute();
         assertThat(actual.size(), is(1));
         MySQLPacket mysqlPacket = actual.iterator().next();
-        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
         assertThat(((MySQLOKPacket) mysqlPacket).getAffectedRows(), is(0L));
         assertThat(((MySQLOKPacket) mysqlPacket).getLastInsertId(), is(0L));
         assertThat(((MySQLOKPacket) mysqlPacket).getWarnings(), is(0));
@@ -80,10 +80,10 @@ public final class MySQLComInitDbPacketTest {
     public void assertExecuteWithInvalidSchemaName() {
         String invalidSchema = "invalid_schema";
         when(payload.readStringEOF()).thenReturn(invalidSchema);
-        Collection<MySQLPacket> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
+        Collection<MySQLPacket> actual = new MySQLComInitDbPacket(payload, backendConnection).execute();
         assertThat(actual.size(), is(1));
         MySQLPacket mysqlPacket = actual.iterator().next();
-        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
         assertThat(((MySQLErrPacket) mysqlPacket).getErrorCode(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
         assertThat(((MySQLErrPacket) mysqlPacket).getSqlState(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
         assertThat(((MySQLErrPacket) mysqlPacket).getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));
@@ -92,8 +92,7 @@ public final class MySQLComInitDbPacketTest {
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        MySQLComInitDbPacket actual = new MySQLComInitDbPacket(1, payload, backendConnection);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload, backendConnection);
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_INIT_DB.getValue());
         verify(payload).writeStringEOF(ShardingConstant.LOGIC_SCHEMA_NAME);
