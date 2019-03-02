@@ -52,7 +52,7 @@ import java.sql.SQLException;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  */
 @Slf4j
-public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
+public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
     
     @Getter
     private final int sequenceId;
@@ -61,13 +61,13 @@ public final class MySQLComPacketQuery implements MySQLQueryCommandPacket {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    public MySQLComPacketQuery(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public MySQLComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
     }
     
-    public MySQLComPacketQuery(final int sequenceId, final String sql) {
+    public MySQLComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
         textProtocolBackendHandler = null;

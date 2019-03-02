@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.MySQLQueryComStmtExecutePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComPacketQuery;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 
 import java.sql.SQLException;
 
@@ -63,7 +63,7 @@ public final class MySQLCommandPacketFactory {
             case COM_FIELD_LIST:
                 return new MySQLComFieldListPacket(sequenceId, payload, backendConnection);
             case COM_QUERY:
-                return new MySQLComPacketQuery(sequenceId, payload, backendConnection);
+                return new MySQLComQueryPacket(sequenceId, payload, backendConnection);
             case COM_STMT_PREPARE:
                 return new MySQLComStmtPreparePacket(sequenceId, backendConnection, payload);
             case COM_STMT_EXECUTE:

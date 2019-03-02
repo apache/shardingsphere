@@ -91,7 +91,7 @@ public final class MySQLComQueryPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComPacketQuery actual = new MySQLComPacketQuery(1, "SELECT id FROM tbl");
+        MySQLComQueryPacket actual = new MySQLComQueryPacket(1, "SELECT id FROM tbl");
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
@@ -101,7 +101,7 @@ public final class MySQLComQueryPacketTest {
     @Test
     public void assertExecuteWithoutTransaction() throws SQLException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         QueryResponse queryResponse = mock(QueryResponse.class);
         setBackendHandler(packet, queryResponse);
         Optional<TransportResponse> actual = packet.execute();
@@ -112,14 +112,14 @@ public final class MySQLComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setBackendHandler(final MySQLComPacketQuery packet, final QueryResponse queryResponse) {
+    private void setBackendHandler(final MySQLComQueryPacket packet, final QueryResponse queryResponse) {
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
         when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.VARCHAR), Collections.<Object>singletonList("id")));
         when(textProtocolBackendHandler.execute()).thenReturn(queryResponse);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
         when(textProtocolBackendHandler.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
-        Field field = MySQLComPacketQuery.class.getDeclaredField("textProtocolBackendHandler");
+        Field field = MySQLComQueryPacket.class.getDeclaredField("textProtocolBackendHandler");
         field.setAccessible(true);
         field.set(packet, textProtocolBackendHandler);
     }
@@ -127,7 +127,7 @@ public final class MySQLComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithLocalTransaction() {
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -138,7 +138,7 @@ public final class MySQLComQueryPacketTest {
     public void assertExecuteTCLWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -150,7 +150,7 @@ public final class MySQLComQueryPacketTest {
     public void assertExecuteRollbackWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        MySQLComPacketQuery packet = new MySQLComPacketQuery(1, payload, backendConnection);
+        MySQLComQueryPacket packet = new MySQLComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
