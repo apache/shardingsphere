@@ -43,7 +43,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +56,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -138,8 +138,9 @@ public final class MySQLComStmtPreparePacketTest {
         Optional<TransportResponse> actual = getComStmtPreparePacketWithMockedSQLParsingEngine("SELECT 1", selectStatement).execute();
         assertTrue(actual.isPresent());
         assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        assertThat(((CommandTransportResponse) actual.get()).getHeadPacket(), CoreMatchers.<DatabasePacket>instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(1));
+        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        assertThat(mysqlPacket, instanceOf(MySQLComStmtPrepareOKPacket.class));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
     }
     
     @Test
@@ -149,8 +150,9 @@ public final class MySQLComStmtPreparePacketTest {
         Optional<TransportResponse> actual = getComStmtPreparePacketWithMockedSQLParsingEngine("INSERT INTO tbl VALUES(1)", insertStatement).execute();
         assertTrue(actual.isPresent());
         assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        assertThat(((CommandTransportResponse) actual.get()).getHeadPacket(), CoreMatchers.<DatabasePacket>instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(1));
+        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        assertThat(mysqlPacket, instanceOf(MySQLComStmtPrepareOKPacket.class));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
     }
     
     @Test
@@ -159,8 +161,9 @@ public final class MySQLComStmtPreparePacketTest {
         Optional<TransportResponse> actual = getComStmtPreparePacketWithMockedSQLParsingEngine("SHOW TABLES", showTablesStatement).execute();
         assertTrue(actual.isPresent());
         assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        assertThat(((CommandTransportResponse) actual.get()).getHeadPacket(), CoreMatchers.<DatabasePacket>instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(1));
+        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        assertThat(mysqlPacket, instanceOf(MySQLComStmtPrepareOKPacket.class));
+        assertThat(mysqlPacket.getSequenceId(), is(1));
     }
     
     @SneakyThrows

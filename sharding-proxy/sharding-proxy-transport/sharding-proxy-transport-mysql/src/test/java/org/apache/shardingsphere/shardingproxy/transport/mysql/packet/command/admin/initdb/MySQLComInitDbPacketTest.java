@@ -72,11 +72,12 @@ public final class MySQLComInitDbPacketTest {
         Optional<TransportResponse> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getAffectedRows(), is(0L));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getLastInsertId(), is(0L));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getWarnings(), is(0));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getInfo(), is(""));
+        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(((MySQLOKPacket) mysqlPacket).getAffectedRows(), is(0L));
+        assertThat(((MySQLOKPacket) mysqlPacket).getLastInsertId(), is(0L));
+        assertThat(((MySQLOKPacket) mysqlPacket).getWarnings(), is(0));
+        assertThat(((MySQLOKPacket) mysqlPacket).getInfo(), is(""));
     }
     
     @Test
@@ -86,11 +87,11 @@ public final class MySQLComInitDbPacketTest {
         Optional<TransportResponse> actual = new MySQLComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getErrorCode(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
-        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSqlState(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
-        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getErrorMessage(), 
-                is(String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));
+        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(((MySQLErrPacket) mysqlPacket).getErrorCode(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
+        assertThat(((MySQLErrPacket) mysqlPacket).getSqlState(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
+        assertThat(((MySQLErrPacket) mysqlPacket).getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));
     }
     
     @Test

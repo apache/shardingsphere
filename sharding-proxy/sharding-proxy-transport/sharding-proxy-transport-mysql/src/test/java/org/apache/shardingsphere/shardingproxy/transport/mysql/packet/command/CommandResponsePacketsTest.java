@@ -33,6 +33,6 @@ public final class CommandResponsePacketsTest {
         DatabasePacket packet2 = new MySQLOKPacket(2);
         CommandTransportResponse actual = new CommandTransportResponse(packet1);
         actual.getPackets().add(packet2);
-        assertThat(actual.getHeadPacket(), is(packet1));
+        assertThat(actual.getPackets().iterator().next(), is(packet1));
     }
 }

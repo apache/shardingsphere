@@ -42,13 +42,4 @@ public final class CommandTransportResponse implements TransportResponse {
     public CommandTransportResponse(final Collection<DatabasePacket> databasePackets) {
         packets.addAll(databasePackets);
     }
-    
-    /**
-     * Get head packet.
-     *
-     * @return head packet
-     */
-    public DatabasePacket getHeadPacket() {
-        return packets.iterator().next();
-    }
 }

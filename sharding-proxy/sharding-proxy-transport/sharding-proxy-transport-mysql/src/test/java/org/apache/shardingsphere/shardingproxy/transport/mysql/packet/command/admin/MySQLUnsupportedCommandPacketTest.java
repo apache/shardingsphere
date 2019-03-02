@@ -46,11 +46,11 @@ public final class MySQLUnsupportedCommandPacketTest {
         Optional<TransportResponse> actual = new MySQLUnsupportedCommandPacket(1, MySQLCommandPacketType.COM_SLEEP).execute();
         assertTrue(actual.isPresent());
         assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
-        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
-        assertThat(((MySQLErrPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getErrorMessage(), 
-                is(String.format(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
+        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(((MySQLErrPacket) mysqlPacket).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
+        assertThat(((MySQLErrPacket) mysqlPacket).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
+        assertThat(((MySQLErrPacket) mysqlPacket).getErrorMessage(), is(String.format(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
     }
     
     @Test

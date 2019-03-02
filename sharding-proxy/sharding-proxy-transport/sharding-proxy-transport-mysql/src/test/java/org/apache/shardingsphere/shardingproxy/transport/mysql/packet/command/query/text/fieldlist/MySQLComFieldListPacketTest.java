@@ -132,7 +132,7 @@ public final class MySQLComFieldListPacketTest {
         setBackendHandler(packet);
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
-        assertThat(((CommandTransportResponse) actual.get()).getHeadPacket(), instanceOf(MySQLErrPacket.class));
+        assertThat(((CommandTransportResponse) actual.get()).getPackets().iterator().next(), instanceOf(MySQLErrPacket.class));
     }
     
     @SneakyThrows

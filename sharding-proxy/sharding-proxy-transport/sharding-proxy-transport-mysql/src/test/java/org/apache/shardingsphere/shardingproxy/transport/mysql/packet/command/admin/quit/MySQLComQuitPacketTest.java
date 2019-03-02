@@ -45,11 +45,12 @@ public final class MySQLComQuitPacketTest {
         Optional<TransportResponse> actual = new MySQLComQuitPacket(1).execute();
         assertTrue(actual.isPresent());
         assertThat(((CommandTransportResponse) actual.get()).getPackets().size(), is(1));
-        assertThat(((MySQLPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getAffectedRows(), is(0L));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getLastInsertId(), is(0L));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getWarnings(), is(0));
-        assertThat(((MySQLOKPacket) ((CommandTransportResponse) actual.get()).getHeadPacket()).getInfo(), is(""));
+        MySQLPacket mysqlPacket = (MySQLPacket) ((CommandTransportResponse) actual.get()).getPackets().iterator().next();
+        assertThat(mysqlPacket.getSequenceId(), is(2));
+        assertThat(((MySQLOKPacket) mysqlPacket).getAffectedRows(), is(0L));
+        assertThat(((MySQLOKPacket) mysqlPacket).getLastInsertId(), is(0L));
+        assertThat(((MySQLOKPacket) mysqlPacket).getWarnings(), is(0));
+        assertThat(((MySQLOKPacket) mysqlPacket).getInfo(), is(""));
     }
     
     @Test
