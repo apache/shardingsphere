@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
 
 import java.util.Collection;
@@ -29,17 +28,24 @@ import java.util.LinkedList;
  *
  * @author zhangyonglun
  */
-@NoArgsConstructor
-@Getter
-public class CommandTransportResponse implements TransportResponse {
+public final class CommandTransportResponse implements TransportResponse {
     
+    private final boolean hasMoreData;
+    
+    @Getter
     private final Collection<DatabasePacket> packets = new LinkedList<>();
     
+    public CommandTransportResponse() {
+        this.hasMoreData = false;
+    }
+    
     public CommandTransportResponse(final DatabasePacket databasePacket) {
+        this.hasMoreData = false;
         packets.add(databasePacket);
     }
     
-    public CommandTransportResponse(final Collection<DatabasePacket> databasePackets) {
+    public CommandTransportResponse(final boolean hasMoreData, final Collection<DatabasePacket> databasePackets) {
+        this.hasMoreData = hasMoreData;
         packets.addAll(databasePackets);
     }
     
@@ -50,5 +56,10 @@ public class CommandTransportResponse implements TransportResponse {
      */
     public DatabasePacket getHeadPacket() {
         return packets.iterator().next();
+    }
+    
+    @Override
+    public boolean hasMoreData() {
+        return hasMoreData;
     }
 }

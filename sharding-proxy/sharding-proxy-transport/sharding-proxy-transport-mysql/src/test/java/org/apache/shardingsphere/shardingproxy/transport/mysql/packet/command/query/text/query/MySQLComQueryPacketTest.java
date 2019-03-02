@@ -107,7 +107,7 @@ public final class MySQLComQueryPacketTest {
         Optional<TransportResponse> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertTrue(packet.next());
-        assertThat(packet.getQueryData(3).getSequenceId(), is(3));
+        assertThat(packet.getQueryData().getSequenceId(), is(3));
         assertFalse(packet.next());
     }
     

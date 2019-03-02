@@ -92,7 +92,7 @@ public final class MySQLComStmtExecutePacketTest {
         Optional<TransportResponse> actualCommandResponsePackets = packet.execute();
         assertTrue(actualCommandResponsePackets.isPresent());
         assertTrue(packet.next());
-        MySQLPacket actual = packet.getQueryData(3);
+        MySQLPacket actual = packet.getQueryData();
         assertThat(actual.getSequenceId(), is(3));
         assertFalse(packet.next());
     }

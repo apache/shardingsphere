@@ -41,9 +41,8 @@ public interface MySQLQueryCommandPacket extends MySQLCommandPacket {
     /**
      * Get query data.
      *
-     * @param sequenceId sequence ID
      * @return MySQL packet of query data
      * @throws SQLException SQL exception
      */
-    MySQLPacket getQueryData(int sequenceId) throws SQLException;
+    MySQLPacket getQueryData() throws SQLException;
 }

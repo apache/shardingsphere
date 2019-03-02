@@ -24,18 +24,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandTransportResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryTransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.TransportResponse;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
@@ -62,8 +58,6 @@ public final class MySQLCommandExecutor implements Runnable {
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
-    private int currentSequenceId;
-    
     @Override
     public void run() {
         rootInvokeHook.start();
@@ -71,22 +65,20 @@ public final class MySQLCommandExecutor implements Runnable {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            MySQLCommandPacket mysqlCommandPacket = getCommandPacket(payload, backendConnection);
+            MySQLCommandPacket mysqlCommandPacket = MySQLCommandPacketFactory.newInstance(payload.readInt1(), payload, backendConnection);
             Optional<TransportResponse> transportResponse = mysqlCommandPacket.execute();
             if (!transportResponse.isPresent()) {
                 return;
             }
-            if (transportResponse.get() instanceof QueryTransportResponse) {
-                writeQueryHeaders((QueryTransportResponse) transportResponse.get());
+            for (DatabasePacket each : ((CommandTransportResponse) transportResponse.get()).getPackets()) {
+                context.write(each);
+            }
+            if (transportResponse.get().hasMoreData()) {
                 writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket);
-            } else {
-                for (DatabasePacket each : ((CommandTransportResponse) transportResponse.get()).getPackets()) {
-                    context.write(each);
-                }
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
-            context.write(MySQLErrPacketFactory.newInstance(++currentSequenceId, ex));
+            context.write(MySQLErrPacketFactory.newInstance(1, ex));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -97,38 +89,27 @@ public final class MySQLCommandExecutor implements Runnable {
         }
     }
     
-    private MySQLCommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        int sequenceId = payload.readInt1();
-        return MySQLCommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
-    }
-    
-    private void writeQueryHeaders(final QueryTransportResponse queryTransportResponse) {
-        context.write(new MySQLFieldCountPacket(++currentSequenceId, queryTransportResponse.getQueryHeaders().size()));
-        for (QueryHeader each : queryTransportResponse.getQueryHeaders()) {
-            context.write(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
-        }
-        context.write(new MySQLEofPacket(++currentSequenceId));
-    }
-    
     private void writeMoreResults(final MySQLQueryCommandPacket mysqlQueryCommandPacket) throws SQLException {
         if (!context.channel().isActive()) {
             return;
         }
         int count = 0;
         int flushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int lastSequenceId = 0;
         while (mysqlQueryCommandPacket.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwait();
             }
-            MySQLPacket resultValue = mysqlQueryCommandPacket.getQueryData(++currentSequenceId);
-            context.write(resultValue);
+            MySQLPacket dataValue = mysqlQueryCommandPacket.getQueryData();
+            context.write(dataValue);
             if (flushThreshold == count) {
                 context.flush();
                 count = 0;
             }
+            lastSequenceId = dataValue.getSequenceId();
         }
-        context.write(new MySQLEofPacket(++currentSequenceId));
+        context.write(new MySQLEofPacket(++lastSequenceId));
     }
 }
