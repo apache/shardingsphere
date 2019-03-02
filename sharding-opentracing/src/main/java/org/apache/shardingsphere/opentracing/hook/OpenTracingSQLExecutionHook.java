@@ -61,7 +61,7 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     }
     
     private String toString(final List<Object> parameterSets) {
-        return parameterSets.isEmpty() ? "" : Joiner.on(", ").join(parameterSets);
+        return parameterSets.isEmpty() ? "" : String.format("[%s]", Joiner.on(", ").join(parameterSets));
     }
     
     @Override
