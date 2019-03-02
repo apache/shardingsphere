@@ -46,13 +46,13 @@ public final class MySQLCommandPacketFactory {
     /**
      * Create new instance of command packet.
      *
-     * @param sequenceId sequence id
      * @param payload MySQL packet payload
      * @param backendConnection backend connection
      * @return command packet
      * @throws SQLException SQL exception
      */
-    public static MySQLCommandPacket newInstance(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+    public static MySQLCommandPacket newInstance(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+        int sequenceId = payload.readInt1();
         int commandPacketTypeValue = payload.readInt1();
         MySQLCommandPacketType type = MySQLCommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {

@@ -65,7 +65,7 @@ public final class MySQLCommandExecutor implements Runnable {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            MySQLCommandPacket mysqlCommandPacket = MySQLCommandPacketFactory.newInstance(payload.readInt1(), payload, backendConnection);
+            MySQLCommandPacket mysqlCommandPacket = MySQLCommandPacketFactory.newInstance(payload, backendConnection);
             Optional<TransportResponse> transportResponse = mysqlCommandPacket.execute();
             if (!transportResponse.isPresent()) {
                 return;
@@ -73,7 +73,7 @@ public final class MySQLCommandExecutor implements Runnable {
             for (DatabasePacket each : ((CommandTransportResponse) transportResponse.get()).getPackets()) {
                 context.write(each);
             }
-            if (transportResponse.get().hasMoreData()) {
+            if (mysqlCommandPacket instanceof MySQLQueryCommandPacket && transportResponse.get().hasMoreData()) {
                 writeMoreResults((MySQLQueryCommandPacket) mysqlCommandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
