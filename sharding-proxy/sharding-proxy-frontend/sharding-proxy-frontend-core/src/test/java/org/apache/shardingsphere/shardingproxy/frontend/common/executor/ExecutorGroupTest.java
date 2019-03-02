@@ -32,13 +32,27 @@ public final class ExecutorGroupTest {
     @Test
     public void assertGetExecutorServiceWithLocal() {
         ChannelId channelId = mock(ChannelId.class);
-        assertThat(CommandExecutorSelector.getExecutor(TransactionType.LOCAL, channelId), instanceOf(ExecutorService.class));
+        assertThat(CommandExecutorSelector.getExecutor(false, TransactionType.LOCAL, channelId), instanceOf(ExecutorService.class));
+    }
+    
+    @Test
+    public void assertGetExecutorServiceWithOccupyThreadForPerConnection() {
+        ChannelId channelId = mock(ChannelId.class);
+        ChannelThreadExecutorGroup.getInstance().register(channelId);
+        assertThat(CommandExecutorSelector.getExecutor(true, TransactionType.LOCAL, channelId), instanceOf(ExecutorService.class));
     }
     
     @Test
     public void assertGetExecutorServiceWithXA() {
         ChannelId channelId = mock(ChannelId.class);
         ChannelThreadExecutorGroup.getInstance().register(channelId);
-        assertThat(CommandExecutorSelector.getExecutor(TransactionType.XA, channelId), instanceOf(ExecutorService.class));
+        assertThat(CommandExecutorSelector.getExecutor(false, TransactionType.XA, channelId), instanceOf(ExecutorService.class));
+    }
+    
+    @Test
+    public void assertGetExecutorServiceWithBASE() {
+        ChannelId channelId = mock(ChannelId.class);
+        ChannelThreadExecutorGroup.getInstance().register(channelId);
+        assertThat(CommandExecutorSelector.getExecutor(false, TransactionType.BASE, channelId), instanceOf(ExecutorService.class));
     }
 }

@@ -54,6 +54,11 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
+    public boolean isOccupyThreadForPerConnection() {
+        return false;
+    }
+    
+    @Override
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
@@ -82,7 +87,8 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Override
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        CommandExecutorSelector.getExecutor(backendConnection.getTransactionType(), context.channel().id()).execute(new MySQLCommandExecutor(context, message, backendConnection));
+        CommandExecutorSelector.getExecutor(
+                isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id()).execute(new MySQLCommandExecutor(context, message, backendConnection));
     }
     
     @Override

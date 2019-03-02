@@ -36,6 +36,13 @@ public interface DatabaseFrontendEngine {
     String getDatabaseType();
     
     /**
+     * Judge is occupy thread for per connection.
+     * 
+     * @return is occupy thread for per connection or not
+     */
+    boolean isOccupyThreadForPerConnection();
+    
+    /**
      * Handshake.
      * 
      * @param context channel handler context

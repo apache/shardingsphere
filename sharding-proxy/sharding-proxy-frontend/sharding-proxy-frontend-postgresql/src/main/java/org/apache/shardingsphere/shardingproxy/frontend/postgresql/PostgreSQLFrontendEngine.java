@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
@@ -52,6 +52,11 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public String getDatabaseType() {
         return DatabaseType.PostgreSQL.name();
+    }
+    
+    @Override
+    public boolean isOccupyThreadForPerConnection() {
+        return true;
     }
     
     @Override
@@ -88,7 +93,8 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Override
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        ChannelThreadExecutorGroup.getInstance().get(context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
+        CommandExecutorSelector.getExecutor(
+                isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, backendConnection));
     }
     
     @Override
