@@ -21,6 +21,14 @@ package org.apache.shardingsphere.shardingproxy.transport.spi;
  * Database packet.
  *
  * @author zhangliang
+ * @param <T> type of packet payload
  */
-public interface DatabasePacket {
+public interface DatabasePacket<T extends PacketPayload> {
+    
+    /**
+     * Write packet to byte buffer.
+     *
+     * @param payload packet payload to be written
+     */
+    void write(T payload);
 }

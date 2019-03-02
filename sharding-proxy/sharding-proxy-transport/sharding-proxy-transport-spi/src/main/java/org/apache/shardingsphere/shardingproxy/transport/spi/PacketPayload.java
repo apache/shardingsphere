@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet;
+package org.apache.shardingsphere.shardingproxy.transport.spi;
 
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import io.netty.buffer.ByteBuf;
 
 /**
- * MySQL packet.
+ * Packet payload.
  *
  * @author zhangliang
  */
-public interface MySQLPacket extends DatabasePacket<MySQLPacketPayload> {
-    
-    int PAYLOAD_LENGTH = 3;
-    
-    int SEQUENCE_LENGTH = 1;
+public interface PacketPayload extends AutoCloseable {
     
     /**
-     * Get sequence ID.
-     *
-     * @return sequence ID
+     * Get byte buf.
+     * 
+     * @return byte buf
      */
-    int getSequenceId();
+    ByteBuf getByteBuf();
 }

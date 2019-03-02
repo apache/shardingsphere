@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet;
 
-import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.spi.PacketPayload;
 
 /**
  * Payload operation for PostgreSQL packet data types.
@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PostgreSQLPacketPayload implements AutoCloseable {
+public final class PostgreSQLPacketPayload implements PacketPayload {
     
     private final ByteBuf byteBuf;
     
@@ -72,24 +72,6 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
     }
     
     /**
-     * Read 3 byte fixed length integer from byte buffers.
-     *
-     * @return 3 byte fixed length integer
-     */
-    public int readInt3() {
-        return byteBuf.readMedium() & 0xffffff;
-    }
-    
-    /**
-     * Write 3 byte fixed length integer to byte buffers.
-     *
-     * @param value 3 byte fixed length integer
-     */
-    public void writeInt3(final int value) {
-        byteBuf.writeMedium(value);
-    }
-    
-    /**
      * Read 4 byte fixed length integer from byte buffers.
      *
      * @return 4 byte fixed length integer
@@ -126,139 +108,6 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
     }
     
     /**
-     * Read lenenc integer from byte buffers.
-     *
-     * @return lenenc integer
-     */
-    public long readIntLenenc() {
-        int firstByte = readInt1();
-        if (firstByte < 0xfb) {
-            return firstByte;
-        }
-        if (0xfb == firstByte) {
-            return 0;
-        }
-        if (0xfc == firstByte) {
-            return byteBuf.readShortLE();
-        }
-        if (0xfd == firstByte) {
-            return byteBuf.readMediumLE();
-        }
-        return byteBuf.readLongLE();
-    }
-    
-    /**
-     * Write lenenc integer to byte buffers.
-     *
-     * @param value lenenc integer
-     */
-    public void writeIntLenenc(final long value) {
-        if (value < 0xfb) {
-            byteBuf.writeByte((int) value);
-            return;
-        }
-        if (value < Math.pow(2, 16)) {
-            byteBuf.writeByte(0xfc);
-            byteBuf.writeShortLE((int) value);
-            return;
-        }
-        if (value < Math.pow(2, 24)) {
-            byteBuf.writeByte(0xfd);
-            byteBuf.writeMediumLE((int) value);
-            return;
-        }
-        byteBuf.writeByte(0xfe);
-        byteBuf.writeLongLE(value);
-    }
-    
-    /**
-     * Read lenenc string from byte buffers.
-     *
-     * @return lenenc string
-     */
-    public String readStringLenenc() {
-        int length = (int) readIntLenenc();
-        byte[] result = new byte[length];
-        byteBuf.readBytes(result);
-        return new String(result);
-    }
-    
-    /**
-     * Read lenenc string from byte buffers for bytes.
-     *
-     * @return lenenc bytes
-     */
-    public byte[] readStringLenencByBytes() {
-        int length = (int) readIntLenenc();
-        byte[] result = new byte[length];
-        byteBuf.readBytes(result);
-        return result;
-    }
-    
-    /**
-     * Write lenenc string to byte buffers.
-     * 
-     * @param value fixed length string
-     */
-    public void writeStringLenenc(final String value) {
-        if (Strings.isNullOrEmpty(value)) {
-            byteBuf.writeByte(0);
-            return;
-        }
-        writeIntLenenc(value.getBytes().length);
-        byteBuf.writeBytes(value.getBytes());
-    }
-    
-    /**
-     * Write lenenc bytes to byte buffers.
-     *
-     * @param value fixed length bytes
-     */
-    public void writeBytesLenenc(final byte[] value) {
-        if (0 == value.length) {
-            byteBuf.writeByte(0);
-            return;
-        }
-        writeIntLenenc(value.length);
-        byteBuf.writeBytes(value);
-    }
-    
-    /**
-     * Read fixed length string from byte buffers.
-     * 
-     * @param length length of fixed string
-     * 
-     * @return fixed length string
-     */
-    public String readStringFix(final int length) {
-        byte[] result = new byte[length];
-        byteBuf.readBytes(result);
-        return new String(result);
-    }
-    
-    /**
-     * Read fixed length string from byte buffers and return bytes.
-     *
-     * @param length length of fixed string
-     *
-     * @return fixed length bytes
-     */
-    public byte[] readStringFixByBytes(final int length) {
-        byte[] result = new byte[length];
-        byteBuf.readBytes(result);
-        return result;
-    }
-    
-    /**
-     * Write variable length string to byte buffers.
-     * 
-     * @param value fixed length string
-     */
-    public void writeStringFix(final String value) {
-        byteBuf.writeBytes(value.getBytes());
-    }
-    
-    /**
      * Write variable length bytes to byte buffers.
      * 
      * @param value fixed length bytes
@@ -289,18 +138,6 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
     }
     
     /**
-     * Read null terminated string from byte buffers and return bytes.
-     *
-     * @return null terminated bytes
-     */
-    public byte[] readStringNulByBytes() {
-        byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
-        byteBuf.readBytes(result);
-        byteBuf.skipBytes(1);
-        return result;
-    }
-    
-    /**
      * Write null terminated string to byte buffers.
      * 
      * @param value null terminated string
@@ -308,17 +145,6 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
     public void writeStringNul(final String value) {
         byteBuf.writeBytes(value.getBytes());
         byteBuf.writeByte(0);
-    }
-    
-    /**
-     * Read rest of packet string from byte buffers.
-     * 
-     * @return rest of packet string
-     */
-    public String readStringEOF() {
-        byte[] result = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(result);
-        return new String(result);
     }
     
     /**
@@ -337,17 +163,6 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      */
     public void skipReserved(final int length) {
         byteBuf.skipBytes(length);
-    }
-    
-    /**
-     * Write null for reserved to byte buffers.
-     * 
-     * @param length length of reserved
-     */
-    public void writeReserved(final int length) {
-        for (int i = 0; i < length; i++) {
-            byteBuf.writeByte(0);
-        }
     }
     
     @Override

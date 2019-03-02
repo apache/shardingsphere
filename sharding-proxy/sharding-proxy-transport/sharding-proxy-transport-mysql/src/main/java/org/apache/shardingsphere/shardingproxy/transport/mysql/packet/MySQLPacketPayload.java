@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.spi.PacketPayload;
 
 /**
  * MySQL payload operation for MySQL packet data types.
@@ -33,7 +34,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLPacketPayload implements AutoCloseable {
+public final class MySQLPacketPayload implements PacketPayload {
     
     private final ByteBuf byteBuf;
     
