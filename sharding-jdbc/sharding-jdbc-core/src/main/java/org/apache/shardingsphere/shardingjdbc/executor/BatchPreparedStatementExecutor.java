@@ -228,6 +228,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final ShardingExecuteGroup<StatementExecuteUnit> executeGroup) {
         return Iterators.tryFind(executeGroup.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
+            
             @Override
             public boolean apply(final StatementExecuteUnit input) {
                 return input.getStatement().equals(statement);
