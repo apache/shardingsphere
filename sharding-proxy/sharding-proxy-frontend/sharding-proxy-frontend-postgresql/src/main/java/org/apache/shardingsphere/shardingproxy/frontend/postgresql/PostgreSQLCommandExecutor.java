@@ -66,7 +66,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message);
              BackendConnection backendConnection = this.backendConnection) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            PostgreSQLCommandPacket commandPacket = getCommandPacket(payload, backendConnection);
+            PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(payload, backendConnection);
             Optional<TransportResponse> responsePackets = commandPacket.execute();
             if (commandPacket instanceof PostgreSQLComSyncPacket) {
                 context.write(new PostgreSQLCommandCompletePacket());
@@ -97,10 +97,6 @@ public final class PostgreSQLCommandExecutor implements Runnable {
         } finally {
             rootInvokeHook.finish(connectionSize);
         }
-    }
-    
-    private PostgreSQLCommandPacket getCommandPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        return PostgreSQLCommandPacketFactory.newInstance(payload, backendConnection);
     }
     
     private void writeMoreResults(final PostgreSQLQueryCommandPacket queryCommandPacket) throws SQLException {
