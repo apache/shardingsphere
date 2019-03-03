@@ -109,7 +109,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
-            backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             writePackets(context, payload, backendConnection);
         } catch (final SQLException ex) {
             context.writeAndFlush(new PostgreSQLErrorResponsePacket());

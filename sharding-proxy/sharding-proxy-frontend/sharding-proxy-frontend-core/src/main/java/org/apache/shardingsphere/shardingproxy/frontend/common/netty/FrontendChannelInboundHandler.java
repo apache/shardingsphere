@@ -54,9 +54,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
-        if (!authorized) {
-            authorized = databaseFrontendEngine.auth(context, (ByteBuf) message, backendConnection);
-        } else {
+        if (authorized) {
             CommandExecutorSelector.getExecutor(databaseFrontendEngine.isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id()).execute(new Runnable() {
                 
                 @Override
@@ -65,6 +63,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
                     rootInvokeHook.start();
                     int connectionSize = 0;
                     try (BackendConnection backendConnection = FrontendChannelInboundHandler.this.backendConnection) {
+                        backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
                         databaseFrontendEngine.executeCommand(context, (ByteBuf) message, backendConnection);
                         connectionSize = backendConnection.getConnectionSize();
                         // CHECKSTYLE:OFF
@@ -76,6 +75,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
                     }
                 }
             });
+        } else {
+            authorized = databaseFrontendEngine.auth(context, (ByteBuf) message, backendConnection);
         }
     }
     

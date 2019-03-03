@@ -101,7 +101,6 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
-            backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             writePackets(context, payload, backendConnection);
         } catch (final SQLException ex) {
             context.write(MySQLErrPacketFactory.newInstance(1, ex));
