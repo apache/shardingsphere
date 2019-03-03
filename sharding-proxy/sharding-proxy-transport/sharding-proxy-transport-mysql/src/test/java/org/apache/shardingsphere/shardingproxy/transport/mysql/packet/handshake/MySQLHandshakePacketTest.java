@@ -43,17 +43,16 @@ public final class MySQLHandshakePacketTest {
     
     @Test
     public void assertNewWithPayload() {
-        when(payload.readInt1()).thenReturn(1, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
+        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.SERVER_VERSION);
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
-        assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getMySQLAuthPluginData().getAuthPluginDataPart1(), is(part1));
-        assertThat(actual.getMySQLAuthPluginData().getAuthPluginDataPart2(), is(part2));
+        assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
+        assertThat(actual.getAuthPluginData().getAuthPluginDataPart2(), is(part2));
         verify(payload).skipReserved(10);
     }
     
