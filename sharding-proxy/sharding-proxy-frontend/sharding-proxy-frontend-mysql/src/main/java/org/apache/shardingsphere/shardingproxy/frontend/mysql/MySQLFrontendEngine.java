@@ -75,7 +75,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
-        context.writeAndFlush(new MySQLHandshakePacket(connectionId, mysqlAuthenticationHandler.getMySQLAuthPluginData()));
+        context.writeAndFlush(new MySQLHandshakePacket(connectionId, mysqlAuthenticationHandler.getAuthPluginData()));
     }
     
     @Override

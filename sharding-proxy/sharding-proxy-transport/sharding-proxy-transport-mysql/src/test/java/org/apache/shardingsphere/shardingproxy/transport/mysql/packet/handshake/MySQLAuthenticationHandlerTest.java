@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class MySQLAuthenticationHandlerTest {
     
-    private final MySQLAuthenticationHandler mySQLAuthenticationHandler = new MySQLAuthenticationHandler();
+    private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
     private final byte[] part1 = {84, 85, 115, 77, 68, 116, 85, 78};
 
@@ -45,24 +45,24 @@ public final class MySQLAuthenticationHandlerTest {
     
     @SneakyThrows
     private void initAuthPluginDataForAuthenticationHandler() {
-        MySQLAuthPluginData mySQLAuthPluginData = new MySQLAuthPluginData(part1, part2);
-        Field field = MySQLAuthenticationHandler.class.getDeclaredField("mySQLAuthPluginData");
+        MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
+        Field field = MySQLAuthenticationHandler.class.getDeclaredField("authPluginData");
         field.setAccessible(true);
-        field.set(mySQLAuthenticationHandler, mySQLAuthPluginData);
+        field.set(authenticationHandler, authPluginData);
     }
     
     @Test
     public void assertLoginWithPassword() {
         setAuthentication(new Authentication("root", "root"));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(mySQLAuthenticationHandler.login("root", authResponse));
+        assertTrue(authenticationHandler.login("root", authResponse));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         setAuthentication(new Authentication("root", null));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertTrue(mySQLAuthenticationHandler.login("root", authResponse));
+        assertTrue(authenticationHandler.login("root", authResponse));
     }
     
     @SneakyThrows
@@ -74,6 +74,6 @@ public final class MySQLAuthenticationHandlerTest {
     
     @Test
     public void assertGetAuthPluginData() {
-        assertThat(mySQLAuthenticationHandler.getMySQLAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
+        assertThat(authenticationHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
     }
 }

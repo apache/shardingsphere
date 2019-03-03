@@ -115,14 +115,14 @@ public final class MySQLComStmtPreparePacketTest {
         Collection<MySQLPacket> actual = getComStmtPreparePacketWithMockedSQLParsingEngine("SELECT id FROM tbl WHERE id=?", selectStatement).execute();
         assertThat(actual.size(), is(3));
         Iterator<MySQLPacket> packets = actual.iterator();
-        MySQLComStmtPrepareOKPacket mySQLComStmtPrepareOKPacket = (MySQLComStmtPrepareOKPacket) packets.next();
-        assertThat(mySQLComStmtPrepareOKPacket.getSequenceId(), is(1));
-        MySQLColumnDefinition41Packet mySQLColumnDefinition41Packet = (MySQLColumnDefinition41Packet) packets.next();
-        assertThat(mySQLColumnDefinition41Packet.getSequenceId(), is(2));
-        assertThat(mySQLColumnDefinition41Packet.getName(), is(""));
-        assertThat(mySQLColumnDefinition41Packet.getMySQLColumnType(), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
-        MySQLEofPacket mySQLEofPacket = (MySQLEofPacket) packets.next();
-        assertThat(mySQLEofPacket.getSequenceId(), is(3));
+        MySQLComStmtPrepareOKPacket comStmtPrepareOKPacket = (MySQLComStmtPrepareOKPacket) packets.next();
+        assertThat(comStmtPrepareOKPacket.getSequenceId(), is(1));
+        MySQLColumnDefinition41Packet columnDefinition41Packet = (MySQLColumnDefinition41Packet) packets.next();
+        assertThat(columnDefinition41Packet.getSequenceId(), is(2));
+        assertThat(columnDefinition41Packet.getName(), is(""));
+        assertThat(columnDefinition41Packet.getColumnType(), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
+        MySQLEofPacket eofPacket = (MySQLEofPacket) packets.next();
+        assertThat(eofPacket.getSequenceId(), is(3));
     }
     
     @Test

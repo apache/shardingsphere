@@ -65,7 +65,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     private final int columnLength;
     
     @Getter
-    private final MySQLColumnType mySQLColumnType;
+    private final MySQLColumnType columnType;
     
     private final int decimals;
     
@@ -76,7 +76,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     }
     
     public MySQLColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable,
-                                         final String name, final String orgName, final int columnLength, final MySQLColumnType mySQLColumnType, final int decimals) {
+                                         final String name, final String orgName, final int columnLength, final MySQLColumnType columnType, final int decimals) {
         this.sequenceId = sequenceId;
         this.characterSet = MySQLServerInfo.CHARSET;
         this.flags = 0;
@@ -86,7 +86,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
         this.name = name;
         this.orgName = orgName;
         this.columnLength = columnLength;
-        this.mySQLColumnType = mySQLColumnType;
+        this.columnType = columnType;
         this.decimals = decimals;
     }
     
@@ -100,7 +100,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
         this.name = queryHeader.getColumnLabel();
         this.orgName = queryHeader.getColumnName();
         this.columnLength = queryHeader.getColumnLength();
-        this.mySQLColumnType = MySQLColumnType.valueOfJDBCType(queryHeader.getColumnType());
+        this.columnType = MySQLColumnType.valueOfJDBCType(queryHeader.getColumnType());
         this.decimals = queryHeader.getDecimals();
     }
     
@@ -115,7 +115,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
         Preconditions.checkArgument(NEXT_LENGTH == payload.readIntLenenc());
         characterSet = payload.readInt2();
         columnLength = payload.readInt4();
-        mySQLColumnType = MySQLColumnType.valueOf(payload.readInt1());
+        columnType = MySQLColumnType.valueOf(payload.readInt1());
         flags = payload.readInt2();
         decimals = payload.readInt1();
         payload.skipReserved(2);
@@ -132,7 +132,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
         payload.writeIntLenenc(NEXT_LENGTH);
         payload.writeInt2(characterSet);
         payload.writeInt4(columnLength);
-        payload.writeInt1(mySQLColumnType.getValue());
+        payload.writeInt1(columnType.getValue());
         payload.writeInt2(flags);
         payload.writeInt1(decimals);
         payload.writeReserved(2);

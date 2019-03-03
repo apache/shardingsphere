@@ -110,7 +110,7 @@ public final class MySQLComFieldListPacketTest {
     private void assertColumnDefinition41Packet(final MySQLColumnDefinition41Packet actual) {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getName(), is("id"));
-        assertThat(actual.getMySQLColumnType(), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(actual.getColumnType(), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
     }
     
     private void assertEofPacket(final MySQLEofPacket actual) {

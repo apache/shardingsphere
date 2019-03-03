@@ -41,7 +41,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     
     private final int capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
     
-    private final MySQLStatusFlag mySQLStatusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
+    private final MySQLStatusFlag statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
     
     private final int capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
     
@@ -64,7 +64,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         final byte[] authPluginDataPart1 = payload.readStringNulByBytes();
         payload.readInt2();
         payload.readInt1();
-        Preconditions.checkArgument(mySQLStatusFlag.getValue() == payload.readInt2());
+        Preconditions.checkArgument(statusFlag.getValue() == payload.readInt2());
         payload.readInt2();
         payload.readInt1();
         payload.skipReserved(10);
@@ -80,7 +80,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         payload.writeInt2(capabilityFlagsLower);
         payload.writeInt1(MySQLServerInfo.CHARSET);
-        payload.writeInt2(mySQLStatusFlag.getValue());
+        payload.writeInt2(statusFlag.getValue());
         payload.writeInt2(capabilityFlagsUpper);
         payload.writeInt1(0);
         payload.writeReserved(10);

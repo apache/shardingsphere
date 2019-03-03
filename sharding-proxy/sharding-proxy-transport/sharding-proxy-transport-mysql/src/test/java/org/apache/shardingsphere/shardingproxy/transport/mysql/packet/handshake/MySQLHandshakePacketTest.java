@@ -58,18 +58,18 @@ public final class MySQLHandshakePacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLAuthPluginData mySQLAuthPluginData = new MySQLAuthPluginData(part1, part2);
-        new MySQLHandshakePacket(1000, mySQLAuthPluginData).write(payload);
+        MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
+        new MySQLHandshakePacket(1000, authPluginData).write(payload);
         verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
         verify(payload).writeStringNul(MySQLServerInfo.SERVER_VERSION);
         verify(payload).writeInt4(1000);
-        verify(payload).writeStringNul(new String(mySQLAuthPluginData.getAuthPluginDataPart1()));
+        verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
         verify(payload).writeInt1(MySQLServerInfo.CHARSET);
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         verify(payload).writeInt1(0);
         verify(payload).writeReserved(10);
-        verify(payload).writeStringNul(new String(mySQLAuthPluginData.getAuthPluginDataPart2()));
+        verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));
     }
 }
