@@ -52,10 +52,10 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     
     private void writeValues(final PostgreSQLPacketPayload payload) {
         for (int i = 0; i < columnTypes.size(); i++) {
-            PostgreSQLBinaryProtocolValue postgreSQLBinaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i));
+            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i));
             Object value = data.get(i);
-            payload.writeInt4(postgreSQLBinaryProtocolValue.getColumnLength(value));
-            postgreSQLBinaryProtocolValue.write(payload, value);
+            payload.writeInt4(binaryProtocolValue.getColumnLength(value));
+            binaryProtocolValue.write(payload, value);
         }
     }
 }

@@ -89,8 +89,8 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
         }
         message.resetReaderIndex();
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
-            PostgreSQLComStartupPacket postgreSQLComStartupPacket = new PostgreSQLComStartupPacket(payload);
-            String databaseName = postgreSQLComStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
+            PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
+            String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
             if (!Strings.isNullOrEmpty(databaseName) && !LogicSchemas.getInstance().schemaExists(databaseName)) {
                 // TODO send an error message
                 return true;

@@ -138,12 +138,12 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     }
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
-        List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
-        isQuery = !postgreSQLColumnDescriptions.isEmpty();
-        if (postgreSQLColumnDescriptions.isEmpty() || !isBinaryRowData()) {
+        List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
+        isQuery = !columnDescriptions.isEmpty();
+        if (columnDescriptions.isEmpty() || !isBinaryRowData()) {
             return Optional.absent();
         }
-        return Optional.of(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
+        return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
     
     private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {

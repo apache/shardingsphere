@@ -52,18 +52,18 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.PARSE.getValue();
     
-    private final ConnectionScopeBinaryStatementRegistry postgreSQLBinaryStatementRegistry;
+    private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
     
     private String statementId;
     
     private final String sql;
     
-    private final List<PostgreSQLBinaryStatementParameterType> postgreSQLBinaryStatementParameterTypes = new ArrayList<>(64);
+    private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes = new ArrayList<>(64);
     
     private SQLParsingEngine sqlParsingEngine;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
-        postgreSQLBinaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection);
+        binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection);
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
@@ -78,7 +78,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     private void getParameterTypes(final PostgreSQLPacketPayload payload) {
         int parameterCount = payload.readInt2();
         for (int i = 0; i < parameterCount; i++) {
-            postgreSQLBinaryStatementParameterTypes.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.valueOf(payload.readInt4())));
+            binaryStatementParameterTypes.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.valueOf(payload.readInt4())));
         }
     }
     
@@ -100,7 +100,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
         if (!sql.isEmpty()) {
             SQLStatement sqlStatement = sqlParsingEngine.parse(true);
             int parametersIndex = sqlStatement.getParametersIndex();
-            postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex, postgreSQLBinaryStatementParameterTypes);
+            binaryStatementRegistry.register(statementId, sql, parametersIndex, binaryStatementParameterTypes);
         }
         return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLParseCompletePacket());
     }

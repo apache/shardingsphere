@@ -97,12 +97,12 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     }
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
-        List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
-        isQuery = !postgreSQLColumnDescriptions.isEmpty();
-        if (postgreSQLColumnDescriptions.isEmpty()) {
+        List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
+        isQuery = !columnDescriptions.isEmpty();
+        if (columnDescriptions.isEmpty()) {
             return Optional.absent();
         }
-        return Optional.of(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
+        return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
     
     private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {

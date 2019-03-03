@@ -39,12 +39,12 @@ public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
     @Getter
     private final int fieldCount;
     
-    private final List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions;
+    private final List<PostgreSQLColumnDescription> columnDescriptions;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(fieldCount);
-        for (PostgreSQLColumnDescription each : postgreSQLColumnDescriptions) {
+        for (PostgreSQLColumnDescription each : columnDescriptions) {
             payload.writeStringNul(each.getColumnName());
             payload.writeInt4(each.getTableOID());
             payload.writeInt2(each.getColumnIndex());
