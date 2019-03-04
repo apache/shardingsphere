@@ -60,11 +60,9 @@ public final class PostgreSQLComBindPacketExecutor implements QueryCommandPacket
     
     public PostgreSQLComBindPacketExecutor(final PostgreSQLComBindPacket comBindPacket, final BackendConnection backendConnection) {
         this.comBindPacket = comBindPacket;
-        if (null != comBindPacket.getBinaryStatement() && null != comBindPacket.getBinaryStatement().getSql()) {
-            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(backendConnection.getLogicSchema(), comBindPacket.getBinaryStatement().getSql(), comBindPacket.getParameters(), backendConnection);
-        } else {
-            databaseCommunicationEngine = null;
-        }
+        databaseCommunicationEngine = null == comBindPacket.getSql() ? null
+                : DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
+                        backendConnection.getLogicSchema(), comBindPacket.getSql(), comBindPacket.getParameters(), backendConnection);
     }
     
     @Override

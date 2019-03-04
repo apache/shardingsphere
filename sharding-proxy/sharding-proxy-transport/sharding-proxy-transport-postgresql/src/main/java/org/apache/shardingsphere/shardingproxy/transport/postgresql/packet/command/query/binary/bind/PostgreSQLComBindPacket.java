@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
@@ -41,7 +42,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final String statementId;
     
-    private final PostgreSQLBinaryStatement binaryStatement;
+    private final String sql;
     
     private final List<Object> parameters;
     
@@ -55,12 +56,9 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         for (int i = 0; i < parameterFormatsLength; i++) {
             payload.readInt2();
         }
-        binaryStatement = BinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
-        if (null != binaryStatement && null != binaryStatement.getSql()) {
-            parameters = getParameters(payload);
-        } else {
-            parameters = Collections.emptyList();
-        }
+        PostgreSQLBinaryStatement binaryStatement = BinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
+        sql = null == binaryStatement ? null : binaryStatement.getSql();
+        parameters = null == sql ? Collections.emptyList() : getParameters(payload, binaryStatement.getParameterTypes());
         int resultFormatsLength = payload.readInt2();
         binaryRowData = resultFormatsLength > 0;
         for (int i = 0; i < resultFormatsLength; i++) {
@@ -68,12 +66,12 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         }
     }
     
-    private List<Object> getParameters(final PostgreSQLPacketPayload payload) throws SQLException {
+    private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<PostgreSQLBinaryStatementParameterType> parameterTypes) throws SQLException {
         int parametersCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
             payload.readInt4();
-            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getColumnType());
+            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(parameterIndex).getColumnType());
             result.add(binaryProtocolValue.read(payload));
         }
         return result;
