@@ -63,7 +63,7 @@ public final class SQLStatementFillerEngine {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         ((AbstractSQLStatement) result).setLogicSQL(sql);
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLStatementFiller> filler = parsingRuleRegistry.findSQLStatementFiller(sqlStatementFillerRule.getClass(), each.getClass());
+            Optional<SQLStatementFiller> filler = parsingRuleRegistry.findSQLStatementFiller(each.getClass());
             if (filler.isPresent()) {
                 if (sqlStatementFillerRule instanceof ShardingRule) {
                     filler.get().fill(each, result, sql, (ShardingRule) sqlStatementFillerRule, shardingTableMetaData);

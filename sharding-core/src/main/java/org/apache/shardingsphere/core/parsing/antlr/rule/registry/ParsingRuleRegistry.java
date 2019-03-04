@@ -59,8 +59,6 @@ public final class ParsingRuleRegistry {
     
     private final FillerRuleDefinition fillerRuleDefinition = new FillerRuleDefinition();
     
-    private final Map<Class<? extends SQLStatementFillerRule>, Map<Class<? extends SQLSegment>, SQLStatementFiller>> statementFillerRuleMap = new HashMap<>();
-    
     /**
      * Get singleton instance of parsing rule registry.
      *
@@ -85,7 +83,6 @@ public final class ParsingRuleRegistry {
             }
         }
         fillerRuleDefinition.init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName()));
-        statementFillerRuleMap.put(ShardingRule.class, fillerRuleDefinition.getRules());
     }
     
     private SQLStatementRuleDefinition init(final DatabaseType databaseType) {
@@ -117,20 +114,5 @@ public final class ParsingRuleRegistry {
      */
     public Optional<SQLStatementFiller> findSQLStatementFiller(final Class<? extends SQLSegment> sqlSegmentClass) {
         return Optional.fromNullable(fillerRuleDefinition.getRules().get(sqlSegmentClass));
-    }
-    
-    /**
-     * Find SQL statement filler.
-     *
-     * @param sqlStatementFillerRuleClass SQL filler rule class
-     * @param sqlSegmentClass             SQL segment class
-     * @return SQL statement filler
-     */
-    public Optional<SQLStatementFiller> findSQLStatementFiller(final Class<? extends SQLStatementFillerRule> sqlStatementFillerRuleClass, final Class<? extends SQLSegment> sqlSegmentClass) {
-        Map<Class<? extends SQLSegment>, SQLStatementFiller> sqlStatementFillerMap = statementFillerRuleMap.get(sqlStatementFillerRuleClass);
-        if (null == sqlStatementFillerMap) {
-            return Optional.absent();
-        }
-        return Optional.fromNullable(sqlStatementFillerMap.get(sqlSegmentClass));
     }
 }
