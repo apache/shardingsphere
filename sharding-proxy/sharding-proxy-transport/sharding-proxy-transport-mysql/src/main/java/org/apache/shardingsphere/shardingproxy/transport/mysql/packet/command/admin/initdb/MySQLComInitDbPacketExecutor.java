@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -34,11 +34,15 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class MySQLComInitDbPacketExecutor implements CommandPacketExecutor<MySQLPacket> {
     
+    private final MySQLComInitDbPacket comInitDbPacket;
+    
+    private final BackendConnection backendConnection;
+    
     @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        MySQLComInitDbPacket comInitDbPacket = (MySQLComInitDbPacket) commandPacket;
+    public Collection<MySQLPacket> execute() {
         if (LogicSchemas.getInstance().schemaExists(comInitDbPacket.getSchema())) {
             backendConnection.setCurrentSchema(comInitDbPacket.getSchema());
             return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));

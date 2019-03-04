@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -49,14 +48,16 @@ import java.util.List;
  */
 public final class PostgreSQLComQueryPacketExecutor implements QueryCommandPacketExecutor<PostgreSQLPacket> {
     
-    private TextProtocolBackendHandler textProtocolBackendHandler;
+    private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private boolean isQuery;
+    private volatile boolean isQuery;
+    
+    public PostgreSQLComQueryPacketExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(comQueryPacket.getSql(), backendConnection);
+    }
     
     @Override
-    public Collection<PostgreSQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        PostgreSQLComQueryPacket comQueryPacket = (PostgreSQLComQueryPacket) commandPacket;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(comQueryPacket.getSql(), backendConnection);
+    public Collection<PostgreSQLPacket> execute() {
         if (GlobalContext.getInstance().isCircuitBreak()) {
             return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
         }

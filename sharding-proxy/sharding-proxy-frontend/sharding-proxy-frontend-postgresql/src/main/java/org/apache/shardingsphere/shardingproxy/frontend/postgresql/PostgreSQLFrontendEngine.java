@@ -127,8 +127,8 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     private void writePackets(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload);
         PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(commandPacketType, payload, backendConnection.getConnectionId());
-        CommandPacketExecutor<PostgreSQLPacket> commandPacketExecutor = PostgreSQLCommandPacketExecutorFactory.newInstance(commandPacketType);
-        Collection<PostgreSQLPacket> responsePackets = commandPacketExecutor.execute(backendConnection, commandPacket);
+        CommandPacketExecutor<PostgreSQLPacket> commandPacketExecutor = PostgreSQLCommandPacketExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
+        Collection<PostgreSQLPacket> responsePackets = commandPacketExecutor.execute();
         if (commandPacket instanceof PostgreSQLComSyncPacket) {
             context.write(new PostgreSQLCommandCompletePacket());
             context.writeAndFlush(new PostgreSQLReadyForQueryPacket());

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
@@ -40,10 +39,17 @@ import java.util.Collections;
  */
 public final class PostgreSQLComParsePacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
     
+    private final PostgreSQLComParsePacket comParsePacket;
+    
+    private final LogicSchema logicSchema;
+    
+    public PostgreSQLComParsePacketExecutor(final PostgreSQLComParsePacket comParsePacket, final BackendConnection backendConnection) {
+        this.comParsePacket = comParsePacket;
+        logicSchema = backendConnection.getLogicSchema();
+    }
+    
     @Override
-    public Collection<PostgreSQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        PostgreSQLComParsePacket comParsePacket = (PostgreSQLComParsePacket) commandPacket;
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
+    public Collection<PostgreSQLPacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(DatabaseType.PostgreSQL, comParsePacket.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
         if (!comParsePacket.getSql().isEmpty()) {

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -51,16 +50,18 @@ import java.util.List;
  */
 public final class MySQLComQueryPacketExecutor implements QueryCommandPacketExecutor<MySQLPacket> {
     
-    private TextProtocolBackendHandler textProtocolBackendHandler;
+    private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private boolean isQuery;
+    private volatile boolean isQuery;
     
     private int currentSequenceId;
     
-    @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        MySQLComQueryPacket comQueryPacket = (MySQLComQueryPacket) commandPacket;
+    public MySQLComQueryPacketExecutor(final MySQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(comQueryPacket.getSql(), backendConnection);
+    }
+    
+    @Override
+    public Collection<MySQLPacket> execute() {
         if (GlobalContext.getInstance().isCircuitBreak()) {
             return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }

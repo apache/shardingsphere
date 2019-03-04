@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
@@ -34,7 +32,7 @@ import java.util.Collections;
 public final class MySQLOKCommandPacketExecutor implements CommandPacketExecutor<MySQLPacket> {
     
     @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
+    public Collection<MySQLPacket> execute() {
         return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
     }
 }

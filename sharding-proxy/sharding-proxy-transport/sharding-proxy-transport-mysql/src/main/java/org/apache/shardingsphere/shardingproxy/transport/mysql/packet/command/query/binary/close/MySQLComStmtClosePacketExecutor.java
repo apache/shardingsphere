@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 
@@ -33,7 +31,7 @@ import java.util.Collections;
 public final class MySQLComStmtClosePacketExecutor implements CommandPacketExecutor<MySQLPacket> {
     
     @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
+    public Collection<MySQLPacket> execute() {
         return Collections.emptyList();
     }
 }

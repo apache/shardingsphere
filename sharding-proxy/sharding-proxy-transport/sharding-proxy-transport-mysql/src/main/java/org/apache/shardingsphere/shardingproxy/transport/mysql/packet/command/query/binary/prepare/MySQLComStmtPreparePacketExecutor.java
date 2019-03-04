@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -47,10 +46,20 @@ public final class MySQLComStmtPreparePacketExecutor implements CommandPacketExe
     
     private static final MySQLBinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = MySQLBinaryStatementRegistry.getInstance();
     
+    private final MySQLComStmtPreparePacket comStmtPreparePacket;
+    
+    private final LogicSchema logicSchema;
+    
+    private final String schemaName;
+    
+    public MySQLComStmtPreparePacketExecutor(final MySQLComStmtPreparePacket comStmtPreparePacket, final BackendConnection backendConnection) {
+        this.comStmtPreparePacket = comStmtPreparePacket;
+        logicSchema = backendConnection.getLogicSchema();
+        schemaName = backendConnection.getSchemaName();
+    }
+    
     @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        MySQLComStmtPreparePacket comStmtPreparePacket = (MySQLComStmtPreparePacket) commandPacket;
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
+    public Collection<MySQLPacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
                 LogicSchemas.getInstance().getDatabaseType(), comStmtPreparePacket.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
@@ -62,7 +71,7 @@ public final class MySQLComStmtPreparePacketExecutor implements CommandPacketExe
                 ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(comStmtPreparePacket.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, backendConnection.getSchemaName(),
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {

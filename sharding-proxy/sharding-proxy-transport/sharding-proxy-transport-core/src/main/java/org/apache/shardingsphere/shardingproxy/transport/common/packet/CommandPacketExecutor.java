@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 
 import java.sql.SQLException;
@@ -36,10 +34,8 @@ public interface CommandPacketExecutor<T extends DatabasePacket> {
     /**
      * Execute command.
      *
-     * @param backendConnection backend connection
-     * @param commandPacket command packet
      * @return database packets to be sent
      * @throws SQLException SQL exception
      */
-    Collection<T> execute(BackendConnection backendConnection, CommandPacket commandPacket) throws SQLException;
+    Collection<T> execute() throws SQLException;
 }
