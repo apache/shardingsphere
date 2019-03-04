@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 import java.sql.SQLException;
 
 /**
- * PostgreSQL command packet factory.
+ * Command packet factory for PostgreSQL.
  *
  * @author zhangyonglun
  */
@@ -41,17 +41,17 @@ import java.sql.SQLException;
 public final class PostgreSQLCommandPacketFactory {
     
     /**
-     * Create new instance of PostgreSQL command packet.
+     * Create new instance of command packet.
      *
-     * @param payload PostgreSQL packet payload
+     * @param commandPacketType command packet type for PostgreSQL
+     * @param payload packet payload for PostgreSQL
      * @param backendConnection backend connection
-     * @return command packet
+     * @return command packet for PostgreSQL
      * @throws SQLException SQL exception
      */
-    public static PostgreSQLCommandPacket newInstance(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        int commandPacketTypeValue = payload.readInt1();
-        PostgreSQLCommandPacketType type = PostgreSQLCommandPacketType.valueOf(commandPacketTypeValue);
-        switch (type) {
+    public static PostgreSQLCommandPacket newInstance(
+            final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+        switch (commandPacketType) {
             case QUERY:
                 return new PostgreSQLComQueryPacket(payload, backendConnection);
             case PARSE:
@@ -67,7 +67,7 @@ public final class PostgreSQLCommandPacketFactory {
             case TERMINATE:
                 return new PostgreSQLComTerminationPacket(payload);
             default:
-                return new PostgreSQLUnsupportedCommandPacket(type.getValue());
+                return new PostgreSQLUnsupportedCommandPacket(commandPacketType.getValue());
         }
     }
 }

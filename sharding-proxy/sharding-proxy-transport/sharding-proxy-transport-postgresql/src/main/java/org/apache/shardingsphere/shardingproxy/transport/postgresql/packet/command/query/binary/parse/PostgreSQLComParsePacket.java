@@ -52,12 +52,16 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.PARSE.getValue();
     
+    @Getter
     private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
     
+    @Getter
     private String statementId;
     
+    @Getter
     private final String sql;
     
+    @Getter
     private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes = new ArrayList<>(64);
     
     private SQLParsingEngine sqlParsingEngine;

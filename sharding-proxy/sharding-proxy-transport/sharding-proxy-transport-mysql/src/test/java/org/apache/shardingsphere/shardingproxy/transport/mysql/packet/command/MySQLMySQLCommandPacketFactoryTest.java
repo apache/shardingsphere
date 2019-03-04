@@ -128,7 +128,7 @@ public final class MySQLMySQLCommandPacketFactoryTest {
         when(payload.readInt1()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue());
         when(payload.readInt4()).thenReturn(1);
         MySQLBinaryStatementRegistry.getInstance().register("SELECT * FROM t_order", 1);
-        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_PREPARE, payload, backendConnection), instanceOf(MySQLQueryComStmtExecutePacket.class));
+        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, payload, backendConnection), instanceOf(MySQLQueryComStmtExecutePacket.class));
     }
     
     @Test

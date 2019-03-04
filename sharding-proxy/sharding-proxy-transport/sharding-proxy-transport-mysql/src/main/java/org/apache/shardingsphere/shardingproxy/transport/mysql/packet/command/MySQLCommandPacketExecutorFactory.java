@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacketExecutor;
 
 /**
- * MySQL command packet executor factory.
+ * Command packet executor factory for MySQL.
  *
  * @author zhangliang
  */
@@ -41,7 +41,7 @@ public final class MySQLCommandPacketExecutorFactory {
      * Create new instance of command packet executor.
      *
      * @param commandPacketType command packet type for MySQL
-     * @return Command packet executor
+     * @return command packet executor
      */
     public static CommandPacketExecutor<MySQLPacket> newInstance(final MySQLCommandPacketType commandPacketType) {
         switch (commandPacketType) {

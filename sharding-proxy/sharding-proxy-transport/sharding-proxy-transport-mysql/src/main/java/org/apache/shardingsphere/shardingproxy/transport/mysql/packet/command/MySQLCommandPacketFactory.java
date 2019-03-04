@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
 import java.sql.SQLException;
 
 /**
- * MySQL command packet factory.
+ * Command packet factory for MySQL.
  *
  * @author zhangliang
  * @author wangkai

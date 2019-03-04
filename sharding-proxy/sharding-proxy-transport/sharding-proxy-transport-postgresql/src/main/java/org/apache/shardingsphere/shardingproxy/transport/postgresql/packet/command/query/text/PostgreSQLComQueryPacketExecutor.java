@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -29,14 +27,13 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -45,36 +42,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * PostgreSQL command query packet.
+ * PostgreSQL command query packet executor.
  *
  * @author zhangyonglun
+ * @author zhangliang
  */
-@Slf4j
-public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPacket {
+public final class PostgreSQLComQueryPacketExecutor implements QueryCommandPacketExecutor<PostgreSQLPacket> {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.QUERY.getValue();
-    
-    @Getter
-    private final String sql;
-    
-    private final TextProtocolBackendHandler textProtocolBackendHandler;
+    private TextProtocolBackendHandler textProtocolBackendHandler;
     
     private boolean isQuery;
     
-    public PostgreSQLComQueryPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
-        payload.readInt4();
-        sql = payload.readStringNul();
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
-    }
-    
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public Collection<PostgreSQLPacket> execute() {
-        log.debug("PostgreSQLComQueryPacket received for Sharding-Proxy: {}", sql);
+    public Collection<PostgreSQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
+        PostgreSQLComQueryPacket comQueryPacket = (PostgreSQLComQueryPacket) commandPacket;
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(comQueryPacket.getSql(), backendConnection);
         if (GlobalContext.getInstance().isCircuitBreak()) {
             return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
         }
