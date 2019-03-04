@@ -1398,7 +1398,7 @@
                   
                     
                     
-<option id="en" value="/document/legacy/3.x/en/features/sharding/principle/rewrite/">English</option>
+<option id="en" value="/document/legacy/3.x/document/en/features/sharding/principle/rewrite/">English</option>
                     
                   
               
@@ -1412,7 +1412,7 @@
                   
                     
                     
-<option id="cn" value="/document/legacy/3.x/cn/features/sharding/principle/rewrite/" selected>Chinese</option>
+<option id="cn" value="/document/legacy/3.x/document/cn/features/sharding/principle/rewrite/" selected>Chinese</option>
                     
                   
               
@@ -1699,7 +1699,7 @@
 
 <p>下图展示了不进行SQL的改写的分页执行结果。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/pagination_without_rewrite.png" alt="不改写SQL的分页执行结果" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/pagination_without_rewrite.png" alt="不改写SQL的分页执行结果" /></p>
 
 <p>通过图中所示，想要取得两个表中共同的按照分数排序的第2条和第3条数据，应该是<code>95</code>和<code>90</code>。
 由于执行的SQL只能从每个表中获取第2条和第3条数据，即从t_score_0表中获取的是<code>90</code>和<code>80</code>；从t_score_0表中获取的是<code>85</code>和<code>75</code>。
@@ -1708,7 +1708,7 @@
 <p>正确的做法是将分页条件改写为<code>LIMIT 0, 3</code>，取出所有前两页数据，再结合排序条件计算出正确的数据。
 下图展示了进行SQL改写之后的分页执行结果。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/pagination_with_rewrite.png" alt="改写SQL的分页执行结果" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/pagination_with_rewrite.png" alt="改写SQL的分页执行结果" /></p>
 
 <p>越获取偏移量位置靠后数据，使用LIMIT分页方式的效率就越低。
 有很多方法可以避免使用LIMIT进行分页。比如构建行记录数量与行偏移量的二级索引，或使用上次分页数据结尾ID作为下次查询条件的分页方式等。</p>
@@ -1767,7 +1767,7 @@ SELECT * FROM t_order_1 WHERE order_id IN (1, 2, 3);
 
 <p>改写引擎的整体结构划分如下图所示。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/rewrite_architecture_cn.png" alt="改写引擎结构" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/rewrite_architecture_cn.png" alt="改写引擎结构" /></p>
 
 
 <footer class=" footline" >

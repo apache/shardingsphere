@@ -1398,7 +1398,7 @@
                   
                     
                     
-<option id="en" value="/document/legacy/3.x/en/features/orchestration/apm/">English</option>
+<option id="en" value="/document/legacy/3.x/document/en/features/orchestration/apm/">English</option>
                     
                   
               
@@ -1412,7 +1412,7 @@
                   
                     
                     
-<option id="cn" value="/document/legacy/3.x/cn/features/orchestration/apm/" selected>Chinese</option>
+<option id="cn" value="/document/legacy/3.x/document/cn/features/orchestration/apm/" selected>Chinese</option>
                     
                   
               
@@ -1587,37 +1587,37 @@
 
 <h3 id="拓扑图展示">拓扑图展示</h3>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_topology.png" alt="拓扑图" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_topology.png" alt="拓扑图" /></p>
 
 <p>从图中看，用户访问18次Sharding-Proxy应用，每次每个数据库访问了两次。这是由于每次访问涉及到每个库中的两个分表，所以每次访问了四张表。</p>
 
 <h3 id="跟踪数据展示">跟踪数据展示</h3>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_trace.png" alt="跟踪图" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_trace.png" alt="跟踪图" /></p>
 
 <p>从跟踪图中可以能够看到SQL解析和执行的情况。</p>
 
 <p><code>/Sharding-Sphere/parseSQL/</code> : 表示本次SQL的解析性能。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_parse.png" alt="解析节点" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_parse.png" alt="解析节点" /></p>
 
 <p><code>/Sharding-Sphere/executeSQL/</code> : 表示具体执行的实际SQL的性能。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_executeSQL.png" alt="实际访问节点" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_executeSQL.png" alt="实际访问节点" /></p>
 
 <h3 id="异常情况展示">异常情况展示</h3>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_trace_err.png" alt="异常跟踪图" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_trace_err.png" alt="异常跟踪图" /></p>
 
 <p>从跟踪图中可以能够看到发生异常的节点。</p>
 
 <p><code>/Sharding-Sphere/executeSQL/</code> : 表示执行SQL异常的结果。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_executeSQL_Tags_err.png" alt="异常节点" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_executeSQL_Tags_err.png" alt="异常节点" /></p>
 
 <p><code>/Sharding-Sphere/executeSQL/</code> : 表示执行SQL异常的日志。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_executeSQL_Logs_err.png" alt="异常节点日志" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_executeSQL_Logs_err.png" alt="异常节点日志" /></p>
 
 
 <footer class=" footline" >

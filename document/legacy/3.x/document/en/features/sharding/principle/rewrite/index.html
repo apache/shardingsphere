@@ -1398,7 +1398,7 @@
                   
                     
                     
-<option id="en" value="/document/legacy/3.x/en/features/sharding/principle/rewrite/" selected>English</option>
+<option id="en" value="/document/legacy/3.x/document/en/features/sharding/principle/rewrite/" selected>English</option>
                     
                   
               
@@ -1412,7 +1412,7 @@
                   
                     
                     
-<option id="cn" value="/document/legacy/3.x/cn/features/sharding/principle/rewrite/">Chinese</option>
+<option id="cn" value="/document/legacy/3.x/document/cn/features/sharding/principle/rewrite/">Chinese</option>
                     
                   
               
@@ -1709,7 +1709,7 @@ and take out the first 10 pieces of data according to sorting conditions after m
 
 <p>The following picture shows the execution of pagination results without SQL rewrite.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/pagination_without_rewrite.png" alt="Pagination without rewrite" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/pagination_without_rewrite.png" alt="Pagination without rewrite" /></p>
 
 <p>As shown in the picture, if you want to acquire the second and the third piece of data ordered by score common in both tables, and they are supposed to be <code>95</code> and <code>90</code>.
 Since the executed SQL can only acquire the second and the third piece of data from each table, i.e., <code>90</code> and <code>80</code> from t_score_0, <code>85</code> and <code>75</code> from t_score_1.
@@ -1718,7 +1718,7 @@ When merging results, it can only merge from <code>90</code>, <code>80</code>, <
 <p>The right way is to rewrite pagination conditions as <code>LIMIT 0, 3</code>, take out all the data from the first two pages and combine sorting conditions to calculate the right data.
 The following picture shows the execution of pagination results after SQL rewrite.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/pagination_with_rewrite.png" alt="Pagination with rewrite" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/pagination_with_rewrite.png" alt="Pagination with rewrite" /></p>
 
 <p>The latter the offset position is, the lower the efficiency of using LIMIT pagination will be.
 There are many ways to avoid using LIMIT as pagination method, such as constructing a secondary index to record line record number and line offset amount,
@@ -1786,7 +1786,7 @@ In the result merging part, stream merging and memory merging will be explained 
 
 <p>The overall structure division of rewrite engine is shown in the following picture.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/rewrite_architecture_en.png" alt="Rewrite Engine" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/rewrite_architecture_en.png" alt="Rewrite Engine" /></p>
 
 
 <footer class=" footline" >

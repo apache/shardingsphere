@@ -1398,7 +1398,7 @@
                   
                     
                     
-<option id="en" value="/document/legacy/3.x/en/features/sharding/principle/merge/" selected>English</option>
+<option id="en" value="/document/legacy/3.x/document/en/features/sharding/principle/merge/" selected>English</option>
                     
                   
               
@@ -1412,7 +1412,7 @@
                   
                     
                     
-<option id="cn" value="/document/legacy/3.x/cn/features/sharding/principle/merge/">Chinese</option>
+<option id="cn" value="/document/legacy/3.x/document/cn/features/sharding/principle/merge/">Chinese</option>
                     
                   
               
@@ -1564,7 +1564,7 @@ Data result sets returned by 3 diagrams are shown in the example, and each one o
 When ordering the data value currently pointed by cursors in these 3 result sets and putting them into the priority queue, the data value of t_score_0 is the biggest, followed by that of t_score_2 and t_score_1 in sequence.
 Thus, the priority queue is ordered by the sequence of t_score_0, t_score_2 and t_score_1.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/order_by_merge_1.png" alt="Order by merger examole 1" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/order_by_merge_1.png" alt="Order by merger examole 1" /></p>
 
 <p>This diagram illustrates how the order-by merger works when using next invocation.
 We can see from the diagram that when using next invocation, t_score_0 at the first of the queue will be popped out. After returning the data value currently pointed by the cursor, i.e., 100, to the client end, the cursor will be moved down and t_score_0 will be put back to the queue.
@@ -1575,7 +1575,7 @@ According to the current value, t_score_0 is at the last of the queue, and in th
 Its value pointed by the cursor of the data result set is returned to the client end, with its cursor moved down to rejoin the queue, and the following will be in the same way.
 If there is no data in the result set, it will not rejoin the queue.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/order_by_merge_2.png" alt="Order by merger examole 2" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/order_by_merge_2.png" alt="Order by merger examole 2" /></p>
 
 <p>It can be seen that, under the circumstance that single data result set is ordered while multiple data result set is disordered, ShardingSphere does not need to upload all the data to the memory to order.
 By the order-by merger method, each next only acquires one right piece of data each time, so the memory consumption can be saved to a large extent.</p>
@@ -1600,11 +1600,11 @@ The SQL used to acquire each examinee’s total score is as follow:</p>
 <p>When order-by item and group-by item are totally consistent, the data obtained are continuous.
 For the data needed to group are all stored in the data value currently pointed by cursors of each data result set, stream group-by merger can be used, as illustrated by the diagram:</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/group_by_merge_1_v3.png" alt="Group by merger examole 1" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/group_by_merge_1_v3.png" alt="Group by merger examole 1" /></p>
 
 <p>The merging logic will be similar as that of order-by merger. The following picture shows how stream group-by merger works when using next invocation.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/group_by_merge_2_v2.png" alt="Group by merger examole 2" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/group_by_merge_2_v2.png" alt="Group by merger examole 2" /></p>
 
 <p>We can see from the picture, in the first next invocation, t_score_java in the first position, along with the data having the grouping value of “Jetty” in other result sets, will be popped out of the queue.
 After acquiring all the students’ scores with the name of “Jetty”, the accumulation operation will be proceeded.
@@ -1671,7 +1671,7 @@ For example:</p>
 
 <p>The overall structure division of merger engine is shown in the following diagram:</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/merge_architecture_en.png" alt="Merge Architecture" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/merge_architecture_en.png" alt="Merge Architecture" /></p>
 
 
 <footer class=" footline" >
