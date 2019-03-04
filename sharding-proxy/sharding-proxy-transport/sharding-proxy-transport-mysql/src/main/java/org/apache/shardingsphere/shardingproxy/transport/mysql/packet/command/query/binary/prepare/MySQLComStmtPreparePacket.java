@@ -19,12 +19,8 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * MySQL COM_STMT_PREPARE command packet.
@@ -46,12 +42,6 @@ public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeStringEOF(sql);
-    }
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        log.debug("COM_STMT_PREPARE received for Sharding-Proxy: {}", sql);
-        return new LinkedList<>();
     }
     
     @Override

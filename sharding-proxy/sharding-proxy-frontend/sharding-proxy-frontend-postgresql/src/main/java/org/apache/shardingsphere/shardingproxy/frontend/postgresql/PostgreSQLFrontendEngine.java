@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketExecutorFactory;
@@ -82,7 +83,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
-        BinaryStatementRegistry.getInstance().register(backendConnection);
+        BinaryStatementRegistry.getInstance().register(connectionId);
     }
     
     @Override
@@ -126,7 +127,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     private void writePackets(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload);
-        PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(commandPacketType, payload, backendConnection);
+        PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(commandPacketType, payload, backendConnection.getConnectionId());
         CommandPacketExecutor<PostgreSQLPacket> commandPacketExecutor = PostgreSQLCommandPacketExecutorFactory.newInstance(commandPacketType);
         Collection<PostgreSQLPacket> responsePackets = commandPacketExecutor.execute(backendConnection, commandPacket);
         if (commandPacket instanceof PostgreSQLComSyncPacket) {
@@ -141,7 +142,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             context.write(each);
         }
         if (commandPacket instanceof PostgreSQLQueryCommandPacket) {
-            writeMoreResults(context, backendConnection, (PostgreSQLQueryCommandPacket) commandPacket);
+            writeMoreResults(context, backendConnection, (QueryCommandPacketExecutor<PostgreSQLPacket>) commandPacketExecutor);
         }
         if (commandPacket instanceof PostgreSQLComQueryPacket) {
             context.write(new PostgreSQLCommandCompletePacket());
@@ -149,19 +150,20 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
         }
     }
     
-    private void writeMoreResults(final ChannelHandlerContext context, final BackendConnection backendConnection, final PostgreSQLQueryCommandPacket queryCommandPacket) throws SQLException {
-        if (queryCommandPacket.isQuery() && !context.channel().isActive()) {
+    private void writeMoreResults(
+            final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandPacketExecutor<PostgreSQLPacket> queryCommandPacketExecutor) throws SQLException {
+        if (queryCommandPacketExecutor.isQuery() && !context.channel().isActive()) {
             return;
         }
         int count = 0;
         int proxyFrontendFlushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
-        while (queryCommandPacket.next()) {
+        while (queryCommandPacketExecutor.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwait();
             }
-            DatabasePacket resultValue = queryCommandPacket.getQueryData();
+            DatabasePacket resultValue = queryCommandPacketExecutor.getQueryData();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
                 context.flush();
@@ -172,6 +174,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Override
     public void release(final BackendConnection backendConnection) {
-        BinaryStatementRegistry.getInstance().unregister(backendConnection);
+        BinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
     }
 }

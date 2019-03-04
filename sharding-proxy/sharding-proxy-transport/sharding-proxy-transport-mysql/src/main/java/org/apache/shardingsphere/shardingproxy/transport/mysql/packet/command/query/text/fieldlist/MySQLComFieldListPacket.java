@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * MySQL COM_FIELD_LIST command packet.
@@ -52,11 +48,6 @@ public final class MySQLComFieldListPacket implements MySQLCommandPacket {
         payload.writeInt1(MySQLCommandPacketType.COM_FIELD_LIST.getValue());
         payload.writeStringNul(table);
         payload.writeStringEOF(fieldWildcard);
-    }
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.emptyList();
     }
     
     @Override

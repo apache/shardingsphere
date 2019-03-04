@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -34,7 +33,7 @@ public final class BinaryStatementRegistry {
     
     private static final BinaryStatementRegistry INSTANCE = new BinaryStatementRegistry();
     
-    private final ConcurrentMap<BackendConnection, ConnectionScopeBinaryStatementRegistry> registries = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Integer, ConnectionScopeBinaryStatementRegistry> registries = new ConcurrentHashMap<>();
     
     /**
      * Get instance of binary statement registry.
@@ -48,28 +47,28 @@ public final class BinaryStatementRegistry {
     /**
      * Register.
      *
-     * @param backendConnection backend connection
+     * @param connectionId connection id
      */
-    public void register(final BackendConnection backendConnection) {
-        registries.put(backendConnection, new ConnectionScopeBinaryStatementRegistry());
+    public void register(final int connectionId) {
+        registries.put(connectionId, new ConnectionScopeBinaryStatementRegistry());
     }
     
     /**
      * Unregister.
      *
-     * @param backendConnection backend connection
+     * @param connectionId connection id
      */
-    public void unregister(final BackendConnection backendConnection) {
-        registries.remove(backendConnection);
+    public void unregister(final int connectionId) {
+        registries.remove(connectionId);
     }
     
     /**
      * Get connection scope binary statement registry.
      *
-     * @param backendConnection backend connection
+     * @param connectionId connection id
      * @return connection scope binary statement registry
      */
-    public ConnectionScopeBinaryStatementRegistry get(final BackendConnection backendConnection) {
-        return registries.get(backendConnection);
+    public ConnectionScopeBinaryStatementRegistry get(final int connectionId) {
+        return registries.get(connectionId);
     }
 }

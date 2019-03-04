@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * PostgreSQL command query packet.
@@ -43,26 +39,6 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public boolean isQuery() {
-        return true;
-    }
-    
-    @Override
-    public boolean next() {
-        return true;
-    }
-    
-    @Override
-    public PostgreSQLPacket getQueryData() {
-        return null;
     }
     
     @Override

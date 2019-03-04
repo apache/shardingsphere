@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
@@ -30,8 +28,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,7 +46,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     private final boolean binaryRowData;
     
-    public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+    public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) throws SQLException {
         payload.readInt4();
         payload.readStringNul();
         statementId = payload.readStringNul();
@@ -58,7 +54,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         for (int i = 0; i < parameterFormatsLength; i++) {
             payload.readInt2();
         }
-        binaryStatement = BinaryStatementRegistry.getInstance().get(backendConnection).getBinaryStatement(statementId);
+        binaryStatement = BinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         if (null != binaryStatement && null != binaryStatement.getSql()) {
             parameters = getParameters(payload);
         }
@@ -82,26 +78,6 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public boolean isQuery() {
-        return true;
-    }
-    
-    @Override
-    public boolean next() {
-        return true;
-    }
-    
-    @Override
-    public PostgreSQLPacket getQueryData() {
-        return null;
     }
     
     @Override

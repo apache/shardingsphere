@@ -19,13 +19,9 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * MySQL COM_QUERY command packet.
@@ -50,26 +46,6 @@ public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
         payload.writeStringEOF(sql);
-    }
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public boolean isQuery() {
-        return false;
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public MySQLPacket getQueryData() {
-        return null;
     }
     
     @Override

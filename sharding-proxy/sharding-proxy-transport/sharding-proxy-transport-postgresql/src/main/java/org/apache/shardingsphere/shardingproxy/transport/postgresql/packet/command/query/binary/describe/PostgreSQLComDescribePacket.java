@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.describe;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * PostgreSQL command describe packet.
@@ -42,11 +38,6 @@ public final class PostgreSQLComDescribePacket implements PostgreSQLCommandPacke
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
     }
     
     @Override

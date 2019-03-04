@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * MySQL COM_INIT_DB command packet.
@@ -45,11 +41,6 @@ public final class MySQLComInitDbPacket implements MySQLCommandPacket {
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(MySQLCommandPacketType.COM_INIT_DB.getValue());
         payload.writeStringEOF(schema);
-    }
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.emptyList();
     }
     
     @Override

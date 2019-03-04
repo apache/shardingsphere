@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.parse;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
@@ -29,8 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,8 +45,8 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     
     private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes = new ArrayList<>(64);
     
-    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
-        binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection);
+    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final int connectionId) {
+        binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(connectionId);
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
@@ -72,11 +68,6 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
     }
     
     @Override

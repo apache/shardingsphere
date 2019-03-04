@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ping;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * MySQL COM_PING command packet.
@@ -35,11 +31,6 @@ import java.util.Collections;
  */
 @Getter
 public final class MySQLComPingPacket implements MySQLCommandPacket {
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.emptyList();
-    }
     
     @Override
     public void write(final MySQLPacketPayload payload) {

@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLNewParametersBoundFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementParameterType;
@@ -32,8 +31,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -116,26 +113,6 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
             payload.writeStringLenenc(null == each ? "" : each.toString());
             count++;
         }
-    }
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public boolean isQuery() {
-        return false;
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public MySQLPacket getQueryData() {
-        return null;
     }
     
     @Override

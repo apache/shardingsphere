@@ -17,31 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * MySQL unsupported command packet.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class MySQLUnsupportedCommandPacket implements MySQLCommandPacket {
-    
-    private final MySQLCommandPacketType type;
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, type));
-    }
     
     @Override
     public void write(final MySQLPacketPayload payload) {

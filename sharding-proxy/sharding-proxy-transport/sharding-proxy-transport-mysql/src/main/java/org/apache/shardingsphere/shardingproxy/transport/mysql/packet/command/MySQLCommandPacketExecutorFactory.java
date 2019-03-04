@@ -62,7 +62,7 @@ public final class MySQLCommandPacketExecutorFactory {
             case COM_PING:
                 return new MySQLOKCommandPacketExecutor();
             default:
-                return new MySQLUnsupportedCommandPacketExecutor();
+                return new MySQLUnsupportedCommandPacketExecutor(commandPacketType);
         }
     }
 }

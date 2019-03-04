@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.api.packet;
 
-import java.sql.SQLException;
-
 /**
  * Query command packet.
  *
@@ -27,27 +25,4 @@ import java.sql.SQLException;
  * @param <T> type of database packet
  */
 public interface QueryCommandPacket<T extends DatabasePacket> extends CommandPacket<T> {
-    
-    /**
-     * Judge is query SQL or not.
-     *
-     * @return is query SQL or not
-     */
-    boolean isQuery();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return database packet of query data
-     * @throws SQLException SQL exception
-     */
-    T getQueryData() throws SQLException;
 }

@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync;
 
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * PostgreSQL command sync packet.
@@ -38,11 +34,6 @@ public final class PostgreSQLComSyncPacket implements PostgreSQLCommandPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
     }
     
     @Override
