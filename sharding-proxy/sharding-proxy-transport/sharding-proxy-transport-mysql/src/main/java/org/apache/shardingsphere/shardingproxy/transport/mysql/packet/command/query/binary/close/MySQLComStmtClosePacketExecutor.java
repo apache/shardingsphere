@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacke
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -33,7 +34,8 @@ import java.util.Collections;
 public final class MySQLComStmtClosePacketExecutor implements CommandPacketExecutor<MySQLPacket> {
     
     @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
+    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) throws SQLException {
+        commandPacket.execute();
         return Collections.emptyList();
     }
 }

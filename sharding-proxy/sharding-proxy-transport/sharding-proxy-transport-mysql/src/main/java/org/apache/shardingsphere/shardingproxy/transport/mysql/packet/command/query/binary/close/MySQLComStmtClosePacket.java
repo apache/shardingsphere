@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
@@ -39,6 +40,7 @@ public final class MySQLComStmtClosePacket implements MySQLCommandPacket {
     
     @Override
     public void write(final MySQLPacketPayload payload) {
+        MySQLBinaryStatementRegistry.getInstance().remove(statementId);
     }
     
     @Override
