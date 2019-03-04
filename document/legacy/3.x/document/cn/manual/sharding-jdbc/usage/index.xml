@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>使用手册 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/</link>
+    <description>Recent content in 使用手册 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>数据分片</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/sharding/</guid>
+      <description>不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
+// 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置第一个数据源 BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds0&amp;quot;); dataSource1.setUsername(&amp;quot;root&amp;quot;); dataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds0&amp;quot;, dataSource1); // 配置第二个数据源 BasicDataSource dataSource2 = new BasicDataSource(); dataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds1&amp;quot;); dataSource2.setUsername(&amp;quot;root&amp;quot;); dataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds1&amp;quot;, dataSource2); // 配置Order表规则 TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration(); orderTableRuleConfig.setLogicTable(&amp;quot;t_order&amp;quot;); orderTableRuleConfig.setActualDataNodes(&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); // 配置分库 + 分表策略 orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;order_id&amp;quot;, &amp;quot;t_order${order_id % 2}&amp;quot;)); // 配置分片规则 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration(); shardingRuleConfig.</description>
+    </item>
+    
+    <item>
+      <title>读写分离</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/</guid>
+      <description>不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置主库 BasicDataSource masterDataSource = new BasicDataSource(); masterDataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); masterDataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_master&amp;quot;); masterDataSource.setUsername(&amp;quot;root&amp;quot;); masterDataSource.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_master&amp;quot;, masterDataSource); // 配置第一个从库 BasicDataSource slaveDataSource1 = new BasicDataSource(); slaveDataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave0&amp;quot;); slaveDataSource1.setUsername(&amp;quot;root&amp;quot;); slaveDataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave0&amp;quot;, slaveDataSource1); // 配置第二个从库 BasicDataSource slaveDataSource2 = new BasicDataSource(); slaveDataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave1&amp;quot;); slaveDataSource2.setUsername(&amp;quot;root&amp;quot;); slaveDataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave1&amp;quot;, slaveDataSource2); // 配置读写分离规则 MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(&amp;quot;ds_master_slave&amp;quot;, &amp;quot;ds_master&amp;quot;, Arrays.asList(&amp;quot;ds_slave0&amp;quot;, &amp;quot;ds_slave1&amp;quot;)); // 获取数据源对象 DataSource dataSource = MasterSlaveDataSourceFactory.</description>
+    </item>
+    
+    <item>
+      <title>强制路由</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/hint/</guid>
+      <description>简介 ShardingSphere使用ThreadLocal管理分片键值进行Hint强制路由。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。 Hint方式主要使用场景：
+1.分片字段不存在SQL中、数据库表结构中，而存在于外部业务逻辑。因此，通过Hint实现外部指定分片结果进行数据操作。
+2.强制在主库进行某些数据操作。
+基于暗示(Hint)的数据分片 配置 使用hint进行强制数据分片，需要使用HintManager搭配分片策略配置共同使用。若DatabaseShardingStrategy配置了Hint分片算法，则可使用HintManager进行分库路由结果的注入。同理，若TableShardingStrategy配置了Hint分片算法，则同样可 使用HintManager进行分表路由结果的注入。所以使用Hint之前，需要配置Hint分片算法。
+参考代码如下：
+shardingRule: tables: t_order: actualDataNodes: demo_ds_${0..1}.t_order_${0..1} databaseStrategy: hint: algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm tableStrategy: hint: algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: demo_ds_${user_id % 2} defaultTableStrategy: none: defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator props: sql.show: true  实例化 HintManager hintManager = HintManager.getInstance();  添加分片键值  使用hintManager.addDatabaseShardingValue来添加数据源分片键值。 使用hintManager.addTableShardingValue来添加表分片键值。   分库不分表情况下，强制路由至某一个分库时，可使用hintManager.setDatabaseShardingValue方式添加分片。通过此方式添加分片键值后，将跳过SQL解析和改写阶段，从而提高整体执行效率。
+ 清除分片键值 分片键值保存在ThreadLocal中，所以需要在操作结束时调用hintManager.close()来清除ThreadLocal中的内容。
+hintManager实现了AutoCloseable接口，可推荐使用try with resource自动关闭。
+完整代码示例 // Sharding database and table with using hintManager. String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try (HintManager hintManager = HintManager.</description>
+    </item>
+    
+    <item>
+      <title>数据治理</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/orchestration/</guid>
+      <description>使用数据治理功能需要指定一个注册中心。配置将全部存入注册中心，可以在每次启动时使用本地配置覆盖注册中心配置，也可以只通过注册中心读取配置。
+不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--若使用zookeeper, 请加入下面Maven坐标--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--若使用etcd, 请下面Maven坐标--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-etcd&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 省略配置dataSourceMap以及shardingRuleConfig // ... // 配置注册中心 RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration(); regConfig.setServerLists(&amp;quot;localhost:2181&amp;quot;); regConfig.setNamespace(&amp;quot;sharding-sphere-orchestration&amp;quot;); // 配置数据治理 OrchestrationConfiguration orchConfig = new OrchestrationConfiguration(&amp;quot;orchestration-sharding-data-source&amp;quot;, regConfig, false); // 获取数据源对象 DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);  基于Yaml的规则配置 或通过Yaml方式配置，与以上配置等价：
+orchestration: name: orchestration-sharding-data-source overwrite: false registry: serverLists: localhost:2181 namespace: sharding-sphere-orchestration  DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.</description>
+    </item>
+    
+    <item>
+      <title>分布式事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/transaction/</guid>
+      <description>引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
+连接池配置 ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。 其它连接池需要用户实现DataSourceMapConverter的SPI接口进行扩展，可以参考io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper的实现。 若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
+   属性名称 默认值     connectionTimeoutMilliseconds 30 * 1000   idleTimeoutMilliseconds 60 * 1000   maintenanceIntervalMilliseconds 30 * 1000   maxLifetimeMilliseconds 0 (无限制)   maxPoolSize 50   minPoolSize 1    事务类型切换 ShardingSphere的事务类型存放在TransactionTypeHolder的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。
+注意：数据库连接创建之后，事务类型将无法更改。
+API方式 TransactionTypeHolder.set(TransactionType.LOCAL);  或
+TransactionTypeHolder.set(TransactionType.XA);  SpringBootStarter使用方式 引入Maven依赖：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring-boot-starter&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  SpringBoot使用方式 引入Maven依赖：</description>
+    </item>
+    
+  </channel>
+</rss>

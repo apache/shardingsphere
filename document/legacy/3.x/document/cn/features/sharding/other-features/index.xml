@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>其他功能 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/</link>
+    <description>Recent content in 其他功能 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>行表达式</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/inline-expression/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/inline-expression/</guid>
+      <description>实现动机 配置的简化与一体化是行表达式所希望解决的两个主要问题。
+在繁琐的数据分片规则配置中，随着数据节点的增多，大量的重复配置使得配置本身不易被维护。通过行表达式可以有效的简化数据节点配置工作量。
+对于常见的分片算法，使用Java代码实现并不有助于配置的统一管理。通过行表达式书写分片算法，可以有效的将规则配置一同存放，更加易于浏览与存储。
+语法说明 行表达式的使用非常直观，只需要在配置中使用${ expression }或$-&amp;gt;{ expression }标识行表达式即可。 目前支持数据节点和分片算法这两个部分的配置。行表达式的内容使用的是Groovy的语法，Groovy能够支持的所有操作，行表达式均能够支持。例如：
+${begin..end}表示范围区间
+${[unit1, unit2, unit_x]}表示枚举值
+行表达式中如果出现连续多个${ expression }或$-&amp;gt;{ expression }表达式，整个表达式最终的结果将会根据每个子表达式的结果进行笛卡尔组合。
+例如，以下行表达式：
+${[&#39;online&#39;, &#39;offline&#39;]}_table${1..3}  最终会解析为：
+online_table1, online_table2, online_table3, offline_table1, offline_table2, offline_table3  配置数据节点 对于均匀分布的数据节点，如果数据结构如下：
+db0 ├── t_order0 └── t_order1 db1 ├── t_order0 └── t_order1  用行表达式可以简化为：
+db${0..1}.t_order${0..1}  或者
+db$-&amp;gt;{0..1}.t_order$-&amp;gt;{0..1}  对于自定义的数据节点，如果数据结构如下：
+db0 ├── t_order0 └── t_order1 db1 ├── t_order2 ├── t_order3 └── t_order4  用行表达式可以简化为：
+db0.t_order${0..1},db1.t_order${2..4}  或者</description>
+    </item>
+    
+    <item>
+      <title>分布式主键</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/key-generator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/key-generator/</guid>
+      <description>实现动机 传统数据库软件开发中，主键自动生成技术是基本需求。而各个数据库对于该需求也提供了相应的支持，比如MySQL的自增键，Oracle的自增序列等。 数据分片后，不同数据节点生成全局唯一主键是非常棘手的问题。同一个逻辑表内的不同实际表之间的自增键由于无法互相感知而产生重复主键。 虽然可通过约束自增主键初始值和步长的方式避免碰撞，但需引入额外的运维规则，使解决方案缺乏完整性和可扩展性。
+目前有许多第三方解决方案可以完美解决这个问题，如UUID等依靠特定算法自生成不重复键，或者通过引入主键生成服务等。 但也正因为这种多样性导致了ShardingSphere如果强依赖于任何一种方案就会限制其自身的发展。
+基于以上的原因，ShardingSphere最终采用以接口来实现对于生成主键的访问，而将底层具体的主键生成实现分离出来。
+默认分布式主键生成器 ShardingSphere提供灵活的配置分布式主键生成策略方式。 在分片规则配置模块可配置每个表的主键生成策略，默认使用雪花算法（snowflake）生成64bit的长整型数据。
+雪花算法是由Twitter公布的分布式主键生成算法，它能够保证不同进程主键的不重复性，以及相同进程主键的有序性。
+在同一个进程中，它首先是通过时间位保证不重复，如果时间相同则是通过序列位保证。 同时由于时间位是单调递增的，且各个服务器如果大体做了时间同步，那么生成的主键在分布式环境可以认为是总体有序的，这就保证了对索引字段的插入的高效性。例如MySQL的Innodb存储引擎的主键。
+使用雪花算法生成的主键，二进制表示形式包含4部分，从高位到低位分表为：1bit符号位、41bit时间戳位、10bit工作进程位以及12bit序列号位。
+ 符号位(1bit)  预留的符号位，恒为零。
+ 时间戳位(41bit)  41位的时间戳可以容纳的毫秒数是2的41次幂，一年所使用的毫秒数是：365 * 24 * 60 * 60 * 1000。通过计算可知：
+Math.pow(2, 41) / (365 * 24 * 60 * 60 * 1000L);  结果约等于69.73年。ShardingSphere的雪花算法的时间纪元从2016年11月1日零点开始，可以使用到2086年，相信能满足绝大部分系统的要求。
+ 工作进程位(10bit)  该标志在Java进程内是唯一的，如果是分布式应用部署应保证每个工作进程的id是不同的。该值默认为0，可通过调用静态方法DefaultKeyGenerator.setWorkerId()设置。
+ 序列号位(12bit)  该序列是用来在同一个毫秒内生成不同的ID。如果在这个毫秒内生成的数量超过4096(2的12次幂)，那么生成器会等待到下个毫秒继续生成。
+时钟回拨 服务器时钟回拨会导致产生重复序列，因此默认分布式主键生成器提供了一个最大容忍的时钟回拨毫秒数。 如果时钟回拨的时间超过最大容忍的毫秒数阈值，则程序报错；如果在可容忍的范围内，默认分布式主键生成器会等待时钟同步到最后一次主键生成的时间后再继续工作。 最大容忍的时钟回拨毫秒数的默认值为0，可通过调用静态方法DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds()设置。
+雪花算法主键的详细结构见下图。</description>
+    </item>
+    
+    <item>
+      <title>强制分片路由</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/sharding-hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/sharding-hint/</guid>
+      <description>实现动机 通过解析SQL语句提取分片键列与值并进行分片是ShardingSphere对SQL零侵入的实现方式。若SQL语句中没有分片条件，则无法进行分片，需要全路由。
+在一些应用场景中，分片条件并不存在于SQL，而存在于外部业务逻辑。因此需要提供一种通过外部指定分片结果的方式，在ShardingSphere中叫做Hint。
+实现机制 ShardingSphere使用ThreadLocal管理分片键值。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。
+除了通过编程的方式使用强制分片路由，ShardingSphere还计划通过SQL中的特殊注释的方式引用Hint，使开发者可以采用更加透明的方式使用该功能。
+指定了强制分片路由的SQL将会无视原有的分片逻辑，直接路由至指定的真实数据节点。</description>
+    </item>
+    
+  </channel>
+</rss>

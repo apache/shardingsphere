@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>00-overviews on </title>
-    <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/</link>
+    <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</link>
     <description>Recent content in 00-overviews on </description>
     <generator>Hugo -- gohugo.io</generator>
     
-	<atom:link href="http://shardingsphere.io/document/legacy/1.x/cn/00-overview/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>概览</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</guid>
       <description>概述 &amp;nbsp; &amp;nbsp; &amp;nbsp; 
 Sharding-JDBC是一个开源的适用于微服务的分布式数据访问基础类库，它始终以云原生的基础开发套件为目标。
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
@@ -25,10 +25,10 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
     
     <item>
       <title>简介</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/intro/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/intro/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/</guid>
       <description>Sharding-JDBC直接封装JDBC API，可以理解为增强版的JDBC驱动，旧代码迁移成本几乎为零：
  可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。  Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。采用&amp;rdquo;半理解&amp;rdquo;理念的SQL解析引擎，以达到性能与兼容性的最大平衡。
 Sharding-JDBC功能灵活且全面：
@@ -41,29 +41,29 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule)
     
     <item>
       <title>新闻</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/news/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/news/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/</guid>
       <description> 新闻  2017-07 InfoQ新闻：分布式数据库中间件Sharding-JDBC 1.5.0发布——自研SQL解析引擎+全数据库支持里程碑版本 2017-07 芋艿V的博客：Sharding-JDBC 源码分析 2017-07 DBAPlus分享：轻量级数据库中间件利器Sharding-JDBC深度解析 2017-03 开源中国高手问答：高手问答第144期—轻量级数据库中间层 Sharding-JDBC 深度解析 2016-06 InfoQ文章：Sharding-JDBC 1.3.0发布——支持读写分离 2016-02 CSDN文章：解读分库分表中间件Sharding-JDBC 2016-01 InfoQ新闻：当当开源sharding-jdbc，轻量级数据库分库分表中间件  </description>
     </item>
     
     <item>
       <title>采用公司</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/company/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/company/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/</guid>
       <description> 采用公司（统计中） 公司排名不分先后，按拼音顺序排名
 佰昌科技 当当 东方车联 非凡之星 凤凰汽车 欢聚时代YY 家视天下 客如云 男衣库 Q堡直播 权大师 视觉中国 食蚁兽 搜好货 搜狐资讯 TCL 特微智能 唯品会 小牛在线 义乌购 御馔企业 中策车空间 转转公司 真信认知科技 足记 </description>
     </item>
     
     <item>
       <title>贡献代码</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/contribution/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/contribution/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/</guid>
       <description>您可以报告bug，提交一个新的功能增强建议或者直接对以上内容提交改进补丁。
 报告bug 本章节介绍如何提交一个bug。
 报告一个新bug之前  确定在最新版本中该bug存在。我们将不会持续维护所有的发布版本，所有的修改仅根据当前版本。 确认该bug是可以复现的。请尽量提供完整的重现步骤。 请确定这不是一个重复的bug。 查看Issue Page列表，搜索您要提交的bug是否已经被报告过。  如何提交一个有质量的bug 请在Issue Page页面中提交bug。

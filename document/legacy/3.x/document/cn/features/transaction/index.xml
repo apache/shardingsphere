@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>分布式事务 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/</link>
+    <description>Recent content in 分布式事务 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>本地事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/local-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/local-transaction/</guid>
+      <description> 概念  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
+ 完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。
+ 不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交。
+  支持情况  Sharding-JDBC可以支持由用户自行配置不使用XA数据源
+ Sharding-Proxy无需支持，使用XA或柔性事务即可
+  </description>
+    </item>
+    
+    <item>
+      <title>两阶段事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/2pc-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/2pc-transaction/</guid>
+      <description> 概念  完全支持跨库事务。
+ 默认使用Atomikos，支持使用SPI的方式加载其他XA事务管理器。
+  支持情况  Sharding-JDBC可以支持由用户自行配置XA数据源
+ Sharding-Proxy支持
+  </description>
+    </item>
+    
+    <item>
+      <title>柔性事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/base-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/base-transaction/</guid>
+      <description> 概念  完全支持跨库事务。
+ 使用Servicecomb-Saga。
+ 支持反向SQL以及更新快照自动生成以及自动补偿。
+  支持情况  预计4.0.0支持  </description>
+    </item>
+    
+  </channel>
+</rss>

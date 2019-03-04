@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>读写分离 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/</link>
+    <description>Recent content in 读写分离 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>核心概念</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/concept/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/concept/</guid>
+      <description>主库 添加、更新以及删除数据操作所使用的数据库，目前仅支持单主库。
+从库 查询数据操作所使用的数据库，可支持多从库。
+主从同步 将主库的数据异步的同步到从库的操作。由于主从同步的异步性，从库与主库的数据会短时间内不一致。
+负载均衡策略 通过负载均衡策略将查询请求疏导至不同从库。
+Config Map 配置读写分离数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的masterSlaveConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。</description>
+    </item>
+    
+    <item>
+      <title>核心功能</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/core-features/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/core-features/</guid>
+      <description> 提供一主多从的读写分离配置，可独立使用，也可配合分库分表使用。 独立使用读写分离支持SQL透传。 同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。 基于Hint的强制主库路由。  </description>
+    </item>
+    
+    <item>
+      <title>不支持项</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/unsupported-items/</guid>
+      <description> 主库和从库的数据同步。 主库和从库的数据同步延迟导致的数据不一致。 主库双写或多写。  </description>
+    </item>
+    
+  </channel>
+</rss>

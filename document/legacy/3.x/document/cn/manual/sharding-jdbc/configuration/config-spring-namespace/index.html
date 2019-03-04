@@ -1,0 +1,3552 @@
+<!DOCTYPE html>
+<html lang="cn" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/legacy/3.x/document/img/favicon.png" type="image/x-icon" />
+
+    <title>Spring命名空间配置 :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/nucleus.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/font-awesome.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hybrid.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/featherlight.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/perfect-scrollbar.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/auto-complete.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hugo-theme.css?1547543307" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme-black.css?1547543307" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery-2.x.min.js?1547543307"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/cn/manual/sharding-jdbc/configuration/config-spring-namespace/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/logo_v2.png" />
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/overview/" title="概览" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview/">
+          <b>1. </b>概览
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/quick-start/" title="快速入门" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/">
+          <b>2. </b>快速入门
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/quick-start/sharding-jdbc-quick-start/" title="Sharding-JDBC" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-jdbc-quick-start/">
+        <b>2.1. </b>Sharding-JDBC
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/quick-start/sharding-proxy-quick-start/" title="Sharding-Proxy" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-proxy-quick-start/">
+        <b>2.2. </b>Sharding-Proxy
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/" title="概念 &amp; 功能" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/">
+          <b>3. </b>概念 &amp; 功能
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/" title="数据分片" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/">
+          <b>3.1. </b>数据分片
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/concept/" title="核心概念" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/">
+          <b>3.1.1. </b>核心概念
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/sharding/" title="分片" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sharding/">
+        分片
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/configuration/" title="配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/configuration/">
+        配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/principle/" title="内核剖析" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/">
+          <b>3.1.2. </b>内核剖析
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/parse/" title="解析引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/parse/">
+        解析引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/route/" title="路由引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/route/">
+        路由引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/rewrite/" title="改写引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/rewrite/">
+        改写引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/execute/" title="执行引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/execute/">
+        执行引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/merge/" title="归并引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/merge/">
+        归并引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/use-norms/" title="使用规范" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/">
+          <b>3.1.3. </b>使用规范
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/use-norms/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/use-norms/pagination/" title="分页" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/pagination/">
+        分页
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/other-features/" title="其他功能" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/">
+          <b>3.1.4. </b>其他功能
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/inline-expression/" title="行表达式" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/inline-expression/">
+        行表达式
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/key-generator/" title="分布式主键" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/key-generator/">
+        分布式主键
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/sharding-hint/" title="强制分片路由" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/sharding-hint/">
+        强制分片路由
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/read-write-split/" title="读写分离" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/">
+          <b>3.2. </b>读写分离
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/concept/" title="核心概念" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/concept/">
+        <b>3.2.1. </b>核心概念
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/core-features/" title="核心功能" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/core-features/">
+        <b>3.2.2. </b>核心功能
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/unsupported-items/" title="不支持项" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/unsupported-items/">
+        <b>3.2.3. </b>不支持项
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/orchestration/" title="数据治理" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/">
+          <b>3.3. </b>数据治理
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/config-center/" title="配置中心" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/config-center/">
+        <b>3.3.1. </b>配置中心
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/orchestration/" title="编排治理" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/orchestration/">
+        <b>3.3.2. </b>编排治理
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/supported-registry-repo/" title="支持的注册中心" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/supported-registry-repo/">
+        <b>3.3.3. </b>支持的注册中心
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/apm/" title="应用性能监控" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/apm/">
+        <b>3.3.4. </b>应用性能监控
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/transaction/" title="分布式事务" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/">
+          <b>3.4. </b>分布式事务
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/local-transaction/" title="本地事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/local-transaction/">
+        <b>3.4.1. </b>本地事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/2pc-transaction/" title="两阶段事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/2pc-transaction/">
+        <b>3.4.2. </b>两阶段事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/base-transaction/" title="柔性事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/base-transaction/">
+        <b>3.4.3. </b>柔性事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/" title="使用手册" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/">
+          <b>4. </b>使用手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/" title="Sharding-JDBC" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/">
+          <b>4.1. </b>Sharding-JDBC
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/usage/" title="使用手册" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/">
+          <b>4.1.1. </b>使用手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/sharding/" title="数据分片" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/sharding/">
+        数据分片
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/read-write-splitting/" title="读写分离" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/">
+        读写分离
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/hint/" title="强制路由" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/hint/">
+        强制路由
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/orchestration/" title="数据治理" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/orchestration/">
+        数据治理
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/transaction/">
+        分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/configuration/" title="配置手册" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/">
+          <b>4.1.2. </b>配置手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-java/" title="Java配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-java/">
+        Java配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-yaml/" title="Yaml配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-yaml/">
+        Yaml配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-spring-boot/" title="Spring Boot配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-boot/">
+        Spring Boot配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-spring-namespace/" title="Spring命名空间配置" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-namespace/">
+        Spring命名空间配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/unsupported-items/" title="JDBC不支持项" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/">
+        <b>4.1.3. </b>JDBC不支持项
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/stress-test/" title="性能测试报告" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/">
+        <b>4.1.4. </b>性能测试报告
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-proxy/" title="Sharding-Proxy" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/">
+          <b>4.2. </b>Sharding-Proxy
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/usage/" title="使用手册" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/usage/">
+        <b>4.2.1. </b>使用手册
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/configuration/" title="配置手册" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/configuration/">
+        <b>4.2.2. </b>配置手册
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/docker/" title="Docker镜像" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/docker/">
+        <b>4.2.3. </b>Docker镜像
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-sidecar/" title="Sharding-Sidecar" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-sidecar/">
+          <b>4.3. </b>Sharding-Sidecar
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/faq/" title="FAQ" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/faq/">
+          <b>5. </b>FAQ
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/">English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-namespace/" selected>Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/'>使用手册</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/'>Sharding-JDBC</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/'>配置手册</a> > Spring命名空间配置
+          
+         
+          
+         
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#注意事项">注意事项</a></li>
+<li><a href="#配置示例">配置示例</a>
+<ul>
+<li><a href="#数据分片">数据分片</a></li>
+<li><a href="#读写分离">读写分离</a></li>
+<li><a href="#数据分片-读写分离">数据分片 + 读写分离</a></li>
+<li><a href="#数据治理">数据治理</a></li>
+</ul></li>
+<li><a href="#配置项说明">配置项说明</a>
+<ul>
+<li><a href="#分库分表">分库分表</a>
+<ul>
+<li><a href="#sharding-data-source">&lt;sharding:data-source /&gt;</a></li>
+<li><a href="#sharding-sharding-rule">&lt;sharding:sharding-rule /&gt;</a></li>
+<li><a href="#sharding-table-rules">&lt;sharding:table-rules /&gt;</a></li>
+<li><a href="#sharding-table-rule">&lt;sharding:table-rule /&gt;</a></li>
+<li><a href="#sharding-binding-table-rules">&lt;sharding:binding-table-rules /&gt;</a></li>
+<li><a href="#sharding-binding-table-rule">&lt;sharding:binding-table-rule /&gt;</a></li>
+<li><a href="#sharding-broadcast-table-rules">&lt;sharding:broadcast-table-rules /&gt;</a></li>
+<li><a href="#sharding-broadcast-table-rule">&lt;sharding:broadcast-table-rule /&gt;</a></li>
+<li><a href="#sharding-standard-strategy">&lt;sharding:standard-strategy /&gt;</a></li>
+<li><a href="#sharding-complex-strategy">&lt;sharding:complex-strategy /&gt;</a></li>
+<li><a href="#sharding-inline-strategy">&lt;sharding:inline-strategy /&gt;</a></li>
+<li><a href="#sharding-hint-database-strategy">&lt;sharding:hint-database-strategy /&gt;</a></li>
+<li><a href="#sharding-none-strategy">&lt;sharding:none-strategy /&gt;</a></li>
+<li><a href="#sharding-props">&lt;sharding:props /&gt;</a></li>
+<li><a href="#sharding-config-map">&lt;sharding:config-map /&gt;</a></li>
+</ul></li>
+<li><a href="#读写分离-1">读写分离</a>
+<ul>
+<li><a href="#master-slave-data-source">&lt;master-slave:data-source /&gt;</a></li>
+<li><a href="#master-slave-config-map">&lt;master-slave:config-map /&gt;</a></li>
+<li><a href="#master-slave-props">&lt;master-slave:props /&gt;</a></li>
+</ul></li>
+<li><a href="#数据分片-数据治理">数据分片 + 数据治理</a>
+<ul>
+<li><a href="#orchestration-sharding-data-source">&lt;orchestration:sharding-data-source /&gt;</a></li>
+</ul></li>
+<li><a href="#读写分离-数据治理">读写分离 + 数据治理</a>
+<ul>
+<li><a href="#orchestration-master-slave-data-source">&lt;orchestration:master-slave-data-source /&gt;</a></li>
+</ul></li>
+<li><a href="#数据治理注册中心">数据治理注册中心</a>
+<ul>
+<li><a href="#orchestration-registry-center">&lt;orchestration:registry-center /&gt;</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>Spring命名空间配置</h1>
+          
+
+        
+
+
+
+
+<h2 id="注意事项">注意事项</h2>
+
+<p>行表达式标识符可以使用<code>${...}</code>或<code>$-&gt;{...}</code>，但前者与Spring本身的属性文件占位符冲突，因此在Spring环境中使用行表达式标识符建议使用<code>$-&gt;{...}</code>。</p>
+
+<h2 id="配置示例">配置示例</h2>
+
+<h3 id="数据分片">数据分片</h3>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingsphere/sharding&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd&quot;&gt;
+    &lt;context:annotation-config /&gt;
+    &lt;context:component-scan base-package=&quot;io.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
+    
+    &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;shardingDataSource&quot; /&gt;
+        &lt;property name=&quot;jpaVendorAdapter&quot;&gt;
+            &lt;bean class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot; p:database=&quot;MYSQL&quot; /&gt;
+        &lt;/property&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;io.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
+        &lt;property name=&quot;jpaProperties&quot;&gt;
+            &lt;props&gt;
+                &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQLDialect&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.hbm2ddl.auto&quot;&gt;create&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.show_sql&quot;&gt;true&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot; p:entityManagerFactory-ref=&quot;entityManagerFactory&quot; /&gt;
+    &lt;tx:annotation-driven /&gt;
+    
+    &lt;bean id=&quot;ds0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds0&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;ds1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds1&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;preciseModuloDatabaseShardingAlgorithm&quot; class=&quot;io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm&quot; /&gt;
+    &lt;bean id=&quot;preciseModuloTableShardingAlgorithm&quot; class=&quot;io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm&quot; /&gt;
+    
+    &lt;sharding:standard-strategy id=&quot;databaseShardingStrategy&quot; sharding-column=&quot;user_id&quot; precise-algorithm-ref=&quot;preciseModuloDatabaseShardingAlgorithm&quot; /&gt;
+    &lt;sharding:standard-strategy id=&quot;tableShardingStrategy&quot; sharding-column=&quot;order_id&quot; precise-algorithm-ref=&quot;preciseModuloTableShardingAlgorithm&quot; /&gt;
+    
+    &lt;sharding:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;sharding:sharding-rule data-source-names=&quot;ds0,ds1&quot;&gt;
+            &lt;sharding:table-rules&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order&quot; actual-data-nodes=&quot;ds$-&gt;{0..1}.t_order$-&gt;{0..1}&quot; database-strategy-ref=&quot;databaseShardingStrategy&quot; table-strategy-ref=&quot;tableShardingStrategy&quot; generate-key-column-name=&quot;order_id&quot; /&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order_item&quot; actual-data-nodes=&quot;ds$-&gt;{0..1}.t_order_item$-&gt;{0..1}&quot; database-strategy-ref=&quot;databaseShardingStrategy&quot; table-strategy-ref=&quot;tableShardingStrategy&quot; generate-key-column-name=&quot;order_item_id&quot; /&gt;
+            &lt;/sharding:table-rules&gt;
+            &lt;sharding:binding-table-rules&gt;
+                &lt;sharding:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot; /&gt;
+            &lt;/sharding:binding-table-rules&gt;
+            &lt;sharding:broadcast-table-rules&gt;
+                &lt;sharding:broadcast-table-rule table=&quot;t_config&quot; /&gt;
+            &lt;/sharding:broadcast-table-rules&gt;
+        &lt;/sharding:sharding-rule&gt;
+    &lt;/sharding:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h3 id="读写分离">读写分离</h3>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xmlns:master-slave=&quot;http://shardingsphere.io/schema/shardingsphere/masterslave&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://shardingsphere.io/schema/shardingsphere/masterslave  
+                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd&quot;&gt;
+    &lt;context:annotation-config /&gt;
+    &lt;context:component-scan base-package=&quot;io.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
+    
+    &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;masterSlaveDataSource&quot; /&gt;
+        &lt;property name=&quot;jpaVendorAdapter&quot;&gt;
+            &lt;bean class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot; p:database=&quot;MYSQL&quot; /&gt;
+        &lt;/property&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;io.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
+        &lt;property name=&quot;jpaProperties&quot;&gt;
+            &lt;props&gt;
+                &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQLDialect&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.hbm2ddl.auto&quot;&gt;create&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.show_sql&quot;&gt;true&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot; p:entityManagerFactory-ref=&quot;entityManagerFactory&quot; /&gt;
+    &lt;tx:annotation-driven /&gt;
+    
+    &lt;bean id=&quot;ds_master&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_master&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;ds_slave0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_slave0&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;ds_slave1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_slave1&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;randomStrategy&quot; class=&quot;io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm&quot; /&gt;
+    &lt;master-slave:data-source id=&quot;masterSlaveDataSource&quot; master-data-source-name=&quot;ds_master&quot; slave-data-source-names=&quot;ds_slave0, ds_slave1&quot; strategy-ref=&quot;randomStrategy&quot;&gt;
+            &lt;master-slave:props&gt;
+                &lt;prop key=&quot;sql.show&quot;&gt;${sql_show}&lt;/prop&gt;
+                &lt;prop key=&quot;executor.size&quot;&gt;10&lt;/prop&gt;
+                &lt;prop key=&quot;foo&quot;&gt;bar&lt;/prop&gt;
+            &lt;/master-slave:props&gt;
+    &lt;/master-slave:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h3 id="数据分片-读写分离">数据分片 + 读写分离</h3>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingsphere/sharding&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd&quot;&gt;
+    &lt;context:annotation-config /&gt;
+    &lt;context:component-scan base-package=&quot;io.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
+    
+    &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;shardingDataSource&quot; /&gt;
+        &lt;property name=&quot;jpaVendorAdapter&quot;&gt;
+            &lt;bean class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot; p:database=&quot;MYSQL&quot; /&gt;
+        &lt;/property&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;io.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
+        &lt;property name=&quot;jpaProperties&quot;&gt;
+            &lt;props&gt;
+                &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQLDialect&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.hbm2ddl.auto&quot;&gt;create&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.show_sql&quot;&gt;true&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot; p:entityManagerFactory-ref=&quot;entityManagerFactory&quot; /&gt;
+    &lt;tx:annotation-driven /&gt;
+    
+    &lt;bean id=&quot;ds_master0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_master0&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;ds_master0_slave0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_master0_slave0&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;ds_master0_slave1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_master0_slave1&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;ds_master1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_master1&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;ds_master1_slave0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_master1_slave0&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;ds_master1_slave1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds_master1_slave1&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;randomStrategy&quot; class=&quot;io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm&quot; /&gt;
+    
+    &lt;sharding:inline-strategy id=&quot;databaseStrategy&quot; sharding-column=&quot;user_id&quot; algorithm-expression=&quot;ds_ms$-&gt;{user_id % 2}&quot; /&gt;
+    &lt;sharding:inline-strategy id=&quot;orderTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order$-&gt;{order_id % 2}&quot; /&gt;
+    &lt;sharding:inline-strategy id=&quot;orderItemTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order_item$-&gt;{order_id % 2}&quot; /&gt;
+    
+    &lt;sharding:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;sharding:sharding-rule data-source-names=&quot;ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1&quot;&gt;
+            &lt;sharding:master-slave-rules&gt;
+                &lt;sharding:master-slave-rule id=&quot;ds_ms0&quot; master-data-source-name=&quot;ds_master0&quot; slave-data-source-names=&quot;ds_master0_slave0, ds_master0_slave1&quot; strategy-ref=&quot;randomStrategy&quot; /&gt;
+                &lt;sharding:master-slave-rule id=&quot;ds_ms1&quot; master-data-source-name=&quot;ds_master1&quot; slave-data-source-names=&quot;ds_master1_slave0, ds_master1_slave1&quot; strategy-ref=&quot;randomStrategy&quot; /&gt;
+            &lt;/sharding:master-slave-rules&gt;
+            &lt;sharding:table-rules&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order&quot; actual-data-nodes=&quot;ds_ms$-&gt;{0..1}.t_order$-&gt;{0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderTableStrategy&quot; generate-key-column-name=&quot;order_id&quot; /&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order_item&quot; actual-data-nodes=&quot;ds_ms$-&gt;{0..1}.t_order_item$-&gt;{0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderItemTableStrategy&quot; generate-key-column-name=&quot;order_item_id&quot; /&gt;
+            &lt;/sharding:table-rules&gt;
+            &lt;sharding:binding-table-rules&gt;
+                &lt;sharding:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot; /&gt;
+            &lt;/sharding:binding-table-rules&gt;
+            &lt;sharding:broadcast-table-rules&gt;
+                &lt;sharding:broadcast-table-rule table=&quot;t_config&quot; /&gt;
+            &lt;/sharding:broadcast-table-rules&gt;
+        &lt;/sharding:sharding-rule&gt;
+    &lt;/sharding:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h3 id="数据治理">数据治理</h3>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:orchestration=&quot;http://shardingsphere.io/schema/shardingsphere/orchestration&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.io/schema/shardingsphere/orchestration
+                           http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd&quot;&gt;
+    &lt;orchestration:registry-center id=&quot;regCenter&quot; server-lists=&quot;localhost:2181&quot; namespace=&quot;orchestration-spring-namespace-demo&quot; operation-timeout-milliseconds=&quot;1000&quot; max-retries=&quot;3&quot; /&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h2 id="配置项说明">配置项说明</h2>
+
+<h3 id="分库分表">分库分表</h3>
+
+<p>命名空间：<a href="http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd</a></p>
+
+<h4 id="sharding-data-source">&lt;sharding:data-source /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>Spring Bean Id</td>
+</tr>
+
+<tr>
+<td>sharding-rule</td>
+<td>标签</td>
+<td>数据分片配置规则</td>
+</tr>
+
+<tr>
+<td>config-map (?)</td>
+<td>标签</td>
+<td>用户自定义配置</td>
+</tr>
+
+<tr>
+<td>props (?)</td>
+<td>标签</td>
+<td>属性配置</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-sharding-rule">&lt;sharding:sharding-rule /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>data-source-names</td>
+<td>属性</td>
+<td>数据源Bean列表，多个Bean以逗号分隔</td>
+</tr>
+
+<tr>
+<td>table-rules</td>
+<td>标签</td>
+<td>表分片规则配置对象</td>
+</tr>
+
+<tr>
+<td>binding-table-rules (?)</td>
+<td>标签</td>
+<td>绑定表规则列表</td>
+</tr>
+
+<tr>
+<td>broadcast-table-rules (?)</td>
+<td>标签</td>
+<td>广播表规则列表</td>
+</tr>
+
+<tr>
+<td>default-data-source-name (?)</td>
+<td>属性</td>
+<td>未配置分片规则的表将通过默认数据源定位</td>
+</tr>
+
+<tr>
+<td>default-database-strategy-ref (?)</td>
+<td>属性</td>
+<td>默认数据库分片策略，对应&lt;sharding:xxx-strategy&gt;中的策略Id，缺省表示不分库</td>
+</tr>
+
+<tr>
+<td>default-table-strategy-ref (?)</td>
+<td>属性</td>
+<td>默认表分片策略，对应&lt;sharding:xxx-strategy&gt;中的策略Id，缺省表示不分表</td>
+</tr>
+
+<tr>
+<td>default-key-generator-ref (?)</td>
+<td>属性</td>
+<td>默认自增列值生成器引用，缺省使用<code>io.shardingsphere.core.keygen.DefaultKeyGenerator</code>。该类需实现KeyGenerator接口</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-table-rules">&lt;sharding:table-rules /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>table-rule (+)</td>
+<td>标签</td>
+<td>表分片规则配置对象</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-table-rule">&lt;sharding:table-rule /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logic-table</td>
+<td>属性</td>
+<td>逻辑表名称</td>
+</tr>
+
+<tr>
+<td>actual-data-nodes (?)</td>
+<td>属性</td>
+<td>由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况</td>
+</tr>
+
+<tr>
+<td>database-strategy-ref (?)</td>
+<td>属性</td>
+<td>数据库分片策略，对应&lt;sharding:xxx-strategy&gt;中的策略Id，缺省表示使用&lt;sharding:sharding-rule /&gt;配置的默认数据库分片策略</td>
+</tr>
+
+<tr>
+<td>table-strategy-ref (?)</td>
+<td>属性</td>
+<td>表分片策略，对应&lt;sharding:xxx-strategy&gt;中的策略Id，缺省表示使用&lt;sharding:sharding-rule /&gt;配置的默认表分片策略</td>
+</tr>
+
+<tr>
+<td>generate-key-column-name (?)</td>
+<td>属性</td>
+<td>自增列名称，缺省表示不使用自增主键生成器</td>
+</tr>
+
+<tr>
+<td>key-generator-ref (?)</td>
+<td>属性</td>
+<td>自增列值生成器引用，缺省表示使用默认自增列值生成器.该类需实现KeyGenerator接口</td>
+</tr>
+
+<tr>
+<td>logic-index (?)</td>
+<td>属性</td>
+<td>逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-binding-table-rules">&lt;sharding:binding-table-rules /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>binding-table-rule (+)</td>
+<td>标签</td>
+<td>绑定表规则</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-binding-table-rule">&lt;sharding:binding-table-rule /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logic-tables</td>
+<td>属性</td>
+<td>绑定规则的逻辑表名，多表以逗号分隔</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-broadcast-table-rules">&lt;sharding:broadcast-table-rules /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>broadcast-table-rule (+)</td>
+<td>标签</td>
+<td>广播表规则</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-broadcast-table-rule">&lt;sharding:broadcast-table-rule /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th>*说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>table</td>
+<td>属性</td>
+<td>广播规则的表名</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-standard-strategy">&lt;sharding:standard-strategy /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>Spring Bean Id</td>
+</tr>
+
+<tr>
+<td>sharding-column</td>
+<td>属性</td>
+<td>分片列名称</td>
+</tr>
+
+<tr>
+<td>precise-algorithm-ref</td>
+<td>属性</td>
+<td>精确分片算法引用，用于=和IN。该类需实现PreciseShardingAlgorithm接口</td>
+</tr>
+
+<tr>
+<td>range-algorithm-ref (?)</td>
+<td>属性</td>
+<td>范围分片算法引用，用于BETWEEN。该类需实现RangeShardingAlgorithm接口</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-complex-strategy">&lt;sharding:complex-strategy /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>Spring Bean Id</td>
+</tr>
+
+<tr>
+<td>sharding-columns</td>
+<td>属性</td>
+<td>分片列名称，多个列以逗号分隔</td>
+</tr>
+
+<tr>
+<td>algorithm-ref</td>
+<td>属性</td>
+<td>复合分片算法引用。该类需实现ComplexKeysShardingAlgorithm接口</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-inline-strategy">&lt;sharding:inline-strategy /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>Spring Bean Id</td>
+</tr>
+
+<tr>
+<td>sharding-column</td>
+<td>属性</td>
+<td>分片列名称</td>
+</tr>
+
+<tr>
+<td>algorithm-expression</td>
+<td>属性</td>
+<td>分片算法行表达式，需符合groovy语法</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-hint-database-strategy">&lt;sharding:hint-database-strategy /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>Spring Bean Id</td>
+</tr>
+
+<tr>
+<td>algorithm-ref</td>
+<td>属性</td>
+<td>Hint分片算法。该类需实现HintShardingAlgorithm接口</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-none-strategy">&lt;sharding:none-strategy /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>Spring Bean Id</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-props">&lt;sharding:props /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sql.show (?)</td>
+<td>属性</td>
+<td>是否开启SQL显示，默认值: false</td>
+</tr>
+
+<tr>
+<td>executor.size (?)</td>
+<td>属性</td>
+<td>工作线程数量，默认值: CPU核数</td>
+</tr>
+
+<tr>
+<td>max.connections.size.per.query (?)</td>
+<td>属性</td>
+<td>每个物理数据库为每次查询分配的最大连接数量。默认值: 1</td>
+</tr>
+
+<tr>
+<td>check.table.metadata.enabled (?)</td>
+<td>属性</td>
+<td>是否在启动时检查分表元数据一致性，默认值: false</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-config-map">&lt;sharding:config-map /&gt;</h4>
+
+<h3 id="读写分离-1">读写分离</h3>
+
+<p>命名空间：<a href="http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd</a></p>
+
+<h4 id="master-slave-data-source">&lt;master-slave:data-source /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>Spring Bean Id</td>
+</tr>
+
+<tr>
+<td>master-data-source-name</td>
+<td>属性</td>
+<td>主库数据源Bean Id</td>
+</tr>
+
+<tr>
+<td>slave-data-source-names</td>
+<td>属性</td>
+<td>从库数据源Bean Id列表，多个Bean以逗号分隔</td>
+</tr>
+
+<tr>
+<td>strategy-ref (?)</td>
+<td>属性</td>
+<td>从库负载均衡算法引用。该类需实现MasterSlaveLoadBalanceAlgorithm接口</td>
+</tr>
+
+<tr>
+<td>strategy-type (?)</td>
+<td>属性</td>
+<td>从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若<code>strategy-ref</code>存在则忽略该配置</td>
+</tr>
+
+<tr>
+<td>config-map (?)</td>
+<td>标签</td>
+<td>用户自定义配置</td>
+</tr>
+
+<tr>
+<td>props (?)</td>
+<td>标签</td>
+<td>属性配置</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="master-slave-config-map">&lt;master-slave:config-map /&gt;</h4>
+
+<h4 id="master-slave-props">&lt;master-slave:props /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sql.show (?)</td>
+<td>属性</td>
+<td>是否开启SQL显示，默认值: false</td>
+</tr>
+
+<tr>
+<td>executor.size (?)</td>
+<td>属性</td>
+<td>工作线程数量，默认值: CPU核数</td>
+</tr>
+
+<tr>
+<td>max.connections.size.per.query (?)</td>
+<td>属性</td>
+<td>每个物理数据库为每次查询分配的最大连接数量。默认值: 1</td>
+</tr>
+
+<tr>
+<td>check.table.metadata.enabled (?)</td>
+<td>属性</td>
+<td>是否在启动时检查分表元数据一致性，默认值: false</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="数据分片-数据治理">数据分片 + 数据治理</h3>
+
+<p>命名空间：<a href="http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
+
+<h4 id="orchestration-sharding-data-source">&lt;orchestration:sharding-data-source /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>ID</td>
+</tr>
+
+<tr>
+<td>data-source-ref (?)</td>
+<td>属性</td>
+<td>被治理的数据库id</td>
+</tr>
+
+<tr>
+<td>registry-center-ref</td>
+<td>属性</td>
+<td>注册中心id</td>
+</tr>
+
+<tr>
+<td>overwrite</td>
+<td>属性</td>
+<td>本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。  缺省为不覆盖</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="读写分离-数据治理">读写分离 + 数据治理</h3>
+
+<p>命名空间：<a href="http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
+
+<h4 id="orchestration-master-slave-data-source">&lt;orchestration:master-slave-data-source /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>ID</td>
+</tr>
+
+<tr>
+<td>data-source-ref (?)</td>
+<td>属性</td>
+<td>被治理的数据库id</td>
+</tr>
+
+<tr>
+<td>registry-center-ref</td>
+<td>属性</td>
+<td>注册中心id</td>
+</tr>
+
+<tr>
+<td>overwrite</td>
+<td>属性</td>
+<td>本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="数据治理注册中心">数据治理注册中心</h3>
+
+<p>命名空间：<a href="http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
+
+<h4 id="orchestration-registry-center">&lt;orchestration:registry-center /&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>注册中心的Spring Bean Id</td>
+</tr>
+
+<tr>
+<td>server-lists</td>
+<td>属性</td>
+<td>连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181</td>
+</tr>
+
+<tr>
+<td>namespace (?)</td>
+<td>属性</td>
+<td>注册中心的命名空间</td>
+</tr>
+
+<tr>
+<td>digest (?)</td>
+<td>属性</td>
+<td>连接注册中心的权限令牌。缺省为不需要权限验证</td>
+</tr>
+
+<tr>
+<td>operation-timeout-milliseconds (?)</td>
+<td>属性</td>
+<td>操作超时的毫秒数，默认500毫秒</td>
+</tr>
+
+<tr>
+<td>max-retries (?)</td>
+<td>属性</td>
+<td>连接失败后的最大重试次数，默认3次</td>
+</tr>
+
+<tr>
+<td>retry-interval-milliseconds (?)</td>
+<td>属性</td>
+<td>重试间隔毫秒数，默认500毫秒</td>
+</tr>
+
+<tr>
+<td>time-to-live-seconds (?)</td>
+<td>属性</td>
+<td>临时节点存活秒数，默认60秒</td>
+</tr>
+</tbody>
+</table>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-boot/" title="Spring Boot配置"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/" title="JDBC不支持项" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/clipboard.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.jquery.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery.sticky.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/featherlight.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/html5shiv-printshiv.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/highlight.pack.js?1547543307"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/modernizr.custom.71422.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/learn.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/hugo-learn.js?1547543307"></script>
+
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.css?1547543307" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.js?1547543307"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

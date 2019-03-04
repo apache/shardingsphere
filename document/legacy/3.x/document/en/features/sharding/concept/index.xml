@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Core Concept on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/</link>
+    <description>Recent content in Core Concept on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SQL</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sql/</guid>
+      <description>Logic Table It refers collectively to the same kind of databases (tables) of horizontal sharding. For instance, the order data is divided into 10 tables according to the last number of the primary key, and they are from t_order_0 to t_order_9, whose logic name is t_order.
+Actual Table The physical table that really exists in the sharding database, e.g. t_order_0 to t_order_9 in the instance above.
+Data Node The smallest unit of data sharding, consist of source data name and table name, e.</description>
+    </item>
+    
+    <item>
+      <title>Sharding</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sharding/</guid>
+      <description>Sharding Key The database field used in sharding refers to the key field in horizontal sharding of the database (table). For example, in last number modulo of order ID sharding, order ID is taken as the sharding key. The full route executed when there is no sharding field in SQL has a poor performance. Beside single sharding column, ShardingSphere also supports multiple sharding columns.
+Sharding Algorithm The sharding of data can be achieved by sharding algorithms through =, BETWEEN and IN.</description>
+    </item>
+    
+    <item>
+      <title>Configuration</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/configuration/</guid>
+      <description>Sharding Rule The main entrance for Sharding rules includes the configurations of data source, tables, binding tables and read-write split.
+Data Sources Configuration Real data sources list.
+Tables Configuration Configurations of logic table names, data node and table sharding rules.
+Data Node Configuration It is used in the configurations of the mapping relationship between logic tables and actual tables, can be divided into two kinds: uniform distribution and user-defined distribution.</description>
+    </item>
+    
+  </channel>
+</rss>

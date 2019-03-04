@@ -1,0 +1,3393 @@
+<!DOCTYPE html>
+<html lang="cn" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/legacy/3.x/document/img/favicon.png" type="image/x-icon" />
+
+    <title>性能测试报告 :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/nucleus.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/font-awesome.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hybrid.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/featherlight.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/perfect-scrollbar.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/auto-complete.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hugo-theme.css?1547543307" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme-black.css?1547543307" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery-2.x.min.js?1547543307"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/cn/manual/sharding-jdbc/stress-test/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/logo_v2.png" />
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/overview/" title="概览" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview/">
+          <b>1. </b>概览
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/quick-start/" title="快速入门" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/">
+          <b>2. </b>快速入门
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/quick-start/sharding-jdbc-quick-start/" title="Sharding-JDBC" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-jdbc-quick-start/">
+        <b>2.1. </b>Sharding-JDBC
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/quick-start/sharding-proxy-quick-start/" title="Sharding-Proxy" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-proxy-quick-start/">
+        <b>2.2. </b>Sharding-Proxy
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/" title="概念 &amp; 功能" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/">
+          <b>3. </b>概念 &amp; 功能
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/" title="数据分片" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/">
+          <b>3.1. </b>数据分片
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/concept/" title="核心概念" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/">
+          <b>3.1.1. </b>核心概念
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/sharding/" title="分片" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sharding/">
+        分片
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/configuration/" title="配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/configuration/">
+        配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/principle/" title="内核剖析" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/">
+          <b>3.1.2. </b>内核剖析
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/parse/" title="解析引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/parse/">
+        解析引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/route/" title="路由引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/route/">
+        路由引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/rewrite/" title="改写引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/rewrite/">
+        改写引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/execute/" title="执行引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/execute/">
+        执行引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/merge/" title="归并引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/merge/">
+        归并引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/use-norms/" title="使用规范" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/">
+          <b>3.1.3. </b>使用规范
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/use-norms/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/use-norms/pagination/" title="分页" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/pagination/">
+        分页
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/other-features/" title="其他功能" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/">
+          <b>3.1.4. </b>其他功能
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/inline-expression/" title="行表达式" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/inline-expression/">
+        行表达式
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/key-generator/" title="分布式主键" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/key-generator/">
+        分布式主键
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/sharding-hint/" title="强制分片路由" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/sharding-hint/">
+        强制分片路由
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/read-write-split/" title="读写分离" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/">
+          <b>3.2. </b>读写分离
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/concept/" title="核心概念" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/concept/">
+        <b>3.2.1. </b>核心概念
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/core-features/" title="核心功能" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/core-features/">
+        <b>3.2.2. </b>核心功能
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/unsupported-items/" title="不支持项" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/unsupported-items/">
+        <b>3.2.3. </b>不支持项
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/orchestration/" title="数据治理" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/">
+          <b>3.3. </b>数据治理
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/config-center/" title="配置中心" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/config-center/">
+        <b>3.3.1. </b>配置中心
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/orchestration/" title="编排治理" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/orchestration/">
+        <b>3.3.2. </b>编排治理
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/supported-registry-repo/" title="支持的注册中心" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/supported-registry-repo/">
+        <b>3.3.3. </b>支持的注册中心
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/apm/" title="应用性能监控" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/apm/">
+        <b>3.3.4. </b>应用性能监控
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/transaction/" title="分布式事务" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/">
+          <b>3.4. </b>分布式事务
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/local-transaction/" title="本地事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/local-transaction/">
+        <b>3.4.1. </b>本地事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/2pc-transaction/" title="两阶段事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/2pc-transaction/">
+        <b>3.4.2. </b>两阶段事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/base-transaction/" title="柔性事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/base-transaction/">
+        <b>3.4.3. </b>柔性事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/" title="使用手册" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/">
+          <b>4. </b>使用手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/" title="Sharding-JDBC" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/">
+          <b>4.1. </b>Sharding-JDBC
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/usage/" title="使用手册" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/">
+          <b>4.1.1. </b>使用手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/sharding/" title="数据分片" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/sharding/">
+        数据分片
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/read-write-splitting/" title="读写分离" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/">
+        读写分离
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/hint/" title="强制路由" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/hint/">
+        强制路由
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/orchestration/" title="数据治理" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/orchestration/">
+        数据治理
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/transaction/">
+        分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/configuration/" title="配置手册" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/">
+          <b>4.1.2. </b>配置手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-java/" title="Java配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-java/">
+        Java配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-yaml/" title="Yaml配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-yaml/">
+        Yaml配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-spring-boot/" title="Spring Boot配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-boot/">
+        Spring Boot配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-spring-namespace/" title="Spring命名空间配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-namespace/">
+        Spring命名空间配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/unsupported-items/" title="JDBC不支持项" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/">
+        <b>4.1.3. </b>JDBC不支持项
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/stress-test/" title="性能测试报告" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/">
+        <b>4.1.4. </b>性能测试报告
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-proxy/" title="Sharding-Proxy" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/">
+          <b>4.2. </b>Sharding-Proxy
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/usage/" title="使用手册" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/usage/">
+        <b>4.2.1. </b>使用手册
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/configuration/" title="配置手册" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/configuration/">
+        <b>4.2.2. </b>配置手册
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/docker/" title="Docker镜像" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/docker/">
+        <b>4.2.3. </b>Docker镜像
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-sidecar/" title="Sharding-Sidecar" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-sidecar/">
+          <b>4.3. </b>Sharding-Sidecar
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/faq/" title="FAQ" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/faq/">
+          <b>5. </b>FAQ
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/document/legacy/3.x/document/en/manual/sharding-jdbc/stress-test/">English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/" selected>Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/'>使用手册</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/'>Sharding-JDBC</a> > 性能测试报告
+          
+         
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#测试结果概述">测试结果概述</a>
+<ul>
+<li><a href="#基准测试性能对比">基准测试性能对比</a></li>
+<li><a href="#jdbc单库两库表与sharding-jdbc两库各两表对比">JDBC单库两库表与Sharding-JDBC两库各两表对比</a></li>
+<li><a href="#jdbc单库单表与sharding-jdbc两库各一表对比">JDBC单库单表与Sharding-JDBC两库各一表对比</a></li>
+<li><a href="#sharding-jdbc-v1-4-2与v1-5-2版本对比">Sharding-JDBC v1.4.2与v1.5.2版本对比</a></li>
+</ul></li>
+<li><a href="#测试目的">测试目的</a></li>
+<li><a href="#测试场景">测试场景</a>
+<ul>
+<li><a href="#jdbc业务场景">JDBC业务场景</a></li>
+<li><a href="#sharding-jdbc业务场景">Sharding-JDBC业务场景</a></li>
+</ul></li>
+<li><a href="#测试方法">测试方法</a></li>
+<li><a href="#测试环境配置">测试环境配置</a></li>
+<li><a href="#测试过程数据">测试过程数据</a></li>
+<li><a href="#基准测试">基准测试</a>
+<ul>
+<li><a href="#单库单表查询">单库单表查询</a></li>
+<li><a href="#单库单表更新">单库单表更新</a></li>
+<li><a href="#单库单表插入">单库单表插入</a></li>
+</ul></li>
+<li><a href="#极限测试">极限测试</a>
+<ul>
+<li><a href="#单库单表与两库各一表查询">单库单表与两库各一表查询</a></li>
+<li><a href="#单库两表与两库各两表查询">单库两表与两库各两表查询</a></li>
+<li><a href="#单库单表更新与两库各一表更新">单库单表更新与两库各一表更新</a></li>
+<li><a href="#单库两表与两库各2表更新">单库两表与两库各2表更新</a></li>
+<li><a href="#单库单表插入与两库各一表插入">单库单表插入与两库各一表插入</a></li>
+<li><a href="#单库两表与两库各2表插入">单库两表与两库各2表插入</a></li>
+<li><a href="#sharding-jdbc-1-4-2与1-5-2两库各一表对比">Sharding-JDBC 1.4.2与1.5.2两库各一表对比</a></li>
+</ul></li>
+<li><a href="#附录">附录</a>
+<ul>
+<li><a href="#建表语句说明">建表语句说明</a></li>
+<li><a href="#sql语句说明">SQL语句说明</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>性能测试报告</h1>
+          
+
+        
+
+
+
+
+<h2 id="测试结果概述">测试结果概述</h2>
+
+<ol>
+<li>性能损耗测试：服务器资源充足、并发数相同，比较JDBC和Sharding-JDBC性能损耗，Sharding-JDBC相对JDBC损耗不超过7%。</li>
+<li>性能对比测试：服务器资源使用到极限，相同的场景JDBC与Sharding-JDBC的吞吐量相当。</li>
+<li>性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升。</li>
+<li>性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定。</li>
+</ol>
+
+<h3 id="基准测试性能对比">基准测试性能对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">JDBC</th>
+<th align="left">Sharding-JDBC1.5.2</th>
+<th align="left">Sharding-JDBC1.5.2/JDBC损耗</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">493</td>
+<td align="left">470</td>
+<td align="left">4.7%</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">6682</td>
+<td align="left">6303</td>
+<td align="left">5.7%</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">6855</td>
+<td align="left">6375</td>
+<td align="left">7%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="jdbc单库两库表与sharding-jdbc两库各两表对比">JDBC单库两库表与Sharding-JDBC两库各两表对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">JDBC单库两表</th>
+<th align="left">Sharding-JDBC两库各两表</th>
+<th align="left">性能提升至</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">1736</td>
+<td align="left">3331</td>
+<td align="left">192%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">9170</td>
+<td align="left">17997</td>
+<td align="left">196%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">11574</td>
+<td align="left">23043</td>
+<td align="left">199%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="jdbc单库单表与sharding-jdbc两库各一表对比">JDBC单库单表与Sharding-JDBC两库各一表对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">JDBC单库单表</th>
+<th align="left">Sharding-JDBC两库各一表</th>
+<th align="left">性能提升至</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">1586</td>
+<td align="left">2944</td>
+<td align="left">185%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">9548</td>
+<td align="left">18561</td>
+<td align="left">194%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">11182</td>
+<td align="left">21414</td>
+<td align="left">192%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sharding-jdbc-v1-4-2与v1-5-2版本对比">Sharding-JDBC v1.4.2与v1.5.2版本对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">Sharding-JDBC 1.4.2</th>
+<th align="left">Sharding-JDBC 1.5.2</th>
+<th align="left">1.5.2 / 1.4.2</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">2934</td>
+<td align="left">2944</td>
+<td align="left">100.34%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">18454</td>
+<td align="left">18561</td>
+<td align="left">100.58%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">21045</td>
+<td align="left">21414</td>
+<td align="left">101.75%</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="测试目的">测试目的</h2>
+
+<ul>
+<li>对比Sharding-JDBC 1.5.2与JDBC性能是否有较大损耗;</li>
+<li>Sharding-JDBC 1.52与1.4.2版本对比，性能是否有损耗;</li>
+<li>Sharding-JDBC 1.5.2是否存在非功能问题，为优化提供依据;</li>
+</ul>
+
+<h2 id="测试场景">测试场景</h2>
+
+<h3 id="jdbc业务场景">JDBC业务场景</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">场景缩写</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">JSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">JSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">JSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">单库两表查询</td>
+<td align="left">JSdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库两表插入</td>
+<td align="left">JSdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库两表更新</td>
+<td align="left">JSdbMtUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sharding-jdbc业务场景">Sharding-JDBC业务场景</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">场景缩写</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">SJSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">SJSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">SJSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">单库两表查询</td>
+<td align="left">SJSdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库两表插入</td>
+<td align="left">SJSdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库两表更新</td>
+<td align="left">SJSdbMtUpdate</td>
+</tr>
+
+<tr>
+<td align="left">两库各一表查询</td>
+<td align="left">SJMdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">两库各一表插入</td>
+<td align="left">SJMdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">两库各一表更新</td>
+<td align="left">SJMdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">两库各两表查询</td>
+<td align="left">SJMdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">两库各两表插入</td>
+<td align="left">SJMdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">两库各两表更新</td>
+<td align="left">SJMdbMtUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<p>所有测试场景共分为以下两大类，其中极限测试测试范围是全部场景，基准测试范围是以下场景：</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">场景缩写</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">JSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">JSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">JSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">SJSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">SJSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">SJSdbStUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="测试方法">测试方法</h2>
+
+<p>基准测试：服务器资源充足，使用同样的并发线程数量，对比同样的业务场景。</p>
+
+<p>极限测试：服务器资源使用达到极限、TPS不再上升，对比JDBC和Sharding-JDBC分库分表。</p>
+
+<h2 id="测试环境配置">测试环境配置</h2>
+
+<p>服务器配置</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="left">硬件配置</th>
+<th align="left">软件配置</th>
+<th align="left">混合应用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">DB0</td>
+<td align="left">OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G*2_RAID1+600G*4_RAID10<br/>网卡：1000mbps</td>
+<td align="left">MySQL 5.7.13</td>
+<td align="left">否</td>
+</tr>
+
+<tr>
+<td align="left">DB1</td>
+<td align="left">OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G*2_RAID1+600G*4_RAID10<br/>网卡：1000mbps</td>
+<td align="left">MySQL 5.7.13</td>
+<td align="left">否</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="测试过程数据">测试过程数据</h2>
+
+<h2 id="基准测试">基准测试</h2>
+
+<h3 id="单库单表查询">单库单表查询</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表查询</td>
+<td align="left">7</td>
+<td align="left">493</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表查询</td>
+<td align="left">8</td>
+<td align="left">470</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-query-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-query-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表更新">单库单表更新</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表更新</td>
+<td align="left">2</td>
+<td align="left">6682</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表更新</td>
+<td align="left">3</td>
+<td align="left">6303</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-update-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-update-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表插入">单库单表插入</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表插入</td>
+<td align="left">2</td>
+<td align="left">6855</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表插入</td>
+<td align="left">2</td>
+<td align="left">6375</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-insert-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-insert-rt.png" alt="RT" /></p>
+
+<h2 id="极限测试">极限测试</h2>
+
+<h3 id="单库单表与两库各一表查询">单库单表与两库各一表查询</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表查询</td>
+<td align="left">7</td>
+<td align="left">1586</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表查询</td>
+<td align="left">7</td>
+<td align="left">1600</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各1表查询</td>
+<td align="left">13</td>
+<td align="left">2944</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-query-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-query-rt.png" alt="RT" /></p>
+
+<h3 id="单库两表与两库各两表查询">单库两表与两库各两表查询</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库两表查询</td>
+<td align="left">6</td>
+<td align="left">1736</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库两表查询</td>
+<td align="left">7</td>
+<td align="left">1732</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各两表查询</td>
+<td align="left">10</td>
+<td align="left">3331</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-query-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-query-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表更新与两库各一表更新">单库单表更新与两库各一表更新</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间（ms）</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表更新</td>
+<td align="left">7</td>
+<td align="left">9548</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单更新</td>
+<td align="left">7</td>
+<td align="left">9263</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各1表更新</td>
+<td align="left">4</td>
+<td align="left">18561</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-update-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-update-rt.png" alt="RT" /></p>
+
+<h3 id="单库两表与两库各2表更新">单库两表与两库各2表更新</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库两表更新</td>
+<td align="left">7</td>
+<td align="left">9170</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库两表更新</td>
+<td align="left">7</td>
+<td align="left">8941</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各两表更新</td>
+<td align="left">5</td>
+<td align="left">17997</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-update-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-update-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表插入与两库各一表插入">单库单表插入与两库各一表插入</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表插入</td>
+<td align="left">5</td>
+<td align="left">11182</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表插入</td>
+<td align="left">5</td>
+<td align="left">10882</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各1表插入</td>
+<td align="left">4</td>
+<td align="left">21414</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-insert-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-insert-rt.png" alt="RT" /></p>
+
+<h3 id="单库两表与两库各2表插入">单库两表与两库各2表插入</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库两表插入</td>
+<td align="left">4</td>
+<td align="left">11574</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库两表插入</td>
+<td align="left">5</td>
+<td align="left">10849</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各两表插入</td>
+<td align="left">4</td>
+<td align="left">23043</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-insert-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-insert-rt.png" alt="RT" /></p>
+
+<h3 id="sharding-jdbc-1-4-2与1-5-2两库各一表对比">Sharding-JDBC 1.4.2与1.5.2两库各一表对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">Sharding-JDBC 1.4.2</th>
+<th align="left">Sharding-JDBC 1.5.2</th>
+<th align="left">1.5.2 / 1.4.2</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">2934</td>
+<td align="left">2944</td>
+<td align="left">100.34%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">18454</td>
+<td align="left">18561</td>
+<td align="left">100.58%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">21045</td>
+<td align="left">21414</td>
+<td align="left">101.75%</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/152vs142tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/152vs142rt.png" alt="RT" /></p>
+
+<h2 id="附录">附录</h2>
+
+<p>本次测试，共使用两台数据库服务器，每台服务器上分别有1库，每个库中分别有2个主表，2个子表。</p>
+
+<h3 id="建表语句说明">建表语句说明</h3>
+
+<p>主表结构如下：</p>
+
+<pre><code class="language-sql">CREATE TABLE `order0` (
+  `id` bigint(50) NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(50) NOT NULL,
+  `order_type` int(11) DEFAULT NULL,
+  `cust_id` int(11) DEFAULT NULL,
+  `cust_type` int(11) DEFAULT NULL,
+  `cust_email` varchar(50) DEFAULT NULL,
+  `payment_method_type` int(11) DEFAULT NULL,
+  `payment_provider_id` int(11) DEFAULT NULL,
+  `shipping_method_type` int(11) DEFAULT NULL,
+  `packing_type` int(11) DEFAULT NULL,
+  `preferred_shipping_time_type` int(11) DEFAULT NULL,
+  `receiver_name` varchar(100) DEFAULT NULL,
+  `receiver_address` varchar(200) DEFAULT NULL,
+  `receiver_country_id` int(11) DEFAULT NULL,
+  `receiver_province_id` int(11) DEFAULT NULL,
+  `receiver_city_id` int(11) DEFAULT NULL,
+  `receiver_zip` varchar(20) DEFAULT NULL,
+  `receiver_tel` varchar(50) DEFAULT NULL,
+  `receiver_mobile_tel` varchar(50) DEFAULT NULL,
+  `cust_message` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_id` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5189307 DEFAULT CHARSET=gbk 
+</code></pre>
+
+<p>子表结构如下：</p>
+
+<pre><code class="language-sql">CREATE TABLE `ordert0` (
+  `idm` bigint(50) NOT NULL,
+  `id` int(10) DEFAULT NULL,
+  `order_idm` varchar(50) DEFAULT NULL,
+  `order_typem` int(11) DEFAULT NULL,
+  `cust_idm` int(11) DEFAULT NULL,
+  `cust_typem` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=gbk ROW_FORMAT=DYNAMIC
+</code></pre>
+
+<h3 id="sql语句说明">SQL语句说明</h3>
+
+<p>JDBC 插入</p>
+
+<pre><code class="language-sql">insert 
+into order?(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
+</code></pre>
+
+<p>JDBC 查询</p>
+
+<pre><code class="language-sql">select a.id,order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order? a,ordert? b where a.id=? and a.id%100=b.idm%100;
+</code></pre>
+
+<p>JDBC 更新</p>
+
+<pre><code class="language-sql">Update order? SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
+</code></pre>
+
+<p>Sharding-JDBC 插入</p>
+
+<pre><code class="language-sql">INSERT INTO `order`(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
+</code></pre>
+
+<p>Sharding-JDBC 查询</p>
+
+<pre><code class="language-sql">select cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order a,order_item b where a.id=? and a.id%100=b.idm%100;
+</code></pre>
+
+<p>Sharding-JDBC 更新</p>
+
+<pre><code class="language-sql">update order SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
+</code></pre>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/" title="JDBC不支持项"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/" title="Sharding-Proxy" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/clipboard.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.jquery.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery.sticky.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/featherlight.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/html5shiv-printshiv.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/highlight.pack.js?1547543307"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/modernizr.custom.71422.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/learn.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/hugo-learn.js?1547543307"></script>
+
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.css?1547543307" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.js?1547543307"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

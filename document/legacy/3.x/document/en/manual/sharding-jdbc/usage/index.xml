@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Manual on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/</link>
+    <description>Recent content in Manual on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Sharding</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/sharding/</guid>
+      <description>Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java Database sharding and table sharding of Sharding-JDBC configure descriptions according to rules. The following example is two databases plus two tables configurations, whose databases take module and split according to order_id, tables take module and split according to order_id.
+// Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure first data source BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.</description>
+    </item>
+    
+    <item>
+      <title>Read-write Splitting</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/read-write-splitting/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/read-write-splitting/</guid>
+      <description>Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure master data source BasicDataSource masterDataSource = new BasicDataSource(); masterDataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); masterDataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_master&amp;quot;); masterDataSource.setUsername(&amp;quot;root&amp;quot;); masterDataSource.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_master&amp;quot;, masterDataSource); // Configure first slave data source BasicDataSource slaveDataSource1 = new BasicDataSource(); slaveDataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave0&amp;quot;); slaveDataSource1.setUsername(&amp;quot;root&amp;quot;); slaveDataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave0&amp;quot;, slaveDataSource1); // Configure second slave data source BasicDataSource slaveDataSource2 = new BasicDataSource(); slaveDataSource2.</description>
+    </item>
+    
+    <item>
+      <title>Hint</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/hint/</guid>
+      <description>Introduction ShardingSphere uses ThreadLocal to manage sharding-columns and sharding-values. Developers can use HintManager to add sharding conditions by coding, sharding conditions effective only on current thread.
+Main usages of Hint:
+ Sharding column does not exist in SQL or tables in databases, but exist in external business logic. Therefore, it is possible to get the sharding result by Hint.
+ Mandatory Master routing strategy based in Hint.
+  Sharding with hint configuration Hint is used for mandatory data sharding, which requires HintManager to be used together with database or table ShardingStrategy.</description>
+    </item>
+    
+    <item>
+      <title>Orchestration</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/orchestration/</guid>
+      <description>Use orchestration feature need indicate a registry center. Configuration will save into registry center. Configuration can overwrite by local when every application startup, or load from registry center only.
+Without spring Add maven dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use zookeeper, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use etcd, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-etcd&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt;  Configure orchestration with java // Configure dataSourceMap and shardingRuleConfig // .</description>
+    </item>
+    
+    <item>
+      <title>Distribute Transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/transaction/</guid>
+      <description>to be translate</description>
+    </item>
+    
+  </channel>
+</rss>

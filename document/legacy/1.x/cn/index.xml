@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title></title>
-    <link>http://shardingsphere.io/document/legacy/1.x/cn/</link>
+    <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/</link>
     <description>Recent content on </description>
     <generator>Hugo -- gohugo.io</generator>
     
-	<atom:link href="http://shardingsphere.io/document/legacy/1.x/cn/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>快速入门</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/quick-start/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/quick-start/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/</guid>
       <description>使用API配置 Maven安装 &amp;lt;!-- 引入sharding-jdbc核心模块 --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-jdbc.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  规则配置 Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全貌：
 ShardingRule shardingRule = ShardingRule.builder() .dataSourceRule(dataSourceRule) .tableRules(tableRuleList) .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm())) .tableShardingStrategy(new TableShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm()))) .build();  规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
  详细的规则配置请参考分库分表
@@ -24,19 +24,19 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule)
     
     <item>
       <title>架构设计</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/03-design/architecture/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/03-design/architecture/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/</guid>
       <description></description>
     </item>
     
     <item>
       <title>核心概念</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/concepts/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/concepts/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/concepts/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/concepts/</guid>
       <description>本文介绍Sharding-JDBC包含的一些核心概念。
 LogicTable 数据分片的逻辑表，对于水平拆分的数据库(表)，同一类表的总称。例：订单数据根据主键尾数拆分为10张表,分别是t_order_0到t_order_9，他们的逻辑表名为t_order。
 ActualTable 在分片的数据库中真实存在的物理表。即上个示例中的t_order_0到t_order_9。
@@ -50,10 +50,10 @@ SQL Hint 对于分片字段非SQL决定，而由其他外置条件决定的场�
     
     <item>
       <title>简介</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/intro/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/intro/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/</guid>
       <description>Sharding-JDBC直接封装JDBC API，可以理解为增强版的JDBC驱动，旧代码迁移成本几乎为零：
  可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。  Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。采用&amp;rdquo;半理解&amp;rdquo;理念的SQL解析引擎，以达到性能与兼容性的最大平衡。
 Sharding-JDBC功能灵活且全面：
@@ -66,10 +66,10 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule)
     
     <item>
       <title>FAQ</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/faq/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/faq/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/</guid>
       <description>1. 阅读源码时为什么会出现编译错误? 回答：
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考lombok官网。
 2. 1.5.0版本之前出现java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
@@ -95,10 +95,10 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;  8. 1.</descri
     
     <item>
       <title>分库分表</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/sharding/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/sharding/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/sharding/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/sharding/</guid>
       <description>阅读本指南前，请先阅读快速起步。本文档使用更复杂的场景进一步介绍Sharding-JDBC的分库分表能力。
 数据库模式 本文档中提供了两个数据源db0和db1，每个数据源之中包含了两组表t_order_0和t_order_1，t_order_item_0和t_order_item_1 。这两组表的建表语句为：
 CREATE TABLE IF NOT EXISTS t_order_x ( order_id INT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (order_id) ); CREATE TABLE IF NOT EXISTS t_order_item_x ( item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, PRIMARY KEY (item_id) );  逻辑表与实际表映射关系 均匀分布 数据表在每个数据源内呈现均匀分布的态势
@@ -108,28 +108,28 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
     
     <item>
       <title>新闻</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/news/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/news/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/</guid>
       <description> 新闻  2017-07 InfoQ新闻：分布式数据库中间件Sharding-JDBC 1.5.0发布——自研SQL解析引擎+全数据库支持里程碑版本 2017-07 芋艿V的博客：Sharding-JDBC 源码分析 2017-07 DBAPlus分享：轻量级数据库中间件利器Sharding-JDBC深度解析 2017-03 开源中国高手问答：高手问答第144期—轻量级数据库中间层 Sharding-JDBC 深度解析 2016-06 InfoQ文章：Sharding-JDBC 1.3.0发布——支持读写分离 2016-02 CSDN文章：解读分库分表中间件Sharding-JDBC 2016-01 InfoQ新闻：当当开源sharding-jdbc，轻量级数据库分库分表中间件  </description>
     </item>
     
     <item>
       <title>目录结构说明</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/03-design/module/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/03-design/module/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/</guid>
       <description>sharding-jdbc ├──sharding-jdbc-core 分库分表核心模块，可直接使用 ├──sharding-jdbc-config-parent 配置父模块，不应直接使用 ├ ├──sharding-jdbc-config-common 配置公共模块，不应直接使用 ├ ├──sharding-jdbc-config-spring Spring命名空间支持模块，可直接使用 ├ ├──sharding-jdbc-config-yaml YAML配置，可直接使用 ├──sharding-jdbc-transaction-parent 柔性事务父模块，不应直接使用 ├ ├──sharding-jdbc-transaction 柔性事务核心模块，可直接使用 ├ ├──sharding-jdbc-transaction-storage 柔性事务存储模块，不应直接使用 ├ ├──sharding-jdbc-transaction-async-job 柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可 ├──sharding-jdbc-plugin 插件模块，目前包含自定义分布式自增主键，可直接使用 ├──sharding-jdbc-example 使用示例 ├ ├──sharding-jdbc-example-jdbc 基于JDBC的使用示例 ├ ├──sharding-jdbc-example-jpa 基于JPA的使用示例 ├ ├──sharding-jdbc-example-mybatis 基于MyBatis的使用示例 ├ ├──sharding-jdbc-example-config-spring 基于Spring命名空间配置的使用示例 ├ ├──sharding-jdbc-example-config-yaml 基于YAML配置的使用示例 ├ ├──sharding-jdbc-example-jdbc-transaction 柔性事务的使用示例 ├──sharding-jdbc-doc markdown生成文档的项目，使用方无需关注  </description>
     </item>
     
     <item>
       <title>详细功能列表</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/features/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/features/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/</guid>
       <description> 功能性需求 分库分表  分片规则自由定制 支持多分片键 支持通过=，BETWEEN，IN分片 支持级联表 支持多表笛卡尔积查询 支持多表结果归并 支持聚合查询结果归并 支持AVG函数改写为SUM/COUNT 支持ORDER BY结果归并 支持GROUP BY结果归并 支持LIMIT分页查询以及多库表结果改写及归并  柔性事务  最大努力送达型 TCC型(TBD)  易用性  JDBC协议适配
 1.1. 全ORM支持
 1.2. 全数据库连接池支持
@@ -143,30 +143,30 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
     
     <item>
       <title>读写分离</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/master-slave/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/master-slave/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/master-slave/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/master-slave/</guid>
       <description>概念 为了缓解数据库压力，将写入和读取操作分离为不同数据源，写库称为主库，读库称为从库，一主库可配置多从库。
 支持项  提供了一主多从的读写分离配置，可独立使用，也可配合分库分表使用。 同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。 Spring命名空间。 基于Hint的强制主库路由。  不支持范围  主库和从库的数据同步。 主库和从库的数据同步延迟导致的数据不一致。 主库双写或多写。  代码开发示例 // 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource0, slaveDataSource00, slaveDataSource01等为使用DBCP等连接池配置的真实数据源 Map&amp;lt;String, DataSource&amp;gt; slaveDataSourceMap0 = new HashMap&amp;lt;&amp;gt;(); slaveDataSourceMap0.put(&amp;quot;slaveDataSource00&amp;quot;, slaveDataSource00); slaveDataSourceMap0.put(&amp;quot;slaveDataSource01&amp;quot;, slaveDataSource01); // 可选择主从库负载均衡策略, 默认是ROUND_ROBIN, 还有RANDOM可以选择, 或者自定义负载策略 DataSource masterSlaveDs0 = MasterSlaveDataSourceFactory.createDataSource(&amp;quot;ms_0&amp;quot;, &amp;quot;masterDataSource0&amp;quot;, masterDataSource0, slaveDataSourceMap0, MasterSlaveLoadBalanceStrategyType.ROUND_ROBIN); Map&amp;lt;String, DataSource&amp;gt; slaveDataSourceMap1 = new HashMap&amp;lt;&amp;gt;(); slaveDataSourceMap1.put(&amp;quot;slaveDataSource10&amp;quot;, slaveDataSource10); slaveDataSourceMap1.put(&amp;quot;slaveDataSource11&amp;quot;, slaveDataSource11); DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource(&amp;quot;ms_1&amp;quot;, &amp;quot;masterDataSource1&amp;quot;, masterDataSource1, slaveDataSourceMap1, MasterSlaveLoadBalanceStrategyType.ROUND_ROBIN); // 构建分库分表数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); dataSourceMap.</description>
     </item>
     
     <item>
       <title>采用公司</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/company/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/company/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/</guid>
       <description> 采用公司（统计中） 公司排名不分先后，按拼音顺序排名
 佰昌科技 当当 东方车联 非凡之星 凤凰汽车 欢聚时代YY 家视天下 客如云 男衣库 Q堡直播 权大师 视觉中国 食蚁兽 搜好货 搜狐资讯 TCL 特微智能 唯品会 小牛在线 义乌购 御馔企业 中策车空间 转转公司 真信认知科技 足记 </description>
     </item>
     
     <item>
       <title>使用限制</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/limitations/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/limitations/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/</guid>
       <description> JDBC未支持列表 Sharding-JDBC暂时未支持不常用的JDBC方法。
 DataSource接口  不支持timeout相关操作  Connection接口  不支持存储过程，函数，游标的操作 不支持执行native的SQL 不支持savepoint相关操作 不支持Schema/Catalog的操作 不支持自定义类型映射  Statement和PreparedStatement接口  不支持返回多结果集的语句（即存储过程，非SELECT多条数据） 不支持国际化字符的操作  对于ResultSet接口  不支持对于结果集指针位置判断 不支持通过非next方法改变结果指针位置 不支持修改结果集内容 不支持获取国际化字符 不支持获取Array  JDBC 4.1  不支持JDBC 4.1接口新功能  查询所有未支持方法，请阅读com.dangdang.ddframe.rdb.sharding.jdbc.unsupported包。
 SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
@@ -175,19 +175,19 @@ SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UN
     
     <item>
       <title>未来线路规划</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/03-design/roadmap/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/03-design/roadmap/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/</guid>
       <description> 已完成 数据库  MySQL Oracle SQLServer PostgreSQL  DQL  JOIN BETWEEN IN ORDER BY GROUP BY COUNT, SUM, MAX, MIN, AVG LIMIT, rownum, TOP 非功能型子查询  DML  INSERT INTO INSERT SET UPDATE DELETE  DDL  CREATE ALTER DROP TRUNCATE  配置  Java API Spring命名空间 Yaml (仅读写分离未完成)  SQL解析  词法分析 语法分析  SQL改写  正确性改写 优化改写  访问路由  Hint路由 简单路由 笛卡尔积路由  结果归并  流式归并 内存归并 装饰者归并  分库分表  分库 分表 动态表 默认数据源  读写分离  读写分离 同一线程且同一数据库连接内一致性保证 Hint强制主库路由  分布式主键  JDBC集成 分布式主键策略接口 基于snowflake的分布式主键算法实现  柔性事务  最大努力送达型  计划中 配置  读写分离独立化 Binding策略提升 集中化 动态化  治理  数据源健康检测及发现 数据源动态切换 流量控制  待定 DQL  DISTINCT HAVING OR UNION, UNION ALL 全子查询 计算表达式，如：SUM(pv) / COUNT(uv) 通过SQL注释指定SQL Hint  DML  INSERT INTO VALUES (xxx), (xxx) 多表UPDATE 多表DELETE  DDL  CREATE VIEW CREATE INDEX CREATE OR REPLACE  SQL解析提升  批量解析 冗余括号 通过SQL注释指定SQL Hint  柔性事务提升  TCC  运维工具  字典表复制广播 动态扩容  </description>
     </item>
     
     <item>
       <title>贡献代码</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/contribution/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/contribution/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/</guid>
       <description>您可以报告bug，提交一个新的功能增强建议或者直接对以上内容提交改进补丁。
 报告bug 本章节介绍如何提交一个bug。
 报告一个新bug之前  确定在最新版本中该bug存在。我们将不会持续维护所有的发布版本，所有的修改仅根据当前版本。 确认该bug是可以复现的。请尽量提供完整的重现步骤。 请确定这不是一个重复的bug。 查看Issue Page列表，搜索您要提交的bug是否已经被报告过。  如何提交一个有质量的bug 请在Issue Page页面中提交bug。
@@ -200,10 +200,10 @@ SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UN
     
     <item>
       <title>SQL支持详细列表</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/sql-supported/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/sql-supported/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/</guid>
       <description>由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。 本文详细罗列出已明确可支持的SQL种类以及已明确不支持的SQL种类，尽量让使用者避免踩坑。 其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
 全局不支持项 动态表 未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在SQL或Hint中包含分片键的SQL均不支持。 原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。
 有限支持子查询 子查询支持详情请参考分页及子查询。
@@ -212,19 +212,19 @@ SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UN
     
     <item>
       <title>配置手册</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/configuration/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/configuration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/configuration/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/configuration/</guid>
       <description>YAML配置 引入maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-config-yaml&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Java示例 DataSource dataSource = new YamlShardingDataSource(yamlFile);  配置示例 dataSource: ds_0: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds_0 username: root password: ds_1: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds_1 username: root password: defaultDataSourceName: ds_0 tables: config: actualTables: t_config t_order: actualTables: t_order_${0..1} tableStrategy: &amp;amp;table001 shardingColumns: order_id algorithmExpression: t_order_${order_id.longValue() % 2} #绑定表中其余的表的策略与t_order的策略相同 t_order_item: actualTables: t_order_item_${0..1} tableStrategy: *table001 bindingTables: - tableNames: t_order,t_order_item - tableNames: ... defaultDatabaseStrategy: shardingColumns: none algorithmClassName: com.</description>
     </item>
     
     <item>
       <title>强制路由</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/hint-sharding-value/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/hint-sharding-value/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/hint-sharding-value/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/hint-sharding-value/</guid>
       <description>提示:阅读本文前请详细预读 分库分表
  背景 对Sharding-JDBC有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自SQL语句中WHERE条件的。 例如逻辑表t_order如果其数据源分片键为user_id， 分片算法是奇数值路由到db1偶数值路由到db2；表分片键为order_id， 分片算法是奇数值路由到t_order_1偶数值路由到t_order_2，如果执行如下sql语句：
 select * from t_order where user_id = 1 and order_id = 2  那么在数据源分片算法的shardingValue参数将会传入1用于分片计算，结果为路由到db1; 表分片算法的shardingValue参数将会传入2用于分片计算，结果为路由到t_order_2。最终SQL为：
@@ -236,10 +236,10 @@ String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try ( HintManager hintMa
     
     <item>
       <title>性能测试报告</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/stress-test/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/stress-test/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/</guid>
       <description>测试目的 对Sharding-JDBC进行性能测试，客观、公正评估系统的性能，目的有三:
  对比Sharding-JDBC和JDBC的性能。 Sharding-JDBC是否通过扩展数据库解决JDBC吞吐量不足的问题。 Sharding-JDBC的稳定性。  测试数据库配置    数据库实例 DB1 DB2     操作系统 centOS5.4 centOS5.4   CPU 2C四核 2C四核   内存 32GB 32GB   硬盘 250G*2_RAID1+600G*4_RAID10 250G*2_RAID1+600G*4_RAID10   Mysql版本 5.5.19 5.5.19   数据表字段数量 70 70   数据表行数 1000万 1000万    网络拓扑 单库情况下Sharding-JDBC与JDBC性能对比 测试结论：
  查询操作，Sharding-JDBC的TPS为JDBC的TPS的99.8% 插入操作，Sharding-JDBC的TPS为JDBC的TPS的90.2% 更新操作，Sharding-JDBC的TPS为JDBC的TPS的93.1%  查询  横坐标：并发用户数 纵坐标：TPS   插入  横坐标：并发用户数 纵坐标：TPS   更新  横坐标：并发用户数 纵坐标：TPS   Sharding-JDBC单库与双库性能对比 对比测试：</description>
@@ -247,10 +247,10 @@ String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try ( HintManager hintMa
     
     <item>
       <title>分布式主键</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/key-generator/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/key-generator/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/key-generator/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/key-generator/</guid>
       <description>实现动机 传统数据库软件开发中，主键自动生成技术是基本需求。而各大数据库对于该需求也提供了相应的支持，比如MySQL的自增键。 对于MySQL而言，分库分表之后，不同表生成全局唯一的Id是非常棘手的问题。因为同一个逻辑表内的不同实际表之间的自增键是无法互相感知的， 这样会造成重复Id的生成。我们当然可以通过约束表生成键的规则来达到数据的不重复，但是这需要引入额外的运维力量来解决重复性问题，并使框架缺乏扩展性。
 目前有许多第三方解决方案可以完美解决这个问题，比如UUID等依靠特定算法自生成不重复键，或者通过引入Id生成服务等。 但也正因为这种多样性导致了Sharding-JDBC如果强依赖于任何一种方案就会限制其自身的发展。
 基于以上的原因，最终采用了以JDBC接口来实现对于生成Id的访问，而将底层具体的Id生成实现分离出来。
@@ -274,10 +274,10 @@ TableRule.builder(&amp;quot;t_order_item&amp;quot;).generateKeyColumns(&amp;quot
     
     <item>
       <title>事务支持</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/transaction/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/transaction/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/transaction/</guid>
       <description>Sharding-JDBC由于性能方面的考量，决定不支持强一致性分布式事务。我们已明确规划线路图，未来会支持最终一致性的柔性事务。
 目前最大努力送达型柔性事务已开发完成。
 如果不使用柔性事务，也会自动包含弱XA事务支持，有以下几点说明：
@@ -291,10 +291,10 @@ TableRule.builder(&amp;quot;t_order_item&amp;quot;).generateKeyColumns(&amp;quot
     
     <item>
       <title>分页及子查询</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/subquery/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/subquery/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/</guid>
       <description>Sharding-JDBC完全支持MySQL、PostgreSQL和Oracle的分页查询，SQLServer由于分页查询较为复杂，仅部分支持。
 分页性能 性能瓶颈 查询偏移量过大的分页会导致数据库获取数据性能低下，以MySQL为例：
 SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10  这句SQL会使得MySQL在无法利用索引的情况下跳过1000000条记录后，再获取10条记录，其性能可想而知。而在分库分表的情况下（假设分为2个库），为了保证数据的正确性，SQL会改写为：
@@ -309,10 +309,10 @@ SELECT * FROM t_order WHERE id &amp;gt; 100000 LIMIT 10  分页子查询 Oracle�
     
     <item>
       <title>测试引擎</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/test-framework/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/test-framework/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/test-framework/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/test-framework/</guid>
       <description>Sharding-JDBC提供了完善的测试引擎。它以XML方式定义SQL，每条SQL由SQL解析单元测试引擎和整合测试引擎驱动，每个引擎分别为H2、MySQL、PostgreSQL、SQLServer和Oracle数据库运行测试用例。
 SQL解析单元测试全面覆盖SQL占位符和字面量维度。整合测试进一步拆分为策略和JDBC两个维度，策略维度包括分库分表、仅分表、仅分库、读写分离、动态表等策略，JDBC维度包括Statement、PreparedStatement。
 因此，1条SQL会驱动5种数据库的解析 * 2种参数传递类型 + 5种数据库 * 5种分片策略 * 2种JDBC运行方式 = 60个测试用例，以达到Sharding-JDBC对于高质量的追求。
@@ -327,19 +327,19 @@ SQL解析单元测试全面覆盖SQL占位符和字面量维度。整合测试�
     
     <item>
       <title>使用指南</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/02-guide/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/</guid>
       <description> 本章导航  想一览基本的概念，请阅读基本概念。 想通过一个完整的例子使用Sharding-JDBC进行分库分表，请阅读如何分库分表章节。 分库分表后，要进一步提高性能，可以使用读写分离功能。 配置手册介绍了如何通过YAML和Spring两种方式配置。 一般情况Sharding-JDBC是通过SQL解析来获取数据路由数据的，但也可以使用强制路由方式来设置分片数据。该模式非常适合存量系统扩容。 分库分表后主键如何生成？分布式主键将给你答案。 分库后事务如何保证？事务支持将介绍Sharding-JDBC如何通过使用柔性事务的方式来实现分布式事务。 分页是否影响性能？Oracle和SQLServer的分页涉及到子查询又该如何处理？请阅读分页及子查询。 Sharding-JDBC如何运行单元测试和整合测试？请阅读测试引擎。  </description>
     </item>
     
     <item>
       <title>概览</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/00-overview/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</guid>
       <description>概述 &amp;nbsp; &amp;nbsp; &amp;nbsp; 
 Sharding-JDBC是一个开源的适用于微服务的分布式数据访问基础类库，它始终以云原生的基础开发套件为目标。
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
@@ -350,19 +350,19 @@ Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功�
     
     <item>
       <title>设计规划</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/03-design/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/03-design/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/</guid>
       <description> 本章导航  想了解架构设计及项目模块设计的概念，请阅读架构设计及目录结构说明。 Sharding-JDBC未来规划有哪些呢？请阅读未来规划。  </description>
     </item>
     
     <item>
       <title>起航</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/</guid>
       <description> 本章导航  如果想快速体验Sharding-JDBC的强大功能，请阅读快速入门。 如果在使用中遇到什么问题，请首先在FAQ中寻找解决问题的答案。 想要在自己的项目中集成Sharding-JDBC,您一定很关心它能做什么和不能做什么。 数据库中间件一般都不会支持完全的SQL语法,在这里能了解到支持的SQL语法。 最后，你会关心中间件的性能情况。这里将展示我们的性能测试结果。  </description>
     </item>
     
