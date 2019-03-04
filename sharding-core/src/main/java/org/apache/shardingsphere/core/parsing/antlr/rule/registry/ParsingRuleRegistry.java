@@ -31,8 +31,6 @@ import org.apache.shardingsphere.core.parsing.antlr.rule.registry.filler.FillerR
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRuleDefinition;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import com.google.common.base.Optional;
 
