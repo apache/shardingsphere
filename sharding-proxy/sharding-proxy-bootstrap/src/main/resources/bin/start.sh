@@ -39,6 +39,6 @@ if [ $# == 2 ]; then
     echo "The configuration file is $DEPLOY_DIR/conf/$2"
 fi
 
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} > ${STDOUT_FILE} 2>&1 &
+nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"
