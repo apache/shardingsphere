@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 
