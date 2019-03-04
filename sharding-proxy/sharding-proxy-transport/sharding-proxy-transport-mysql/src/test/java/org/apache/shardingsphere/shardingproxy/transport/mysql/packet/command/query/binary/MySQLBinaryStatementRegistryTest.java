@@ -23,9 +23,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLMySQLBinaryStatementRegistryTest {
+public final class MySQLBinaryStatementRegistryTest {
     
     private final String sql = "SELECT * FROM tbl WHERE id=?";
     
@@ -50,5 +51,13 @@ public final class MySQLMySQLBinaryStatementRegistryTest {
         MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(1);
         assertThat(actual.getSql(), is(sql));
         assertThat(actual.getParametersCount(), is(1));
+    }
+    
+    @Test
+    public void assertRemoveIfPresent() {
+        MySQLBinaryStatementRegistry.getInstance().register(sql, 1);
+        MySQLBinaryStatementRegistry.getInstance().remove(1);
+        MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(1);
+        assertNull(actual);
     }
 }

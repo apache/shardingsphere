@@ -28,10 +28,14 @@ import java.util.Collections;
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class MySQLComStmtClosePacketExecutor implements CommandPacketExecutor<MySQLPacket> {
+    
+    private final MySQLComStmtClosePacket comStmtClosePacket;
     
     @Override
     public Collection<MySQLPacket> execute() {
+        comStmtClosePacket.removeCachedStatement();
         return Collections.emptyList();
     }
 }
