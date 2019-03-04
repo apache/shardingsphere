@@ -36,7 +36,7 @@ import java.util.List;
 @Getter
 public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
-    private String statementId;
+    private final String statementId;
     
     private final String sql;
     
