@@ -1,32 +1,32 @@
 dataSources:
-  ds_master_0: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_master_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_master_0
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_master_0
     username: root
     password:
-  ds_master_0_slave_0: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_master_0_slave_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0
     username: root
     password:
-  ds_master_0_slave_1: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_master_0_slave_1: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1
     username: root
     password:
-  ds_master_1: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_master_1: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_master_1
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_master_1
     username: root
     password:
-  ds_master_1_slave_0: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_master_1_slave_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0
     username: root
     password:
-  ds_master_1_slave_1: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_master_1_slave_1: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1
     username: root
     password:
 

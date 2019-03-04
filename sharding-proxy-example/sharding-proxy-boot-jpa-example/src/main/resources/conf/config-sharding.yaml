@@ -12,7 +12,7 @@ schemaName: sharding_db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -20,7 +20,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
   ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000

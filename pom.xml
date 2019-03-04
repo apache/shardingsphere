@@ -26,7 +26,7 @@
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
         <spring-boot.version>1.5.17.RELEASE</spring-boot.version>
-        <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
+        <hikari-cp.version>2.4.11</hikari-cp.version>
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
         <slf4j.version>1.7.7</slf4j.version>
@@ -199,15 +199,9 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${commons-dbcp2.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-pool</groupId>
-                    <artifactId>commons-pool</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP-java7</artifactId>
+            <version>${hikari-cp.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
