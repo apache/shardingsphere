@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -70,6 +71,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     
     private final int statementId;
     
+    @Getter
     private final MySQLBinaryStatement binaryStatement;
     
     private final int flags;
@@ -78,6 +80,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     
     private final MySQLNewParametersBoundFlag newParametersBoundFlag;
     
+    @Getter
     private final List<Object> parameters;
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -47,16 +46,14 @@ public final class MySQLCommandPacketFactory {
     /**
      * Create new instance of command packet.
      *
-     * @param payload MySQL packet payload
+     * @param commandPacketType command packet type for MySQL
+     * @param payload packet payload for MySQL
      * @param backendConnection backend connection
-     * @return command packet
+     * @return command packet for MySQL
      * @throws SQLException SQL exception
      */
-    public static MySQLCommandPacket newInstance(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL command packet must be `0`.");
-        int commandPacketTypeValue = payload.readInt1();
-        MySQLCommandPacketType type = MySQLCommandPacketType.valueOf(commandPacketTypeValue);
-        switch (type) {
+    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+        switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitPacket();
             case COM_INIT_DB:
@@ -74,7 +71,7 @@ public final class MySQLCommandPacketFactory {
             case COM_PING:
                 return new MySQLComPingPacket();
             default:
-                return new MySQLUnsupportedCommandPacket(type);
+                return new MySQLUnsupportedCommandPacket(commandPacketType);
         }
     }
 }
