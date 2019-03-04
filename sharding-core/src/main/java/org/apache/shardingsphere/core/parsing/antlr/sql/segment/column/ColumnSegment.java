@@ -23,6 +23,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.List;
@@ -42,7 +44,9 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     
     private final int startIndex;
     
-    public ColumnSegment(final String columnText, final int startIndex) {
+    private final int stopIndex;
+    
+    public ColumnSegment(final String columnText, final int startIndex, final int stopIndex) {
         List<String> texts = Splitter.on(Symbol.DOT.getLiterals()).splitToList(columnText);
         if (1 == texts.size()) {
             name = SQLUtil.getExactlyValue(columnText);
@@ -52,6 +56,7 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
             owner = SQLUtil.getExactlyValue(texts.get(0));
         }
         this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
     }
     
     /**
@@ -66,5 +71,10 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     @Override
     public final Optional<String> getOwner() {
         return Optional.fromNullable(owner);
+    }
+
+    @Override
+    public Condition buildCondition(final Column column, final String sql) {
+        throw new RuntimeException("Unsupported right column segment to condition ");
     }
 }

@@ -66,6 +66,7 @@ public enum MySQLKeyword implements Keyword {
     EXCHANGE,
     REBUILD,
     REPAIR,
+    REPLACE,
     REMOVE,
     UPGRADE,
     KEY_BLOCK_SIZE,

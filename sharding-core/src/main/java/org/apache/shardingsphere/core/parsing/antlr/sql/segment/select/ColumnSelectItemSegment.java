@@ -31,8 +31,8 @@ public final class ColumnSelectItemSegment extends ColumnSegment implements Sele
     
     private String alias;
     
-    public ColumnSelectItemSegment(final String columnText, final int startIndex) {
-        super(columnText, startIndex);
+    public ColumnSelectItemSegment(final String columnText, final int startIndex, final int stopIndex) {
+        super(columnText, startIndex, stopIndex);
     }
     
     @Override

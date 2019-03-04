@@ -41,9 +41,7 @@ public class DeleteFromWhereFiller extends FromWhereFiller {
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         dmlStatement.setDeleteStatement(true);
         for (Entry<String, String> each : sqlSegment.getTableAliases().entrySet()) {
-            if (!each.getValue().equals(each.getKey())) {
-                dmlStatement.getUpdateTables().put(each.getKey(), each.getValue());
-            }
+            dmlStatement.getUpdateTableAlias().put(each.getKey(), each.getValue());
         }
         dmlStatement.setWhereStartIndex(deleteFromWhereSegment.getWhereStartIndex());
         dmlStatement.setWhereStopIndex(deleteFromWhereSegment.getWhereStopIndex());

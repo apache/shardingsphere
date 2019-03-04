@@ -17,15 +17,21 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
+import java.util.Map.Entry;
+
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
+import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.Map.Entry;
 
 /**
  * Update set where filler.
@@ -39,10 +45,28 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
         super.fill(sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
         UpdateSetWhereSegment updateSetWhereSegment = (UpdateSetWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
-        for (Entry<String, ExpressionSegment> each : updateSetWhereSegment.getUpdateColumns().entrySet()) {
-            //TODO :hongjun use Column instead of each.getKey()
-//            dmlStatement.getUpdateColumnValues().put(each.getKey(), new OrConditionFiller().buildExpression(each.getValue(), sql).get());
+        String updateTable = dmlStatement.getUpdateTableAlias().values().iterator().next();
+        for (Entry<ColumnSegment, ExpressionSegment> each : updateSetWhereSegment.getUpdateColumns().entrySet()) {
+            Column column = new Column(each.getKey().getName(), updateTable);
+            SQLExpression expression = each.getValue().convertToSQLExpression(sql).get();
+            dmlStatement.getUpdateColumnValues().put(column, expression);
+            fillEncryptCondition(column, each.getKey(), shardingRule, sqlStatement, expression);
         }
         dmlStatement.setDeleteStatement(false);
+    }
+    
+    private void fillEncryptCondition(final Column column, final ColumnSegment columnSegment, final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression expression) {
+        if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+            return;
+        }
+        AndCondition andCondition;
+        if (0 == sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().size()) {
+            andCondition = new AndCondition();
+            sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(andCondition);
+        } else {
+            andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
+        }
+        andCondition.getConditions().add(new Condition(column, expression));
+        sqlStatement.getSQLTokens().add(new EncryptColumnToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), column, false));
     }
 }

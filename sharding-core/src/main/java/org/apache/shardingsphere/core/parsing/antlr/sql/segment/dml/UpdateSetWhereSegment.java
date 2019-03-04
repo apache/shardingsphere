@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
 
 import lombok.Getter;
@@ -32,5 +33,5 @@ import lombok.Getter;
 @Getter
 public final class UpdateSetWhereSegment extends DeleteFromWhereSegment {
 
-    private final Map<String, ExpressionSegment> updateColumns = new LinkedHashMap<>();
+    private final Map<ColumnSegment, ExpressionSegment> updateColumns = new LinkedHashMap<>();
 }

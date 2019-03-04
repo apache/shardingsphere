@@ -27,25 +27,25 @@ public final class SQLStatementRuleDefinitionEntityLoaderTest {
     
     @Test
     public void assertLoadForMySQL() {
-        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/mysql/sql-statement-rule-definition.xml");
+        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForPostgreSQL() {
-        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/postgresql/sql-statement-rule-definition.xml");
+        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/postgresql/sql-statement-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForOracle() {
-        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/oracle/sql-statement-rule-definition.xml");
+        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/oracle/sql-statement-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForSQLServer() {
-        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sqlserver/sql-statement-rule-definition.xml");
+        SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/sqlserver/sql-statement-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
 }

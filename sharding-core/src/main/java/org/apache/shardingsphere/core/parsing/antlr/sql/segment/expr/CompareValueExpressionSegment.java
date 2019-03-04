@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.parser.token;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
+
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
- * SQL Token.
- *
- * @author zhangliang
- * @author panjuan
+ * Equals value expression segment.
+ * 
+ * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public abstract class SQLToken implements Comparable<SQLToken> {
+public final class CompareValueExpressionSegment implements SQLRightValueExpressionSegment {
     
-    private final int startIndex;
+    private final ExpressionSegment expression;
     
+    private final String compareOperator;
+
     @Override
-    public final int compareTo(final SQLToken sqlToken) {
-        return startIndex - sqlToken.getStartIndex();
+    public Condition buildCondition(final Column column, final String sql) {
+        return new Condition(column, compareOperator, expression.convertToSQLExpression(sql).get());
     }
 }

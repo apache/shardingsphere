@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.rule.registry;
 
-import com.google.common.base.Optional;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;
@@ -32,8 +32,10 @@ import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLS
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRuleDefinition;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.base.Optional;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Parsing rule registry.
@@ -57,7 +59,7 @@ public final class ParsingRuleRegistry {
     
     /**
      * Get singleton instance of parsing rule registry.
-     * 
+     *
      * @return instance of parsing rule registry
      */
     public static ParsingRuleRegistry getInstance() {
@@ -84,7 +86,7 @@ public final class ParsingRuleRegistry {
     private SQLStatementRuleDefinition init(final DatabaseType databaseType) {
         ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition();
         extractorRuleDefinition.init(
-                extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()), 
+                extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()),
                 extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(databaseType)));
         SQLStatementRuleDefinition result = new SQLStatementRuleDefinition();
         result.init(statementRuleDefinitionLoader.load(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(databaseType)), extractorRuleDefinition);

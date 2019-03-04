@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Equals value expression segment.
- * 
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
@@ -30,4 +33,9 @@ import lombok.RequiredArgsConstructor;
 public final class EqualsValueExpressionSegment implements SQLRightValueExpressionSegment {
     
     private final ExpressionSegment expression;
+    
+    @Override
+    public Condition buildCondition(final Column column, final String sql) {
+        return new Condition(column, expression.convertToSQLExpression(sql).get());
+    }
 }

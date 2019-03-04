@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.rule.registry;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public final class ParsingRuleRegistryTest {
     
@@ -49,6 +49,7 @@ public final class ParsingRuleRegistryTest {
     
     @Test
     public void assertNotFindSQLStatementFiller() {
+     
         assertFalse(ParsingRuleRegistry.getInstance().findSQLStatementFiller(SQLSegment.class).isPresent());
     }
 }

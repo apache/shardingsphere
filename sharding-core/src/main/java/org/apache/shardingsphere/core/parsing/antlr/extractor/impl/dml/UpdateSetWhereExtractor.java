@@ -63,7 +63,7 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
         ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(setClauseNode.get(), RuleName.ASSIGNMENT)) {
             Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract((ParserRuleContext) each.getChild(0));
-            updateSetWhereSegment.getUpdateColumns().put(columnSegment.get().getName(), expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) each.getChild(2)).get());
+            updateSetWhereSegment.getUpdateColumns().put(columnSegment.get(), expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) each.getChild(2)).get());
         }
     }
 }

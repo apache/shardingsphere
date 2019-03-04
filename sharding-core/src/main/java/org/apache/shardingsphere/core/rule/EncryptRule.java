@@ -37,10 +37,10 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class EncryptRule {
+public final class EncryptRule implements SQLStatementFillerRule {
     
     private final Collection<EncryptTableRule> tableRules;
-
+    
     private final ShardingEncryptorStrategy defaultEncryptorStrategy;
     
     @Getter

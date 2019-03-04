@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Condition segment.
@@ -35,7 +35,7 @@ public final class ConditionSegment implements SQLSegment {
     
     private final ColumnSegment column;
     
-    private final ShardingOperator operator;
+    private final String operator;
     
     private final SQLRightValueExpressionSegment expression;
     

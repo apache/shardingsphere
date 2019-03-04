@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+
+import com.google.common.base.Optional;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -38,4 +42,9 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     private final int innerExpressionStopIndex; 
     
     private final int distinctExpressionStartIndex;
+    
+    @Override
+    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
+        return Optional.absent();
+    }
 }
