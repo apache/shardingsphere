@@ -37,7 +37,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketTypeLoader;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
@@ -141,7 +140,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
         for (PostgreSQLPacket each : responsePackets) {
             context.write(each);
         }
-        if (commandPacket instanceof PostgreSQLQueryCommandPacket) {
+        if (commandPacketExecutor instanceof QueryCommandPacketExecutor) {
             writeMoreResults(context, backendConnection, (QueryCommandPacketExecutor<PostgreSQLPacket>) commandPacketExecutor);
         }
         if (commandPacket instanceof PostgreSQLComQueryPacket) {

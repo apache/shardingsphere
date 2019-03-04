@@ -21,8 +21,6 @@ package org.apache.shardingsphere.shardingproxy.transport.api.packet;
  * Command packet.
  *
  * @author zhangliang
- * 
- * @param <T> type of database packet
  */
-public interface CommandPacket<T extends DatabasePacket> {
+public interface CommandPacket {
 }

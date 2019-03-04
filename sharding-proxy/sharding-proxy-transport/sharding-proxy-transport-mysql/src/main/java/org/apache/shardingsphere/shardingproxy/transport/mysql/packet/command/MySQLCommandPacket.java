@@ -26,5 +26,5 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
  * @author zhangliang
  * @author wangkai
  */
-public interface MySQLCommandPacket extends MySQLPacket, CommandPacket<MySQLPacket> {
+public interface MySQLCommandPacket extends MySQLPacket, CommandPacket {
 }

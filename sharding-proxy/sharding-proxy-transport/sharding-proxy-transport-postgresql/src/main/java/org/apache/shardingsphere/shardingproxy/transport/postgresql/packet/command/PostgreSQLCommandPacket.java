@@ -25,5 +25,5 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.Postg
  *
  * @author zhangyonglun
  */
-public interface PostgreSQLCommandPacket extends PostgreSQLPacket, CommandPacket<PostgreSQLPacket> {
+public interface PostgreSQLCommandPacket extends PostgreSQLPacket, CommandPacket {
 }

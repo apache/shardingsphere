@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
+public final class MySQLComQueryPacket implements MySQLCommandPacket {
     
     private final String sql;
     
