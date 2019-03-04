@@ -31,10 +31,8 @@ import java.util.Collections;
  *
  * @author zhangyonglun
  */
+@Getter
 public final class PostgreSQLComDescribePacket implements PostgreSQLCommandPacket {
-    
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.DESCRIBE.getValue();
     
     public PostgreSQLComDescribePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
@@ -49,5 +47,10 @@ public final class PostgreSQLComDescribePacket implements PostgreSQLCommandPacke
     @Override
     public Collection<PostgreSQLPacket> execute() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.DESCRIBE.getValue();
     }
 }

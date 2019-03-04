@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.MySQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ping.MySQLComPingPacket;
@@ -48,24 +47,23 @@ public final class MySQLCommandPacketFactory {
      *
      * @param commandPacketType command packet type for MySQL
      * @param payload packet payload for MySQL
-     * @param backendConnection backend connection
      * @return command packet for MySQL
      * @throws SQLException SQL exception
      */
-    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload) throws SQLException {
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitPacket();
             case COM_INIT_DB:
-                return new MySQLComInitDbPacket(payload, backendConnection);
+                return new MySQLComInitDbPacket(payload);
             case COM_FIELD_LIST:
-                return new MySQLComFieldListPacket(payload, backendConnection);
+                return new MySQLComFieldListPacket(payload);
             case COM_QUERY:
-                return new MySQLComQueryPacket(payload, backendConnection);
+                return new MySQLComQueryPacket(payload);
             case COM_STMT_PREPARE:
-                return new MySQLComStmtPreparePacket(backendConnection, payload);
+                return new MySQLComStmtPreparePacket(payload);
             case COM_STMT_EXECUTE:
-                return new MySQLQueryComStmtExecutePacket(payload, backendConnection);
+                return new MySQLQueryComStmtExecutePacket(payload);
             case COM_STMT_CLOSE:
                 return new MySQLComStmtClosePacket(payload);
             case COM_PING:

@@ -49,24 +49,25 @@ public final class MySQLComFieldListPacketExecutor implements CommandPacketExecu
     @Override
     public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) throws SQLException {
         MySQLComFieldListPacket comFieldListPacket = (MySQLComFieldListPacket) commandPacket;
+        String schemaName = backendConnection.getSchemaName();
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(
-                backendConnection.getLogicSchema(), getShowColumnsSQL(comFieldListPacket), backendConnection);
+                backendConnection.getLogicSchema(), getShowColumnsSQL(schemaName, comFieldListPacket), backendConnection);
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        return backendResponse instanceof ErrorResponse
-                ? Collections.<MySQLPacket>singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) : getColumnDefinition41Packets(comFieldListPacket);
+        return backendResponse instanceof ErrorResponse ? Collections.<MySQLPacket>singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
+                : getColumnDefinition41Packets(schemaName, comFieldListPacket);
     }
     
-    private String getShowColumnsSQL(final MySQLComFieldListPacket comFieldListPacket) {
-        return String.format(SQL, comFieldListPacket.getTable(), comFieldListPacket.getSchemaName());
+    private String getShowColumnsSQL(final String schemaName, final MySQLComFieldListPacket comFieldListPacket) {
+        return String.format(SQL, comFieldListPacket.getTable(), schemaName);
     }
     
-    private Collection<MySQLPacket> getColumnDefinition41Packets(final MySQLComFieldListPacket comFieldListPacket) throws SQLException {
+    private Collection<MySQLPacket> getColumnDefinition41Packets(final String schemaName, final MySQLComFieldListPacket comFieldListPacket) throws SQLException {
         Collection<MySQLPacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         while (databaseCommunicationEngine.next()) {
             String columnName = databaseCommunicationEngine.getQueryData().getData().get(0).toString();
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, 
-                    comFieldListPacket.getSchemaName(), comFieldListPacket.getTable(), comFieldListPacket.getTable(), columnName, columnName, 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId,
+                    schemaName, comFieldListPacket.getTable(), comFieldListPacket.getTable(), columnName, columnName, 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;

@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.Collection;
@@ -44,6 +43,6 @@ public final class PostgreSQLUnsupportedCommandPacket implements PostgreSQLComma
     
     @Override
     public Collection<PostgreSQLPacket> execute() {
-        return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
+        return Collections.emptyList();
     }
 }

@@ -18,15 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.util.Collection;
@@ -38,17 +32,13 @@ import java.util.Collections;
  * @author zhangliang
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>
  */
-@Slf4j
+@Getter
 public final class MySQLComInitDbPacket implements MySQLCommandPacket {
     
-    @Getter
     private final String schema;
     
-    private final BackendConnection backendConnection;
-    
-    public MySQLComInitDbPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public MySQLComInitDbPacket(final MySQLPacketPayload payload) {
         schema = payload.readStringEOF();
-        this.backendConnection = backendConnection;
     }
     
     @Override
@@ -59,12 +49,7 @@ public final class MySQLComInitDbPacket implements MySQLCommandPacket {
     
     @Override
     public Collection<MySQLPacket> execute() {
-        log.debug("Schema name received for Sharding-Proxy: {}", schema);
-        if (LogicSchemas.getInstance().schemaExists(schema)) {
-            backendConnection.setCurrentSchema(schema);
-            return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
-        }
-        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema));
+        return Collections.emptyList();
     }
     
     @Override

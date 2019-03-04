@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
@@ -32,7 +32,7 @@ import java.util.Collections;
  *
  * @author zhangyonglun
  */
-@Slf4j
+@Getter
 public final class MySQLComStmtClosePacket implements MySQLCommandPacket {
     
     private final int statementId;
@@ -47,8 +47,6 @@ public final class MySQLComStmtClosePacket implements MySQLCommandPacket {
     
     @Override
     public Collection<MySQLPacket> execute() {
-        log.debug("COM_STMT_CLOSE received for Sharding-Proxy: {}", statementId);
-        // TODO :yonglun need to clean PreparedStatementRegistry?
         return Collections.emptyList();
     }
     

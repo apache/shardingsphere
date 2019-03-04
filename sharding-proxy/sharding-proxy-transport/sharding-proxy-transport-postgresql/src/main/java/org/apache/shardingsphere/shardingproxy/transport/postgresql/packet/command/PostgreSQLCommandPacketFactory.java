@@ -53,7 +53,7 @@ public final class PostgreSQLCommandPacketFactory {
             final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         switch (commandPacketType) {
             case QUERY:
-                return new PostgreSQLComQueryPacket(payload, backendConnection);
+                return new PostgreSQLComQueryPacket(payload);
             case PARSE:
                 return new PostgreSQLComParsePacket(payload, backendConnection);
             case BIND:

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync;
 
-import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -33,9 +32,6 @@ import java.util.Collections;
  */
 public final class PostgreSQLComSyncPacket implements PostgreSQLCommandPacket {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.SYNC.getValue();
-    
     public PostgreSQLComSyncPacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
     }
@@ -47,5 +43,10 @@ public final class PostgreSQLComSyncPacket implements PostgreSQLCommandPacket {
     @Override
     public Collection<PostgreSQLPacket> execute() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.SYNC.getValue();
     }
 }
