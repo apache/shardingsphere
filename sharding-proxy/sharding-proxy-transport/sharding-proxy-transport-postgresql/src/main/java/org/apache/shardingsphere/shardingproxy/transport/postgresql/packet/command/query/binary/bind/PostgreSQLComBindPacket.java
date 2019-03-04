@@ -121,18 +121,25 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         if (GlobalContext.getInstance().isCircuitBreak()) {
             return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
         }
-        if (null != databaseCommunicationEngine) {
-            BackendResponse backendResponse = databaseCommunicationEngine.execute();
-            if (backendResponse instanceof ErrorResponse) {
-                return Collections.<PostgreSQLPacket>singletonList(createErrorPacket((ErrorResponse) backendResponse));
-            }
-            if (backendResponse instanceof UpdateResponse) {
-                return Collections.<PostgreSQLPacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
-            }
-            Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
-            return result.isPresent() ? Collections.<PostgreSQLPacket>singletonList(result.get()) : Collections.<PostgreSQLPacket>emptyList();
+        List<PostgreSQLPacket> result = new LinkedList<>();
+        result.add(new PostgreSQLBindCompletePacket());
+        if (null == databaseCommunicationEngine) {
+            return result;
         }
-        return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLBindCompletePacket());
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
+        if (backendResponse instanceof ErrorResponse) {
+            result.add(createErrorPacket((ErrorResponse) backendResponse));
+        }
+        if (backendResponse instanceof UpdateResponse) {
+            result.add(createUpdatePacket((UpdateResponse) backendResponse));
+        }
+        if (backendResponse instanceof QueryResponse) {
+            Optional<PostgreSQLRowDescriptionPacket> postgreSQLRowDescriptionPacketOptional = createQueryPacket((QueryResponse) backendResponse);
+            if (postgreSQLRowDescriptionPacketOptional.isPresent()) {
+                result.add(postgreSQLRowDescriptionPacketOptional.get());
+            }
+        }
+        return result;
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
@@ -146,7 +153,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
         isQuery = !columnDescriptions.isEmpty();
-        if (columnDescriptions.isEmpty() || !isBinaryRowData()) {
+        if (columnDescriptions.isEmpty() || isBinaryRowData()) {
             return Optional.absent();
         }
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
@@ -175,7 +182,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     public PostgreSQLPacket getQueryData() throws SQLException {
         QueryData queryData = databaseCommunicationEngine.getQueryData();
         return binaryRowData
-                ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), getPostgreSQLColumnTypes(queryData)) : new PostgreSQLDataRowPacket(queryData.getData());
+            ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), getPostgreSQLColumnTypes(queryData)) : new PostgreSQLDataRowPacket(queryData.getData());
     }
     
     private List<PostgreSQLColumnType> getPostgreSQLColumnTypes(final QueryData queryData) {
