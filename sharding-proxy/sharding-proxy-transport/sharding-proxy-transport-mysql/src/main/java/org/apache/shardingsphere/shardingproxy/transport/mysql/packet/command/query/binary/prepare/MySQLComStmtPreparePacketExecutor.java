@@ -39,7 +39,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * MySQL COM_STMT_PREPARE command packet executor.
+ * COM_STMT_PREPARE command packet executor for MySQL.
  * 
  * @author zhangliang
  */

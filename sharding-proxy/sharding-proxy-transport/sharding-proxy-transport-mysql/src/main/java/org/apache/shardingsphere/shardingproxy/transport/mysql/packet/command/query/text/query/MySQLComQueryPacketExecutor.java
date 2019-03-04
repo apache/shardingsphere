@@ -45,7 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MySQL COM_QUERY command packet executor.
+ * COM_QUERY command packet executor for MySQL.
  *
  * @author zhangliang
  */

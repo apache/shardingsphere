@@ -18,21 +18,16 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 
 /**
- * MySQL unsupported command packet.
+ * Unsupported command packet for MySQL.
  *
  * @author zhangliang
  */
-public final class MySQLUnsupportedCommandPacket implements MySQLCommandPacket {
+public final class MySQLUnsupportedCommandPacket extends MySQLCommandPacket {
     
-    @Override
-    public void write(final MySQLPacketPayload payload) {
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
+    public MySQLUnsupportedCommandPacket(final MySQLCommandPacketType type) {
+        super(type);
     }
 }

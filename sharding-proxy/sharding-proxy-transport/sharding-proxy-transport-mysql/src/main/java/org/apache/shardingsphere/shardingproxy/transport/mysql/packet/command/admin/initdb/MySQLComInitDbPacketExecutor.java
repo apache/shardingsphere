@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * MySQL COM_INIT_DB command packet executor.
+ * COM_INIT_DB command packet executor for MySQL.
  *
  * @author zhangliang
  */

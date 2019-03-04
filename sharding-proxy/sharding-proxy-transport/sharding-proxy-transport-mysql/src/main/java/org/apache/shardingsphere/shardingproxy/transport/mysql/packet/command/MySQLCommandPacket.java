@@ -17,14 +17,32 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
  * MySQL command packet.
  *
  * @author zhangliang
- * @author wangkai
  */
-public interface MySQLCommandPacket extends MySQLPacket, CommandPacket {
+@RequiredArgsConstructor
+public abstract class MySQLCommandPacket implements MySQLPacket, CommandPacket {
+    
+    private final MySQLCommandPacketType type;
+    
+    @Override
+    public final void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(type.getValue());
+        doWrite(payload);
+    }
+    
+    protected void doWrite(final MySQLPacketPayload payload) {
+    }
+    
+    @Override
+    public final int getSequenceId() {
+        return 0;
+    }
 }

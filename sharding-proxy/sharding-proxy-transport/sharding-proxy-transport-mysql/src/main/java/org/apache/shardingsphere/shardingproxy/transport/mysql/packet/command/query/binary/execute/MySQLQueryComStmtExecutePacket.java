@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementParameterType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
@@ -34,13 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * MySQL COM_STMT_EXECUTE command packet.
+ * COM_STMT_EXECUTE command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
  *
  * @author zhangyonglun
  */
-public final class MySQLQueryComStmtExecutePacket implements MySQLCommandPacket {
+public final class MySQLQueryComStmtExecutePacket extends MySQLCommandPacket {
     
     private static final int ITERATION_COUNT = 1;
     
@@ -61,6 +62,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLCommandPacket 
     private final List<Object> parameters;
     
     public MySQLQueryComStmtExecutePacket(final MySQLPacketPayload payload) throws SQLException {
+        super(MySQLCommandPacketType.COM_STMT_EXECUTE);
         statementId = payload.readInt4();
         binaryStatement = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
         flags = payload.readInt1();
@@ -97,7 +99,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLCommandPacket 
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    public void doWrite(final MySQLPacketPayload payload) {
         payload.writeInt4(statementId);
         payload.writeInt1(flags);
         payload.writeInt4(ITERATION_COUNT);
@@ -113,10 +115,5 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLCommandPacket 
             payload.writeStringLenenc(null == each ? "" : each.toString());
             count++;
         }
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }
