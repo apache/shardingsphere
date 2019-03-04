@@ -60,7 +60,7 @@ public final class MySQLQueryComStmtExecutePacketExecutor implements QueryComman
     
     public MySQLQueryComStmtExecutePacketExecutor(final MySQLQueryComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                backendConnection.getLogicSchema(), comStmtExecutePacket.getBinaryStatement().getSql(), comStmtExecutePacket.getParameters(), backendConnection);
+                backendConnection.getLogicSchema(), comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
     }
     
     @Override

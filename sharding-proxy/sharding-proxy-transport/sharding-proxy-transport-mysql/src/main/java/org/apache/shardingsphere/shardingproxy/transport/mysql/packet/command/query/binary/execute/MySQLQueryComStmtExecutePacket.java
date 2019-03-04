@@ -49,7 +49,6 @@ public final class MySQLQueryComStmtExecutePacket extends MySQLCommandPacket {
     
     private final int statementId;
     
-    @Getter
     private final MySQLBinaryStatement binaryStatement;
     
     private final int flags;
@@ -57,6 +56,9 @@ public final class MySQLQueryComStmtExecutePacket extends MySQLCommandPacket {
     private final MySQLNullBitmap nullBitmap;
     
     private final MySQLNewParametersBoundFlag newParametersBoundFlag;
+    
+    @Getter
+    private final String sql;
     
     @Getter
     private final List<Object> parameters;
@@ -76,6 +78,7 @@ public final class MySQLQueryComStmtExecutePacket extends MySQLCommandPacket {
         if (MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
+        sql = binaryStatement.getSql();
         parameters = getParameters(payload, parametersCount);
     }
     
