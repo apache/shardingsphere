@@ -27,6 +27,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,9 +45,12 @@ public final class PostgreSQLComParsePacketExecutor implements CommandPacketExec
     
     private final LogicSchema logicSchema;
     
+    private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
+    
     public PostgreSQLComParsePacketExecutor(final PostgreSQLComParsePacket comParsePacket, final BackendConnection backendConnection) {
         this.comParsePacket = comParsePacket;
         logicSchema = backendConnection.getLogicSchema();
+        binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
     }
     
     @Override
@@ -55,7 +60,7 @@ public final class PostgreSQLComParsePacketExecutor implements CommandPacketExec
         if (!comParsePacket.getSql().isEmpty()) {
             SQLStatement sqlStatement = sqlParsingEngine.parse(true);
             int parametersIndex = sqlStatement.getParametersIndex();
-            comParsePacket.getBinaryStatementRegistry().register(comParsePacket.getStatementId(), comParsePacket.getSql(), parametersIndex, comParsePacket.getBinaryStatementParameterTypes());
+            binaryStatementRegistry.register(comParsePacket.getStatementId(), comParsePacket.getSql(), parametersIndex, comParsePacket.getBinaryStatementParameterTypes());
         }
         return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLParseCompletePacket());
     }

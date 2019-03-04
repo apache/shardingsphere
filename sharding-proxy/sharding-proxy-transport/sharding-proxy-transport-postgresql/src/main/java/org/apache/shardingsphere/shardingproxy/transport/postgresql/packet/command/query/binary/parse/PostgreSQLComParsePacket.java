@@ -21,8 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -37,16 +35,13 @@ import java.util.List;
 @Getter
 public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
-    private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
-    
     private String statementId;
     
     private final String sql;
     
     private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes = new ArrayList<>(64);
     
-    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final int connectionId) {
-        binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(connectionId);
+    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
