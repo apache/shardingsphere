@@ -1398,7 +1398,7 @@
                   
                     
                     
-<option id="en" value="/document/legacy/3.x/en/features/sharding/principle/execute/" selected>English</option>
+<option id="en" value="/document/legacy/3.x/document/en/features/sharding/principle/execute/" selected>English</option>
                     
                   
               
@@ -1412,7 +1412,7 @@
                   
                     
                     
-<option id="cn" value="/document/legacy/3.x/cn/features/sharding/principle/execute/">Chinese</option>
+<option id="cn" value="/document/legacy/3.x/document/cn/features/sharding/principle/execute/">Chinese</option>
                     
                   
               
@@ -1618,7 +1618,7 @@ Detailed steps are as follow:</p>
 <li><p>Through the equation in the following picture, acquire the SQL route result group to be executed by each database case within the range that maxConnectionSizePerQuery permits; calculate the most optimized connection mode of this request.</p></li>
 </ol>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/connection_mode_en.png" alt="Connection mode calculate formula" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/connection_mode_en.png" alt="Connection mode calculate formula" /></p>
 
 <p>Within the range that maxConnectionSizePerQuery permits, when the request number that one connection needs to execute is more than 1, meaning current database connection cannot hold the corresponding data result set, it must uses memory merger.
 On the contrary, when it equals to 1, meaning current database connection can hold the according data result set, it can use stream merger.</p>
@@ -1636,7 +1636,7 @@ It is possible that Query A has already acquired a database connection of that d
 If the maximum connection number that database connection pool permits is 2, those two query requests will wait forever.
 The following picture has illustrated the deadlock situation:</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/dead_lock_en.png" alt="Dead lock" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/dead_lock_en.png" alt="Dead lock" /></p>
 
 <p>To avoid deadlock, ShardingSphere will go through synchronous processing as acquiring database connection.
 As creating execution units, it acquires all the database connections that this SQL requires for once with atomic method, and reduces the possibility of only acquiring part of the resources.
@@ -1665,7 +1665,7 @@ Other ShardingSphere modular, such as distributed transactions, invoked chain tr
 
 <p>The overall structure division of execution engine is shown as the following picture:</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/sharding/execute_architecture_en.png" alt="Execute engine architecture" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/execute_architecture_en.png" alt="Execute engine architecture" /></p>
 
 
 <footer class=" footline" >

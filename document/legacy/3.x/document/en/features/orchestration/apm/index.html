@@ -1398,7 +1398,7 @@
                   
                     
                     
-<option id="en" value="/document/legacy/3.x/en/features/orchestration/apm/" selected>English</option>
+<option id="en" value="/document/legacy/3.x/document/en/features/orchestration/apm/" selected>English</option>
                     
                   
               
@@ -1412,7 +1412,7 @@
                   
                     
                     
-<option id="cn" value="/document/legacy/3.x/cn/features/orchestration/apm/">Chinese</option>
+<option id="cn" value="/document/legacy/3.x/document/cn/features/orchestration/apm/">Chinese</option>
                     
                   
               
@@ -1595,38 +1595,38 @@ ShardingSphere team cooperates with <a href="http://skywalking.io/">SkyWalking</
 
 <h3 id="topology-demonstration">Topology Demonstration</h3>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_topology.png" alt="The topology diagram" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_topology.png" alt="The topology diagram" /></p>
 
 <p>It can be seen from the picture that the user has accessed Sharding-Proxy 18 times, with each database twice each time.
 It is because two tables in each database are accessed each time, so there are totally four tables accessed each time.</p>
 
 <h3 id="tracking-demonstration">Tracking Demonstration</h3>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_trace.png" alt="The tracking diagram" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_trace.png" alt="The tracking diagram" /></p>
 
 <p>SQL parsing and implementation situation can be seen from the tracing diagram.</p>
 
 <p><code>/Sharding-Sphere/parseSQL/</code> indicates SQL parsing performance this time.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_parse.png" alt="The parsing node" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_parse.png" alt="The parsing node" /></p>
 
 <p><code>/Sharding-Sphere/executeSQL/</code> indicates SQL parsing performance in actual execution.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_executeSQL.png" alt="The actual access node" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_executeSQL.png" alt="The actual access node" /></p>
 
 <h3 id="exception-demonstration">Exception Demonstration</h3>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_trace_err.png" alt="Exception tracking diagram" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_trace_err.png" alt="Exception tracking diagram" /></p>
 
 <p>Exception nodes can be seen from the tracing diagram.</p>
 
 <p><code>/Sharding-Sphere/executeSQL/</code> indicates exception results of SQL execution.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_executeSQL_Tags_err.png" alt="Exception node" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_executeSQL_Tags_err.png" alt="Exception node" /></p>
 
 <p><code>/Sharding-Sphere/executeSQL/</code> indicates the exception log of SQL execution.</p>
 
-<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/apm/5x_executeSQL_Logs_err.png" alt="Exception log" /></p>
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/apm/5x_executeSQL_Logs_err.png" alt="Exception log" /></p>
 
 
 <footer class=" footline" >

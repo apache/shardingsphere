@@ -1398,7 +1398,7 @@
                   
                     
                     
-<option id="en" value="/document/legacy/3.x/en/features/read-write-split/" selected>English</option>
+<option id="en" value="/document/legacy/3.x/document/en/features/read-write-split/" selected>English</option>
                     
                   
               
@@ -1412,7 +1412,7 @@
                   
                     
                     
-<option id="cn" value="/document/legacy/3.x/cn/features/read-write-split/">Chinese</option>
+<option id="cn" value="/document/legacy/3.x/document/cn/features/read-write-split/">Chinese</option>
                     
                   
               
@@ -1511,7 +1511,7 @@ As a result, under the circumstance that any database goes down, or even the dis
 
 <p>Different from the horizontal sharding that separates the data to all data nodes according to sharding keys, read-write split routes read operations and write operations separately to the master database and slave database according to SQL meaning analysis.</p>
 
-<p>[<img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/read-write-split/read-write-split.png" alt="Read-write split" /></p>
+<p>[<img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/read-write-split/read-write-split.png" alt="Read-write split" /></p>
 
 <p>Data in read-write split nodes is consistent, whereas that in horizontal shards is not.
 The combined use of horizontal sharding and read-write split will effectively enhance the system performance.</p>
@@ -1522,7 +1522,7 @@ The combined use of horizontal sharding and read-write split will effectively en
 What&rsquo;s more, it also brings the problem similar as data sharding, making application development and operation staff&rsquo;s maintenance work more complex.
 The following picture has shown the complex topological relations between application and database group when sharding table and database are used together with read-write split.</p>
 
-<p>[<img src="https://shardingsphere.apache.org/document/legacy/3.x/document/current/img/read-write-split/sharding-read-write-split.png" alt="Sharding + Read-write split" /></p>
+<p>[<img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/read-write-split/sharding-read-write-split.png" alt="Sharding + Read-write split" /></p>
 
 <h2 id="goal">Goal</h2>
 
