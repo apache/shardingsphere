@@ -30,12 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * PostgreSQL command parse packet.
+ * Command parse packet for PostgreSQL.
  *
  * @author zhangyonglun
  */
 @Getter
-public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
+public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
     

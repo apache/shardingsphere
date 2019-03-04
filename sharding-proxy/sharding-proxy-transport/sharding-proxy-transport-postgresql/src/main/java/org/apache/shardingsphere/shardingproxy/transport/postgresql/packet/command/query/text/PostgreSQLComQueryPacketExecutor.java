@@ -42,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * PostgreSQL command query packet executor.
+ * Command query packet executor for PostgreSQL.
  *
  * @author zhangyonglun
  * @author zhangliang

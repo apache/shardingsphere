@@ -28,21 +28,22 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * PostgreSQL command bind packet.
+ * Command bind packet for PostgreSQL.
  *
  * @author zhangyonglun
  */
 @Getter
-public final class PostgreSQLComBindPacket implements PostgreSQLCommandPacket {
+public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final String statementId;
     
     private final PostgreSQLBinaryStatement binaryStatement;
     
-    private List<Object> parameters;
+    private final List<Object> parameters;
     
     private final boolean binaryRowData;
     
@@ -57,6 +58,8 @@ public final class PostgreSQLComBindPacket implements PostgreSQLCommandPacket {
         binaryStatement = BinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         if (null != binaryStatement && null != binaryStatement.getSql()) {
             parameters = getParameters(payload);
+        } else {
+            parameters = Collections.emptyList();
         }
         int resultFormatsLength = payload.readInt2();
         binaryRowData = resultFormatsLength > 0;

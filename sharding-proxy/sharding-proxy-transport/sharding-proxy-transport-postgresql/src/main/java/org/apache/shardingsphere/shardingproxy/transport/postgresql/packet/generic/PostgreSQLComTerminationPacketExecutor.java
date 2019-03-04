@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * PostgreSQL command termination packet executor.
+ * Command termination packet executor for PostgreSQL.
  * 
  * @author zhangliang
  */

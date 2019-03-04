@@ -46,7 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * PostgreSQL command bind packet executor.
+ * Command bind packet executor for PostgreSQL.
  *
  * @author zhangyonglun
  * @author zhangliang

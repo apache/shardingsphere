@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * PostgreSQL command execute packet executor.
+ * Command execute packet executor for PostgreSQL.
  *
  * @author zhangyonglun
  * @author zhangliang

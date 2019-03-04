@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * PostgreSQL command sync packet executor.
+ * Command sync packet executor for PostgreSQL.
  *
  * @author zhangyonglun
  * @author zhangliang
