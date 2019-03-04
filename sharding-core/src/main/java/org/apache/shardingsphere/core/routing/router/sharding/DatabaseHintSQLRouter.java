@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLLogger;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,7 +59,7 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
         RoutingResult routingResult = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(Collections.singleton(parameters)))));
+            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(parameters))));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());

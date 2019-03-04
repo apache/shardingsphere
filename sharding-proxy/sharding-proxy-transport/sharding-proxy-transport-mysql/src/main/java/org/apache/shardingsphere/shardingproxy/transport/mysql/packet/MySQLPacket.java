@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet;
 
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
  * MySQL packet.
  *
  * @author zhangliang
  */
-public interface MySQLPacket extends DatabasePacket {
+public interface MySQLPacket extends DatabasePacket<MySQLPacketPayload> {
     
     int PAYLOAD_LENGTH = 3;
     
@@ -36,11 +37,4 @@ public interface MySQLPacket extends DatabasePacket {
      * @return sequence ID
      */
     int getSequenceId();
-    
-    /**
-     * Write packet to byte buffer.
-     *
-     * @param payload packet payload to be write
-     */
-    void write(MySQLPacketPayload payload);
 }

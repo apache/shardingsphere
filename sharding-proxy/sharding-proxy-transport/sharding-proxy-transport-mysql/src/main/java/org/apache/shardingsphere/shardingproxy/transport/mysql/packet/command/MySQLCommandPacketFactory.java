@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.MySQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ping.MySQLComPingPacket;
@@ -29,12 +28,13 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.MySQLQueryComStmtExecutePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComPacketQuery;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.sql.SQLException;
 
 /**
- * MySQL command packet factory.
+ * Command packet factory for MySQL.
  *
  * @author zhangliang
  * @author wangkai
@@ -46,34 +46,32 @@ public final class MySQLCommandPacketFactory {
     /**
      * Create new instance of command packet.
      *
-     * @param sequenceId sequence id
-     * @param payload MySQL packet payload
+     * @param commandPacketType command packet type for MySQL
+     * @param payload packet payload for MySQL
      * @param backendConnection backend connection
-     * @return command packet
+     * @return command packet for MySQL
      * @throws SQLException SQL exception
      */
-    public static MySQLCommandPacket newInstance(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        int commandPacketTypeValue = payload.readInt1();
-        MySQLCommandPacketType type = MySQLCommandPacketType.valueOf(commandPacketTypeValue);
-        switch (type) {
+    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+        switch (commandPacketType) {
             case COM_QUIT:
-                return new MySQLComQuitPacket(sequenceId);
+                return new MySQLComQuitPacket();
             case COM_INIT_DB:
-                return new MySQLComInitDbPacket(sequenceId, payload, backendConnection);
+                return new MySQLComInitDbPacket(payload, backendConnection);
             case COM_FIELD_LIST:
-                return new MySQLComFieldListPacket(sequenceId, payload, backendConnection);
+                return new MySQLComFieldListPacket(payload, backendConnection);
             case COM_QUERY:
-                return new MySQLComPacketQuery(sequenceId, payload, backendConnection);
+                return new MySQLComQueryPacket(payload, backendConnection);
             case COM_STMT_PREPARE:
-                return new MySQLComStmtPreparePacket(sequenceId, backendConnection, payload);
+                return new MySQLComStmtPreparePacket(backendConnection, payload);
             case COM_STMT_EXECUTE:
-                return new MySQLQueryComStmtExecutePacket(sequenceId, payload, backendConnection);
+                return new MySQLQueryComStmtExecutePacket(payload, backendConnection);
             case COM_STMT_CLOSE:
-                return new MySQLComStmtClosePacket(sequenceId, payload);
+                return new MySQLComStmtClosePacket(payload);
             case COM_PING:
-                return new MySQLComPingPacket(sequenceId);
+                return new MySQLComPingPacket();
             default:
-                return new MySQLUnsupportedCommandPacket(sequenceId, type);
+                return new MySQLUnsupportedCommandPacket(commandPacketType);
         }
     }
 }

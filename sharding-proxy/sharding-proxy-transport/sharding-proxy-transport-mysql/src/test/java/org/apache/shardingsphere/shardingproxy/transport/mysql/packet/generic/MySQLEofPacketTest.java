@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLStatusFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

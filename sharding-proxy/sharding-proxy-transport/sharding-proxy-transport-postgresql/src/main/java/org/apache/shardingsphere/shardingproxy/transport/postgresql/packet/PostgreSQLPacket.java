@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet;
 
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * PostgreSQL packet.
  *
  * @author zhangyonglun
  */
-public interface PostgreSQLPacket extends DatabasePacket {
+public interface PostgreSQLPacket extends DatabasePacket<PostgreSQLPacketPayload> {
     
     int MESSAGE_TYPE_LENGTH = 1;
     
@@ -36,11 +37,4 @@ public interface PostgreSQLPacket extends DatabasePacket {
      * @return message type
      */
     char getMessageType();
-    
-    /**
-     * Write packet to byte buffer.
-     *
-     * @param payload packet payload to be write
-     */
-    void write(PostgreSQLPacketPayload payload);
 }

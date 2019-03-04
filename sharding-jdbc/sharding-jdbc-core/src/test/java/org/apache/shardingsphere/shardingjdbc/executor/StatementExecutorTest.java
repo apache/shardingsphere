@@ -331,10 +331,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
-            List<List<Object>> parameterSets = new LinkedList<>();
             String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
-            parameterSets.add(Collections.singletonList((Object) 1));
-            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = StatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);

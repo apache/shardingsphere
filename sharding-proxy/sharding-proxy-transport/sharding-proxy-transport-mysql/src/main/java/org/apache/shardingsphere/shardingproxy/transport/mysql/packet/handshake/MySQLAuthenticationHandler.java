@@ -35,7 +35,7 @@ public final class MySQLAuthenticationHandler {
     
     private static final GlobalContext GLOBAL_REGISTRY = GlobalContext.getInstance();
     
-    private final MySQLAuthPluginData mySQLAuthPluginData = new MySQLAuthPluginData();
+    private final MySQLAuthPluginData authPluginData = new MySQLAuthPluginData();
     
     /**
      * Login.
@@ -55,9 +55,9 @@ public final class MySQLAuthenticationHandler {
     private byte[] getAuthCipherBytes(final String password) {
         byte[] sha1Password = DigestUtils.sha1(password);
         byte[] doubleSha1Password = DigestUtils.sha1(sha1Password);
-        byte[] concatBytes = new byte[mySQLAuthPluginData.getAuthPluginData().length + doubleSha1Password.length];
-        System.arraycopy(mySQLAuthPluginData.getAuthPluginData(), 0, concatBytes, 0, mySQLAuthPluginData.getAuthPluginData().length);
-        System.arraycopy(doubleSha1Password, 0, concatBytes, mySQLAuthPluginData.getAuthPluginData().length, doubleSha1Password.length);
+        byte[] concatBytes = new byte[authPluginData.getAuthPluginData().length + doubleSha1Password.length];
+        System.arraycopy(authPluginData.getAuthPluginData(), 0, concatBytes, 0, authPluginData.getAuthPluginData().length);
+        System.arraycopy(doubleSha1Password, 0, concatBytes, authPluginData.getAuthPluginData().length, doubleSha1Password.length);
         byte[] sha1ConcatBytes = DigestUtils.sha1(concatBytes);
         return xor(sha1Password, sha1ConcatBytes);
     }

@@ -70,6 +70,7 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
+    @Getter
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
@@ -87,7 +88,6 @@ public final class BackendConnection implements AutoCloseable {
         if (null == schemaName) {
             throw new ShardingException("Please select database, then switch transaction type.");
         }
-        //TODO switch transaction type will not effect running transaction now, need to remove this logic.
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }
@@ -111,7 +111,7 @@ public final class BackendConnection implements AutoCloseable {
     private boolean isSwitchFailed() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            resourceSynchronizer.doAwait();
+            resourceSynchronizer.doAwaitUntil();
             ++retryCount;
             log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
         }

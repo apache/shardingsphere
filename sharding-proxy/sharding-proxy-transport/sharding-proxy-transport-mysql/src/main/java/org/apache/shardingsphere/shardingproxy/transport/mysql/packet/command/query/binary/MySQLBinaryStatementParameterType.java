@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCol
 @Getter
 public final class MySQLBinaryStatementParameterType {
     
-    private final MySQLColumnType mySQLColumnType;
+    private final MySQLColumnType columnType;
     
     private final int unsignedFlag;
 }

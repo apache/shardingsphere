@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.parse;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -28,16 +27,18 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,18 +52,22 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.PARSE.getValue();
     
-    private final ConnectionScopeBinaryStatementRegistry postgreSQLBinaryStatementRegistry;
+    @Getter
+    private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
     
+    @Getter
     private String statementId;
     
+    @Getter
     private final String sql;
     
-    private final List<PostgreSQLBinaryStatementParameterType> postgreSQLBinaryStatementParameterTypes = new ArrayList<>(64);
+    @Getter
+    private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes = new ArrayList<>(64);
     
     private SQLParsingEngine sqlParsingEngine;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
-        postgreSQLBinaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection);
+        binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection);
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
@@ -77,7 +82,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     private void getParameterTypes(final PostgreSQLPacketPayload payload) {
         int parameterCount = payload.readInt2();
         for (int i = 0; i < parameterCount; i++) {
-            postgreSQLBinaryStatementParameterTypes.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.valueOf(payload.readInt4())));
+            binaryStatementParameterTypes.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.valueOf(payload.readInt4())));
         }
     }
     
@@ -94,13 +99,13 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Collection<PostgreSQLPacket> execute() {
         log.debug("PostgreSQLComParsePacket received for Sharding-Proxy: {}", sql);
         if (!sql.isEmpty()) {
             SQLStatement sqlStatement = sqlParsingEngine.parse(true);
             int parametersIndex = sqlStatement.getParametersIndex();
-            postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex, postgreSQLBinaryStatementParameterTypes);
+            binaryStatementRegistry.register(statementId, sql, parametersIndex, binaryStatementParameterTypes);
         }
-        return Optional.of(new CommandResponsePackets(new PostgreSQLParseCompletePacket()));
+        return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLParseCompletePacket());
     }
 }

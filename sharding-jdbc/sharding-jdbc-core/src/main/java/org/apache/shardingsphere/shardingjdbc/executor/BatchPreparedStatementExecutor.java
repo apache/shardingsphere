@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -126,6 +127,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private void handleOldRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
         for (final BatchRouteUnit each : newRouteUnits) {
             Optional<BatchRouteUnit> batchRouteUnitOptional = Iterators.tryFind(routeUnits.iterator(), new Predicate<BatchRouteUnit>() {
+                
                 @Override
                 public boolean apply(final BatchRouteUnit input) {
                     return input.equals(each);
@@ -138,7 +140,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private void reviseBatchRouteUnit(final BatchRouteUnit oldBatchRouteUnit, final BatchRouteUnit newBatchRouteUnit) {
-        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().add(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().get(0));
+        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameters().addAll(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameters());
         oldBatchRouteUnit.mapAddBatchCount(batchCount);
     }
     
@@ -213,20 +215,36 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        Optional<StatementExecuteUnit> target;
         List<List<Object>> result = new LinkedList<>();
         for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
-            target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
-                @Override
-                public boolean apply(final StatementExecuteUnit input) {
-                    return input.getStatement().equals(statement);
-                }
-            });
+            Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
-                result.addAll(target.get().getRouteUnit().getSqlUnit().getParameterSets());
+                result = getParameterSets(target.get());
                 break;
             }
         }
+        return result;
+    }
+    
+    private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final ShardingExecuteGroup<StatementExecuteUnit> executeGroup) {
+        return Iterators.tryFind(executeGroup.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
+            
+            @Override
+            public boolean apply(final StatementExecuteUnit input) {
+                return input.getStatement().equals(statement);
+                }
+        });
+    }
+    
+    private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
+        List<List<Object>> result;
+        result = Collections2.filter(routeUnits, new Predicate<BatchRouteUnit>() {
+
+            @Override
+            public boolean apply(final BatchRouteUnit input) {
+                return input.getRouteUnit().equals(executeUnit.getRouteUnit());
+            }
+        }).iterator().next().getParameterSets();
         return result;
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLStatusFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -43,34 +43,33 @@ public final class MySQLHandshakePacketTest {
     
     @Test
     public void assertNewWithPayload() {
-        when(payload.readInt1()).thenReturn(1, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
+        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.SERVER_VERSION);
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
-        assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getMySQLAuthPluginData().getAuthPluginDataPart1(), is(part1));
-        assertThat(actual.getMySQLAuthPluginData().getAuthPluginDataPart2(), is(part2));
+        assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
+        assertThat(actual.getAuthPluginData().getAuthPluginDataPart2(), is(part2));
         verify(payload).skipReserved(10);
     }
     
     @Test
     public void assertWrite() {
-        MySQLAuthPluginData mySQLAuthPluginData = new MySQLAuthPluginData(part1, part2);
-        new MySQLHandshakePacket(1000, mySQLAuthPluginData).write(payload);
+        MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
+        new MySQLHandshakePacket(1000, authPluginData).write(payload);
         verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
         verify(payload).writeStringNul(MySQLServerInfo.SERVER_VERSION);
         verify(payload).writeInt4(1000);
-        verify(payload).writeStringNul(new String(mySQLAuthPluginData.getAuthPluginDataPart1()));
+        verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
         verify(payload).writeInt1(MySQLServerInfo.CHARSET);
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         verify(payload).writeInt1(0);
         verify(payload).writeReserved(10);
-        verify(payload).writeStringNul(new String(mySQLAuthPluginData.getAuthPluginDataPart2()));
+        verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));
     }
 }

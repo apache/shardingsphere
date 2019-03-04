@@ -263,8 +263,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         for (PreparedStatement each : preparedStatements) {
             List<List<Object>> parameterSets = new LinkedList<>();
             String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
-            parameterSets.add(Collections.singletonList((Object) 1));
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, parameterSets)), each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);

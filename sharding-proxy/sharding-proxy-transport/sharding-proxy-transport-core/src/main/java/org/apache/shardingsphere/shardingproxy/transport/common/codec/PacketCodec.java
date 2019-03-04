@@ -23,7 +23,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
 
 import java.util.List;
@@ -51,6 +51,7 @@ public final class PacketCodec extends ByteToMessageCodec<DatabasePacket> {
         databasePacketCodecEngine.decode(context, in, out, readableBytes);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         databasePacketCodecEngine.encode(context, message, out);

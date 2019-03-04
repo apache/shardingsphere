@@ -21,10 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.List;
 
@@ -52,10 +52,10 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
     
     private void writeValues(final PostgreSQLPacketPayload payload) {
         for (int i = 0; i < columnTypes.size(); i++) {
-            PostgreSQLBinaryProtocolValue postgreSQLBinaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i));
+            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i));
             Object value = data.get(i);
-            payload.writeInt4(postgreSQLBinaryProtocolValue.getColumnLength(value));
-            postgreSQLBinaryProtocolValue.write(payload, value);
+            payload.writeInt4(binaryProtocolValue.getColumnLength(value));
+            binaryProtocolValue.write(payload, value);
         }
     }
 }

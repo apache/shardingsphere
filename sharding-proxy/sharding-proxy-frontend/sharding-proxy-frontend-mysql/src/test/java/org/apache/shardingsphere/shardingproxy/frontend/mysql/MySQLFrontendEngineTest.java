@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
@@ -37,13 +34,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLFrontendEngineTest {
@@ -84,30 +79,9 @@ public final class MySQLFrontendEngineTest {
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
     
-    @Test
-    public void assertExecuteCommand() throws ReflectiveOperationException {
-        Channel channel = mock(Channel.class);
-        ChannelId channelId = mock(ChannelId.class);
-        when(channel.id()).thenReturn(channelId);
-        when(context.channel()).thenReturn(channel);
-        setTransactionType();
-        mysqlFrontendEngine.executeCommand(context, mock(ByteBuf.class), mock(BackendConnection.class));
-    }
-    
     private void setAuthentication(final Object value) throws ReflectiveOperationException {
         Field field = GlobalContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
         field.set(GlobalContext.getInstance(), value);
-    }
-    
-    private void setTransactionType() throws ReflectiveOperationException {
-        Field field = GlobalContext.getInstance().getClass().getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        field.set(GlobalContext.getInstance(), getShardingProperties());
-    }
-    
-    private ShardingProperties getShardingProperties() {
-        Properties props = new Properties();
-        return new ShardingProperties(props);
     }
 }

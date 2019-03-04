@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collection;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLUnsupportedCommandPacketTest {
@@ -42,20 +41,18 @@ public final class MySQLUnsupportedCommandPacketTest {
     
     @Test
     public void assertExecute() {
-        Optional<CommandResponsePackets> actual = new MySQLUnsupportedCommandPacket(1, MySQLCommandPacketType.COM_SLEEP).execute();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
-        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
-        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorMessage(), 
-                is(String.format(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
+        Collection<MySQLPacket> actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_SLEEP).execute();
+        assertThat(actual.size(), is(1));
+        MySQLPacket mysqlPacket = actual.iterator().next();
+        assertThat(mysqlPacket.getSequenceId(), is(1));
+        assertThat(((MySQLErrPacket) mysqlPacket).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
+        assertThat(((MySQLErrPacket) mysqlPacket).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
+        assertThat(((MySQLErrPacket) mysqlPacket).getErrorMessage(), is(String.format(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
     }
     
     @Test
     public void assertWrite() {
-        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(1, MySQLCommandPacketType.COM_SLEEP);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_SLEEP);
         actual.write(payload);
     }
 }

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query;
 
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.QueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
-
-import java.sql.SQLException;
 
 /**
  * MySQL query command packet.
@@ -28,21 +27,5 @@ import java.sql.SQLException;
  * @author zhangliang
  * @author wangkai
  */
-public interface MySQLQueryCommandPacket extends MySQLCommandPacket {
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return MySQL packet of query data
-     * @throws SQLException SQL exception
-     */
-    MySQLPacket getQueryData() throws SQLException;
+public interface MySQLQueryCommandPacket extends MySQLCommandPacket, QueryCommandPacket<MySQLPacket> {
 }

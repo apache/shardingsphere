@@ -29,19 +29,20 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * PostgreSQL command query packet.
@@ -54,9 +55,12 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.QUERY.getValue();
     
+    @Getter
     private final String sql;
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
+    
+    private boolean isQuery;
     
     public PostgreSQLComQueryPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
         payload.readInt4();
@@ -69,20 +73,20 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Collection<PostgreSQLPacket> execute() {
         log.debug("PostgreSQLComQueryPacket received for Sharding-Proxy: {}", sql);
         if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Optional.of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket()));
+            return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Optional.of(new CommandResponsePackets(createErrorPacket((ErrorResponse) backendResponse)));
+            return Collections.<PostgreSQLPacket>singletonList(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
+            return Collections.<PostgreSQLPacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets((QueryResponse) backendResponse);
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderPackets.size() + 2));
+        Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
+        return result.isPresent() ? Collections.<PostgreSQLPacket>singletonList(result.get()) : Collections.<PostgreSQLPacket>emptyList();
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
@@ -93,14 +97,27 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
         return new PostgreSQLCommandCompletePacket();
     }
     
-    private Collection<DataHeaderPacket> createDataHeaderPackets(final QueryResponse queryResponse) {
-        Collection<DataHeaderPacket> result = new LinkedList<>();
-        int sequenceId = 1;
+    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
+        List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
+        isQuery = !columnDescriptions.isEmpty();
+        if (columnDescriptions.isEmpty()) {
+            return Optional.absent();
+        }
+        return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
+    }
+    
+    private List<PostgreSQLColumnDescription> getPostgreSQLColumnDescriptions(final QueryResponse queryResponse) {
+        List<PostgreSQLColumnDescription> result = new LinkedList<>();
+        int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            result.add(new DataHeaderPacket(
-                    ++sequenceId, each.getSchema(), each.getTable(), each.getTable(), each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), each.getColumnType(), each.getDecimals()));
+            result.add(new PostgreSQLColumnDescription(each, ++columnIndex));
         }
         return result;
+    }
+    
+    @Override
+    public boolean isQuery() {
+        return isQuery;
     }
     
     @Override
@@ -109,7 +126,7 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     }
     
     @Override
-    public DatabasePacket getQueryData() throws SQLException {
+    public PostgreSQLPacket getQueryData() throws SQLException {
         return new PostgreSQLDataRowPacket(textProtocolBackendHandler.getQueryData().getData());
     }
 }

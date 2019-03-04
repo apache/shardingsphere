@@ -21,8 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
 
 import java.util.List;
@@ -32,7 +31,7 @@ import java.util.List;
  * 
  * @author zhangliang 
  */
-public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
+public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<MySQLPacket> {
     
     @Override
     public String getDatabaseType() {
@@ -56,11 +55,11 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
     }
     
     @Override
-    public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
+    public void encode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer())) {
-            ((MySQLPacket) message).write(payload);
+            message.write(payload);
             out.writeMediumLE(payload.getByteBuf().readableBytes());
-            out.writeByte(((MySQLPacket) message).getSequenceId());
+            out.writeByte(message.getSequenceId());
             out.writeBytes(payload.getByteBuf());
         }
     }

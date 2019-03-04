@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.admin;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * PostgreSQL unsupported command packet.
@@ -37,11 +39,11 @@ public final class PostgreSQLUnsupportedCommandPacket implements PostgreSQLComma
     private final char messageType;
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
-        return Optional.of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket()));
+    public void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    public Collection<PostgreSQLPacket> execute() {
+        return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
     }
 }

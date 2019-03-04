@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,26 +31,27 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementParameterType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,53 +69,51 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     
     private static final int NULL_BITMAP_OFFSET = 0;
     
-    @Getter
-    private final int sequenceId;
-    
     private final int statementId;
     
-    private final MySQLBinaryStatement mySQLBinaryStatement;
+    @Getter
+    private final MySQLBinaryStatement binaryStatement;
     
     private final int flags;
     
-    private final MySQLNullBitmap mySQLNullBitmap;
+    private final MySQLNullBitmap nullBitmap;
     
-    private final MySQLNewParametersBoundFlag mySQLNewParametersBoundFlag;
+    private final MySQLNewParametersBoundFlag newParametersBoundFlag;
     
+    @Getter
     private final List<Object> parameters;
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private int dataHeaderEofSequenceId;
+    private boolean isQuery;
     
-    private int currentQueryDataSequenceId;
+    private int currentSequenceId;
     
-    public MySQLQueryComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        this.sequenceId = sequenceId;
+    public MySQLQueryComStmtExecutePacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         statementId = payload.readInt4();
-        mySQLBinaryStatement = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
+        binaryStatement = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
-        int parametersCount = mySQLBinaryStatement.getParametersCount();
-        mySQLNullBitmap = new MySQLNullBitmap(parametersCount, NULL_BITMAP_OFFSET);
-        for (int i = 0; i < mySQLNullBitmap.getNullBitmap().length; i++) {
-            mySQLNullBitmap.getNullBitmap()[i] = payload.readInt1();
+        int parametersCount = binaryStatement.getParametersCount();
+        nullBitmap = new MySQLNullBitmap(parametersCount, NULL_BITMAP_OFFSET);
+        for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
+            nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
-        mySQLNewParametersBoundFlag = MySQLNewParametersBoundFlag.valueOf(payload.readInt1());
-        if (MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST == mySQLNewParametersBoundFlag) {
-            mySQLBinaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
+        newParametersBoundFlag = MySQLNewParametersBoundFlag.valueOf(payload.readInt1());
+        if (MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
+            binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                backendConnection.getLogicSchema(), mySQLBinaryStatement.getSql(), parameters, backendConnection);
+                backendConnection.getLogicSchema(), binaryStatement.getSql(), parameters, backendConnection);
     }
     
     private List<MySQLBinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
         List<MySQLBinaryStatementParameterType> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            MySQLColumnType mySQLColumnType = MySQLColumnType.valueOf(payload.readInt1());
+            MySQLColumnType columnType = MySQLColumnType.valueOf(payload.readInt1());
             int unsignedFlag = payload.readInt1();
-            result.add(new MySQLBinaryStatementParameterType(mySQLColumnType, unsignedFlag));
+            result.add(new MySQLBinaryStatementParameterType(columnType, unsignedFlag));
         }
         return result;
     }
@@ -123,9 +121,8 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     private List<Object> getParameters(final MySQLPacketPayload payload, final int parametersCount) throws SQLException {
         List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            MySQLBinaryProtocolValue mySQLBinaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(
-                mySQLBinaryStatement.getParameterTypes().get(parameterIndex).getMySQLColumnType());
-            result.add(mySQLNullBitmap.isNullParameter(parameterIndex) ? null : mySQLBinaryProtocolValue.read(payload));
+            MySQLBinaryProtocolValue binaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getColumnType());
+            result.add(nullBitmap.isNullParameter(parameterIndex) ? null : binaryProtocolValue.read(payload));
         }
         return result;
     }
@@ -135,14 +132,14 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
         payload.writeInt4(statementId);
         payload.writeInt1(flags);
         payload.writeInt4(ITERATION_COUNT);
-        for (int each : mySQLNullBitmap.getNullBitmap()) {
+        for (int each : nullBitmap.getNullBitmap()) {
             payload.writeInt1(each);
         }
-        payload.writeInt1(mySQLNewParametersBoundFlag.getValue());
+        payload.writeInt1(newParametersBoundFlag.getValue());
         int count = 0;
         for (Object each : parameters) {
-            MySQLBinaryStatementParameterType parameterType = mySQLBinaryStatement.getParameterTypes().get(count);
-            payload.writeInt1(parameterType.getMySQLColumnType().getValue());
+            MySQLBinaryStatementParameterType parameterType = binaryStatement.getParameterTypes().get(count);
+            payload.writeInt1(parameterType.getColumnType().getValue());
             payload.writeInt1(parameterType.getUnsignedFlag());
             payload.writeStringLenenc(null == each ? "" : each.toString());
             count++;
@@ -150,21 +147,20 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Collection<MySQLPacket> execute() {
         log.debug("COM_STMT_EXECUTE received for Sharding-Proxy: {}", statementId);
         if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Optional.of(new CommandResponsePackets(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE)));
+            return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Optional.of(new CommandResponsePackets(createErrorPacket(((ErrorResponse) backendResponse).getCause())));
+            return Collections.<MySQLPacket>singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Optional.of(new CommandResponsePackets(createUpdatePacket((UpdateResponse) backendResponse)));
+            return Collections.<MySQLPacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
-        Collection<DataHeaderPacket> dataHeaderPackets = createDataHeaderPackets(((QueryResponse) backendResponse).getQueryHeaders());
-        dataHeaderEofSequenceId = dataHeaderPackets.size() + 2;
-        return Optional.<CommandResponsePackets>of(new QueryResponsePackets(dataHeaderPackets, dataHeaderEofSequenceId));
+        isQuery = true;
+        return createQueryPacket((QueryResponse) backendResponse);
     }
     
     private MySQLErrPacket createErrorPacket(final Exception cause) {
@@ -175,18 +171,20 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
         return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
     }
     
-    private Collection<DataHeaderPacket> createDataHeaderPackets(final List<QueryHeader> queryHeaders) {
-        Collection<DataHeaderPacket> result = new LinkedList<>();
-        int sequenceId = 1;
-        for (QueryHeader each : queryHeaders) {
-            result.add(createDataHeaderPacket(++sequenceId, each));
+    private Collection<MySQLPacket> createQueryPacket(final QueryResponse backendResponse) {
+        Collection<MySQLPacket> result = new LinkedList<>();
+        List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
+        result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
+        for (QueryHeader each : queryHeader) {
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
         }
+        result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
     }
     
-    private DataHeaderPacket createDataHeaderPacket(final int sequenceId, final QueryHeader queryHeader) {
-        return new DataHeaderPacket(sequenceId, queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
-                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), queryHeader.getColumnType(), queryHeader.getDecimals());
+    @Override
+    public boolean isQuery() {
+        return isQuery;
     }
     
     @Override
@@ -197,7 +195,7 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     @Override
     public MySQLPacket getQueryData() throws SQLException {
         QueryData queryData = databaseCommunicationEngine.getQueryData();
-        return new MySQLBinaryResultSetRowPacket(++currentQueryDataSequenceId + dataHeaderEofSequenceId, queryData.getData(), getMySQLColumnTypes(queryData));
+        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, queryData.getData(), getMySQLColumnTypes(queryData));
     }
     
     private List<MySQLColumnType> getMySQLColumnTypes(final QueryData queryData) {
@@ -206,5 +204,10 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
             result.add(MySQLColumnType.valueOfJDBCType(queryData.getColumnTypes().get(i)));
         }
         return result;
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

@@ -36,10 +36,10 @@ public final class ConnectionScopeBinaryStatementRegistry {
      * @param statementId statement id
      * @param sql SQL
      * @param parametersCount parameters count
-     * @param postgreSQLBinaryStatementParameterTypes PostgreSQL binary statement parameter types
+     * @param binaryStatementParameterTypes binary statement parameter types
      */
-    public void register(final String statementId, final String sql, final int parametersCount, final List<PostgreSQLBinaryStatementParameterType> postgreSQLBinaryStatementParameterTypes) {
-        binaryStatements.put(statementId, new PostgreSQLBinaryStatement(sql, parametersCount, postgreSQLBinaryStatementParameterTypes));
+    public void register(final String statementId, final String sql, final int parametersCount, final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes) {
+        binaryStatements.put(statementId, new PostgreSQLBinaryStatement(sql, parametersCount, binaryStatementParameterTypes));
     }
     
     /**

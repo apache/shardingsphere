@@ -111,11 +111,11 @@ public final class MySQLBinaryProtocolValueFactory {
     /**
      * Get binary protocol value.
      * 
-     * @param mySQLColumnType column type
+     * @param columnType column type
      * @return binary protocol value
      */
-    public static MySQLBinaryProtocolValue getBinaryProtocolValue(final MySQLColumnType mySQLColumnType) {
-        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(mySQLColumnType), "Cannot find MySQL type '%s' in column type when process binary protocol value", mySQLColumnType);
-        return BINARY_PROTOCOL_VALUES.get(mySQLColumnType);
+    public static MySQLBinaryProtocolValue getBinaryProtocolValue(final MySQLColumnType columnType) {
+        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(columnType), "Cannot find MySQL type '%s' in column type when process binary protocol value", columnType);
+        return BINARY_PROTOCOL_VALUES.get(columnType);
     }
 }

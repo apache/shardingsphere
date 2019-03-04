@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ping;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * MySQL COM_PING command packet.
@@ -33,19 +34,21 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLComPingPacket implements MySQLCommandPacket {
     
-    private final int sequenceId;
-    
     @Override
-    public Optional<CommandResponsePackets> execute() {
-        return Optional.of(new CommandResponsePackets(new MySQLOKPacket(getSequenceId() + 1)));
+    public Collection<MySQLPacket> execute() {
+        return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
     }
     
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(MySQLCommandPacketType.COM_PING.getValue());
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

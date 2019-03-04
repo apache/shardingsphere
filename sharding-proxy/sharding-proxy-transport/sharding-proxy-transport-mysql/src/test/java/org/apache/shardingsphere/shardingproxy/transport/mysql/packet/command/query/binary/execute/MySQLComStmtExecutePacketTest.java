@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -69,8 +68,7 @@ public final class MySQLComStmtExecutePacketTest {
         MySQLBinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
-        MySQLQueryComStmtExecutePacket actual = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLQueryComStmtExecutePacket actual = new MySQLQueryComStmtExecutePacket(payload, backendConnection);
         actual.write(payload);
         verify(payload, times(2)).writeInt4(1);
         verify(payload, times(4)).writeInt1(1);
@@ -87,14 +85,13 @@ public final class MySQLComStmtExecutePacketTest {
         when(databaseCommunicationEngine.execute()).thenReturn(mock(QueryResponse.class));
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
         when(databaseCommunicationEngine.getQueryData()).thenReturn(new QueryData(Collections.singletonList(Types.BIGINT), Collections.<Object>singletonList(99999L)));
-        MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(1, payload, backendConnection);
+        MySQLQueryComStmtExecutePacket packet = new MySQLQueryComStmtExecutePacket(payload, backendConnection);
         setBackendHandler(packet, databaseCommunicationEngine);
-        Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();
-        assertTrue(actualCommandResponsePackets.isPresent());
+        Collection<MySQLPacket> mysqlPackets = packet.execute();
+        assertThat(mysqlPackets.size(), is(2));
         assertTrue(packet.next());
         MySQLPacket actual = packet.getQueryData();
         assertThat(actual.getSequenceId(), is(3));
-        assertThat(((MySQLBinaryResultSetRowPacket) actual).getData(), is(Collections.<Object>singletonList(99999L)));
         assertFalse(packet.next());
     }
     

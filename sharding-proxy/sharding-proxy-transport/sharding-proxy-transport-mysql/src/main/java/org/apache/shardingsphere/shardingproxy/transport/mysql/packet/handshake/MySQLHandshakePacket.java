@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCap
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
  * MySQL handshake packet protocol.
@@ -41,39 +41,35 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     
     private final int capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
     
-    private final MySQLStatusFlag mySQLStatusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
+    private final MySQLStatusFlag statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
     
     private final int capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
-    
-    @Getter
-    private final int sequenceId;
     
     @Getter
     private final int connectionId;
     
     @Getter
-    private final MySQLAuthPluginData mySQLAuthPluginData;
+    private final MySQLAuthPluginData authPluginData;
     
-    public MySQLHandshakePacket(final int connectionId, final MySQLAuthPluginData mySQLAuthPluginData) {
-        sequenceId = 0;
+    public MySQLHandshakePacket(final int connectionId, final MySQLAuthPluginData authPluginData) {
         this.connectionId = connectionId;
-        this.mySQLAuthPluginData = mySQLAuthPluginData;
+        this.authPluginData = authPluginData;
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
-        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL handshake packet must be `0`.");
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         payload.readStringNul();
         connectionId = payload.readInt4();
         final byte[] authPluginDataPart1 = payload.readStringNulByBytes();
         payload.readInt2();
         payload.readInt1();
-        Preconditions.checkArgument(mySQLStatusFlag.getValue() == payload.readInt2());
+        Preconditions.checkArgument(statusFlag.getValue() == payload.readInt2());
         payload.readInt2();
         payload.readInt1();
         payload.skipReserved(10);
         byte[] authPluginDataPart2 = payload.readStringNulByBytes();
-        mySQLAuthPluginData = new MySQLAuthPluginData(authPluginDataPart1, authPluginDataPart2);
+        authPluginData = new MySQLAuthPluginData(authPluginDataPart1, authPluginDataPart2);
     }
     
     @Override
@@ -81,13 +77,18 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         payload.writeInt1(protocolVersion);
         payload.writeStringNul(serverVersion);
         payload.writeInt4(connectionId);
-        payload.writeStringNul(new String(mySQLAuthPluginData.getAuthPluginDataPart1()));
+        payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         payload.writeInt2(capabilityFlagsLower);
         payload.writeInt1(MySQLServerInfo.CHARSET);
-        payload.writeInt2(mySQLStatusFlag.getValue());
+        payload.writeInt2(statusFlag.getValue());
         payload.writeInt2(capabilityFlagsUpper);
         payload.writeInt1(0);
         payload.writeReserved(10);
-        payload.writeStringNul(new String(mySQLAuthPluginData.getAuthPluginDataPart2()));
+        payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

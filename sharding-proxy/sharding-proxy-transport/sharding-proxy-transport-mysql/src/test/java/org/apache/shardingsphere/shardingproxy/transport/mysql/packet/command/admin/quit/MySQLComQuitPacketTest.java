@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.quit;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collection;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,20 +40,19 @@ public final class MySQLComQuitPacketTest {
     
     @Test
     public void assertExecute() {
-        Optional<CommandResponsePackets> actual = new MySQLComQuitPacket(1).execute();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getPackets().size(), is(1));
-        assertThat(((MySQLPacket) actual.get().getHeadPacket()).getSequenceId(), is(2));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getAffectedRows(), is(0L));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getLastInsertId(), is(0L));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getWarnings(), is(0));
-        assertThat(((MySQLOKPacket) actual.get().getHeadPacket()).getInfo(), is(""));
+        Collection<MySQLPacket> actual = new MySQLComQuitPacket().execute();
+        assertThat(actual.size(), is(1));
+        MySQLPacket mysqlPacket = actual.iterator().next();
+        assertThat(mysqlPacket.getSequenceId(), is(1));
+        assertThat(((MySQLOKPacket) mysqlPacket).getAffectedRows(), is(0L));
+        assertThat(((MySQLOKPacket) mysqlPacket).getLastInsertId(), is(0L));
+        assertThat(((MySQLOKPacket) mysqlPacket).getWarnings(), is(0));
+        assertThat(((MySQLOKPacket) mysqlPacket).getInfo(), is(""));
     }
     
     @Test
     public void assertWrite() {
-        MySQLComQuitPacket actual = new MySQLComQuitPacket(1);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComQuitPacket actual = new MySQLComQuitPacket();
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_QUIT.getValue());
     }

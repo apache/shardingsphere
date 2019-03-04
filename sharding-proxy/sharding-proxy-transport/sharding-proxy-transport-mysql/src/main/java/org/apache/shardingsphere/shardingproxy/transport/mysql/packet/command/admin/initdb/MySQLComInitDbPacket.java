@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * MySQL COM_INIT_DB command packet.
@@ -40,14 +42,11 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 public final class MySQLComInitDbPacket implements MySQLCommandPacket {
     
     @Getter
-    private final int sequenceId;
-    
     private final String schema;
     
     private final BackendConnection backendConnection;
     
-    public MySQLComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
-        this.sequenceId = sequenceId;
+    public MySQLComInitDbPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         schema = payload.readStringEOF();
         this.backendConnection = backendConnection;
     }
@@ -59,12 +58,17 @@ public final class MySQLComInitDbPacket implements MySQLCommandPacket {
     }
     
     @Override
-    public Optional<CommandResponsePackets> execute() {
+    public Collection<MySQLPacket> execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schema);
         if (LogicSchemas.getInstance().schemaExists(schema)) {
             backendConnection.setCurrentSchema(schema);
-            return Optional.of(new CommandResponsePackets(new MySQLOKPacket(getSequenceId() + 1)));
+            return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
         }
-        return Optional.of(new CommandResponsePackets(new MySQLErrPacket(getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema)));
+        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema));
+    }
+    
+    @Override
+    public int getSequenceId() {
+        return 0;
     }
 }

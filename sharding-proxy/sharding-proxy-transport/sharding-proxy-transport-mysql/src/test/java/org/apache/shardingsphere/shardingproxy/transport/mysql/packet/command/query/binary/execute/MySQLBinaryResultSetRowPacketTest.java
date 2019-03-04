@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute;
 
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,7 +41,6 @@ public final class MySQLBinaryResultSetRowPacketTest {
         MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(
                 1, Arrays.<Object>asList("value", null), Arrays.asList(MySQLColumnType.MYSQL_TYPE_STRING, MySQLColumnType.MYSQL_TYPE_STRING));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getData(), is(Arrays.<Object>asList("value", null)));
         actual.write(payload);
         verify(payload).writeInt1(0x00);
         verify(payload).writeInt1(0x08);

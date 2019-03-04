@@ -21,9 +21,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
 
 import java.util.List;
@@ -33,7 +32,7 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine {
+public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
     
     @Override
     public String getDatabaseType() {
@@ -64,12 +63,12 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     }
     
     @Override
-    public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
+    public void encode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer())) {
-            ((PostgreSQLPacket) message).write(payload);
+            message.write(payload);
             if (!(message instanceof PostgreSQLSSLNegativePacket)) {
-                out.writeByte(((PostgreSQLPacket) message).getMessageType());
-                out.writeInt(payload.getByteBuf().readableBytes() + ((PostgreSQLPacket) message).PAYLOAD_LENGTH);
+                out.writeByte(message.getMessageType());
+                out.writeInt(payload.getByteBuf().readableBytes() + message.PAYLOAD_LENGTH);
             }
             out.writeBytes(payload.getByteBuf());
         }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.ad
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.quit.MySQLComQuitPacketTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41PacketTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacketTest;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePacketsTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLMySQLBinaryStatementRegistryTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacketTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacketTest;
@@ -41,26 +40,25 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        MySQLMySQLCommandPacketTypeTest.class,
-        MySQLMySQLCommandPacketFactoryTest.class,
-        CommandResponsePacketsTest.class, 
-        QueryResponsePacketsTest.class, 
-        MySQLMySQLBinaryStatementRegistryTest.class,
-        MySQLNullBitmapTest.class,
+        MySQLCommandPacketTypeLoaderTest.class, 
+        MySQLMySQLCommandPacketTypeTest.class, 
+        MySQLMySQLCommandPacketFactoryTest.class, 
+        MySQLMySQLBinaryStatementRegistryTest.class, 
+        MySQLNullBitmapTest.class, 
         AllMySQLBinaryProtocolTests.class, 
-        MySQLFieldCountPacketTest.class,
-        MySQLColumnDefinition41PacketTest.class,
-        MySQLTextResultSetRowPacketTest.class,
-        MySQLComFieldListPacketTest.class,
-        MySQLComQueryPacketTest.class,
-        MySQLComStmtPreparePacketTest.class,
-        MySQLComStmtPrepareMySQLOKPacketTest.class,
-        MySQLBinaryResultSetRowPacketTest.class,
-        MySQLComStmtExecutePacketTest.class,
-        MySQLComStmtClosePacketTest.class,
-        MySQLComInitDbPacketTest.class,
-        MySQLComPingPacketTest.class,
-        MySQLComQuitPacketTest.class,
+        MySQLFieldCountPacketTest.class, 
+        MySQLColumnDefinition41PacketTest.class, 
+        MySQLTextResultSetRowPacketTest.class, 
+        MySQLComFieldListPacketTest.class, 
+        MySQLComQueryPacketTest.class, 
+        MySQLComStmtPreparePacketTest.class, 
+        MySQLComStmtPrepareMySQLOKPacketTest.class, 
+        MySQLBinaryResultSetRowPacketTest.class, 
+        MySQLComStmtExecutePacketTest.class, 
+        MySQLComStmtClosePacketTest.class, 
+        MySQLComInitDbPacketTest.class, 
+        MySQLComPingPacketTest.class, 
+        MySQLComQuitPacketTest.class, 
         MySQLUnsupportedCommandPacketTest.class
 })
 public final class AllMySQLMySQLCommandPacketTests {

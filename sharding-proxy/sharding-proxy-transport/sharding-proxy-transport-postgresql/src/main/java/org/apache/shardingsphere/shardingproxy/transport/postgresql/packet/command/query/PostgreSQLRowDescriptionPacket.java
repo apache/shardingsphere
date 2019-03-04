@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.List;
 
@@ -31,19 +31,20 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-@Getter
 public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
     
+    @Getter
     private final char messageType = PostgreSQLCommandPacketType.ROW_DESCRIPTION.getValue();
     
+    @Getter
     private final int fieldCount;
     
-    private final List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions;
+    private final List<PostgreSQLColumnDescription> columnDescriptions;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(fieldCount);
-        for (PostgreSQLColumnDescription each : postgreSQLColumnDescriptions) {
+        for (PostgreSQLColumnDescription each : columnDescriptions) {
             payload.writeStringNul(each.getColumnName());
             payload.writeInt4(each.getTableOID());
             payload.writeInt2(each.getColumnIndex());
