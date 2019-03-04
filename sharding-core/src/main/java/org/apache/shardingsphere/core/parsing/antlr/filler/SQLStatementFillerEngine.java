@@ -17,22 +17,25 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler;
 
-import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import java.util.Collection;
+
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collection;
+import com.google.common.base.Optional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 /**
  * SQL statement filler engine.
- * 
+ *
  * @author zhangliang
  * @author panjuan
  */
@@ -43,7 +46,7 @@ public final class SQLStatementFillerEngine {
     
     private final String sql;
     
-    private final ShardingRule shardingRule;
+    private final SQLStatementFillerRule sqlStatementFillerRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
@@ -60,9 +63,11 @@ public final class SQLStatementFillerEngine {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
         ((AbstractSQLStatement) result).setLogicSQL(sql);
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLStatementFiller> filler = parsingRuleRegistry.findSQLStatementFiller(each.getClass());
+            Optional<SQLStatementFiller> filler = parsingRuleRegistry.findSQLStatementFiller(sqlStatementFillerRule.getClass(), each.getClass());
             if (filler.isPresent()) {
-                filler.get().fill(each, result, sql, shardingRule, shardingTableMetaData);
+                if (sqlStatementFillerRule instanceof ShardingRule) {
+                    filler.get().fill(each, result, sql, (ShardingRule) sqlStatementFillerRule, shardingTableMetaData);
+                }
             }
         }
         return result;

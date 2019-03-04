@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.parsing.antlr;
 
+import java.util.Collection;
+
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.SQLSegmentsExtractorEngine;
@@ -27,9 +29,7 @@ import org.apache.shardingsphere.core.parsing.antlr.parser.SQLParserEngine;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.Collection;
+import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
 
 /**
  * SQL parsing engine.
@@ -47,10 +47,10 @@ public final class AntlrParsingEngine implements SQLParser {
     
     private final SQLStatementOptimizerEngine optimizerEngine;
     
-    public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final SQLStatementFillerRule sqlStatementFillerRule, final ShardingTableMetaData shardingTableMetaData) {
         parserEngine = new SQLParserEngine(databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
-        fillerEngine = new SQLStatementFillerEngine(sql, shardingRule, shardingTableMetaData);
+        fillerEngine = new SQLStatementFillerEngine(sql, sqlStatementFillerRule, shardingTableMetaData);
         optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
     }
     

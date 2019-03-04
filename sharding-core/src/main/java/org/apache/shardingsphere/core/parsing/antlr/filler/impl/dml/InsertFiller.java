@@ -57,7 +57,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     @Override
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        insertStatement.getUpdateTables().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
+        insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
         createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
         insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastIndex());

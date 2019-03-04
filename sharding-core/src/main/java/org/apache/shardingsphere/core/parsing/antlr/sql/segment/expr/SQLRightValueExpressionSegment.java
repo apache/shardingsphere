@@ -31,6 +31,8 @@ public interface SQLRightValueExpressionSegment extends SQLSegment {
     /**
      * Build condition.
      *
+     *  @param column column object
+     *  @param sql SQL text
      * @return condition
      */
     Condition buildCondition(Column column, String sql);

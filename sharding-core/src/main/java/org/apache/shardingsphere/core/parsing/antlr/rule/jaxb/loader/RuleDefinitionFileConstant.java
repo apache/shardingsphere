@@ -32,6 +32,8 @@ public final class RuleDefinitionFileConstant {
     
     private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
     
+    private static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
+    
     private static final String COMMON = "common";
     
     private static final String SQL_STATEMENT_RULE_DEFINITION_FILE_NAME = "sql-statement-rule-definition.xml";
@@ -47,7 +49,7 @@ public final class RuleDefinitionFileConstant {
      * @return SQL statement rule definition file name
      */
     public static String getSQLStatementRuleDefinitionFileName(final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(SHARDING_ROOT_PATH, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -57,7 +59,7 @@ public final class RuleDefinitionFileConstant {
      * @return extractor rule definition file name
      */
     public static String getExtractorRuleDefinitionFileName(final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, databaseType.name().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(SHARDING_ROOT_PATH, databaseType.name().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
     }
     
     /**

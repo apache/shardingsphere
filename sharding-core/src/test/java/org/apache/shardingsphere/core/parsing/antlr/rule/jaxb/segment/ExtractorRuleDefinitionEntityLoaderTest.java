@@ -33,25 +33,25 @@ public final class ExtractorRuleDefinitionEntityLoaderTest {
     
     @Test
     public void assertLoadForMySQL() {
-        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/mysql/extractor-rule-definition.xml");
+        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForPostgreSQL() {
-        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/postgresql/extractor-rule-definition.xml");
+        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/postgresql/extractor-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForOracle() {
-        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/oracle/extractor-rule-definition.xml");
+        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/oracle/extractor-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForSQLServer() {
-        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sqlserver/extractor-rule-definition.xml");
+        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/sharding/sqlserver/extractor-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
 }

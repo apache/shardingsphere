@@ -15,27 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.parser.token;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+package org.apache.shardingsphere.core.rule;
 
 /**
- * SQL Token.
+ * SQL Statement Filler Rule.
  *
- * @author zhangliang
- * @author panjuan
+ * @author duhongjun
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public abstract class SQLToken implements Comparable<SQLToken> {
-    
-    private final int startIndex;
-    
-    @Override
-    public final int compareTo(final SQLToken sqlToken) {
-        return startIndex - sqlToken.getStartIndex();
-    }
+public interface SQLStatementFillerRule {
+
 }

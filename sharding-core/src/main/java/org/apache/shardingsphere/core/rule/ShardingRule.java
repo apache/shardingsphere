@@ -58,7 +58,7 @@ import java.util.TreeSet;
  * @author panjuan
  */
 @Getter
-public class ShardingRule {
+public class ShardingRule implements SQLStatementFillerRule {
     
     private final ShardingRuleConfiguration shardingRuleConfig;
     
@@ -280,7 +280,7 @@ public class ShardingRule {
     /**
      * Judge logic tables is all belong to broadcast tables.
      *
-     * @param logicTableNames  logic table names
+     * @param logicTableNames logic table names
      * @return logic tables is all belong to broadcast tables or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
@@ -407,7 +407,7 @@ public class ShardingRule {
     
     /**
      * Get all actual table names.
-     * 
+     *
      * @return all actual table names
      */
     public Map<String, Collection<String>> getAllActualTableNames() {
@@ -511,7 +511,7 @@ public class ShardingRule {
     
     /**
      * Judge contains table in sharding rule.
-     * 
+     *
      * @param logicTableName logic table name
      * @return contains table in sharding rule or not
      */
@@ -521,7 +521,7 @@ public class ShardingRule {
     
     /**
      * Get sharding logic table names.
-     * 
+     *
      * @param logicTableNames logic table names
      * @return sharding logic table names
      */
@@ -538,7 +538,7 @@ public class ShardingRule {
     
     /**
      * Is routing by hint.
-     * 
+     *
      * @param tableRule table rule
      * @return route by hint is true
      */

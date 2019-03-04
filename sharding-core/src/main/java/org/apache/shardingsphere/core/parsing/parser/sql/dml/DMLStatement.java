@@ -48,7 +48,7 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private boolean deleteStatement;
     
-    private final Map<String, String> updateTables = new HashMap<>();
+    private final Map<String, String> updateTableAlias = new HashMap<>();
     
     private final Map<Column, SQLExpression> updateColumnValues = new LinkedHashMap<>();
     

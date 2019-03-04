@@ -20,13 +20,10 @@ package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 import java.util.Map.Entry;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -35,8 +32,6 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Update set where filler.
@@ -50,8 +45,7 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
         super.fill(sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
         UpdateSetWhereSegment updateSetWhereSegment = (UpdateSetWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
-        Preconditions.checkArgument(!dmlStatement.getUpdateTables().isEmpty(), "Update table does not exist");
-        String updateTable = dmlStatement.getUpdateTables().values().iterator().next();
+        String updateTable = dmlStatement.getUpdateTableAlias().values().iterator().next();
         for (Entry<ColumnSegment, ExpressionSegment> each : updateSetWhereSegment.getUpdateColumns().entrySet()) {
             Column column = new Column(each.getKey().getName(), updateTable);
             SQLExpression expression = each.getValue().convertToSQLExpression(sql).get();
