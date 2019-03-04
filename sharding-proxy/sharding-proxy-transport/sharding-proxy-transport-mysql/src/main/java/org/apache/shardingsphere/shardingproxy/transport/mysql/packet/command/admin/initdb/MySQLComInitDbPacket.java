@@ -23,28 +23,24 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL COM_INIT_DB command packet.
+ * COM_INIT_DB command packet for MySQL.
  *
- * @author zhangliang
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>
+ * 
+ * @author zhangliang
  */
 @Getter
-public final class MySQLComInitDbPacket implements MySQLCommandPacket {
+public final class MySQLComInitDbPacket extends MySQLCommandPacket {
     
     private final String schema;
     
     public MySQLComInitDbPacket(final MySQLPacketPayload payload) {
+        super(MySQLCommandPacketType.COM_INIT_DB);
         schema = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(MySQLCommandPacketType.COM_INIT_DB.getValue());
+    public void doWrite(final MySQLPacketPayload payload) {
         payload.writeStringEOF(schema);
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

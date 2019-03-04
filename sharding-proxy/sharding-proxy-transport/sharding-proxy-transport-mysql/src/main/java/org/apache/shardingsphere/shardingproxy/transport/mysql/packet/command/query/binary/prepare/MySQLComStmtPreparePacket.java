@@ -18,34 +18,29 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL COM_STMT_PREPARE command packet.
+ * COM_STMT_PREPARE command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare.html">COM_STMT_PREPARE</a>
  *
  * @author zhangliang
  */
-@Slf4j
-public final class MySQLComStmtPreparePacket implements MySQLCommandPacket {
+@Getter
+public final class MySQLComStmtPreparePacket extends MySQLCommandPacket {
     
-    @Getter
     private final String sql;
     
     public MySQLComStmtPreparePacket(final MySQLPacketPayload payload) {
+        super(MySQLCommandPacketType.COM_STMT_PREPARE);
         sql = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    public void doWrite(final MySQLPacketPayload payload) {
         payload.writeStringEOF(sql);
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

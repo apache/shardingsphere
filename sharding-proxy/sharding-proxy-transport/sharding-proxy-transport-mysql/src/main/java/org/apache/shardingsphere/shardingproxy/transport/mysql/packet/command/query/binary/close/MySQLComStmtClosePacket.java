@@ -19,30 +19,23 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL COM_STMT_CLOSE command packet.
+ * COM_STMT_CLOSE command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-close.html">COM_QUERY</a>
  *
  * @author zhangyonglun
  */
 @Getter
-public final class MySQLComStmtClosePacket implements MySQLCommandPacket {
+public final class MySQLComStmtClosePacket extends MySQLCommandPacket {
     
     private final int statementId;
     
     public MySQLComStmtClosePacket(final MySQLPacketPayload payload) {
+        super(MySQLCommandPacketType.COM_STMT_CLOSE);
         statementId = payload.readInt4();
-    }
-    
-    @Override
-    public void write(final MySQLPacketPayload payload) {
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

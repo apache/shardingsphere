@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLComQueryPacketTest {
@@ -34,7 +35,8 @@ public final class MySQLComQueryPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComQueryPacket actual = new MySQLComQueryPacket("SELECT id FROM tbl");
+        when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
+        MySQLComQueryPacket actual = new MySQLComQueryPacket(payload);
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
         verify(payload).writeStringEOF("SELECT id FROM tbl");

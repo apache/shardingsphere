@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * MySQL COM_STMT_CLOSE command packet executor.
+ * COM_STMT_CLOSE command packet executor for MySQL.
  * 
  * @author zhangliang
  */

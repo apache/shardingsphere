@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.MySQLOKCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.MySQLUnsupportedCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.MySQLQueryComStmtExecutePacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacketExecutor;
@@ -58,7 +59,7 @@ public final class MySQLCommandPacketExecutorFactory {
             case COM_STMT_EXECUTE:
                 return new MySQLQueryComStmtExecutePacketExecutor();
             case COM_STMT_CLOSE:
-                return new MySQLComFieldListPacketExecutor();
+                return new MySQLComStmtClosePacketExecutor();
             case COM_PING:
                 return new MySQLOKCommandPacketExecutor();
             default:
