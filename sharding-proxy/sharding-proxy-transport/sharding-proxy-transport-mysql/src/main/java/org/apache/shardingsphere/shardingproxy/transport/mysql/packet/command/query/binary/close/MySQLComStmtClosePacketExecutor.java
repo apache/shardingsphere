@@ -35,7 +35,8 @@ public final class MySQLComStmtClosePacketExecutor implements CommandPacketExecu
     
     @Override
     public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) throws SQLException {
-        commandPacket.execute();
+        MySQLComStmtClosePacket mySQLComStmtClosePacket = (MySQLComStmtClosePacket) commandPacket;
+        mySQLComStmtClosePacket.removeCachedStatement();
         return Collections.emptyList();
     }
 }

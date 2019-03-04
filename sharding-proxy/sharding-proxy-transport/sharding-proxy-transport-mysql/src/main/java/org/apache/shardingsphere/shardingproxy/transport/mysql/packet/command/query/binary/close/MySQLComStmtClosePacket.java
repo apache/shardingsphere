@@ -40,11 +40,17 @@ public final class MySQLComStmtClosePacket implements MySQLCommandPacket {
     
     @Override
     public void write(final MySQLPacketPayload payload) {
-        MySQLBinaryStatementRegistry.getInstance().remove(statementId);
     }
     
     @Override
     public int getSequenceId() {
         return 0;
+    }
+    
+    /**
+     * Remove cached statement.
+     */
+    void removeCachedStatement() {
+        MySQLBinaryStatementRegistry.getInstance().remove(statementId);
     }
 }
