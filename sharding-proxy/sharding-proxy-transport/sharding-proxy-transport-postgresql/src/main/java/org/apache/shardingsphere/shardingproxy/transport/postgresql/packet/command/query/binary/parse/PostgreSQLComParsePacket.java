@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,22 +40,22 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     private final String sql;
     
-    private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes = new ArrayList<>(64);
+    private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
-        if (!sql.isEmpty()) {
-            getParameterTypes(payload);
-        }
+        binaryStatementParameterTypes = sql.isEmpty() ? Collections.<PostgreSQLBinaryStatementParameterType>emptyList() : getParameterTypes(payload);
     }
     
-    private void getParameterTypes(final PostgreSQLPacketPayload payload) {
+    private List<PostgreSQLBinaryStatementParameterType> getParameterTypes(final PostgreSQLPacketPayload payload) {
         int parameterCount = payload.readInt2();
+        List<PostgreSQLBinaryStatementParameterType> result = new ArrayList<>(parameterCount); 
         for (int i = 0; i < parameterCount; i++) {
-            binaryStatementParameterTypes.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.valueOf(payload.readInt4())));
+            result.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLColumnType.valueOf(payload.readInt4())));
         }
+        return result;
     }
     
     private String alterSQLToJDBCStyle(final String sql) {
