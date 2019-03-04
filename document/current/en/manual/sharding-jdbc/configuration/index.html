@@ -12,19 +12,19 @@
     <title>Configuration manual :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1550226744" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1550226744" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1550226744"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1504,70 +1504,53 @@
 
 
 
-<h2 id="overview">Overview</h2>
+<h2 id="introduction">Introduction</h2>
 
-<p>Configuration is core module of Sharding-JDBC, it is only one module which end-users need to study. Configuration module is main entrance of Sharding-JDBC, end-users can use it to know what features that Sharding-JDBC supported.</p>
+<p>As the core of Sharding-JDBC, configuration is the only module in Sharding-JDBC that has something to do with application developers.
+Configuration module is also the portal of Sharding-JDBC, through which users can fast and clearly understand the functions provided by Sharding-JDBC.</p>
 
-<p>This section is a configuration manual, users can use it as a dictionary, may lookup some configuration if necessary.</p>
+<p>This part is a configuration manual for Sharding-JDBC, which can also be referred to as a dictionary if necessary.</p>
 
-<p>Sharding-JDBC provides 4 types of configurations. User can use sharding, read-write splitting or sharding + read-write splitting together.</p>
+<p>Sharding-JDBC has provided 4 kinds of configuration methods for different situations.
+By configuration, application developers can flexibly use sharding databases with sharding tables, read-write split or the combination of both.</p>
 
 <p><img src="https://shardingsphere.apache.org/document/current/img/config_domain.png" alt="The class diagrams for Domain Model" /></p>
 
-<h2 id="the-factory-method-pattern">The Factory Method Pattern</h2>
+<h2 id="factory-api">Factory API</h2>
 
-<p>The yellow part of the figure represents the Sharding-JDBC entry API, which is provided in the form of factory methods. It includes ShardingDataSourceFactory factory class and MasterSlaveDataSourceFactory factory class. ShardingDataSourceFactory is used to create JDBC driver for Sharding + Read-write splitting, but MasterSlaveDataSourceFactory is to create JDBC driver only for Read-write splitting.</p>
+<p>The yellow part in the diagram indicates the API entrance of Sharding-JDBC, provided in factory method.
+There are two kinds of factories, <code>ShardingDataSourceFactory</code> and <code>MasterSlaveDataSourceFactory</code> for now.
+<code>ShardingDataSourceFactory</code> is used to create JDBC drivers of sharding databases with sharding tables or sharding databases with sharding tables+read-write split; <code>MasterSlaveDataSourceFactory</code> is used to create JDBC drivers of read-write split.</p>
 
 <h2 id="configuration-object">Configuration Object</h2>
 
-<p>The blue part of the figure shows the Sharding-JDBC configuration objects. ShardingRuleConfiguration is the entrance to configure the Sharding strategy, and it can include multiple TableRuleConfiguration and MasterSlaveRuleConfiguration. A TableRuleConfiguration is configured for a group of tables with the same sharding strategy. If both Sharding and Read-write splitting are used, you need to set MasterSlaveRuleConfiguration for each logic database used to do Read-write splitting. There is one-to-one correspondence between each TableRuleConfiguration and each ShardingStrategyConfiguration which consists of 5 kinds of strategies to choose from. For details on the use of sharding strategies, please read the <a href="https://shardingsphere.apache.org/document/current/02-guide/sharding/">Database Sharding</a>.</p>
+<p>The yellow part in the diagram indicates configuration objects of Sharding-JDBC, which provides flexible configuration methods.
+<code>ShardingRuleConfiguration</code> is the core and entrance of sharding database and sharding table configuration, which can include many <code>TableRuleConfiguration</code> and <code>MasterSlaveRuleConfiguration</code>.
+Each group of sharding tables with same rules is set with a <code>TableRuleConfiguration</code>.
+If sharding databases with sharding tables and read-write split are used together, each logic database of read-write split is set with a <code>MasterSlaveRuleConfiguration</code>.
+Each <code>TableRuleConfiguration</code> is corresponding to a <code>ShardingStrategyConfiguration</code> and it has 5 types to choose.</p>
 
-<p>MasterSlaveRuleConfiguration is only used for Read-write splitting.</p>
+<p>Read-write split uses <code>MasterSlaveRuleConfiguration</code>.</p>
 
 <h2 id="internal-object">Internal Object</h2>
 
-<p>The red part of the figure represents internal objects, which are used by Sharding-JDBC itself. Therefore users do not look inside those objects. By using ShardingRuleConfiguration and MasterSlaveRuleConfiguration, Sharding-JDBC provides final rules to ShardingDataSource and MasterSlaveDataSource which implement the DataSource interface.</p>
+<p>The red part in the diagram indicates internal objects, which are used in Sharding-JDBC and needless to be focused by application developers.
+Sharding-JDBC uses <code>ShardingRuleConfiguration</code> and <code>MasterSlaveRuleConfiguration</code> to generate rule objects used by <code>ShardingDataSource</code> and <code>MasterSlaveDataSource</code>.
+Implemented with <code>DataSource</code> interface, <code>ShardingDataSource</code> and <code>MasterSlaveDataSource</code> are complete implementation schemes of JDBC.</p>
 
-<h2 id="operation-steps">Operation Steps</h2>
-
-<ol>
-<li>Create Configuration object.</li>
-<li>The Configuration object is transformed into the Rule object through the Factory object.</li>
-<li>The Rule object is bound to the DataSource object through the Factory object.</li>
-<li>Sharding-JDBC operates Sharding and Read-write splitting on DataSource object.</li>
-</ol>
-
-<p>This section explains configuration domain models in Sharding-JDBC. The following class diagram is about those domain models in Sharding-JDBC.</p>
-
-<p><img src="https://shardingsphere.apache.org/document/current/img/config_domain.png" alt="The class diagrams for Domain Model" /></p>
-
-<h2 id="the-factory-method-pattern-1">The Factory Method Pattern</h2>
-
-<p>The yellow part of the figure represents the Sharding-JDBC entry API, which is provided in the form of factory methods. It includes ShardingDataSourceFactory factory class and MasterSlaveDataSourceFactory factory class. ShardingDataSourceFactory is used to create JDBC driver for Sharding + Read-write splitting, but MasterSlaveDataSourceFactory is to create JDBC driver only for Read-write splitting.</p>
-
-<h2 id="configuration-object-1">Configuration Object</h2>
-
-<p>The blue part of the figure shows the sharding-jdbc configuration objects. ShardingRuleConfiguration is the entrance to configure the Sharding strategy, and it can include multiple TableRuleConfiguration and MasterSlaveRuleConfiguration. A TableRuleConfiguration is configured for a group of tables with the same sharding strategy. If both Sharding and Read-write splitting are used, you need to set MasterSlaveRuleConfiguration for each logic database used to do Read-write splitting. There is one-to-one correspondence between each TableRuleConfiguration and each ShardingStrategyConfiguration which consists of 5 kinds of strategies to choose from. For details on the use of sharding strategies, please read the <a href="https://shardingsphere.apache.org/document/current/02-guide/sharding/">Database Sharding</a>.</p>
-
-<p>MasterSlaveRuleConfiguration is only used for Read-write splitting.</p>
-
-<h2 id="internal-object-1">Internal Object</h2>
-
-<p>The red part of the figure represents internal objects, which are used by Sharding-JDBC itself. Therefore users do not look inside those objects. By using ShardingRuleConfiguration and MasterSlaveRuleConfiguration, Sharding-JDBC provides final rules to ShardingDataSource and MasterSlaveDataSource which implement the DataSource interface.</p>
-
-<h2 id="operation-steps-1">Operation Steps</h2>
+<h2 id="initialization-process">Initialization Process</h2>
 
 <ol>
-<li>Create Configuration object.</li>
-<li>The Configuration object is transformed into the Rule object through the Factory object.</li>
-<li>The Rule object is bound to the DataSource object through the Factory object.</li>
-<li>Sharding-JDBC operates Sharding and Read-write splitting on DataSource object.</li>
+<li>Configure <code>Configuration</code> objects.</li>
+<li>Transfer <code>Configuration</code> objects to <code>Rule</code> objects through <code>Factory</code> objects.</li>
+<li>Equip <code>Rule</code> objects and <code>DataSource</code> objects through <code>Factory</code> objects.</li>
+<li>Sharding-JDBC uses <code>DataSource</code> objects to split databases.</li>
 </ol>
 
-<h2 id="convention">Convention</h2>
+<h2 id="use-convention">Use Convention</h2>
 
-<p>Classes in package <code>org.apache.shardingsphere.api</code> and <code>org.apache.shardingsphere.shardingjdbc.api</code> is API for end users, every update will declare at release notes.
-Classes in other packages is internal implementation, maybe refactor in anytime, please <code>DO NOT USE</code> them.</p>
+<p>Classes in <code>io.shardingsphere.api</code> and <code>io.shardingsphere.shardingjdbc.api</code> packages are API open to users, the modifications of which will be declared in release notes.
+As internal implementations, classes in other packages can adjust any time, <code>please not use them directly</code>.</p>
 
 
 <footer class=" footline" >
@@ -2553,20 +2536,20 @@ Classes in other packages is internal implementation, maybe refactor in anytime,
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1550226744"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1550226744"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1550226744" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1550226744"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

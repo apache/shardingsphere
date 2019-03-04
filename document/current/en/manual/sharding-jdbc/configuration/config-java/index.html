@@ -12,19 +12,19 @@
     <title>Java :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1550226744" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1550226744" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1550226744" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1550226744"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1503,11 +1503,11 @@
 <ul>
 <li>
 <ul>
-<li><a href="#example">Example</a>
+<li><a href="#configuration-instance">Configuration Instance</a>
 <ul>
 <li><a href="#sharding">Sharding</a></li>
-<li><a href="#read-write-splitting">Read-write splitting</a></li>
-<li><a href="#sharding-read-write-splitting">Sharding + Read-write splitting</a></li>
+<li><a href="#read-write-split">Read-Write Split</a></li>
+<li><a href="#sharding-read-write-split">Sharding + Read-Write Split</a></li>
 <li><a href="#orchestration">Orchestration</a></li>
 </ul></li>
 <li><a href="#configuration-reference">Configuration reference</a>
@@ -1526,7 +1526,7 @@
 <li><a href="#shardingpropertiesconstant">ShardingPropertiesConstant</a></li>
 <li><a href="#configmap">configMap</a></li>
 </ul></li>
-<li><a href="#read-write-splitting-1">Read-write splitting</a>
+<li><a href="#read-write-splitting">Read-write splitting</a>
 <ul>
 <li><a href="#masterslavedatasourcefactory">MasterSlaveDataSourceFactory</a></li>
 <li><a href="#masterslaveruleconfiguration">MasterSlaveRuleConfiguration</a></li>
@@ -1563,7 +1563,7 @@
 
 
 
-<h2 id="example">Example</h2>
+<h2 id="configuration-instance">Configuration Instance</h2>
 
 <h3 id="sharding">Sharding</h3>
 
@@ -1607,7 +1607,7 @@
      }
 </code></pre>
 
-<h3 id="read-write-splitting">Read-write splitting</h3>
+<h3 id="read-write-split">Read-Write Split</h3>
 
 <pre><code class="language-java">     DataSource getMasterSlaveDataSource() throws SQLException {
          MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
@@ -1626,7 +1626,7 @@
      }
 </code></pre>
 
-<h3 id="sharding-read-write-splitting">Sharding + Read-write splitting</h3>
+<h3 id="sharding-read-write-split">Sharding + Read-Write Split</h3>
 
 <pre><code class="language-java">    DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -2041,7 +2041,7 @@
 
 <p>User-defined arguments.</p>
 
-<h3 id="read-write-splitting-1">Read-write splitting</h3>
+<h3 id="read-write-splitting">Read-write splitting</h3>
 
 <h4 id="masterslavedatasourcefactory">MasterSlaveDataSourceFactory</h4>
 
@@ -3325,20 +3325,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1550226744"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1550226744"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1550226744"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1550226744" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1550226744"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
