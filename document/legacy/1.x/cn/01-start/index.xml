@@ -2,28 +2,28 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>01-starts on </title>
-    <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/</link>
+    <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/</link>
     <description>Recent content in 01-starts on </description>
     <generator>Hugo -- gohugo.io</generator>
     
-	<atom:link href="http://shardingsphere.io/document/legacy/1.x/cn/01-start/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>起航</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/</guid>
       <description> 本章导航  如果想快速体验Sharding-JDBC的强大功能，请阅读快速入门。 如果在使用中遇到什么问题，请首先在FAQ中寻找解决问题的答案。 想要在自己的项目中集成Sharding-JDBC,您一定很关心它能做什么和不能做什么。 数据库中间件一般都不会支持完全的SQL语法,在这里能了解到支持的SQL语法。 最后，你会关心中间件的性能情况。这里将展示我们的性能测试结果。  </description>
     </item>
     
     <item>
       <title>快速入门</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/quick-start/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/quick-start/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/</guid>
       <description>使用API配置 Maven安装 &amp;lt;!-- 引入sharding-jdbc核心模块 --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-jdbc.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  规则配置 Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全貌：
 ShardingRule shardingRule = ShardingRule.builder() .dataSourceRule(dataSourceRule) .tableRules(tableRuleList) .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm())) .tableShardingStrategy(new TableShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm()))) .build();  规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
  详细的规则配置请参考分库分表
@@ -33,10 +33,10 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule)
     
     <item>
       <title>FAQ</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/faq/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/faq/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/</guid>
       <description>1. 阅读源码时为什么会出现编译错误? 回答：
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考lombok官网。
 2. 1.5.0版本之前出现java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
@@ -62,10 +62,10 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;  8. 1.</descri
     
     <item>
       <title>详细功能列表</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/features/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/features/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/</guid>
       <description> 功能性需求 分库分表  分片规则自由定制 支持多分片键 支持通过=，BETWEEN，IN分片 支持级联表 支持多表笛卡尔积查询 支持多表结果归并 支持聚合查询结果归并 支持AVG函数改写为SUM/COUNT 支持ORDER BY结果归并 支持GROUP BY结果归并 支持LIMIT分页查询以及多库表结果改写及归并  柔性事务  最大努力送达型 TCC型(TBD)  易用性  JDBC协议适配
 1.1. 全ORM支持
 1.2. 全数据库连接池支持
@@ -79,10 +79,10 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;  8. 1.</descri
     
     <item>
       <title>使用限制</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/limitations/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/limitations/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/</guid>
       <description> JDBC未支持列表 Sharding-JDBC暂时未支持不常用的JDBC方法。
 DataSource接口  不支持timeout相关操作  Connection接口  不支持存储过程，函数，游标的操作 不支持执行native的SQL 不支持savepoint相关操作 不支持Schema/Catalog的操作 不支持自定义类型映射  Statement和PreparedStatement接口  不支持返回多结果集的语句（即存储过程，非SELECT多条数据） 不支持国际化字符的操作  对于ResultSet接口  不支持对于结果集指针位置判断 不支持通过非next方法改变结果指针位置 不支持修改结果集内容 不支持获取国际化字符 不支持获取Array  JDBC 4.1  不支持JDBC 4.1接口新功能  查询所有未支持方法，请阅读com.dangdang.ddframe.rdb.sharding.jdbc.unsupported包。
 SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
@@ -91,10 +91,10 @@ SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UN
     
     <item>
       <title>SQL支持详细列表</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/sql-supported/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/sql-supported/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/</guid>
       <description>由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。 本文详细罗列出已明确可支持的SQL种类以及已明确不支持的SQL种类，尽量让使用者避免踩坑。 其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
 全局不支持项 动态表 未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在SQL或Hint中包含分片键的SQL均不支持。 原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。
 有限支持子查询 子查询支持详情请参考分页及子查询。
@@ -103,10 +103,10 @@ SQL语句限制 有限支持子查询 不支持HAVING 不支持OR，UNION 和 UN
     
     <item>
       <title>性能测试报告</title>
-      <link>http://shardingsphere.io/document/legacy/1.x/cn/01-start/stress-test/</link>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/legacy/1.x/cn/01-start/stress-test/</guid>
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/</guid>
       <description>测试目的 对Sharding-JDBC进行性能测试，客观、公正评估系统的性能，目的有三:
  对比Sharding-JDBC和JDBC的性能。 Sharding-JDBC是否通过扩展数据库解决JDBC吞吐量不足的问题。 Sharding-JDBC的稳定性。  测试数据库配置    数据库实例 DB1 DB2     操作系统 centOS5.4 centOS5.4   CPU 2C四核 2C四核   内存 32GB 32GB   硬盘 250G*2_RAID1+600G*4_RAID10 250G*2_RAID1+600G*4_RAID10   Mysql版本 5.5.19 5.5.19   数据表字段数量 70 70   数据表行数 1000万 1000万    网络拓扑 单库情况下Sharding-JDBC与JDBC性能对比 测试结论：
  查询操作，Sharding-JDBC的TPS为JDBC的TPS的99.8% 插入操作，Sharding-JDBC的TPS为JDBC的TPS的90.2% 更新操作，Sharding-JDBC的TPS为JDBC的TPS的93.1%  查询  横坐标：并发用户数 纵坐标：TPS   插入  横坐标：并发用户数 纵坐标：TPS   更新  横坐标：并发用户数 纵坐标：TPS   Sharding-JDBC单库与双库性能对比 对比测试：</description>
