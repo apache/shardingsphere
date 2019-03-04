@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -53,17 +52,19 @@ import java.util.List;
  */
 public final class MySQLQueryComStmtExecutePacketExecutor implements QueryCommandPacketExecutor<MySQLPacket> {
     
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private boolean isQuery;
+    private volatile boolean isQuery;
     
     private int currentSequenceId;
     
-    @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        MySQLQueryComStmtExecutePacket comStmtExecutePacket = (MySQLQueryComStmtExecutePacket) commandPacket;
+    public MySQLQueryComStmtExecutePacketExecutor(final MySQLQueryComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                backendConnection.getLogicSchema(), comStmtExecutePacket.getBinaryStatement().getSql(), comStmtExecutePacket.getParameters(), backendConnection);
+                backendConnection.getLogicSchema(), comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
+    }
+    
+    @Override
+    public Collection<MySQLPacket> execute() {
         if (GlobalContext.getInstance().isCircuitBreak()) {
             return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }

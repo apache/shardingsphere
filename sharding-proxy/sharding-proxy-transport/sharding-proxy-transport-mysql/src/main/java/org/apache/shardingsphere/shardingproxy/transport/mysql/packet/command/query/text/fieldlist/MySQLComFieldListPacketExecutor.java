@@ -22,7 +22,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -44,24 +43,30 @@ public final class MySQLComFieldListPacketExecutor implements CommandPacketExecu
     
     private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
     
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final MySQLComFieldListPacket comFieldListPacket;
     
-    @Override
-    public Collection<MySQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) throws SQLException {
-        MySQLComFieldListPacket comFieldListPacket = (MySQLComFieldListPacket) commandPacket;
-        String schemaName = backendConnection.getSchemaName();
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(
-                backendConnection.getLogicSchema(), getShowColumnsSQL(schemaName, comFieldListPacket), backendConnection);
-        BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        return backendResponse instanceof ErrorResponse ? Collections.<MySQLPacket>singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
-                : getColumnDefinition41Packets(schemaName, comFieldListPacket);
+    private final String schemaName;
+    
+    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    
+    public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket comFieldListPacket, final BackendConnection backendConnection) {
+        this.comFieldListPacket = comFieldListPacket;
+        schemaName = backendConnection.getSchemaName();
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(backendConnection.getLogicSchema(), getShowColumnsSQL(), backendConnection);
     }
     
-    private String getShowColumnsSQL(final String schemaName, final MySQLComFieldListPacket comFieldListPacket) {
+    @Override
+    public Collection<MySQLPacket> execute() throws SQLException {
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
+        return backendResponse instanceof ErrorResponse ? Collections.<MySQLPacket>singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
+                : getColumnDefinition41Packets();
+    }
+    
+    private String getShowColumnsSQL() {
         return String.format(SQL, comFieldListPacket.getTable(), schemaName);
     }
     
-    private Collection<MySQLPacket> getColumnDefinition41Packets(final String schemaName, final MySQLComFieldListPacket comFieldListPacket) throws SQLException {
+    private Collection<MySQLPacket> getColumnDefinition41Packets() throws SQLException {
         Collection<MySQLPacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         while (databaseCommunicationEngine.next()) {

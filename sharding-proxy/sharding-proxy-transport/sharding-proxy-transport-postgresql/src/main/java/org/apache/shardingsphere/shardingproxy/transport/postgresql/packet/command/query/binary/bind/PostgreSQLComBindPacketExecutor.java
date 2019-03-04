@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.QueryCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
@@ -46,43 +45,47 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * PostgreSQL command bind packet executor.
+ * Command bind packet executor for PostgreSQL.
  *
  * @author zhangyonglun
  * @author zhangliang
  */
 public final class PostgreSQLComBindPacketExecutor implements QueryCommandPacketExecutor<PostgreSQLPacket> {
     
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final PostgreSQLComBindPacket comBindPacket;
+            
+    private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private boolean isBinaryRowData;
+    private volatile boolean isQuery;
     
-    private boolean isQuery;
+    public PostgreSQLComBindPacketExecutor(final PostgreSQLComBindPacket comBindPacket, final BackendConnection backendConnection) {
+        this.comBindPacket = comBindPacket;
+        databaseCommunicationEngine = null == comBindPacket.getSql() ? null
+                : DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
+                        backendConnection.getLogicSchema(), comBindPacket.getSql(), comBindPacket.getParameters(), backendConnection);
+    }
     
     @Override
-    public Collection<PostgreSQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        PostgreSQLComBindPacket comBindPacket = (PostgreSQLComBindPacket) commandPacket;
+    public Collection<PostgreSQLPacket> execute() {
         if (GlobalContext.getInstance().isCircuitBreak()) {
             return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
         }
         List<PostgreSQLPacket> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
-        isBinaryRowData = comBindPacket.isBinaryRowData();
-        if (null != comBindPacket.getBinaryStatement() && null != comBindPacket.getBinaryStatement().getSql()) {
-            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-                    backendConnection.getLogicSchema(), comBindPacket.getBinaryStatement().getSql(), comBindPacket.getParameters(), backendConnection);
-            BackendResponse backendResponse = databaseCommunicationEngine.execute();
-            if (backendResponse instanceof ErrorResponse) {
-                result.add(createErrorPacket((ErrorResponse) backendResponse));
-            }
-            if (backendResponse instanceof UpdateResponse) {
-                result.add(createUpdatePacket((UpdateResponse) backendResponse));
-            }
-            if (backendResponse instanceof QueryResponse) {
-                Optional<PostgreSQLRowDescriptionPacket> postgreSQLRowDescriptionPacket = createQueryPacket((QueryResponse) backendResponse);
-                if (postgreSQLRowDescriptionPacket.isPresent()) {
-                    result.add(postgreSQLRowDescriptionPacket.get());
-                }
+        if (null == databaseCommunicationEngine) {
+            return result;
+        }
+        BackendResponse backendResponse = databaseCommunicationEngine.execute();
+        if (backendResponse instanceof ErrorResponse) {
+            result.add(createErrorPacket((ErrorResponse) backendResponse));
+        }
+        if (backendResponse instanceof UpdateResponse) {
+            result.add(createUpdatePacket((UpdateResponse) backendResponse));
+        }
+        if (backendResponse instanceof QueryResponse) {
+            Optional<PostgreSQLRowDescriptionPacket> postgreSQLRowDescriptionPacket = createQueryPacket((QueryResponse) backendResponse);
+            if (postgreSQLRowDescriptionPacket.isPresent()) {
+                result.add(postgreSQLRowDescriptionPacket.get());
             }
         }
         return result;
@@ -99,7 +102,7 @@ public final class PostgreSQLComBindPacketExecutor implements QueryCommandPacket
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
         isQuery = !columnDescriptions.isEmpty();
-        if (columnDescriptions.isEmpty() || isBinaryRowData) {
+        if (columnDescriptions.isEmpty() || comBindPacket.isBinaryRowData()) {
             return Optional.absent();
         }
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
@@ -127,7 +130,7 @@ public final class PostgreSQLComBindPacketExecutor implements QueryCommandPacket
     @Override
     public PostgreSQLPacket getQueryData() throws SQLException {
         QueryData queryData = databaseCommunicationEngine.getQueryData();
-        return isBinaryRowData ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), getPostgreSQLColumnTypes(queryData)) : new PostgreSQLDataRowPacket(queryData.getData());
+        return comBindPacket.isBinaryRowData() ? new PostgreSQLBinaryResultSetRowPacket(queryData.getData(), getPostgreSQLColumnTypes(queryData)) : new PostgreSQLDataRowPacket(queryData.getData());
     }
     
     private List<PostgreSQLColumnType> getPostgreSQLColumnTypes(final QueryData queryData) {

@@ -22,11 +22,11 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PostgreSQL command execute packet.
+ * Command execute packet for PostgreSQL.
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLComExecutePacket implements PostgreSQLCommandPacket {
+public final class PostgreSQLComExecutePacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComExecutePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();

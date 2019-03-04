@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic;
 
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
@@ -26,14 +24,14 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * PostgreSQL command termination packet executor.
+ * Command termination packet executor for PostgreSQL.
  * 
  * @author zhangliang
  */
 public final class PostgreSQLComTerminationPacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
     
     @Override
-    public Collection<PostgreSQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
+    public Collection<PostgreSQLPacket> execute() {
         return Collections.emptyList();
     }
 }

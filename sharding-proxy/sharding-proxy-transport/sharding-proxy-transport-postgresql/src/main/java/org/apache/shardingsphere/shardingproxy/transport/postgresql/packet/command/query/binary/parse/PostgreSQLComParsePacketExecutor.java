@@ -25,9 +25,10 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,16 +41,26 @@ import java.util.Collections;
  */
 public final class PostgreSQLComParsePacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
     
+    private final PostgreSQLComParsePacket comParsePacket;
+    
+    private final LogicSchema logicSchema;
+    
+    private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
+    
+    public PostgreSQLComParsePacketExecutor(final PostgreSQLComParsePacket comParsePacket, final BackendConnection backendConnection) {
+        this.comParsePacket = comParsePacket;
+        logicSchema = backendConnection.getLogicSchema();
+        binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
+    }
+    
     @Override
-    public Collection<PostgreSQLPacket> execute(final BackendConnection backendConnection, final CommandPacket commandPacket) {
-        PostgreSQLComParsePacket comParsePacket = (PostgreSQLComParsePacket) commandPacket;
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
+    public Collection<PostgreSQLPacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(DatabaseType.PostgreSQL, comParsePacket.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
         if (!comParsePacket.getSql().isEmpty()) {
             SQLStatement sqlStatement = sqlParsingEngine.parse(true);
             int parametersIndex = sqlStatement.getParametersIndex();
-            comParsePacket.getBinaryStatementRegistry().register(comParsePacket.getStatementId(), comParsePacket.getSql(), parametersIndex, comParsePacket.getBinaryStatementParameterTypes());
+            binaryStatementRegistry.register(comParsePacket.getStatementId(), comParsePacket.getSql(), parametersIndex, comParsePacket.getBinaryStatementParameterTypes());
         }
         return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLParseCompletePacket());
     }

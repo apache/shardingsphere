@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class PostgreSQLUnsupportedCommandPacket implements PostgreSQLCommandPacket {
+public final class PostgreSQLUnsupportedCommandPacket extends PostgreSQLCommandPacket {
     
     @Getter
     private final char messageType;
