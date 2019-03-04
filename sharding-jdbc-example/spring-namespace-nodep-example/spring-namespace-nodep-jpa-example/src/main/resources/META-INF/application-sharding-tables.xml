@@ -34,9 +34,9 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
     
-    <bean id="demo_ds" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>

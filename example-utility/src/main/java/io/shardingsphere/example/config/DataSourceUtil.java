@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.config;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 
@@ -32,9 +32,9 @@ public class DataSourceUtil {
     private static final String PASSWORD = "";
     
     public static DataSource createDataSource(final String dataSourceName) {
-        BasicDataSource result = new BasicDataSource();
+        HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
-        result.setUrl(String.format("jdbc:mysql://%s:%s/%s", HOST, PORT, dataSourceName));
+        result.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", HOST, PORT, dataSourceName));
         result.setUsername(USER_NAME);
         result.setPassword(PASSWORD);
         return result;

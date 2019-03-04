@@ -1,12 +1,12 @@
 dataSources:
-  ds_0: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_0
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0
     username: root
     password:
-  ds_1: !!org.apache.commons.dbcp2.BasicDataSource
+  ds_1: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_ds_1
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1
     username: root
     password:
 
