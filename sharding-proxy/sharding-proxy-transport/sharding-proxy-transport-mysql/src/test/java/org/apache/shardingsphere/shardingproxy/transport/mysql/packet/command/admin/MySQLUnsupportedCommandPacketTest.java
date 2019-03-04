@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +32,7 @@ public final class MySQLUnsupportedCommandPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket();
+        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_DEBUG);
         actual.write(payload);
     }
 }

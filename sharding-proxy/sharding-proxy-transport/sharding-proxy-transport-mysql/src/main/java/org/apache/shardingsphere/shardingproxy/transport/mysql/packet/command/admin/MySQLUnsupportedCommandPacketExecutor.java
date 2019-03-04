@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * MySQL unsupported command packet executor.
+ * Unsupported command packet executor for MySQL.
  *
  * @author zhangliang
  */

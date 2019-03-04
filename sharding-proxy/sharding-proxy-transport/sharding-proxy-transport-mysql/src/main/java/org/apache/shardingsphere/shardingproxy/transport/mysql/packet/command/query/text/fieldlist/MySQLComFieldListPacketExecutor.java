@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * MySQL COM_FIELD_LIST packet executor.
+ * COM_FIELD_LIST packet executor for MySQL.
  *
  * @author zhangliang 
  */

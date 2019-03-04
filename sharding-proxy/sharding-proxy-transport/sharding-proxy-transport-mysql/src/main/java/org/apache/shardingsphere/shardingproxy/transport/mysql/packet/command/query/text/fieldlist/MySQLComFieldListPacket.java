@@ -23,35 +23,29 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL COM_FIELD_LIST command packet.
- *
+ * COM_FIELD_LIST command packet for MySQL.
+ * 
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
+ * 
  * @author zhangliang
  * @author wangkai
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
  */
 @Getter
-public final class MySQLComFieldListPacket implements MySQLCommandPacket {
-    
-    private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
+public final class MySQLComFieldListPacket extends MySQLCommandPacket {
     
     private final String table;
     
     private final String fieldWildcard;
     
     public MySQLComFieldListPacket(final MySQLPacketPayload payload) {
+        super(MySQLCommandPacketType.COM_FIELD_LIST);
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(MySQLCommandPacketType.COM_FIELD_LIST.getValue());
+    public void doWrite(final MySQLPacketPayload payload) {
         payload.writeStringNul(table);
         payload.writeStringEOF(fieldWildcard);
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

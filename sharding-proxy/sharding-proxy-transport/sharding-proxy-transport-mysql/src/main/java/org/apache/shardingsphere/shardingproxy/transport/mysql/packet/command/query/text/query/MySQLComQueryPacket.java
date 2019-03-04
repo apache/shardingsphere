@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL COM_QUERY command packet.
+ * COM_QUERY command packet for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  * 
@@ -32,24 +31,18 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * @author linjiaqi
  * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
-public final class MySQLComQueryPacket implements MySQLCommandPacket {
+public final class MySQLComQueryPacket extends MySQLCommandPacket {
     
     private final String sql;
     
     public MySQLComQueryPacket(final MySQLPacketPayload payload) {
-        this(payload.readStringEOF());
+        super(MySQLCommandPacketType.COM_QUERY);
+        sql = payload.readStringEOF();
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
+    public void doWrite(final MySQLPacketPayload payload) {
         payload.writeStringEOF(sql);
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

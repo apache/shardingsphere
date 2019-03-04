@@ -47,7 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MySQL COM_STMT_EXECUTE command packet executor.
+ * COM_STMT_EXECUTE command packet executor for MySQL.
  * 
  * @author zhangliang
  */
