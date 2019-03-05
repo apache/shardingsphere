@@ -29,7 +29,7 @@ import java.util.List;
 
 public abstract class BaseOrderEncryptRepository implements OrderEncryptRepository {
     
-    protected static final String SQL_INSERT_T_ORDER_ITEM = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id, aes_query_id) VALUES (?, ?, ?, ?, ？)";
+    protected static final String SQL_INSERT_T_ORDER_ENCRYPT = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id, aes_query_id) VALUES (?, ?, ?, ?, ？)";
     
     protected static final String SQL_DELETE_BY_MD5_ID = "DELETE FROM t_order_encrypt WHERE md5_id=?";
     
