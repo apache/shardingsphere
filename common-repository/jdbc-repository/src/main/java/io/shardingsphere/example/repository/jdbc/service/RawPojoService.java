@@ -18,10 +18,13 @@
 package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderEncryptRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 
@@ -33,9 +36,12 @@ public class RawPojoService extends CommonServiceImpl {
     
     private final OrderItemRepository orderItemRepository;
     
+    private final OrderEncryptRepository orderEncryptRepository;
+    
     public RawPojoService(final DataSource dataSource) {
         this.orderRepository = new JDBCOrderRepositoryImpl(dataSource);
         this.orderItemRepository = new JDBCOrderItemRepositoryImpl(dataSource);
+        this.orderEncryptRepository = new JDBCOrderEncryptRepositoryImpl(dataSource);
     }
     
     @Override
@@ -49,6 +55,11 @@ public class RawPojoService extends CommonServiceImpl {
     }
     
     @Override
+    protected OrderEncryptRepository getOrderEncryptRepository() {
+        return orderEncryptRepository;
+    }
+    
+    @Override
     protected Order newOrder() {
         return new Order();
     }
@@ -56,5 +67,10 @@ public class RawPojoService extends CommonServiceImpl {
     @Override
     protected OrderItem newOrderItem() {
         return new OrderItem();
+    }
+    
+    @Override
+    protected OrderEncrypt newOrderEncrypt() {
+        return new OrderEncrypt();
     }
 }
