@@ -19,14 +19,14 @@ package io.shardingsphere.example.repository.jdbc.service;
 
 import javax.sql.DataSource;
 
-public class RangeRawPojoService extends RawPojoService {
+public final class RangeRawPojoService extends RawPojoService {
     
     public RangeRawPojoService(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
-    public final void printData() {
+    public void printData() {
         doPrintRangeData();
     }
 }
