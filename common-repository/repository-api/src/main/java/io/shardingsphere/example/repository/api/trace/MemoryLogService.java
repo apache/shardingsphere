@@ -18,6 +18,7 @@
 package io.shardingsphere.example.repository.api.trace;
 
 import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 
 import java.util.Collections;
@@ -30,12 +31,15 @@ import java.util.Map;
  * Memory repository history.
  *
  * @author zhaojun
+ * @author panjuan
  */
 public class MemoryLogService {
     
     private final Map<DatabaseAccess, List<Order>> orderMap = new HashMap<>();
     
     private final Map<DatabaseAccess, List<OrderItem>> orderItemMap = new HashMap<>();
+    
+    private final Map<DatabaseAccess, List<OrderEncrypt>> orderEncryptMap = new HashMap<>();
     
     public void putOrderData(final DatabaseAccess operation, final Order order) {
         if (!orderMap.containsKey(operation)) {
@@ -57,5 +61,16 @@ public class MemoryLogService {
     
     public List<OrderItem> getOrderItemData(final DatabaseAccess operation) {
         return orderItemMap.containsKey(operation) ? orderItemMap.get(operation) : Collections.<OrderItem>emptyList();
+    }
+    
+    public void putEncryptData(final DatabaseAccess operation, final OrderEncrypt orderEncrypt) {
+        if (!orderEncryptMap.containsKey(operation)) {
+            orderEncryptMap.put(operation, new LinkedList<OrderEncrypt>());
+        }
+        orderEncryptMap.get(operation).add(orderEncrypt);
+    }
+    
+    public List<OrderEncrypt> getOrderEncryptData(final DatabaseAccess operation) {
+        return orderEncryptMap.containsKey(operation) ? orderEncryptMap.get(operation) : Collections.<OrderEncrypt>emptyList();
     }
 }
