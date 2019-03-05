@@ -18,7 +18,9 @@
 package io.shardingsphere.example.repository.api.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.trace.DatabaseAccess;
@@ -136,7 +138,11 @@ public abstract class CommonServiceImpl implements CommonService {
     
     protected abstract OrderItemRepository getOrderItemRepository();
     
+    protected abstract OrderEncryptRepository getOrderEncryptRepository();
+    
     protected abstract Order newOrder();
     
     protected abstract OrderItem newOrderItem();
+    
+    protected abstract OrderEncrypt newOrderEncrypt();
 }
