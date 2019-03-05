@@ -257,7 +257,8 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     private String getCurrentDataSourceName() {
-        return currentDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
+        currentDataSourceName = shardingRule.getShardingDataSourceNames().getRandomDataSourceName();
+        return shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(currentDataSourceName);
     }
     
     private String getActualTableNamePattern(final String tableNamePattern) {
@@ -265,6 +266,6 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     private String getActualTable(final String table) {
-        return null == table ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(currentDataSourceName, table).getTableName() : table);
+        return null == table || null == shardingRule ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(currentDataSourceName, table).getTableName() : table);
     }
 }
