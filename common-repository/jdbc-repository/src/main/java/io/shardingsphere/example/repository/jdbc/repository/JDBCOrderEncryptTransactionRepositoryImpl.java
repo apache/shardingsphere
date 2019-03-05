@@ -74,7 +74,7 @@ public final class JDBCOrderEncryptTransactionRepositoryImpl extends BaseOrderEn
     
     @Override
     public void delete(final Long md5ID) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_MD5_ID)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_AES_ID)) {
             deleteById(preparedStatement, md5ID.toString());
         } catch (final SQLException ignored) {
         }

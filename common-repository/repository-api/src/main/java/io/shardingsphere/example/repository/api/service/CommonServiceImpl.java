@@ -100,7 +100,6 @@ public abstract class CommonServiceImpl implements CommonService {
             OrderEncrypt encrypt = newOrderEncrypt();
             encrypt.setOrderId(order.getOrderId());
             encrypt.setUserId(i);
-            encrypt.setMd5Id(String.valueOf(i));
             encrypt.setAesId(String.valueOf(i));
             getOrderEncryptRepository().insert(encrypt);
             memoryLogService.putEncryptData(DatabaseAccess.INSERT, encrypt);
