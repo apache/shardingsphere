@@ -66,7 +66,7 @@ public final class JDBCOrderEncryptRepositoryImpl extends BaseOrderEncryptReposi
     @Override
     public Long insert(final OrderEncrypt orderEncrypt) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_T_ORDER_ITEM, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_T_ORDER_ENCRYPT, Statement.RETURN_GENERATED_KEYS)) {
             insertEncrypt(preparedStatement, orderEncrypt);
         } catch (final SQLException ignored) {
         }
