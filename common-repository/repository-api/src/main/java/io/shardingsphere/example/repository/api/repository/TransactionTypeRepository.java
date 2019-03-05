@@ -22,5 +22,4 @@ import io.shardingsphere.example.repository.api.entity.TransactionType;
 public interface TransactionTypeRepository {
     
     TransactionType showTransactionType();
-    
 }
