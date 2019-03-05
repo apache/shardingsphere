@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
+package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLComTerminationPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLUnsupportedCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.bind.PostgreSQLComBindPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.describe.PostgreSQLComDescribePacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.execute.PostgreSQLComExecutePacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.parse.PostgreSQLComParsePacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync.PostgreSQLComSyncPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.text.PostgreSQLComQueryPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLComTerminationPacketExecutor;
 
 /**
  * Command packet executor factory for PostgreSQL.

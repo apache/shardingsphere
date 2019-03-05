@@ -15,24 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
+package org.apache.shardingsphere.shardingproxy.frontend.command;
 
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.sql.SQLException;
 
 /**
- * MySQL OK command packet executor.
+ * Query command packet executor.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of database packet
  */
-public final class MySQLOKCommandPacketExecutor implements CommandPacketExecutor<MySQLPacket> {
+public interface QueryCommandPacketExecutor<T extends DatabasePacket> extends CommandPacketExecutor<T> {
     
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
-    }
+    /**
+     * Judge is query SQL or not.
+     *
+     * @return is query SQL or not
+     */
+    boolean isQuery();
+    
+    /**
+     * Goto next result value.
+     *
+     * @return has more result value or not
+     * @throws SQLException SQL exception
+     */
+    boolean next() throws SQLException;
+    
+    /**
+     * Get query data.
+     *
+     * @return database packet of query data
+     * @throws SQLException SQL exception
+     */
+    T getQueryData() throws SQLException;
 }

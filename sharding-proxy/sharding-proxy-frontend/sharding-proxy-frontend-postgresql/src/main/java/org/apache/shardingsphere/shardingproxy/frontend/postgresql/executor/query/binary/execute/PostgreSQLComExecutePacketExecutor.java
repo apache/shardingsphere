@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.packet;
+package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.execute;
 
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
-import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Command packet executor.
+ * Command execute packet executor for PostgreSQL.
  *
+ * @author zhangyonglun
  * @author zhangliang
- * 
- * @param <T> type of database packet
  */
-public interface CommandPacketExecutor<T extends DatabasePacket> {
+public final class PostgreSQLComExecutePacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
     
-    /**
-     * Execute command.
-     *
-     * @return database packets to be sent
-     * @throws SQLException SQL exception
-     */
-    Collection<T> execute() throws SQLException;
+    @Override
+    public Collection<PostgreSQLPacket> execute() {
+        return Collections.emptyList();
+    }
 }

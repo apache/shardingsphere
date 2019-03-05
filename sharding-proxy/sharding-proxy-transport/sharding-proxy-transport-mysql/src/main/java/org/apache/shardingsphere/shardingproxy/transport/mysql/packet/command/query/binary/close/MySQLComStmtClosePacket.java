@@ -43,7 +43,7 @@ public final class MySQLComStmtClosePacket extends MySQLCommandPacket {
     /**
      * Remove cached statement.
      */
-    void removeCachedStatement() {
+    public void removeCachedStatement() {
         MySQLBinaryStatementRegistry.getInstance().remove(statementId);
     }
 }

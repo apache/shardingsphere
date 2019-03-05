@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.binary.close;
 
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Command sync packet executor for PostgreSQL.
- *
- * @author zhangyonglun
+ * COM_STMT_CLOSE command packet executor for MySQL.
+ * 
  * @author zhangliang
  */
-public final class PostgreSQLComSyncPacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
+@RequiredArgsConstructor
+public final class MySQLComStmtClosePacketExecutor implements CommandPacketExecutor<MySQLPacket> {
+    
+    private final MySQLComStmtClosePacket comStmtClosePacket;
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
+    public Collection<MySQLPacket> execute() {
+        comStmtClosePacket.removeCachedStatement();
         return Collections.emptyList();
     }
 }

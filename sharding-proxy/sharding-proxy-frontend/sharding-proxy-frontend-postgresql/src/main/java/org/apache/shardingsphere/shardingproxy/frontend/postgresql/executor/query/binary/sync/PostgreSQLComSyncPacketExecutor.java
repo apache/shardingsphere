@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic;
+package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync;
 
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Command termination packet executor for PostgreSQL.
- * 
+ * Command sync packet executor for PostgreSQL.
+ *
+ * @author zhangyonglun
  * @author zhangliang
  */
-public final class PostgreSQLComTerminationPacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComSyncPacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
     
     @Override
     public Collection<PostgreSQLPacket> execute() {

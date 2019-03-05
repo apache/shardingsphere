@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.admin.initdb.MySQLComInitDbPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.generic.MySQLOKCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.generic.MySQLUnsupportedCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.binary.close.MySQLComStmtClosePacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.binary.execute.MySQLQueryComStmtExecutePacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.binary.prepare.MySQLComStmtPreparePacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.text.fieldlist.MySQLComFieldListPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.text.query.MySQLComQueryPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.MySQLOKCommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.MySQLUnsupportedCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.MySQLQueryComStmtExecutePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.MySQLQueryComStmtExecutePacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacketExecutor;
 
 /**
  * Command packet executor factory for MySQL.
