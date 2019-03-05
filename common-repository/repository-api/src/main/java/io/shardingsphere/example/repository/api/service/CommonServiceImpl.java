@@ -43,14 +43,17 @@ public abstract class CommonServiceImpl implements CommonService {
     public final void initEnvironment() {
         getOrderRepository().createTableIfNotExists();
         getOrderItemRepository().createTableIfNotExists();
+        getOrderEncryptRepository().createTableIfNotExists();
         getOrderRepository().truncateTable();
         getOrderItemRepository().truncateTable();
+        getOrderEncryptRepository().truncateTable();
     }
     
     @Override
     public final void cleanEnvironment() {
         getOrderRepository().dropTable();
         getOrderItemRepository().dropTable();
+        getOrderEncryptRepository().dropTable();
     }
     
     /**
@@ -94,6 +97,13 @@ public abstract class CommonServiceImpl implements CommonService {
             item.setStatus("INSERT_TEST");
             getOrderItemRepository().insert(item);
             memoryLogService.putItemData(DatabaseAccess.INSERT, item);
+            OrderEncrypt encrypt = newOrderEncrypt();
+            encrypt.setOrderId(order.getOrderId());
+            encrypt.setUserId(i);
+            encrypt.setMd5Id(String.valueOf(i));
+            encrypt.setAesId(String.valueOf(i));
+            getOrderEncryptRepository().insert(encrypt);
+            memoryLogService.putEncryptData(DatabaseAccess.INSERT, encrypt);
             result.add(order.getOrderId());
         }
         return result;
@@ -104,6 +114,7 @@ public abstract class CommonServiceImpl implements CommonService {
         for (Long each : orderIds) {
             getOrderRepository().delete(each);
             getOrderItemRepository().delete(each);
+            getOrderEncryptRepository().delete(each);
         }
     }
     
@@ -119,6 +130,11 @@ public abstract class CommonServiceImpl implements CommonService {
             memoryLogService.putItemData(DatabaseAccess.SELECT, each);
             System.out.println(each);
         }
+        System.out.println("---------------------------- Print OrderEncrypt Data -------------------");
+        for (OrderEncrypt each : getOrderEncryptRepository().selectAll()) {
+            memoryLogService.putEncryptData(DatabaseAccess.SELECT, each);
+            System.out.println(each);
+        }
     }
     
     protected void doPrintRangeData() {
@@ -130,6 +146,11 @@ public abstract class CommonServiceImpl implements CommonService {
         System.out.println("---------------------------- Print OrderItem Data -------------------");
         for (OrderItem each : getOrderItemRepository().selectRange()) {
             getMemoryLogService().putItemData(DatabaseAccess.SELECT, each);
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderEncrypt Data -------------------");
+        for (OrderEncrypt each : getOrderEncryptRepository().selectRange()) {
+            getMemoryLogService().putEncryptData(DatabaseAccess.SELECT, each);
             System.out.println(each);
         }
     }
