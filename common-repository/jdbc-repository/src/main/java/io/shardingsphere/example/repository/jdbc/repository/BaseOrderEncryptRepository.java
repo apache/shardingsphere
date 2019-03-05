@@ -29,11 +29,11 @@ import java.util.List;
 
 public abstract class BaseOrderEncryptRepository implements OrderEncryptRepository {
     
-    static final String SQL_INSERT_T_ORDER_ITEM = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id, aes_query_id) VALUES (?, ?, ?, ?, ？)";
+    protected static final String SQL_INSERT_T_ORDER_ITEM = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id, aes_query_id) VALUES (?, ?, ?, ?, ？)";
     
-    static final String SQL_DELETE_BY_MD5_ID = "DELETE FROM t_order_encrypt WHERE md5_id=?";
+    protected static final String SQL_DELETE_BY_MD5_ID = "DELETE FROM t_order_encrypt WHERE md5_id=?";
     
-    static final String SQL_UPDATE_BY_AES_ID = "UPDATET t_order_encrypt SET aes_id = 11 WHERE aes_id=?";
+    protected static final String SQL_UPDATE_BY_AES_ID = "UPDATET t_order_encrypt SET aes_id = 11 WHERE aes_id=?";
     
     private static final String SQL_CREATE_T_ORDER_ENCRYPT = "CREATE TABLE IF NOT EXISTS t_order_item "
         + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, md5_id VARCHAR(200), aes_id VARCHAR(200), aes_query_id VARCHAR(200), PRIMARY KEY (order_id))";
@@ -46,20 +46,19 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
     
     private static final String SQL_SELECT_T_ORDER_ENCRYPT_RANGE = "SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id AND o.user_id BETWEEN 1 AND 5";
     
-    final void createEncryptTableNotExist(final Statement statement) throws SQLException {
+    protected final void createEncryptTableNotExist(final Statement statement) throws SQLException {
         statement.executeUpdate(SQL_CREATE_T_ORDER_ENCRYPT);
     }
     
-    final void dropEncryptTable(final Statement statement) throws SQLException {
+    protected final void dropEncryptTable(final Statement statement) throws SQLException {
         statement.executeUpdate(SQL_DROP_T_ORDER_ENCRYPT);
     }
     
-    final void truncateEncryptTable(final Statement statement) throws SQLException {
+    protected final void truncateEncryptTable(final Statement statement) throws SQLException {
         statement.executeUpdate(SQL_TRUNCATE_T_ORDER_ENCRYPT);
     }
     
-    
-    final void insertEncrypt(final PreparedStatement preparedStatement, final OrderEncrypt orderEncrypt) throws SQLException {
+    protected final void insertEncrypt(final PreparedStatement preparedStatement, final OrderEncrypt orderEncrypt) throws SQLException {
         preparedStatement.setLong(1, orderEncrypt.getOrderId());
         preparedStatement.setInt(2, orderEncrypt.getUserId());
         preparedStatement.setString(3, orderEncrypt.getMd5Id());
@@ -73,12 +72,12 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
         }
     }
     
-    final void deleteById(final PreparedStatement preparedStatement, final Long orderEncryptId) throws SQLException {
+    protected final void deleteById(final PreparedStatement preparedStatement, final Long orderEncryptId) throws SQLException {
         preparedStatement.setLong(1, orderEncryptId);
         preparedStatement.executeUpdate();
     }
     
-    final List<OrderEncrypt> queryOrderEncrypt(final PreparedStatement preparedStatement) {
+    protected final List<OrderEncrypt> queryOrderEncrypt(final PreparedStatement preparedStatement) {
         List<OrderEncrypt> result = new LinkedList<>();
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
