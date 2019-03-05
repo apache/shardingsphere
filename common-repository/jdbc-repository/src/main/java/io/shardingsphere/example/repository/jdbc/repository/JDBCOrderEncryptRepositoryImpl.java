@@ -18,9 +18,7 @@
 package io.shardingsphere.example.repository.jdbc.repository;
 
 import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
-import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
-import io.shardingsphere.example.repository.api.repository.OrderRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -76,16 +74,25 @@ public final class JDBCOrderEncryptRepositoryImpl extends BaseOrderEncryptReposi
     }
     
     @Override
-    public void delete(final Long orderId) {
+    public void delete(final Long md5Id) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_ITEM_ID)) {
-            deleteById(preparedStatement, orderId);
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_MD5_ID)) {
+            deleteById(preparedStatement, md5Id.toString());
         } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public List<OrderEncrypt> getOrderItems(final String sql) {
+    public void update(final String aesId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_BY_AES_ID)) {
+            updateById(preparedStatement, aesId);
+        } catch (final SQLException ignored) {
+        }
+    }
+    
+    @Override
+    public List<OrderEncrypt> getOrderEncrypts(final String sql) {
         List<OrderEncrypt> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
