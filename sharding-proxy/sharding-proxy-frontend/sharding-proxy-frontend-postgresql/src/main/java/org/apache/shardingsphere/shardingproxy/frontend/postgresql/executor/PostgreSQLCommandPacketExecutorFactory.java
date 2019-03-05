@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLComTerminationPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLUnsupportedCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.bind.PostgreSQLComBindPacketExecutor;

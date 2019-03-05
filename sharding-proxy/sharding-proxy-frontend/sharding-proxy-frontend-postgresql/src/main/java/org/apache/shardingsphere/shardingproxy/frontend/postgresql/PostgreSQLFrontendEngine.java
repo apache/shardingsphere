@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.command.QueryCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandPacketExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;

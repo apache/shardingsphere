@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.generic;
 
-import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 

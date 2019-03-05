@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.common.executor;
+package org.apache.shardingsphere.shardingproxy.frontend.executor;
 
 import io.netty.channel.ChannelId;
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.common;
+package org.apache.shardingsphere.shardingproxy.frontend;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

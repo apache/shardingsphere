@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.command;
+package org.apache.shardingsphere.shardingproxy.frontend.api;
 
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 

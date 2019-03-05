@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.frontend.command.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.admin.initdb.MySQLComInitDbPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.generic.MySQLOKCommandPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.generic.MySQLUnsupportedCommandPacketExecutor;

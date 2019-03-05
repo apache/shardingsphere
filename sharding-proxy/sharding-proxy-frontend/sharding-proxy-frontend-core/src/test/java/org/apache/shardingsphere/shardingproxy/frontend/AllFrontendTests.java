@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend;
 
-import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngineFactoryTest;
-import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroupTest;
-import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroupTest;
+import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroupTest;
+import org.apache.shardingsphere.shardingproxy.frontend.executor.ExecutorGroupTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

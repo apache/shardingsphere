@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend;
+package org.apache.shardingsphere.shardingproxy.frontend.bootstrap;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -35,7 +35,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.context.ExecutorContext;
-import org.apache.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
+import org.apache.shardingsphere.shardingproxy.frontend.netty.ServerHandlerInitializer;
 
 /**
  * Sharding-Proxy.

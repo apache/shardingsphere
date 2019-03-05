@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.common.netty;
+package org.apache.shardingsphere.shardingproxy.frontend.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,8 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
-import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
+import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroup;
+import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.common.netty;
+package org.apache.shardingsphere.shardingproxy.frontend.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.frontend.common.DatabaseFrontendEngineFactory;
+import org.apache.shardingsphere.shardingproxy.frontend.DatabaseFrontendEngineFactory;
 import org.apache.shardingsphere.shardingproxy.transport.common.codec.DatabasePacketCodecEngineFactory;
 import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodec;
 

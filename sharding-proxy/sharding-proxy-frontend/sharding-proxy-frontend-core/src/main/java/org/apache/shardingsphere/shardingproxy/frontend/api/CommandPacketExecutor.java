@@ -15,15 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.common;
+package org.apache.shardingsphere.shardingproxy.frontend.api;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.junit.Test;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 
-public final class DatabaseFrontendEngineFactoryTest {
+import java.sql.SQLException;
+import java.util.Collection;
+
+/**
+ * Command packet executor.
+ *
+ * @author zhangliang
+ * 
+ * @param <T> type of database packet
+ */
+public interface CommandPacketExecutor<T extends DatabasePacket> {
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertNewInstanceWhenUnsupported() {
-        DatabaseFrontendEngineFactory.newInstance(DatabaseType.Oracle);
-    }
+    /**
+     * Execute command.
+     *
+     * @return database packets to be sent
+     * @throws SQLException SQL exception
+     */
+    Collection<T> execute() throws SQLException;
 }
