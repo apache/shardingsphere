@@ -32,5 +32,4 @@ public interface CommonService {
     void printData();
     
     MemoryLogService getMemoryLogService();
-    
 }
