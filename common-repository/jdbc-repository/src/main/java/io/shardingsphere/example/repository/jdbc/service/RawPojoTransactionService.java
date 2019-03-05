@@ -18,11 +18,14 @@
 package io.shardingsphere.example.repository.jdbc.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
 import io.shardingsphere.example.repository.api.service.TransactionService;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderEncryptTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -38,6 +41,8 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     
     private final JDBCOrderItemTransactionRepositoryImpl orderItemRepository;
     
+    private final JDBCOrderEncryptTransactionRepositoryImpl orderEncryptRepository;
+    
     private Connection connection;
     
     private DataSource dataSource;
@@ -47,6 +52,7 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
         this.connection = dataSource.getConnection();
         this.orderRepository = new JDBCOrderTransactionRepositoryImpl(connection);
         this.orderItemRepository = new JDBCOrderItemTransactionRepositoryImpl(connection);
+        this.orderEncryptRepository = new JDBCOrderEncryptTransactionRepositoryImpl(connection);
     }
     
     @Override
@@ -101,6 +107,11 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     }
     
     @Override
+    protected OrderEncryptRepository getOrderEncryptRepository() {
+        return orderEncryptRepository;
+    }
+    
+    @Override
     protected Order newOrder() {
         return new Order();
     }
@@ -108,6 +119,11 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
     @Override
     protected OrderItem newOrderItem() {
         return new OrderItem();
+    }
+    
+    @Override
+    protected OrderEncrypt newOrderEncrypt() {
+        return new OrderEncrypt();
     }
     
     private void doInTransactionWithFailure() {
@@ -139,6 +155,7 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
         connection = dataSource.getConnection();
         orderRepository.setConnection(connection);
         orderItemRepository.setConnection(connection);
+        orderEncryptRepository.setConnection(connection);
     }
     
     private void closeConnection() {
