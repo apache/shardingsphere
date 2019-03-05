@@ -101,5 +101,4 @@ public abstract class BaseOrderItemRepository implements OrderItemRepository {
     }
     
     public abstract List<OrderItem> getOrderItems(String sql);
-    
 }

@@ -97,5 +97,4 @@ public abstract class BaseOrderRepository implements OrderRepository {
     }
     
     public abstract List<Order> getOrders(String sql);
-    
 }
