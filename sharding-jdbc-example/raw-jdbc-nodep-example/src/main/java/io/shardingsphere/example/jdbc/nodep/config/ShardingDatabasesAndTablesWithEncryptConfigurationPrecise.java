@@ -55,7 +55,9 @@ public final class ShardingDatabasesAndTablesWithEncryptConfigurationPrecise imp
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
+        return result;
     }
     
     private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
