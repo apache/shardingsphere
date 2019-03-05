@@ -31,10 +31,12 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
     
     static final String SQL_INSERT_T_ORDER_ITEM = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id, aes_query_id) VALUES (?, ?, ?, ?, ？)";
     
-    static final String SQL_DELETE_BY_ITEM_ID = "DELETE FROM t_order_encrypt WHERE order_id=?";
+    static final String SQL_DELETE_BY_MD5_ID = "DELETE FROM t_order_encrypt WHERE md5_id=?";
+    
+    static final String SQL_UPDATE_BY_AES_ID = "UPDATET t_order_encrypt SET aes_id = 11 WHERE aes_id=?";
     
     private static final String SQL_CREATE_T_ORDER_ITEM = "CREATE TABLE IF NOT EXISTS t_order_item "
-        + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, md5_id VARCHAR(200), aed_id VARCHAR(200), aed_query_id VARCHAR(200), PRIMARY KEY (order_id))";
+        + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, md5_id VARCHAR(200), aes_id VARCHAR(200), aes_query_id VARCHAR(200), PRIMARY KEY (order_id))";
     
     private static final String SQL_DROP_T_ORDER_ITEM = "DROP TABLE t_order_encrypt";
     
