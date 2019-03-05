@@ -35,27 +35,27 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
     
     static final String SQL_UPDATE_BY_AES_ID = "UPDATET t_order_encrypt SET aes_id = 11 WHERE aes_id=?";
     
-    private static final String SQL_CREATE_T_ORDER_ITEM = "CREATE TABLE IF NOT EXISTS t_order_item "
+    private static final String SQL_CREATE_T_ORDER_ENCRYPT = "CREATE TABLE IF NOT EXISTS t_order_item "
         + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, md5_id VARCHAR(200), aes_id VARCHAR(200), aes_query_id VARCHAR(200), PRIMARY KEY (order_id))";
     
-    private static final String SQL_DROP_T_ORDER_ITEM = "DROP TABLE t_order_encrypt";
+    private static final String SQL_DROP_T_ORDER_ENCRYPT = "DROP TABLE t_order_encrypt";
     
-    private static final String SQL_TRUNCATE_T_ORDER_ITEM = "TRUNCATE TABLE t_order_encrypt";
+    private static final String SQL_TRUNCATE_T_ORDER_ENCRYPT = "TRUNCATE TABLE t_order_encrypt";
     
-    private static final String SQL_SELECT_T_ORDER_ITEM_ALL = "SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id";
+    private static final String SQL_SELECT_T_ORDER_ENCRYPT_ALL = "SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id";
     
-    private static final String SQL_SELECT_T_ORDER_ITEM_RANGE = "SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id AND o.user_id BETWEEN 1 AND 5";
+    private static final String SQL_SELECT_T_ORDER_ENCRYPT_RANGE = "SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id AND o.user_id BETWEEN 1 AND 5";
     
     final void createEncryptTableNotExist(final Statement statement) throws SQLException {
-        statement.executeUpdate(SQL_CREATE_T_ORDER_ITEM);
+        statement.executeUpdate(SQL_CREATE_T_ORDER_ENCRYPT);
     }
     
     final void dropEncryptTable(final Statement statement) throws SQLException {
-        statement.executeUpdate(SQL_DROP_T_ORDER_ITEM);
+        statement.executeUpdate(SQL_DROP_T_ORDER_ENCRYPT);
     }
     
     final void truncateEncryptTable(final Statement statement) throws SQLException {
-        statement.executeUpdate(SQL_TRUNCATE_T_ORDER_ITEM);
+        statement.executeUpdate(SQL_TRUNCATE_T_ORDER_ENCRYPT);
     }
     
     
@@ -97,12 +97,12 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
     
     @Override
     public final List<OrderEncrypt> selectAll() {
-        return getOrderEncrypts(SQL_SELECT_T_ORDER_ITEM_ALL);
+        return getOrderEncrypts(SQL_SELECT_T_ORDER_ENCRYPT_ALL);
     }
     
     @Override
     public final List<OrderEncrypt> selectRange() {
-        return getOrderEncrypts(SQL_SELECT_T_ORDER_ITEM_RANGE);
+        return getOrderEncrypts(SQL_SELECT_T_ORDER_ENCRYPT_RANGE);
     }
     
     public abstract List<OrderEncrypt> getOrderEncrypts(String sql);
