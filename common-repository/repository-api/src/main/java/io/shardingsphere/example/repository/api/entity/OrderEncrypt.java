@@ -53,8 +53,8 @@ public class OrderEncrypt implements Serializable {
         return md5Id;
     }
     
-    public void setMd5Id(final String status) {
-        this.md5Id = status;
+    public void setMd5Id(final String md5Id) {
+        this.md5Id = md5Id;
     }
     
     public String getAesId() {
@@ -62,7 +62,7 @@ public class OrderEncrypt implements Serializable {
     }
     
     public void setAesId(final String aesId) {
-        this.md5Id = aesId;
+        this.aesId = aesId;
     }
     
     public String getAesQueryId() {
