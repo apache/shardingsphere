@@ -19,6 +19,7 @@ package io.shardingsphere.example.jdbc.nodep.factory;
 
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
+import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesWithEncryptConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
@@ -41,6 +42,8 @@ public class RangeDataSourceFactory {
                 return new MasterSlaveConfiguration().getDataSource();
             case SHARDING_MASTER_SLAVE:
                 return new ShardingMasterSlaveConfigurationRange().getDataSource();
+            case SHARDING_ENCRYPT:
+                return new ShardingDatabasesAndTablesWithEncryptConfigurationRange().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
