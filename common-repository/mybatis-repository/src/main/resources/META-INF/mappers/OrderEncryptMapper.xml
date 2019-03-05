@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.shardingsphere.example.repository.mybatis.repository.MybatisOrderEncryptRepository">
+    <resultMap id="baseResultMap" type="io.shardingsphere.example.repository.api.entity.OrderEncrypt">
+        <result column="order_id" property="orderId" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="md5_id" property="md5Id" jdbcType="VARCHAR"/>
+        <result column="aes_id" property="aesId" jdbcType="VARCHAR"/>
+        <result column="aes_query_id" property="aesQueryId" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <update id="createTableIfNotExists">
+        CREATE TABLE IF NOT EXISTS t_order_encrypt (order_id BIGINT NOT NULL, user_id INT NOT NULL, md5_id VARCHAR(200), aes_id VARCHAR(200), aes_query_id VARCHAR(200), PRIMARY KEY (order_id));
+    </update>
+    
+    <update id="truncateTable">
+        TRUNCATE TABLE t_order_encrypt;
+    </update>
+    
+    <update id="dropTable">
+        DROP TABLE IF EXISTS t_order_encrypt;
+    </update>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id) VALUES (#{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{md5Id,jdbcType=VARCHAR}, #{aesId,jdbcType=VARCHAR})
+    </insert>
+    
+    <delete id="delete">
+        DELETE FROM t_order_encrypt WHERE md5_id = #{md5Id,jdbcType=VARCHAR};
+    </delete>
+    
+    <select id="selectAll" resultMap="baseResultMap">
+        SELECT i.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id;
+    </select>
+    
+    <select id="selectRange" resultMap="baseResultMap">
+        SELECT i.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id AND o.user_id BETWEEN 1 AND 5
+    </select>
+</mapper>
