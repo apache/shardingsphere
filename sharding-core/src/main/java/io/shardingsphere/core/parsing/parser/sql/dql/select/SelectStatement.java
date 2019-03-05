@@ -38,6 +38,7 @@ import lombok.ToString;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -306,18 +307,16 @@ public final class SelectStatement extends DQLStatement {
     }
     
     private void resetLimitTokens(final SelectStatement selectStatement, final List<SQLToken> limitSQLTokens) {
-        int count = 0;
-        List<Integer> toBeRemovedIndexes = new LinkedList<>();
         List<SQLToken> sqlTokens = selectStatement.getSQLTokens();
-        for (SQLToken each : sqlTokens) {
+
+        Iterator<SQLToken> iter = sqlTokens.iterator();
+        while (iter.hasNext()) {
+            SQLToken each = iter.next();
             if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                toBeRemovedIndexes.add(count);
+                iter.remove();
             }
-            count++;
         }
-        for (int each : toBeRemovedIndexes) {
-            sqlTokens.remove(each);
-        }
+
         sqlTokens.addAll(limitSQLTokens);
     }
     
