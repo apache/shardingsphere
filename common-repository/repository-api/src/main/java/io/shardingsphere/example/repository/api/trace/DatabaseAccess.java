@@ -24,5 +24,5 @@ package io.shardingsphere.example.repository.api.trace;
  */
 public enum DatabaseAccess {
     
-    INSERT, SELECT, DELETE
+    INSERT, SELECT, DELETE, UPDATE
 }
