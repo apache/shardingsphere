@@ -28,4 +28,6 @@ public enum ShardingType {
     MASTER_SLAVE,
     
     SHARDING_MASTER_SLAVE,
+    
+    SHARDING_ENCRYPT
 }
