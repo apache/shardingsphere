@@ -18,7 +18,9 @@
 package io.shardingsphere.example.repository.jpa.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
@@ -39,6 +41,9 @@ public class SpringEntityServiceImpl extends CommonServiceImpl implements Spring
     @Resource
     private OrderItemRepository orderItemRepository;
     
+    @Resource
+    private OrderEncryptRepository orderEncryptRepository;
+    
     @Override
     protected OrderRepository getOrderRepository() {
         return orderRepository;
@@ -50,6 +55,11 @@ public class SpringEntityServiceImpl extends CommonServiceImpl implements Spring
     }
     
     @Override
+    public OrderEncryptRepository getOrderEncryptRepository() {
+        return orderEncryptRepository;
+    }
+    
+    @Override
     protected Order newOrder() {
         return new OrderEntity();
     }
@@ -57,5 +67,10 @@ public class SpringEntityServiceImpl extends CommonServiceImpl implements Spring
     @Override
     protected OrderItem newOrderItem() {
         return new OrderItemEntity();
+    }
+    
+    @Override
+    protected OrderEncrypt newOrderEncrypt() {
+        return new OrderEncrypt();
     }
 }

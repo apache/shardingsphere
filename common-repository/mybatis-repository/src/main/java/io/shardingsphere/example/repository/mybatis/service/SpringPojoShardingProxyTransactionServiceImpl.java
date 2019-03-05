@@ -18,12 +18,13 @@
 package io.shardingsphere.example.repository.mybatis.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.repository.TransactionTypeRepository;
 import io.shardingsphere.example.repository.api.service.ShardingProxyTransactionService;
-
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,6 +37,8 @@ public class SpringPojoShardingProxyTransactionServiceImpl extends ShardingProxy
     
     @Resource
     private OrderItemRepository orderItemRepository;
+    
+    private OrderEncryptRepository orderEncryptRepository;
     
     @Resource
     private TransactionTypeRepository transactionTypeRepository;
@@ -51,6 +54,11 @@ public class SpringPojoShardingProxyTransactionServiceImpl extends ShardingProxy
     }
     
     @Override
+    protected OrderEncryptRepository getOrderEncryptRepository() {
+        return orderEncryptRepository;
+    }
+    
+    @Override
     protected Order newOrder() {
         return new Order();
     }
@@ -58,6 +66,11 @@ public class SpringPojoShardingProxyTransactionServiceImpl extends ShardingProxy
     @Override
     protected OrderItem newOrderItem() {
         return new OrderItem();
+    }
+    
+    @Override
+    protected OrderEncrypt newOrderEncrypt() {
+        return new OrderEncrypt();
     }
     
     @Override

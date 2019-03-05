@@ -18,7 +18,9 @@
 package io.shardingsphere.example.repository.jpa.service;
 
 import io.shardingsphere.example.repository.api.entity.Order;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.repository.TransactionTypeRepository;
@@ -39,6 +41,9 @@ public class SpringEntityShardingProxyTransactionServiceImpl extends ShardingPro
     private OrderItemRepository orderItemRepository;
     
     @Resource
+    private OrderEncryptRepository orderEncryptRepository;
+    
+    @Resource
     private TransactionTypeRepository transactionTypeRepository;
     
     @Override
@@ -52,6 +57,16 @@ public class SpringEntityShardingProxyTransactionServiceImpl extends ShardingPro
     }
     
     @Override
+    protected OrderEncryptRepository getOrderEncryptRepository() {
+        return orderEncryptRepository;
+    }
+    
+    @Override
+    protected TransactionTypeRepository getTransactionTypeRepository() {
+        return transactionTypeRepository;
+    }
+    
+    @Override
     protected Order newOrder() {
         return new OrderEntity();
     }
@@ -62,7 +77,7 @@ public class SpringEntityShardingProxyTransactionServiceImpl extends ShardingPro
     }
     
     @Override
-    protected TransactionTypeRepository getTransactionTypeRepository() {
-        return transactionTypeRepository;
+    protected OrderEncrypt newOrderEncrypt() {
+        return new OrderEncrypt();
     }
 }
