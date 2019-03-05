@@ -29,7 +29,7 @@ import java.util.List;
 
 public abstract class BaseOrderEncryptRepository implements OrderEncryptRepository {
     
-    protected static final String SQL_INSERT_T_ORDER_ENCRYPT = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id, aes_query_id) VALUES (?, ?, ?, ?, ？)";
+    protected static final String SQL_INSERT_T_ORDER_ENCRYPT = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id) VALUES (?, ?, ?, ?)";
     
     protected static final String SQL_DELETE_BY_MD5_ID = "DELETE FROM t_order_encrypt WHERE md5_id=?";
     
@@ -63,7 +63,6 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
         preparedStatement.setInt(2, orderEncrypt.getUserId());
         preparedStatement.setString(3, orderEncrypt.getMd5Id());
         preparedStatement.setString(4, orderEncrypt.getAesId());
-        preparedStatement.setString(5, orderEncrypt.getAesQueryId());
         preparedStatement.executeUpdate();
         try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
             if (resultSet.next()) {
