@@ -72,8 +72,13 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
         }
     }
     
-    protected final void deleteById(final PreparedStatement preparedStatement, final Long orderEncryptId) throws SQLException {
-        preparedStatement.setLong(1, orderEncryptId);
+    protected final void deleteById(final PreparedStatement preparedStatement, final String md5Id) throws SQLException {
+        preparedStatement.setString(1, md5Id);
+        preparedStatement.executeUpdate();
+    }
+    
+    protected final void updateById(final PreparedStatement preparedStatement, final String aesId) throws SQLException {
+        preparedStatement.setString(1, aesId);
         preparedStatement.executeUpdate();
     }
     
