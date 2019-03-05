@@ -250,11 +250,15 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     
     private Connection getCurrentConnection() throws SQLException {
         if (null == currentConnection || currentConnection.isClosed()) {
-            DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next()
-                : dataSourceMap.get(currentDataSourceName = shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
+            DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next() : dataSourceMap.get(getCurrentDataSourceName());
             currentConnection = dataSource.getConnection();
         }
         return currentConnection;
+    }
+    
+    private String getCurrentDataSourceName() {
+        currentDataSourceName = shardingRule.getShardingDataSourceNames().getRandomDataSourceName();
+        return shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(currentDataSourceName);
     }
     
     private String getActualTableNamePattern(final String tableNamePattern) {
@@ -262,6 +266,6 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     private String getActualTable(final String table) {
-        return null == table ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(currentDataSourceName, table).getTableName() : table);
+        return null == table || null == shardingRule ? table : (shardingRule.findTableRule(table).isPresent() ? shardingRule.getDataNode(currentDataSourceName, table).getTableName() : table);
     }
 }

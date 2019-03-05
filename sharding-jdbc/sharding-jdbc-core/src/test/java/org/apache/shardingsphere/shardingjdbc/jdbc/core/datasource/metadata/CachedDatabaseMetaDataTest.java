@@ -75,6 +75,7 @@ public final class CachedDatabaseMetaDataTest {
         ShardingRule result = mock(ShardingRule.class);
         ShardingDataSourceNames shardingDataSourceNames = mock(ShardingDataSourceNames.class);
         when(shardingDataSourceNames.getRandomDataSourceName()).thenReturn("ds");
+        when(shardingDataSourceNames.getRawMasterDataSourceName("ds")).thenReturn("ds");
         when(result.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
         return result;
     }
