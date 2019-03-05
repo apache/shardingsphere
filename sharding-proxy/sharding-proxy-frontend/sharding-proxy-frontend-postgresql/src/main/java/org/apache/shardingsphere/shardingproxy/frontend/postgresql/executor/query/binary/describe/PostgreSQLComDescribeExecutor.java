@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.execute;
+package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.describe;
 
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Command execute packet executor for PostgreSQL.
+ * Command describe for PostgreSQL.
  *
  * @author zhangyonglun
  * @author zhangliang
  */
-public final class PostgreSQLComExecutePacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComDescribeExecutor implements CommandExecutor<PostgreSQLPacket> {
     
     @Override
     public Collection<PostgreSQLPacket> execute() {

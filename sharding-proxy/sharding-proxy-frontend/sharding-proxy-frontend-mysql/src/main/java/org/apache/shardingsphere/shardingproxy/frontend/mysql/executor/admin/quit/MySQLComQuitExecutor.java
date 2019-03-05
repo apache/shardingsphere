@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.admin.quit;
 
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Command sync packet executor for PostgreSQL.
+ * COM_QUIT executor for MySQL.
  *
- * @author zhangyonglun
  * @author zhangliang
  */
-public final class PostgreSQLComSyncPacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
+@RequiredArgsConstructor
+public final class MySQLComQuitExecutor implements CommandExecutor<MySQLPacket> {
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
+    public Collection<MySQLPacket> execute() {
+        return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
     }
 }

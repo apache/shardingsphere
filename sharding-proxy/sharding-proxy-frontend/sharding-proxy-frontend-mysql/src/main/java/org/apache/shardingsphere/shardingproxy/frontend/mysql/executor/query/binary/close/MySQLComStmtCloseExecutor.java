@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.api;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.binary.close;
 
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 
-import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Command packet executor.
- *
- * @author zhangliang
+ * COM_STMT_CLOSE command executor for MySQL.
  * 
- * @param <T> type of database packet
+ * @author zhangliang
  */
-public interface CommandPacketExecutor<T extends DatabasePacket> {
+@RequiredArgsConstructor
+public final class MySQLComStmtCloseExecutor implements CommandExecutor<MySQLPacket> {
     
-    /**
-     * Execute command.
-     *
-     * @return database packets to be sent
-     * @throws SQLException SQL exception
-     */
-    Collection<T> execute() throws SQLException;
+    private final MySQLComStmtClosePacket packet;
+    
+    @Override
+    public Collection<MySQLPacket> execute() {
+        packet.removeCachedStatement();
+        return Collections.emptyList();
+    }
 }

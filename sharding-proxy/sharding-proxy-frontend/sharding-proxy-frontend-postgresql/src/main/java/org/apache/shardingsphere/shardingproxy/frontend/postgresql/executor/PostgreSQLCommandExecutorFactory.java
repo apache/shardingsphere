@@ -20,15 +20,15 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLComTerminationPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLUnsupportedCommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.bind.PostgreSQLComBindPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.describe.PostgreSQLComDescribePacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.execute.PostgreSQLComExecutePacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.parse.PostgreSQLComParsePacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync.PostgreSQLComSyncPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.text.PostgreSQLComQueryPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLComTerminationExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic.PostgreSQLUnsupportedCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.bind.PostgreSQLComBindExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.describe.PostgreSQLComDescribeExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.execute.PostgreSQLComExecuteExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.parse.PostgreSQLComParseExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync.PostgreSQLComSyncExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.text.PostgreSQLComQueryExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -37,40 +37,40 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 
 /**
- * Command packet executor factory for PostgreSQL.
+ * Command executor factory for PostgreSQL.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLCommandPacketExecutorFactory {
+public final class PostgreSQLCommandExecutorFactory {
     
     /**
-     * Create new instance of command packet executor.
+     * Create new instance of command executor.
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param commandPacket command packet for PostgreSQL
      * @param backendConnection backend connection
-     * @return command packet executor
+     * @return command executor
      */
-    public static CommandPacketExecutor<PostgreSQLPacket> newInstance(
+    public static CommandExecutor<PostgreSQLPacket> newInstance(
             final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) {
         switch (commandPacketType) {
             case QUERY:
-                return new PostgreSQLComQueryPacketExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);
+                return new PostgreSQLComQueryExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);
             case PARSE:
-                return new PostgreSQLComParsePacketExecutor((PostgreSQLComParsePacket) commandPacket, backendConnection);
+                return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, backendConnection);
             case BIND:
-                return new PostgreSQLComBindPacketExecutor((PostgreSQLComBindPacket) commandPacket, backendConnection);
+                return new PostgreSQLComBindExecutor((PostgreSQLComBindPacket) commandPacket, backendConnection);
             case DESCRIBE:
-                return new PostgreSQLComDescribePacketExecutor();
+                return new PostgreSQLComDescribeExecutor();
             case EXECUTE:
-                return new PostgreSQLComExecutePacketExecutor();
+                return new PostgreSQLComExecuteExecutor();
             case SYNC:
-                return new PostgreSQLComSyncPacketExecutor();
+                return new PostgreSQLComSyncExecutor();
             case TERMINATE:
-                return new PostgreSQLComTerminationPacketExecutor();
+                return new PostgreSQLComTerminationExecutor();
             default:
-                return new PostgreSQLUnsupportedCommandPacketExecutor();
+                return new PostgreSQLUnsupportedCommandExecutor();
         }
     }
 }

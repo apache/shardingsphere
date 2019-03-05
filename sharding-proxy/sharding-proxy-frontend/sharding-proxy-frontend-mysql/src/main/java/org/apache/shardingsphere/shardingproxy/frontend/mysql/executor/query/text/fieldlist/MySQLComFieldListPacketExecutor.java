@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -40,18 +40,18 @@ import java.util.LinkedList;
  *
  * @author zhangliang 
  */
-public final class MySQLComFieldListPacketExecutor implements CommandPacketExecutor<MySQLPacket> {
+public final class MySQLComFieldListPacketExecutor implements CommandExecutor<MySQLPacket> {
     
     private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
     
-    private final MySQLComFieldListPacket comFieldListPacket;
+    private final MySQLComFieldListPacket packet;
     
     private final String schemaName;
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket comFieldListPacket, final BackendConnection backendConnection) {
-        this.comFieldListPacket = comFieldListPacket;
+    public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final BackendConnection backendConnection) {
+        this.packet = packet;
         schemaName = backendConnection.getSchemaName();
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(backendConnection.getLogicSchema(), getShowColumnsSQL(), backendConnection);
     }
@@ -64,7 +64,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandPacketExecu
     }
     
     private String getShowColumnsSQL() {
-        return String.format(SQL, comFieldListPacket.getTable(), schemaName);
+        return String.format(SQL, packet.getTable(), schemaName);
     }
     
     private Collection<MySQLPacket> getColumnDefinition41Packets() throws SQLException {
@@ -73,7 +73,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandPacketExecu
         while (databaseCommunicationEngine.next()) {
             String columnName = databaseCommunicationEngine.getQueryData().getData().get(0).toString();
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId,
-                    schemaName, comFieldListPacket.getTable(), comFieldListPacket.getTable(), columnName, columnName, 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
+                    schemaName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;

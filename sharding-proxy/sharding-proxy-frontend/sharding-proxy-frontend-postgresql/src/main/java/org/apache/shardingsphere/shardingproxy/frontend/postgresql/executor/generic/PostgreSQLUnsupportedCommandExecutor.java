@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic;
 
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
@@ -25,12 +25,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * PostgreSQL unsupported command packet executor.
+ * Unsupported command executor for PostgreSQL.
  *
  * @author zhangyonglun
  * @author zhangliang
  */
-public final class PostgreSQLUnsupportedCommandPacketExecutor implements CommandPacketExecutor<PostgreSQLPacket> {
+public final class PostgreSQLUnsupportedCommandExecutor implements CommandExecutor<PostgreSQLPacket> {
     
     @Override
     public Collection<PostgreSQLPacket> execute() {

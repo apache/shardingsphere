@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -48,11 +48,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * COM_STMT_EXECUTE command packet executor for MySQL.
+ * COM_STMT_EXECUTE command executor for MySQL.
  * 
+ * @author zhangyonglun
  * @author zhangliang
  */
-public final class MySQLQueryComStmtExecutePacketExecutor implements QueryCommandPacketExecutor<MySQLPacket> {
+public final class MySQLQueryComStmtExecuteExecutor implements QueryCommandExecutor<MySQLPacket> {
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
@@ -60,7 +61,7 @@ public final class MySQLQueryComStmtExecutePacketExecutor implements QueryComman
     
     private int currentSequenceId;
     
-    public MySQLQueryComStmtExecutePacketExecutor(final MySQLQueryComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
+    public MySQLQueryComStmtExecuteExecutor(final MySQLQueryComStmtExecutePacket comStmtExecutePacket, final BackendConnection backendConnection) {
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
                 backendConnection.getLogicSchema(), comStmtExecutePacket.getSql(), comStmtExecutePacket.getParameters(), backendConnection);
     }

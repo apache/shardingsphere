@@ -15,41 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.api;
+package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync;
 
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Query command packet executor.
+ * Command sync executor for PostgreSQL.
  *
+ * @author zhangyonglun
  * @author zhangliang
- * 
- * @param <T> type of database packet
  */
-public interface QueryCommandPacketExecutor<T extends DatabasePacket> extends CommandPacketExecutor<T> {
+public final class PostgreSQLComSyncExecutor implements CommandExecutor<PostgreSQLPacket> {
     
-    /**
-     * Judge is query SQL or not.
-     *
-     * @return is query SQL or not
-     */
-    boolean isQuery();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return database packet of query data
-     * @throws SQLException SQL exception
-     */
-    T getQueryData() throws SQLException;
+    @Override
+    public Collection<PostgreSQLPacket> execute() {
+        return Collections.emptyList();
+    }
 }

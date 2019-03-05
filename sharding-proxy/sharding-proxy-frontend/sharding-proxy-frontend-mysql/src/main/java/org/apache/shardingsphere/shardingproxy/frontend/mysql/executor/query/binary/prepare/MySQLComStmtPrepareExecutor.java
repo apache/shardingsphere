@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -40,22 +40,23 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * COM_STMT_PREPARE command packet executor for MySQL.
+ * COM_STMT_PREPARE command executor for MySQL.
  * 
+ * @author zhangyonglun
  * @author zhangliang
  */
-public final class MySQLComStmtPreparePacketExecutor implements CommandPacketExecutor<MySQLPacket> {
+public final class MySQLComStmtPrepareExecutor implements CommandExecutor<MySQLPacket> {
     
     private static final MySQLBinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = MySQLBinaryStatementRegistry.getInstance();
     
-    private final MySQLComStmtPreparePacket comStmtPreparePacket;
+    private final MySQLComStmtPreparePacket packet;
     
     private final LogicSchema logicSchema;
     
     private final String schemaName;
     
-    public MySQLComStmtPreparePacketExecutor(final MySQLComStmtPreparePacket comStmtPreparePacket, final BackendConnection backendConnection) {
-        this.comStmtPreparePacket = comStmtPreparePacket;
+    public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
+        this.packet = packet;
         logicSchema = backendConnection.getLogicSchema();
         schemaName = backendConnection.getSchemaName();
     }
@@ -64,13 +65,13 @@ public final class MySQLComStmtPreparePacketExecutor implements CommandPacketExe
     public Collection<MySQLPacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
-                LogicSchemas.getInstance().getDatabaseType(), comStmtPreparePacket.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+                LogicSchemas.getInstance().getDatabaseType(), packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
         Collection<MySQLPacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = sqlParsingEngine.parse(true);
         int parametersIndex = sqlStatement.getParametersIndex();
         result.add(new MySQLComStmtPrepareOKPacket(
-                ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(comStmtPreparePacket.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
+                ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,

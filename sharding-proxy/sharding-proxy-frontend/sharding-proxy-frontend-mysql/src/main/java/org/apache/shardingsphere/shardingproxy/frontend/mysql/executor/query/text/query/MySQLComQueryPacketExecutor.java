@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
@@ -49,7 +49,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class MySQLComQueryPacketExecutor implements QueryCommandPacketExecutor<MySQLPacket> {
+public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<MySQLPacket> {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     

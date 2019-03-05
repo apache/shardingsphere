@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.generic;
+package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.execute;
 
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * MySQL OK command packet executor.
+ * Command execute executor for PostgreSQL.
  *
+ * @author zhangyonglun
  * @author zhangliang
  */
-public final class MySQLOKCommandPacketExecutor implements CommandPacketExecutor<MySQLPacket> {
+public final class PostgreSQLComExecuteExecutor implements CommandExecutor<PostgreSQLPacket> {
     
     @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
+    public Collection<PostgreSQLPacket> execute() {
+        return Collections.emptyList();
     }
 }

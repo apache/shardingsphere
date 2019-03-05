@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.admin.in
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
@@ -31,23 +31,23 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * COM_INIT_DB command packet executor for MySQL.
+ * COM_INIT_DB command executor for MySQL.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MySQLComInitDbPacketExecutor implements CommandPacketExecutor<MySQLPacket> {
+public final class MySQLComInitDbExecutor implements CommandExecutor<MySQLPacket> {
     
-    private final MySQLComInitDbPacket comInitDbPacket;
+    private final MySQLComInitDbPacket packet;
     
     private final BackendConnection backendConnection;
     
     @Override
     public Collection<MySQLPacket> execute() {
-        if (LogicSchemas.getInstance().schemaExists(comInitDbPacket.getSchema())) {
-            backendConnection.setCurrentSchema(comInitDbPacket.getSchema());
+        if (LogicSchemas.getInstance().schemaExists(packet.getSchema())) {
+            backendConnection.setCurrentSchema(packet.getSchema());
             return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
         }
-        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, comInitDbPacket.getSchema()));
+        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getSchema()));
     }
 }

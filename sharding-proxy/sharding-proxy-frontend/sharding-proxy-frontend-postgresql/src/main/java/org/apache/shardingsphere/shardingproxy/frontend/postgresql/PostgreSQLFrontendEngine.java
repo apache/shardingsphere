@@ -27,9 +27,9 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandPacketExecutorFactory;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
@@ -127,7 +127,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     private void writePackets(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload);
         PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(commandPacketType, payload, backendConnection.getConnectionId());
-        CommandPacketExecutor<PostgreSQLPacket> commandPacketExecutor = PostgreSQLCommandPacketExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
+        CommandExecutor<PostgreSQLPacket> commandPacketExecutor = PostgreSQLCommandExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
         Collection<PostgreSQLPacket> responsePackets = commandPacketExecutor.execute();
         if (commandPacket instanceof PostgreSQLComSyncPacket) {
             context.write(new PostgreSQLCommandCompletePacket());
@@ -140,8 +140,8 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
         for (PostgreSQLPacket each : responsePackets) {
             context.write(each);
         }
-        if (commandPacketExecutor instanceof QueryCommandPacketExecutor) {
-            writeMoreResults(context, backendConnection, (QueryCommandPacketExecutor<PostgreSQLPacket>) commandPacketExecutor);
+        if (commandPacketExecutor instanceof QueryCommandExecutor) {
+            writeMoreResults(context, backendConnection, (QueryCommandExecutor<PostgreSQLPacket>) commandPacketExecutor);
         }
         if (commandPacket instanceof PostgreSQLComQueryPacket) {
             context.write(new PostgreSQLCommandCompletePacket());
@@ -150,7 +150,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     private void writeMoreResults(
-            final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandPacketExecutor<PostgreSQLPacket> queryCommandPacketExecutor) throws SQLException {
+            final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandExecutor<PostgreSQLPacket> queryCommandPacketExecutor) throws SQLException {
         if (queryCommandPacketExecutor.isQuery() && !context.channel().isActive()) {
             return;
         }

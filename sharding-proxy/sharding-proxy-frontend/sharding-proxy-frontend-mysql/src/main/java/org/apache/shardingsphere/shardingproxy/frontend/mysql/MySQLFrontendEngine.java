@@ -28,9 +28,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandPacketExecutorFactory;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -122,7 +122,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     private void writePackets(final ChannelHandlerContext context, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         MySQLCommandPacketType commandPacketType = MySQLCommandPacketTypeLoader.getCommandPacketType(payload);
         MySQLCommandPacket commandPacket = MySQLCommandPacketFactory.newInstance(commandPacketType, payload);
-        CommandPacketExecutor<MySQLPacket> commandPacketExecutor = MySQLCommandPacketExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
+        CommandExecutor<MySQLPacket> commandPacketExecutor = MySQLCommandExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
         Collection<MySQLPacket> responsePackets = commandPacketExecutor.execute();
         if (responsePackets.isEmpty()) {
             return;
@@ -130,13 +130,13 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
         for (MySQLPacket each : responsePackets) {
             context.write(each);
         }
-        if (commandPacketExecutor instanceof QueryCommandPacketExecutor) {
-            writeMoreResults(context, backendConnection, (QueryCommandPacketExecutor<MySQLPacket>) commandPacketExecutor, responsePackets.size());
+        if (commandPacketExecutor instanceof QueryCommandExecutor) {
+            writeMoreResults(context, backendConnection, (QueryCommandExecutor<MySQLPacket>) commandPacketExecutor, responsePackets.size());
         }
     }
     
-    private void writeMoreResults(final ChannelHandlerContext context, final BackendConnection backendConnection, 
-                                  final QueryCommandPacketExecutor<MySQLPacket> queryCommandPacketExecutor, final int sequenceIdOffset) throws SQLException {
+    private void writeMoreResults(final ChannelHandlerContext context, final BackendConnection backendConnection,
+                                  final QueryCommandExecutor<MySQLPacket> queryCommandPacketExecutor, final int sequenceIdOffset) throws SQLException {
         if (!queryCommandPacketExecutor.isQuery() || !context.channel().isActive()) {
             return;
         }
