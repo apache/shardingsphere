@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.repository.jdbc.repository;
 
-import io.shardingsphere.example.repository.api.entity.OrderItem;
-import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
+import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,7 +27,7 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BaseOrderEncryptRepository implements OrderItemRepository {
+public abstract class BaseOrderEncryptRepository implements OrderEncryptRepository {
     
     static final String SQL_INSERT_T_ORDER_ITEM = "INSERT INTO t_order_encrypt (order_id, user_id, md5_id, aes_id, aes_query_id) VALUES (?, ?, ?, ?, ？)";
     
@@ -44,46 +44,49 @@ public abstract class BaseOrderEncryptRepository implements OrderItemRepository 
     
     private static final String SQL_SELECT_T_ORDER_ITEM_RANGE = "SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id AND o.user_id BETWEEN 1 AND 5";
     
-    final void createItemTableNotExist(final Statement statement) throws SQLException {
+    final void createEncryptTableNotExist(final Statement statement) throws SQLException {
         statement.executeUpdate(SQL_CREATE_T_ORDER_ITEM);
     }
     
-    final void dropItemTable(final Statement statement) throws SQLException {
+    final void dropEncryptTable(final Statement statement) throws SQLException {
         statement.executeUpdate(SQL_DROP_T_ORDER_ITEM);
     }
     
-    final void truncateItemTable(final Statement statement) throws SQLException {
+    final void truncateEncryptTable(final Statement statement) throws SQLException {
         statement.executeUpdate(SQL_TRUNCATE_T_ORDER_ITEM);
     }
     
     
-    final void insertItem(final PreparedStatement preparedStatement, final OrderItem orderItem) throws SQLException {
-        preparedStatement.setLong(1, orderItem.getOrderId());
-        preparedStatement.setInt(2, orderItem.getUserId());
-        preparedStatement.setString(3, orderItem.getStatus());
+    final void insertEncrypt(final PreparedStatement preparedStatement, final OrderEncrypt orderEncrypt) throws SQLException {
+        preparedStatement.setLong(1, orderEncrypt.getOrderId());
+        preparedStatement.setInt(2, orderEncrypt.getUserId());
+        preparedStatement.setString(3, orderEncrypt.getMd5Id());
+        preparedStatement.setString(4, orderEncrypt.getAesId());
+        preparedStatement.setString(5, orderEncrypt.getAesQueryId());
         preparedStatement.executeUpdate();
         try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
             if (resultSet.next()) {
-                orderItem.setOrderItemId(resultSet.getLong(1));
+                orderEncrypt.setOrderId(resultSet.getLong(1));
             }
         }
     }
     
-    final void deleteById(final PreparedStatement preparedStatement, final Long orderItemId) throws SQLException {
-        preparedStatement.setLong(1, orderItemId);
+    final void deleteById(final PreparedStatement preparedStatement, final Long orderEncryptId) throws SQLException {
+        preparedStatement.setLong(1, orderEncryptId);
         preparedStatement.executeUpdate();
     }
     
-    final List<OrderItem> queryOrderItem(final PreparedStatement preparedStatement) {
-        List<OrderItem> result = new LinkedList<>();
+    final List<OrderEncrypt> queryOrderEncrypt(final PreparedStatement preparedStatement) {
+        List<OrderEncrypt> result = new LinkedList<>();
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setOrderItemId(resultSet.getLong(1));
-                orderItem.setOrderId(resultSet.getLong(2));
-                orderItem.setUserId(resultSet.getInt(3));
-                orderItem.setStatus(resultSet.getString(4));
-                result.add(orderItem);
+                OrderEncrypt orderEncrypt = new OrderEncrypt();
+                orderEncrypt.setOrderId(resultSet.getLong(1));
+                orderEncrypt.setUserId(resultSet.getInt(2));
+                orderEncrypt.setMd5Id(resultSet.getString(3));
+                orderEncrypt.setAesId(resultSet.getString(4));
+                orderEncrypt.setAesQueryId(resultSet.getString(5));
+                result.add(orderEncrypt);
             }
         } catch (final SQLException ignored) {
         }
@@ -91,15 +94,14 @@ public abstract class BaseOrderEncryptRepository implements OrderItemRepository 
     }
     
     @Override
-    public final List<OrderItem> selectAll() {
-        return getOrderItems(SQL_SELECT_T_ORDER_ITEM_ALL);
+    public final List<OrderEncrypt> selectAll() {
+        return getOrderEncrypts(SQL_SELECT_T_ORDER_ITEM_ALL);
     }
     
     @Override
-    public final List<OrderItem> selectRange() {
-        return getOrderItems(SQL_SELECT_T_ORDER_ITEM_RANGE);
+    public final List<OrderEncrypt> selectRange() {
+        return getOrderEncrypts(SQL_SELECT_T_ORDER_ITEM_RANGE);
     }
     
-    public abstract List<OrderItem> getOrderItems(String sql);
-    
+    public abstract List<OrderEncrypt> getOrderEncrypts(String sql);
 }
