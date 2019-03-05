@@ -33,7 +33,7 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
     
     protected static final String SQL_DELETE_BY_MD5_ID = "DELETE FROM t_order_encrypt WHERE md5_id=?";
     
-    protected static final String SQL_UPDATE_BY_AES_ID = "UPDATET t_order_encrypt SET aes_id = 11 WHERE aes_id=?";
+    protected static final String SQL_UPDATE_BY_AES_ID = "UPDATE t_order_encrypt SET aes_id = 11 WHERE aes_id=?";
     
     private static final String SQL_CREATE_T_ORDER_ENCRYPT = "CREATE TABLE IF NOT EXISTS t_order_item "
         + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, md5_id VARCHAR(200), aes_id VARCHAR(200), aes_query_id VARCHAR(200), PRIMARY KEY (order_id))";
