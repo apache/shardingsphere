@@ -17,9 +17,9 @@
 
 package io.shardingsphere.example.repository.api.repository;
 
-import io.shardingsphere.example.repository.api.entity.OrderItem;
+import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 
-public interface OrderEncryptRepository extends CommonRepository<OrderItem> {
+public interface OrderEncryptRepository extends CommonRepository<OrderEncrypt> {
     
-    void update(Long id);
+    void update(String id);
 }
