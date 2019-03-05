@@ -27,8 +27,6 @@ public class OrderEncrypt implements Serializable {
     
     private int userId;
     
-    private String md5Id;
-    
     private String aesId;
     
     private String aesQueryId;
@@ -49,14 +47,6 @@ public class OrderEncrypt implements Serializable {
         this.userId = userId;
     }
     
-    public String getMd5Id() {
-        return md5Id;
-    }
-    
-    public void setMd5Id(final String md5Id) {
-        this.md5Id = md5Id;
-    }
-    
     public String getAesId() {
         return aesId;
     }
@@ -75,6 +65,6 @@ public class OrderEncrypt implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, md5_id: %s, aesId: %s, aesQueryId: %s", orderId, userId, md5Id, aesId, aesQueryId);
+        return String.format("order_id: %s, user_id: %s, aesId: %s, aesQueryId: %s", orderId, userId, aesId, aesQueryId);
     }
 }
