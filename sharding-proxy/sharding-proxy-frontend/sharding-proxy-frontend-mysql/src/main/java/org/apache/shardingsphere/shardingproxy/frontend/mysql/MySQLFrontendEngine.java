@@ -107,6 +107,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
             writePackets(context, payload, backendConnection);
         } catch (final SQLException ex) {
+            log.error("Exception occur:", ex);
             context.write(MySQLErrPacketFactory.newInstance(1, ex));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -130,18 +131,18 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
             context.write(each);
         }
         if (commandPacketExecutor instanceof QueryCommandPacketExecutor) {
-            writeMoreResults(context, backendConnection, (QueryCommandPacketExecutor<MySQLPacket>) commandPacketExecutor);
+            writeMoreResults(context, backendConnection, (QueryCommandPacketExecutor<MySQLPacket>) commandPacketExecutor, responsePackets.size());
         }
     }
     
-    private void writeMoreResults(
-            final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandPacketExecutor<MySQLPacket> queryCommandPacketExecutor) throws SQLException {
+    private void writeMoreResults(final ChannelHandlerContext context, final BackendConnection backendConnection, 
+                                  final QueryCommandPacketExecutor<MySQLPacket> queryCommandPacketExecutor, final int sequenceIdOffset) throws SQLException {
         if (!queryCommandPacketExecutor.isQuery() || !context.channel().isActive()) {
             return;
         }
         int count = 0;
         int flushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
-        int lastSequenceId = 0;
+        int currentSequenceId = 0;
         while (queryCommandPacketExecutor.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
@@ -154,9 +155,9 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
                 context.flush();
                 count = 0;
             }
-            lastSequenceId = dataValue.getSequenceId();
+            currentSequenceId++;
         }
-        context.write(new MySQLEofPacket(++lastSequenceId));
+        context.write(new MySQLEofPacket(++currentSequenceId + sequenceIdOffset));
     }
     
     @Override
