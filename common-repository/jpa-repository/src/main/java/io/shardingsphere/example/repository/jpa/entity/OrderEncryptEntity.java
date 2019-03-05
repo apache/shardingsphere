@@ -44,12 +44,6 @@ public final class OrderEncryptEntity extends OrderEncrypt {
         return super.getUserId();
     }
     
-    @Column(name = "md5_id")
-    @Override
-    public String getMd5Id() {
-        return super.getMd5Id();
-    }
-    
     @Column(name = "aes_id")
     @Override
     public String getAesId() {

@@ -18,7 +18,6 @@
 package io.shardingsphere.example.repository.jpa.repository;
 
 import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
-import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import org.springframework.stereotype.Repository;
 
@@ -57,9 +56,9 @@ public class JPAOrderEncryptRepositoryImpl implements OrderEncryptRepository {
     }
     
     @Override
-    public void delete(final Long md5Id) {
-        Query query = entityManager.createQuery("DELETE FROM OrderEncryptEntity e WHERE e.md5Id = ?1");
-        query.setParameter(1, md5Id);
+    public void delete(final Long aesId) {
+        Query query = entityManager.createQuery("DELETE FROM OrderEncryptEntity e WHERE e.aesId = ?1");
+        query.setParameter(1, aesId);
         query.executeUpdate();
     }
     
