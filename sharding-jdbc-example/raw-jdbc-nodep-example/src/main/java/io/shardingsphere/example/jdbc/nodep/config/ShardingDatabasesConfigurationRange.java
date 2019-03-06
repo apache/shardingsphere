@@ -21,6 +21,7 @@ import io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorith
 import io.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -40,6 +41,8 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item, t_order_encrypt");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
                 new StandardShardingStrategyConfiguration("user_id", new PreciseModuloShardingDatabaseAlgorithm(), new RangeModuloShardingDatabaseAlgorithm()));
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
@@ -52,7 +55,17 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item");
+        result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_encrypt");
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "12345678");
+        result.setEncryptorConfig(new EncryptorConfiguration("AES", "aes_id", "aes_query_id", properties));
+        return result;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
