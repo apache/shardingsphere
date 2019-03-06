@@ -312,12 +312,11 @@ public final class SelectStatement extends DQLStatement {
     
     private void resetLimitTokens(final SelectStatement selectStatement, final List<SQLToken> limitSQLTokens) {
         List<SQLToken> sqlTokens = selectStatement.getSQLTokens();
-
-        Iterator<SQLToken> iter = sqlTokens.iterator();
-        while (iter.hasNext()) {
-            SQLToken each = iter.next();
+        Iterator<SQLToken> sqlTokenIterator = sqlTokens.iterator();
+        while (sqlTokenIterator.hasNext()) {
+            SQLToken each = sqlTokenIterator.next();
             if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                iter.remove();
+                sqlTokenIterator.remove();
             }
         }
         sqlTokens.addAll(limitSQLTokens);
