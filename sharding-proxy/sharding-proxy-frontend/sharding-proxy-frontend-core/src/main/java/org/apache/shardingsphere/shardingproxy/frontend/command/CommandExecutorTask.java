@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
@@ -77,9 +78,10 @@ public final class CommandExecutorTask implements Runnable {
     }
     
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        CommandPacketType type = databaseFrontendEngine.getCommandExecuteEngine().getCommandPacketType(payload);
-        CommandPacket commandPacket = databaseFrontendEngine.getCommandExecuteEngine().getCommandPacket(payload, type, backendConnection);
-        CommandExecutor commandExecutor = databaseFrontendEngine.getCommandExecuteEngine().getCommandExecutor(type, commandPacket, backendConnection);
+        CommandExecuteEngine commandExecuteEngine = databaseFrontendEngine.getCommandExecuteEngine();
+        CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
+        CommandPacket commandPacket = commandExecuteEngine.getCommandPacket(payload, type, backendConnection);
+        CommandExecutor commandExecutor = commandExecuteEngine.getCommandExecutor(type, commandPacket, backendConnection);
         Collection<DatabasePacket> responsePackets = commandExecutor.execute();
         if (responsePackets.isEmpty()) {
             return false;
@@ -88,7 +90,7 @@ public final class CommandExecutorTask implements Runnable {
             context.write(each);
         }
         if (commandExecutor instanceof QueryCommandExecutor) {
-            databaseFrontendEngine.getCommandExecuteEngine().writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
+            commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
             return true;
         }
         return databaseFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
