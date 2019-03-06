@@ -4,12 +4,12 @@
     <resultMap id="baseResultMap" type="io.shardingsphere.example.repository.api.entity.OrderEncrypt">
         <result column="order_id" property="orderId" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="aes_id" property="aesId" jdbcType="VARCHAR"/>
-        <result column="aes_query_id" property="aesQueryId" jdbcType="VARCHAR"/>
+        <result column="encrypt_id" property="encryptId" jdbcType="VARCHAR"/>
+        <result column="query_id" property="queryId" jdbcType="VARCHAR"/>
     </resultMap>
     
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_order_encrypt (order_id BIGINT NOT NULL, user_id INT NOT NULL, aes_id VARCHAR(200), aes_query_id VARCHAR(200), PRIMARY KEY (order_id));
+        CREATE TABLE IF NOT EXISTS t_order_encrypt (order_id BIGINT NOT NULL, user_id INT NOT NULL, encrypt_id VARCHAR(200), query_id VARCHAR(200), PRIMARY KEY (order_id));
     </update>
     
     <update id="truncateTable">
@@ -21,15 +21,15 @@
     </update>
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
-        INSERT INTO t_order_encrypt (order_id, user_id, aes_id) VALUES (#{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{aesId,jdbcType=VARCHAR})
+        INSERT INTO t_order_encrypt (order_id, user_id, encrypt_id) VALUES (#{orderId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{encryptId,jdbcType=VARCHAR})
     </insert>
     
     <delete id="delete">
-        DELETE FROM t_order_encrypt WHERE aes_id = #{aesId,jdbcType=VARCHAR};
+        DELETE FROM t_order_encrypt WHERE encrypt_id = #{encryptId,jdbcType=VARCHAR};
     </delete>
     
      <update id="update">
-        UPDATE FROM t_order_encrypt SET aes_id = 11 WHERE aes_id = #{aesId,jdbcType=VARCHAR};
+        UPDATE FROM t_order_encrypt SET encrypt_id = 11 WHERE encrypt_id = #{encryptId,jdbcType=VARCHAR};
     </update>
     
     <select id="selectAll" resultMap="baseResultMap">
