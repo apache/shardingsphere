@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
+import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpressio
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
+import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -82,7 +84,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
-                fillInsertValuesWithGeneratedKeyName(insertValuesToken);
+                fillGeneratedKeyName(insertValuesToken);
                 fillInsertValuesTokenWithColumnValue(insertValuesToken.getColumnValues().get(i), currentGeneratedKey);
                 fillShardingCondition(shardingCondition, currentGeneratedKey);
             }
@@ -137,8 +139,18 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(generateKeyColumn.get());
     }
     
-    private void fillInsertValuesWithGeneratedKeyName(final InsertValuesToken insertValuesToken) {
-        insertValuesToken.getColumnNames().add(shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName());
+    private void fillInsertStatementWithColumnName(final InsertValuesToken insertValuesToken, final String columnName) {
+        if (DefaultKeyword.VALUES == insertValuesToken.getType()) {
+            ItemsToken itemsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
+            itemsToken.getItems().add(columnName);
+            insertStatement.getSQLTokens().add(itemsToken);
+        }
+    }
+    
+    private void fillGeneratedKeyName(final InsertValuesToken insertValuesToken) {
+        String generatedKeyName = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName();
+        insertValuesToken.getColumnNames().add(generatedKeyName);
+        fillInsertStatementWithColumnName(insertValuesToken, generatedKeyName);
     }
     
     private boolean isNeededToEncrypt() {
