@@ -30,9 +30,11 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleDefinitionFileConstant {
     
-    private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
+    public static final String ROOT_PATH = "META-INF/parsing-rule-definition";
     
-    private static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
+    public static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
+    
+    public static final String ENCRYPT_ROOT_PATH = ROOT_PATH + "/encrypt";
     
     private static final String COMMON = "common";
     
@@ -45,21 +47,43 @@ public final class RuleDefinitionFileConstant {
     /**
      * Get SQL statement rule definition file name.
      * 
+     * @param rootDir root dir
      * @param databaseType database type
      * @return SQL statement rule definition file name
      */
-    public static String getSQLStatementRuleDefinitionFileName(final DatabaseType databaseType) {
-        return Joiner.on('/').join(SHARDING_ROOT_PATH, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
+    public static String getSQLStatementRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
+        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
      * Get extractor rule definition file name.
      *
+     * @param rootDir root dir
      * @param databaseType database type
      * @return extractor rule definition file name
      */
-    public static String getExtractorRuleDefinitionFileName(final DatabaseType databaseType) {
-        return Joiner.on('/').join(SHARDING_ROOT_PATH, databaseType.name().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+    public static String getExtractorRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
+        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+    }
+    
+    /**
+     * Get extractor rule definition file name.
+     *
+     * @param rootDir root dir
+     * @param databaseType database type
+     * @return extractor rule definition file name
+     */
+    public static String getFillerRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
+        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), FILLER_DEFINITION_FILE_NAME);
+    }
+    
+    /**
+     * Get sharding common filler rule definition file name.
+     *
+     * @return filler rule definition file name
+     */
+    public static String getShardingCommonFillerRuleDefinitionFileName() {
+        return Joiner.on('/').join(SHARDING_ROOT_PATH, COMMON, FILLER_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -76,7 +100,7 @@ public final class RuleDefinitionFileConstant {
      * 
      * @return filler rule definition file name
      */
-    public static String getFillerRuleDefinitionFileName() {
+    public static String getCommonFillerRuleDefinitionFileName() {
         return Joiner.on('/').join(ROOT_PATH, COMMON, FILLER_DEFINITION_FILE_NAME);
     }
 }

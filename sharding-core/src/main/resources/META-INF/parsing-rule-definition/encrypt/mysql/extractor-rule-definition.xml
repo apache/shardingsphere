@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extractor-rule-definition>
+    <extractor-rule id="deleteFromWhere" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml.DeleteFromWhereExtractor" />
+    <extractor-rule id="updateWhere" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml.UpdateSetWhereExtractor" />
+    <extractor-rule id="insert" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml.InsertExtractor" />
+</extractor-rule-definition>

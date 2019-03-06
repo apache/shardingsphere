@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.parser;
 
-import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -27,6 +25,11 @@ import org.apache.shardingsphere.core.parsing.antlr.parser.impl.SQLParserFactory
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
+
+import com.google.common.base.Optional;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * SQL parser engine.
@@ -36,11 +39,17 @@ import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingUnsuppo
 @RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private final ParsingRuleRegistry parsingRuleRegistry = ParsingRuleRegistry.getInstance();
+    private final ParsingRuleRegistry parsingRuleRegistry;
     
     private final DatabaseType databaseType;
     
     private final String sql;
+    
+    public SQLParserEngine(final ParsingRuleRegistry parsingRuleRegistry, final SQLStatementFillerRule sqlStatementFillerRule, final DatabaseType databaseType, final String sql) {
+        this.parsingRuleRegistry = parsingRuleRegistry;
+        this.databaseType = databaseType;
+        this.sql = sql;
+    }
     
     /**
      * Parse SQL to AST.

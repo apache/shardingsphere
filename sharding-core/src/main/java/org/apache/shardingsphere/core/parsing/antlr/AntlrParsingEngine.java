@@ -26,9 +26,13 @@ import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFillerEng
 import org.apache.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizerEngine;
 import org.apache.shardingsphere.core.parsing.antlr.parser.SQLAST;
 import org.apache.shardingsphere.core.parsing.antlr.parser.SQLParserEngine;
+import org.apache.shardingsphere.core.parsing.antlr.rule.registry.EncryptParsingRuleRegistry;
+import org.apache.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
+import org.apache.shardingsphere.core.parsing.antlr.rule.registry.ShardingParsingRuleRegistry;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
 
 /**
@@ -43,14 +47,20 @@ public final class AntlrParsingEngine implements SQLParser {
     
     private final SQLSegmentsExtractorEngine extractorEngine;
     
-    private final SQLStatementFillerEngine fillerEngine; 
+    private final SQLStatementFillerEngine fillerEngine;
     
     private final SQLStatementOptimizerEngine optimizerEngine;
     
     public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final SQLStatementFillerRule sqlStatementFillerRule, final ShardingTableMetaData shardingTableMetaData) {
-        parserEngine = new SQLParserEngine(databaseType, sql);
+        ParsingRuleRegistry parsingRuleRegistry;
+        if (sqlStatementFillerRule instanceof EncryptRule) {
+            parsingRuleRegistry = EncryptParsingRuleRegistry.getInstance();
+        } else {
+            parsingRuleRegistry = ShardingParsingRuleRegistry.getInstance();
+        }
+        parserEngine = new SQLParserEngine(parsingRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
-        fillerEngine = new SQLStatementFillerEngine(sql, sqlStatementFillerRule, shardingTableMetaData);
+        fillerEngine = new SQLStatementFillerEngine(parsingRuleRegistry, databaseType, sql, sqlStatementFillerRule, shardingTableMetaData);
         optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
     }
     

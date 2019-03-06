@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<filler-rule-definition>
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.DeleteFromWhereSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.sharding.statement.impl.dml.DeleteFromWhereFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.sharding.statement.impl.dml.UpdateSetWhereFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.sharding.statement.impl.dml.InsertFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.common.statement.impl.ShowParamFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.tcl.SetAutoCommitSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.common.statement.impl.tcl.SetAutoCommitFiller" />
+</filler-rule-definition>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<filler-rule-definition>
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.sharding.segment.impl.TableFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.sharding.segment.impl.FromWhereFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.SubqueryConditionSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.sharding.segment.impl.dql.SubqueryConditionFiller" />
+</filler-rule-definition>

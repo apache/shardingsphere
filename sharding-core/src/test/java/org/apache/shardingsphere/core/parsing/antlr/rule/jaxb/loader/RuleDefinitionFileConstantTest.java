@@ -27,12 +27,14 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetSQLStatementRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(DatabaseType.MySQL), is("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, DatabaseType.MySQL),
+                is("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml"));
     }
     
     @Test
     public void assertGetExtractorRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(DatabaseType.MySQL), is("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, DatabaseType.MySQL),
+                is("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml"));
     }
     
     @Test
@@ -42,6 +44,6 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetFillerRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(), is("META-INF/parsing-rule-definition/common/filler-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName(), is("META-INF/parsing-rule-definition/common/filler-rule-definition.xml"));
     }
 }

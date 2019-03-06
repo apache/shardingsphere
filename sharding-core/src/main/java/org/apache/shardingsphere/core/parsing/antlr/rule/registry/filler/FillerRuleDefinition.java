@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.rule.registry.filler;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.apache.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler.FillerRuleEntity;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import lombok.Getter;
+import lombok.SneakyThrows;
 
 /**
  * Filler rule definition.
@@ -35,7 +36,7 @@ import java.util.Map;
 @Getter
 public final class FillerRuleDefinition {
     
-    private final Map<Class<? extends SQLSegment>, SQLStatementFiller> rules = new LinkedHashMap<>();
+    private final Map<Class<? extends SQLSegment>, SQLSegmentFiller> rules = new LinkedHashMap<>();
     
     /**
      * Initialize filler rule definition.
@@ -46,7 +47,7 @@ public final class FillerRuleDefinition {
     @SneakyThrows
     public void init(final FillerRuleDefinitionEntity fillerRuleDefinitionEntity) {
         for (FillerRuleEntity each : fillerRuleDefinitionEntity.getRules()) {
-            rules.put((Class<? extends SQLSegment>) Class.forName(each.getSqlSegmentClass()), (SQLStatementFiller) Class.forName(each.getFillerClass()).newInstance());
+            rules.put((Class<? extends SQLSegment>) Class.forName(each.getSqlSegmentClass()), (SQLSegmentFiller) Class.forName(each.getFillerClass()).newInstance());
         }
     }
 }
