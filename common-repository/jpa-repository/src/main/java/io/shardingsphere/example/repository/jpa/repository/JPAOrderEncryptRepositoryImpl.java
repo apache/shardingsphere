@@ -56,16 +56,16 @@ public class JPAOrderEncryptRepositoryImpl implements OrderEncryptRepository {
     }
     
     @Override
-    public void delete(final Long aesId) {
-        Query query = entityManager.createQuery("DELETE FROM OrderEncryptEntity e WHERE e.aesId = ?1");
-        query.setParameter(1, aesId);
+    public void delete(final Long encryptId) {
+        Query query = entityManager.createQuery("DELETE FROM OrderEncryptEntity e WHERE e.encryptId = ?1");
+        query.setParameter(1, encryptId);
         query.executeUpdate();
     }
     
     @Override
-    public void update(final String aesId) {
-        Query query = entityManager.createQuery("UPDATE OrderEncryptEntity SET e.aesId = 11 WHERE e.aesId = ?1");
-        query.setParameter(1, aesId);
+    public void update(final String encryptId) {
+        Query query = entityManager.createQuery("UPDATE OrderEncryptEntity SET e.encryptId = 11 WHERE e.encryptId = ?1");
+        query.setParameter(1, encryptId);
         query.executeUpdate();
     }
     

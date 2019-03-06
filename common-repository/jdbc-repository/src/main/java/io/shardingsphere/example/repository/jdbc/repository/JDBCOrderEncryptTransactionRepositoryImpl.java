@@ -73,17 +73,17 @@ public final class JDBCOrderEncryptTransactionRepositoryImpl extends BaseOrderEn
     }
     
     @Override
-    public void delete(final Long aesId) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_AES_ID)) {
-            deleteById(preparedStatement, aesId.toString());
+    public void delete(final Long encryptId) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_BY_ENCRYPT_ID)) {
+            deleteById(preparedStatement, encryptId.toString());
         } catch (final SQLException ignored) {
         }
     }
     
     @Override
-    public void update(final String aesId) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_BY_AES_ID)) {
-            updateById(preparedStatement, aesId);
+    public void update(final String encryptId) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_BY_ENCRYPT_ID)) {
+            updateById(preparedStatement, encryptId);
         } catch (final SQLException ignored) {
         }
     }

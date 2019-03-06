@@ -29,14 +29,14 @@ import java.util.List;
 
 public abstract class BaseOrderEncryptRepository implements OrderEncryptRepository {
     
-    protected static final String SQL_INSERT_T_ORDER_ENCRYPT = "INSERT INTO t_order_encrypt (order_id, user_id, aes_id) VALUES (?, ?, ?)";
+    protected static final String SQL_INSERT_T_ORDER_ENCRYPT = "INSERT INTO t_order_encrypt (order_id, user_id, encrypt_id) VALUES (?, ?, ?)";
     
-    protected static final String SQL_DELETE_BY_AES_ID = "DELETE FROM t_order_encrypt WHERE aes_id=?";
+    protected static final String SQL_DELETE_BY_ENCRYPT_ID = "DELETE FROM t_order_encrypt WHERE encrypt_id=?";
     
-    protected static final String SQL_UPDATE_BY_AES_ID = "UPDATE t_order_encrypt SET aes_id = 11 WHERE aes_id=?";
+    protected static final String SQL_UPDATE_BY_ENCRYPT_ID = "UPDATE t_order_encrypt SET encrypt_id = 11 WHERE encrypt_id=?";
     
     private static final String SQL_CREATE_T_ORDER_ENCRYPT = "CREATE TABLE IF NOT EXISTS t_order_encrypt "
-        + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, aes_id VARCHAR(200), aes_query_id VARCHAR(200), PRIMARY KEY (order_id))";
+        + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, encrypt_id VARCHAR(200), query_id VARCHAR(200), PRIMARY KEY (order_id))";
     
     private static final String SQL_DROP_T_ORDER_ENCRYPT = "DROP TABLE t_order_encrypt";
     
@@ -61,7 +61,7 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
     protected final void insertEncrypt(final PreparedStatement preparedStatement, final OrderEncrypt orderEncrypt) throws SQLException {
         preparedStatement.setLong(1, orderEncrypt.getOrderId());
         preparedStatement.setInt(2, orderEncrypt.getUserId());
-        preparedStatement.setString(3, orderEncrypt.getAesId());
+        preparedStatement.setString(3, orderEncrypt.getEncryptId());
         preparedStatement.executeUpdate();
         try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
             if (resultSet.next()) {
@@ -70,13 +70,13 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
         }
     }
     
-    protected final void deleteById(final PreparedStatement preparedStatement, final String aesId) throws SQLException {
-        preparedStatement.setString(1, aesId);
+    protected final void deleteById(final PreparedStatement preparedStatement, final String encryptId) throws SQLException {
+        preparedStatement.setString(1, encryptId);
         preparedStatement.executeUpdate();
     }
     
-    protected final void updateById(final PreparedStatement preparedStatement, final String aesId) throws SQLException {
-        preparedStatement.setString(1, aesId);
+    protected final void updateById(final PreparedStatement preparedStatement, final String encryptId) throws SQLException {
+        preparedStatement.setString(1, encryptId);
         preparedStatement.executeUpdate();
     }
     
@@ -87,8 +87,8 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
                 OrderEncrypt orderEncrypt = new OrderEncrypt();
                 orderEncrypt.setOrderId(resultSet.getLong(1));
                 orderEncrypt.setUserId(resultSet.getInt(2));
-                orderEncrypt.setAesId(resultSet.getString(3));
-                orderEncrypt.setAesQueryId(resultSet.getString(4));
+                orderEncrypt.setEncryptId(resultSet.getString(3));
+                orderEncrypt.setQueryId(resultSet.getString(4));
                 result.add(orderEncrypt);
             }
         } catch (final SQLException ignored) {
