@@ -17,44 +17,29 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
-import com.google.common.base.Strings;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecuteEngine;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.PostgreSQLPacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * PostgreSQL frontend engine.
  *
  * @author zhangyonglun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
-    private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;
-    
-    private static final int SSL_REQUEST_CODE = 80877103;
-    
-    private static final String DATABASE_NAME_KEYWORD = "database";
-    
     private final FrontendContext frontendContext = new FrontendContext(true, false);
+    
+    private final PostgreSQLAuthenticationEngine authEngine = new PostgreSQLAuthenticationEngine();
     
     private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
@@ -63,38 +48,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public String getDatabaseType() {
         return DatabaseType.PostgreSQL.name();
-    }
-    
-    @Override
-    public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
-        int connectionId = ConnectionIdGenerator.getInstance().nextId();
-        backendConnection.setConnectionId(connectionId);
-        BinaryStatementRegistry.getInstance().register(connectionId);
-    }
-    
-    @Override
-    public boolean auth(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        if (SSL_REQUEST_PAYLOAD_LENGTH == message.markReaderIndex().readInt() && SSL_REQUEST_CODE == message.readInt()) {
-            context.writeAndFlush(new PostgreSQLSSLNegativePacket());
-            return false;
-        }
-        message.resetReaderIndex();
-        try (PostgreSQLPacketPayload payload = (PostgreSQLPacketPayload) codecEngine.createPacketPayload(message)) {
-            PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
-            String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
-            if (!Strings.isNullOrEmpty(databaseName) && !LogicSchemas.getInstance().schemaExists(databaseName)) {
-                // TODO send an error message
-                return true;
-            }
-            backendConnection.setCurrentSchema(databaseName);
-            // TODO send a md5 authentication request message
-            context.write(new PostgreSQLAuthenticationOKPacket(true));
-            context.write(new PostgreSQLParameterStatusPacket("server_version", "8.4"));
-            context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
-            context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
-            context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
-            return true;
-        }
     }
     
     @Override

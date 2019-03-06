@@ -22,12 +22,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
  * Frontend channel inbound handler.
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngi
  * @author zhangliang 
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
     private final DatabaseFrontendEngine databaseFrontendEngine;
@@ -46,17 +49,29 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
-        databaseFrontendEngine.handshake(context, backendConnection);
+        databaseFrontendEngine.getAuthEngine().handshake(context, backendConnection);
     }
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         if (!authorized) {
-            authorized = databaseFrontendEngine.auth(context, (ByteBuf) message, backendConnection);
+            authorized = auth(context, (ByteBuf) message);
             return;
         }
         CommandExecutorSelector.getExecutor(databaseFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id())
                 .execute(new CommandExecutorTask(databaseFrontendEngine, backendConnection, context, message));
+    }
+    
+    private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
+        try (PacketPayload payload = databaseFrontendEngine.getCodecEngine().createPacketPayload(message)) {
+            return databaseFrontendEngine.getAuthEngine().auth(context, payload, backendConnection);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Exception occur: ", ex);
+            context.write(databaseFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+        }
+        return false;
     }
     
     @Override

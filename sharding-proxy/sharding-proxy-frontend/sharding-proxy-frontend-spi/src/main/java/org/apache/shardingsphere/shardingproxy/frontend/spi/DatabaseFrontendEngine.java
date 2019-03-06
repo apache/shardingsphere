@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.spi;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
+import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
 
@@ -53,22 +52,11 @@ public interface DatabaseFrontendEngine {
     DatabasePacketCodecEngine getCodecEngine();
     
     /**
-     * Handshake.
+     * Get authentication engine.
      * 
-     * @param context channel handler context
-     * @param backendConnection backend connection
+     * @return authentication engine
      */
-    void handshake(ChannelHandlerContext context, BackendConnection backendConnection);
-    
-    /**
-     * Auth.
-     * 
-     * @param context channel handler context
-     * @param message message
-     * @param backendConnection backend connection
-     * @return auth finish or not
-     */
-    boolean auth(ChannelHandlerContext context, ByteBuf message, BackendConnection backendConnection);
+    AuthenticationEngine getAuthEngine();
     
     /**
      * Get command execute engine.
