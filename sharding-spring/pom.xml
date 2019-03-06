@@ -16,5 +16,6 @@
         <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-orchestration-spring</module>
         <module>sharding-transaction-spring</module>
+        <module>sharding-transaction-spring-boot-starter</module>
     </modules>
 </project>
