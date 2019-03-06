@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.generic;
 
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,10 +28,10 @@ import java.util.Collections;
  * 
  * @author zhangliang
  */
-public final class PostgreSQLComTerminationExecutor implements CommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComTerminationExecutor implements CommandExecutor {
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         return Collections.emptyList();
     }
 }

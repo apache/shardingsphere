@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.generic;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 
@@ -33,12 +33,12 @@ import java.util.Collections;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MySQLUnsupportedCommandExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLUnsupportedCommandExecutor implements CommandExecutor {
     
     private final MySQLCommandPacketType type;
     
     @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, type));
+    public Collection<DatabasePacket> execute() {
+        return Collections.<DatabasePacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, type));
     }
 }

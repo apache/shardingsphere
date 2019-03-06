@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
@@ -48,7 +49,7 @@ import java.util.List;
  * @author zhangyonglun
  * @author zhangliang
  */
-public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
@@ -59,19 +60,19 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<Po
     }
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
+            return Collections.<DatabasePacket>singletonList(new PostgreSQLErrorResponsePacket());
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Collections.<PostgreSQLPacket>singletonList(createErrorPacket((ErrorResponse) backendResponse));
+            return Collections.<DatabasePacket>singletonList(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Collections.<PostgreSQLPacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+            return Collections.<DatabasePacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
-        return result.isPresent() ? Collections.<PostgreSQLPacket>singletonList(result.get()) : Collections.<PostgreSQLPacket>emptyList();
+        return result.isPresent() ? Collections.<DatabasePacket>singletonList(result.get()) : Collections.<DatabasePacket>emptyList();
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {

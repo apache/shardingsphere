@@ -25,10 +25,8 @@ import java.sql.SQLException;
  * Query command executor.
  *
  * @author zhangliang
- * 
- * @param <T> type of database packet
  */
-public interface QueryCommandExecutor<T extends DatabasePacket> extends CommandExecutor<T> {
+public interface QueryCommandExecutor extends CommandExecutor {
     
     /**
      * Judge is query SQL or not.
@@ -51,5 +49,5 @@ public interface QueryCommandExecutor<T extends DatabasePacket> extends CommandE
      * @return database packet of query data
      * @throws SQLException SQL exception
      */
-    T getQueryData() throws SQLException;
+    DatabasePacket getQueryData() throws SQLException;
 }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
@@ -49,7 +50,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<MySQLPacket> {
+public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
@@ -62,16 +63,16 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<M
     }
     
     @Override
-    public Collection<MySQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
+            return Collections.<DatabasePacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Collections.<MySQLPacket>singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+            return Collections.<DatabasePacket>singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Collections.<MySQLPacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+            return Collections.<DatabasePacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         isQuery = true;
         return createQueryPackets((QueryResponse) backendResponse);
@@ -85,8 +86,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<M
         return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
     }
     
-    private Collection<MySQLPacket> createQueryPackets(final QueryResponse backendResponse) {
-        Collection<MySQLPacket> result = new LinkedList<>();
+    private Collection<DatabasePacket> createQueryPackets(final QueryResponse backendResponse) {
+        Collection<DatabasePacket> result = new LinkedList<>();
         List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
         for (QueryHeader each : queryHeader) {

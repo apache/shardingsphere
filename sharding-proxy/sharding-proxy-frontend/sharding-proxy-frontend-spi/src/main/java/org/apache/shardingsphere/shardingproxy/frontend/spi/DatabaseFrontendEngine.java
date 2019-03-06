@@ -115,13 +115,14 @@ public interface DatabaseFrontendEngine {
     
     /**
      * Write query data.
+     * 
      * @param context channel handler context
      * @param backendConnection backend connection
      * @param queryCommandExecutor query command executor
-     * @param sequenceIdOffset sequence ID offset
+     * @param headerPackagesCount count of header packages
      * @throws SQLException SQL exception
      */
-    void writeQueryData(ChannelHandlerContext context, BackendConnection backendConnection, QueryCommandExecutor<?> queryCommandExecutor, int sequenceIdOffset) throws SQLException;
+    void writeQueryData(ChannelHandlerContext context, BackendConnection backendConnection, QueryCommandExecutor queryCommandExecutor, int headerPackagesCount) throws SQLException;
     
     /**
      * Release resource.

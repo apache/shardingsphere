@@ -37,7 +37,6 @@ import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacke
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
@@ -67,7 +66,7 @@ import java.util.Collection;
 @Slf4j
 public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
-    private final MySQLAuthenticationHandler mysqlAuthenticationHandler = new MySQLAuthenticationHandler();
+    private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
     @Override
     public PacketPayload createPacketPayload(final ByteBuf message) {
@@ -88,14 +87,14 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
-        context.writeAndFlush(new MySQLHandshakePacket(connectionId, mysqlAuthenticationHandler.getAuthPluginData()));
+        context.writeAndFlush(new MySQLHandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     
     @Override
     public boolean auth(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
             MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet(payload);
-            if (mysqlAuthenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
+            if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 if (!Strings.isNullOrEmpty(response41.getDatabase()) && !LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {
                     context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return true;
@@ -122,7 +121,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public CommandExecutor<MySQLPacket> getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) {
+    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) {
         return MySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, backendConnection);
     }
     
@@ -144,24 +143,24 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     private void writePackets(final ChannelHandlerContext context, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        MySQLCommandPacketType type = getCommandPacketType(payload);
-        MySQLCommandPacket commandPacket = getCommandPacket(payload, type, backendConnection);
-        CommandExecutor<MySQLPacket> commandExecutor = getCommandExecutor(type, commandPacket, backendConnection);
-        Collection<MySQLPacket> responsePackets = commandExecutor.execute();
+        CommandPacketType type = getCommandPacketType(payload);
+        CommandPacket commandPacket = getCommandPacket(payload, type, backendConnection);
+        CommandExecutor commandExecutor = getCommandExecutor(type, commandPacket, backendConnection);
+        Collection<DatabasePacket> responsePackets = commandExecutor.execute();
         if (responsePackets.isEmpty()) {
             return;
         }
-        for (MySQLPacket each : responsePackets) {
+        for (DatabasePacket each : responsePackets) {
             context.write(each);
         }
         if (commandExecutor instanceof QueryCommandExecutor) {
-            writeQueryData(context, backendConnection, (QueryCommandExecutor<MySQLPacket>) commandExecutor, responsePackets.size());
+            writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
         }
     }
     
     @Override
     public void writeQueryData(final ChannelHandlerContext context, 
-                               final BackendConnection backendConnection, final QueryCommandExecutor<?> queryCommandExecutor, final int sequenceIdOffset) throws SQLException {
+                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (!queryCommandExecutor.isQuery() || !context.channel().isActive()) {
             return;
         }
@@ -182,7 +181,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
             }
             currentSequenceId++;
         }
-        context.write(new MySQLEofPacket(++currentSequenceId + sequenceIdOffset));
+        context.write(new MySQLEofPacket(++currentSequenceId + headerPackagesCount));
     }
     
     @Override

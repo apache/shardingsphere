@@ -29,7 +29,6 @@ import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.quer
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.text.PostgreSQLComQueryExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
@@ -52,8 +51,7 @@ public final class PostgreSQLCommandExecutorFactory {
      * @param backendConnection backend connection
      * @return command executor
      */
-    public static CommandExecutor<PostgreSQLPacket> newInstance(
-            final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) {
+    public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) {
         switch (commandPacketType) {
             case QUERY:
                 return new PostgreSQLComQueryExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);

@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.admin.ping;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 
 import java.util.Collection;
@@ -30,11 +29,10 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class MySQLComPingExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLComPingExecutor implements CommandExecutor {
     
     @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
+    public Collection<DatabasePacket> execute() {
+        return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.bi
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 
 import java.util.Collection;
@@ -31,12 +31,12 @@ import java.util.Collections;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MySQLComStmtCloseExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLComStmtCloseExecutor implements CommandExecutor {
     
     private final MySQLComStmtClosePacket packet;
     
     @Override
-    public Collection<MySQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         packet.removeCachedStatement();
         return Collections.emptyList();
     }

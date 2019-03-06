@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -53,7 +54,7 @@ import java.util.List;
  * @author zhangyonglun
  * @author zhangliang
  */
-public final class PostgreSQLComBindExecutor implements QueryCommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private final PostgreSQLComBindPacket packet;
             
@@ -68,11 +69,11 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor<Pos
     }
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
+            return Collections.<DatabasePacket>singletonList(new PostgreSQLErrorResponsePacket());
         }
-        List<PostgreSQLPacket> result = new LinkedList<>();
+        List<DatabasePacket> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
         if (null == databaseCommunicationEngine) {
             return result;

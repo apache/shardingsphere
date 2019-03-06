@@ -28,8 +28,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
@@ -45,7 +45,7 @@ import java.util.LinkedList;
  * @author zhangyonglun
  * @author zhangliang
  */
-public final class MySQLComStmtPrepareExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private static final MySQLBinaryStatementRegistry PREPARED_STATEMENT_REGISTRY = MySQLBinaryStatementRegistry.getInstance();
     
@@ -62,11 +62,11 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor<MySQLP
     }
     
     @Override
-    public Collection<MySQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
                 LogicSchemas.getInstance().getDatabaseType(), packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
-        Collection<MySQLPacket> result = new LinkedList<>();
+        Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = sqlParsingEngine.parse(true);
         int parametersIndex = sqlStatement.getParametersIndex();

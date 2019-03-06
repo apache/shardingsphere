@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
@@ -36,18 +36,18 @@ import java.util.Collections;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MySQLComInitDbExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLComInitDbExecutor implements CommandExecutor {
     
     private final MySQLComInitDbPacket packet;
     
     private final BackendConnection backendConnection;
     
     @Override
-    public Collection<MySQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         if (LogicSchemas.getInstance().schemaExists(packet.getSchema())) {
             backendConnection.setCurrentSchema(packet.getSchema());
-            return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
+            return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
         }
-        return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getSchema()));
+        return Collections.<DatabasePacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getSchema()));
     }
 }
