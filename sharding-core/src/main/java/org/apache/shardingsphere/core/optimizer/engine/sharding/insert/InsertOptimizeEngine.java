@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.core.optimizer.engine.sharding.insert;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -146,11 +148,21 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void fillInsertStatementWithColumnName(final InsertValuesToken insertValuesToken, final String columnName) {
-        ItemsToken itemsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
-        itemsToken.getItems().add(columnName);
-        if (DefaultKeyword.VALUES == insertValuesToken.getType() && !insertStatement.getSQLTokens().contains(itemsToken)) {
+        if (DefaultKeyword.VALUES == insertValuesToken.getType() && isNotExisted(columnName)) {
+            ItemsToken itemsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
+            itemsToken.getItems().add(columnName);
             insertStatement.getSQLTokens().add(itemsToken);
         }
+    }
+    
+    private boolean isNotExisted(final String insertColumnName) {
+        return Collections2.filter(insertStatement.getItemsTokens(), new Predicate<ItemsToken>() {
+            
+            @Override
+            public boolean apply(final ItemsToken input) {
+                return input.getItems().contains(insertColumnName);
+            }
+        }).isEmpty();
     }
     
     private boolean isNeededToEncrypt() {
