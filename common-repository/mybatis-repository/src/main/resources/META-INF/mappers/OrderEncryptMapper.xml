@@ -33,10 +33,10 @@
     </update>
     
     <select id="selectAll" resultMap="baseResultMap">
-        SELECT i.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id;
+        SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id;
     </select>
     
     <select id="selectRange" resultMap="baseResultMap">
-        SELECT i.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id AND o.user_id BETWEEN 1 AND 5
+        SELECT e.* FROM t_order o, t_order_encrypt e WHERE o.order_id = e.order_id AND o.user_id BETWEEN 1 AND 5
     </select>
 </mapper>
