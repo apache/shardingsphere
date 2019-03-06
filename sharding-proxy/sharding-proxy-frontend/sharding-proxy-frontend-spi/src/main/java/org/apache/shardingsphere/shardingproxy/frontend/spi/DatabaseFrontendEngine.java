@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
@@ -111,6 +112,16 @@ public interface DatabaseFrontendEngine {
      * @param backendConnection backend connection
      */
     void executeCommand(ChannelHandlerContext context, PacketPayload packetPayload, BackendConnection backendConnection);
+    
+    /**
+     * Write query data.
+     * @param context channel handler context
+     * @param backendConnection backend connection
+     * @param queryCommandExecutor query command executor
+     * @param sequenceIdOffset sequence ID offset
+     * @throws SQLException SQL exception
+     */
+    void writeQueryData(ChannelHandlerContext context, BackendConnection backendConnection, QueryCommandExecutor<?> queryCommandExecutor, int sequenceIdOffset) throws SQLException;
     
     /**
      * Release resource.

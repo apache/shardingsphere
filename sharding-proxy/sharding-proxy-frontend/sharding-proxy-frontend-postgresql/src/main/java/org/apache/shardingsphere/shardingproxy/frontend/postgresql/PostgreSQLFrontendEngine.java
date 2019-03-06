@@ -164,7 +164,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             context.write(each);
         }
         if (commandExecutor instanceof QueryCommandExecutor) {
-            writeMoreResults(context, backendConnection, (QueryCommandExecutor<PostgreSQLPacket>) commandExecutor);
+            writeQueryData(context, backendConnection, (QueryCommandExecutor<PostgreSQLPacket>) commandExecutor, 0);
         }
         if (commandPacket instanceof PostgreSQLComQueryPacket) {
             context.write(new PostgreSQLCommandCompletePacket());
@@ -172,8 +172,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
         }
     }
     
-    private void writeMoreResults(
-            final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandExecutor<PostgreSQLPacket> queryCommandExecutor) throws SQLException {
+    @Override
+    public void writeQueryData(final ChannelHandlerContext context,
+                               final BackendConnection backendConnection, final QueryCommandExecutor<?> queryCommandExecutor, final int sequenceIdOffset) throws SQLException {
         if (queryCommandExecutor.isQuery() && !context.channel().isActive()) {
             return;
         }

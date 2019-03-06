@@ -34,6 +34,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLComm
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -154,12 +155,13 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
             context.write(each);
         }
         if (commandExecutor instanceof QueryCommandExecutor) {
-            writeMoreResults(context, backendConnection, (QueryCommandExecutor<MySQLPacket>) commandExecutor, responsePackets.size());
+            writeQueryData(context, backendConnection, (QueryCommandExecutor<MySQLPacket>) commandExecutor, responsePackets.size());
         }
     }
     
-    private void writeMoreResults(final ChannelHandlerContext context, final BackendConnection backendConnection,
-                                  final QueryCommandExecutor<MySQLPacket> queryCommandExecutor, final int sequenceIdOffset) throws SQLException {
+    @Override
+    public void writeQueryData(final ChannelHandlerContext context, 
+                               final BackendConnection backendConnection, final QueryCommandExecutor<?> queryCommandExecutor, final int sequenceIdOffset) throws SQLException {
         if (!queryCommandExecutor.isQuery() || !context.channel().isActive()) {
             return;
         }
@@ -172,7 +174,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwait();
             }
-            MySQLPacket dataValue = queryCommandExecutor.getQueryData();
+            DatabasePacket dataValue = queryCommandExecutor.getQueryData();
             context.write(dataValue);
             if (flushThreshold == count) {
                 context.flush();
