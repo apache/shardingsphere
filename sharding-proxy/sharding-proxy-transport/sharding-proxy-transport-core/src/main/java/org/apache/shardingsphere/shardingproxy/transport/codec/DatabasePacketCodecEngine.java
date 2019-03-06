@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 import java.util.List;
 
@@ -58,4 +59,12 @@ public interface DatabasePacketCodecEngine<T extends DatabasePacket> {
      * @param out output
      */
     void encode(ChannelHandlerContext context, T message, ByteBuf out);
+    
+    /**
+     * Create packet payload.
+     *
+     * @param message message
+     * @return packet payload
+     */
+    PacketPayload createPacketPayload(ByteBuf message);
 }

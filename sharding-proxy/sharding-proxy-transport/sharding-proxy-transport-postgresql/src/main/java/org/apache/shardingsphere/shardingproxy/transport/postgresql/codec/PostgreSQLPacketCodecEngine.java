@@ -67,4 +67,9 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             out.writeBytes(payload.getByteBuf());
         }
     }
+    
+    @Override
+    public PostgreSQLPacketPayload createPacketPayload(final ByteBuf message) {
+        return new PostgreSQLPacketPayload(message);
+    }
 }

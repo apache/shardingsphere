@@ -66,11 +66,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public PostgreSQLPacketPayload createPacketPayload(final ByteBuf message) {
-        return new PostgreSQLPacketPayload(message);
-    }
-    
-    @Override
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
@@ -84,7 +79,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             return false;
         }
         message.resetReaderIndex();
-        try (PostgreSQLPacketPayload payload = createPacketPayload(message)) {
+        try (PostgreSQLPacketPayload payload = (PostgreSQLPacketPayload) codecEngine.createPacketPayload(message)) {
             PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
             String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
             if (!Strings.isNullOrEmpty(databaseName) && !LogicSchemas.getInstance().schemaExists(databaseName)) {

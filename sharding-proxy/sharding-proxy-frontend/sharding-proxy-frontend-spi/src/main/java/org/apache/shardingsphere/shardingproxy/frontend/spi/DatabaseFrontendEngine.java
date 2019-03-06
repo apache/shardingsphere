@@ -23,7 +23,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
  * Database frontend engine.
@@ -40,26 +39,18 @@ public interface DatabaseFrontendEngine {
     String getDatabaseType();
     
     /**
+     * Get frontend context.
+     *
+     * @return frontend context
+     */
+    FrontendContext getFrontendContext();
+    
+    /**
      * Get database packet codec engine.
      * 
      * @return database packet codec engine
      */
     DatabasePacketCodecEngine getCodecEngine();
-    
-    /**
-     * Create packet payload.
-     *
-     * @param message message
-     * @return packet payload
-     */
-    PacketPayload createPacketPayload(ByteBuf message);
-    
-    /**
-     * Get frontend context.
-     * 
-     * @return frontend context
-     */
-    FrontendContext getFrontendContext();
     
     /**
      * Handshake.

@@ -57,4 +57,9 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
             out.writeBytes(payload.getByteBuf());
         }
     }
+    
+    @Override
+    public MySQLPacketPayload createPacketPayload(final ByteBuf message) {
+        return new MySQLPacketPayload(message);
+    }
 }

@@ -67,11 +67,6 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public MySQLPacketPayload createPacketPayload(final ByteBuf message) {
-        return new MySQLPacketPayload(message);
-    }
-    
-    @Override
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
@@ -80,7 +75,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Override
     public boolean auth(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        try (MySQLPacketPayload payload = createPacketPayload(message)) {
+        try (MySQLPacketPayload payload = (MySQLPacketPayload) codecEngine.createPacketPayload(message)) {
             MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet(payload);
             if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 if (!Strings.isNullOrEmpty(response41.getDatabase()) && !LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {
