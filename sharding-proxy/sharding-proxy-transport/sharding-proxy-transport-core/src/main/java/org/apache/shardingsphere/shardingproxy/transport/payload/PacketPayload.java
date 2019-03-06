@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.api.packet;
+package org.apache.shardingsphere.shardingproxy.transport.payload;
+
+import io.netty.buffer.ByteBuf;
 
 /**
- * Command packet type.
+ * Packet payload.
  *
  * @author zhangliang
  */
-public interface CommandPacketType {
+public interface PacketPayload extends AutoCloseable {
+    
+    /**
+     * Get byte buf.
+     * 
+     * @return byte buf
+     */
+    ByteBuf getByteBuf();
 }

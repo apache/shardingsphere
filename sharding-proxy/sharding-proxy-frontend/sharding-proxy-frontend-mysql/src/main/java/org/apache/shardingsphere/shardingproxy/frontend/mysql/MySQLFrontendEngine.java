@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
 
 /**
  * MySQL frontend engine.

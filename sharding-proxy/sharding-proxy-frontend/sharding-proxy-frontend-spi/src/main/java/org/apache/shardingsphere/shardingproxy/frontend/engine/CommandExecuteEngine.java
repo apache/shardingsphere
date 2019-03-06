@@ -21,10 +21,10 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 import java.sql.SQLException;
 

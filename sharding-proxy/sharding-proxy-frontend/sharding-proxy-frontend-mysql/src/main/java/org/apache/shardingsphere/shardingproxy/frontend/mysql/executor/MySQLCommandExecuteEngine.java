@@ -24,10 +24,6 @@ import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
@@ -35,6 +31,10 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 import java.sql.SQLException;
 

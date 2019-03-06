@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
 
 /**
  * Command packet for MySQL.

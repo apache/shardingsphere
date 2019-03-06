@@ -22,8 +22,8 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
  * Database frontend engine.

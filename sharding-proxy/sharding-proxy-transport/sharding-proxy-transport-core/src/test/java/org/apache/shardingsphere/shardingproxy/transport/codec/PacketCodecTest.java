@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.codec;
+package org.apache.shardingsphere.shardingproxy.transport.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +68,7 @@ public final class PacketCodecTest {
         verify(databasePacketCodecEngine, times(0)).decode(context, byteBuf, Collections.emptyList(), 1);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertEncode() {
         DatabasePacket databasePacket = mock(DatabasePacket.class);

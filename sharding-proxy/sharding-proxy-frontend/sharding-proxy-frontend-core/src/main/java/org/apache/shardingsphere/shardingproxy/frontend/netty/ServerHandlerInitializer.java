@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.DatabaseFrontendEngineFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodec;
+import org.apache.shardingsphere.shardingproxy.transport.codec.PacketCodec;
 
 /**
  * Channel initializer.

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.api.packet;
+package org.apache.shardingsphere.shardingproxy.transport.packet;
 
 /**
  * Command packet.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.query.binary.sync;
 
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.util.Collection;
 import java.util.Collections;

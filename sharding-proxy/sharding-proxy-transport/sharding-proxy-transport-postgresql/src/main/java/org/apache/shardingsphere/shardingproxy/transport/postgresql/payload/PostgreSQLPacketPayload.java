@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.payload;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
  * Payload operation for PostgreSQL packet data types.

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.bin
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.binary.prepare.MySQLComStmtPrepareExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.text.fieldlist.MySQLComFieldListPacketExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.query.text.query.MySQLComQueryPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
 
 /**
  * Command executor factory for MySQL.

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.transport;
 
-import org.apache.shardingsphere.shardingproxy.transport.common.codec.AllCommonCodecTests;
+import org.apache.shardingsphere.shardingproxy.transport.codec.PacketCodecTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(AllCommonCodecTests.class)
+@SuiteClasses(PacketCodecTest.class)
 public final class AllTransportTests {
 }

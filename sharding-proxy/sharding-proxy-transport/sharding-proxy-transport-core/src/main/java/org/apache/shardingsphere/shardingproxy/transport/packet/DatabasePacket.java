@@ -15,15 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.codec;
+package org.apache.shardingsphere.shardingproxy.transport.packet;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.junit.Test;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
-public final class DatabasePacketCodecEngineFactoryTest {
+/**
+ * Database packet.
+ *
+ * @author zhangliang
+ * 
+ * @param <T> type of packet payload
+ */
+public interface DatabasePacket<T extends PacketPayload> {
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertNewInstanceForUnsupportedType() {
-        DatabasePacketCodecEngineFactory.newInstance(DatabaseType.H2);
-    }
+    /**
+     * Write packet to byte buffer.
+     *
+     * @param payload packet payload to be written
+     */
+    void write(T payload);
 }

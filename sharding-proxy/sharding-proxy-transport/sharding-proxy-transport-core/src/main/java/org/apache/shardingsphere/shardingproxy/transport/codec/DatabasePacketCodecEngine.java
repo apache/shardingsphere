@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.spi;
+package org.apache.shardingsphere.shardingproxy.transport.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.util.List;
 
@@ -31,13 +31,6 @@ import java.util.List;
  * @param <T> type of database packet
  */
 public interface DatabasePacketCodecEngine<T extends DatabasePacket> {
-    
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    String getDatabaseType();
     
     /**
      * Judge is valid header or not.

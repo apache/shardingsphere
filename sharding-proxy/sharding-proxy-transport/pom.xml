@@ -13,7 +13,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-proxy-transport-spi</module>
         <module>sharding-proxy-transport-core</module>
         <module>sharding-proxy-transport-mysql</module>
         <module>sharding-proxy-transport-postgresql</module>

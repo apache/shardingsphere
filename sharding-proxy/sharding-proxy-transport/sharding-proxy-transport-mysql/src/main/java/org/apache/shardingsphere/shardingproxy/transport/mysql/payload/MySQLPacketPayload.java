@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
  * MySQL payload operation for MySQL packet data types.
