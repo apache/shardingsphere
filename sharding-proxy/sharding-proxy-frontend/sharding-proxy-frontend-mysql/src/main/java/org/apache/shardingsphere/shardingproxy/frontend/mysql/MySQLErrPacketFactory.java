@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLErro
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 
 import java.sql.SQLException;
 

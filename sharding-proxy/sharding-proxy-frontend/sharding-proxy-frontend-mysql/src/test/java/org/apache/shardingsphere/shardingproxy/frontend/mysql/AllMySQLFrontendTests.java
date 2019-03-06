@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -23,9 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        MySQLOKPacketTest.class, 
-        MySQLEofPacketTest.class, 
-        MySQLErrPacketTest.class
+        MySQLFrontendEngineTest.class, 
+        MySQLErrPacketFactoryTest.class 
 })
-public final class AllMySQLGenericPacketTests {
+public final class AllMySQLFrontendTests {
 }
