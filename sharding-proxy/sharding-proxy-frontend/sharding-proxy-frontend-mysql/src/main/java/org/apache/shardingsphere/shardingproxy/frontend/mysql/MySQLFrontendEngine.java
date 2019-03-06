@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
 
 /**
  * MySQL frontend engine.
@@ -46,24 +49,26 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
+@Getter
 public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
-    @Getter
     private final FrontendContext frontendContext = new FrontendContext(false, true);
     
-    private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
-    
-    @Getter
     private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
-    @Override
-    public MySQLPacketPayload createPacketPayload(final ByteBuf message) {
-        return new MySQLPacketPayload(message);
-    }
+    private final DatabasePacketCodecEngine codecEngine = new MySQLPacketCodecEngine();
+    
+    @Getter(AccessLevel.NONE)
+    private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
     @Override
     public String getDatabaseType() {
         return DatabaseType.MySQL.name();
+    }
+    
+    @Override
+    public MySQLPacketPayload createPacketPayload(final ByteBuf message) {
+        return new MySQLPacketPayload(message);
     }
     
     @Override

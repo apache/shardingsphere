@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.PostgreSQLPacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.hands
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodecEngine;
 
 /**
  * PostgreSQL frontend engine.
@@ -55,6 +57,8 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     private final FrontendContext frontendContext = new FrontendContext(true, false);
     
     private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
+    
+    private final DatabasePacketCodecEngine codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
     public String getDatabaseType() {
