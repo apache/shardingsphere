@@ -1,0 +1,2 @@
+http\://shardingsphere.apache.org/schema/shardingsphere/sharding=org.apache.shardingsphere.shardingjdbc.spring.namespace.handler.ShardingNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/masterslave=org.apache.shardingsphere.shardingjdbc.spring.namespace.handler.MasterSlaveNamespaceHandler
