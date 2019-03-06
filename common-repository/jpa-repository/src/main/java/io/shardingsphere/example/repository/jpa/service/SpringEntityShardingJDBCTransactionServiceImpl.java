@@ -24,9 +24,9 @@ import io.shardingsphere.example.repository.api.repository.OrderEncryptRepositor
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.ShardingJDBCTransactionService;
+import io.shardingsphere.example.repository.jpa.entity.OrderEncryptEntity;
 import io.shardingsphere.example.repository.jpa.entity.OrderEntity;
 import io.shardingsphere.example.repository.jpa.entity.OrderItemEntity;
-
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -70,6 +70,6 @@ public class SpringEntityShardingJDBCTransactionServiceImpl extends ShardingJDBC
     
     @Override
     protected OrderEncrypt newOrderEncrypt() {
-        return new OrderEncrypt();
+        return new OrderEncryptEntity();
     }
 }
