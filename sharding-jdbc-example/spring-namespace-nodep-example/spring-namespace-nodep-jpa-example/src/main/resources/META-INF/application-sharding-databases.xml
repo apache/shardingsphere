@@ -53,11 +53,15 @@
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
     <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
     
+    <sharding:encryptor id="md5" type="MD5" columns="status" />
+    <sharding:encryptor id="query" type="QUERY" columns="encrypt_id" assisted-query-columns="query_id" />
+    
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generator-ref="itemKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generator-ref="itemKeyGenerator" encryptor-ref="md5" />
+                <sharding:table-rule logic-table="t_order_encrypt" database-strategy-ref="databaseStrategy" encryptor-ref="query" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
