@@ -19,7 +19,6 @@ package io.shardingsphere.example.jdbc.nodep.factory;
 
 import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesWithEncryptConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
@@ -42,8 +41,6 @@ public class DataSourceFactory {
                 return new MasterSlaveConfiguration().getDataSource();
             case SHARDING_MASTER_SLAVE:
                 return new ShardingMasterSlaveConfigurationPrecise().getDataSource();
-            case SHARDING_ENCRYPT:
-                return new ShardingDatabasesAndTablesWithEncryptConfigurationPrecise().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
