@@ -26,6 +26,11 @@
             <artifactId>sharding-transaction-xa-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>example-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>

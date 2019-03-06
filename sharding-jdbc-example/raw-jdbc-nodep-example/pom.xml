@@ -17,12 +17,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>example-utility</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
         </dependency>
