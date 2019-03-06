@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.FrontendContextConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
@@ -64,6 +66,9 @@ import java.sql.SQLException;
 @Slf4j
 public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
+    @Getter
+    private final FrontendContextConfiguration contextConfiguration = new FrontendContextConfiguration(false, true);
+    
     private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
     @Override
@@ -74,16 +79,6 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public String getDatabaseType() {
         return DatabaseType.MySQL.name();
-    }
-    
-    @Override
-    public boolean isOccupyThreadForPerConnection() {
-        return false;
-    }
-    
-    @Override
-    public boolean isFlushForEveryCommandPacket() {
-        return true;
     }
     
     @Override

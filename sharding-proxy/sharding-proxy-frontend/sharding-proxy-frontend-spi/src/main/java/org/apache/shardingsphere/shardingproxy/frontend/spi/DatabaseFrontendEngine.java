@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.FrontendContextConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
@@ -52,18 +53,11 @@ public interface DatabaseFrontendEngine {
     PacketPayload createPacketPayload(ByteBuf message);
     
     /**
-     * Judge is occupy thread for per connection.
+     * Get frontend context configuration.
      * 
-     * @return is occupy thread for per connection or not
+     * @return frontend context configuration
      */
-    boolean isOccupyThreadForPerConnection();
-    
-    /**
-     * Jugde is flush for every command packet.
-     * 
-     * @return is flush for every command packet or not
-     */
-    boolean isFlushForEveryCommandPacket();
+    FrontendContextConfiguration getContextConfiguration();
     
     /**
      * Handshake.

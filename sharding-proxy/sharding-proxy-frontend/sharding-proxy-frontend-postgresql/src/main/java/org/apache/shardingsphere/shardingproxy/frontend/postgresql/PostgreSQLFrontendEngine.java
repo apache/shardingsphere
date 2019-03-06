@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.FrontendContextConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
@@ -67,6 +69,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     private static final String DATABASE_NAME_KEYWORD = "database";
     
+    @Getter
+    private final FrontendContextConfiguration contextConfiguration = new FrontendContextConfiguration(true, false);
+    
     @Override
     public String getDatabaseType() {
         return DatabaseType.PostgreSQL.name();
@@ -75,16 +80,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public PacketPayload createPacketPayload(final ByteBuf message) {
         return new PostgreSQLPacketPayload(message);
-    }
-    
-    @Override
-    public boolean isOccupyThreadForPerConnection() {
-        return true;
-    }
-    
-    @Override
-    public boolean isFlushForEveryCommandPacket() {
-        return false;
     }
     
     @Override

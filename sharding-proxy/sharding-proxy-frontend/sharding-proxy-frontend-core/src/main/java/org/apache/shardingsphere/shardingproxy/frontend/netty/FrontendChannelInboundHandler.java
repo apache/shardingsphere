@@ -67,7 +67,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = databaseFrontendEngine.auth(context, (ByteBuf) message, backendConnection);
             return;
         }
-        CommandExecutorSelector.getExecutor(databaseFrontendEngine.isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id()).execute(new Runnable() {
+        CommandExecutorSelector.getExecutor(
+                databaseFrontendEngine.getContextConfiguration().isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id()).execute(new Runnable() {
             
             @Override
             public void run() {
@@ -110,7 +111,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             databaseFrontendEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
             return true;
         }
-        return databaseFrontendEngine.isFlushForEveryCommandPacket();
+        return databaseFrontendEngine.getContextConfiguration().isFlushForPerCommandPacket();
     }
     
     @Override
