@@ -55,7 +55,7 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds.t_order_item_${[0, 1]}}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds.t_order_item_${[0, 1]}");
         result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
         return result;
     }
