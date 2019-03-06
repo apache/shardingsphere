@@ -179,13 +179,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void fillShardingCondition(final ShardingCondition shardingCondition, final Comparable<?> currentGeneratedKey) {
         Column generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
-        if (isShardingColumn(generateKeyColumn)) {
+        if (shardingRule.isShardingColumn(generateKeyColumn)) {
             shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn, new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters)));
         }
         insertStatement.setContainGenerateKey(true);
-    }
-    
-    private boolean isShardingColumn(final Column generateKeyColumn) {
-        return shardingRule.getTableRule(generateKeyColumn.getTableName()).getAllShardingColumns().contains(generateKeyColumn.getName());
     }
 }

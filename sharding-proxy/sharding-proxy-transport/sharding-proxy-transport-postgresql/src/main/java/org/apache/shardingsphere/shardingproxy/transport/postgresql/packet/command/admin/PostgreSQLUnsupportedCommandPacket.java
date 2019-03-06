@@ -19,13 +19,8 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * PostgreSQL unsupported command packet.
@@ -33,17 +28,12 @@ import java.util.Collections;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class PostgreSQLUnsupportedCommandPacket implements PostgreSQLCommandPacket {
+public final class PostgreSQLUnsupportedCommandPacket extends PostgreSQLCommandPacket {
     
     @Getter
     private final char messageType;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.<PostgreSQLPacket>singletonList(new PostgreSQLErrorResponsePacket());
     }
 }

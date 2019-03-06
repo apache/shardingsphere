@@ -18,23 +18,17 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.describe;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * PostgreSQL command describe packet.
+ * Command describe packet for PostgreSQL.
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLComDescribePacket implements PostgreSQLCommandPacket {
-    
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.DESCRIBE.getValue();
+@Getter
+public final class PostgreSQLComDescribePacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComDescribePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
@@ -47,7 +41,7 @@ public final class PostgreSQLComDescribePacket implements PostgreSQLCommandPacke
     }
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.DESCRIBE.getValue();
     }
 }

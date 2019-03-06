@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
@@ -45,19 +44,19 @@ public final class PostgreSQLCommandPacketFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param payload packet payload for PostgreSQL
-     * @param backendConnection backend connection
+     * @param connectionId connection id
      * @return command packet for PostgreSQL
      * @throws SQLException SQL exception
      */
     public static PostgreSQLCommandPacket newInstance(
-            final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+            final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) throws SQLException {
         switch (commandPacketType) {
             case QUERY:
-                return new PostgreSQLComQueryPacket(payload, backendConnection);
+                return new PostgreSQLComQueryPacket(payload);
             case PARSE:
-                return new PostgreSQLComParsePacket(payload, backendConnection);
+                return new PostgreSQLComParsePacket(payload);
             case BIND:
-                return new PostgreSQLComBindPacket(payload, backendConnection);
+                return new PostgreSQLComBindPacket(payload, connectionId);
             case DESCRIBE:
                 return new PostgreSQLComDescribePacket(payload);
             case EXECUTE:

@@ -17,21 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLUnsupportedCommandPacketTest {
@@ -40,19 +31,8 @@ public final class MySQLUnsupportedCommandPacketTest {
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertExecute() {
-        Collection<MySQLPacket> actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_SLEEP).execute();
-        assertThat(actual.size(), is(1));
-        MySQLPacket mysqlPacket = actual.iterator().next();
-        assertThat(mysqlPacket.getSequenceId(), is(1));
-        assertThat(((MySQLErrPacket) mysqlPacket).getErrorCode(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorCode()));
-        assertThat(((MySQLErrPacket) mysqlPacket).getSqlState(), CoreMatchers.is(CommonErrorCode.UNSUPPORTED_COMMAND.getSqlState()));
-        assertThat(((MySQLErrPacket) mysqlPacket).getErrorMessage(), is(String.format(CommonErrorCode.UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
-    }
-    
-    @Test
     public void assertWrite() {
-        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_SLEEP);
+        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_DEBUG);
         actual.write(payload);
     }
 }

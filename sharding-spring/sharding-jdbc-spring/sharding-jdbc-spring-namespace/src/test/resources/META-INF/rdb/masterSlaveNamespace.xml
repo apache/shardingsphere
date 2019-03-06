@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        ">
+    <import resource="datasource/masterSlaveDataSource.xml" />
+    
+    <bean id="randomLoadBalanceAlgorithm" class="org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="roundRobinLoadBalanceAlgorithm" class="org.apache.shardingsphere.core.masterslave.impl.RoundRobinMasterSlaveLoadBalanceAlgorithm" />
+    
+    <master-slave:data-source id="defaultMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" />
+    <master-slave:data-source id="randomMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-ref="randomLoadBalanceAlgorithm" />
+    <master-slave:data-source id="roundRobinMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-ref="roundRobinLoadBalanceAlgorithm" />
+    <master-slave:data-source id="refMasterSlaveDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomLoadBalanceAlgorithm" />
+</beans>

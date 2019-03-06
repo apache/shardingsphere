@@ -27,19 +27,19 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketTypeLoader;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
@@ -51,7 +51,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.hands
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * PostgreSQL frontend engine.
@@ -74,15 +73,25 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
+    public PacketPayload createPacketPayload(final ByteBuf message) {
+        return new PostgreSQLPacketPayload(message);
+    }
+    
+    @Override
     public boolean isOccupyThreadForPerConnection() {
         return true;
+    }
+    
+    @Override
+    public boolean isFlushForEveryCommandPacket() {
+        return false;
     }
     
     @Override
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
         int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
-        BinaryStatementRegistry.getInstance().register(backendConnection);
+        BinaryStatementRegistry.getInstance().register(connectionId);
     }
     
     @Override
@@ -111,67 +120,54 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
-            writePackets(context, payload, backendConnection);
-        } catch (final SQLException ex) {
-            context.writeAndFlush(new PostgreSQLErrorResponsePacket());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("Exception occur:", ex);
-            context.writeAndFlush(new PostgreSQLErrorResponsePacket());
-        }
+    public PostgreSQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
+        return PostgreSQLCommandPacketTypeLoader.getCommandPacketType((PostgreSQLPacketPayload) payload);
     }
     
-    private void writePackets(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload);
-        PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(commandPacketType, payload, backendConnection);
-        CommandPacketExecutor<PostgreSQLPacket> commandPacketExecutor = PostgreSQLCommandPacketExecutorFactory.newInstance(commandPacketType);
-        Collection<PostgreSQLPacket> responsePackets = commandPacketExecutor.execute(backendConnection, commandPacket);
-        if (commandPacket instanceof PostgreSQLComSyncPacket) {
-            context.write(new PostgreSQLCommandCompletePacket());
-            context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
-            return;
-        }
-        if (responsePackets.isEmpty()) {
-            return;
-        }
-        for (PostgreSQLPacket each : responsePackets) {
-            context.write(each);
-        }
-        if (commandPacket instanceof PostgreSQLQueryCommandPacket) {
-            writeMoreResults(context, backendConnection, (PostgreSQLQueryCommandPacket) commandPacket);
-        }
-        if (commandPacket instanceof PostgreSQLComQueryPacket) {
-            context.write(new PostgreSQLCommandCompletePacket());
-            context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
-        }
+    @Override
+    public PostgreSQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final BackendConnection backendConnection) throws SQLException {
+        return PostgreSQLCommandPacketFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLPacketPayload) payload, backendConnection.getConnectionId());
     }
     
-    private void writeMoreResults(final ChannelHandlerContext context, final BackendConnection backendConnection, final PostgreSQLQueryCommandPacket queryCommandPacket) throws SQLException {
-        if (queryCommandPacket.isQuery() && !context.channel().isActive()) {
+    @Override
+    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) {
+        return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, backendConnection);
+    }
+    
+    @Override
+    public DatabasePacket getErrorPacket(final Exception cause) {
+        return new PostgreSQLErrorResponsePacket();
+    }
+    
+    @Override
+    public void writeQueryData(final ChannelHandlerContext context,
+                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+        if (queryCommandExecutor.isQuery() && !context.channel().isActive()) {
+            context.write(new PostgreSQLCommandCompletePacket());
+            context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }
         int count = 0;
         int proxyFrontendFlushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
-        while (queryCommandPacket.next()) {
+        while (queryCommandExecutor.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
                 backendConnection.getResourceSynchronizer().doAwait();
             }
-            DatabasePacket resultValue = queryCommandPacket.getQueryData();
+            DatabasePacket resultValue = queryCommandExecutor.getQueryData();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
                 context.flush();
                 count = 0;
             }
         }
+        context.write(new PostgreSQLCommandCompletePacket());
+        context.write(new PostgreSQLReadyForQueryPacket());
     }
     
     @Override
     public void release(final BackendConnection backendConnection) {
-        BinaryStatementRegistry.getInstance().unregister(backendConnection);
+        BinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
     }
 }

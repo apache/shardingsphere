@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author zhangliang
  * @author zhangyonglun
+ * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class MySQLBinaryStatementRegistry {
@@ -76,5 +77,18 @@ public final class MySQLBinaryStatementRegistry {
      */
     public MySQLBinaryStatement getBinaryStatement(final int statementId) {
         return binaryStatements.get(statementId);
+    }
+    
+    /**
+     * Remove expired cache statement.
+     *
+     * @param statementId statement ID
+     */
+    public void remove(final int statementId) {
+        MySQLBinaryStatement binaryStatement = getBinaryStatement(statementId);
+        if (null != binaryStatement) {
+            statementIdAssigner.remove(binaryStatement.getSql());
+            binaryStatements.remove(statementId);
+        }
     }
 }

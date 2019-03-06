@@ -18,37 +18,12 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLQueryCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * MySQL COM_QUERY command packet.
+ * COM_QUERY command packet for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
  * 
@@ -56,87 +31,18 @@ import java.util.List;
  * @author linjiaqi
  * @author zhaojun
  */
-@Slf4j
-public final class MySQLComQueryPacket implements MySQLQueryCommandPacket {
+@Getter
+public final class MySQLComQueryPacket extends MySQLCommandPacket {
     
-    @Getter
     private final String sql;
     
-    private final TextProtocolBackendHandler textProtocolBackendHandler;
-    
-    private boolean isQuery;
-    
-    private int currentSequenceId;
-    
-    public MySQLComQueryPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public MySQLComQueryPacket(final MySQLPacketPayload payload) {
+        super(MySQLCommandPacketType.COM_QUERY);
         sql = payload.readStringEOF();
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
-    }
-    
-    public MySQLComQueryPacket(final String sql) {
-        this.sql = sql;
-        textProtocolBackendHandler = null;
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(MySQLCommandPacketType.COM_QUERY.getValue());
+    public void doWrite(final MySQLPacketPayload payload) {
         payload.writeStringEOF(sql);
-    }
-    
-    @Override
-    public Collection<MySQLPacket> execute() {
-        log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        if (GlobalContext.getInstance().isCircuitBreak()) {
-            return Collections.<MySQLPacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
-        }
-        BackendResponse backendResponse = textProtocolBackendHandler.execute();
-        if (backendResponse instanceof ErrorResponse) {
-            return Collections.<MySQLPacket>singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
-        }
-        if (backendResponse instanceof UpdateResponse) {
-            return Collections.<MySQLPacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
-        }
-        isQuery = true;
-        return createQueryPackets((QueryResponse) backendResponse);
-    }
-    
-    private MySQLErrPacket createErrorPacket(final Exception cause) {
-        return MySQLErrPacketFactory.newInstance(1, cause);
-    }
-    
-    private MySQLOKPacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new MySQLOKPacket(1, updateResponse.getUpdateCount(), updateResponse.getLastInsertId());
-    }
-    
-    private Collection<MySQLPacket> createQueryPackets(final QueryResponse backendResponse) {
-        Collection<MySQLPacket> result = new LinkedList<>();
-        List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
-        result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
-        for (QueryHeader each : queryHeader) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, each));
-        }
-        result.add(new MySQLEofPacket(++currentSequenceId));
-        return result;
-    }
-    
-    @Override
-    public boolean isQuery() {
-        return isQuery;
-    }
-    
-    @Override
-    public boolean next() throws SQLException {
-        return textProtocolBackendHandler.next();
-    }
-    
-    @Override
-    public MySQLPacket getQueryData() throws SQLException {
-        return new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getQueryData().getData());
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

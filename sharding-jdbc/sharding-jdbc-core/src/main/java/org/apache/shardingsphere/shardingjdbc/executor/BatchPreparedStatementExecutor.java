@@ -179,11 +179,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for(ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
-            for(StatementExecuteUnit eachUnit : each.getInputs()) {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+            for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = null;
-                for(BatchRouteUnit eachRouteUnit : routeUnits) {
-                    if(eachRouteUnit.getRouteUnit().equals(eachUnit.getRouteUnit())) {
+                for (BatchRouteUnit eachRouteUnit : routeUnits) {
+                    if (eachRouteUnit.getRouteUnit().equals(eachUnit.getRouteUnit())) {
                         jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
                         break;
                     }

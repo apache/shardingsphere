@@ -17,24 +17,16 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic;
 
-import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * PostgreSQL command termination packet.
+ * Command termination packet for PostgreSQL.
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLComTerminationPacket implements PostgreSQLCommandPacket {
-    
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.TERMINATE.getValue();
+public final class PostgreSQLComTerminationPacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComTerminationPacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
@@ -45,7 +37,7 @@ public final class PostgreSQLComTerminationPacket implements PostgreSQLCommandPa
     }
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
-        return Collections.emptyList();
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.TERMINATE.getValue();
     }
 }

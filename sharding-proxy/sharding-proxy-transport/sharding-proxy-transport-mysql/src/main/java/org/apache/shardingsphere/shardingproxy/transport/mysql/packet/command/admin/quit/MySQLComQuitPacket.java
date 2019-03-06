@@ -17,38 +17,19 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.quit;
 
-import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
- * MySQL COM_QUIT command packet.
+ * COM_QUIT command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-quit.html">COM_QUIT</a>
  *
  * @author zhangliang
  */
-@Getter
-public final class MySQLComQuitPacket implements MySQLCommandPacket {
+public final class MySQLComQuitPacket extends MySQLCommandPacket {
     
-    @Override
-    public Collection<MySQLPacket> execute() {
-        return Collections.<MySQLPacket>singletonList(new MySQLOKPacket(1));
-    }
-    
-    @Override
-    public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(MySQLCommandPacketType.COM_QUIT.getValue());
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
+    public MySQLComQuitPacket() {
+        super(MySQLCommandPacketType.COM_QUIT);
     }
 }
