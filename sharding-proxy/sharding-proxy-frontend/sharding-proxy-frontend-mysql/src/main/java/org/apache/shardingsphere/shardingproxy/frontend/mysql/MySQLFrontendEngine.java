@@ -25,15 +25,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLAuthenticationHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
@@ -58,7 +57,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
     @Override
-    public PacketPayload createPacketPayload(final ByteBuf message) {
+    public MySQLPacketPayload createPacketPayload(final ByteBuf message) {
         return new MySQLPacketPayload(message);
     }
     
@@ -69,14 +68,14 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Override
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
-        int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
+        int connectionId = ConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
         context.writeAndFlush(new MySQLHandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     
     @Override
     public boolean auth(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
+        try (MySQLPacketPayload payload = createPacketPayload(message)) {
             MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet(payload);
             if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 if (!Strings.isNullOrEmpty(response41.getDatabase()) && !LogicSchemas.getInstance().schemaExists(response41.getDatabase())) {

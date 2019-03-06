@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake
 
 import com.google.common.primitives.Bytes;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MySQL auth plugin data.
@@ -30,6 +31,7 @@ import lombok.Getter;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 public final class MySQLAuthPluginData {
     
@@ -39,11 +41,6 @@ public final class MySQLAuthPluginData {
     
     public MySQLAuthPluginData() {
         this(MySQLRandomGenerator.getInstance().generateRandomBytes(8), MySQLRandomGenerator.getInstance().generateRandomBytes(12));
-    }
-    
-    public MySQLAuthPluginData(final byte[] authPluginDataPart1, final byte[] authPluginDataPart2) {
-        this.authPluginDataPart1 = authPluginDataPart1;
-        this.authPluginDataPart2 = authPluginDataPart2;
     }
     
     /**

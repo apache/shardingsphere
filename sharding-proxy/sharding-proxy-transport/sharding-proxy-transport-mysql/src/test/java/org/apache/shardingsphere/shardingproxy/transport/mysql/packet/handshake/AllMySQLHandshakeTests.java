@@ -26,7 +26,6 @@ import org.junit.runners.Suite.SuiteClasses;
         MySQLRandomGeneratorTest.class,
         MySQLAuthenticationHandlerTest.class,
         MySQLAuthPluginDataTest.class,
-        MySQLConnectionIdGeneratorTest.class,
         MySQLHandshakePacketTest.class,
         MySQLHandshakeResponse41PacketTest.class
 })

@@ -25,7 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        DatabaseFrontendEngineFactoryTest.class, 
+        DatabaseFrontendEngineFactoryTest.class,
+        ConnectionIdGeneratorTest.class, 
         ExecutorGroupTest.class, 
         ChannelThreadExecutorGroupTest.class
 })

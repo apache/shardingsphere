@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake;
+package org.apache.shardingsphere.shardingproxy.frontend;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * PostgreSQL connection id generator.
+ * Connection ID generator.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class PostgreSQLConnectionIdGenerator {
+public final class ConnectionIdGenerator {
     
-    private static final PostgreSQLConnectionIdGenerator INSTANCE = new PostgreSQLConnectionIdGenerator();
+    private static final ConnectionIdGenerator INSTANCE = new ConnectionIdGenerator();
     
     private int currentId;
     
@@ -37,14 +37,14 @@ public final class PostgreSQLConnectionIdGenerator {
      * 
      * @return instance
      */
-    public static PostgreSQLConnectionIdGenerator getInstance() {
+    public static ConnectionIdGenerator getInstance() {
         return INSTANCE;
     } 
     
     /**
-     * Get next connection id.
+     * Get next connection ID.
      * 
-     * @return next connection id
+     * @return next connection ID
      */
     public synchronized int nextId() {
         if (currentId >= Integer.MAX_VALUE) {

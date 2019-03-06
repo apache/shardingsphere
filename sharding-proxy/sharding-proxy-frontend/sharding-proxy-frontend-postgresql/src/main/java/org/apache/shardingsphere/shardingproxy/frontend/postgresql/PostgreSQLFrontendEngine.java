@@ -25,15 +25,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
@@ -63,13 +62,13 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public PacketPayload createPacketPayload(final ByteBuf message) {
+    public PostgreSQLPacketPayload createPacketPayload(final ByteBuf message) {
         return new PostgreSQLPacketPayload(message);
     }
     
     @Override
     public void handshake(final ChannelHandlerContext context, final BackendConnection backendConnection) {
-        int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
+        int connectionId = ConnectionIdGenerator.getInstance().nextId();
         backendConnection.setConnectionId(connectionId);
         BinaryStatementRegistry.getInstance().register(connectionId);
     }
@@ -81,7 +80,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             return false;
         }
         message.resetReaderIndex();
-        try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
+        try (PostgreSQLPacketPayload payload = createPacketPayload(message)) {
             PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
             String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
             if (!Strings.isNullOrEmpty(databaseName) && !LogicSchemas.getInstance().schemaExists(databaseName)) {
