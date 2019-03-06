@@ -126,7 +126,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     private void writePackets(final ChannelHandlerContext context, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        MySQLCommandPacketType commandPacketType = MySQLCommandPacketTypeLoader.getCommandPacketType(payload);
+        MySQLCommandPacketType commandPacketType = new MySQLCommandPacketTypeLoader(payload).getCommandPacketType();
         MySQLCommandPacket commandPacket = MySQLCommandPacketFactory.newInstance(commandPacketType, payload);
         CommandExecutor<MySQLPacket> commandPacketExecutor = MySQLCommandExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
         Collection<MySQLPacket> responsePackets = commandPacketExecutor.execute();

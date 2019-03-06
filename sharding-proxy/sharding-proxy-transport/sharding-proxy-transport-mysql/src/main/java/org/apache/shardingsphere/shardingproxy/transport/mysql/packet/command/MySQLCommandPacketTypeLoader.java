@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketTypeLoader;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
@@ -27,16 +27,13 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLCommandPacketTypeLoader {
+@RequiredArgsConstructor
+public final class MySQLCommandPacketTypeLoader implements CommandPacketTypeLoader<MySQLCommandPacketType> {
     
-    /**
-     * Get command packet type.
-     *
-     * @param payload packet payload for MySQL
-     * @return command packet type for MySQL
-     */
-    public static MySQLCommandPacketType getCommandPacketType(final MySQLPacketPayload payload) {
+    private final MySQLPacketPayload payload;
+    
+    @Override
+    public MySQLCommandPacketType getCommandPacketType() {
         Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL command packet must be `0`.");
         return MySQLCommandPacketType.valueOf(payload.readInt1());
     }

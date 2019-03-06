@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
+package org.apache.shardingsphere.shardingproxy.transport.common.packet;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-public final class MySQLCommandPacketTypeLoaderTest {
+/**
+ * Command packet type loader.
+ * 
+ * @param <T> Type of command packet type
+ * 
+ * @author zhangliang
+ */
+public interface CommandPacketTypeLoader<T extends CommandPacketType> {
     
-    @Test
-    public void assertGetCommandPacketType() {
-        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        when(payload.readInt1()).thenReturn(0, MySQLCommandPacketType.COM_QUIT.getValue());
-        assertThat(new MySQLCommandPacketTypeLoader(payload).getCommandPacketType(), is(MySQLCommandPacketType.COM_QUIT));
-    }
+    /**
+     * Get command packet type.
+     *
+     * @return command packet type
+     */
+    T getCommandPacketType();
 }
