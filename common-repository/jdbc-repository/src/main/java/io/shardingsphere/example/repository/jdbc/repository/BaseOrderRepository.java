@@ -35,7 +35,7 @@ public abstract class BaseOrderRepository implements OrderRepository {
     
     private static final String SQL_CREATE_T_ORDER = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
     
-    private static final String SQL_DROP_T_ORDER = "DROP TABLE t_order";
+    private static final String SQL_DROP_T_ORDER = "DROP TABLE IF EXISTS t_order";
     
     private static final String SQL_TRUNCATE_T_ORDER = "TRUNCATE TABLE t_order";
     

@@ -38,7 +38,7 @@ public abstract class BaseOrderEncryptRepository implements OrderEncryptReposito
     private static final String SQL_CREATE_T_ORDER_ENCRYPT = "CREATE TABLE IF NOT EXISTS t_order_encrypt "
         + "(order_id BIGINT NOT NULL, user_id INT NOT NULL, encrypt_id VARCHAR(200), query_id VARCHAR(200), PRIMARY KEY (order_id))";
     
-    private static final String SQL_DROP_T_ORDER_ENCRYPT = "DROP TABLE t_order_encrypt";
+    private static final String SQL_DROP_T_ORDER_ENCRYPT = "DROP TABLE IF EXISTS t_order_encrypt";
     
     private static final String SQL_TRUNCATE_T_ORDER_ENCRYPT = "TRUNCATE TABLE t_order_encrypt";
     
