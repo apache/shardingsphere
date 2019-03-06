@@ -24,35 +24,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecutorFactory;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketTypeLoader;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLAuthenticationHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-
-import java.sql.SQLException;
 
 /**
  * MySQL frontend engine.
@@ -70,6 +55,9 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     private final FrontendContext frontendContext = new FrontendContext(false, true);
     
     private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
+    
+    @Getter
+    private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
     @Override
     public PacketPayload createPacketPayload(final ByteBuf message) {
@@ -106,52 +94,6 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
             }
             return true;
         }
-    }
-    
-    @Override
-    public MySQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
-        return MySQLCommandPacketTypeLoader.getCommandPacketType((MySQLPacketPayload) payload);
-    }
-    
-    @Override
-    public MySQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final BackendConnection backendConnection) throws SQLException {
-        return MySQLCommandPacketFactory.newInstance((MySQLCommandPacketType) type, (MySQLPacketPayload) payload);
-    }
-    
-    @Override
-    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) {
-        return MySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, backendConnection);
-    }
-    
-    @Override
-    public DatabasePacket getErrorPacket(final Exception cause) {
-        return MySQLErrPacketFactory.newInstance(1, cause);
-    }
-    
-    @Override
-    public void writeQueryData(final ChannelHandlerContext context, 
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        if (!queryCommandExecutor.isQuery() || !context.channel().isActive()) {
-            return;
-        }
-        int count = 0;
-        int flushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
-        int currentSequenceId = 0;
-        while (queryCommandExecutor.next()) {
-            count++;
-            while (!context.channel().isWritable() && context.channel().isActive()) {
-                context.flush();
-                backendConnection.getResourceSynchronizer().doAwait();
-            }
-            DatabasePacket dataValue = queryCommandExecutor.getQueryData();
-            context.write(dataValue);
-            if (flushThreshold == count) {
-                context.flush();
-                count = 0;
-            }
-            currentSequenceId++;
-        }
-        context.write(new MySQLEofPacket(++currentSequenceId + headerPackagesCount));
     }
     
     @Override

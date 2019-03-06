@@ -67,7 +67,7 @@ public final class CommandExecutorTask implements Runnable {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
-            context.write(databaseFrontendEngine.getErrorPacket(ex));
+            context.write(databaseFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
         } finally {
             if (isNeedFlush) {
                 context.flush();
@@ -77,9 +77,9 @@ public final class CommandExecutorTask implements Runnable {
     }
     
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        CommandPacketType type = databaseFrontendEngine.getCommandPacketType(payload);
-        CommandPacket commandPacket = databaseFrontendEngine.getCommandPacket(payload, type, backendConnection);
-        CommandExecutor commandExecutor = databaseFrontendEngine.getCommandExecutor(type, commandPacket, backendConnection);
+        CommandPacketType type = databaseFrontendEngine.getCommandExecuteEngine().getCommandPacketType(payload);
+        CommandPacket commandPacket = databaseFrontendEngine.getCommandExecuteEngine().getCommandPacket(payload, type, backendConnection);
+        CommandExecutor commandExecutor = databaseFrontendEngine.getCommandExecuteEngine().getCommandExecutor(type, commandPacket, backendConnection);
         Collection<DatabasePacket> responsePackets = commandExecutor.execute();
         if (responsePackets.isEmpty()) {
             return false;
@@ -88,7 +88,7 @@ public final class CommandExecutorTask implements Runnable {
             context.write(each);
         }
         if (commandExecutor instanceof QueryCommandExecutor) {
-            databaseFrontendEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
+            databaseFrontendEngine.getCommandExecuteEngine().writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
             return true;
         }
         return databaseFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();

@@ -24,26 +24,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecutorFactory;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketTypeLoader;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
@@ -52,14 +39,13 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.hands
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.sql.SQLException;
-
 /**
  * PostgreSQL frontend engine.
  *
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
+@Getter
 @Slf4j
 public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
@@ -69,8 +55,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     private static final String DATABASE_NAME_KEYWORD = "database";
     
-    @Getter
     private final FrontendContext frontendContext = new FrontendContext(true, false);
+    
+    private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
     @Override
     public String getDatabaseType() {
@@ -112,53 +99,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
             context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
             return true;
         }
-    }
-    
-    @Override
-    public PostgreSQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
-        return PostgreSQLCommandPacketTypeLoader.getCommandPacketType((PostgreSQLPacketPayload) payload);
-    }
-    
-    @Override
-    public PostgreSQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final BackendConnection backendConnection) throws SQLException {
-        return PostgreSQLCommandPacketFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLPacketPayload) payload, backendConnection.getConnectionId());
-    }
-    
-    @Override
-    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) {
-        return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, backendConnection);
-    }
-    
-    @Override
-    public DatabasePacket getErrorPacket(final Exception cause) {
-        return new PostgreSQLErrorResponsePacket();
-    }
-    
-    @Override
-    public void writeQueryData(final ChannelHandlerContext context,
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        if (queryCommandExecutor.isQuery() && !context.channel().isActive()) {
-            context.write(new PostgreSQLCommandCompletePacket());
-            context.write(new PostgreSQLReadyForQueryPacket());
-            return;
-        }
-        int count = 0;
-        int proxyFrontendFlushThreshold = GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
-        while (queryCommandExecutor.next()) {
-            count++;
-            while (!context.channel().isWritable() && context.channel().isActive()) {
-                context.flush();
-                backendConnection.getResourceSynchronizer().doAwait();
-            }
-            DatabasePacket resultValue = queryCommandExecutor.getQueryData();
-            context.write(resultValue);
-            if (proxyFrontendFlushThreshold == count) {
-                context.flush();
-                count = 0;
-            }
-        }
-        context.write(new PostgreSQLCommandCompletePacket());
-        context.write(new PostgreSQLReadyForQueryPacket());
     }
     
     @Override
