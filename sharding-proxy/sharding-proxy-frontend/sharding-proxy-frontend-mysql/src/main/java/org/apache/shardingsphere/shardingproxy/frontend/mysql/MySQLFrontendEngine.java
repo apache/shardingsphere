@@ -22,7 +22,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -48,7 +47,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Getter

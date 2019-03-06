@@ -22,7 +22,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -46,7 +45,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
 public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     
     private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;

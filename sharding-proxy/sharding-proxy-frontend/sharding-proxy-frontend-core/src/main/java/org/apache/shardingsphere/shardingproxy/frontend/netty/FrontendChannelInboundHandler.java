@@ -22,7 +22,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngi
  * @author zhangliang 
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
     private final DatabaseFrontendEngine databaseFrontendEngine;
