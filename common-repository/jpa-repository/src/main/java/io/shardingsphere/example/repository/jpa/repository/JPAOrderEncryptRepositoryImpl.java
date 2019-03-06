@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.repository.jpa.repository;
 
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QEncoderStream;
 import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import org.springframework.stereotype.Repository;
@@ -51,7 +52,11 @@ public class JPAOrderEncryptRepositoryImpl implements OrderEncryptRepository {
     
     @Override
     public Long insert(final OrderEncrypt orderEncrypt) {
-        entityManager.persist(orderEncrypt);
+        Query query = entityManager.createNativeQuery("INSERT INTO t_order_encrypt (order_id, user_id, encrypt_id) VALUES (?, ?, ?)");
+        query.setParameter(1, orderEncrypt.getOrderId());
+        query.setParameter(2, orderEncrypt.getUserId());
+        query.setParameter(3, orderEncrypt.getEncryptId());
+        query.executeUpdate();
         return orderEncrypt.getOrderId();
     }
     
