@@ -26,11 +26,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
+
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Frontend channel inbound handler.
@@ -66,20 +74,43 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
                 RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
                 rootInvokeHook.start();
                 int connectionSize = 0;
+                boolean isNeedFlush = false;
                 try (BackendConnection backendConnection = FrontendChannelInboundHandler.this.backendConnection;
-                     PacketPayload packetPayload = databaseFrontendEngine.createPacketPayload((ByteBuf) message)) {
+                     PacketPayload payload = databaseFrontendEngine.createPacketPayload((ByteBuf) message)) {
                     backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-                    databaseFrontendEngine.executeCommand(context, packetPayload, backendConnection);
+                    isNeedFlush = executeCommand(context, payload, backendConnection);
                     connectionSize = backendConnection.getConnectionSize();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
                     log.error("Exception occur: ", ex);
+                    context.write(databaseFrontendEngine.getErrorPacket(ex));
                 } finally {
+                    if (isNeedFlush) {
+                        context.flush();
+                    }
                     rootInvokeHook.finish(connectionSize);
                 }
             }
         });
+    }
+    
+    private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+        CommandPacketType type = databaseFrontendEngine.getCommandPacketType(payload);
+        CommandPacket commandPacket = databaseFrontendEngine.getCommandPacket(payload, type, backendConnection);
+        CommandExecutor commandExecutor = databaseFrontendEngine.getCommandExecutor(type, commandPacket, backendConnection);
+        Collection<DatabasePacket> responsePackets = commandExecutor.execute();
+        if (responsePackets.isEmpty()) {
+            return false;
+        }
+        for (DatabasePacket each : responsePackets) {
+            context.write(each);
+        }
+        if (commandExecutor instanceof QueryCommandExecutor) {
+            databaseFrontendEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
+            return true;
+        }
+        return databaseFrontendEngine.isFlushForEveryCommandPacket();
     }
     
     @Override

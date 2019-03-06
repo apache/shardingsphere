@@ -51,7 +51,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.hands
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * PostgreSQL frontend engine.
@@ -81,6 +80,11 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public boolean isOccupyThreadForPerConnection() {
         return true;
+    }
+    
+    @Override
+    public boolean isFlushForEveryCommandPacket() {
+        return false;
     }
     
     @Override
@@ -131,40 +135,8 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public void executeCommand(final ChannelHandlerContext context, final PacketPayload packetPayload, final BackendConnection backendConnection) {
-        boolean isNeedFlush = false;
-        try {
-            isNeedFlush = writePackets(context, (PostgreSQLPacketPayload) packetPayload, backendConnection);
-        } catch (final SQLException ex) {
-            context.writeAndFlush(new PostgreSQLErrorResponsePacket());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("Exception occur:", ex);
-            context.writeAndFlush(new PostgreSQLErrorResponsePacket());
-        } finally {
-            if (isNeedFlush) {
-                context.flush();
-            }
-        }
-    }
-    
-    private boolean writePackets(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        CommandPacketType type = getCommandPacketType(payload);
-        CommandPacket commandPacket = getCommandPacket(payload, type, backendConnection);
-        CommandExecutor commandExecutor = getCommandExecutor(type, commandPacket, backendConnection);
-        Collection<DatabasePacket> responsePackets = commandExecutor.execute();
-        if (responsePackets.isEmpty()) {
-            return false;
-        }
-        for (DatabasePacket each : responsePackets) {
-            context.write(each);
-        }
-        if (commandExecutor instanceof QueryCommandExecutor) {
-            writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
-            return true;
-        }
-        return false;
+    public DatabasePacket getErrorPacket(final Exception cause) {
+        return new PostgreSQLErrorResponsePacket();
     }
     
     @Override

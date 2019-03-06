@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 
 import java.sql.SQLException;
@@ -56,6 +57,13 @@ public interface DatabaseFrontendEngine {
      * @return is occupy thread for per connection or not
      */
     boolean isOccupyThreadForPerConnection();
+    
+    /**
+     * Jugde is flush for every command packet.
+     * 
+     * @return is flush for every command packet or not
+     */
+    boolean isFlushForEveryCommandPacket();
     
     /**
      * Handshake.
@@ -105,13 +113,12 @@ public interface DatabaseFrontendEngine {
     CommandExecutor getCommandExecutor(CommandPacketType type, CommandPacket packet, BackendConnection backendConnection);
     
     /**
-     * Execute command.
+     * Get error packet.
      * 
-     * @param context channel handler context
-     * @param packetPayload packet payload
-     * @param backendConnection backend connection
+     * @param cause cause of error
+     * @return error packet
      */
-    void executeCommand(ChannelHandlerContext context, PacketPayload packetPayload, BackendConnection backendConnection);
+    DatabasePacket getErrorPacket(Exception cause);
     
     /**
      * Write query data.

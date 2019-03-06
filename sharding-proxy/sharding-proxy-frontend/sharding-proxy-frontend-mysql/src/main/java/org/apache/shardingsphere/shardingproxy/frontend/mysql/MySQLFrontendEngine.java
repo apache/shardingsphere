@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecutorFactory;
@@ -52,7 +51,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * MySQL frontend engine.
@@ -81,6 +79,11 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     @Override
     public boolean isOccupyThreadForPerConnection() {
         return false;
+    }
+    
+    @Override
+    public boolean isFlushForEveryCommandPacket() {
+        return true;
     }
     
     @Override
@@ -126,36 +129,8 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public void executeCommand(final ChannelHandlerContext context, final PacketPayload packetPayload, final BackendConnection backendConnection) {
-        try {
-            writePackets(context, (MySQLPacketPayload) packetPayload, backendConnection);
-        } catch (final SQLException ex) {
-            log.error("Exception occur:", ex);
-            context.write(MySQLErrPacketFactory.newInstance(1, ex));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("Exception occur:", ex);
-            context.write(new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()));
-        } finally {
-            context.flush();
-        }
-    }
-    
-    private void writePackets(final ChannelHandlerContext context, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        CommandPacketType type = getCommandPacketType(payload);
-        CommandPacket commandPacket = getCommandPacket(payload, type, backendConnection);
-        CommandExecutor commandExecutor = getCommandExecutor(type, commandPacket, backendConnection);
-        Collection<DatabasePacket> responsePackets = commandExecutor.execute();
-        if (responsePackets.isEmpty()) {
-            return;
-        }
-        for (DatabasePacket each : responsePackets) {
-            context.write(each);
-        }
-        if (commandExecutor instanceof QueryCommandExecutor) {
-            writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
-        }
+    public DatabasePacket getErrorPacket(final Exception cause) {
+        return MySQLErrPacketFactory.newInstance(1, cause);
     }
     
     @Override
