@@ -146,9 +146,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void fillInsertStatementWithColumnName(final InsertValuesToken insertValuesToken, final String columnName) {
-        if (DefaultKeyword.VALUES == insertValuesToken.getType()) {
-            ItemsToken itemsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
-            itemsToken.getItems().add(columnName);
+        ItemsToken itemsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
+        itemsToken.getItems().add(columnName);
+        if (DefaultKeyword.VALUES == insertValuesToken.getType() && !insertStatement.getSQLTokens().contains(itemsToken)) {
             insertStatement.getSQLTokens().add(itemsToken);
         }
     }
