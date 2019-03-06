@@ -62,9 +62,7 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
     
     private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order_encrypt", "demo_ds.t_order_encrypt_${[0, 1]}");
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "12345678");
-        result.setEncryptorConfig(new EncryptorConfiguration("AES", "aes_id", "aes_query_id", properties));
+        result.setEncryptorConfig(new EncryptorConfiguration("query", "encrypt_id", "query_id", new Properties()));
         return result;
     }
     
