@@ -13,18 +13,8 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
         </dependency>
     </dependencies>
 </project>
