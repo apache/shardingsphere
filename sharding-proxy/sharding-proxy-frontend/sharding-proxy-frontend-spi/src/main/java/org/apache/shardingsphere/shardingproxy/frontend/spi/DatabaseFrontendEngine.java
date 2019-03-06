@@ -20,8 +20,13 @@ package org.apache.shardingsphere.shardingproxy.frontend.spi;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketTypeLoader;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
+
+import java.sql.SQLException;
 
 /**
  * Database frontend engine.
@@ -77,6 +82,27 @@ public interface DatabaseFrontendEngine {
      * @return command packet type loader
      */
     CommandPacketTypeLoader getCommandPacketTypeLoader(PacketPayload packetPayload);
+    
+    /**
+     * Get command packet.
+     * 
+     * @param payload packet payload
+     * @param type command packet type
+     * @param backendConnection backend connection
+     * @return command packet
+     * @throws SQLException SQL exception
+     */
+    CommandPacket getCommandPacket(PacketPayload payload, CommandPacketType type, BackendConnection backendConnection) throws SQLException;
+    
+    /**
+     * Get command executor.
+     * 
+     * @param type command packet type
+     * @param packet command packet
+     * @param backendConnection backend connection
+     * @return command executor
+     */
+    CommandExecutor getCommandExecutor(CommandPacketType type, CommandPacket packet, BackendConnection backendConnection);
     
     /**
      * Execute command.
