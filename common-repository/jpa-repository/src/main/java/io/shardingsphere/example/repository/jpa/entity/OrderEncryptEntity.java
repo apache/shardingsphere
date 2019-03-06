@@ -21,8 +21,6 @@ import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -31,7 +29,6 @@ import javax.persistence.Table;
 public final class OrderEncryptEntity extends OrderEncrypt {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     @Override
     public long getOrderId() {
