@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 /**
@@ -65,9 +66,10 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
                 RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
                 rootInvokeHook.start();
                 int connectionSize = 0;
-                try (BackendConnection backendConnection = FrontendChannelInboundHandler.this.backendConnection) {
+                try (BackendConnection backendConnection = FrontendChannelInboundHandler.this.backendConnection;
+                     PacketPayload packetPayload = databaseFrontendEngine.createPacketPayload((ByteBuf) message)) {
                     backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-                    databaseFrontendEngine.executeCommand(context, (ByteBuf) message, backendConnection);
+                    databaseFrontendEngine.executeCommand(context, packetPayload, backendConnection);
                     connectionSize = backendConnection.getConnectionSize();
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {

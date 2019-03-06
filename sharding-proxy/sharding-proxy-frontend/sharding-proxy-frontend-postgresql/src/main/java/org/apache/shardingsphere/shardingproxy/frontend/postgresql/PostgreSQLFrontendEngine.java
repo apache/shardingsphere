@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
@@ -74,6 +75,11 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
+    public PacketPayload createPacketPayload(final ByteBuf message) {
+        return new PostgreSQLPacketPayload(message);
+    }
+    
+    @Override
     public boolean isOccupyThreadForPerConnection() {
         return true;
     }
@@ -111,9 +117,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
-            writePackets(context, payload, backendConnection);
+    public void executeCommand(final ChannelHandlerContext context, final PacketPayload packetPayload, final BackendConnection backendConnection) {
+        try {
+            writePackets(context, (PostgreSQLPacketPayload) packetPayload, backendConnection);
         } catch (final SQLException ex) {
             context.writeAndFlush(new PostgreSQLErrorResponsePacket());
             // CHECKSTYLE:OFF

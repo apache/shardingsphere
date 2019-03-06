@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.spi;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 
 /**
  * Database frontend engine.
@@ -34,6 +35,14 @@ public interface DatabaseFrontendEngine {
      * @return database type
      */
     String getDatabaseType();
+    
+    /**
+     * Create packet payload.
+     *
+     * @param message message
+     * @return packet payload
+     */
+    PacketPayload createPacketPayload(ByteBuf message);
     
     /**
      * Judge is occupy thread for per connection.
@@ -64,10 +73,10 @@ public interface DatabaseFrontendEngine {
      * Execute command.
      * 
      * @param context channel handler context
-     * @param message message
+     * @param packetPayload packet payload
      * @param backendConnection backend connection
      */
-    void executeCommand(ChannelHandlerContext context, ByteBuf message, BackendConnection backendConnection);
+    void executeCommand(ChannelHandlerContext context, PacketPayload packetPayload, BackendConnection backendConnection);
     
     /**
      * Release resource.

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
@@ -64,6 +65,11 @@ import java.util.Collection;
 public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
     private final MySQLAuthenticationHandler mysqlAuthenticationHandler = new MySQLAuthenticationHandler();
+    
+    @Override
+    public PacketPayload createPacketPayload(final ByteBuf message) {
+        return new MySQLPacketPayload(message);
+    }
     
     @Override
     public String getDatabaseType() {
@@ -103,9 +109,9 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
-    public void executeCommand(final ChannelHandlerContext context, final ByteBuf message, final BackendConnection backendConnection) {
-        try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
-            writePackets(context, payload, backendConnection);
+    public void executeCommand(final ChannelHandlerContext context, final PacketPayload packetPayload, final BackendConnection backendConnection) {
+        try {
+            writePackets(context, (MySQLPacketPayload) packetPayload, backendConnection);
         } catch (final SQLException ex) {
             log.error("Exception occur:", ex);
             context.write(MySQLErrPacketFactory.newInstance(1, ex));
