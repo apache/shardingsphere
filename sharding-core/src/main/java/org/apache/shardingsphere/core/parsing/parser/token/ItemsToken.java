@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.parser.token;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,6 +33,7 @@ import java.util.List;
  */
 @Getter
 @ToString
+@EqualsAndHashCode(callSuper = true)
 public final class ItemsToken extends SQLToken {
     
     @Setter
