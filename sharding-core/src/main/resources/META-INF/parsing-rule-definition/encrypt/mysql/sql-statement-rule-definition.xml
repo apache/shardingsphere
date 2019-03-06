@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement-rule-definition>
+    <sql-statement-rule context="select" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement" 
+                        extractor-rule-refs="tableNames, fromWhere, subqueryCondition"/>
+    <sql-statement-rule context="Delete" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,deleteFromWhere"/>
+    <sql-statement-rule context="Update" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,updateWhere"/>
+    <sql-statement-rule context="Insert" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement" extractor-rule-refs="tableNames,insert"/>
+</sql-statement-rule-definition>

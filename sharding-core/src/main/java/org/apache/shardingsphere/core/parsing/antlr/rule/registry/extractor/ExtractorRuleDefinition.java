@@ -30,6 +30,7 @@ import java.util.Map;
  * Extractor rule definition.
  *
  * @author zhangliang
+ * @author duhongjun
  */
 @Getter
 public final class ExtractorRuleDefinition {
@@ -39,16 +40,10 @@ public final class ExtractorRuleDefinition {
     /**
      * Initialize SQL extractor rule definition.
      * 
-     * @param commonRuleDefinitionEntity common extractor rule definition entity
-     * @param dialectRuleDefinitionEntity SQL dialect extractor rule definition entity
+     * @param ruleDefinitionEntity extractor rule definition entity
      */
-    public void init(final ExtractorRuleDefinitionEntity commonRuleDefinitionEntity, final ExtractorRuleDefinitionEntity dialectRuleDefinitionEntity) {
-        init(commonRuleDefinitionEntity);
-        init(dialectRuleDefinitionEntity);
-    }
-    
     @SneakyThrows
-    private void init(final ExtractorRuleDefinitionEntity ruleDefinitionEntity) {
+    public void init(final ExtractorRuleDefinitionEntity ruleDefinitionEntity) {
         for (ExtractorRuleEntity each : ruleDefinitionEntity.getRules()) {
             rules.put(each.getId(), (SQLSegmentExtractor) Class.forName(each.getExtractorClass()).newInstance());
         }
