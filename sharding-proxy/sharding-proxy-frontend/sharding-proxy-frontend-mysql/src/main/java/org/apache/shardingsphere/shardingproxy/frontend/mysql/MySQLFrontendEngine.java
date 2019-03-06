@@ -29,8 +29,8 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.FrontendContextConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.executor.MySQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
@@ -67,7 +67,7 @@ import java.sql.SQLException;
 public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     
     @Getter
-    private final FrontendContextConfiguration contextConfiguration = new FrontendContextConfiguration(false, true);
+    private final FrontendContext frontendContext = new FrontendContext(false, true);
     
     private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     

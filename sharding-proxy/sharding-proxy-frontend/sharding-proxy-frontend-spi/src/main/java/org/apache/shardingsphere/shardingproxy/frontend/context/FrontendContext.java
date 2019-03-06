@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.api;
+package org.apache.shardingsphere.shardingproxy.frontend.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Frontend context configuration.
+ * Frontend context.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class FrontendContextConfiguration {
+public final class FrontendContext {
     
     private final boolean occupyThreadForPerConnection;
     

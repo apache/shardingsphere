@@ -57,7 +57,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = databaseFrontendEngine.auth(context, (ByteBuf) message, backendConnection);
             return;
         }
-        CommandExecutorSelector.getExecutor(databaseFrontendEngine.getContextConfiguration().isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id())
+        CommandExecutorSelector.getExecutor(databaseFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id())
                 .execute(new CommandExecutorTask(databaseFrontendEngine, backendConnection, context, message));
     }
     

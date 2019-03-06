@@ -91,6 +91,6 @@ public final class CommandExecutorTask implements Runnable {
             databaseFrontendEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
             return true;
         }
-        return databaseFrontendEngine.getContextConfiguration().isFlushForPerCommandPacket();
+        return databaseFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }
 }

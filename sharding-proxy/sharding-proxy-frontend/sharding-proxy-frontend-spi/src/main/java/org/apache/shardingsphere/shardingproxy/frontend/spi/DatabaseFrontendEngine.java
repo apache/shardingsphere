@@ -21,8 +21,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.FrontendContextConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePacket;
@@ -53,11 +53,11 @@ public interface DatabaseFrontendEngine {
     PacketPayload createPacketPayload(ByteBuf message);
     
     /**
-     * Get frontend context configuration.
+     * Get frontend context.
      * 
-     * @return frontend context configuration
+     * @return frontend context
      */
-    FrontendContextConfiguration getContextConfiguration();
+    FrontendContext getFrontendContext();
     
     /**
      * Handshake.

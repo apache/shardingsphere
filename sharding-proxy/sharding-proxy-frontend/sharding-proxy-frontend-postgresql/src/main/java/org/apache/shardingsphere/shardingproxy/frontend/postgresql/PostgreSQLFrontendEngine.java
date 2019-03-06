@@ -29,8 +29,8 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.FrontendContextConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.executor.PostgreSQLCommandExecutorFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
@@ -70,7 +70,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     private static final String DATABASE_NAME_KEYWORD = "database";
     
     @Getter
-    private final FrontendContextConfiguration contextConfiguration = new FrontendContextConfiguration(true, false);
+    private final FrontendContext frontendContext = new FrontendContext(true, false);
     
     @Override
     public String getDatabaseType() {
