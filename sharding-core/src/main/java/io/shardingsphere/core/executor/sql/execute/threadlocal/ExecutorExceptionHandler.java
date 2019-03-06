@@ -32,45 +32,45 @@ import java.sql.SQLException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ExecutorExceptionHandler {
-
-	private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = new ThreadLocal<Boolean>() {
+    
+    private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = new ThreadLocal<Boolean>() {
 		@Override
 		protected Boolean initialValue() {
 			return Boolean.TRUE;
 		}
-	};
-
-	/**
-	 * Set throw exception if error occur or not.
-	 *
-	 * @param isExceptionThrown throw exception if error occur or not
-	 */
-	public static void setExceptionThrown(final boolean isExceptionThrown) {
-		ExecutorExceptionHandler.IS_EXCEPTION_THROWN.set(isExceptionThrown);
-	}
-
-	/**
-	 * Get throw exception if error occur or not.
-	 * 
-	 * @return throw exception if error occur or not
-	 */
-	public static boolean isExceptionThrown() {
-		return IS_EXCEPTION_THROWN.get();
-	}
-
-	/**
-	 * Handle exception.
-	 * 
-	 * @param exception to be handled exception
-	 * @throws SQLException SQL exception
-	 */
-	public static void handleException(final Exception exception) throws SQLException {
-		if (isExceptionThrown()) {
-			if (exception instanceof SQLException) {
-				throw (SQLException) exception;
-			}
-			throw new ShardingException(exception);
-		}
-		log.error("exception occur: ", exception);
-	}
+    };
+    
+    /**
+     * Set throw exception if error occur or not.
+     *
+     * @param isExceptionThrown throw exception if error occur or not
+     */
+    public static void setExceptionThrown(final boolean isExceptionThrown) {
+        ExecutorExceptionHandler.IS_EXCEPTION_THROWN.set(isExceptionThrown);
+    }
+    
+    /**
+     * Get throw exception if error occur or not.
+     * 
+     * @return throw exception if error occur or not
+     */
+    public static boolean isExceptionThrown() {
+        return null == IS_EXCEPTION_THROWN.get() ? true : IS_EXCEPTION_THROWN.get();
+    }
+    
+    /**
+     * Handle exception. 
+     * 
+     * @param exception to be handled exception
+     * @throws SQLException SQL exception
+     */
+    public static void handleException(final Exception exception) throws SQLException {
+        if (isExceptionThrown()) {
+            if (exception instanceof SQLException) {
+                throw (SQLException) exception;
+            }
+            throw new ShardingException(exception);
+        }
+        log.error("exception occur: ", exception);
+    }
 }
