@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketTypeLoader;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketTypeLoader;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**

@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.common.packet;
+package org.apache.shardingsphere.shardingproxy.transport.api.packet;
 
 /**
- * Command packet type.
- *
+ * Command packet type loader.
+ * 
  * @author zhangliang
+ * 
+ * @param <T> Type of command packet type
  */
-public interface CommandPacketType {
+public interface CommandPacketTypeLoader<T extends CommandPacketType> {
+    
+    /**
+     * Get command packet type.
+     *
+     * @return command packet type
+     */
+    T getCommandPacketType();
 }

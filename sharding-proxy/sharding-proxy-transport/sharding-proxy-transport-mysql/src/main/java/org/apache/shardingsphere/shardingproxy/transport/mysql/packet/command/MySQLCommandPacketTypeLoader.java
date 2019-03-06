@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.CommandPacketTypeLoader;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketTypeLoader;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**

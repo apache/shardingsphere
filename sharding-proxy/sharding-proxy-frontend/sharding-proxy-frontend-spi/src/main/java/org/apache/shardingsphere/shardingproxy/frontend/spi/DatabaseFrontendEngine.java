@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.spi;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketTypeLoader;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 
 /**
@@ -68,6 +69,14 @@ public interface DatabaseFrontendEngine {
      * @return auth finish or not
      */
     boolean auth(ChannelHandlerContext context, ByteBuf message, BackendConnection backendConnection);
+    
+    /**
+     * Get command packet type loader.
+     * 
+     * @param packetPayload packet payload
+     * @return command packet type loader
+     */
+    CommandPacketTypeLoader getCommandPacketTypeLoader(PacketPayload packetPayload);
     
     /**
      * Execute command.

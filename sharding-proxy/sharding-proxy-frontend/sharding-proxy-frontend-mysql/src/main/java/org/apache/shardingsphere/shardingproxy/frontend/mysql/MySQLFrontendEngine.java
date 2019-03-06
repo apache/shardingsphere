@@ -109,6 +109,11 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
+    public MySQLCommandPacketTypeLoader getCommandPacketTypeLoader(final PacketPayload payload) {
+        return new MySQLCommandPacketTypeLoader((MySQLPacketPayload) payload);
+    }
+    
+    @Override
     public void executeCommand(final ChannelHandlerContext context, final PacketPayload packetPayload, final BackendConnection backendConnection) {
         try {
             writePackets(context, (MySQLPacketPayload) packetPayload, backendConnection);
@@ -126,7 +131,7 @@ public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     private void writePackets(final ChannelHandlerContext context, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        MySQLCommandPacketType commandPacketType = new MySQLCommandPacketTypeLoader(payload).getCommandPacketType();
+        MySQLCommandPacketType commandPacketType = getCommandPacketTypeLoader(payload).getCommandPacketType();
         MySQLCommandPacket commandPacket = MySQLCommandPacketFactory.newInstance(commandPacketType, payload);
         CommandExecutor<MySQLPacket> commandPacketExecutor = MySQLCommandExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
         Collection<MySQLPacket> responsePackets = commandPacketExecutor.execute();

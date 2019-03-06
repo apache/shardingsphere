@@ -117,6 +117,11 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     @Override
+    public PostgreSQLCommandPacketTypeLoader getCommandPacketTypeLoader(final PacketPayload payload) {
+        return new PostgreSQLCommandPacketTypeLoader((PostgreSQLPacketPayload) payload);
+    }
+    
+    @Override
     public void executeCommand(final ChannelHandlerContext context, final PacketPayload packetPayload, final BackendConnection backendConnection) {
         try {
             writePackets(context, (PostgreSQLPacketPayload) packetPayload, backendConnection);
@@ -131,7 +136,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseFrontendEngine {
     }
     
     private void writePackets(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        PostgreSQLCommandPacketType commandPacketType = new PostgreSQLCommandPacketTypeLoader(payload).getCommandPacketType();
+        PostgreSQLCommandPacketType commandPacketType = getCommandPacketTypeLoader(payload).getCommandPacketType();
         PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.newInstance(commandPacketType, payload, backendConnection.getConnectionId());
         CommandExecutor<PostgreSQLPacket> commandPacketExecutor = PostgreSQLCommandExecutorFactory.newInstance(commandPacketType, commandPacket, backendConnection);
         Collection<PostgreSQLPacket> responsePackets = commandPacketExecutor.execute();
