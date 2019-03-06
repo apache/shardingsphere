@@ -23,7 +23,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketTypeLoader;
 import org.apache.shardingsphere.shardingproxy.transport.api.payload.PacketPayload;
 
 import java.sql.SQLException;
@@ -76,12 +75,12 @@ public interface DatabaseFrontendEngine {
     boolean auth(ChannelHandlerContext context, ByteBuf message, BackendConnection backendConnection);
     
     /**
-     * Get command packet type loader.
+     * Get command packet type.
      * 
      * @param packetPayload packet payload
-     * @return command packet type loader
+     * @return command packet type
      */
-    CommandPacketTypeLoader getCommandPacketTypeLoader(PacketPayload packetPayload);
+    CommandPacketType getCommandPacketType(PacketPayload packetPayload);
     
     /**
      * Get command packet.

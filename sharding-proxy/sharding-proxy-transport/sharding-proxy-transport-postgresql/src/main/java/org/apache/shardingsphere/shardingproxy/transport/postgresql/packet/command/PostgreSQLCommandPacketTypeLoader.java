@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketTypeLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -26,13 +26,16 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class PostgreSQLCommandPacketTypeLoader implements CommandPacketTypeLoader<PostgreSQLCommandPacketType> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLCommandPacketTypeLoader {
     
-    private final PostgreSQLPacketPayload payload;
-    
-    @Override
-    public PostgreSQLCommandPacketType getCommandPacketType() {
+    /**
+     * Get command packet type.
+     *
+     * @param payload packet payload for PostgreSQL
+     * @return command packet type for PostgreSQL
+     */
+    public static PostgreSQLCommandPacketType getCommandPacketType(final PostgreSQLPacketPayload payload) {
         return PostgreSQLCommandPacketType.valueOf(payload.readInt1());
     }
 }
