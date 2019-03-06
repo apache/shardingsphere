@@ -32,11 +32,6 @@
             <artifactId>sharding-proxy-backend</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-opentracing</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>io.netty</groupId>
