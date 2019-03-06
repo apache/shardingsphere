@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://shardingsphere.io/schema/shardingsphere/masterslave"
+<xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            targetNamespace="http://shardingsphere.io/schema/shardingsphere/masterslave"
+            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
     <xsd:element name="data-source">

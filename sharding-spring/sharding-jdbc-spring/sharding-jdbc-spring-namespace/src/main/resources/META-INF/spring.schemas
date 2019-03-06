@@ -1,2 +1,2 @@
-http\://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd=META-INF/namespace/sharding.xsd
-http\://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd=META-INF/namespace/master-slave.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd=META-INF/namespace/sharding.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd=META-INF/namespace/master-slave.xsd

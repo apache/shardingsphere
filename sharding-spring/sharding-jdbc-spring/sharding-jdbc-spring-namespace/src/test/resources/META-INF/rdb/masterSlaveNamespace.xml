@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://shardingsphere.io/schema/shardingsphere/masterslave
-                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
                         ">
     <import resource="datasource/masterSlaveDataSource.xml" />
     
