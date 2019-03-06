@@ -1,0 +1,1 @@
+http\://shardingsphere.io/schema/shardingsphere/orchestration=org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.handler.OrchestrationNamespaceHandler

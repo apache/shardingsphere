@@ -3,9 +3,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <modules>
-        <module>sharding-jdbc-spring</module>
-    </modules>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
@@ -15,4 +12,8 @@
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
+    <modules>
+        <module>sharding-jdbc-spring</module>
+        <module>sharding-jdbc-orchestration-spring</module>
+    </modules>
 </project>

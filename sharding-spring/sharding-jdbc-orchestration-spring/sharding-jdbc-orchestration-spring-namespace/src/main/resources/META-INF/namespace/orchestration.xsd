@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns="http://shardingsphere.io/schema/shardingsphere/orchestration"
+            targetNamespace="http://shardingsphere.io/schema/shardingsphere/orchestration"
+            elementFormDefault="qualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+    <xsd:element name="sharding-data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="data-source-ref" type="xsd:string" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="master-slave-data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="data-source-ref" type="xsd:string" />
+            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="registry-center">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="server-lists" type="xsd:string" use="required" />
+                    <xsd:attribute name="namespace" type="xsd:string" />
+                    <xsd:attribute name="digest" type="xsd:string" />
+                    <xsd:attribute name="operation-timeout-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="max-retries" type="xsd:string" />
+                    <xsd:attribute name="retry-interval-milliseconds" type="xsd:string" />
+                    <xsd:attribute name="time-to-live-seconds" type="xsd:string" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
