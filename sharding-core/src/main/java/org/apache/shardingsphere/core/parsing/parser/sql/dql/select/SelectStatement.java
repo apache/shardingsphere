@@ -38,6 +38,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -310,17 +311,13 @@ public final class SelectStatement extends DQLStatement {
     }
     
     private void resetLimitTokens(final SelectStatement selectStatement, final List<SQLToken> limitSQLTokens) {
-        int count = 0;
-        List<Integer> toBeRemovedIndexes = new LinkedList<>();
         List<SQLToken> sqlTokens = selectStatement.getSQLTokens();
-        for (SQLToken each : sqlTokens) {
+        Iterator<SQLToken> sqlTokenIterator = sqlTokens.iterator();
+        while (sqlTokenIterator.hasNext()) {
+            SQLToken each = sqlTokenIterator.next();
             if (each instanceof RowCountToken || each instanceof OffsetToken) {
-                toBeRemovedIndexes.add(count);
+                sqlTokenIterator.remove();
             }
-            count++;
-        }
-        for (int each : toBeRemovedIndexes) {
-            sqlTokens.remove(each);
         }
         sqlTokens.addAll(limitSQLTokens);
     }

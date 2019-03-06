@@ -1,0 +1,2 @@
+org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.DecrementKeyGenerator
+org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator
