@@ -27,9 +27,9 @@ public class OrderEncrypt implements Serializable {
     
     private int userId;
     
-    private String aesId;
+    private String encryptId;
     
-    private String aesQueryId;
+    private String queryId;
     
     public long getOrderId() {
         return orderId;
@@ -47,24 +47,24 @@ public class OrderEncrypt implements Serializable {
         this.userId = userId;
     }
     
-    public String getAesId() {
-        return aesId;
+    public String getEncryptId() {
+        return encryptId;
     }
     
-    public void setAesId(final String aesId) {
-        this.aesId = aesId;
+    public void setEncryptId(final String encryptId) {
+        this.encryptId = encryptId;
     }
     
-    public String getAesQueryId() {
-        return aesQueryId;
+    public String getQueryId() {
+        return queryId;
     }
     
-    public void setAesQueryId(final String aesQueryId) {
-        this.aesQueryId = aesQueryId;
+    public void setQueryId(final String queryId) {
+        this.queryId = queryId;
     }
     
     @Override
     public String toString() {
-        return String.format("order_id: %s, user_id: %s, aesId: %s, aesQueryId: %s", orderId, userId, aesId, aesQueryId);
+        return String.format("order_id: %s, user_id: %s, encryptId: %s, queryId: %s", orderId, userId, encryptId, queryId);
     }
 }

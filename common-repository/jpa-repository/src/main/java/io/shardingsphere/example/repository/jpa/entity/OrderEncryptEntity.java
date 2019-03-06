@@ -44,15 +44,15 @@ public final class OrderEncryptEntity extends OrderEncrypt {
         return super.getUserId();
     }
     
-    @Column(name = "aes_id")
+    @Column(name = "encrypt_id")
     @Override
-    public String getAesId() {
-        return super.getAesId();
+    public String getEncryptId() {
+        return super.getEncryptId();
     }
     
-    @Column(name = "aes_query_id")
+    @Column(name = "query_id")
     @Override
-    public String getAesQueryId() {
-        return super.getAesQueryId();
+    public String getQueryId() {
+        return super.getQueryId();
     }
 }
