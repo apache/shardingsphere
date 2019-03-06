@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 import java.sql.Timestamp;
 
 /**
- * PostgreSQL binary protocol value for time.
+ * Binary protocol value for time for PostgreSQL.
  *
  * @author zhangyonglun
  */

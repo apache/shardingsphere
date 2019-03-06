@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL EOF packet protocol.
+ * EOF packet protocol for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-EOF_Packet.html">EOF Packet</a>
  * 

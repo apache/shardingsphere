@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL ERR packet protocol.
+ * ERR packet protocol for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html">ERR Packet</a>
  * 

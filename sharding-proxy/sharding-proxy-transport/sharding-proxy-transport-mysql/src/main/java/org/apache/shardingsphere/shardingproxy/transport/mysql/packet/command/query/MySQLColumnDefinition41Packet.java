@@ -30,7 +30,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * MySQL column definition above MySQL 4.1 packet protocol.
+ * Column definition above MySQL 4.1 packet protocol.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41">ColumnDefinition41</a>
  *

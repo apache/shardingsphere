@@ -24,7 +24,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * PostgreSQL binary prepared statement.
+ * Binary prepared statement for PostgreSQL.
  *
  * @author zhangyonglun
  */

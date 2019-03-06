@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLSer
 import java.sql.SQLException;
 
 /**
- * MySQL ERR packet factory.
+ * ERR packet factory for MySQL.
  * 
  * @author zhangliang
  */

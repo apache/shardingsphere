@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PostgreSQL error response packet.
+ * Error response packet for PostgreSQL.
  *
  * @author zhangyonglun
  */

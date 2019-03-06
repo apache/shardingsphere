@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.error.SQLErrorCode;
 
 /**
- * MySQL server error code of MySQL.
+ * Server error code for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html">error-messages-server</a>
  *

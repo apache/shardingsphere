@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.Postg
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PostgreSQL SSL negative packet.
+ * SSL negative packet for PostgreSQL.
  *
  * @author zhangyonglun
  */

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL binary protocol value for float.
+ * Binary protocol value for float for MySQL.
  * 
  * @author zhangyonglun
  * @author zhangliang

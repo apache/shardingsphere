@@ -25,16 +25,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * PostgreSQL startup packet.
+ * Startup packet for PostgreSQL.
  *
  * @author zhangyonglun
  */
+@Getter
 public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     
-    @Getter
     private final char messageType = '\0';
     
-    @Getter
     private final Map<String, String> parametersMap = new HashMap<>(16, 1);
     
     public PostgreSQLComStartupPacket(final PostgreSQLPacketPayload payload) {

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL handshake response above MySQL 4.1 packet protocol.
+ * Handshake response above MySQL 4.1 packet protocol.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
  * 

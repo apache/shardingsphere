@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 import java.math.BigDecimal;
 
 /**
- * PostgreSQL binary protocol value for int8.
+ * Binary protocol value for int8 for PostgreSQL.
  * 
  * @author zhangyonglun
  */

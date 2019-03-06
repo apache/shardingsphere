@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PostgreSQL bind complete packet.
+ * Bind complete packet for PostgreSQL.
  *
  * @author zhangyonglun
  */

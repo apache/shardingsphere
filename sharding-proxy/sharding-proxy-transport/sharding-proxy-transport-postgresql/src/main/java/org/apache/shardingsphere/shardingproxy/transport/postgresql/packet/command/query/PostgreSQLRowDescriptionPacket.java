@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 import java.util.List;
 
 /**
- * PostgreSQL row description packet.
+ * Row description packet for PostgreSQL.
  *
  * @author zhangyonglun
  */

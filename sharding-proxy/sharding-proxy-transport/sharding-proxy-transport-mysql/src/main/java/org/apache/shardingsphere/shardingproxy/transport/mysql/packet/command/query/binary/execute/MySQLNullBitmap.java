@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import lombok.Getter;
 
 /**
- * MySQL null bitmap.
+ * Null bitmap for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/null-bitmap.html">NULL-Bitmap</a>
  * 

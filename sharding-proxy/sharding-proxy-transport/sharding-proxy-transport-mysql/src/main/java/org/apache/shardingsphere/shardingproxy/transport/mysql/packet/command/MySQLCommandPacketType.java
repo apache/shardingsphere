@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
 
 /**
- * MySQL command packet type.
+ * Command packet type for MySQL.
  *
  * @author zhangliang
  */

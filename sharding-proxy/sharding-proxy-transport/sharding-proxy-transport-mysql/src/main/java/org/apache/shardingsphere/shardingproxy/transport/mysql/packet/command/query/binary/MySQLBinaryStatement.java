@@ -24,7 +24,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * MySQL binary prepared statement.
+ * Binary prepared statement for MySQL.
  *
  * @author zhangyonglun
  */

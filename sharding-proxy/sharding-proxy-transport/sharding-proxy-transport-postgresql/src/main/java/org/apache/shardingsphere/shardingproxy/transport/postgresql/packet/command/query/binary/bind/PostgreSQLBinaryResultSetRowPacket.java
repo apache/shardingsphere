@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 import java.util.List;
 
 /**
- * PostgreSQL binary result set row packet.
+ * Binary result set row packet for PostgreSQL.
  *
  * @author zhangyonglun
  */

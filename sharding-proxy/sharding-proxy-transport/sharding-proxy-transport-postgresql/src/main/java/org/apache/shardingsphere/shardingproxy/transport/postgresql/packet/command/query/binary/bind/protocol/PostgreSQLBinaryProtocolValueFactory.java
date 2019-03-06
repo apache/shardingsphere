@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * PostgreSQL binary protocol value factory.
+ * Binary protocol value factory for PostgreSQL.
  *
  * @author zhangyonglun
  */

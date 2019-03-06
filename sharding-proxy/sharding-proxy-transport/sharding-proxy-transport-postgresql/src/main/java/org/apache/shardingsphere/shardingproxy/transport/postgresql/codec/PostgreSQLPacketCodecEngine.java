@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.spi.DatabasePacketCodec
 import java.util.List;
 
 /**
- * PostgreSQL packet codec.
+ * Database packet codec for MySQL.
  *
  * @author zhangyonglun
  */

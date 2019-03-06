@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
 import java.util.List;
 
 /**
- * MySQL binary result set row packet.
+ * Binary result set row packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-resultset-row.html">Binary Protocol Resultset Row</a>
  *

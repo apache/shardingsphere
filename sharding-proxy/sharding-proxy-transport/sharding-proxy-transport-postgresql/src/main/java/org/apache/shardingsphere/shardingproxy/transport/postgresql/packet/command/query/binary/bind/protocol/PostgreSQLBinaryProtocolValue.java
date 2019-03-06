@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 import java.sql.SQLException;
 
 /**
- * PostgreSQL binary protocol value.
+ * Binary protocol value for PostgreSQL.
  *
  * @author zhangyonglun
  */

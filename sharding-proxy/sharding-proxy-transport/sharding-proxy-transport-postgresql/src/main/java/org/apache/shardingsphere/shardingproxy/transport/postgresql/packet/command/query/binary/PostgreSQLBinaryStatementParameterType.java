@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 
 /**
- * PostgreSQL bind parameter type.
+ * Bind parameter type for PostgreSQL.
  *
  * @author zhangyonglun
  */

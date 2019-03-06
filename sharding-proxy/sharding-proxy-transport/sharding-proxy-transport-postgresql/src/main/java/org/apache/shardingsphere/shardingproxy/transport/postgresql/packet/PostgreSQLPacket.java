@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePack
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PostgreSQL packet.
+ * Database packet for PostgreSQL.
  *
  * @author zhangyonglun
  */

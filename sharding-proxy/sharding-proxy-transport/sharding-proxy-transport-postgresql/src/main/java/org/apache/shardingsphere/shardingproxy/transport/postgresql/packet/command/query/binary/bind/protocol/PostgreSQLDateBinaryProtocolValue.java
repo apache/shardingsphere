@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 /**
- * PostgreSQL binary protocol value for date.
+ * Binary protocol value for date for PostgreSQL.
  *
  * @author zhangyonglun
  */

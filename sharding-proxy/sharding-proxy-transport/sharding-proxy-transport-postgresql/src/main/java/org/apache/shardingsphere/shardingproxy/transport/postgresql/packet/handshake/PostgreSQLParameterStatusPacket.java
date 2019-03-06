@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PostgreSQL parameter status packet.
+ * Parameter status packet for PostgreSQL.
  *
  * @author zhangyonglun
  */

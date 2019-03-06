@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL COM_STMT_PREPARE_OK packet.
+ * COM_STMT_PREPARE_OK packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare-response.html#packet-COM_STMT_PREPARE_OK">COM_STMT_PREPARE_OK</a>
  *

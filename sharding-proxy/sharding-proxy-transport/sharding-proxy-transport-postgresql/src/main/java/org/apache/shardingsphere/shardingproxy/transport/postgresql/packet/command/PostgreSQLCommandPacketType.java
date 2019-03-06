@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.api.packet.CommandPacketType;
 
 /**
- * PostgreSQL command packet type.
+ * Command packet type for PostgreSQL.
  *
  * @author zhangyonglun
  */

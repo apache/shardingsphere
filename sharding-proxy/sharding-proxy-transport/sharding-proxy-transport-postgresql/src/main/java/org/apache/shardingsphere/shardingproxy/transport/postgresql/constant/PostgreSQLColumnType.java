@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * PostgreSQL column types.
+ * Column types for PostgreSQL.
  * 
  * @author zhangyonglun
  */

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * PostgreSQL binary protocol value for int2.
+ * Binary protocol value for int2 for PostgreSQL.
  * 
  * @author zhangyonglun
  */

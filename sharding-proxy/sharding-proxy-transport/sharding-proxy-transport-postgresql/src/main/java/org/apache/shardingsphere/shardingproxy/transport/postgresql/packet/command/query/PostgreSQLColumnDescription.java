@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 
 /**
- * PostgreSQL column description.
+ * Column description for PostgreSQL.
  *
  * @author zhangyonglun
  */

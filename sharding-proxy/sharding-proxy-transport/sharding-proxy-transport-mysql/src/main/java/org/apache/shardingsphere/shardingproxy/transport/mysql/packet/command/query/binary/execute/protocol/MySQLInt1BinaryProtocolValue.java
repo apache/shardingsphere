@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL binary protocol value for int1.
+ * Binary protocol value for int1 for MySQL.
  * 
  * @author zhangyonglun
  * @author zhangliang

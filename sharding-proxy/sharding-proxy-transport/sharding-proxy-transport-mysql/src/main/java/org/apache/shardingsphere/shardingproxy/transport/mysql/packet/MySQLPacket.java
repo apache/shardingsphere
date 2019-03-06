@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingproxy.transport.api.packet.DatabasePack
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL packet.
+ * Database packet for MySQL.
  *
  * @author zhangliang
  */
