@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -88,20 +87,6 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
         this.columnLength = columnLength;
         this.columnType = columnType;
         this.decimals = decimals;
-    }
-    
-    public MySQLColumnDefinition41Packet(final int sequenceId, final QueryHeader queryHeader) {
-        this.sequenceId = sequenceId;
-        this.characterSet = MySQLServerInfo.CHARSET;
-        this.flags = 0;
-        this.schema = queryHeader.getSchema();
-        this.table = queryHeader.getTable();
-        this.orgTable = queryHeader.getTable();
-        this.name = queryHeader.getColumnLabel();
-        this.orgName = queryHeader.getColumnName();
-        this.columnLength = queryHeader.getColumnLength();
-        this.columnType = MySQLColumnType.valueOfJDBCType(queryHeader.getColumnType());
-        this.decimals = queryHeader.getDecimals();
     }
     
     public MySQLColumnDefinition41Packet(final MySQLPacketPayload payload) {
