@@ -12,3 +12,15 @@ The manual schema initial script is in `https://github.com/apache/incubator-shar
 please execute it before you first run the example.
 
 Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
+
+## Using docker-compose to config startup environment
+### before we use docker compose, please install docker first : https://docs.docker.com/compose/install/
+### usage is as following :
+1. access the docker folder (cd docker)
+2. launch the environment by docker compose (docker-compose up -d)
+3. access mysql / etcd / zookeeper as you want
+4. if there is conflict on port, just modify the mapper port in docker-compose.yml and then launch docker compose again(docker-compose up -d)
+5. if you want to stop these environment, use command docker-compose stop
+
+to clean the docker container , you could use docker rm `docker ps -a -q` (be careful)
+
