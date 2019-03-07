@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.context.ProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
@@ -70,7 +70,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        if (GlobalContext.getInstance().isCircuitBreak()) {
+        if (ProxyContext.getInstance().isCircuitBreak()) {
             return Collections.<DatabasePacket>singletonList(new PostgreSQLErrorResponsePacket());
         }
         List<DatabasePacket> result = new LinkedList<>();

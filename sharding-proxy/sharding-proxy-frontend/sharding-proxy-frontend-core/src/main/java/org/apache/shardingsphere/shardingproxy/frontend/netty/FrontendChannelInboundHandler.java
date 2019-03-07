@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.context.ProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
@@ -44,7 +44,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private volatile boolean authorized;
     
-    private final BackendConnection backendConnection = new BackendConnection(GlobalContext.getInstance().getTransactionType());
+    private final BackendConnection backendConnection = new BackendConnection(ProxyContext.getInstance().getTransactionType());
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {

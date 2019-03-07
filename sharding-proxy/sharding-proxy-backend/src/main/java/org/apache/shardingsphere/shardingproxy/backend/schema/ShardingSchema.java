@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMaster
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ExecutorContext;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.context.ProxyContext;
 
 import java.util.Collection;
 import java.util.Map;
@@ -66,7 +66,7 @@ public final class ShardingSchema extends LogicSchema {
     private ShardingMetaData createShardingMetaData(final boolean isCheckingMetaData) {
         return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, LogicSchemas.getInstance().getDatabaseType(),
                 ExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
-                GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), isCheckingMetaData);
+                ProxyContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), isCheckingMetaData);
     }
     
     /**

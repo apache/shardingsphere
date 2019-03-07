@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.routing.router.masterslave.MasterSlaveRout
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.context.ProxyContext;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -46,7 +46,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
-    private static final GlobalContext GLOBAL_REGISTRY = GlobalContext.getInstance();
+    private static final ProxyContext GLOBAL_REGISTRY = ProxyContext.getInstance();
     
     private final LogicSchema logicSchema;
     

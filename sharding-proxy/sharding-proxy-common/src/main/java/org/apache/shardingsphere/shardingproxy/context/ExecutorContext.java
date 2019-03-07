@@ -34,7 +34,7 @@ public final class ExecutorContext {
     
     private static final ExecutorContext INSTANCE = new ExecutorContext();
     
-    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
+    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(ProxyContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
     
     /**
      * Get executor context instance.

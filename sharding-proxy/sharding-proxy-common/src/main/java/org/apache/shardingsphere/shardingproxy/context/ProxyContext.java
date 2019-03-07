@@ -31,15 +31,16 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import java.util.Properties;
 
 /**
- * Global context.
+ * Context of Sharding-Proxy.
  *
  * @author chenqingyang
  * @author panjuan
+ * @author zhangliang
  */
 @Getter
-public final class GlobalContext {
+public final class ProxyContext {
     
-    private static final GlobalContext INSTANCE = new GlobalContext();
+    private static final ProxyContext INSTANCE = new ProxyContext();
     
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
@@ -47,7 +48,7 @@ public final class GlobalContext {
     
     private boolean isCircuitBreak;
     
-    private GlobalContext() {
+    private ProxyContext() {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
@@ -56,7 +57,7 @@ public final class GlobalContext {
      *
      * @return instance of proxy context.
      */
-    public static GlobalContext getInstance() {
+    public static ProxyContext getInstance() {
         return INSTANCE;
     }
     
