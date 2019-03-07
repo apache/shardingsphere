@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.extractor.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
@@ -40,10 +39,9 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionS
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
-import lombok.RequiredArgsConstructor;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Predicate extractor.
@@ -182,7 +180,8 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         ParserRuleContext valueNode = leftNode.isPresent() ? (ParserRuleContext) comparisionNode.get().parent.getChild(2) : (ParserRuleContext) comparisionNode.get().parent.getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(placeholderIndexes, valueNode);
         return sqlExpression.isPresent()
-                ? Optional.of(new ConditionSegment(column.get(), comparisionNode.get().getText(), new CompareValueExpressionSegment(sqlExpression.get(), comparisionNode.get().getText()))) : Optional.<ConditionSegment>absent();
+                ? Optional.of(new ConditionSegment(column.get(), comparisionNode.get().getText(), new CompareValueExpressionSegment(sqlExpression.get(), comparisionNode.get().getText())))
+                : Optional.<ConditionSegment>absent();
     }
     
     private Optional<ConditionSegment> buildBetweenCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext predicateNode) {
