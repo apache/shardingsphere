@@ -26,7 +26,7 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConf
 import java.util.Properties;
 
 /**
- * Server configuration for yaml.
+ * Server configuration for YAML.
  * 
  * @author chenqingyang
  * @author panjuan

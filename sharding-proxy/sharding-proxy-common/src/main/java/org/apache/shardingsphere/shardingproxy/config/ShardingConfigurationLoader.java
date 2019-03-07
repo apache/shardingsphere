@@ -48,9 +48,9 @@ public final class ShardingConfigurationLoader {
     private static final Pattern RULE_CONFIG_FILE_PATTERN = Pattern.compile("config-.+\\.yaml");
     
     /**
-     * Load proxy configuration.
+     * Load configuration of Sharding-Proxy.
      *
-     * @return proxy configuration
+     * @return configuration of Sharding-Proxy
      * @throws IOException IO exception
      */
     public ShardingConfiguration load() throws IOException {
