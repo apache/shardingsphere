@@ -20,13 +20,11 @@ package org.apache.shardingsphere.shardingproxy.context;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Properties;
 
@@ -73,41 +71,32 @@ public final class ShardingProxyContext {
     }
     
     /**
-     * Get transaction type.
-     *
-     * @return transaction type
-     */
-    public TransactionType getTransactionType() {
-        return TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE));
-    }
-    
-    /**
      * Renew properties.
      *
-     * @param propertiesChangedEvent properties changed event
+     * @param event properties changed event
      */
     @Subscribe
-    public synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
-        shardingProperties = new ShardingProperties(propertiesChangedEvent.getProps());
+    public synchronized void renew(final PropertiesChangedEvent event) {
+        shardingProperties = new ShardingProperties(event.getProps());
     }
     
     /**
      * Renew authentication.
      *
-     * @param authenticationChangedEvent authentication changed event
+     * @param event authentication changed event
      */
     @Subscribe
-    public synchronized void renew(final AuthenticationChangedEvent authenticationChangedEvent) {
-        authentication = authenticationChangedEvent.getAuthentication();
+    public synchronized void renew(final AuthenticationChangedEvent event) {
+        authentication = event.getAuthentication();
     }
     
     /**
      * Renew circuit breaker state.
      *
-     * @param circuitStateChangedEvent circuit state changed event
+     * @param event circuit state changed event
      */
     @Subscribe
-    public synchronized void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
-        isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
+    public synchronized void renew(final CircuitStateChangedEvent event) {
+        isCircuitBreak = event.isCircuitBreak();
     }
 }

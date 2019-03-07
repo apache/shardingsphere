@@ -23,7 +23,6 @@ import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchest
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -40,20 +39,21 @@ public final class ShardingProxyContextTest {
         Authentication authentication = new Authentication("root", "root");
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE.getKey(), TransactionType.BASE.toString());
+        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE.getKey(), "BASE");
         ShardingProxyContext.getInstance().init(authentication, props);
         assertThat(ShardingProxyContext.getInstance().getAuthentication(), is(authentication));
         assertTrue(ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        assertThat(ShardingProxyContext.getInstance().getTransactionType(), is(TransactionType.BASE));
+        assertThat(ShardingProxyContext.getInstance().getShardingProperties().<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE), is("BASE"));
     }
     
     @Test
     public void assertRenewShardingProperties() {
-        assertThat(ShardingProxyContext.getInstance().getTransactionType(), is(TransactionType.LOCAL));
+        ShardingProxyContext.getInstance().init(new Authentication("root", "root"), new Properties());
+        assertTrue(ShardingProxyContext.getInstance().getShardingProperties().getProps().isEmpty());
         Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE.getKey(), TransactionType.XA.toString());
+        props.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         ShardingOrchestrationEventBus.getInstance().post(new PropertiesChangedEvent(props));
-        assertThat(ShardingProxyContext.getInstance().getTransactionType(), is(TransactionType.XA));
+        assertFalse(ShardingProxyContext.getInstance().getShardingProperties().getProps().isEmpty());
     }
     
     @Test
@@ -69,5 +69,6 @@ public final class ShardingProxyContextTest {
         assertFalse(ShardingProxyContext.getInstance().isCircuitBreak());
         ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(true));
         assertTrue(ShardingProxyContext.getInstance().isCircuitBreak());
+        ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
     }
 }
