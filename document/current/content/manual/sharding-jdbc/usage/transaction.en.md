@@ -8,7 +8,7 @@ weight = 5
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-2pc-xa</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
@@ -20,7 +20,7 @@ XA transaction manager will be uploaded by Sharding-JDBC in SPI form.
 
 ShardingSphere supports to transform normal database connection pools to connection pools that support XA transactions; 
 they also provide  internal support for HikariCP, Druid and DBCP2, requiring no extra configurations. 
-Other connection pools require users to use SPI interface that implements `DataSourceMapConverter` to expand, please refer to the implementation of `io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`. 
+Other connection pools require users to use SPI interface that implements `DataSourceMapConverter` to expand, please refer to the implementation of `org.apache.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`. 
 If ShardingSphere cannot find a proper implementation, it will create XA transaction connection pools according to default configurations. 
 Default properties are as follow:
 
@@ -58,7 +58,7 @@ Introduce Maven Dependency:
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -70,7 +70,7 @@ Introduce Maven Dependency:
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -88,7 +88,7 @@ AutoConfiguration:
 
 ```java
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-@ComponentScan("io.shardingsphere.transaction.aspect")
+@ComponentScan("org.apache.shardingsphere.transaction.aspect")
 public class StartMain {
 }
 ```
@@ -99,7 +99,7 @@ Introduce Maven Dependency:
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>

@@ -133,14 +133,14 @@ try (
 ```xml
 <!-- for spring boot -->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-spring-namespace</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -181,11 +181,11 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorith
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding" 
+    xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding" 
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd 
                         ">
     <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />

@@ -8,7 +8,7 @@ weight = 5
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-2pc-xa</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
@@ -53,7 +53,7 @@ TransactionTypeHolder.set(TransactionType.XA);
 引入Maven依赖：
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -64,7 +64,7 @@ TransactionTypeHolder.set(TransactionType.XA);
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -82,7 +82,7 @@ TransactionTypeHolder.set(TransactionType.XA);
 AutoConfiguration配置
 ```java
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-@ComponentScan("io.shardingsphere.transaction.aspect")
+@ComponentScan("org.apache.shardingsphere.transaction.aspect")
 public class StartMain {
 }
 ```
@@ -93,7 +93,7 @@ public class StartMain {
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
