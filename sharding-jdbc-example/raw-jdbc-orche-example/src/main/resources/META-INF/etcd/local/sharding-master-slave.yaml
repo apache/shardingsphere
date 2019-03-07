@@ -47,8 +47,21 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}  
+      encryptor:
+        type: MD5
+        columns: status
+    t_order_encrypt:
+      actualDataNodes: ds_${0..1}.t_order_encrypt_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_encrypt_${order_id % 2}
+      encryptor:
+        type: QUERY
+        columns: encrypt_id
+        assistedQueryColumns: query_id
   bindingTables:
-    - t_order,t_order_item
+    - t_order,t_order_item,t_order_encrypt
   
   defaultDatabaseStrategy:
     inline:
