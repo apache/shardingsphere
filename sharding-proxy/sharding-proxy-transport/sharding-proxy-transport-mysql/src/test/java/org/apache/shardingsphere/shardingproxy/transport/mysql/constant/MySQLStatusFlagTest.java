@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.constant;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        MySQLCapabilityFlagTest.class, 
-        MySQLColumnTypeTest.class, 
-        MySQLNewParametersBoundFlagTest.class, 
-        MySQLServerErrorCodeTest.class, 
-        MySQLStatusFlagTest.class
-})
-public final class AllMySQLConstantTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLStatusFlagTest {
+    
+    @Test
+    public void assertGetValue() {
+        assertThat(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue(), is(0x0001));
+    }
 }
