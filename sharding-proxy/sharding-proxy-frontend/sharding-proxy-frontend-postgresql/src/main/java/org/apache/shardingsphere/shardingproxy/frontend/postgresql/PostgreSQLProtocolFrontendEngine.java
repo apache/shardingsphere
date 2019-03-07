@@ -15,43 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.mysql;
+package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.auth.MySQLAuthenticationEngine;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.command.MySQLCommandExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
+import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.PostgreSQLPacketCodecEngine;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 
 /**
- * MySQL frontend engine.
+ * Frontend engine for PostgreSQL protocol.
  *
- * @author zhangliang
- * @author panjuan
- * @author wangkai
  * @author zhangyonglun
+ * @author zhangliang
  */
 @Getter
-public final class MySQLFrontendEngine implements DatabaseFrontendEngine {
+public final class PostgreSQLProtocolFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(false, true);
+    private final FrontendContext frontendContext = new FrontendContext(true, false);
     
-    private final MySQLAuthenticationEngine authEngine = new MySQLAuthenticationEngine();
+    private final PostgreSQLAuthenticationEngine authEngine = new PostgreSQLAuthenticationEngine();
     
-    private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
+    private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
-    private final DatabasePacketCodecEngine codecEngine = new MySQLPacketCodecEngine();
+    private final DatabasePacketCodecEngine codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
     public String getDatabaseType() {
-        return DatabaseType.MySQL.name();
+        return DatabaseType.PostgreSQL.name();
     }
     
     @Override
     public void release(final BackendConnection backendConnection) {
+        BinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
     }
 }

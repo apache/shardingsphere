@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
@@ -45,7 +45,7 @@ import java.util.Collection;
 @Slf4j
 public final class CommandExecutorTask implements Runnable {
     
-    private final DatabaseFrontendEngine databaseFrontendEngine;
+    private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
     
     private final BackendConnection backendConnection;
     
@@ -60,7 +60,7 @@ public final class CommandExecutorTask implements Runnable {
         int connectionSize = 0;
         boolean isNeedFlush = false;
         try (BackendConnection backendConnection = this.backendConnection;
-             PacketPayload payload = databaseFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
+             PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             backendConnection.getStateHandler().setRunningStatusIfNecessary();
             isNeedFlush = executeCommand(context, payload, backendConnection);
@@ -69,7 +69,7 @@ public final class CommandExecutorTask implements Runnable {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
-            context.write(databaseFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
         } finally {
             if (isNeedFlush) {
                 context.flush();
@@ -79,7 +79,7 @@ public final class CommandExecutorTask implements Runnable {
     }
     
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
-        CommandExecuteEngine commandExecuteEngine = databaseFrontendEngine.getCommandExecuteEngine();
+        CommandExecuteEngine commandExecuteEngine = databaseProtocolFrontendEngine.getCommandExecuteEngine();
         CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
         CommandPacket commandPacket = commandExecuteEngine.getCommandPacket(payload, type, backendConnection);
         CommandExecutor commandExecutor = commandExecuteEngine.getCommandExecutor(type, commandPacket, backendConnection);
@@ -94,6 +94,6 @@ public final class CommandExecutorTask implements Runnable {
             commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
             return true;
         }
-        return databaseFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
+        return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }
 }

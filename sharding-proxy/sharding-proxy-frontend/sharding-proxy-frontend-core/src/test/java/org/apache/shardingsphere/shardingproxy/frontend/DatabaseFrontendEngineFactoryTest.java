@@ -24,6 +24,6 @@ public final class DatabaseFrontendEngineFactoryTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWhenUnsupported() {
-        DatabaseFrontendEngineFactory.newInstance(DatabaseType.Oracle);
+        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseType.Oracle);
     }
 }
