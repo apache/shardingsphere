@@ -132,7 +132,6 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        stateHandler.setRunningStatusIfNecessary();
         if (stateHandler.isInTransaction()) {
             return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
         } else {
