@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.shardingproxy.context.ProxyContext;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.util.Arrays;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
 @Getter
 public final class MySQLAuthenticationHandler {
     
-    private static final ProxyContext GLOBAL_REGISTRY = ProxyContext.getInstance();
+    private static final ShardingProxyContext GLOBAL_REGISTRY = ShardingProxyContext.getInstance();
     
     private final MySQLAuthPluginData authPluginData = new MySQLAuthPluginData();
     

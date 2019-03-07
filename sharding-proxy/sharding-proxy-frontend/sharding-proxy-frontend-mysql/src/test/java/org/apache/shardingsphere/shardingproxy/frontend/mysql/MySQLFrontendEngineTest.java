@@ -21,7 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.context.ProxyContext;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
@@ -88,8 +88,8 @@ public final class MySQLFrontendEngineTest {
     
     @SneakyThrows
     private void setAuthentication(final Object value) {
-        Field field = ProxyContext.class.getDeclaredField("authentication");
+        Field field = ShardingProxyContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), value);
+        field.set(ShardingProxyContext.getInstance(), value);
     }
 }

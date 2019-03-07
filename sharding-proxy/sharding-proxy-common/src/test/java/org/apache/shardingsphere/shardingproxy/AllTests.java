@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy;
 
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoaderTest;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContextTest;
 import org.apache.shardingsphere.shardingproxy.error.CommonErrorCodeTest;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverterTest;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        ShardingProxyContextTest.class, 
         ShardingConfigurationLoaderTest.class, 
         CommonErrorCodeTest.class, 
         DataSourceConverterTest.class

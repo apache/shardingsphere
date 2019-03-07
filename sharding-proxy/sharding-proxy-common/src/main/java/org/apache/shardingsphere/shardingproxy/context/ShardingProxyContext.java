@@ -38,9 +38,9 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public final class ProxyContext {
+public final class ShardingProxyContext {
     
-    private static final ProxyContext INSTANCE = new ProxyContext();
+    private static final ShardingProxyContext INSTANCE = new ShardingProxyContext();
     
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
@@ -48,16 +48,16 @@ public final class ProxyContext {
     
     private boolean isCircuitBreak;
     
-    private ProxyContext() {
+    private ShardingProxyContext() {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**
-     * Get instance of proxy context.
+     * Get instance of Sharding-Proxy's context.
      *
-     * @return instance of proxy context.
+     * @return instance of Sharding-Proxy's context.
      */
-    public static ProxyContext getInstance() {
+    public static ShardingProxyContext getInstance() {
         return INSTANCE;
     }
     
@@ -69,7 +69,7 @@ public final class ProxyContext {
      */
     public void init(final Authentication authentication, final Properties props) {
         this.authentication = authentication;
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        shardingProperties = new ShardingProperties(props);
     }
     
     /**
