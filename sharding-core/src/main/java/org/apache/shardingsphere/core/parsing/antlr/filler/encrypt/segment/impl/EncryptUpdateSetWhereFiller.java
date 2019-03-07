@@ -24,9 +24,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
@@ -59,14 +57,6 @@ public class EncryptUpdateSetWhereFiller extends EncryptDeleteFromWhereFiller {
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
-        AndCondition andCondition;
-        if (0 == dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().size()) {
-            andCondition = new AndCondition();
-            dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(andCondition);
-        } else {
-            andCondition = dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
-        }
-        andCondition.getConditions().add(new Condition(column, expression));
         dmlStatement.getSQLTokens().add(new EncryptColumnToken(entry.getKey().getStartIndex(), entry.getValue().getStopIndex(), column, false));
     }
 }
