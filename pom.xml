@@ -116,6 +116,11 @@
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-transaction-base-saga</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
     
             <dependency>
                 <groupId>org.aspectj</groupId>
