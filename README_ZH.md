@@ -17,7 +17,7 @@
 
 ## 文档
 
-[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://shardingsphere.apache.org/document/current/cn/)
+[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://shardingsphere.apache.org/document/current/cn/overview/)
 [![Roadmap](https://img.shields.io/badge/roadmap-English-blue.svg)](ROADMAP.md)
 
 ## 概述
