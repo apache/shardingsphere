@@ -17,7 +17,6 @@
 
 package io.shardingsphere.example.repository.jpa.repository;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QEncoderStream;
 import io.shardingsphere.example.repository.api.entity.OrderEncrypt;
 import io.shardingsphere.example.repository.api.repository.OrderEncryptRepository;
 import org.springframework.stereotype.Repository;
