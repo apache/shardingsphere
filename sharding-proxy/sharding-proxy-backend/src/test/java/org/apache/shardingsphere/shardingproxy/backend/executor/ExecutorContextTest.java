@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.context;
+package org.apache.shardingsphere.shardingproxy.backend.executor;
 
 import org.junit.Test;
 
@@ -26,6 +26,6 @@ public final class ExecutorContextTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(ExecutorContext.getInstance().getExecuteEngine(), is(ExecutorContext.getInstance().getExecuteEngine()));
+        assertThat(BackendExecutorContext.getInstance().getExecuteEngine(), is(BackendExecutorContext.getInstance().getExecuteEngine()));
     }
 }
