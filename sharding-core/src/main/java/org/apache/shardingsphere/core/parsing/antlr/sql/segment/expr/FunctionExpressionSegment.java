@@ -35,7 +35,9 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     
     private final String functionName;
     
-    private final int functionStartIndex;
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private final int innerExpressionStartIndex;
     

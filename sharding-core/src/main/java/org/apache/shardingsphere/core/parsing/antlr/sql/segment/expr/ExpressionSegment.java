@@ -36,4 +36,18 @@ public interface ExpressionSegment extends SQLSegment {
      * @return sql expression object
      */
     Optional<SQLExpression> convertToSQLExpression(String sql);
+    
+    /**
+     * Get start index.
+     * 
+     * @return start index
+     */
+    int getStartIndex();
+    
+    /**
+     * Get stop index.
+     * 
+     * @return stop index
+     */
+    int getStopIndex();
 }

@@ -55,7 +55,7 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
             }
             parentNode = parentNode.getParent();
         }
-        SubquerySegment result = new SubquerySegment(subqueryInFrom);
+        SubquerySegment result = new SubquerySegment(subqueryInFrom, subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex());
         Optional<SelectClauseSegment> selectClauseSegment = new SelectClauseExtractor().extract(subqueryNode);
         if (selectClauseSegment.isPresent()) {
             result.setSelectClauseSegment(selectClauseSegment.get());

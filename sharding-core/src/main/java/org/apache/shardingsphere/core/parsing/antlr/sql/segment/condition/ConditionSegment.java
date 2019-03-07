@@ -39,4 +39,6 @@ public final class ConditionSegment implements SQLSegment {
     
     private final SQLRightValueExpressionSegment expression;
     
+    private final int stopIndex;
+    
 }

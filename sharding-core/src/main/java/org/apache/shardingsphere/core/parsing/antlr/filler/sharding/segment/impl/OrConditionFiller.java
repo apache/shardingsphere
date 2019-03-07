@@ -164,7 +164,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
         andCondition.getConditions().add(condition.getExpression().buildCondition(column, sql));
-        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getColumn().getStopIndex(), column, true));
+        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getStopIndex(), column, true));
     }
     
     private boolean isShardingCondition(final String operator) {

@@ -102,7 +102,7 @@ public class EncryptOrConditionFiller implements SQLSegmentEncryptFiller<OrCondi
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
         andCondition.getConditions().add(condition.getExpression().buildCondition(column, sql));
-        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getColumn().getStopIndex(), column, true));
+        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getStopIndex(), column, true));
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only

@@ -74,8 +74,8 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     // TODO extract column name and value from function
     private ExpressionSegment extractFunctionExpressionSegment(final ParserRuleContext functionNode) {
-        return new FunctionExpressionSegment(functionNode.getChild(0).getText(), 
-                functionNode.getStart().getStartIndex(), ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
+        return new FunctionExpressionSegment(functionNode.getChild(0).getText(), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), 
+                ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
     }
     
     private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode) {

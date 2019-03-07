@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.extractor.impl;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
@@ -39,9 +40,10 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionS
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Predicate extractor.
@@ -164,8 +166,9 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!comparisionNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> leftNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(0), RuleName.COLUMN_NAME);
-        Optional<ParserRuleContext> rightNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(2), RuleName.COLUMN_NAME);
+        ParserRuleContext predicateNode = comparisionNode.get().getParent();
+        Optional<ParserRuleContext> leftNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) predicateNode.getChild(0), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> rightNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) predicateNode.getChild(2), RuleName.COLUMN_NAME);
         if (!leftNode.isPresent() && !rightNode.isPresent()) {
             return Optional.absent();
         }
@@ -173,15 +176,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             Optional<ColumnSegment> leftColumn = buildColumn(leftNode.get());
             Optional<ColumnSegment> rightColumn = buildColumn(rightNode.get());
             Preconditions.checkState(leftColumn.isPresent() && rightColumn.isPresent());
-            return Optional.of(new ConditionSegment(leftColumn.get(), comparisionNode.get().getText(), rightColumn.get()));
+            return Optional.of(new ConditionSegment(leftColumn.get(), comparisionNode.get().getText(), rightColumn.get(), predicateNode.getStop().getStopIndex()));
         }
         Optional<ColumnSegment> column = buildColumn(exprNode);
         Preconditions.checkState(column.isPresent());
         ParserRuleContext valueNode = leftNode.isPresent() ? (ParserRuleContext) comparisionNode.get().parent.getChild(2) : (ParserRuleContext) comparisionNode.get().parent.getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(placeholderIndexes, valueNode);
         return sqlExpression.isPresent()
-                ? Optional.of(new ConditionSegment(column.get(), comparisionNode.get().getText(), new CompareValueExpressionSegment(sqlExpression.get(), comparisionNode.get().getText())))
-                : Optional.<ConditionSegment>absent();
+                ? Optional.of(new ConditionSegment(column.get(), comparisionNode.get().getText(), new CompareValueExpressionSegment(sqlExpression.get(), comparisionNode.get().getText()), predicateNode.getStop().getStopIndex())) : Optional.<ConditionSegment>absent();
     }
     
     private Optional<ConditionSegment> buildBetweenCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext predicateNode) {
@@ -192,7 +194,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Optional<? extends ExpressionSegment> beginSQLExpression = expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) predicateNode.getChild(2));
         Optional<? extends ExpressionSegment> endSQLExpression = expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) predicateNode.getChild(4));
         if (beginSQLExpression.isPresent() && endSQLExpression.isPresent()) {
-            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.BETWEEN.name(), new BetweenValueExpressionSegment(beginSQLExpression.get(), endSQLExpression.get())));
+            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.BETWEEN.name(), new BetweenValueExpressionSegment(beginSQLExpression.get(), endSQLExpression.get()), predicateNode.getStop().getStopIndex()));
         }
         return Optional.absent();
     }
@@ -216,7 +218,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!sqlExpressions.isEmpty()) {
             InValueExpressionSegment inExpressionSegment = new InValueExpressionSegment();
             inExpressionSegment.getSqlExpressions().addAll(sqlExpressions);
-            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.IN.name(), inExpressionSegment));
+            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.IN.name(), inExpressionSegment, predicateNode.getStop().getStopIndex()));
         }
         return Optional.absent();
     }
