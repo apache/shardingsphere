@@ -29,11 +29,11 @@ import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class ExecutorContext {
     
     private static final ExecutorContext INSTANCE = new ExecutorContext();
     
-    @Getter
     private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
     
     /**

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
@@ -47,12 +46,11 @@ import java.util.Map.Entry;
  * @author panjuan
  * @author maxiaoguang
  */
-@NoArgsConstructor
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
     private Map<String, DataSource> dataSources;
     
-    private JDBCBackendDataSourceFactory hikariDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
+    private JDBCBackendDataSourceFactory dataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
     private ShardingTransactionManagerEngine shardingTransactionManagerEngine = GlobalContext.getInstance().getShardingTransactionManagerEngine();
     
@@ -64,7 +62,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
-                dataSourceMap.put(entry.getKey(), hikariDataSourceFactory.build(entry.getKey(), entry.getValue()));
+                dataSourceMap.put(entry.getKey(), dataSourceFactory.build(entry.getKey(), entry.getValue()));
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON

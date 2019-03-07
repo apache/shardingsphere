@@ -70,8 +70,8 @@ public final class GlobalContext {
      * @param props properties
      */
     public void init(final Authentication authentication, final Properties props) {
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.authentication = authentication;
+        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     /**
