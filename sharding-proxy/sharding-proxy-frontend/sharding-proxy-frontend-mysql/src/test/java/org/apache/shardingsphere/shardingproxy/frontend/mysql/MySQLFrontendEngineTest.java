@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLFrontendEngineTest {
     
-    private MySQLFrontendEngine mysqlFrontendEngine;
+    private MySQLProtocolFrontendEngine mysqlFrontendEngine;
     
     @Mock
     private ChannelHandlerContext context;
@@ -58,7 +58,7 @@ public final class MySQLFrontendEngineTest {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
         field.set(ConnectionIdGenerator.getInstance(), 0);
-        mysqlFrontendEngine = new MySQLFrontendEngine();
+        mysqlFrontendEngine = new MySQLProtocolFrontendEngine();
     }
     
     @Test

@@ -24,11 +24,11 @@ import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEng
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
 
 /**
- * Database frontend engine.
+ * Database protocol frontend engine.
  * 
  * @author zhangliang 
  */
-public interface DatabaseFrontendEngine {
+public interface DatabaseProtocolFrontendEngine {
     
     /**
      * Get database type.

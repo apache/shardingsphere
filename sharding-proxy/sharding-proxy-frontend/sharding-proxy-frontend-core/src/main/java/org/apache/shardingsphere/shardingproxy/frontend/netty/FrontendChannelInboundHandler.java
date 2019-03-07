@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
-import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseFrontendEngine;
+import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
@@ -40,7 +40,7 @@ import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 @Slf4j
 public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
-    private final DatabaseFrontendEngine databaseFrontendEngine;
+    private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
     
     private volatile boolean authorized;
     
@@ -49,7 +49,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
-        databaseFrontendEngine.getAuthEngine().handshake(context, backendConnection);
+        databaseProtocolFrontendEngine.getAuthEngine().handshake(context, backendConnection);
     }
     
     @Override
@@ -58,18 +58,18 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = auth(context, (ByteBuf) message);
             return;
         }
-        CommandExecutorSelector.getExecutor(databaseFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id())
-                .execute(new CommandExecutorTask(databaseFrontendEngine, backendConnection, context, message));
+        CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id())
+                .execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
     
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
-        try (PacketPayload payload = databaseFrontendEngine.getCodecEngine().createPacketPayload(message)) {
-            return databaseFrontendEngine.getAuthEngine().auth(context, payload, backendConnection);
+        try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
+            return databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload, backendConnection);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
-            context.write(databaseFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
         }
         return false;
     }
@@ -78,7 +78,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @SneakyThrows
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        databaseFrontendEngine.release(backendConnection);
+        databaseProtocolFrontendEngine.release(backendConnection);
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
