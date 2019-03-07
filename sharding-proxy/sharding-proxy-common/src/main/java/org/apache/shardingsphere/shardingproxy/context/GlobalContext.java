@@ -26,7 +26,6 @@ import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchest
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Properties;
@@ -43,8 +42,6 @@ public final class GlobalContext {
     private static final GlobalContext INSTANCE = new GlobalContext();
     
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
-    
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     private Authentication authentication;
     

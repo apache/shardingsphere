@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -52,7 +52,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private JDBCBackendDataSourceFactory dataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = GlobalContext.getInstance().getShardingTransactionManagerEngine();
+    @Getter
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         createDataSourceMap(dataSourceParameters);
