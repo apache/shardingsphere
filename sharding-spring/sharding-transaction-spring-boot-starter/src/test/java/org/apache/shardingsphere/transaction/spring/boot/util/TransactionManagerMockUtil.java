@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.transaction.spring.boot.util;
 
-import org.apache.shardingsphere.transaction.aspect.ShardingTransactionalAspect;
-import org.apache.shardingsphere.transaction.spring.boot.fixture.ShardingTransactionalTestService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.transaction.aspect.ShardingTransactionalAspect;
+import org.apache.shardingsphere.transaction.spring.boot.fixture.ShardingTransactionalTestService;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -72,7 +72,8 @@ public final class TransactionManagerMockUtil {
      * @param transactionManager specified transaction manager
      * @throws SQLException SQL exception
      */
-    public static void testChangeProxyTransactionTypeToLOCAL(final ShardingTransactionalTestService testService, final ShardingTransactionalAspect aspect, final PlatformTransactionManager transactionManager) throws SQLException {
+    public static void testChangeProxyTransactionTypeToLOCAL(
+            final ShardingTransactionalTestService testService, final ShardingTransactionalAspect aspect, final PlatformTransactionManager transactionManager) throws SQLException {
         aspect.setTransactionManager(transactionManager);
         aspect.setEnvironment(getProxyDataSource());
         testService.testChangeTransactionTypeToLOCAL();
@@ -86,7 +87,8 @@ public final class TransactionManagerMockUtil {
      * @param transactionManager specified transaction manager
      * @throws SQLException SQL exception
      */
-    public static void testChangeProxyTransactionTypeToXA(final ShardingTransactionalTestService testService, final ShardingTransactionalAspect aspect, final PlatformTransactionManager transactionManager) throws SQLException {
+    public static void testChangeProxyTransactionTypeToXA(
+            final ShardingTransactionalTestService testService, final ShardingTransactionalAspect aspect, final PlatformTransactionManager transactionManager) throws SQLException {
         aspect.setTransactionManager(transactionManager);
         aspect.setEnvironment(getProxyDataSource());
         testService.testChangeTransactionTypeToXA();
@@ -100,7 +102,8 @@ public final class TransactionManagerMockUtil {
      * @param transactionManager specified transaction manager
      * @throws SQLException SQL exception
      */
-    public static void testChangeProxyTransactionTypeToBASE(final ShardingTransactionalTestService testService, final ShardingTransactionalAspect aspect, final PlatformTransactionManager transactionManager) throws SQLException {
+    public static void testChangeProxyTransactionTypeToBASE(
+            final ShardingTransactionalTestService testService, final ShardingTransactionalAspect aspect, final PlatformTransactionManager transactionManager) throws SQLException {
         aspect.setTransactionManager(transactionManager);
         aspect.setEnvironment(getProxyDataSource());
         testService.testChangeTransactionTypeToBASE();

@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 
 /**
@@ -28,7 +26,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.Pos
  * @author zhangyonglun
  */
 @Getter
-@RequiredArgsConstructor
 public final class PostgreSQLColumnDescription {
     
     private final String columnName;
@@ -45,10 +42,10 @@ public final class PostgreSQLColumnDescription {
     
     private final int dataFormat = 0;
     
-    public PostgreSQLColumnDescription(final QueryHeader queryHeader, final int columnIndex) {
-        this.columnName = queryHeader.getColumnLabel();
+    public PostgreSQLColumnDescription(final String columnName, final int columnIndex, final int columnType, final int columnLength) {
+        this.columnName = columnName;
         this.columnIndex = columnIndex;
-        this.typeOID = PostgreSQLColumnType.valueOfJDBCType(queryHeader.getColumnType()).getValue();
-        this.columnLength = queryHeader.getColumnLength();
+        this.typeOID = PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
+        this.columnLength = columnLength;
     }
 }

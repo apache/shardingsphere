@@ -115,7 +115,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         List<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
         for (QueryHeader each : queryResponse.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each, ++columnIndex));
+            result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength()));
         }
         return result;
     }

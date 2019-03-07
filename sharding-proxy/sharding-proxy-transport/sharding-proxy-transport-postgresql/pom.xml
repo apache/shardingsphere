@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-backend</artifactId>
+            <artifactId>sharding-proxy-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         
@@ -27,6 +27,5 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
         </dependency>
-        
     </dependencies>
 </project>
