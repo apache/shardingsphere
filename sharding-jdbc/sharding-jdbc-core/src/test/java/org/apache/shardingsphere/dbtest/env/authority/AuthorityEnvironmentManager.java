@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 
 import javax.sql.DataSource;
@@ -36,7 +35,6 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@Slf4j
 public final class AuthorityEnvironmentManager {
     
     private final AuthorityEnvironment authorityEnvironment;
