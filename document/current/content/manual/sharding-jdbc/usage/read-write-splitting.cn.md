@@ -80,10 +80,8 @@ masterSlaveRule:
   masterDataSourceName: ds_master
   slaveDataSourceNames: [ds_slave0, ds_slave1]
   
-  props:
-      sql.show: true
-  configMap:
-      key1: value1
+props:
+  sql.show: true
 ```
 
 ```java

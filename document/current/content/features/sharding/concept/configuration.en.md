@@ -77,8 +77,3 @@ API of those two kinds of strategies are totally same.
 ## Generation Strategy of Auto-increment Key
 
 Replacing the original database auto-increment key with that generated in the server can make distributed key not repeat.
-
-## Config Map
-
-When configuring the metadata from the source of sharding databases and tables, `ConfigMapContext.getInstance()` can be used to acquire shardingConfig data in ConfigMap. 
-For instance, machines of different weight may have different data traffic and `ConfigMap` can be used to set the metadata.

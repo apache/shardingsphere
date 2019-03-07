@@ -17,13 +17,12 @@ It can support dynamic switch between data sources, tables, shards and the read-
 
 ## Data Structure in Configuration Center
 
-Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, ConfigMap and Properties configurations in YAML form. 
+Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, and Properties configurations in YAML form. 
 Modifying nodes can dynamically manage configuration.
 
 ```
 config
     ├──authentication                            # Sharding-Proxy authentication configuration
-    ├──configMap                                 # ConfigMap configuration stored in K/V form, e.g.{"key1":"value1"}
     ├──props                                     # Properties configuration
     ├──schema                                    # Schema configuration
     ├      ├──sharding_db                        # SchemaName configuration
@@ -39,14 +38,6 @@ config
 ```yaml
 password: root
 username: root
-```
-
-### config/configmap
-
-Read-write split ConfigMap configuration stored in K/V form.
-
-```yaml
-key2: value2
 ```
 
 ### config/sharding/props

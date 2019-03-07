@@ -295,7 +295,6 @@ weight = 4
 | -------------- | ----- | -------------- |
 | id             | 属性  | Spring Bean Id |
 | sharding-rule  | 标签  | 数据分片配置规则 |
-| config-map (?) | 标签  | 用户自定义配置   |
 | props (?)      | 标签  | 属性配置        |
 
 #### \<sharding:sharding-rule />
@@ -406,8 +405,6 @@ weight = 4
 | max.connections.size.per.query (?) | 属性  | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
 | check.table.metadata.enabled (?)   | 属性  | 是否在启动时检查分表元数据一致性，默认值: false       |
 
-#### \<sharding:config-map />
-
 ### 读写分离
 
 命名空间：http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd
@@ -421,10 +418,7 @@ weight = 4
 | slave-data-source-names | 属性  | 从库数据源Bean Id列表，多个Bean以逗号分隔                                        |
 | strategy-ref (?)        | 属性  | 从库负载均衡算法引用。该类需实现MasterSlaveLoadBalanceAlgorithm接口               |
 | strategy-type (?)       | 属性  | 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`strategy-ref`存在则忽略该配置 |
-| config-map (?)          | 标签  | 用户自定义配置                                                                 |
 | props (?)               | 标签  | 属性配置                                                                       |
-
-#### \<master-slave:config-map />
 
 #### \<master-slave:props />
 

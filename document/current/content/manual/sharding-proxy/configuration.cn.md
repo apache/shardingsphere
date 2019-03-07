@@ -216,16 +216,12 @@ shardingRule:
           - ds0_slave0
           - ds0_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key0: master-slave-value0
       ms_ds1:
         masterDataSourceName: ds1
         slaveDataSourceNames: 
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key1: master-slave-value1
 ```
 
 ## 全局配置示例

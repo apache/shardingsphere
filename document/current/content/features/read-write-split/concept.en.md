@@ -21,9 +21,3 @@ Because of master-slave asynchronization between the master database and the sla
 ## Load Balance Strategy
 
 Through this strategy, queries are separated to different slave databases.
-
-## Config Map
-
-To configure read-write split meta-data, users can acquire masterSlaveConfig data in ConfigMap by calling for `ConfigMapContext.getInstance()`. 
-For example, machines of different weights can have different traffic. 
-ConfigMap can be used to configure machine weight meta-data.

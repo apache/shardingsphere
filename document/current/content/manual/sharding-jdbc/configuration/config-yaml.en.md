@@ -160,17 +160,12 @@ shardingRule:
           - ds0_slave0
           - ds0_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key0: master-slave-value0
       ms_ds1:
         masterDataSourceName: ds1
         slaveDataSourceNames: 
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key1: master-slave-value1
-
 props:
   sql.show: true
 ```
@@ -249,20 +244,11 @@ shardingRule:
       slaveDataSourceNames: #more details can reference Read-write splitting part
       loadBalanceAlgorithmType: #more details can reference Read-write splitting part
       loadBalanceAlgorithmClassName: #more details can reference Read-write splitting part
-      configMap: #User-defined arguments
-          key1: value1
-          key2: value2
-          keyx: valuex
-  
+
 props: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
-    
-configMap: #User-defined arguments
-  key1: value1
-  key2: value2
-  keyx: valuex
 ```
 
 ### Read-write splitting
@@ -284,12 +270,6 @@ props: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
-
-configMap: #User-defined arguments
-  key1: value1
-  key2: value2
-  keyx: valuex
-```
 
 ### Orchestration
 

@@ -152,7 +152,6 @@ weight = 1
 | ------------------ |  ------------------------ | -------------- |
 | dataSourceMap      | Map\<String, DataSource\> | 数据源配置      |
 | shardingRuleConfig | ShardingRuleConfiguration | 数据分片配置规则 |
-| configMap (?)      | Map\<String, Object\>     | 用户自定义配置   |
 | props (?)          | Properties                | 属性配置        |
 
 #### ShardingRuleConfiguration
@@ -241,10 +240,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | max.connections.size.per.query (?)| int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1   |
 | check.table.metadata.enabled (?)  | boolean   | 是否在启动时检查分表元数据一致性，默认值: false        |
 
-#### configMap
-
-用户自定义配置。
-
 ### 读写分离
 
 #### MasterSlaveDataSourceFactory
@@ -255,7 +250,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------------- | ---------------------------- | ------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射  |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则         |
-| configMap (?)         | Map\<String, Object\>        | 用户自定义配置       |
 | props (?)             | Properties                   | 属性配置            |
 
 #### MasterSlaveRuleConfiguration
@@ -268,10 +262,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | masterDataSourceName     | String                          | 主库数据源名称    |
 | slaveDataSourceNames     | Collection\<String\>            | 从库数据源名称列表 |
 | loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | 从库负载均衡算法   |
-
-#### configMap
-
-用户自定义配置。
 
 #### PropertiesConstant
 
@@ -295,7 +285,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | ------------------- |  ------------------------- | --------------------------- |
 | dataSourceMap       | Map\<String, DataSource\>  | 同ShardingDataSourceFactory |
 | shardingRuleConfig  | ShardingRuleConfiguration  | 同ShardingDataSourceFactory |
-| configMap (?)       | Map\<String, Object\>      | 同ShardingDataSourceFactory |
 | props (?)           | Properties                 | 同ShardingDataSourceFactory |
 | orchestrationConfig | OrchestrationConfiguration | 数据治理规则配置              |
 
@@ -307,7 +296,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------------- | ---------------------------- | ------------------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
-| configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
 | props (?)             | Properties                   | 同ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
 

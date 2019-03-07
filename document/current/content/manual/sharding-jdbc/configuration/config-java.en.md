@@ -150,7 +150,6 @@ weight = 1
 | ------------------ |  ------------------------ | --------------------------- |
 | dataSourceMap      | Map\<String, DataSource\> | Data sources configuration  |
 | shardingRuleConfig | ShardingRuleConfiguration | Sharding rule configuration |
-| configMap (?)      | Map\<String, Object\>     | Config map                  |
 | props (?)          | Properties                | Properties                  |
 
 #### ShardingRuleConfiguration
@@ -235,10 +234,6 @@ Enumeration of properties.
 | max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
 | check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : false         |
 
-#### configMap
-
-User-defined arguments.
-
 ### Read-write splitting
 
 #### MasterSlaveDataSourceFactory
@@ -247,7 +242,6 @@ User-defined arguments.
 | --------------------- | ---------------------------- | ----------------------------------- |
 | dataSourceMap         | Map\<String, DataSource\>    | Map of data sources and their names |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Master slave rule configuration     |
-| configMap (?)         | Map\<String, Object\>        | Config map                          |
 | props (?)             | Properties                   | Properties                          |
 
 #### MasterSlaveRuleConfiguration
@@ -258,10 +252,6 @@ User-defined arguments.
 | masterDataSourceName     | String                          | Name of master data source       |
 | slaveDataSourceNames     | Collection\<String\>            | Names of Slave data sources      |
 | loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Load balance algorithm           |
-
-#### configMap
-
-User-defined arguments.
 
 #### ShardingPropertiesConstant
 
@@ -282,7 +272,6 @@ Enumeration of properties.
 | ------------------- |  ------------------------- | ----------------------------------- |
 | dataSourceMap       | Map\<String, DataSource\>  | Same with ShardingDataSourceFactory |
 | shardingRuleConfig  | ShardingRuleConfiguration  | Same with ShardingDataSourceFactory |
-| configMap (?)       | Map\<String, Object\>      | Same with ShardingDataSourceFactory |
 | props (?)           | Properties                 | Same with ShardingDataSourceFactory |
 | orchestrationConfig | OrchestrationConfiguration | Orchestration configuration         |
 
@@ -292,7 +281,6 @@ Enumeration of properties.
 | --------------------- | ---------------------------- | -------------------------------------- |
 | dataSourceMap         | Map\<String, DataSource\>    | Same with MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Same with MasterSlaveDataSourceFactory |
-| configMap (?)         | Map\<String, Object\>        | Same with MasterSlaveDataSourceFactory |
 | props (?)             | Properties                   | Same with ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | Orchestration configuration            |
  

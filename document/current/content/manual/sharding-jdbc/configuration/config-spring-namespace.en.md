@@ -304,7 +304,6 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | -------------- | --------- | --------------------------- |
 | id             | Attribute | Spring Bean Id              |
 | sharding-rule  | Tag       | Sharding rule configuration |
-| config-map (?) | Tag       | User-defined arguments      |
 | props (?)      | Tag       | Properties                  |
 
 #### \<sharding:sharding-rule />
@@ -415,8 +414,6 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
 | check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : false         |
 
-#### \<sharding:config-map />
-
 ### Read-write splitting
 
 Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd
@@ -430,10 +427,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 | slave-data-source-names | Attribute | Reference of slave data sources. Multiple columns separated with comma                                        |
 | strategy-ref (?)        | Attribute | Reference of load balance algorithm. This class need to implements MasterSlaveLoadBalanceAlgorithm            |
 | strategy-type (?)       | Attribute | Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `strategy-ref` is present |
-| config-map (?)          | Attribute | User-defined arguments                                                                                        |
 | props (?)               | Tag       | Properties                                                                                                    |
-
-#### \<master-slave:config-map />
 
 #### \<master-slave:props />
 

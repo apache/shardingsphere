@@ -160,17 +160,12 @@ shardingRule:
           - ds0_slave0
           - ds0_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key0: master-slave-value0
       ms_ds1:
         masterDataSourceName: ds1
         slaveDataSourceNames: 
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key1: master-slave-value1
-
 props:
   sql.show: true
 ```
@@ -298,14 +293,7 @@ props:
   proxy.backend.max.connections: # 使用NIO而非epoll的话,proxy后台连接每个netty客户端允许的最大连接数量(注意不是数据库连接限制) 默认为8
   proxy.backend.connection.timeout.seconds: #使用nio而非epoll的话,proxy后台连接的超时时间,默认60s
   check.table.metadata.enabled: # 是否在启动时候,检查sharing的表的实际元数据是否一致,默认False
-
   
-configMap: #用户自定义配置
-  key1: value1
-  key2: value2
-  keyx: valuex
-```
-
 ### 读写分离
 
 ```yaml
@@ -326,12 +314,6 @@ props: #属性配置
   executor.size: #工作线程数量，默认值: CPU核数
   check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
   
-configMap: #用户自定义配置
-  key1: value1
-  key2: value2
-  keyx: valuex
-```
-
 ### 数据治理
 
 ```yaml
