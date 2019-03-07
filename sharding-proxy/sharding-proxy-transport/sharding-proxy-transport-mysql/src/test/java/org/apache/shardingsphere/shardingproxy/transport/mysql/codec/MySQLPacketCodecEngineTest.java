@@ -92,4 +92,9 @@ public final class MySQLPacketCodecEngineTest {
         verify(byteBuf).writeByte(1);
         verify(byteBuf).writeBytes(payloadByteBuf);
     }
+    
+    @Test
+    public void assertCreatePacketPayload() {
+        assertThat(new MySQLPacketCodecEngine().createPacketPayload(byteBuf).getByteBuf(), is(byteBuf));
+    }
 }
