@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +47,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
+        assertThat(actual.getDatabase(), is("sharding_db"));
         verify(payload).skipReserved(23);
     }
     
@@ -59,6 +61,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
+        assertNull(actual.getDatabase());
         verify(payload).skipReserved(23);
     }
     
@@ -72,6 +75,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getAuthResponse(), is(new byte[] {1}));
+        assertNull(actual.getDatabase());
         verify(payload).skipReserved(23);
     }
     

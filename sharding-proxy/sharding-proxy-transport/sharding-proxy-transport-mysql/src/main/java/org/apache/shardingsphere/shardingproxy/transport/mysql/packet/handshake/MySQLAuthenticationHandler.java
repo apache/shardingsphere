@@ -33,7 +33,7 @@ import java.util.Arrays;
 @Getter
 public final class MySQLAuthenticationHandler {
     
-    private static final ShardingProxyContext GLOBAL_REGISTRY = ShardingProxyContext.getInstance();
+    private static final ShardingProxyContext SHARDING_PROXY_CONTEXT = ShardingProxyContext.getInstance();
     
     private final MySQLAuthPluginData authPluginData = new MySQLAuthPluginData();
     
@@ -45,7 +45,7 @@ public final class MySQLAuthenticationHandler {
      * @return login success or failure
      */
     public boolean login(final String username, final byte[] authResponse) {
-        Authentication authentication = GLOBAL_REGISTRY.getAuthentication();
+        Authentication authentication = SHARDING_PROXY_CONTEXT.getAuthentication();
         if (Strings.isNullOrEmpty(authentication.getPassword())) {
             return authentication.getUsername().equals(username);
         }

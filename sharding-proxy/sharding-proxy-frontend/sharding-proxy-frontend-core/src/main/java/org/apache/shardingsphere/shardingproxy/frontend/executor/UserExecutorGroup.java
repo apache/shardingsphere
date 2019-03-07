@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
  */
 public final class UserExecutorGroup implements AutoCloseable {
     
-    private static final ShardingProxyContext GLOBAL_REGISTRY = ShardingProxyContext.getInstance();
+    private static final ShardingProxyContext SHARDING_PROXY_CONTEXT = ShardingProxyContext.getInstance();
     
     private static final String NAME_FORMAT = "Command-%d";
     
@@ -43,7 +43,7 @@ public final class UserExecutorGroup implements AutoCloseable {
     private final ListeningExecutorService executorService;
     
     private UserExecutorGroup() {
-        shardingExecutorService = new ShardingExecutorService(GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE), NAME_FORMAT);
+        shardingExecutorService = new ShardingExecutorService(SHARDING_PROXY_CONTEXT.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE), NAME_FORMAT);
         executorService = shardingExecutorService.getExecutorService();
     }
     
