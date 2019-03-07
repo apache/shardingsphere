@@ -50,23 +50,26 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
             Column column = new Column(each.getKey().getName(), updateTable);
             SQLExpression expression = each.getValue().convertToSQLExpression(sql).get();
             dmlStatement.getUpdateColumnValues().put(column, expression);
-            fillEncryptCondition(column, each.getKey(), shardingRule, sqlStatement, expression);
+            fillEncryptCondition(each, updateTable, sql, shardingRule, dmlStatement);
         }
         dmlStatement.setDeleteStatement(false);
     }
     
-    private void fillEncryptCondition(final Column column, final ColumnSegment columnSegment, final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression expression) {
+    private void fillEncryptCondition(final Entry<ColumnSegment, ExpressionSegment> entry, final String updateTable, final String sql, final ShardingRule shardingRule, final DMLStatement dmlStatement) {
+        Column column = new Column(entry.getKey().getName(), updateTable);
+        SQLExpression expression = entry.getValue().convertToSQLExpression(sql).get();
+        dmlStatement.getUpdateColumnValues().put(column, expression);
         if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
         AndCondition andCondition;
-        if (0 == sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().size()) {
+        if (0 == dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().size()) {
             andCondition = new AndCondition();
-            sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(andCondition);
+            dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(andCondition);
         } else {
-            andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
+            andCondition = dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
         andCondition.getConditions().add(new Condition(column, expression));
-        sqlStatement.getSQLTokens().add(new EncryptColumnToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), column, false));
+        dmlStatement.getSQLTokens().add(new EncryptColumnToken(entry.getKey().getStartIndex(), entry.getValue().getStopIndex(), column, false));
     }
 }
