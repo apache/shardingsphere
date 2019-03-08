@@ -22,10 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.locks.LockSupport;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -61,9 +58,6 @@ public final class MySQLBinaryStatementRegistryTest {
         MySQLBinaryStatementRegistry.getInstance().register(sql, 1);
         MySQLBinaryStatementRegistry.getInstance().remove(1);
         MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(1);
-        assertNotNull(actual);
-        LockSupport.parkUntil(System.currentTimeMillis() + 6 * 1000);
-        actual = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(1);
         assertNull(actual);
     }
 }

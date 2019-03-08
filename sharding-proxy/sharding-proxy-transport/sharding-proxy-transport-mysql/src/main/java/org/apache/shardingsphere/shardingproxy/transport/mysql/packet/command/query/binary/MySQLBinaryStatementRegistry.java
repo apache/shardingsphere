@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Binary prepared statement registry for MySQL.
+ * MySQL binary prepared statement registry.
  *
  * @author zhangliang
  * @author zhangyonglun
@@ -45,11 +42,9 @@ public final class MySQLBinaryStatementRegistry {
     
     private final AtomicInteger sequence = new AtomicInteger();
     
-    private final Cache<Integer, MySQLBinaryStatement> closedCacheBinaryStatements = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.SECONDS).build();
-    
     /**
      * Get prepared statement registry instance.
-     * 
+     *
      * @return prepared statement registry instance
      */
     public static MySQLBinaryStatementRegistry getInstance() {
@@ -58,7 +53,7 @@ public final class MySQLBinaryStatementRegistry {
     
     /**
      * Register SQL.
-     * 
+     *
      * @param sql SQL
      * @param parametersCount parameters count
      * @return statement ID
@@ -81,7 +76,7 @@ public final class MySQLBinaryStatementRegistry {
      * @return binary prepared statement
      */
     public MySQLBinaryStatement getBinaryStatement(final int statementId) {
-        return binaryStatements.containsKey(statementId) ? binaryStatements.get(statementId) : closedCacheBinaryStatements.getIfPresent(statementId);
+        return binaryStatements.get(statementId);
     }
     
     /**
@@ -89,12 +84,11 @@ public final class MySQLBinaryStatementRegistry {
      *
      * @param statementId statement ID
      */
-    public synchronized void remove(final int statementId) {
-        MySQLBinaryStatement binaryStatement = binaryStatements.get(statementId);
+    public void remove(final int statementId) {
+        MySQLBinaryStatement binaryStatement = getBinaryStatement(statementId);
         if (null != binaryStatement) {
             statementIdAssigner.remove(binaryStatement.getSql());
             binaryStatements.remove(statementId);
-            closedCacheBinaryStatements.put(statementId, binaryStatement);
         }
     }
 }
