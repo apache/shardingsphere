@@ -326,7 +326,7 @@ public final class SQLRewriteEngine {
             
             @Override
             public boolean apply(final SQLToken input) {
-                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals(encryptColumnToken.getColumn());
+                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals(encryptColumnToken.getColumn()) && ((EncryptColumnToken) input).isInWhere() == encryptColumnToken.isInWhere();
             }
         }));
         return result.indexOf(encryptColumnToken);
