@@ -1,6 +1,6 @@
 +++
 toc = true
-title = "数据脱敏"
+title = "Data Masking"
 weight = 6
 +++
 
