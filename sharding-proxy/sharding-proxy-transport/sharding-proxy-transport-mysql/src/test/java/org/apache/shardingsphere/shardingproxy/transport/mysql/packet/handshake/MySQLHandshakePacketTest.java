@@ -50,6 +50,7 @@ public final class MySQLHandshakePacketTest {
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
+        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getConnectionId(), is(1000));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart1(), is(part1));
         assertThat(actual.getAuthPluginData().getAuthPluginDataPart2(), is(part2));
