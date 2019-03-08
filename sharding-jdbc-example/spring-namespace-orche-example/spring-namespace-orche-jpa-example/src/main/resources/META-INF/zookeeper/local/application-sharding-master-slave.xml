@@ -42,7 +42,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="demo_ds_master_0_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -50,7 +49,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="demo_ds_master_0_slave_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -58,7 +56,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="demo_ds_master_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -66,7 +63,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="demo_ds_master_1_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -74,7 +70,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="demo_ds_master_1_slave_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -82,7 +77,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
 
     <bean id="randomStrategy" class="org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm" />
