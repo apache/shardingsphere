@@ -4,7 +4,7 @@ title = "Data Masking"
 weight = 6
 +++
 
-This chapter mainly introduce how to use the feather of Data Masking. On one hand User can use Data Masking and Sharding together, which will
+This chapter mainly introduces how to use the feather of Data Masking. On one hand User can use Data Masking and Sharding together, which will
 create ShardingDataSource, On another hand, when user only adopt the feather of Data Masking, ShardingSphere will create EncryptDataSource.
 
 ## Not Use Spring

@@ -481,19 +481,19 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | id     | Attribute | Spring Bean Id |
 
 #### \<sharding:key-generator />
-| *Name*             | *Type*                       | *Description*                                                                               |
+| *Name*             | *Type*                      | *Description*                                                                               |
 | ----------------- | ---------------------------- | -------------------------------------------------------------------------------------------- |
 | column            | Attribute                    | Column name of key generator                                                                 |
 | type              | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID          |
 | props-ref         | Attribute                    | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` | 
  
 #### \<sharding:encrypt />
-| *Name*              | *Type*                       | *Description*                                                                                         | 
-| ------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
-| type                | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID                   |
-| column              | Attribute                    | Column name of encrypt                                                                                |
-| assistedQueryColumns| Attribute                    | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
-| props-ref           | Attribute                    | Properties, e.g. `aes.key.value` for AES encryptor                                                    | 
+| *Name*                | *Type*                       | *Description*                                                                                |
+| --------------------- | ---------------------------- | -------------------------------------------------------------------------------------------- |
+| type                  | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID          |
+| column                | Attribute                    | Column name of encrypt                                                                        |
+| assistedQueryColumns  | Attribute                    | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data|
+| props-ref             | Attribute                    | Properties, e.g. `aes.key.value` for AES encryptor                                             | 
 
 #### \<sharding:props />
 

@@ -170,6 +170,7 @@ shardingRule:
         loadBalanceAlgorithmType: ROUND_ROBIN
 props:
   sql.show: true
+```
 
 ### 数据分片 + 数据脱敏
 
