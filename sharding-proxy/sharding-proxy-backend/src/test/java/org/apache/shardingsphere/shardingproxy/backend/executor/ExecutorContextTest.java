@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml;
+package org.apache.shardingsphere.shardingproxy.backend.executor;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Server configuration for YAML.
- * 
- * @author chenqingyang
- * @author panjuan
- */
-@Getter
-@Setter
-public final class YamlProxyServerConfiguration implements YamlConfiguration {
+public final class ExecutorContextTest {
     
-    private YamlAuthentication authentication = new YamlAuthentication();
-    
-    private YamlOrchestrationConfiguration orchestration;
-    
-    private Properties props = new Properties();
+    @Test
+    public void assertGetInstance() {
+        assertThat(BackendExecutorContext.getInstance().getExecuteEngine(), is(BackendExecutorContext.getInstance().getExecuteEngine()));
+    }
 }

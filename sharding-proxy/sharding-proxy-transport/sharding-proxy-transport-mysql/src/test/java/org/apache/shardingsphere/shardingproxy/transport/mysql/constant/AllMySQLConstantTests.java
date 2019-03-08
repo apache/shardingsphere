@@ -23,10 +23,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        MySQLCapabilityFlagTest.class,
-        MySQLColumnTypeTest.class,
-        MySQLNewParametersBoundFlagTest.class,
-        MySQLServerErrorCodeTest.class
+        MySQLCapabilityFlagTest.class, 
+        MySQLColumnTypeTest.class, 
+        MySQLNewParametersBoundFlagTest.class, 
+        MySQLServerErrorCodeTest.class, 
+        MySQLStatusFlagTest.class
 })
 public final class AllMySQLConstantTests {
 }

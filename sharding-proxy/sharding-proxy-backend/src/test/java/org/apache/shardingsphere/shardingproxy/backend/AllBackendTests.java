@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceTest;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCXABackendDataSourceFactoryTest;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.AllRecognizerTests;
+import org.apache.shardingsphere.shardingproxy.backend.executor.ExecutorContextTest;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyTableMetaDataConnectionManagerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandlerTest;
@@ -37,6 +38,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        ExecutorContextTest.class, 
         TextProtocolBackendHandlerFactoryTest.class, 
         BroadcastBackendHandlerTest.class, 
         ShowDatabasesBackendHandlerTest.class, 

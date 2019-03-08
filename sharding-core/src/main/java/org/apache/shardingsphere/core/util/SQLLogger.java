@@ -32,8 +32,8 @@ import java.util.Collection;
  * @author zhangliang
  * @author maxiaoguang
  */
-@Slf4j(topic = "ShardingSphere-SQL")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j(topic = "ShardingSphere-SQL")
 public final class SQLLogger {
     
     /**

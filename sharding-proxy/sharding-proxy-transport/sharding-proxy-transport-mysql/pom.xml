@@ -22,6 +22,11 @@
             <artifactId>sharding-proxy-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>io.netty</groupId>

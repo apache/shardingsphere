@@ -184,6 +184,19 @@ public final class MySQLPacketPayloadTest {
     }
     
     @Test
+    public void assertWriteBytesLenenc() {
+        new MySQLPacketPayload(byteBuf).writeBytesLenenc("value".getBytes());
+        verify(byteBuf).writeByte(5);
+        verify(byteBuf).writeBytes("value".getBytes());
+    }
+    
+    @Test
+    public void assertWriteBytesLenencWithEmpty() {
+        new MySQLPacketPayload(byteBuf).writeBytesLenenc("".getBytes());
+        verify(byteBuf).writeByte(0);
+    }
+    
+    @Test
     public void assertWriteStringLenenc() {
         new MySQLPacketPayload(byteBuf).writeStringLenenc("value");
         verify(byteBuf).writeByte(5);

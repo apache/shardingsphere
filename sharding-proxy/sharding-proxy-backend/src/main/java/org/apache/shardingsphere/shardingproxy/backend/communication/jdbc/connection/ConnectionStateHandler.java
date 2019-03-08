@@ -38,7 +38,7 @@ public class ConnectionStateHandler {
      *
      * @param update new update status
      */
-    public void getAndSetStatus(final ConnectionStatus update) {
+    public void setStatus(final ConnectionStatus update) {
         status.getAndSet(update);
         if (ConnectionStatus.TERMINATED == status.get()) {
             resourceSynchronizer.doNotify();

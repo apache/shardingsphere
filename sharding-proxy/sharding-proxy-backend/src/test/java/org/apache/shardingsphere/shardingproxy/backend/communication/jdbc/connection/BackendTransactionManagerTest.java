@@ -17,100 +17,136 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Connection;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class BackendTransactionManagerTest {
     
-    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    @Mock
+    private LogicSchema logicSchema;
     
-    private BackendTransactionManager backendTransactionManager = new BackendTransactionManager(backendConnection);
+    @Mock
+    private BackendConnection backendConnection;
+    
+    @Mock
+    private ConnectionStateHandler stateHandler;
+    
+    @Mock
+    private LocalTransactionManager localTransactionManager;
+    
+    @Mock
+    private ShardingTransactionManager shardingTransactionManager;
+    
+    private BackendTransactionManager backendTransactionManager;
+    
+    @Before
+    public void setUp() {
+        ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
+        when(shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingTransactionManager);
+        JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
+        when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
+        when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
+        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+    }
     
     @Test
-    public void assertLocalTransactionCommit() throws SQLException {
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
+    public void assertBeginForLocalTransaction() {
+        newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
-        assertThat(backendConnection.getMethodInvocations().size(), is(1));
-        assertThat(backendConnection.getMethodInvocations().iterator().next().getArguments(), is(new Object[]{false}));
-        assertTrue(backendConnection.getCachedConnections().isEmpty());
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
+        verify(stateHandler).setStatus(ConnectionStatus.TRANSACTION);
+        verify(backendConnection).releaseConnections(false);
+        verify(localTransactionManager).begin();
+    }
+    
+    @Test
+    public void assertBeginForDistributedTransaction() {
+        newBackendTransactionManager(TransactionType.XA, true);
+        backendTransactionManager.begin();
+        verify(stateHandler, times(0)).setStatus(ConnectionStatus.TRANSACTION);
+        verify(backendConnection, times(0)).releaseConnections(false);
+        verify(shardingTransactionManager).begin();
+    }
+    
+    @Test
+    public void assertCommitForLocalTransaction() throws SQLException {
+        newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.commit();
-        Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
-        verify(iterator.next()).commit();
-        verify(iterator.next()).commit();
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
+        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(localTransactionManager).commit();
     }
     
     @Test
-    public void assertLocalTransactionCommitWithException() throws SQLException {
-        backendTransactionManager.begin();
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
-        try {
-            backendTransactionManager.commit();
-        } catch (final SQLException ex) {
-            assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
-        }
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
-    }
-    
-    @Test
-    public void assertLocalTransactionRollback() throws SQLException {
-        backendTransactionManager.begin();
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        backendTransactionManager.rollback();
-        Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
-        verify(iterator.next()).rollback();
-        verify(iterator.next()).rollback();
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
-    }
-    
-    @Test
-    public void assertLocalTransactionRollbackWithException() throws SQLException {
-        backendTransactionManager.begin();
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
-        try {
-            backendTransactionManager.rollback();
-        } catch (final SQLException ex) {
-            assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
-        }
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
-    }
-    
-    @Test
-    public void assertXATransactionCommit() throws SQLException {
-        backendConnection.setCurrentSchema("schema");
-        backendConnection.setTransactionType(TransactionType.XA);
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
-        backendTransactionManager.begin();
-        assertTrue(backendConnection.getMethodInvocations().isEmpty());
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
+    public void assertCommitForDistributedTransaction() throws SQLException {
+        newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.commit();
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
-        backendTransactionManager.begin();
+        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(shardingTransactionManager).commit();
     }
     
     @Test
-    public void assertXATransactionRollback() throws SQLException {
-        backendConnection.setCurrentSchema("schema");
-        backendConnection.setTransactionType(TransactionType.XA);
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
-        backendTransactionManager.begin();
-        assertTrue(backendConnection.getMethodInvocations().isEmpty());
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
+    public void assertCommitWithoutTransaction() throws SQLException {
+        newBackendTransactionManager(TransactionType.LOCAL, false);
+        backendTransactionManager.commit();
+        verify(stateHandler, times(0)).setStatus(ConnectionStatus.TERMINATED);
+        verify(localTransactionManager, times(0)).commit();
+        verify(shardingTransactionManager, times(0)).commit();
+    }
+    
+    @Test
+    public void assertRollbackForLocalTransaction() throws SQLException {
+        newBackendTransactionManager(TransactionType.LOCAL, true);
         backendTransactionManager.rollback();
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
+        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(localTransactionManager).rollback();
+    }
+    
+    @Test
+    public void assertRollbackForDistributedTransaction() throws SQLException {
+        newBackendTransactionManager(TransactionType.XA, true);
+        backendTransactionManager.rollback();
+        verify(stateHandler).setStatus(ConnectionStatus.TERMINATED);
+        verify(shardingTransactionManager).rollback();
+    }
+    
+    @Test
+    public void assertRollbackWithoutTransaction() throws SQLException {
+        newBackendTransactionManager(TransactionType.LOCAL, false);
+        backendTransactionManager.rollback();
+        verify(stateHandler, times(0)).setStatus(ConnectionStatus.TERMINATED);
+        verify(localTransactionManager, times(0)).rollback();
+        verify(shardingTransactionManager, times(0)).rollback();
+    }
+    
+    private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTrnsaction) {
+        when(backendConnection.getTransactionType()).thenReturn(transactionType);
+        when(stateHandler.isInTransaction()).thenReturn(inTrnsaction);
+        backendTransactionManager = new BackendTransactionManager(backendConnection);
+        setLocalTransactionManager();
+    }
+    
+    @SneakyThrows
+    private void setLocalTransactionManager() {
+        Field field = BackendTransactionManager.class.getDeclaredField("localTransactionManager");
+        field.setAccessible(true);
+        field.set(backendTransactionManager, localTransactionManager);
     }
 }

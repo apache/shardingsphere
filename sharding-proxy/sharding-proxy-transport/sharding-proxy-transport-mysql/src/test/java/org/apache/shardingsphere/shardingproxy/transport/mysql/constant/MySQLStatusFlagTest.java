@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.context;
+package org.apache.shardingsphere.shardingproxy.transport.mysql.constant;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ExecutorContextTest {
+public final class MySQLStatusFlagTest {
     
     @Test
-    public void assertGetInstance() {
-        assertThat(ExecutorContext.getInstance().getExecuteEngine(), is(ExecutorContext.getInstance().getExecuteEngine()));
+    public void assertGetValue() {
+        assertThat(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue(), is(0x0001));
     }
 }

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Sc
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 
 import java.util.Collection;
@@ -108,7 +108,7 @@ public final class LogicSchemas {
                                           final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         LogicSchema result;
         try {
-            boolean isCheckingMetaData = GlobalContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
+            boolean isCheckingMetaData = ShardingProxyContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
             result = ruleConfiguration instanceof ShardingRuleConfiguration
                     ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isCheckingMetaData, isUsingRegistry)
                     : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);

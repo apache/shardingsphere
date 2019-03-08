@@ -20,46 +20,42 @@ package org.apache.shardingsphere.shardingproxy.context;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Properties;
 
 /**
- * Global context.
+ * Context of Sharding-Proxy.
  *
  * @author chenqingyang
  * @author panjuan
+ * @author zhangliang
  */
 @Getter
-public final class GlobalContext {
+public final class ShardingProxyContext {
     
-    private static final GlobalContext INSTANCE = new GlobalContext();
+    private static final ShardingProxyContext INSTANCE = new ShardingProxyContext();
     
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
-    
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     private Authentication authentication;
     
     private boolean isCircuitBreak;
     
-    private GlobalContext() {
+    private ShardingProxyContext() {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**
-     * Get instance of proxy context.
+     * Get instance of Sharding-Proxy's context.
      *
-     * @return instance of proxy context.
+     * @return instance of Sharding-Proxy's context.
      */
-    public static GlobalContext getInstance() {
+    public static ShardingProxyContext getInstance() {
         return INSTANCE;
     }
     
@@ -70,46 +66,37 @@ public final class GlobalContext {
      * @param props properties
      */
     public void init(final Authentication authentication, final Properties props) {
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         this.authentication = authentication;
-    }
-    
-    /**
-     * Get transaction type.
-     *
-     * @return transaction type
-     */
-    public TransactionType getTransactionType() {
-        return TransactionType.valueOf(shardingProperties.<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE));
+        shardingProperties = new ShardingProperties(props);
     }
     
     /**
      * Renew properties.
      *
-     * @param propertiesChangedEvent properties changed event
+     * @param event properties changed event
      */
     @Subscribe
-    public synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
-        shardingProperties = new ShardingProperties(propertiesChangedEvent.getProps());
+    public synchronized void renew(final PropertiesChangedEvent event) {
+        shardingProperties = new ShardingProperties(event.getProps());
     }
     
     /**
      * Renew authentication.
      *
-     * @param authenticationChangedEvent authentication changed event
+     * @param event authentication changed event
      */
     @Subscribe
-    public synchronized void renew(final AuthenticationChangedEvent authenticationChangedEvent) {
-        authentication = authenticationChangedEvent.getAuthentication();
+    public synchronized void renew(final AuthenticationChangedEvent event) {
+        authentication = event.getAuthentication();
     }
     
     /**
      * Renew circuit breaker state.
      *
-     * @param circuitStateChangedEvent circuit state changed event
+     * @param event circuit state changed event
      */
     @Subscribe
-    public synchronized void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
-        isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
+    public synchronized void renew(final CircuitStateChangedEvent event) {
+        isCircuitBreak = event.isCircuitBreak();
     }
 }

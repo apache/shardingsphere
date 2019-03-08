@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.context;
+package org.apache.shardingsphere.shardingproxy.backend.executor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 /**
- * Executor context.
+ * Backend executor context.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorContext {
+@Getter
+public final class BackendExecutorContext {
     
-    private static final ExecutorContext INSTANCE = new ExecutorContext();
+    private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
-    @Getter
-    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(GlobalContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
+    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(
+            ShardingProxyContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
     
     /**
      * Get executor context instance.
      * 
      * @return instance of executor context
      */
-    public static ExecutorContext getInstance() {
+    public static BackendExecutorContext getInstance() {
         return INSTANCE;
     }
 }

@@ -25,6 +25,11 @@ import static org.junit.Assert.assertThat;
 public final class MySQLCapabilityFlagTest {
     
     @Test
+    public void assertGetValue() {
+        assertThat(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD.getValue(), is(0x00000001));
+    }
+    
+    @Test
     public void assertCalculateHandshakeCapabilityFlagsLower() {
         assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
     }

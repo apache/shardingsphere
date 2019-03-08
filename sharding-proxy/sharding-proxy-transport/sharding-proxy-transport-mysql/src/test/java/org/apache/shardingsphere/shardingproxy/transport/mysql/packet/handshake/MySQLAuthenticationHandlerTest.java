@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,9 +67,9 @@ public final class MySQLAuthenticationHandlerTest {
     
     @SneakyThrows
     private void setAuthentication(final Authentication authentication) {
-        Field field = GlobalContext.class.getDeclaredField("authentication");
+        Field field = ShardingProxyContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
-        field.set(GlobalContext.getInstance(), authentication);
+        field.set(ShardingProxyContext.getInstance(), authentication);
     }
     
     @Test

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.shardingproxy.context.GlobalContext;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.util.Arrays;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
 @Getter
 public final class MySQLAuthenticationHandler {
     
-    private static final GlobalContext GLOBAL_REGISTRY = GlobalContext.getInstance();
+    private static final ShardingProxyContext SHARDING_PROXY_CONTEXT = ShardingProxyContext.getInstance();
     
     private final MySQLAuthPluginData authPluginData = new MySQLAuthPluginData();
     
@@ -45,7 +45,7 @@ public final class MySQLAuthenticationHandler {
      * @return login success or failure
      */
     public boolean login(final String username, final byte[] authResponse) {
-        Authentication authentication = GLOBAL_REGISTRY.getAuthentication();
+        Authentication authentication = SHARDING_PROXY_CONTEXT.getAuthentication();
         if (Strings.isNullOrEmpty(authentication.getPassword())) {
             return authentication.getUsername().equals(username);
         }
