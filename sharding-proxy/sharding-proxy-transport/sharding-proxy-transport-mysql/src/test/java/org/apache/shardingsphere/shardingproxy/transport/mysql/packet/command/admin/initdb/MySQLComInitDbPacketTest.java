@@ -25,6 +25,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,14 @@ public final class MySQLComInitDbPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
+    
+    @Test
+    public void assertNew() {
+        when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload);
+        assertThat(actual.getSequenceId(), is(0));
+        assertThat(actual.getSchema(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
     
     @Test
     public void assertWrite() {
