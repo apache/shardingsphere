@@ -36,11 +36,17 @@ public final class MySQLComInitDbPacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
+    public void assertNew() {
+        when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload);
+        assertThat(actual.getSequenceId(), is(0));
+        assertThat(actual.getSchema(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
+    
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
         MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload);
-        assertThat(actual.getSchema(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_INIT_DB.getValue());
         verify(payload).writeStringEOF(ShardingConstant.LOGIC_SCHEMA_NAME);
