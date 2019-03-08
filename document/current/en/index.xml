@@ -18,7 +18,7 @@
       <guid>https://shardingsphere.apache.org/document/current/en/features/orchestration/config-center/</guid>
       <description>Motivation  Configuration centralization: increasing runtime instances make it hard to manage separate configurations and asynchronized configurations can cause serious problems. Concentrating configurations in configuration center makes it more effective to manage.
  Dynamic configuration: distribution after configuration modification is another important capability that configuration center can provide. It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
-  Data Structure in Configuration Center Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, ConfigMap and Properties configurations in YAML form.</description>
+  Data Structure in Configuration Center Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, and Properties configurations in YAML form.</description>
     </item>
     
     <item>
@@ -234,7 +234,7 @@ Edit %SHARDING_PROXY_HOME%\conf\server.yaml. More details please reference Confi
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-yaml/</guid>
-      <description>Configuration Instance Sharding dataSources: ds0: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds0 username: root password: ds1: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds1 username: root password: shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGenerator: column: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} bindingTables: - t_order,t_order_item broadcastTables: - t_config defaultDataSourceName: ds0 defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} defaultTableStrategy: none: defaultKeyGenerator: type: SNOWFLAKE props: sql.</description>
+      <description>Configuration Instance Sharding dataSources: ds0: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds0 username: root password: ds1: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds1 username: root password: shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGenerator: type: SNOWFLAKE column: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} bindingTables: - t_order,t_order_item broadcastTables: - t_config defaultDataSourceName: ds0 defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} defaultTableStrategy: none: defaultKeyGenerator: type: SNOWFLAKE props: sql.</description>
     </item>
     
     <item>
@@ -385,7 +385,17 @@ Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;gro
       
       <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-namespace/</guid>
       <description>Attention Inline expression identifier can use ${...} or $-&amp;gt;{...}, but ${...} is conflict with spring placeholder of properties, so use $-&amp;gt;{...} on spring environment is better.
-Example Sharding &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt; &amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; xmlns:p=&amp;quot;http://www.springframework.org/schema/p&amp;quot; xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot; xmlns:tx=&amp;quot;http://www.springframework.org/schema/tx&amp;quot; xmlns:sharding=&amp;quot;http://shardingsphere.io/schema/shardingsphere/sharding&amp;quot; xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://shardingsphere.io/schema/shardingsphere/sharding http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd&amp;quot;&amp;gt; &amp;lt;context:annotation-config /&amp;gt; &amp;lt;context:component-scan base-package=&amp;quot;io.shardingsphere.example.spring.namespace.jpa&amp;quot; /&amp;gt; &amp;lt;bean id=&amp;quot;entityManagerFactory&amp;quot; class=&amp;quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&amp;quot;&amp;gt; &amp;lt;property name=&amp;quot;dataSource&amp;quot; ref=&amp;quot;shardingDataSource&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaVendorAdapter&amp;quot;&amp;gt; &amp;lt;bean class=&amp;quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&amp;quot; p:database=&amp;quot;MYSQL&amp;quot; /&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property name=&amp;quot;packagesToScan&amp;quot; value=&amp;quot;io.shardingsphere.example.spring.namespace.jpa.entity&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaProperties&amp;quot;&amp;gt; &amp;lt;props&amp;gt; &amp;lt;prop key=&amp;quot;hibernate.</description>
+Example Sharding &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt; &amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; xmlns:p=&amp;quot;http://www.springframework.org/schema/p&amp;quot; xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot; xmlns:tx=&amp;quot;http://www.springframework.org/schema/tx&amp;quot; xmlns:sharding=&amp;quot;http://shardingsphere.apache.org/schema/shardingsphere/sharding&amp;quot; xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://shardingsphere.apache.org/schema/shardingsphere/sharding http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd&amp;quot;&amp;gt; &amp;lt;context:annotation-config /&amp;gt; &amp;lt;bean id=&amp;quot;entityManagerFactory&amp;quot; class=&amp;quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&amp;quot;&amp;gt; &amp;lt;property name=&amp;quot;dataSource&amp;quot; ref=&amp;quot;shardingDataSource&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaVendorAdapter&amp;quot;&amp;gt; &amp;lt;bean class=&amp;quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&amp;quot; p:database=&amp;quot;MYSQL&amp;quot; /&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property name=&amp;quot;packagesToScan&amp;quot; value=&amp;quot;org.apache.shardingsphere.example.spring.namespace.jpa.entity&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaProperties&amp;quot;&amp;gt; &amp;lt;props&amp;gt; &amp;lt;prop key=&amp;quot;hibernate.</description>
+    </item>
+    
+    <item>
+      <title>Data Masking</title>
+      <link>https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/</guid>
+      <description> Background TODO
+Solutions ShardingEncryptor ShardingQueryAssistedEncryptor </description>
     </item>
     
     <item>
@@ -394,8 +404,8 @@ Example Sharding &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</guid>
-      <description>Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA transaction manager will be uploaded by Sharding-JDBC in SPI form.
-Connection Pool Configuration ShardingSphere supports to transform normal database connection pools to connection pools that support XA transactions; they also provide internal support for HikariCP, Druid and DBCP2, requiring no extra configurations. Other connection pools require users to use SPI interface that implements DataSourceMapConverter to expand, please refer to the implementation of io.</description>
+      <description>Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA transaction manager will be uploaded by Sharding-JDBC in SPI form.
+Connection Pool Configuration ShardingSphere supports to transform normal database connection pools to connection pools that support XA transactions; they also provide internal support for HikariCP, Druid and DBCP2, requiring no extra configurations. Other connection pools require users to use SPI interface that implements DataSourceMapConverter to expand, please refer to the implementation of org.</description>
     </item>
     
     <item>
@@ -406,6 +416,16 @@ Connection Pool Configuration ShardingSphere supports to transform normal databa
       <guid>https://shardingsphere.apache.org/document/current/en/features/sharding/principle/merge/</guid>
       <description>Result merger refers to merging multi-data result set acquired from all the data nodes as one result set and returning it to the request end rightly.
 In function, the result merger supported by ShardingSphere can be divided into iteration, order-by, group-by, pagination and aggregation these five kinds, which are in composition relation rather than clash relation. In structure, it can be divided into stream merger, memory merger and decorator merger, in which stream merger and the memory merger clash with each other, and the decorator merger can be further processed based on stream merger and memory merger.</description>
+    </item>
+    
+    <item>
+      <title>Data Masking</title>
+      <link>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/encrypt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/encrypt/</guid>
+      <description>This chapter mainly introduce how to use the feather of Data Masking. On one hand User can use Data Masking and Sharding together, which will create ShardingDataSource, On another hand, when user only adopt the feather of Data Masking, ShardingSphere will create EncryptDataSource.
+Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure first data source BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.</description>
     </item>
     
   </channel>

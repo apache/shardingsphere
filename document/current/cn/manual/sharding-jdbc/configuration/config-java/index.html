@@ -12,19 +12,19 @@
     <title>Java配置 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552011589" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552011589" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552011589"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -782,6 +782,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/">
+        <b>3.3.5. </b>数据脱敏
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -1054,6 +1073,25 @@
       <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
         <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/">
         分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/">
+        数据脱敏
         
         </a>
     </li>
@@ -1508,6 +1546,7 @@
 <li><a href="#数据分片">数据分片</a></li>
 <li><a href="#读写分离">读写分离</a></li>
 <li><a href="#数据分片-读写分离">数据分片 + 读写分离</a></li>
+<li><a href="#数据分片-数据脱敏">数据分片 + 数据脱敏</a></li>
 <li><a href="#数据治理">数据治理</a></li>
 </ul></li>
 <li><a href="#配置项说明">配置项说明</a>
@@ -1523,14 +1562,13 @@
 <li><a href="#hintshardingstrategyconfiguration">HintShardingStrategyConfiguration</a></li>
 <li><a href="#noneshardingstrategyconfiguration">NoneShardingStrategyConfiguration</a></li>
 <li><a href="#keygeneratorconfiguration">KeyGeneratorConfiguration</a></li>
+<li><a href="#encryptorconfiguration">EncryptorConfiguration</a></li>
 <li><a href="#propertiesconstant">PropertiesConstant</a></li>
-<li><a href="#configmap">configMap</a></li>
 </ul></li>
 <li><a href="#读写分离-1">读写分离</a>
 <ul>
 <li><a href="#masterslavedatasourcefactory">MasterSlaveDataSourceFactory</a></li>
 <li><a href="#masterslaveruleconfiguration">MasterSlaveRuleConfiguration</a></li>
-<li><a href="#configmap-1">configMap</a></li>
 <li><a href="#propertiesconstant-1">PropertiesConstant</a></li>
 </ul></li>
 <li><a href="#数据治理-1">数据治理</a>
@@ -1679,6 +1717,50 @@
     }
 </code></pre>
 
+<h3 id="数据分片-数据脱敏">数据分片 + 数据脱敏</h3>
+
+<pre><code class="language-java">    public DataSource getDataSource() throws SQLException {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add(&quot;t_order, t_order_item, t_order_encrypt&quot;);
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&quot;user_id&quot;, &quot;demo_ds_${user_id % 2}&quot;));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration(&quot;order_id&quot;, new PreciseModuloShardingTableAlgorithm()));
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration(&quot;t_order&quot;, &quot;demo_ds_${0..1}.t_order_${[0, 1]}&quot;);
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration(&quot;t_order_item&quot;, &quot;demo_ds_${0..1}.t_order_item_${[0, 1]}&quot;);
+        result.setEncryptorConfig(new EncryptorConfiguration(&quot;MD5&quot;, &quot;status&quot;, new Properties()));
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration(&quot;t_order_encrypt&quot;, &quot;demo_ds_${0..1}.t_order_encrypt_${[0, 1]}&quot;);
+        result.setEncryptorConfig(new EncryptorConfiguration(&quot;query&quot;, &quot;encrypt_id&quot;, &quot;query_id&quot;, new Properties()));
+        return result;
+    }
+    
+    private static Map&lt;String, DataSource&gt; createDataSourceMap() {
+        Map&lt;String, DataSource&gt; result = new HashMap&lt;&gt;();
+        result.put(&quot;demo_ds_0&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_0&quot;));
+        result.put(&quot;demo_ds_1&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_1&quot;));
+        return result;
+    }
+    
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGeneratorConfiguration(&quot;SNOWFLAKE&quot;, &quot;order_id&quot;, new Properties());
+    }
+
+</code></pre>
+
 <h3 id="数据治理">数据治理</h3>
 
 <pre><code class="language-java">    DataSource getDataSource() throws SQLException {
@@ -1723,12 +1805,6 @@
 <td>shardingRuleConfig</td>
 <td>ShardingRuleConfiguration</td>
 <td>数据分片配置规则</td>
-</tr>
-
-<tr>
-<td>configMap (?)</td>
-<td>Map&lt;String, Object&gt;</td>
-<td>用户自定义配置</td>
 </tr>
 
 <tr>
@@ -1851,6 +1927,12 @@
 <td>keyGeneratorConfig (?)</td>
 <td>KeyGeneratorConfiguration</td>
 <td>自增列值生成器配置，缺省表示使用默认自增主键生成器</td>
+</tr>
+
+<tr>
+<td>encryptorConfiguration (?)</td>
+<td>EncryptorConfiguration</td>
+<td>加解密生成器配置</td>
 </tr>
 </tbody>
 </table>
@@ -2003,6 +2085,44 @@
 </tbody>
 </table>
 
+<h4 id="encryptorconfiguration">EncryptorConfiguration</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>数据类型</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>type</td>
+<td>String</td>
+<td>加解密器类型，可自定义或选择内置类型：MD5/AES</td>
+</tr>
+
+<tr>
+<td>column</td>
+<td>String</td>
+<td>加解密器字段</td>
+</tr>
+
+<tr>
+<td>assistedQueryColumns</td>
+<td>String</td>
+<td>辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询</td>
+</tr>
+
+<tr>
+<td>props</td>
+<td>Properties</td>
+<td>属性配置, 比如AES算法的KEY属性：aes.key.value</td>
+</tr>
+</tbody>
+</table>
+
 <h4 id="propertiesconstant">PropertiesConstant</h4>
 
 <p>属性配置项，可以为以下属性。</p>
@@ -2043,10 +2163,6 @@
 </tbody>
 </table>
 
-<h4 id="configmap">configMap</h4>
-
-<p>用户自定义配置。</p>
-
 <h3 id="读写分离-1">读写分离</h3>
 
 <h4 id="masterslavedatasourcefactory">MasterSlaveDataSourceFactory</h4>
@@ -2073,12 +2189,6 @@
 <td>masterSlaveRuleConfig</td>
 <td>MasterSlaveRuleConfiguration</td>
 <td>读写分离规则</td>
-</tr>
-
-<tr>
-<td>configMap (?)</td>
-<td>Map&lt;String, Object&gt;</td>
-<td>用户自定义配置</td>
 </tr>
 
 <tr>
@@ -2128,10 +2238,6 @@
 </tr>
 </tbody>
 </table>
-
-<h4 id="configmap-1">configMap</h4>
-
-<p>用户自定义配置。</p>
 
 <h4 id="propertiesconstant-1">PropertiesConstant</h4>
 
@@ -2202,12 +2308,6 @@
 </tr>
 
 <tr>
-<td>configMap (?)</td>
-<td>Map&lt;String, Object&gt;</td>
-<td>同ShardingDataSourceFactory</td>
-</tr>
-
-<tr>
 <td>props (?)</td>
 <td>Properties</td>
 <td>同ShardingDataSourceFactory</td>
@@ -2244,12 +2344,6 @@
 <tr>
 <td>masterSlaveRuleConfig</td>
 <td>MasterSlaveRuleConfiguration</td>
-<td>同MasterSlaveDataSourceFactory</td>
-</tr>
-
-<tr>
-<td>configMap (?)</td>
-<td>Map&lt;String, Object&gt;</td>
 <td>同MasterSlaveDataSourceFactory</td>
 </tr>
 
@@ -2904,54 +2998,6 @@
             
         
                     
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
             
             
@@ -2971,6 +3017,70 @@
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
             
         
                     
@@ -3021,6 +3131,22 @@
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -3343,20 +3469,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552011589"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552011589"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552011589" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552011589"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -12,19 +12,19 @@
     <title>Yaml配置 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552011589" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552011589" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552011589"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -782,6 +782,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/">
+        <b>3.3.5. </b>数据脱敏
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -1054,6 +1073,25 @@
       <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
         <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/">
         分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/">
+        数据脱敏
         
         </a>
     </li>
@@ -1513,7 +1551,7 @@
 <li><a href="#配置项说明">配置项说明</a>
 <ul>
 <li><a href="#config-xxx-yaml-数据分片-读写分离-根据3-1最新版本修订">config-xxx.yaml 数据分片+读写分离(根据3.1最新版本修订)</a></li>
-<li><a href="#读写分离-1">读写分离</a></li>
+<li><a href="#数据脱敏">数据脱敏</a></li>
 <li><a href="#数据治理-1">数据治理</a></li>
 </ul></li>
 <li><a href="#yaml语法说明">Yaml语法说明</a></li>
@@ -1564,6 +1602,7 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
+        type: SNOWFLAKE
         column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
@@ -1663,7 +1702,8 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
-        Column: order_id
+        type: SNOWFLAKE
+        column: order_id
     t_order_item:
       actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -1692,16 +1732,69 @@ shardingRule:
           - ds0_slave0
           - ds0_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key0: master-slave-value0
       ms_ds1:
         masterDataSourceName: ds1
         slaveDataSourceNames: 
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-        configMap:
-          master-slave-key1: master-slave-value1
+props:
+  sql.show: true
+
+### 数据分片 + 数据脱敏
+
+```yaml
+dataSources:
+  ds_0: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
+    password:
+  ds_1: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
+    password:
+
+shardingRule:
+  tables:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}
+      encryptor:
+        type: MD5
+        columns: status
+    t_order_encrypt:
+      actualDataNodes: ds_${0..1}.t_order_encrypt_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_encrypt_${order_id % 2}      
+      encryptor:
+        type: QUERY
+        columns: encrypt_id
+        assistedQueryColumns: query_id
+  bindingTables:
+    - t_order,t_order_item,t_order_encrypt  
+  
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
 
 props:
   sql.show: true
@@ -1828,17 +1921,11 @@ props:
   proxy.backend.max.connections: # 使用NIO而非epoll的话,proxy后台连接每个netty客户端允许的最大连接数量(注意不是数据库连接限制) 默认为8
   proxy.backend.connection.timeout.seconds: #使用nio而非epoll的话,proxy后台连接的超时时间,默认60s
   check.table.metadata.enabled: # 是否在启动时候,检查sharing的表的实际元数据是否一致,默认False
-
   
-configMap: #用户自定义配置
-  key1: value1
-  key2: value2
-  keyx: valuex
-</code></pre>
+### 读写分离
 
-<h3 id="读写分离-1">读写分离</h3>
-
-<pre><code class="language-yaml">dataSources: #省略数据源配置，与数据分片一致
+```yaml
+dataSources: #省略数据源配置，与数据分片一致
 
 masterSlaveRule:
   name: #读写分离数据源名称
@@ -1854,11 +1941,20 @@ props: #属性配置
   sql.show: #是否开启SQL显示，默认值: false
   executor.size: #工作线程数量，默认值: CPU核数
   check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
-  
-configMap: #用户自定义配置
-  key1: value1
-  key2: value2
-  keyx: valuex
+</code></pre>
+
+<h3 id="数据脱敏">数据脱敏</h3>
+
+<pre><code class="language-yaml">dataSources: #省略数据源配置
+shardingRule: #省略分片规则配
+  tables: #配置表sharding的主要位置
+    sharding_t1:
+      encryptor: #加解密器配置
+        type: #加解密器类型
+        columns: #加解密列
+        assistedQueryColumns: #加解密辅助查询列
+        props:
+          aes.key.value: #例如AES加解密器的Key
 </code></pre>
 
 <h3 id="数据治理-1">数据治理</h3>
@@ -2433,54 +2529,6 @@ orchestration:
             
         
                     
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
             
             
@@ -2500,6 +2548,70 @@ orchestration:
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
             
         
                     
@@ -2550,6 +2662,22 @@ orchestration:
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -2875,20 +3003,20 @@ orchestration:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552011589"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552011589"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552011589" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552011589"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

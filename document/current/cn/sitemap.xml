@@ -801,6 +801,34 @@
   </url>
   
   <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="cn"
+                href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/encrypt/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="cn"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/"
+                />
+  </url>
+  
+  <url>
     <loc>https://shardingsphere.apache.org/document/current/cn/categories/</loc>
     <priority>0</priority>
     <xhtml:link

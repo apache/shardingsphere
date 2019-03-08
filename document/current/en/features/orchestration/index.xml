@@ -18,7 +18,7 @@
       <guid>https://shardingsphere.apache.org/document/current/en/features/orchestration/config-center/</guid>
       <description>Motivation  Configuration centralization: increasing runtime instances make it hard to manage separate configurations and asynchronized configurations can cause serious problems. Concentrating configurations in configuration center makes it more effective to manage.
  Dynamic configuration: distribution after configuration modification is another important capability that configuration center can provide. It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
-  Data Structure in Configuration Center Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, ConfigMap and Properties configurations in YAML form.</description>
+  Data Structure in Configuration Center Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, and Properties configurations in YAML form.</description>
     </item>
     
     <item>
@@ -50,6 +50,16 @@ ShardingSphere uses SPI to load data to the registry center and disable instance
       <guid>https://shardingsphere.apache.org/document/current/en/features/orchestration/apm/</guid>
       <description>Background APM is the abbreviation for application performance monitoring. Currently, APM mainly focuses its functions on the performance diagnosis of distributed systems, including call chain demonstration, application topology analysis and so on.
 ShardingSphere is not responsible for gathering, storing and demonstrating APM related data, but sends the relevant core information of two data shards, SQL parsing and enforcement to APM to process. In other words, ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol.</description>
+    </item>
+    
+    <item>
+      <title>Data Masking</title>
+      <link>https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/</guid>
+      <description> Background TODO
+Solutions ShardingEncryptor ShardingQueryAssistedEncryptor </description>
     </item>
     
   </channel>

@@ -12,19 +12,19 @@
     <title>配置中心 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552011589" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552011589" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552011589"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -782,6 +782,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/">
+        <b>3.3.5. </b>数据脱敏
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -1054,6 +1073,25 @@
       <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
         <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/">
         分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/">
+        数据脱敏
         
         </a>
     </li>
@@ -1501,7 +1539,6 @@
 <li><a href="#配置中心数据结构">配置中心数据结构</a>
 <ul>
 <li><a href="#config-authentication">config/authentication</a></li>
-<li><a href="#config-configmap">config/configmap</a></li>
 <li><a href="#config-sharding-props">config/sharding/props</a></li>
 <li><a href="#config-schema-schemename-datasource">config/schema/schemeName/datasource</a></li>
 <li><a href="#config-schema-sharding-db-rule">config/schema/sharding_db/rule</a></li>
@@ -1540,11 +1577,10 @@
 
 <h2 id="配置中心数据结构">配置中心数据结构</h2>
 
-<p>配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。</p>
+<p>配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、Properties配置，可通过修改节点来实现对于配置的动态管理。</p>
 
 <pre><code>config
     ├──authentication                            # Sharding-Proxy权限配置
-    ├──configMap                                 # 数据分片ConfigMap配置，以K/V形式存储，如：{&quot;key1&quot;:&quot;value1&quot;}
     ├──props                                     # 属性配置
     ├──schema                                    # Schema配置
     ├      ├──sharding_db                        # SchemaName配置
@@ -1559,13 +1595,6 @@
 
 <pre><code class="language-yaml">password: root
 username: root
-</code></pre>
-
-<h3 id="config-configmap">config/configmap</h3>
-
-<p>读写分离ConfigMap配置，以K/V形式存储。</p>
-
-<pre><code class="language-yaml">key2: value2
 </code></pre>
 
 <h3 id="config-sharding-props">config/sharding/props</h3>
@@ -2213,54 +2242,6 @@ loadBalanceAlgorithmType: ROUND_ROBIN
             
         
                     
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
             
             
@@ -2280,6 +2261,70 @@ loadBalanceAlgorithmType: ROUND_ROBIN
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
             
         
                     
@@ -2325,6 +2370,22 @@ loadBalanceAlgorithmType: ROUND_ROBIN
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -2642,20 +2703,20 @@ loadBalanceAlgorithmType: ROUND_ROBIN
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552011589"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552011589"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552011589" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552011589"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

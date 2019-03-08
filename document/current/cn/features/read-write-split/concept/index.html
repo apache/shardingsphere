@@ -12,19 +12,19 @@
     <title>核心概念 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552011589" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552011589" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552011589"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -782,6 +782,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/">
+        <b>3.3.5. </b>数据脱敏
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -1054,6 +1073,25 @@
       <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
         <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/">
         分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/">
+        数据脱敏
         
         </a>
     </li>
@@ -1501,7 +1539,6 @@
 <li><a href="#从库">从库</a></li>
 <li><a href="#主从同步">主从同步</a></li>
 <li><a href="#负载均衡策略">负载均衡策略</a></li>
-<li><a href="#config-map">Config Map</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -1539,10 +1576,6 @@
 <h2 id="负载均衡策略">负载均衡策略</h2>
 
 <p>通过负载均衡策略将查询请求疏导至不同从库。</p>
-
-<h2 id="config-map">Config Map</h2>
-
-<p>配置读写分离数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的masterSlaveConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。</p>
 
 
 <footer class=" footline" >
@@ -2098,54 +2131,6 @@
             
         
                     
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
             
             
@@ -2165,6 +2150,70 @@
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
             
         
                     
@@ -2210,6 +2259,22 @@
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -2527,20 +2592,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552011589"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552011589"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552011589" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552011589"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
