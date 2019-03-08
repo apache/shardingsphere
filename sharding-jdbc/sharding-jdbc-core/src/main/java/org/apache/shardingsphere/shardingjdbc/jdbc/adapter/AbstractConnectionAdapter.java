@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedMa
 import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -191,12 +190,14 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        if (TransactionType.LOCAL == transactionType || this instanceof MasterSlaveConnection) {
+        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
             setAutoCommitForLocalTransaction(autoCommit);
         } else if (!autoCommit) {
             shardingTransactionManager.begin();
         }
     }
+    
+    protected abstract boolean isOnlyLocalTransactionValid();
     
     private void setAutoCommitForLocalTransaction(final boolean autoCommit) throws SQLException {
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
@@ -211,7 +212,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void commit() throws SQLException {
-        if (TransactionType.LOCAL == transactionType || this instanceof MasterSlaveConnection) {
+        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
             commitForLocalTransaction();
         } else {
             shardingTransactionManager.commit();
@@ -230,7 +231,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void rollback() throws SQLException {
-        if (TransactionType.LOCAL == transactionType || this instanceof MasterSlaveConnection) {
+        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
             rollbackForLocalTransaction();
         } else {
             shardingTransactionManager.rollback();
