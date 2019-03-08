@@ -30,6 +30,7 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
+        type: SNOWFLAKE
         column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
@@ -131,7 +132,8 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
-        Column: order_id
+        type: SNOWFLAKE
+        column: order_id
     t_order_item:
       actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -166,6 +168,64 @@ shardingRule:
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
+props:
+  sql.show: true
+
+### 数据分片 + 数据脱敏
+
+```yaml
+dataSources:
+  ds_0: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
+    password:
+  ds_1: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
+    password:
+
+shardingRule:
+  tables:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}
+      encryptor:
+        type: MD5
+        columns: status
+    t_order_encrypt:
+      actualDataNodes: ds_${0..1}.t_order_encrypt_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_encrypt_${order_id % 2}      
+      encryptor:
+        type: QUERY
+        columns: encrypt_id
+        assistedQueryColumns: query_id
+  bindingTables:
+    - t_order,t_order_item,t_order_encrypt  
+  
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
+
 props:
   sql.show: true
 ```
@@ -313,7 +373,22 @@ props: #属性配置
   sql.show: #是否开启SQL显示，默认值: false
   executor.size: #工作线程数量，默认值: CPU核数
   check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
-  
+```
+
+### 数据脱敏
+```yaml
+dataSources: #省略数据源配置
+shardingRule: #省略分片规则配
+  tables: #配置表sharding的主要位置
+    sharding_t1:
+      encryptor: #加解密器配置
+        type: #加解密器类型
+        columns: #加解密列
+        assistedQueryColumns: #加解密辅助查询列
+        props:
+          aes.key.value: #例如AES加解密器的Key
+```
+
 ### 数据治理
 
 ```yaml

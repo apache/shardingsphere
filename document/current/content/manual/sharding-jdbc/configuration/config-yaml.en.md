@@ -30,6 +30,7 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
+        type: SNOWFLAKE
         column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
@@ -131,6 +132,7 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
       keyGenerator:
+        type: SNOWFLAKE
         column: order_id
     t_order_item:
       actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
@@ -166,6 +168,65 @@ shardingRule:
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
+props:
+  sql.show: true
+```
+
+### Sharding + Data Masking
+
+```yaml
+dataSources:
+  ds_0: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
+    password:
+  ds_1: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
+    password:
+
+shardingRule:
+  tables:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}
+      encryptor:
+        type: MD5
+        columns: status
+    t_order_encrypt:
+      actualDataNodes: ds_${0..1}.t_order_encrypt_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_encrypt_${order_id % 2}      
+      encryptor:
+        type: QUERY
+        columns: encrypt_id
+        assistedQueryColumns: query_id
+  bindingTables:
+    - t_order,t_order_item,t_order_encrypt  
+  
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
+
 props:
   sql.show: true
 ```
@@ -270,6 +331,21 @@ props: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
+```
+
+### 数据脱敏
+```yaml
+dataSources: #Ignore data sources configuration
+shardingRule: #Ignore sharding rule configuration
+  tables:
+    sharding_t1:
+      encryptor: #Encryptor configuration
+        type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
+        columns: #Column name of encryptor
+        assistedQueryColumns: #assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+        props:
+          aes.key.value: #Properties, e.g. `aes.key.value` for AES encryptor
+```
 
 ### Orchestration
 
