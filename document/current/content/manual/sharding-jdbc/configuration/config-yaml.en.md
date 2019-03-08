@@ -333,7 +333,7 @@ props: #Properties
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
 ```
 
-### 数据脱敏
+### Data Masking
 ```yaml
 dataSources: #Ignore data sources configuration
 shardingRule: #Ignore sharding rule configuration
