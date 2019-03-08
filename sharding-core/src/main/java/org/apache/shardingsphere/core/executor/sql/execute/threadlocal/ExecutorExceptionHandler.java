@@ -33,7 +33,14 @@ import java.sql.SQLException;
 @Slf4j
 public final class ExecutorExceptionHandler {
     
-    private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = new ThreadLocal<Boolean>() {
+
+		@Override
+		protected Boolean initialValue() {
+			return Boolean.TRUE;
+		}
+    	
+    };
     
     /**
      * Set throw exception if error occur or not.
@@ -50,7 +57,7 @@ public final class ExecutorExceptionHandler {
      * @return throw exception if error occur or not
      */
     public static boolean isExceptionThrown() {
-        return null == IS_EXCEPTION_THROWN.get() ? true : IS_EXCEPTION_THROWN.get();
+        return IS_EXCEPTION_THROWN.get();
     }
     
     /**
