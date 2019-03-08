@@ -22,10 +22,10 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
 ### Rule Configuration Based on Java
 
 ```java
-       // 配置真实数据源
+       // Configure actual data sources
        Map<String, DataSource> dataSourceMap = new HashMap<>();
        
-       // 配置第一个数据源
+       // Configure first data source
        BasicDataSource dataSource1 = new BasicDataSource();
        dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
        dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
@@ -33,7 +33,7 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
        dataSource1.setPassword("");
        dataSourceMap.put("ds0", dataSource1);
        
-       // 配置第二个数据源
+       // Configure second data source
        BasicDataSource dataSource2 = new BasicDataSource();
        dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
        dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
@@ -41,24 +41,24 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
        dataSource2.setPassword("");
        dataSourceMap.put("ds1", dataSource2);
        
-       // 配置Order表规则 + 脱敏规则
+       // Configure table rule for Order
        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
        orderTableRuleConfig.setLogicTable("t_order");
        orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
        orderTableRuleConfig.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
        
-       // 配置分库 + 分表策略
+       // Configure strategies for database + table sharding 
        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
        orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
        
-       // 配置分片规则
+       // Configure sharding rule
        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
        
-       // 省略配置order_item表规则...
+       // Configure table rule for order_item
        // ...
        
-       // 获取数据源对象
+       // Get data source
        DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
