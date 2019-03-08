@@ -43,15 +43,17 @@ public class YamlConfigurationTransactionExample {
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
-    
+//
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = YamlOrchestrationDataSourceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter);
         TransactionService transactionService = new RawPojoTransactionService(dataSource);
         transactionService.initEnvironment();
         transactionService.processSuccessWithLocal();
         transactionService.processSuccessWithXA();
+        transactionService.processSuccessWithBase();
         transactionService.processFailureWithLocal();
         transactionService.processFailureWithXA();
+        transactionService.processFailureWithBase();
         transactionService.cleanEnvironment();
     }
 }

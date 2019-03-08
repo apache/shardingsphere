@@ -53,12 +53,14 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
     
     private TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration("order_id"));
         return result;
     }
     
-    private TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item");
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration("order_item_id"));
+        return result;
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -68,7 +70,7 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
         return result;
     }
     
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration(final String columnName) {
+        return new KeyGeneratorConfiguration("SNOWFLAKE", columnName, new Properties());
     }
 }

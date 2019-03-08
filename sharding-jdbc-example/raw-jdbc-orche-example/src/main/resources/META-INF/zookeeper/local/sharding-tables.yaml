@@ -22,6 +22,9 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}
+      keyGenerator:
+        column: order_item_id
+        type: SNOWFLAKE
   bindingTables:
     - t_order,t_order_item
 
