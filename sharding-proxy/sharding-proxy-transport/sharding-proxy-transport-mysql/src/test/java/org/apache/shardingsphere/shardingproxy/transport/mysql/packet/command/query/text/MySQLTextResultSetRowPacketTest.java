@@ -23,8 +23,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,14 +39,20 @@ public final class MySQLTextResultSetRowPacketTest {
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertWrite() {
+    public void assertNew() {
         when(payload.readInt1()).thenReturn(1);
         when(payload.readStringLenenc()).thenReturn("value_a", null, "value_c");
         MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(payload, 3);
         assertThat(actual.getSequenceId(), is(1));
+        verify(payload, times(3)).readStringLenenc();
+    }
+    
+    @Test
+    public void assertWrite() {
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[] {}));
         actual.write(payload);
-        verify(payload).writeStringLenenc("value_a");
-        verify(payload).writeStringLenenc("value_c");
         verify(payload).writeInt1(0xfb);
+        verify(payload).writeStringLenenc("value");
+        verify(payload).writeStringLenenc("1");
     }
 }
