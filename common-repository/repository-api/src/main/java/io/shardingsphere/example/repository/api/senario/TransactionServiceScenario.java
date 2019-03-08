@@ -37,8 +37,10 @@ public final class TransactionServiceScenario implements Scenario {
             transactionService.initEnvironment();
             transactionService.processSuccessWithLocal();
             transactionService.processSuccessWithXA();
+            transactionService.processSuccessWithBase();
             transactionService.processFailureWithLocal();
             transactionService.processFailureWithXA();
+            transactionService.processFailureWithBase();
         } finally {
             transactionService.cleanEnvironment();
         }
