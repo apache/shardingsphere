@@ -123,6 +123,51 @@ weight = 1
     }
 ```
 
+### 数据分片 + 数据脱敏
+
+```java
+    public DataSource getDataSource() throws SQLException {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item, t_order_encrypt");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_encrypt", "demo_ds_${0..1}.t_order_encrypt_${[0, 1]}");
+        result.setEncryptorConfig(new EncryptorConfiguration("query", "encrypt_id", "query_id", new Properties()));
+        return result;
+    }
+    
+    private static Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>();
+        result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+        result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+        return result;
+    }
+    
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+    }
+
+```
+
 ### 数据治理
 
 ```java
@@ -181,6 +226,7 @@ weight = 1
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，缺省表示使用默认分表策略                                                                                                                                                                              |
 | logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                   |
 | keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列值生成器配置，缺省表示使用默认自增主键生成器                                                                                                                                                                |
+| encryptorConfiguration (?)         | EncryptorConfiguration        | 加解密生成器配置                                                                                                                                                                                              |
 
 #### StandardShardingStrategyConfiguration
 
@@ -223,11 +269,20 @@ ShardingStrategyConfiguration的实现类，用于配置Hint方式分片策略�
 ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 #### KeyGeneratorConfiguration
+
 | *名称*             | *数据类型*                    | *说明*                                                                         |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | column            | String                       | 自增列名称                                                                      |
 | type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
 | props             | Properties                   | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds |  
+
+#### EncryptorConfiguration
+
+| *名称*             | *数据类型*                    | *说明*                                                                         |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| column            | String                       | 加解密器名称                                                                  |
+| type              | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                     |
+| props             | Properties                   | 属性配置, 比如AES算法的KEY属性：aes.key.value                                      |  
 
 #### PropertiesConstant
 
