@@ -267,6 +267,87 @@ weight = 4
 </beans>
 ```
 
+### 数据分片 + 数据脱敏
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <import resource="classpath:META-INF/shardingTransaction.xml"/>
+    <context:annotation-config />
+    <context:component-scan base-package="io.shardingsphere.example.repository.jpa"/>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="shardingDataSource" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
+        </property>
+        <property name="packagesToScan" value="io.shardingsphere.example.repository.jpa.entity" />
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
+    <tx:annotation-driven />
+    
+    <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
+    </bean>
+    
+    <bean id="demo_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
+    </bean>
+    
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
+    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
+    <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
+    
+    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
+    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    
+    <sharding:encryptor id="md5" type="MD5" columns="status" />
+    <sharding:encryptor id="query" type="QUERY" columns="encrypt_id" assisted-query-columns="query_id" />
+    
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" encryptor-ref="md5" />
+                <sharding:table-rule logic-table="t_order_encrypt" actual-data-nodes="demo_ds_${0..1}.t_order_encrypt_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderEncryptTableStrategy" encryptor-ref="query" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+        <sharding:props>
+            <prop key="sql.show">true</prop>
+        </sharding:props>
+    </sharding:data-source>
+</beans>
+```
+
 ### 数据治理
 
 ```xml
@@ -320,11 +401,12 @@ weight = 4
 | *名称*                       | *类型* | *说明*                                                                                                                                                                                                      |
 | ---------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | logic-table                  | 属性  | 逻辑表名称                                                                                                                                                                                                   |
-| actual-data-nodes (?)        | 属性  | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
-| database-strategy-ref (?)    | 属性  | 数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认数据库分片策略                                                                                             |
-| table-strategy-ref (?)       | 属性  | 表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认表分片策略                                                                                                    |
-| key-generator-ref (?)        | 属性  | 自增列值生成器引用，缺省表示使用默认自增列值生成器                                                                                                                                      |
-| logic-index (?)              | 属性  | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                   |
+| actual-data-nodes (?)        | 属性  | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况    |
+| database-strategy-ref (?)    | 属性  | 数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认数据库分片策略                                                                                              |
+| table-strategy-ref (?)       | 属性  | 表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认表分片策略                                                                                                     |
+| key-generator-ref (?)        | 属性  | 自增列值生成器引用，缺省表示使用默认自增列值生成器                                                                                                                                                                 |
+| logic-index (?)              | 属性  | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                    |
+| encryptor (?)                | 属性  | 加解密器引用                                                                                                                                                                                                  |
 
 #### \<sharding:binding-table-rules />
 
@@ -394,6 +476,15 @@ weight = 4
 | column            | 属性                          | 自增列名称                                                                       |
 | type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
 | props-ref         | 属性                          | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds | 
+
+#### \<sharding:encrypt />
+| *名称*             | *类型*                   | *说明*                                                                  |
+| ------------------- | ---------------------- | ---------------------------------------------------------------------- |
+| type                | 属性                    | 加解密器类型，可自定义或选择内置类型：MD5/AES                               |
+| column              | 属性                    | 加解密器字段                                                            |
+| assistedQueryColumns| 属性                    | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询  |
+| props-ref           | 属性                    | 属性配置, 比如AES算法的KEY属性：aes.key.value                             | 
+ 
 
 #### \<sharding:props />
 
