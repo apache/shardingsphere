@@ -320,6 +320,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.type= #Type of
 sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.columns= #Column name of key generator      
 sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.assistedQueryColumns= #assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
 sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.props..<property-name>= #Properties, e.g. `aes.key.value` for AES encryptor  
+```
 
 ### Orchestration
 
