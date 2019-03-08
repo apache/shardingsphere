@@ -36,6 +36,7 @@ public final class MySQLComInitDbPacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
+    @Test
     public void assertNew() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
         MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload);
