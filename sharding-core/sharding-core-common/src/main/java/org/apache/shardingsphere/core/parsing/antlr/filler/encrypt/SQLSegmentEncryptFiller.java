@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * SQL segment Encrypt Filler.
+ * SQL segment encrypt filler.
  *
  * @author duhongjun
  */

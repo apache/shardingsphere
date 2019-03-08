@@ -23,5 +23,4 @@ package org.apache.shardingsphere.core.parsing.antlr.filler;
  * @author duhongjun
  */
 public interface SQLSegmentFiller {
-
 }

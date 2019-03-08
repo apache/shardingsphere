@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * SQL Statement Without Rule Filler.
+ * SQL Statement without rule filler.
  *
  * @author duhongjun
  */

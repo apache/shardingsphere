@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author duhongjun
  * @author zhangliang
  * 
- * @param <T> type of sql segment
+ * @param <T> type of SQL segment
  */
 public interface SQLSegmentShardingFiller<T extends SQLSegment> extends SQLSegmentFiller {
     
