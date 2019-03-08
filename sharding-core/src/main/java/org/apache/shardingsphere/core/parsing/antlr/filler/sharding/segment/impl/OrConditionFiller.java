@@ -113,7 +113,6 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
                     continue;
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
-                fillEncryptCondition(column, condition, shardingRule, sqlStatement, sql);
                 if (isShardingCondition(condition.getOperator()) && shardingRule.isShardingColumn(column)) {
                     shardingCondition.add(condition);
                     needSharding = true;
@@ -122,9 +121,17 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
             if (needSharding) {
                 fillResult(shardingTableMetaData, sqlStatement, shardingRule, result, shardingCondition, sql);
             } else {
-                if(!result.getAndConditions().isEmpty()) {
-                    result.getAndConditions().clear();
+                result.getAndConditions().clear();
+                break;
+            }
+        }
+        for (AndConditionSegment each : orCondition.getAndConditions()) {
+            for (ConditionSegment condition : each.getConditions()) {
+                if (null == condition.getColumn()) {
+                    continue;
                 }
+                Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
+                fillEncryptCondition(column, condition, shardingRule, sqlStatement, sql);
             }
         }
         return result;
