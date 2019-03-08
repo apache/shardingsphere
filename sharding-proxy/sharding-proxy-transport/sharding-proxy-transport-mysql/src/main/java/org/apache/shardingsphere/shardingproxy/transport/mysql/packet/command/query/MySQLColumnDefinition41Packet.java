@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -55,15 +54,12 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     
     private final String orgTable;
     
-    @Getter
-    @Setter
-    private String name;
+    private final String name;
     
     private final String orgName;
     
     private final int columnLength;
     
-    @Getter
     private final MySQLColumnType columnType;
     
     private final int decimals;
