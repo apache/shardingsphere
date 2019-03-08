@@ -61,7 +61,6 @@ public final class ShardingContext implements AutoCloseable {
         this.shardingRule = shardingRule;
         this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.databaseType = databaseType;
-        
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executeEngine = new ShardingExecuteEngine(executorSize);

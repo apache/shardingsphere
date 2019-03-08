@@ -41,13 +41,17 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AbstractSQLRouteTest {
     
     protected SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
-        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(
-                sql, shardingRule, new ShardingMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData()), DatabaseType.MySQL, true);
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        when(shardingMetaData.getDataSource()).thenReturn(buildShardingDataSourceMetaData());
+        when(shardingMetaData.getTable()).thenReturn(buildShardingTableMetaData());
+        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, shardingMetaData, DatabaseType.MySQL, true);
         SQLRouteResult result = engine.route(parameters);
         assertThat(result.getRouteUnits().size(), is(1));
         return result;
