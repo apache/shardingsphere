@@ -272,11 +272,12 @@ Subclass of ShardingStrategyConfiguration.
 
 #### EncryptorConfiguration
 
-| *Name*            | *DataType*                   | *Description*                                                                               |
-| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
-| column            | String                       | Column name of encryptor                                                                    |
-| type              | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                     |
-| props             | Properties                   | Properties, e.g. `aes.key.value` for AES encryptor                                          |  
+| *Name*              | *DataType*                   | *Description*                                                                                        |
+| -----------------   | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                               |
+| column              | String                       | Column name of encryptor                                                                             |
+| assistedQueryColumns| String                       | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
+| props               | Properties                   | Properties, e.g. `aes.key.value` for AES encryptor                                                    |  
 
 
 #### ShardingPropertiesConstant

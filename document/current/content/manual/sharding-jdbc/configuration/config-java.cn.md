@@ -278,11 +278,12 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 #### EncryptorConfiguration
 
-| *名称*             | *数据类型*                    | *说明*                                                                         |
-| ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
-| column            | String                       | 加解密器名称                                                                  |
-| type              | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                     |
-| props             | Properties                   | 属性配置, 比如AES算法的KEY属性：aes.key.value                                      |  
+| *名称*               |*数据类型*                    | *说明*                                                                          |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                        |
+| column              | String                       | 加解密器字段                                                                     |
+| assistedQueryColumns| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询              |
+| props               | Properties                   | 属性配置, 比如AES算法的KEY属性：aes.key.value                                      |  
 
 #### PropertiesConstant
 
