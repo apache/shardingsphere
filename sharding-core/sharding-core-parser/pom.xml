@@ -8,15 +8,15 @@
         <artifactId>sharding-core</artifactId>
         <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-parser</artifactId>
+    <artifactId>sharding-core-parser</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-parser-mysql</module>
-        <module>sharding-parser-postgresql</module>
-        <module>sharding-parser-oracle</module>
-        <module>sharding-parser-sqlserver</module>
+        <module>sharding-core-parser-mysql</module>
+        <module>sharding-core-parser-postgresql</module>
+        <module>sharding-core-parser-oracle</module>
+        <module>sharding-core-parser-sqlserver</module>
     </modules>
     
     <dependencies>

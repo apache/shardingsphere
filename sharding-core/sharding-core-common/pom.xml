@@ -14,22 +14,22 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-parser-mysql</artifactId>
+            <artifactId>sharding-core-parser-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-parser-postgresql</artifactId>
+            <artifactId>sharding-core-parser-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-parser-oracle</artifactId>
+            <artifactId>sharding-core-parser-oracle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-parser-sqlserver</artifactId>
+            <artifactId>sharding-core-parser-sqlserver</artifactId>
             <version>${project.version}</version>
         </dependency>
         

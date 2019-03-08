@@ -14,6 +14,6 @@
     
     <modules>
         <module>sharding-core-common</module>
-        <module>sharding-parser</module>
+        <module>sharding-core-parser</module>
     </modules>
 </project>
