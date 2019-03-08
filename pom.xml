@@ -10,7 +10,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-parser</module>
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
