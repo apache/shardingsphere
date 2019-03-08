@@ -21,7 +21,7 @@ Zookeeper  Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。�
 配置默认事务类型 默认事务类型可在server.yaml中进行配置，例如：
 proxy.transaction.type: XA  切换运行时事务类型 命令行方式 mysql&amp;gt; sctl: set transantcion_type=XA mysql&amp;gt; sctl: show transaction_type  原生JDBC方式 如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送sctl:set transaction_type=XA的SQL切换事务类型。
 Spring注解方式 引入Maven依赖：
-&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  然后在需要事务的方法或类中添加相关注解即可，例如：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  然后在需要事务的方法或类中添加相关注解即可，例如：
 @ShardingTransactionType(TransactionType.LOCAL) @Transactional  或</description>
     </item>
     

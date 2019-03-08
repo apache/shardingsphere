@@ -12,19 +12,19 @@
     <title>Spring Boot配置 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552011589" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552011589" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552011589"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -782,6 +782,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/">
+        <b>3.3.5. </b>数据脱敏
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -1054,6 +1073,25 @@
       <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
         <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/">
         分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/encrypt/" title="数据脱敏" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/">
+        数据脱敏
         
         </a>
     </li>
@@ -1509,12 +1547,14 @@
 <li><a href="#数据分片">数据分片</a></li>
 <li><a href="#读写分离">读写分离</a></li>
 <li><a href="#数据分片-读写分离">数据分片 + 读写分离</a></li>
+<li><a href="#数据分片-数据脱敏">数据分片 + 数据脱敏</a></li>
 <li><a href="#数据治理">数据治理</a></li>
 </ul></li>
 <li><a href="#配置项说明">配置项说明</a>
 <ul>
 <li><a href="#数据分片-1">数据分片</a></li>
 <li><a href="#读写分离-1">读写分离</a></li>
+<li><a href="#数据脱敏">数据脱敏</a></li>
 <li><a href="#数据治理-1">数据治理</a></li>
 </ul></li>
 </ul></li>
@@ -1664,6 +1704,45 @@ sharding.jdbc.config.sharding.master-slave-rules.ds1.master-data-source-name=mas
 sharding.jdbc.config.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 </code></pre>
 
+<h3 id="数据分片-数据脱敏">数据分片 + 数据脱敏</h3>
+
+<pre><code class="language-properties">sharding.jdbc.datasource.names=ds_0,ds_1
+
+sharding.jdbc.datasource.ds_0.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_0
+sharding.jdbc.datasource.ds_0.username=root
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_1
+sharding.jdbc.datasource.ds_1.username=root
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_$-&gt;{user_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_$-&gt;{0..1}.t_order_$-&gt;{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_$-&gt;{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.key-generator.column=order_id
+sharding.jdbc.config.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_$-&gt;{0..1}.t_order_item_$-&gt;{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$-&gt;{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator.column=order_item_id
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
+sharding.jdbc.config.sharding.tables.t_order_item.encryptor.type=MD5
+sharding.jdbc.config.sharding.tables.t_order_item.encryptor.columns=status
+sharding.jdbc.config.sharding.tables.t_order_encrypt.actual-data-nodes=ds_$-&gt;{0..1}.t_order_encrypt_$-&gt;{0..1}
+sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.algorithm-expression=t_order_encrypt_$-&gt;{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.type=QUERY
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.columns=encrypt_id
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColumns=query_id
+</code></pre>
+
 <h3 id="数据治理">数据治理</h3>
 
 <pre><code class="language-properties">sharding.jdbc.datasource.names=ds,ds0,ds1
@@ -1800,6 +1879,14 @@ sharding.jdbc.config.config.map.keyx= #用户自定义配置
 sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
 sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
 sharding.jdbc.config.props.check.table.metadata.enabled= #是否在启动时检查分表元数据一致性，默认值: false
+</code></pre>
+
+<h3 id="数据脱敏">数据脱敏</h3>
+
+<pre><code class="language-properties">sharding.jdbc.config.sharding.tables.&lt;logic-table-name&gt;.encryptor.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
+sharding.jdbc.config.sharding.tables.&lt;logic-table-name&gt;.encryptor.columns= #加解密字段
+sharding.jdbc.config.sharding.tables.&lt;logic-table-name&gt;.encryptor.assistedQueryColumns= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询  
+sharding.jdbc.config.sharding.tables.&lt;logic-table-name&gt;.encryptor.props..&lt;property-name&gt;= #属性配置, 比如AES算法的KEY属性：aes.key.value 
 </code></pre>
 
 <h3 id="数据治理-1">数据治理</h3>
@@ -2362,54 +2449,6 @@ sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #临�
             
         
                     
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
             
             
@@ -2429,6 +2468,70 @@ sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #临�
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
             
         
                     
@@ -2479,6 +2582,22 @@ sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #临�
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -2804,20 +2923,20 @@ sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #临�
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552011589"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552011589"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552011589" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552011589"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

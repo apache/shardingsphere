@@ -12,19 +12,19 @@
     <title>Spring Namespace :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1551681515" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1551681515" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552011589" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1551681515" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552011589" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552011589"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -782,6 +782,25 @@
 
             
           
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/encrypt/" title="Data Masking" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/">
+        <b>3.3.5. </b>Data Masking
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
         
         </ul>
               
@@ -1054,6 +1073,25 @@
       <li data-nav-id="/en/manual/sharding-jdbc/usage/transaction/" title="Distribute Transaction" class="dd-item ">
         <a href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/">
         Distribute Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/encrypt/" title="Data Masking" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/encrypt/">
+        Data Masking
         
         </a>
     </li>
@@ -1509,6 +1547,7 @@
 <li><a href="#sharding">Sharding</a></li>
 <li><a href="#read-write-splitting">Read-write splitting</a></li>
 <li><a href="#sharding-read-write-splitting">Sharding + Read-write splitting</a></li>
+<li><a href="#sharding-data-masking">Sharding + Data Masking</a></li>
 <li><a href="#orchestration">Orchestration</a></li>
 </ul></li>
 <li><a href="#configuration-reference">Configuration reference</a>
@@ -1529,13 +1568,12 @@
 <li><a href="#sharding-hint-database-strategy">&lt;sharding:hint-database-strategy /&gt;</a></li>
 <li><a href="#sharding-none-strategy">&lt;sharding:none-strategy /&gt;</a></li>
 <li><a href="#sharding-key-generator">&lt;sharding:key-generator /&gt;</a></li>
+<li><a href="#sharding-encrypt">&lt;sharding:encrypt /&gt;</a></li>
 <li><a href="#sharding-props">&lt;sharding:props /&gt;</a></li>
-<li><a href="#sharding-config-map">&lt;sharding:config-map /&gt;</a></li>
 </ul></li>
 <li><a href="#read-write-splitting-1">Read-write splitting</a>
 <ul>
 <li><a href="#master-slave-data-source">&lt;master-slave:data-source /&gt;</a></li>
-<li><a href="#master-slave-config-map">&lt;master-slave:config-map /&gt;</a></li>
 <li><a href="#master-slave-props">&lt;master-slave:props /&gt;</a></li>
 </ul></li>
 <li><a href="#sharding-orchestration">Sharding + orchestration</a>
@@ -1587,24 +1625,23 @@
        xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
-       xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingsphere/sharding&quot;
+       xmlns:sharding=&quot;http://shardingsphere.apache.org/schema/shardingsphere/sharding&quot;
        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd&quot;&gt;
     &lt;context:annotation-config /&gt;
-    &lt;context:component-scan base-package=&quot;io.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
     
     &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot;&gt;
         &lt;property name=&quot;dataSource&quot; ref=&quot;shardingDataSource&quot; /&gt;
         &lt;property name=&quot;jpaVendorAdapter&quot;&gt;
             &lt;bean class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot; p:database=&quot;MYSQL&quot; /&gt;
         &lt;/property&gt;
-        &lt;property name=&quot;packagesToScan&quot; value=&quot;io.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;org.apache.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
         &lt;property name=&quot;jpaProperties&quot;&gt;
             &lt;props&gt;
                 &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQLDialect&lt;/prop&gt;
@@ -1630,8 +1667,8 @@
         &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
     &lt;/bean&gt;
     
-    &lt;bean id=&quot;preciseModuloDatabaseShardingAlgorithm&quot; class=&quot;io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm&quot; /&gt;
-    &lt;bean id=&quot;preciseModuloTableShardingAlgorithm&quot; class=&quot;io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm&quot; /&gt;
+    &lt;bean id=&quot;preciseModuloDatabaseShardingAlgorithm&quot; class=&quot;org.apache.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm&quot; /&gt;
+    &lt;bean id=&quot;preciseModuloTableShardingAlgorithm&quot; class=&quot;org.apache.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm&quot; /&gt;
     
     &lt;sharding:standard-strategy id=&quot;databaseShardingStrategy&quot; sharding-column=&quot;user_id&quot; precise-algorithm-ref=&quot;preciseModuloDatabaseShardingAlgorithm&quot; /&gt;
     &lt;sharding:standard-strategy id=&quot;tableShardingStrategy&quot; sharding-column=&quot;order_id&quot; precise-algorithm-ref=&quot;preciseModuloTableShardingAlgorithm&quot; /&gt;
@@ -1664,24 +1701,24 @@
        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
        xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
-       xmlns:master-slave=&quot;http://shardingsphere.io/schema/shardingsphere/masterslave&quot;
+       xmlns:master-slave=&quot;http://shardingsphere.apache.org/schema/shardingsphere/masterslave&quot;
        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.io/schema/shardingsphere/masterslave  
-                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd&quot;&gt;
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave  
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd&quot;&gt;
     &lt;context:annotation-config /&gt;
-    &lt;context:component-scan base-package=&quot;io.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
+    &lt;context:component-scan base-package=&quot;org.apache.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
     
     &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot;&gt;
         &lt;property name=&quot;dataSource&quot; ref=&quot;masterSlaveDataSource&quot; /&gt;
         &lt;property name=&quot;jpaVendorAdapter&quot;&gt;
             &lt;bean class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot; p:database=&quot;MYSQL&quot; /&gt;
         &lt;/property&gt;
-        &lt;property name=&quot;packagesToScan&quot; value=&quot;io.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;org.apache.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
         &lt;property name=&quot;jpaProperties&quot;&gt;
             &lt;props&gt;
                 &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQLDialect&lt;/prop&gt;
@@ -1714,7 +1751,7 @@
         &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
     &lt;/bean&gt;
     
-    &lt;bean id=&quot;randomStrategy&quot; class=&quot;io.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm&quot; /&gt;
+    &lt;bean id=&quot;randomStrategy&quot; class=&quot;org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm&quot; /&gt;
     &lt;master-slave:data-source id=&quot;masterSlaveDataSource&quot; master-data-source-name=&quot;ds_master&quot; slave-data-source-names=&quot;ds_slave0, ds_slave1&quot; strategy-ref=&quot;randomStrategy&quot;&gt;
             &lt;master-slave:props&gt;
                 &lt;prop key=&quot;sql.show&quot;&gt;${sql_show}&lt;/prop&gt;
@@ -1733,24 +1770,24 @@
        xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
        xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
        xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
-       xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingsphere/sharding&quot;
+       xmlns:sharding=&quot;http://shardingsphere.apache.org/schema/shardingsphere/sharding&quot;
        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd&quot;&gt;
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd&quot;&gt;
     &lt;context:annotation-config /&gt;
-    &lt;context:component-scan base-package=&quot;io.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
+    &lt;context:component-scan base-package=&quot;org.apache.shardingsphere.example.spring.namespace.jpa&quot; /&gt;
     
     &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot;&gt;
         &lt;property name=&quot;dataSource&quot; ref=&quot;shardingDataSource&quot; /&gt;
         &lt;property name=&quot;jpaVendorAdapter&quot;&gt;
             &lt;bean class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot; p:database=&quot;MYSQL&quot; /&gt;
         &lt;/property&gt;
-        &lt;property name=&quot;packagesToScan&quot; value=&quot;io.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;org.apache.shardingsphere.example.spring.namespace.jpa.entity&quot; /&gt;
         &lt;property name=&quot;jpaProperties&quot;&gt;
             &lt;props&gt;
                 &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQLDialect&lt;/prop&gt;
@@ -1804,7 +1841,7 @@
         &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
     &lt;/bean&gt;
     
-    &lt;bean id=&quot;randomStrategy&quot; class=&quot;io.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm&quot; /&gt;
+    &lt;bean id=&quot;randomStrategy&quot; class=&quot;org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm&quot; /&gt;
     
     &lt;sharding:inline-strategy id=&quot;databaseStrategy&quot; sharding-column=&quot;user_id&quot; algorithm-expression=&quot;ds_ms$-&gt;{user_id % 2}&quot; /&gt;
     &lt;sharding:inline-strategy id=&quot;orderTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order$-&gt;{order_id % 2}&quot; /&gt;
@@ -1834,22 +1871,102 @@
 &lt;/beans&gt;
 </code></pre>
 
+<h3 id="sharding-data-masking">Sharding + Data Masking</h3>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingsphere/sharding&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd&quot;&gt;
+    &lt;import resource=&quot;classpath:META-INF/shardingTransaction.xml&quot;/&gt;
+    &lt;context:annotation-config /&gt;
+    &lt;context:component-scan base-package=&quot;io.shardingsphere.example.repository.jpa&quot;/&gt;
+
+    &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;shardingDataSource&quot; /&gt;
+        &lt;property name=&quot;jpaVendorAdapter&quot;&gt;
+            &lt;bean class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot; p:database=&quot;MYSQL&quot; /&gt;
+        &lt;/property&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;io.shardingsphere.example.repository.jpa.entity&quot; /&gt;
+        &lt;property name=&quot;jpaProperties&quot;&gt;
+            &lt;props&gt;
+                &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQLDialect&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.hbm2ddl.auto&quot;&gt;create-drop&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.show_sql&quot;&gt;true&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot; p:entityManagerFactory-ref=&quot;entityManagerFactory&quot; /&gt;
+    &lt;tx:annotation-driven /&gt;
+    
+    &lt;bean id=&quot;demo_ds_0&quot; class=&quot;com.zaxxer.hikari.HikariDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;jdbcUrl&quot; value=&quot;jdbc:mysql://localhost:3306/demo_ds_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+        &lt;property name=&quot;maxActive&quot; value=&quot;16&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;demo_ds_1&quot; class=&quot;com.zaxxer.hikari.HikariDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;jdbcUrl&quot; value=&quot;jdbc:mysql://localhost:3306/demo_ds_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+        &lt;property name=&quot;maxActive&quot; value=&quot;16&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;sharding:inline-strategy id=&quot;databaseStrategy&quot; sharding-column=&quot;user_id&quot; algorithm-expression=&quot;demo_ds_${user_id % 2}&quot; /&gt;
+    &lt;sharding:inline-strategy id=&quot;orderTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order_${order_id % 2}&quot; /&gt;
+    &lt;sharding:inline-strategy id=&quot;orderItemTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order_item_${order_id % 2}&quot; /&gt;
+    &lt;sharding:inline-strategy id=&quot;orderEncryptTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order_encrypt_${order_id % 2}&quot; /&gt;
+    
+    &lt;sharding:key-generator id=&quot;orderKeyGenerator&quot; type=&quot;SNOWFLAKE&quot; column=&quot;order_id&quot; /&gt;
+    &lt;sharding:key-generator id=&quot;itemKeyGenerator&quot; type=&quot;SNOWFLAKE&quot; column=&quot;order_item_id&quot; /&gt;
+    
+    &lt;sharding:encryptor id=&quot;md5&quot; type=&quot;MD5&quot; columns=&quot;status&quot; /&gt;
+    &lt;sharding:encryptor id=&quot;query&quot; type=&quot;QUERY&quot; columns=&quot;encrypt_id&quot; assisted-query-columns=&quot;query_id&quot; /&gt;
+    
+    &lt;sharding:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;sharding:sharding-rule data-source-names=&quot;demo_ds_0, demo_ds_1&quot;&gt;
+            &lt;sharding:table-rules&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order&quot; actual-data-nodes=&quot;demo_ds_${0..1}.t_order_${0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderTableStrategy&quot; key-generator-ref=&quot;orderKeyGenerator&quot; /&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order_item&quot; actual-data-nodes=&quot;demo_ds_${0..1}.t_order_item_${0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderItemTableStrategy&quot; key-generator-ref=&quot;itemKeyGenerator&quot; encryptor-ref=&quot;md5&quot; /&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order_encrypt&quot; actual-data-nodes=&quot;demo_ds_${0..1}.t_order_encrypt_${0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderEncryptTableStrategy&quot; encryptor-ref=&quot;query&quot; /&gt;
+            &lt;/sharding:table-rules&gt;
+        &lt;/sharding:sharding-rule&gt;
+        &lt;sharding:props&gt;
+            &lt;prop key=&quot;sql.show&quot;&gt;true&lt;/prop&gt;
+        &lt;/sharding:props&gt;
+    &lt;/sharding:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
 <h3 id="orchestration">Orchestration</h3>
 
 <pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
        xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
-       xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingsphere/orchestration/sharding&quot;
-       xmlns:master-slave=&quot;http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave&quot;
-       xmlns:reg=&quot;http://shardingsphere.io/schema/shardingsphere/orchestration/reg&quot;
+       xmlns:sharding=&quot;http://shardingsphere.apache.org/schema/shardingsphere/orchestration/sharding&quot;
+       xmlns:master-slave=&quot;http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave&quot;
+       xmlns:reg=&quot;http://shardingsphere.apache.org/schema/shardingsphere/orchestration/reg&quot;
        xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd&quot;&gt;
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/reg 
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/reg/reg.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/sharding 
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave  
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave/master-slave.xsd&quot;&gt;
     
     &lt;reg:registry-center id=&quot;regCenter&quot; server-lists=&quot;localhost:2181&quot; namespace=&quot;orchestration-spring-namespace-demo&quot; overwtite=&quot;false&quot; /&gt;
     &lt;sharding:data-source id=&quot;shardingMasterSlaveDataSource&quot; registry-center-ref=&quot;regCenter&quot; /&gt;
@@ -1861,7 +1978,7 @@
 
 <h3 id="sharding-1">Sharding</h3>
 
-<p>Namespace: <a href="http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd</a></p>
+<p>Namespace: <a href="http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd</a></p>
 
 <h4 id="sharding-data-source">&lt;sharding:data-source /&gt;</h4>
 
@@ -1885,12 +2002,6 @@
 <td>sharding-rule</td>
 <td>Tag</td>
 <td>Sharding rule configuration</td>
-</tr>
-
-<tr>
-<td>config-map (?)</td>
-<td>Tag</td>
-<td>User-defined arguments</td>
 </tr>
 
 <tr>
@@ -2029,6 +2140,12 @@
 <td>logic-index (?)</td>
 <td>Attribute</td>
 <td>Name if logic index. If use <code>DROP INDEX XXX</code> SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables</td>
+</tr>
+
+<tr>
+<td>encryptor (?)</td>
+<td>Attribute</td>
+<td>Encrypt generator</td>
 </tr>
 </tbody>
 </table>
@@ -2293,6 +2410,15 @@
 </tbody>
 </table>
 
+<h4 id="sharding-encrypt">&lt;sharding:encrypt /&gt;</h4>
+
+<p>| <em>Name</em>              | <em>Type</em>                       | <em>Description</em>                                                                                         |
+| &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;- | &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;- | &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash; |
+| type                | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID                   |
+| column              | Attribute                    | Column name of encrypt                                                                                |
+| assistedQueryColumns| Attribute                    | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
+| props-ref           | Attribute                    | Properties, e.g. <code>aes.key.value</code> for AES encryptor                                                    |</p>
+
 <h4 id="sharding-props">&lt;sharding:props /&gt;</h4>
 
 <table>
@@ -2331,11 +2457,9 @@
 </tbody>
 </table>
 
-<h4 id="sharding-config-map">&lt;sharding:config-map /&gt;</h4>
-
 <h3 id="read-write-splitting-1">Read-write splitting</h3>
 
-<p>Namespace: <a href="http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd</a></p>
+<p>Namespace: <a href="http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd</a></p>
 
 <h4 id="master-slave-data-source">&lt;master-slave:data-source /&gt;</h4>
 
@@ -2380,20 +2504,12 @@
 </tr>
 
 <tr>
-<td>config-map (?)</td>
-<td>Attribute</td>
-<td>User-defined arguments</td>
-</tr>
-
-<tr>
 <td>props (?)</td>
 <td>Tag</td>
 <td>Properties</td>
 </tr>
 </tbody>
 </table>
-
-<h4 id="master-slave-config-map">&lt;master-slave:config-map /&gt;</h4>
 
 <h4 id="master-slave-props">&lt;master-slave:props /&gt;</h4>
 
@@ -2435,7 +2551,7 @@
 
 <h3 id="sharding-orchestration">Sharding + orchestration</h3>
 
-<p>Namespace: <a href="http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
+<p>Namespace: <a href="http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
 
 <h4 id="orchestration-sharding-data-source">&lt;orchestration:sharding-data-source /&gt;</h4>
 
@@ -2477,7 +2593,7 @@
 
 <h3 id="read-write-splitting-orchestration">Read-write splitting + orchestration</h3>
 
-<p>Namespace: <a href="http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
+<p>Namespace: <a href="http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
 
 <h4 id="orchestration-master-slave-data-source">&lt;orchestration:master-slave-data-source /&gt;</h4>
 
@@ -2519,7 +2635,7 @@
 
 <h3 id="orchestration-registry-center">Orchestration registry center</h3>
 
-<p>Namespace: <a href="http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
+<p>Namespace: <a href="http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd</a></p>
 
 <h4 id="orchestration-registry-center-1">&lt;orchestration:registry-center /&gt;</h4>
 
@@ -3128,54 +3244,6 @@
             
         
                     
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
                         
             
             
@@ -3195,6 +3263,70 @@
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
             
         
                     
@@ -3245,6 +3377,22 @@
                     
                     
 
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
                     
                         
             
@@ -3570,20 +3718,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552011589"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1551681515"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1551681515"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552011589"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1551681515" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1551681515"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552011589" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552011589"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

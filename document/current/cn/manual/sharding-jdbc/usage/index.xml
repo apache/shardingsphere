@@ -63,13 +63,23 @@ orchestration: name: orchestration-sharding-data-source overwrite: false registr
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/</guid>
-      <description>引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
+      <description>引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
 连接池配置 ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。 其它连接池需要用户实现DataSourceMapConverter的SPI接口进行扩展，可以参考org.apache.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper的实现。 若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
    属性名称 默认值     connectionTimeoutMilliseconds 30 * 1000   idleTimeoutMilliseconds 60 * 1000   maintenanceIntervalMilliseconds 30 * 1000   maxLifetimeMilliseconds 0 (无限制)   maxPoolSize 50   minPoolSize 1    事务类型切换 ShardingSphere的事务类型存放在TransactionTypeHolder的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。
 注意：数据库连接创建之后，事务类型将无法更改。
 API方式 TransactionTypeHolder.set(TransactionType.LOCAL);  或
 TransactionTypeHolder.set(TransactionType.XA);  SpringBootStarter使用方式 引入Maven依赖：
-&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring-boot-starter&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  SpringBoot使用方式 引入Maven依赖：</description>
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring-boot-starter&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  SpringBoot使用方式 引入Maven依赖：</description>
+    </item>
+    
+    <item>
+      <title>数据脱敏</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/</guid>
+      <description>该章节主要介绍如何使用数据脱敏功能，如何进行相关配置。数据脱敏功能即可与数据分片功能共同使用，又可作为单独功能组件，独立使用。 与数据分片功能共同使用时，会创建ShardingDataSource；单独使用时，会创建EncryptDataSource来完成数据脱敏功能。
+不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置第一个数据源 BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds0&amp;quot;); dataSource1.setUsername(&amp;quot;root&amp;quot;); dataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds0&amp;quot;, dataSource1); // 配置第二个数据源 BasicDataSource dataSource2 = new BasicDataSource(); dataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds1&amp;quot;); dataSource2.setUsername(&amp;quot;root&amp;quot;); dataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds1&amp;quot;, dataSource2); // 配置Order表规则 + 脱敏规则 TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration(); orderTableRuleConfig.setLogicTable(&amp;quot;t_order&amp;quot;); orderTableRuleConfig.setActualDataNodes(&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); orderTableRuleConfig.setEncryptorConfig(new EncryptorConfiguration(&amp;quot;MD5&amp;quot;, &amp;quot;status&amp;quot;, new Properties())); // 配置分库 + 分表策略 orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); orderTableRuleConfig.</description>
     </item>
     
   </channel>
