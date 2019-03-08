@@ -1,8 +1,11 @@
 +++
 toc = true
-title = "数据分片"
-weight = 1
+title = "数据脱敏"
+weight = 6
 +++
+
+该章节主要介绍如何使用数据脱敏功能，如何进行相关配置。数据脱敏功能即可与数据分片功能共同使用，又可作为单独功能组件，独立使用。
+与数据分片功能共同使用时，会创建ShardingDataSource；单独使用时，会创建EncryptDataSource来完成数据脱敏功能。
 
 ## 不使用Spring
 
@@ -18,46 +21,45 @@ weight = 1
 
 ### 基于Java编码的规则配置
 
-Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
-
 ```java
-    // 配置真实数据源
-    Map<String, DataSource> dataSourceMap = new HashMap<>();
-    
-    // 配置第一个数据源
-    BasicDataSource dataSource1 = new BasicDataSource();
-    dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
-    dataSource1.setUsername("root");
-    dataSource1.setPassword("");
-    dataSourceMap.put("ds0", dataSource1);
-    
-    // 配置第二个数据源
-    BasicDataSource dataSource2 = new BasicDataSource();
-    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
-    dataSource2.setUsername("root");
-    dataSource2.setPassword("");
-    dataSourceMap.put("ds1", dataSource2);
-    
-    // 配置Order表规则
-    TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-    orderTableRuleConfig.setLogicTable("t_order");
-    orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
-    
-    // 配置分库 + 分表策略
-    orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
-    orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
-    
-    // 配置分片规则
-    ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-    shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-    
-    // 省略配置order_item表规则...
-    // ...
-    
-    // 获取数据源对象
-    DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+       // 配置真实数据源
+       Map<String, DataSource> dataSourceMap = new HashMap<>();
+       
+       // 配置第一个数据源
+       BasicDataSource dataSource1 = new BasicDataSource();
+       dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
+       dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
+       dataSource1.setUsername("root");
+       dataSource1.setPassword("");
+       dataSourceMap.put("ds0", dataSource1);
+       
+       // 配置第二个数据源
+       BasicDataSource dataSource2 = new BasicDataSource();
+       dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+       dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
+       dataSource2.setUsername("root");
+       dataSource2.setPassword("");
+       dataSourceMap.put("ds1", dataSource2);
+       
+       // 配置Order表规则 + 脱敏规则
+       TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+       orderTableRuleConfig.setLogicTable("t_order");
+       orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
+       orderTableRuleConfig.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
+       
+       // 配置分库 + 分表策略
+       orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
+       orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
+       
+       // 配置分片规则
+       ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+       shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+       
+       // 省略配置order_item表规则...
+       // ...
+       
+       // 获取数据源对象
+       DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
 ### 基于Yaml的规则配置
@@ -98,32 +100,20 @@ tables:
       inline:
         shardingColumn: order_id
         algorithmInlineExpression: t_order_item${order_id % 2}
+      encryptor:
+        type: MD5
+        columns: status
+    t_order_encrypt:
+       encryptor:
+        type: QUERY
+        columns: encrypt_id
+        assistedQueryColumns: query_id
+  bindingTables:
+    - t_order,t_order_item,t_order_encrypt
 ```
 
 ```java
-    DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
-```
-
-### 使用原生JDBC
-
-通过ShardingDataSourceFactory或者YamlShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
-以JDBC原生实现为例：
-
-```java
-DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(yamlFile);
-String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
-try (
-        Connection conn = dataSource.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    preparedStatement.setInt(1, 10);
-    preparedStatement.setInt(2, 1001);
-    try (ResultSet rs = preparedStatement.executeQuery()) {
-        while(rs.next()) {
-            System.out.println(rs.getInt(1));
-            System.out.println(rs.getInt(2));
-        }
-    }
-}
+    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ## 使用Spring
@@ -173,6 +163,15 @@ sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-exp
 sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.encryptor.type=MD5
+sharding.jdbc.config.sharding.tables.t_order_item.encryptor.columns=status
+
+sharding.jdbc.config.sharding.tables.t_order_encrypt.actual-data-nodes=ds_$->{0..1}.t_order_encrypt_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.algorithm-expression=t_order_encrypt_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.type=QUERY
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.columns=encrypt_id
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColumns=query_id
 ```
 
 ### 基于Spring命名空间的规则配置
@@ -203,12 +202,17 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorith
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
+    <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
+
+    <sharding:encryptor id="md5" type="MD5" columns="status" />
+    <sharding:encryptor id="query" type="QUERY" columns="encrypt_id" assisted-query-columns="query_id" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" encryptor-ref="md5" />
+                <sharding:table-rule logic-table="t_order_encrypt" actual-data-nodes="demo_ds_${0..1}.t_order_encrypt_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderEncryptTableStrategy" encryptor-ref="query" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -223,5 +227,3 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorith
 @Resource
 private DataSource dataSource;
 ```
-
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。更多的详细配置请参考[配置手册](/cn/manual/sharding-jdbc/configuration/)。

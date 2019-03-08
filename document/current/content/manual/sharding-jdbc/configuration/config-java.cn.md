@@ -123,6 +123,51 @@ weight = 1
     }
 ```
 
+### 数据分片 + 数据脱敏
+
+```java
+    public DataSource getDataSource() throws SQLException {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item, t_order_encrypt");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_encrypt", "demo_ds_${0..1}.t_order_encrypt_${[0, 1]}");
+        result.setEncryptorConfig(new EncryptorConfiguration("query", "encrypt_id", "query_id", new Properties()));
+        return result;
+    }
+    
+    private static Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>();
+        result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+        result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+        return result;
+    }
+    
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+    }
+
+```
+
 ### 数据治理
 
 ```java
@@ -152,7 +197,6 @@ weight = 1
 | ------------------ |  ------------------------ | -------------- |
 | dataSourceMap      | Map\<String, DataSource\> | 数据源配置      |
 | shardingRuleConfig | ShardingRuleConfiguration | 数据分片配置规则 |
-| configMap (?)      | Map\<String, Object\>     | 用户自定义配置   |
 | props (?)          | Properties                | 属性配置        |
 
 #### ShardingRuleConfiguration
@@ -182,6 +226,7 @@ weight = 1
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，缺省表示使用默认分表策略                                                                                                                                                                              |
 | logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                   |
 | keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列值生成器配置，缺省表示使用默认自增主键生成器                                                                                                                                                                |
+| encryptorConfiguration (?)         | EncryptorConfiguration        | 加解密生成器配置                                                                                                                                                                                              |
 
 #### StandardShardingStrategyConfiguration
 
@@ -224,11 +269,21 @@ ShardingStrategyConfiguration的实现类，用于配置Hint方式分片策略�
 ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 #### KeyGeneratorConfiguration
+
 | *名称*             | *数据类型*                    | *说明*                                                                         |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | column            | String                       | 自增列名称                                                                      |
 | type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
 | props             | Properties                   | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds |  
+
+#### EncryptorConfiguration
+
+| *名称*               |*数据类型*                    | *说明*                                                                          |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                        |
+| column              | String                       | 加解密器字段                                                                     |
+| assistedQueryColumns| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询              |
+| props               | Properties                   | 属性配置, 比如AES算法的KEY属性：aes.key.value                                      |  
 
 #### PropertiesConstant
 
@@ -241,10 +296,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | max.connections.size.per.query (?)| int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1   |
 | check.table.metadata.enabled (?)  | boolean   | 是否在启动时检查分表元数据一致性，默认值: false        |
 
-#### configMap
-
-用户自定义配置。
-
 ### 读写分离
 
 #### MasterSlaveDataSourceFactory
@@ -255,7 +306,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------------- | ---------------------------- | ------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 数据源与其名称的映射  |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 读写分离规则         |
-| configMap (?)         | Map\<String, Object\>        | 用户自定义配置       |
 | props (?)             | Properties                   | 属性配置            |
 
 #### MasterSlaveRuleConfiguration
@@ -268,10 +318,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | masterDataSourceName     | String                          | 主库数据源名称    |
 | slaveDataSourceNames     | Collection\<String\>            | 从库数据源名称列表 |
 | loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | 从库负载均衡算法   |
-
-#### configMap
-
-用户自定义配置。
 
 #### PropertiesConstant
 
@@ -295,7 +341,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | ------------------- |  ------------------------- | --------------------------- |
 | dataSourceMap       | Map\<String, DataSource\>  | 同ShardingDataSourceFactory |
 | shardingRuleConfig  | ShardingRuleConfiguration  | 同ShardingDataSourceFactory |
-| configMap (?)       | Map\<String, Object\>      | 同ShardingDataSourceFactory |
 | props (?)           | Properties                 | 同ShardingDataSourceFactory |
 | orchestrationConfig | OrchestrationConfiguration | 数据治理规则配置              |
 
@@ -307,7 +352,6 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | --------------------- | ---------------------------- | ------------------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
-| configMap (?)         | Map\<String, Object\>        | 同MasterSlaveDataSourceFactory |
 | props (?)             | Properties                   | 同ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
 

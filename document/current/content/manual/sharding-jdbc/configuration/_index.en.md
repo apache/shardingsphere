@@ -49,5 +49,5 @@ Implemented with `DataSource` interface, `ShardingDataSource` and `MasterSlaveDa
 
 ## Use Convention
 
-Classes in `io.shardingsphere.api` and `io.shardingsphere.shardingjdbc.api` packages are API open to users, the modifications of which will be declared in release notes. 
+Classes in `org.apache.shardingsphere.api` and `org.apache.shardingsphere.shardingjdbc.api` packages are API open to users, the modifications of which will be declared in release notes. 
 As internal implementations, classes in other packages can adjust any time, `please not use them directly`.

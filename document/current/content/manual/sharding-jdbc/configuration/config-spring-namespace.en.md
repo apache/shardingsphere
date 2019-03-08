@@ -19,24 +19,23 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -62,8 +61,8 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="password" value="" />
     </bean>
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
+    <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
+    <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.example.spring.namespace.jpa.algorithm.PreciseModuloTableShardingAlgorithm" />
     
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
@@ -97,24 +96,24 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.io/schema/shardingsphere/masterslave  
-                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave  
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
+    <context:component-scan base-package="org.apache.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="masterSlaveDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -147,7 +146,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="io.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
             <master-slave:props>
                 <prop key="sql.show">${sql_show}</prop>
@@ -167,24 +166,24 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
+    <context:component-scan base-package="org.apache.shardingsphere.example.spring.namespace.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.example.spring.namespace.jpa.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.spring.namespace.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
@@ -238,7 +237,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="io.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="org.apache.shardingsphere.example.spring.namespace.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
@@ -268,23 +267,105 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
 </beans>
 ```
 
+### Sharding + Data Masking
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.io/schema/shardingsphere/sharding 
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <import resource="classpath:META-INF/shardingTransaction.xml"/>
+    <context:annotation-config />
+    <context:component-scan base-package="io.shardingsphere.example.repository.jpa"/>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="shardingDataSource" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
+        </property>
+        <property name="packagesToScan" value="io.shardingsphere.example.repository.jpa.entity" />
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
+    <tx:annotation-driven />
+    
+    <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
+    </bean>
+    
+    <bean id="demo_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+        <property name="maxActive" value="16"/>
+    </bean>
+    
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
+    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
+    <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
+    
+    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
+    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    
+    <sharding:encryptor id="md5" type="MD5" columns="status" />
+    <sharding:encryptor id="query" type="QUERY" columns="encrypt_id" assisted-query-columns="query_id" />
+    
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" encryptor-ref="md5" />
+                <sharding:table-rule logic-table="t_order_encrypt" actual-data-nodes="demo_ds_${0..1}.t_order_encrypt_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderEncryptTableStrategy" encryptor-ref="query" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+        <sharding:props>
+            <prop key="sql.show">true</prop>
+        </sharding:props>
+    </sharding:data-source>
+</beans>
+```
+
+
 ### Orchestration
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/orchestration/sharding"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave"
-       xmlns:reg="http://shardingsphere.io/schema/shardingsphere/orchestration/reg"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/orchestration/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave"
+       xmlns:reg="http://shardingsphere.apache.org/schema/shardingsphere/orchestration/reg"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/reg/reg.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave  
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/reg 
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/reg/reg.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/sharding 
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave  
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
     <reg:registry-center id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
@@ -296,7 +377,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
 
 ### Sharding
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
 
 #### \<sharding:data-source />
 
@@ -304,7 +385,6 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | -------------- | --------- | --------------------------- |
 | id             | Attribute | Spring Bean Id              |
 | sharding-rule  | Tag       | Sharding rule configuration |
-| config-map (?) | Tag       | User-defined arguments      |
 | props (?)      | Tag       | Properties                  |
 
 #### \<sharding:sharding-rule />
@@ -336,6 +416,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | table-strategy-ref (?)       | Attribute | Tables sharding strategy, use default tables sharding strategy if absent                                                                                                                                    |
 | key-generator (?)            | Attribute | Key generator, use default key generator if absent.                                                                                                                                                         |
 | logic-index (?)              | Attribute | Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                          |
+| encryptor (?)                | Attribute | Encrypt generator                                                                                                                                                                             |
 
 #### \<sharding:binding-table-rules />
 
@@ -406,6 +487,14 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | type              | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID          |
 | props-ref         | Attribute                    | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` | 
  
+#### \<sharding:encrypt />
+| *Name*              | *Type*                       | *Description*                                                                                         | 
+| ------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
+| type                | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID                   |
+| column              | Attribute                    | Column name of encrypt                                                                                |
+| assistedQueryColumns| Attribute                    | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
+| props-ref           | Attribute                    | Properties, e.g. `aes.key.value` for AES encryptor                                                    | 
+
 #### \<sharding:props />
 
 | *Name*                              | *Type*    | *Description*                                                                  |
@@ -415,11 +504,9 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
 | check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : false         |
 
-#### \<sharding:config-map />
-
 ### Read-write splitting
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
 
 #### \<master-slave:data-source />
 
@@ -430,10 +517,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 | slave-data-source-names | Attribute | Reference of slave data sources. Multiple columns separated with comma                                        |
 | strategy-ref (?)        | Attribute | Reference of load balance algorithm. This class need to implements MasterSlaveLoadBalanceAlgorithm            |
 | strategy-type (?)       | Attribute | Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `strategy-ref` is present |
-| config-map (?)          | Attribute | User-defined arguments                                                                                        |
 | props (?)               | Tag       | Properties                                                                                                    |
-
-#### \<master-slave:config-map />
 
 #### \<master-slave:props />
 
@@ -446,7 +530,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 
 ### Sharding + orchestration
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
 #### \<orchestration:sharding-data-source />
 
@@ -459,7 +543,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestr
 
 ### Read-write splitting + orchestration
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
 #### \<orchestration:master-slave-data-source />
 
@@ -472,7 +556,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestr
 
 ### Orchestration registry center
 
-Namespace: http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
 #### \<orchestration:registry-center />
 

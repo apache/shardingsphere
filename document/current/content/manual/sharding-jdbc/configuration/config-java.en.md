@@ -122,6 +122,50 @@ weight = 1
         return result;
     }
 ```
+### Sharding + Data Masking
+
+```java
+    public DataSource getDataSource() throws SQLException {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item, t_order_encrypt");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
+    }
+    
+    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
+        return result;
+    }
+    
+    private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_encrypt", "demo_ds_${0..1}.t_order_encrypt_${[0, 1]}");
+        result.setEncryptorConfig(new EncryptorConfiguration("query", "encrypt_id", "query_id", new Properties()));
+        return result;
+    }
+    
+    private static Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>();
+        result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+        result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+        return result;
+    }
+    
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+    }
+
+```
 
 ### Orchestration
 
@@ -150,7 +194,6 @@ weight = 1
 | ------------------ |  ------------------------ | --------------------------- |
 | dataSourceMap      | Map\<String, DataSource\> | Data sources configuration  |
 | shardingRuleConfig | ShardingRuleConfiguration | Sharding rule configuration |
-| configMap (?)      | Map\<String, Object\>     | Config map                  |
 | props (?)          | Properties                | Properties                  |
 
 #### ShardingRuleConfiguration
@@ -171,11 +214,13 @@ weight = 1
 | *Name*                             | *DataType*                    | *Description*                                                                                                                                                                                         |
 | ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | logicTable                         | String                        | Name of logic table                                                                                                                                                                                   |
-| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
+| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7}  |
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy, use default databases sharding strategy if absent                                                                                                                        |
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy, use default databases sharding strategy if absent                                                                                                                           |
 | logicIndex (?)                     | String                        | Name if logic index. If use *DROP INDEX XXX* SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                    |
-| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration, use default key generator if absent                                                                                                                                                    |
+| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration, use default key generator if absent                                                                                                                                      |
+| encryptorConfiguration (?)         | EncryptorConfiguration        | Encrypt generator configuration                                                                                                                                                                       |
+
 
 #### StandardShardingStrategyConfiguration
 
@@ -218,11 +263,22 @@ Subclass of ShardingStrategyConfiguration.
 Subclass of ShardingStrategyConfiguration.
 
 #### KeyGeneratorConfiguration
+
 | *Name*            | *DataType*                   | *Description*                                                                               |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
 | column            | String                       | Column name of key generator                                                                |
 | type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
 | props             | Properties                   | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`|
+
+#### EncryptorConfiguration
+
+| *Name*              | *DataType*                   | *Description*                                                                                        |
+| -----------------   | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                               |
+| column              | String                       | Column name of encryptor                                                                             |
+| assistedQueryColumns| String                       | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
+| props               | Properties                   | Properties, e.g. `aes.key.value` for AES encryptor                                                    |  
+
 
 #### ShardingPropertiesConstant
 
@@ -235,10 +291,6 @@ Enumeration of properties.
 | max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
 | check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : false         |
 
-#### configMap
-
-User-defined arguments.
-
 ### Read-write splitting
 
 #### MasterSlaveDataSourceFactory
@@ -247,7 +299,6 @@ User-defined arguments.
 | --------------------- | ---------------------------- | ----------------------------------- |
 | dataSourceMap         | Map\<String, DataSource\>    | Map of data sources and their names |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Master slave rule configuration     |
-| configMap (?)         | Map\<String, Object\>        | Config map                          |
 | props (?)             | Properties                   | Properties                          |
 
 #### MasterSlaveRuleConfiguration
@@ -258,10 +309,6 @@ User-defined arguments.
 | masterDataSourceName     | String                          | Name of master data source       |
 | slaveDataSourceNames     | Collection\<String\>            | Names of Slave data sources      |
 | loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Load balance algorithm           |
-
-#### configMap
-
-User-defined arguments.
 
 #### ShardingPropertiesConstant
 
@@ -282,7 +329,6 @@ Enumeration of properties.
 | ------------------- |  ------------------------- | ----------------------------------- |
 | dataSourceMap       | Map\<String, DataSource\>  | Same with ShardingDataSourceFactory |
 | shardingRuleConfig  | ShardingRuleConfiguration  | Same with ShardingDataSourceFactory |
-| configMap (?)       | Map\<String, Object\>      | Same with ShardingDataSourceFactory |
 | props (?)           | Properties                 | Same with ShardingDataSourceFactory |
 | orchestrationConfig | OrchestrationConfiguration | Orchestration configuration         |
 
@@ -292,7 +338,6 @@ Enumeration of properties.
 | --------------------- | ---------------------------- | -------------------------------------- |
 | dataSourceMap         | Map\<String, DataSource\>    | Same with MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Same with MasterSlaveDataSourceFactory |
-| configMap (?)         | Map\<String, Object\>        | Same with MasterSlaveDataSourceFactory |
 | props (?)             | Properties                   | Same with ShardingDataSourceFactory    |
 | orchestrationConfig   | OrchestrationConfiguration   | Orchestration configuration            |
  

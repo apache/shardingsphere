@@ -20,7 +20,3 @@ weight = 1
 ## 负载均衡策略
 
 通过负载均衡策略将查询请求疏导至不同从库。
-
-## Config Map
-
-配置读写分离数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的masterSlaveConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。

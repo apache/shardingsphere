@@ -13,12 +13,11 @@ weight = 1
 
 ## 配置中心数据结构
 
-配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
+配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、Properties配置，可通过修改节点来实现对于配置的动态管理。
 
 ```
 config
     ├──authentication                            # Sharding-Proxy权限配置
-    ├──configMap                                 # 数据分片ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
     ├──props                                     # 属性配置
     ├──schema                                    # Schema配置
     ├      ├──sharding_db                        # SchemaName配置
@@ -34,14 +33,6 @@ config
 ```yaml
 password: root
 username: root
-```
-
-### config/configmap
-
-读写分离ConfigMap配置，以K/V形式存储。
-
-```yaml
-key2: value2
 ```
 
 ### config/sharding/props

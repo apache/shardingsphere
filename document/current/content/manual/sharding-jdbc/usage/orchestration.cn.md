@@ -72,7 +72,7 @@ orchestration:
 ```xml
 <!-- for spring boot -->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -95,7 +95,7 @@ orchestration:
 ```xml
 <!-- for spring namespace -->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -129,12 +129,12 @@ sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestratio
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:orchestraion="http://shardingsphere.io/schema/shardingsphere/orchestration"
+       xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.io/schema/shardingsphere/orchestration
-                           http://shardingsphere.io/schema/shardingsphere/orchestration/orchestration.xsd">
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
      <import resource="namespace/shardingDataSourceNamespace.xml" />
      <orchestraion:registry-center id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
      <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />

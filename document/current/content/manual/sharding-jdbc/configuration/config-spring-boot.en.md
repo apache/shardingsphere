@@ -132,6 +132,47 @@ sharding.jdbc.config.sharding.master-slave-rules.ds1.master-data-source-name=mas
 sharding.jdbc.config.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 ```
 
+### Sharding + Data Masking
+
+```properties
+sharding.jdbc.datasource.names=ds_0,ds_1
+
+sharding.jdbc.datasource.ds_0.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds_0.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_0
+sharding.jdbc.datasource.ds_0.username=root
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds_1.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_1
+sharding.jdbc.datasource.ds_1.username=root
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_$->{user_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds_$->{0..1}.t_order_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.key-generator.column=order_id
+sharding.jdbc.config.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds_$->{0..1}.t_order_item_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator.column=order_item_id
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
+sharding.jdbc.config.sharding.tables.t_order_item.encryptor.type=MD5
+sharding.jdbc.config.sharding.tables.t_order_item.encryptor.columns=status
+sharding.jdbc.config.sharding.tables.t_order_encrypt.actual-data-nodes=ds_$->{0..1}.t_order_encrypt_$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.algorithm-expression=t_order_encrypt_$->{order_id % 2}
+
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.type=QUERY
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.columns=encrypt_id
+sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColumns=query_id
+```
+
 ### Orchestration
 
 ```properties
@@ -272,6 +313,13 @@ sharding.jdbc.config.props.sql.show= #To show SQLS or not, default value: false
 sharding.jdbc.config.props.executor.size= #The number of working threads, default value: CPU count
 sharding.jdbc.config.props.check.table.metadata.enabled= #Check the metadata consistency of all the tables, default value: false
 ```
+
+### Data Masking
+```properties
+sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.type= #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES 
+sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.columns= #Column name of key generator      
+sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.assistedQueryColumns= #assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.props..<property-name>= #Properties, e.g. `aes.key.value` for AES encryptor  
 
 ### Orchestration
 
