@@ -66,7 +66,7 @@ Connection Pool Configuration ShardingSphere supports to transform normal databa
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/encrypt/</guid>
-      <description>This chapter mainly introduce how to use the feather of Data Masking. On one hand User can use Data Masking and Sharding together, which will create ShardingDataSource, On another hand, when user only adopt the feather of Data Masking, ShardingSphere will create EncryptDataSource.
+      <description>This chapter mainly introduces how to use the feather of Data Masking. On one hand User can use Data Masking and Sharding together, which will create ShardingDataSource, On another hand, when user only adopt the feather of Data Masking, ShardingSphere will create EncryptDataSource.
 Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure first data source BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.</description>
     </item>
     
