@@ -12,19 +12,19 @@
     <title>Yaml配置 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552011589" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552011589" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552011589" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552011589" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552011589" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552011589" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552011589" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552011589" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552013868" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552013868" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552013868" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552013868" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552013868" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552013868" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552013868" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552013868" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552011589" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552013868" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552013868"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1546,6 +1546,7 @@
 <li><a href="#数据分片">数据分片</a></li>
 <li><a href="#读写分离">读写分离</a></li>
 <li><a href="#数据分片-读写分离">数据分片 + 读写分离</a></li>
+<li><a href="#数据分片-数据脱敏">数据分片 + 数据脱敏</a></li>
 <li><a href="#数据治理">数据治理</a></li>
 </ul></li>
 <li><a href="#配置项说明">配置项说明</a>
@@ -1740,11 +1741,11 @@ shardingRule:
         loadBalanceAlgorithmType: ROUND_ROBIN
 props:
   sql.show: true
+</code></pre>
 
-### 数据分片 + 数据脱敏
+<h3 id="数据分片-数据脱敏">数据分片 + 数据脱敏</h3>
 
-```yaml
-dataSources:
+<pre><code class="language-yaml">dataSources:
   ds_0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
     jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0
@@ -3003,20 +3004,20 @@ orchestration:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552013868"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552011589"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552011589"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552013868"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552013868"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552011589" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552011589"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552013868" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552013868"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
