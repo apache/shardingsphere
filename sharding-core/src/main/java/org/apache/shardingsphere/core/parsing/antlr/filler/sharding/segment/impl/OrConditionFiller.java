@@ -122,8 +122,9 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
             if (needSharding) {
                 fillResult(shardingTableMetaData, sqlStatement, shardingRule, result, shardingCondition, sql);
             } else {
-                result.getAndConditions().clear();
-                break;
+                if(!result.getAndConditions().isEmpty()) {
+                    result.getAndConditions().clear();
+                }
             }
         }
         return result;
