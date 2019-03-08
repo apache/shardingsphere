@@ -58,7 +58,7 @@ public final class MySQLBinaryStatementRegistry {
      * @param parametersCount parameters count
      * @return statement ID
      */
-    public int register(final String sql, final int parametersCount) {
+    public synchronized int register(final String sql, final int parametersCount) {
         Integer result = statementIdAssigner.get(sql);
         if (null != result) {
             return result;
@@ -84,7 +84,7 @@ public final class MySQLBinaryStatementRegistry {
      *
      * @param statementId statement ID
      */
-    public void remove(final int statementId) {
+    public synchronized void remove(final int statementId) {
         MySQLBinaryStatement binaryStatement = getBinaryStatement(statementId);
         if (null != binaryStatement) {
             statementIdAssigner.remove(binaryStatement.getSql());
