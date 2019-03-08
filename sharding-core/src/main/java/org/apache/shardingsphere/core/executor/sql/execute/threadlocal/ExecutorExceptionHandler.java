@@ -34,12 +34,11 @@ import java.sql.SQLException;
 public final class ExecutorExceptionHandler {
     
     private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = new ThreadLocal<Boolean>() {
-
-		@Override
-		protected Boolean initialValue() {
-			return Boolean.TRUE;
-		}
-    	
+        
+        @Override
+        protected Boolean initialValue() { 
+            return true;
+        }
     };
     
     /**
