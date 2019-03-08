@@ -64,7 +64,6 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
 
 ### Rule Configuration Based on Yaml
 
-或通过Yaml方式配置，与以上配置等价：
 
 ```yaml
 dataSources:
@@ -220,8 +219,6 @@ sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColu
 ```
 
 ### Use DataSource in Spring
-
-直接通过注入的方式即可使用DataSource，或者将DataSource配置在JPA、Hibernate或MyBatis中使用。
 
 ```java
 @Resource
