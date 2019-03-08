@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +34,15 @@ public final class MySQLComFieldListPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
+    
+    @Test
+    public void assertNew() {
+        when(payload.readStringNul()).thenReturn("tbl");
+        when(payload.readStringEOF()).thenReturn("-");
+        MySQLComFieldListPacket actual = new MySQLComFieldListPacket(payload);
+        assertThat(actual.getTable(), is("tbl"));
+        assertThat(actual.getFieldWildcard(), is("-"));
+    }
     
     @Test
     public void assertWrite() {

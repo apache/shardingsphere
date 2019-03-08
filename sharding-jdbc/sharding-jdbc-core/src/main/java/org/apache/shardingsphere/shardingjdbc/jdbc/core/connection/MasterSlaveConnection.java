@@ -54,7 +54,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getCachedConnections().isEmpty() ? masterSlaveDataSource.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData(); 
+        return getCachedConnections().isEmpty() ? masterSlaveDataSource.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
     }
     
     @Override
@@ -100,5 +100,10 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
         return new MasterSlavePreparedStatement(this, sql, columnNames);
+    }
+    
+    @Override
+    protected boolean isOnlyLocalTransactionValid() {
+        return true;
     }
 }
