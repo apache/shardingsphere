@@ -59,10 +59,10 @@ public class SpringResultAssertUtils {
     
     public static void assertTransactionServiceResult(final TransactionService transactionService) {
         MemoryLogService memoryLogService = transactionService.getMemoryLogService();
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(40));
-        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(20));
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(40));
-        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(20));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(60));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(30));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(60));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(30));
     }
     
     public static void assertTransactionMasterSlaveResult(final TransactionService transactionService) {

@@ -35,6 +35,7 @@ public abstract class AbstractTransactionScenario {
         try {
             transactionService.processSuccessWithLocal();
             transactionService.processSuccessWithXA();
+            transactionService.processSuccessWithBase();
         } catch (final Exception ignore) {
         }
     }
@@ -47,6 +48,11 @@ public abstract class AbstractTransactionScenario {
         }
         try {
             transactionService.processFailureWithXA();
+        } catch (final Exception ex) {
+            printData();
+        }
+        try {
+            transactionService.processFailureWithBase();
         } catch (final Exception ex) {
             printData();
         }
