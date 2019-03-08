@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
@@ -44,6 +43,7 @@ public final class MySQLComStmtClosePacket extends MySQLCommandPacket {
      * Remove cached statement.
      */
     public void removeCachedStatement() {
-        MySQLBinaryStatementRegistry.getInstance().remove(statementId);
+        //TODO remove statement cache need to do research in future
+//        MySQLBinaryStatementRegistry.getInstance().remove(statementId);
     }
 }
