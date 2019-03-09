@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
+import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
+
 /**
  * Encrypt default optimize engine.
  *
  * @author panjuan
  */
-public class EncryptDefaultOptimizeEngine implements EncryptOptimizeEngine {
+public class EncryptDefaultOptimizeEngine implements OptimizeEngine {
     
     @Override
-    public void optimize() {
+    public OptimizeResult optimize() {
+        return new OptimizeResult(null, null);
     }
 }
