@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderEx
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
@@ -70,6 +69,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
                 encryptInsertColumnValues(insertColumnValues, i);
             }
         }
+        return new OptimizeResult(insertColumnValues);
     }
     
     private InsertColumnValues createInsertColumnValues() {
