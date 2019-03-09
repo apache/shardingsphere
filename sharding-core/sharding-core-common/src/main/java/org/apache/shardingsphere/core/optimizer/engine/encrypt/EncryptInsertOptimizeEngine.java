@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;

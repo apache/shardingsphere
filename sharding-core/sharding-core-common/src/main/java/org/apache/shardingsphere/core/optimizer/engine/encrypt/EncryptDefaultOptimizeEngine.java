@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
-import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 
 /**

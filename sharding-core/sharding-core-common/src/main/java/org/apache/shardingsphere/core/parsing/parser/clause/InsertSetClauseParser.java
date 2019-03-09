@@ -37,7 +37,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLPropertyExpre
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -77,7 +76,8 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         removeUnnecessaryToken(insertStatement);
         insertStatement.setGenerateKeyColumnIndex(-1);
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        insertStatement.addSQLToken(new InsertValuesToken(beginPosition, DefaultKeyword.SET));
+        insertStatement.setType(DefaultKeyword.SET);
+        insertStatement.setColumnClauseStartIndex(beginPosition);
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
         int count = 0;
