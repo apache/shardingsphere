@@ -19,6 +19,9 @@ package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
@@ -40,7 +43,7 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine {
+public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private final EncryptRule encryptRule;
     
@@ -49,10 +52,10 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
     private final List<Object> parameters;
     
     @Override
-    public void optimize() {
+    public OptimizeResult optimize() {
         List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
-        InsertValuesToken insertValuesToken = getInsertValuesToken();
+        InsertColumnValues insertColumnValues = createInsertColumnValues();
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertValues.get(i);
@@ -68,18 +71,18 @@ public final class EncryptInsertOptimizeEngine implements EncryptOptimizeEngine 
         }
     }
     
+    private InsertColumnValues createInsertColumnValues() {
+        InsertValuesToken insertValuesToken = insertStatement.getInsertValuesToken();
+        InsertColumnValues result = new InsertColumnValues(insertValuesToken.getStartIndex(), insertValuesToken.getType());
+        result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
+        return result;
+    }
+    
     private InsertValuesToken getInsertValuesToken() {
         InsertValuesToken result = insertStatement.getInsertValuesToken();
         clearCacheColumnValues(result);
         result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
         return result;
-    }
-    
-    private void clearCacheColumnValues(final InsertValuesToken insertValuesToken) {
-        if (!insertValuesToken.getColumnNames().isEmpty() && !insertValuesToken.getColumnValues().isEmpty()) {
-            insertValuesToken.getColumnNames().clear();
-            insertValuesToken.getColumnValues().clear();
-        }
     }
     
     private List<Object> getCurrentParameters(final int beginCount, final int increment) {
