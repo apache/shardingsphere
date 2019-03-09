@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.optimizer.engine.sharding.insert;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
@@ -37,7 +35,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderEx
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
