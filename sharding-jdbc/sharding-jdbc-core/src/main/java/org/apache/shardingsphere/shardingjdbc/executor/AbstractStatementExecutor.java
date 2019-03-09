@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,8 +30,6 @@ import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaDataFactory;
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement;
@@ -154,7 +151,7 @@ public class AbstractStatementExecutor {
         }
     }
     
-    private void refreshShardingMetaDataIfNeeded(final ShardingContext shardingContext, final SQLStatement sqlStatement) {
+    private void refreshShardingMetaDataIfNeeded(final ShardingContext shardingContext, final SQLStatement sqlStatement) throws SQLException {
         if (sqlStatement instanceof CreateTableStatement) {
             refreshTableMetaData(shardingContext, (CreateTableStatement) sqlStatement);
         } else if (sqlStatement instanceof AlterTableStatement) {
@@ -164,20 +161,14 @@ public class AbstractStatementExecutor {
         }
     }
     
-    private void refreshTableMetaData(final ShardingContext shardingContext, final CreateTableStatement createTableStatement) {
-        shardingContext.getMetaData().getTable().put(createTableStatement.getTables().getSingleTableName(), TableMetaDataFactory.newInstance(createTableStatement));
+    private void refreshTableMetaData(final ShardingContext shardingContext, final CreateTableStatement createTableStatement) throws SQLException {
+        String tableName = createTableStatement.getTables().getSingleTableName();
+        shardingContext.getMetaData().getTable().put(tableName, shardingContext.getMetaData().getTableInitialize().getTableMetaDataLoader().load(tableName, shardingContext.getShardingRule()));
     }
     
-    private void refreshTableMetaData(final ShardingContext shardingContext, final AlterTableStatement alterTableStatement) {
-        String logicTableName = alterTableStatement.getTables().getSingleTableName();
-        TableMetaData newTableMetaData = TableMetaDataFactory.newInstance(alterTableStatement, shardingContext.getMetaData().getTable().get(logicTableName));
-        Optional<String> newTableName = alterTableStatement.getNewTableName();
-        if (newTableName.isPresent()) {
-            shardingContext.getMetaData().getTable().put(newTableName.get(), newTableMetaData);
-            shardingContext.getMetaData().getTable().remove(logicTableName);
-        } else {
-            shardingContext.getMetaData().getTable().put(logicTableName, newTableMetaData);
-        }
+    private void refreshTableMetaData(final ShardingContext shardingContext, final AlterTableStatement alterTableStatement) throws SQLException {
+        String tableName = alterTableStatement.getTables().getSingleTableName();
+        shardingContext.getMetaData().getTable().put(tableName, shardingContext.getMetaData().getTableInitialize().getTableMetaDataLoader().load(tableName, shardingContext.getShardingRule()));
     }
     
     private void refreshTableMetaData(final ShardingContext shardingContext, final DropTableStatement dropTableStatement) {

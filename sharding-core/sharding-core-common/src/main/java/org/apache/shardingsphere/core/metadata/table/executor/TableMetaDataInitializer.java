@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.metadata.table.executor;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
@@ -46,6 +47,7 @@ public final class TableMetaDataInitializer {
     
     private final TableMetaDataConnectionManager connectionManager;
     
+    @Getter
     private final TableMetaDataLoader tableMetaDataLoader;
     
     public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, final ShardingExecuteEngine executeEngine, 
