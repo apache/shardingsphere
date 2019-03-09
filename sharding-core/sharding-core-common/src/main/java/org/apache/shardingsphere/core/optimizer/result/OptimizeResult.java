@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.result;
+package org.apache.shardingsphere.core.optimizer.result;
 
 /**
  * Optimize result.
@@ -23,6 +23,7 @@ package org.apache.shardingsphere.core.optimizer.engine.result;
  * @author panjuan
  */
 public final class OptimizeResult {
+    
     
     
 }
