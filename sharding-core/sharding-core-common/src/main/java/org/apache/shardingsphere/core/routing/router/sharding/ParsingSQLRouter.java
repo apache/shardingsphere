@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.routing.router.sharding;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
@@ -131,8 +131,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     private void checkSubqueryShardingValues(final SQLRouteResult sqlRouteResult, final SQLStatement sqlStatement, final Conditions conditions, final ShardingConditions shardingConditions) {
         for (String each : sqlStatement.getTables().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
-            if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManagerHolder.getDatabaseShardingValues(each).isEmpty()
-                    && !HintManagerHolder.getTableShardingValues(each).isEmpty()) {
+            if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManager.getDatabaseShardingValues(each).isEmpty()
+                    && !HintManager.getTableShardingValues(each).isEmpty()) {
                 return;
             }
         }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.routing.type.standard;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -152,11 +152,11 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private List<RouteValue> getDatabaseShardingValuesFromHint() {
-        return getRouteValues(HintManagerHolder.getDatabaseShardingValues(logicTableName));
+        return getRouteValues(HintManager.getDatabaseShardingValues(logicTableName));
     }
     
     private List<RouteValue> getTableShardingValuesFromHint() {
-        return getRouteValues(HintManagerHolder.getTableShardingValues(logicTableName));
+        return getRouteValues(HintManager.getTableShardingValues(logicTableName));
     }
     
     private List<RouteValue> getRouteValues(final Collection<Comparable<?>> shardingValue) {

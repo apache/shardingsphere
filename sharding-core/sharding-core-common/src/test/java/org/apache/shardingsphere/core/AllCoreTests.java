@@ -21,7 +21,6 @@ import org.apache.shardingsphere.core.config.AllConfigTests;
 import org.apache.shardingsphere.core.constant.AllConstantsTests;
 import org.apache.shardingsphere.core.encrypt.AllEncryptorTests;
 import org.apache.shardingsphere.core.executor.AllExecutorTests;
-import org.apache.shardingsphere.core.hint.AllHintTests;
 import org.apache.shardingsphere.core.keygen.AllKeygenTests;
 import org.apache.shardingsphere.core.masterslave.AllMasterSlaveTests;
 import org.apache.shardingsphere.core.merger.AllMergerTests;
@@ -49,7 +48,6 @@ import org.junit.runners.Suite.SuiteClasses;
         AllRoutingTests.class, 
         AllExecutorTests.class, 
         AllMergerTests.class, 
-        AllHintTests.class, 
         AllYamlTests.class,
         AllSPITests.class, 
         AllMasterSlaveTests.class, 

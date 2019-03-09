@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.routing.type.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.type.RoutingEngine;
@@ -47,7 +47,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Collection<Comparable<?>> shardingValues = HintManagerHolder.getDatabaseShardingValues();
+        Collection<Comparable<?>> shardingValues = HintManager.getDatabaseShardingValues();
         Preconditions.checkState(!shardingValues.isEmpty());
         Collection<String> routingDataSources;
         routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames, Collections.<RouteValue>singletonList(new ListRouteValue<>(new Column("", ""), shardingValues)));

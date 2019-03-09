@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.api.hint;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -32,8 +34,9 @@ import org.apache.shardingsphere.core.hint.HintManagerHolder;
  * @author panjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public final class HintManager implements AutoCloseable {
+    
+    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
     
@@ -49,8 +52,9 @@ public final class HintManager implements AutoCloseable {
      * @return  {@code HintManager} instance
      */
     public static HintManager getInstance() {
+        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
         HintManager result = new HintManager();
-        HintManagerHolder.setHintManager(result);
+        HINT_MANAGER_HOLDER.set(result);
         return result;
     }
     
@@ -94,14 +98,68 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
+     * Get database sharding values.
+     *
+     * @return database sharding values
+     */
+    public static Collection<Comparable<?>> getDatabaseShardingValues() {
+        return getDatabaseShardingValues("");
+    }
+
+    /**
+     * Get database sharding values.
+     *
+     * @param logicTable logic table
+     * @return database sharding values
+     */
+    public static Collection<Comparable<?>> getDatabaseShardingValues(final String logicTable) {
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.<Comparable<?>>emptyList() : HINT_MANAGER_HOLDER.get().databaseShardingValues.get(logicTable);
+    }
+    
+    /**
+     * Get table sharding values.
+     *
+     * @param logicTable logic table name
+     * @return table sharding values
+     */
+    public static Collection<Comparable<?>> getTableShardingValues(final String logicTable) {
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.<Comparable<?>>emptyList() : HINT_MANAGER_HOLDER.get().tableShardingValues.get(logicTable);
+    }
+    
+    /**
+     * Judge whether database sharding only.
+     *
+     * @return database sharding or not
+     */
+    public static boolean isDatabaseShardingOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().databaseShardingOnly;
+    }
+    
+    /**
      * Set database operation force route to master database only.
      */
     public void setMasterRouteOnly() {
         masterRouteOnly = true;
     }
     
+    /**
+     * Judge whether route to master database only or not.
+     *
+     * @return route to master database only or not
+     */
+    public static boolean isMasterRouteOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().masterRouteOnly;
+    }
+    
+    /**
+     * Clear threadlocal for hint manager.
+     */
+    public static void clear() {
+        HINT_MANAGER_HOLDER.remove();
+    }
+    
     @Override
     public void close() {
-        HintManagerHolder.clear();
+        HintManager.clear();
     }
 }

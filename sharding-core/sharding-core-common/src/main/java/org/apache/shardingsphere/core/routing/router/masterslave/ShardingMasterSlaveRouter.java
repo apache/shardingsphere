@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.routing.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -72,6 +72,6 @@ public final class ShardingMasterSlaveRouter {
     }
     
     private boolean isMasterRoute(final SQLType sqlType) {
-        return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManagerHolder.isMasterRouteOnly();
+        return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
     }
 }
