@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpress
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
@@ -73,8 +72,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     }
     
     private InsertColumnValues createInsertColumnValues() {
-        InsertValuesToken insertValuesToken = insertStatement.getInsertValuesToken();
-        InsertColumnValues result = new InsertColumnValues(insertValuesToken.getStartIndex(), insertValuesToken.getType());
+        InsertColumnValues result = new InsertColumnValues(insertStatement.getColumnClauseStartIndex(), insertStatement.getInsertValuesToken().getType());
         result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
         return result;
     }
