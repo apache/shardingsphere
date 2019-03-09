@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;

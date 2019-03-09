@@ -40,7 +40,7 @@ import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;

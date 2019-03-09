@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.routing.strategy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.ShardingAlgorithm;
 import org.apache.shardingsphere.core.exception.ShardingException;
 
 /**

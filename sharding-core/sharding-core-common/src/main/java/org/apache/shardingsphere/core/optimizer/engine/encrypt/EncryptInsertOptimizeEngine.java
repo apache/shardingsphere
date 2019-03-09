@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatem
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.List;

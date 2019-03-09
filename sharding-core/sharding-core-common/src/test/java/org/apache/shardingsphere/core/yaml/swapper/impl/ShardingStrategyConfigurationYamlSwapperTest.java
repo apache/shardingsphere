@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.core.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.fixture.PreciseShardingAlgorithmFixture;

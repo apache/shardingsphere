@@ -69,8 +69,8 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.util.SQLUtil;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.Collection;

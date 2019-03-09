@@ -40,8 +40,8 @@ import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.Ins
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.encrypt.impl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Properties;
 

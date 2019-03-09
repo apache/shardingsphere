@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm;
 
-import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
 

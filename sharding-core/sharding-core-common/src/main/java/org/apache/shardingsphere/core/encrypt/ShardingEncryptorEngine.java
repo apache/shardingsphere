@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.encrypt;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

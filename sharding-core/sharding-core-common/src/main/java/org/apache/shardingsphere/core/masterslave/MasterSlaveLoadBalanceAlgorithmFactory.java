@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.masterslave;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
-import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 /**
  * Master-slave database load-balance algorithm factory.

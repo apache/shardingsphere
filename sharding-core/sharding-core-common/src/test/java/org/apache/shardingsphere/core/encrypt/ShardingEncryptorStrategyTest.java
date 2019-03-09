@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.encrypt;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Test;
 
 import java.util.Properties;

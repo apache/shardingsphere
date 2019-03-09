@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.routing.strategy.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.routing.value.RouteValue;
