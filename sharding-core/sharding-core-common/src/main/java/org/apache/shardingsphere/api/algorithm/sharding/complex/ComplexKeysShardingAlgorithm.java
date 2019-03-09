@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.api.algorithm.sharding.complex;
 
-import org.apache.shardingsphere.core.routing.strategy.ShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.ShardingAlgorithm;
 
 import java.util.Collection;
 

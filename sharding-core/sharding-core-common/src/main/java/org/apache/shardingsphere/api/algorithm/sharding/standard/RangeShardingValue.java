@@ -21,7 +21,7 @@ import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.routing.strategy.ShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 
 /**
  * Sharding value for range.

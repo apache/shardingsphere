@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy;
+package org.apache.shardingsphere.api.algorithm.sharding;
 
 /**
- * Sharding algorithm.
+ * Sharding value.
  * 
  * @author zhangliang
  */
-public interface ShardingAlgorithm {
+public interface ShardingValue {
 }

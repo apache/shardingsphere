@@ -20,7 +20,7 @@ package org.apache.shardingsphere.api.algorithm.sharding.hint;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.routing.strategy.ShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 
 import java.util.Collection;
 
