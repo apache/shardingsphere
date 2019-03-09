@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
@@ -53,6 +54,10 @@ public final class InsertStatement extends DMLStatement {
     private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
     
     private final InsertValues insertValues = new InsertValues();
+    
+    private DefaultKeyword type;
+    
+    private int columnClauseStartIndex;
     
     private int columnsListLastIndex;
     
