@@ -22,6 +22,7 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
@@ -52,12 +53,12 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
     private final List<Object> parameters;
     
     @Override
-    public ShardingConditions optimize() {
+    public OptimizeResult optimize() {
         List<ShardingCondition> result = new ArrayList<>(orCondition.getAndConditions().size());
         for (AndCondition each : orCondition.getAndConditions()) {
             result.add(optimize(each.getConditionsMap()));
         }
-        return new ShardingConditions(result);
+        return new OptimizeResult(new ShardingConditions(result));
     }
     
     private ShardingCondition optimize(final Map<Column, List<Condition>> conditionsMap) {
