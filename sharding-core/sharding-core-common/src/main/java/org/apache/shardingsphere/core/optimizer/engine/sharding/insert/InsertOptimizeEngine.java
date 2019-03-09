@@ -22,6 +22,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
@@ -71,9 +72,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     public ShardingConditions optimize() {
         List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
-        InsertValuesToken insertValuesToken = getInsertValuesToken();
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
-        List<ShardingCondition> result = new ArrayList<>(andConditions.size());
+        List<ShardingCondition> shardingConditions = new ArrayList<>(andConditions.size());
+        InsertColumnValues insertColumnValues = createInsertColumnValues();
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertValues.get(i);
@@ -83,24 +84,24 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 parametersCount = parametersCount + insertValue.getParametersCount();
             }
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
-            insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
+            insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
                 fillInsertStatementWithGeneratedKeyName(insertValuesToken);
-                fillInsertColumnValueWithColumnValue(insertValuesToken.getColumnValues().get(i), currentGeneratedKey);
+                fillInsertColumnValueWithColumnValue(insertColumnValues.getColumnValues().get(i), currentGeneratedKey);
                 fillShardingCondition(shardingCondition, currentGeneratedKey);
             }
             if (isNeededToEncrypt()) {
                 encryptInsertColumnValues(insertValuesToken, i);
             }
-            result.add(shardingCondition);
+            shardingConditions.add(shardingCondition);
         }
-        return new ShardingConditions(result);
+        return new ShardingConditions(shardingConditions);
     }
     
-    private InsertValuesToken getInsertValuesToken() {
-        InsertValuesToken result = insertStatement.getInsertValuesToken();
-        clearCacheColumnValues(result);
+    private InsertColumnValues createInsertColumnValues() {
+        InsertValuesToken insertValuesToken = insertStatement.getInsertValuesToken();
+        InsertColumnValues result = new InsertColumnValues(insertValuesToken.getStartIndex(), insertValuesToken.getType());
         result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
         return result;
     }
