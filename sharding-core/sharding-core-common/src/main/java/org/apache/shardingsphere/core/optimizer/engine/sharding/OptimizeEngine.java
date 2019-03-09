@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.sharding;
 
-import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 
 /**
  * Optimize engine.
  *
  * @author maxiaoguang
+ * @author panjuan
  */
 public interface OptimizeEngine {
     
@@ -31,5 +32,5 @@ public interface OptimizeEngine {
      *
      * @return sharding conditions
      */
-    ShardingConditions optimize();
+    OptimizeResult optimize();
 }
