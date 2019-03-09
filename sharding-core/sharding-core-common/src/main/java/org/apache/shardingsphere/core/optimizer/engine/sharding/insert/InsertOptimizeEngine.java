@@ -106,13 +106,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void clearCacheColumnValues(final InsertValuesToken insertValuesToken) {
-        if (!insertValuesToken.getColumnNames().isEmpty() && !insertValuesToken.getColumnValues().isEmpty()) {
-            insertValuesToken.getColumnNames().clear();
-            insertValuesToken.getColumnValues().clear();
-        }
-    }
-    
     private Iterator<Comparable<?>> createGeneratedKeys() {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
