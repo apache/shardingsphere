@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues.InsertColumnValue;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
@@ -65,15 +66,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private final GeneratedKey generatedKey;
     
     @Override
-    public ShardingConditions optimize() {
+    public OptimizeResult optimize() {
         List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
-        List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
         List<ShardingCondition> shardingConditions = new ArrayList<>(andConditions.size());
         InsertColumnValues insertColumnValues = createInsertColumnValues();
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
-            InsertValue insertValue = insertValues.get(i);
+            InsertValue insertValue = insertStatement.getInsertValues().getInsertValues().get(i);
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
             if (0 != insertValue.getParametersCount()) {
                 currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
@@ -83,7 +83,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
-                fillInsertStatementWithGeneratedKeyName(insertColumnValues);
+                fillInsertColumnValuestWithGeneratedKeyName(insertColumnValues);
                 fillInsertColumnValueWithColumnValue(insertColumnValues.getColumnValues().get(i), currentGeneratedKey);
                 fillShardingCondition(shardingCondition, currentGeneratedKey);
             }
@@ -92,7 +92,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             }
             shardingConditions.add(shardingCondition);
         }
-        return new ShardingConditions(shardingConditions);
+        return new OptimizeResult(new ShardingConditions(shardingConditions), insertColumnValues);
     }
     
     private InsertColumnValues createInsertColumnValues() {
@@ -131,7 +131,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(generateKeyColumn.get());
     }
     
-    private void fillInsertStatementWithGeneratedKeyName(final InsertColumnValues insertColumnValues) {
+    private void fillInsertColumnValuestWithGeneratedKeyName(final InsertColumnValues insertColumnValues) {
         String generatedKeyName = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName();
         insertColumnValues.getColumnNames().add(generatedKeyName);
     }
