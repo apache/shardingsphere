@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourc
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataTest;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataTest;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataTest;
-import org.apache.shardingsphere.core.metadata.table.TableMetaDataFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -37,8 +36,7 @@ import org.junit.runners.Suite.SuiteClasses;
         PostgreSQLDataSourceMetaDataTest.class, 
         SQLServerDataSourceMetaDataTest.class, 
         DataSourceMetaDataFactoryTest.class, 
-        ShardingDataSourceMetaDataTest.class, 
-        TableMetaDataFactoryTest.class
-    })
+        ShardingDataSourceMetaDataTest.class
+})
 public final class AllMetaDataTests {
 }
