@@ -17,13 +17,20 @@
 
 package org.apache.shardingsphere.core.optimizer.result;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
+
 /**
  * Optimize result.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
+@Getter
 public final class OptimizeResult {
     
+    private final ShardingConditions shardingConditions;
     
-    
+    private final InsertColumnValues insertColumnValues;
 }
