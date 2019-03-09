@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimizer.result;
 
-import lombok.Getter;
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
 
@@ -27,10 +27,35 @@ import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditi
  * @author panjuan
  */
 @RequiredArgsConstructor
-@Getter
 public final class OptimizeResult {
     
     private final ShardingConditions shardingConditions;
     
     private final InsertColumnValues insertColumnValues;
+    
+    public OptimizeResult(final ShardingConditions shardingConditions) {
+        this(shardingConditions, null);
+    }
+    
+    public OptimizeResult(final InsertColumnValues insertColumnValues) {
+        this(null, insertColumnValues);
+    }
+    
+    /**
+     * Get sharding conditions.
+     * 
+     * @return ShardingConditions optional
+     */
+    public Optional<ShardingConditions> getShardingConditions() {
+        return null == shardingConditions ? Optional.<ShardingConditions>absent() : Optional.of(shardingConditions);
+    }
+    
+    /**
+     * Get insert column values.
+     * 
+     * @return insert column values optional
+     */
+    public Optional<InsertColumnValues> getInsertColumnValues() {
+        return null == insertColumnValues ? Optional.<InsertColumnValues>absent() : Optional.of(insertColumnValues);
+    }
 }
