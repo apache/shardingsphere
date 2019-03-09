@@ -53,6 +53,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.RowCountToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SchemaToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
+import org.apache.shardingsphere.core.rewrite.hook.RewriteHook;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptUpdateItemColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlaceholder;
@@ -70,7 +71,6 @@ import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
-import org.apache.shardingsphere.spi.hook.RewriteHook;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.spi.hook;
 
+import org.apache.shardingsphere.core.executor.hook.RootInvokeHook;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.util.Collection;
 

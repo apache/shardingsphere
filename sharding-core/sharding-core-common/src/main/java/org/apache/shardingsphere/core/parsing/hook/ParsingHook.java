@@ -15,38 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook;
+package org.apache.shardingsphere.core.parsing.hook;
 
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-
-import java.util.Map;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * SQL Execution hook.
+ * Parsing hook.
  *
  * @author zhangliang
  */
-public interface SQLExecutionHook {
+public interface ParsingHook {
     
     /**
-     * Handle when SQL execution started.
-     * 
-     * @param routeUnit route unit to be executed
-     * @param dataSourceMetaData data source meta data
-     * @param isTrunkThread is execution in trunk thread
-     * @param shardingExecuteDataMap sharding execute data map
-     */
-    void start(RouteUnit routeUnit, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap);
-    
-    /**
-     * Handle when SQL execution finished success.
-     */
-    void finishSuccess();
-    
-    /**
-     * Handle when SQL execution finished failure.
+     * Handle when parse started.
      *
+     * @param sql SQL to be parsed
+     */
+    void start(String sql);
+    
+    /**
+     * Handle when parse finished success.
+     *
+     * @param sqlStatement sql statement
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void finishSuccess(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
+    
+    /**
+     * Handle when parse finished failure.
+     * 
      * @param cause failure cause
      */
     void finishFailure(Exception cause);

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.spi.fixture;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parsing.hook.ParsingHook;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.spi.hook.ParsingHook;
 
 import java.util.Collection;
 import java.util.LinkedList;

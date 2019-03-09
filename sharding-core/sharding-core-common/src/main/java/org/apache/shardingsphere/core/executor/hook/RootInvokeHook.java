@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook;
-
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+package org.apache.shardingsphere.core.executor.hook;
 
 /**
- * Parsing hook.
+ * Root invoke hook.
  *
  * @author zhangliang
  */
-public interface ParsingHook {
+public interface RootInvokeHook {
     
     /**
-     * Handle when parse started.
-     *
-     * @param sql SQL to be parsed
+     * Handle when root invoke started.
      */
-    void start(String sql);
+    void start();
     
     /**
-     * Handle when parse finished success.
-     *
-     * @param sqlStatement sql statement
-     * @param shardingTableMetaData sharding table meta data
-     */
-    void finishSuccess(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
-    
-    /**
-     * Handle when parse finished failure.
+     * Handle when root invoke finished.
      * 
-     * @param cause failure cause
+     * @param connectionCount connection count
      */
-    void finishFailure(Exception cause);
+    void finish(int connectionCount);
 }

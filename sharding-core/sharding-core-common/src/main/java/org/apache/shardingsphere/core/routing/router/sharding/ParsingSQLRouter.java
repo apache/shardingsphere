@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.SQLParsingEngine;
+import org.apache.shardingsphere.core.parsing.hook.ParsingHook;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -44,7 +45,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.spi.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.util.SQLLogger;
-import org.apache.shardingsphere.spi.hook.ParsingHook;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

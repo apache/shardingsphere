@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook;
+package org.apache.shardingsphere.core.rewrite.hook;
 
 import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
