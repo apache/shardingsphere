@@ -78,13 +78,6 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private InsertValuesToken getInsertValuesToken() {
-        InsertValuesToken result = insertStatement.getInsertValuesToken();
-        clearCacheColumnValues(result);
-        result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
-        return result;
-    }
-    
     private List<Object> getCurrentParameters(final int beginCount, final int increment) {
         List<Object> result = new ArrayList<>(increment + 1);
         result.addAll(parameters.subList(beginCount, beginCount + increment));
