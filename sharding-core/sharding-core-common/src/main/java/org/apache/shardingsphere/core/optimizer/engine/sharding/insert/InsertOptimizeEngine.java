@@ -135,18 +135,10 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(generateKeyColumn.get());
     }
     
-    private void fillInsertStatementWithGeneratedKeyName(final InsertValuesToken insertValuesToken) {
+    private void fillInsertStatementWithGeneratedKeyName(final InsertColumnValues insertColumnValues) {
         String generatedKeyName = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName();
-        insertValuesToken.getColumnNames().add(generatedKeyName);
-        fillInsertStatementWithColumnName(insertValuesToken, generatedKeyName);
-    }
-    
-    private void fillInsertStatementWithColumnName(final InsertValuesToken insertValuesToken, final String columnName) {
-        if (DefaultKeyword.VALUES == insertValuesToken.getType() && isNotExisted(columnName)) {
-            ItemsToken itemsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
-            itemsToken.getItems().add(columnName);
-            insertStatement.getSQLTokens().add(itemsToken);
-        }
+        insertColumnValues.getColumnNames().add(generatedKeyName);
+        fillInsertStatementWithColumnName(insertColumnValues, generatedKeyName);
     }
     
     private boolean isNotExisted(final String insertColumnName) {
