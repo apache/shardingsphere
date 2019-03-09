@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.sharding;
 
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
 
 /**
  * Optimize engine.
