@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.sharding;
+package org.apache.shardingsphere.core.optimizer.engine;
 
 import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 
