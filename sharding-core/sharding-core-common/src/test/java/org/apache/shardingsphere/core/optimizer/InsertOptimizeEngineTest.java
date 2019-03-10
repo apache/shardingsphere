@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimizer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
@@ -255,25 +255,25 @@ public final class InsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
-        assertFalse(actual.isAlwaysFalse());
-        assertThat(actual.getShardingConditions().size(), is(2));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(3));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().size(), is(3));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(2), CoreMatchers.<Object>is(2));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
-        assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
-        assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(2));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 2);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
+        assertFalse(actual.getShardingConditions().isAlwaysFalse());
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(3));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().size(), is(3));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(2), CoreMatchers.<Object>is(2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
+        assertThat(actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().size(), is(2));
+        assertThat(actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().size(), is(2));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 10);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(0), 11);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(1), 2);
         assertTrue(insertStatementWithValuesWithPlaceHolder.isContainGenerateKey());
     }
     
@@ -282,24 +282,24 @@ public final class InsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt"));
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolderWithEncrypt, parametersWithValues, generatedKey).optimize();
-        assertFalse(actual.isAlwaysFalse());
-        assertThat(actual.getShardingConditions().size(), is(2));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(1).getParameters().size(), is(3));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is("encryptValue"));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(1).getParameters().get(2), CoreMatchers.<Object>is("encryptValue"));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
-        assertThat(insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
-        assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
-        assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(2));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 2);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolderWithEncrypt, parametersWithValues, generatedKey).optimize();
+        assertFalse(actual.getShardingConditions().isAlwaysFalse());
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().size(), is(3));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is("encryptValue"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(2), CoreMatchers.<Object>is("encryptValue"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
+        assertThat(actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().size(), is(2));
+        assertThat(actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().size(), is(2));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 10);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(0), 11);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(1), 2);
         assertTrue(insertStatementWithValuesWithPlaceHolderWithEncrypt.isContainGenerateKey());
     }
     
@@ -309,21 +309,21 @@ public final class InsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(1);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
-        assertFalse(actual.isAlwaysFalse());
-        assertThat(actual.getShardingConditions().size(), is(2));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(3));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().size(), is(3));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
-        assertThat(insertStatementWithValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
-        assertThat(actual.getShardingConditions().get(0).getShardingValues().size(), is(2));
-        assertThat(actual.getShardingConditions().get(1).getShardingValues().size(), is(2));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 10);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
+        assertFalse(actual.getShardingConditions().isAlwaysFalse());
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(3));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().size(), is(3));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(10));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(0), CoreMatchers.<Object>is(11));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).getParameters().get(1), CoreMatchers.<Object>is("init"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("(?, ?, ?)"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(1).toString(), is("(?, ?, ?)"));
+        assertThat(actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().size(), is(2));
+        assertThat(actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().size(), is(2));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 10);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(0), 11);
     }
     
     @Test
@@ -336,12 +336,12 @@ public final class InsertOptimizeEngineTest {
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getInsertValues().getInsertValues().add(insertValue);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt, Collections.emptyList(), generatedKey).optimize();
-        assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(0));
-        assertThat(insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).toString(), is("('encryptValue', 'a', 1, 'assistedEncryptValue')"));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt, Collections.emptyList(), generatedKey).optimize();
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("('encryptValue', 'a', 1, 'assistedEncryptValue')"));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertTrue(insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.isContainGenerateKey());
     }
     
@@ -355,12 +355,12 @@ public final class InsertOptimizeEngineTest {
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
-        assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(insertStatementWithValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(0));
-        assertThat(insertStatementWithValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("(12, 'a', 1)"));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("(12, 'a', 1)"));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertTrue(insertStatementWithValuesWithoutPlaceHolder.isContainGenerateKey());
     }
     
@@ -372,14 +372,14 @@ public final class InsertOptimizeEngineTest {
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
         insertStatementWithoutValuesWithPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithPlaceHolder, parametersWithoutValues, generatedKey).optimize();
-        assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(insertStatementWithoutValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(3));
-        assertThat(insertStatementWithoutValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(12));
-        assertThat(insertStatementWithoutValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("a"));
-        assertThat(insertStatementWithoutValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
-        assertThat(insertStatementWithoutValuesWithPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("user_id = ?, status = ?, order_id = ?"));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithPlaceHolder, parametersWithoutValues, generatedKey).optimize();
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(3));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is(12));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("a"));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("user_id = ?, status = ?, order_id = ?"));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
     }
     
     @Test
@@ -390,16 +390,16 @@ public final class InsertOptimizeEngineTest {
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValues().getInsertValues().add(insertValue);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt, parametersWithoutValues, generatedKey).optimize();
-        assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(4));
-        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(0), CoreMatchers.<Object>is("encryptValue"));
-        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(1), CoreMatchers.<Object>is("a"));
-        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(2), CoreMatchers.<Object>is(1));
-        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().get(3), CoreMatchers.<Object>is("assistedEncryptValue"));
-        assertThat(insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValuesToken().getColumnValues().get(0).toString(), 
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt, parametersWithoutValues, generatedKey).optimize();
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
+        assertThat((actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size()), is(4));
+        assertThat((actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0)), CoreMatchers.<Object>is("encryptValue"));
+        assertThat((actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1)), CoreMatchers.<Object>is("a"));
+        assertThat((actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2)), CoreMatchers.<Object>is(1));
+        assertThat((actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(3)), CoreMatchers.<Object>is("assistedEncryptValue"));
+        assertThat((actual.getInsertColumnValues().get().getColumnValues().get(0).toString()), 
                 is("user_id = ?, status = ?, order_id = ?, assisted_user_id = ?"));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
     }
     
     @Test
@@ -410,12 +410,12 @@ public final class InsertOptimizeEngineTest {
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithoutValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
-        assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(insertStatementWithoutValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(0));
-        assertThat(insertStatementWithoutValuesWithoutPlaceHolder.getInsertValuesToken().getColumnValues().get(0).toString(), is("user_id = 12, status = 'a', order_id = 1"));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("user_id = 12, status = 'a', order_id = 1"));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertTrue(insertStatementWithoutValuesWithoutPlaceHolder.isContainGenerateKey());
     }
     
@@ -427,12 +427,12 @@ public final class InsertOptimizeEngineTest {
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getInsertValues().getInsertValues().add(insertValue);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt, Collections.emptyList(), generatedKey).optimize();
-        assertThat(actual.getShardingConditions().size(), is(1));
-        assertThat(insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(0).getParameters().size(), is(0));
-        assertThat(insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getInsertValuesToken().getColumnValues().get(0).toString(), is("user_id = 12, status = 'a', order_id = 'encryptValue'"));
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 12);
-        assertShardingValue((ListRouteValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 1);
+        OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt, Collections.emptyList(), generatedKey).optimize();
+        assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("user_id = 12, status = 'a', order_id = 'encryptValue'"));
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
+        assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertTrue(insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.isContainGenerateKey());
     }
     
