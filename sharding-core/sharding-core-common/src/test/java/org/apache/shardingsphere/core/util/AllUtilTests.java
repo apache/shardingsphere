@@ -22,6 +22,10 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(SQLUtilTest.class)
+@SuiteClasses({
+        NumberUtilTest.class,
+        StringUtilTest.class,
+        InlineExpressionParserTest.class
+})
 public final class AllUtilTests {
 }
