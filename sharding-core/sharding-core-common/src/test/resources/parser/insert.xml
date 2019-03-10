@@ -94,7 +94,7 @@
         </tables>
         <tokens>
             <table-token start-index="33" table-name="t_order" />
-            <insert-values-token begin-position="76" type="VALUES" />
+            <insert-values-token begin-position="40" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -117,7 +117,7 @@
             <table-token start-index="21" table-name="t_order" />
             <table-token start-index="39" table-name="t_order" />
             <table-token start-index="56" table-name="t_order" />
-            <insert-values-token begin-position="79" type="VALUES" />
+            <insert-values-token begin-position="19" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -137,16 +137,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-column-token begin-position="19" column-name="(" />
-            <items-token begin-position="19">
-                <items>
-                    <item>order_id</item>
-                    <item>user_id</item>
-                    <item>status</item>
-                </items>
-            </items-token>
-            <insert-column-token begin-position="19" column-name=")" />
-            <insert-values-token begin-position="27" type="VALUES" />
+            <insert-values-token begin-position="19" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -166,7 +157,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="24" type="SET" />
+            <insert-values-token begin-position="19" type="SET" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -186,7 +177,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="55" type="VALUES" />
+            <insert-values-token begin-position="19" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -206,7 +197,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="24" type="SET" />
+            <insert-values-token begin-position="19" type="SET" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -226,7 +217,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-values-token begin-position="83" type="VALUES" />
+            <insert-values-token begin-position="23" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -249,12 +240,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <items-token begin-position="65">
-                <items>
-                    <item>item_id</item>
-                </items>
-            </items-token>
-            <insert-values-token begin-position="74" type="VALUES" />
+            <insert-values-token begin-position="23" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -274,7 +260,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-values-token begin-position="29" type="SET" />
+            <insert-values-token begin-position="24" type="SET" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -297,7 +283,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-values-token begin-position="29" type="SET" />
+            <insert-values-token begin-position="24" type="SET" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -317,7 +303,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="55" type="VALUES" />
+            <insert-values-token begin-position="19" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -337,7 +323,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="24" type="SET" />
+            <insert-values-token begin-position="19" type="SET" />
             <table-token start-index="24" table-name="t_order" />
             <table-token start-index="46" table-name="t_order" />
             <table-token start-index="67" table-name="t_order" />
@@ -385,8 +371,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="55" table-name="t_order"/>
-            <insert-values-token begin-position="55" type="VALUES" />
+            <insert-values-token begin-position="19" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -414,8 +399,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
-            <insert-values-token begin-position="55" table-name="t_order"/>
-            <insert-values-token begin-position="55" type="VALUES" />
+            <insert-values-token begin-position="19" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -471,7 +455,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-values-token begin-position="83" type="VALUES" />
+            <insert-values-token begin-position="23" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -538,7 +522,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_place" />
-            <insert-values-token begin-position="64" type="VALUES" />
+            <insert-values-token begin-position="18" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -558,18 +542,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-column-token begin-position="24" column-name="(" />
-            <items-token begin-position="24">
-                <items>
-                    <item>item_id</item>
-                    <item>order_id</item>
-                    <item>user_id</item>
-                    <item>status</item>
-                    <item>c_date</item>
-                </items>
-            </items-token>
-            <insert-column-token begin-position="24" column-name=")" />
-            <insert-values-token begin-position="31" type="VALUES" />
+            <insert-values-token begin-position="24" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -592,19 +565,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" />
-            <insert-column-token begin-position="24" column-name="(" />
-            <items-token begin-position="24">
-                <items>
-                    <item>order_id</item>
-                    <item>user_id</item>
-                    <item>status</item>
-                    <item>c_date</item>
-                    <item>item_id</item>
-                </items>
-            </items-token>
-            <insert-column-token begin-position="24" column-name=")" />
-            <insert-values-token begin-position="31" table-name="t_order_item"/>
-            <insert-values-token begin-position="31" type="VALUES" />
+            <insert-values-token begin-position="24" type="VALUES" />
         </tokens>
         <or-condition>
             <and-condition>
