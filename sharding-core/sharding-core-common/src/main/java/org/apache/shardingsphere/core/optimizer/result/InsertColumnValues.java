@@ -44,8 +44,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class InsertColumnValues {
     
-    private final int startIndex;
-    
     private final DefaultKeyword type;
     
     private final Set<String> columnNames = new LinkedHashSet<>();
