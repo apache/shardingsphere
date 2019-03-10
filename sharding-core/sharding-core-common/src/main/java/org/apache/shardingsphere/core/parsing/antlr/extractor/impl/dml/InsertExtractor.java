@@ -54,6 +54,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             extractSetColumn(placeholderIndexes, ancestorNode, result);
         }
         extractDuplicateKeys(ancestorNode, result);
+        result.setColumnClauseStartIndex(ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME).get().getStop().getStopIndex() + 1);
         result.setInsertValuesListLastIndex(ancestorNode.getStop().getStopIndex());
         return Optional.of(result);
     }
@@ -73,7 +74,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (!columnClauseNode.isPresent()) {
             return;
         }
-        insertSegment.setColumnClauseStartIndex(columnClauseNode.get().getStart().getStartIndex() - 1);
         Optional<ParserRuleContext> columnListNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAMES);
         if (columnListNode.isPresent()) {
             insertSegment.setColumnsListLastIndex(columnListNode.get().getStop().getStopIndex());
