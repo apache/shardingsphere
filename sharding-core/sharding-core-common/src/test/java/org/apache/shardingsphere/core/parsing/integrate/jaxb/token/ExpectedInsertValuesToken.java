@@ -23,10 +23,6 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -38,11 +34,4 @@ public final class ExpectedInsertValuesToken {
     
     @XmlAttribute(name = "type")
     private String type;
-    
-    @XmlAttribute(name = "column-names")
-    private String columnNames;
-    
-    @XmlElementWrapper(name = "insert-values")
-    @XmlElement(name = "insert-value")
-    private List<ExpectedInsertValueToken> insertValues = new LinkedList<>();
 }
