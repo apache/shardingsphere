@@ -24,6 +24,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
@@ -78,6 +80,8 @@ public final class EncryptSQLRewriteEngine {
     
     private final List<Object> parameters;
     
+    private final OptimizeResult optimizeResult;
+    
     /**
      * Constructs encrypt SQL rewrite engine.
      * 
@@ -87,13 +91,14 @@ public final class EncryptSQLRewriteEngine {
      * @param sqlStatement SQL statement
      * @param parameters parameters
      */
-    public EncryptSQLRewriteEngine(final EncryptRule encryptRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public EncryptSQLRewriteEngine(final EncryptRule encryptRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.encryptRule = encryptRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
         this.parameters = parameters;
+        this.optimizeResult = optimizeResult;
     }
     
     /**
@@ -122,7 +127,7 @@ public final class EncryptSQLRewriteEngine {
             if (each instanceof ItemsToken) {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count);
             } else if (each instanceof InsertValuesToken) {
-                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count);
+                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertColumnValues().get());
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(sqlBuilder, (InsertColumnToken) each, count);
             } else if (each instanceof EncryptColumnToken) {
@@ -149,9 +154,9 @@ public final class EncryptSQLRewriteEngine {
         appendRest(sqlBuilder, count, itemsToken.getStartIndex());
     }
     
-    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count) {
+    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertColumnValues insertColumnValues) {
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
-                insertValuesToken.getType(), insertValuesToken.getColumnNames(), insertValuesToken.getColumnValues()));
+                insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
     }
     
