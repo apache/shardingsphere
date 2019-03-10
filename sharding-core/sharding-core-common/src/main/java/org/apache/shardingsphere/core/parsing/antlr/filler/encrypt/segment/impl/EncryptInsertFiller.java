@@ -50,7 +50,8 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
         createValue(sqlSegment, insertStatement, sql, encryptRule, shardingTableMetaData);
         insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastIndex());
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
-        insertStatement.setType(DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET);
+        insertStatement.getSQLTokens().add(
+                new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
     }
     
     private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
