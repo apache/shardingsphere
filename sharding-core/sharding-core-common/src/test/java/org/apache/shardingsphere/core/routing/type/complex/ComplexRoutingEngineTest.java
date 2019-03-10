@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.routing.type.complex;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -71,7 +72,7 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(
-                mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new ShardingConditions(shardingConditions));
+                mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new OptimizeResult(new ShardingConditions(shardingConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
         List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
@@ -91,7 +92,7 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_config"), new ShardingConditions(shardingConditions));
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_config"), new OptimizeResult(new ShardingConditions(shardingConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
         List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
