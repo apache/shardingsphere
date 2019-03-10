@@ -27,6 +27,8 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -105,6 +107,8 @@ public final class SQLRewriteEngine {
     
     private final List<Object> parameters;
     
+    private final OptimizeResult optimizeResult;
+    
     private final RewriteHook rewriteHook = new SPIRewriteHook();
     
     /**
@@ -116,13 +120,14 @@ public final class SQLRewriteEngine {
      * @param sqlStatement SQL statement
      * @param parameters parameters
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
         this.parameters = parameters;
+        this.optimizeResult = optimizeResult;
     }
     
     /**
@@ -183,7 +188,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
-                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count);
+                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertColumnValues().get());
             } else if (each instanceof RowCountToken) {
                 appendLimitRowCount(sqlBuilder, (RowCountToken) each, count, isRewrite);
             } else if (each instanceof OffsetToken) {
@@ -238,9 +243,9 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, itemsToken.getStartIndex());
     }
     
-    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count) {
+    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertColumnValues insertColumnValues) {
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
-                insertValuesToken.getType(), insertValuesToken.getColumnNames(), insertValuesToken.getColumnValues()));
+                insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
     }
     
