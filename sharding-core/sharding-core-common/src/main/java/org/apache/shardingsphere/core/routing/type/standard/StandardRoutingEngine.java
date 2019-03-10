@@ -21,12 +21,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
+import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues.InsertColumnValue;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimizer.result.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.result.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.type.RoutingEngine;
@@ -63,7 +63,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private final String logicTableName;
     
-    private final ShardingConditions shardingConditions;
+    private final OptimizeResult optimizeResult;
    
     @Override
     public RoutingResult route() {
@@ -99,13 +99,13 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeByShardingConditions(final TableRule tableRule) {
-        return shardingConditions.getShardingConditions().isEmpty() ? route(tableRule, Collections.<RouteValue>emptyList(), Collections.<RouteValue>emptyList())
+        return optimizeResult.getShardingConditions().getShardingConditions().isEmpty() ? route(tableRule, Collections.<RouteValue>emptyList(), Collections.<RouteValue>emptyList())
                 : routeByShardingConditionsWithCondition(tableRule);
     }
     
     private Collection<DataNode> routeByShardingConditionsWithCondition(final TableRule tableRule) {
         Collection<DataNode> result = new LinkedList<>();
-        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+        for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
             reviseInsertStatement(each, dataNodes);
@@ -115,12 +115,12 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeByMixedConditions(final TableRule tableRule) {
-        return shardingConditions.getShardingConditions().isEmpty() ? routeByMixedConditionsWithHint(tableRule) : routeByMixedConditionsWithCondition(tableRule);
+        return optimizeResult.getShardingConditions().getShardingConditions().isEmpty() ? routeByMixedConditionsWithHint(tableRule) : routeByMixedConditionsWithCondition(tableRule);
     }
     
     private Collection<DataNode> routeByMixedConditionsWithCondition(final TableRule tableRule) {
         Collection<DataNode> result = new LinkedList<>();
-        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+        for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
             reviseInsertStatement(each, dataNodes);
             result.addAll(dataNodes);
@@ -208,7 +208,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
-            for (InsertColumnValue each : ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues()) {
+            for (InsertColumnValue each : optimizeResult.getInsertColumnValues().get().getColumnValues()) {
                 if (isQualifiedInsertColumnValue(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
                 }
