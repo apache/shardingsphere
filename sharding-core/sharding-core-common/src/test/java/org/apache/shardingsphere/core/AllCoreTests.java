@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core;
 
+import org.apache.shardingsphere.core.config.AllConfigTests;
 import org.apache.shardingsphere.core.constant.AllConstantsTests;
 import org.apache.shardingsphere.core.util.AllUtilTests;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        AllConfigTests.class, 
         AllConstantsTests.class, 
         AllUtilTests.class
 })
