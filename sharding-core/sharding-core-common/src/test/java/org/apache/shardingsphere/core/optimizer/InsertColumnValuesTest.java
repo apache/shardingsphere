@@ -62,7 +62,7 @@ public class InsertColumnValuesTest {
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getDataNodes().size(), is(0));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue(1), is((Object) "parameter"));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("status"), is(Optional.of((Object) "test")));
-        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).toString(), is("id = 1, value = ?, status = 'test'"));
+        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).toString(), is(" SET id = 1, value = ?, status = 'test'"));
         insertColumnValuesWithSet.getColumnValues().get(0).setColumnValue(0, 2);
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue(0), is((Object) 2));
         insertColumnValuesWithSet.getColumnValues().get(0).setColumnValue(1, "parameter1");
@@ -76,6 +76,6 @@ public class InsertColumnValuesTest {
         expressions.add(new SQLPlaceholderExpression(1));
         expressions.add(new SQLTextExpression("test"));
         insertColumnValuesWithValues.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
-        assertThat(insertColumnValuesWithValues.getColumnValues().get(0).toString(), is("(1, ?, 'test')"));
+        assertThat(insertColumnValuesWithValues.getColumnValues().get(0).toString(), is(" (id, value, status) VALUES (1, ?, 'test')"));
     }
 }
