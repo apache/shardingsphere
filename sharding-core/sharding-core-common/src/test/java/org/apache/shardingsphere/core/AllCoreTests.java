@@ -19,10 +19,8 @@ package org.apache.shardingsphere.core;
 
 import org.apache.shardingsphere.core.config.AllConfigTests;
 import org.apache.shardingsphere.core.constant.AllConstantsTests;
-import org.apache.shardingsphere.core.encrypt.AllEncryptorTests;
-import org.apache.shardingsphere.core.keygen.AllKeygenTests;
-import org.apache.shardingsphere.core.masterslave.AllMasterSlaveTests;
 import org.apache.shardingsphere.core.spi.AllSPITests;
+import org.apache.shardingsphere.core.strategy.AllStrategyTests;
 import org.apache.shardingsphere.core.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -32,11 +30,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllConfigTests.class, 
         AllConstantsTests.class,
+        AllStrategyTests.class,
         AllSPITests.class,
-        AllUtilTests.class,
-        AllMasterSlaveTests.class,
-        AllEncryptorTests.class,
-        AllKeygenTests.class
+        AllUtilTests.class
 })
 public final class AllCoreTests {
 }

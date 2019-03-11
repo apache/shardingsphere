@@ -1,2 +1,2 @@
-org.apache.shardingsphere.core.encrypt.fixture.TestShardingEncryptor
-org.apache.shardingsphere.core.encrypt.fixture.TestQueryAssistedShardingEncryptor
+org.apache.shardingsphere.core.strategy.encrypt.fixture.TestShardingEncryptor
+org.apache.shardingsphere.core.strategy.encrypt.fixture.TestQueryAssistedShardingEncryptor

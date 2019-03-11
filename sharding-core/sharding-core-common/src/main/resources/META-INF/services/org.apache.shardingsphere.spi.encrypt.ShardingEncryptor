@@ -1,2 +1,2 @@
-org.apache.shardingsphere.core.encrypt.impl.MD5ShardingEncryptor
-org.apache.shardingsphere.core.encrypt.impl.AESShardingEncryptor
+org.apache.shardingsphere.core.strategy.encrypt.impl.MD5ShardingEncryptor
+org.apache.shardingsphere.core.strategy.encrypt.impl.AESShardingEncryptor
