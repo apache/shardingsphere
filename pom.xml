@@ -751,12 +751,6 @@
                 <configuration>
                     <excludes>
                         <exclude>**/target/**</exclude>
-                        <exclude>src/resources/assembly/assembly.xml</exclude>
-                        <exclude>src/resources/checkstyle.xml</exclude>
-                        <exclude>src/resources/ruleset.xml</exclude>
-                        <exclude>**/resources/META-INF/services/**</exclude>
-                        <exclude>**/*.g4</exclude>
-                        <exclude>**/*.yaml</exclude>
                         <!-- IDE files -->
                         <exclude>**/*.iml</exclude>
                         <exclude>**/.idea/**</exclude>
