@@ -38,7 +38,7 @@ public final class InsertValuesToken extends SQLToken {
         this.type = type;
     }
     
-    // TODO: In order to be compatible with old ParsingEngine.
+    // TODO :In order to be compatible with old ParsingEngine.
     public InsertValuesToken(final int startIndex) {
         super(startIndex);
     }
