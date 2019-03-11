@@ -31,8 +31,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLIdentifierExp
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
@@ -105,9 +103,6 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData, final String tableName, final Optional<Column> generateKeyColumn) {
         int count = 0;
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, "("));
-        ItemsToken columnsToken = new ItemsToken(beginPosition);
-        columnsToken.setFirstOfItemsSpecial(true);
         Collection<Column> result = new LinkedList<>();
         if (shardingTableMetaData.containsTable(tableName)) {
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
@@ -115,12 +110,9 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
                 if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(each)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
                 }
-                columnsToken.getItems().add(each);
                 count++;
             }
         }
-        insertStatement.addSQLToken(columnsToken);
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, ")"));
         insertStatement.setColumnsListLastIndex(beginPosition);
         return result;
     }
