@@ -120,7 +120,8 @@ public final class SQLRewriteEngine {
      * @param sqlStatement SQL statement
      * @param parameters parameters
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, 
+                            final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -330,7 +331,8 @@ public final class SQLRewriteEngine {
             
             @Override
             public boolean apply(final SQLToken input) {
-                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals(encryptColumnToken.getColumn()) && ((EncryptColumnToken) input).isInWhere() == encryptColumnToken.isInWhere();
+                return input instanceof EncryptColumnToken 
+                        && ((EncryptColumnToken) input).getColumn().equals(encryptColumnToken.getColumn()) && ((EncryptColumnToken) input).isInWhere() == encryptColumnToken.isInWhere();
             }
         }));
         return result.indexOf(encryptColumnToken);
@@ -444,6 +446,14 @@ public final class SQLRewriteEngine {
         return getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1;
     }
     
+    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
+        if (isUsingParameters(encryptColumnToken)) {
+            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+        }
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
+                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
+    }
+    
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
                                                                                      final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         if (isUsingParameters(encryptColumnToken)) {
@@ -458,14 +468,6 @@ public final class SQLRewriteEngine {
         Optional<String> result = shardingRule.getTableRule(column.getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(column.getName());
         Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
         return result.get();
-    }
-    
-    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
-        if (isUsingParameters(encryptColumnToken)) {
-            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        }
-        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), 
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
