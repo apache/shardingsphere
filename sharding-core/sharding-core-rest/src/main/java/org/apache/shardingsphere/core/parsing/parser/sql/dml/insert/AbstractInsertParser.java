@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
@@ -77,16 +76,16 @@ public abstract class AbstractInsertParser implements SQLParser {
     
     private void processGeneratedKey(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
-        if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
+        if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumnName.isPresent()) {
             return;
         }
         if (DefaultKeyword.VALUES.equals(insertStatement.getInsertValues().getInsertValues().get(0).getType())) {
             if (!insertStatement.getItemsTokens().isEmpty()) {
-                insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
+                insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumnName.get());
             } else {
                 ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
-                columnsToken.getItems().add(generateKeyColumn.get().getName());
+                columnsToken.getItems().add(generateKeyColumnName.get());
                 insertStatement.addSQLToken(columnsToken);
             }
         }

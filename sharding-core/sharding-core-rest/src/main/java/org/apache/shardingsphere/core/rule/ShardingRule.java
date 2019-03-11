@@ -33,7 +33,6 @@ import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
@@ -325,32 +324,33 @@ public class ShardingRule implements SQLStatementFillerRule {
     /**
      * Judge is sharding column or not.
      *
-     * @param column column object
+     * @param columnName column name
+     * @param tableName table name
      * @return is sharding column or not
      */
-    public boolean isShardingColumn(final Column column) {
+    public boolean isShardingColumn(final String columnName, final String tableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(column.getTableName()) && isShardingColumn(each, column)) {
+            if (each.getLogicTable().equalsIgnoreCase(tableName) && isShardingColumn(each, columnName)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isShardingColumn(final TableRule tableRule, final Column column) {
-        return getDatabaseShardingStrategy(tableRule).getShardingColumns().contains(column.getName()) || getTableShardingStrategy(tableRule).getShardingColumns().contains(column.getName());
+    private boolean isShardingColumn(final TableRule tableRule, final String columnName) {
+        return getDatabaseShardingStrategy(tableRule).getShardingColumns().contains(columnName) || getTableShardingStrategy(tableRule).getShardingColumns().contains(columnName);
     }
     
     /**
-     * Find column of generated key.
+     * Find column name of generated key.
      *
      * @param logicTableName logic table name
-     * @return generated key's column
+     * @return column name of generated key
      */
-    public Optional<Column> findGenerateKeyColumn(final String logicTableName) {
+    public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
-                return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
+                return Optional.of(each.getGenerateKeyColumn());
             }
         }
         return Optional.absent();

@@ -62,7 +62,7 @@ public abstract class InsertDuplicateKeyUpdateClauseParser implements SQLClauseP
         lexerEngine.accept(DefaultKeyword.UPDATE);
         do {
             Column column = new Column(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()), insertStatement.getTables().getSingleTableName());
-            if (shardingRule.isShardingColumn(column)) {
+            if (shardingRule.isShardingColumn(column.getName(), column.getTableName())) {
                 throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support on sharding column, token is '%s', literals is '%s'.",
                         lexerEngine.getCurrentToken().getType(), lexerEngine.getCurrentToken().getLiterals());
             }

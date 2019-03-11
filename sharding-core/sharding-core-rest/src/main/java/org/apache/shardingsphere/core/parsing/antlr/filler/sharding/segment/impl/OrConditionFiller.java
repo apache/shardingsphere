@@ -112,7 +112,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
                     continue;
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
-                if (isShardingCondition(condition.getOperator()) && shardingRule.isShardingColumn(column)) {
+                if (isShardingCondition(condition.getOperator()) && shardingRule.isShardingColumn(column.getName(), column.getTableName())) {
                     shardingCondition.add(condition);
                     needSharding = true;
                 }
@@ -175,16 +175,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
     }
     
     private boolean isShardingCondition(final String operator) {
-        if (Symbol.EQ.getLiterals().equals(operator)) {
-            return true;
-        }
-        if (ShardingOperator.IN.name().equals(operator)) {
-            return true;
-        }
-        if (ShardingOperator.BETWEEN.name().equals(operator)) {
-            return true;
-        }
-        return false;
+        return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator) || ShardingOperator.BETWEEN.name().equals(operator);
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only

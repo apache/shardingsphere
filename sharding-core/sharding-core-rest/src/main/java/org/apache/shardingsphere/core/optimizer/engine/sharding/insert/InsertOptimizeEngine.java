@@ -137,14 +137,15 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private boolean isNeededToAppendGeneratedKey() {
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
-        return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(generateKeyColumn.get());
+        String tableName = insertStatement.getTables().getSingleTableName();
+        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
+        return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(new Column(generateKeyColumn.get(), tableName));
     }
     
     private void fillInsertStatementWithGeneratedKeyName(final InsertValuesToken insertValuesToken) {
-        String generatedKeyName = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName();
-        insertValuesToken.getColumnNames().add(generatedKeyName);
-        fillInsertStatementWithColumnName(insertValuesToken, generatedKeyName);
+        String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName()).get();
+        insertValuesToken.getColumnNames().add(generateKeyColumnName);
+        fillInsertStatementWithColumnName(insertValuesToken, generateKeyColumnName);
     }
     
     private void fillInsertStatementWithColumnName(final InsertValuesToken insertValuesToken, final String columnName) {
@@ -204,9 +205,12 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void fillShardingCondition(final ShardingCondition shardingCondition, final Comparable<?> currentGeneratedKey) {
-        Column generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
-        if (shardingRule.isShardingColumn(generateKeyColumn)) {
-            shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn, new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters)));
+        String tableName = insertStatement.getTables().getSingleTableName();
+        String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).get();
+        if (shardingRule.isShardingColumn(generateKeyColumnName, tableName)) {
+            Column generateKeyColumn = new Column(generateKeyColumnName, tableName);
+            List<Comparable<?>> conditionValues = new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters);
+            shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn, conditionValues));
         }
         insertStatement.setContainGenerateKey(true);
     }

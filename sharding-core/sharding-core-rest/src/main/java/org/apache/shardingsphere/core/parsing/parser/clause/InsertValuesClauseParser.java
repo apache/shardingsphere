@@ -107,7 +107,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
             AndCondition andCondition = new AndCondition();
             for (Column each : insertStatement.getColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
-                if (shardingRule.isShardingColumn(each)) {
+                if (shardingRule.isShardingColumn(each.getName(), each.getTableName())) {
                     if (!(sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression || sqlExpression instanceof SQLPlaceholderExpression)) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each.getName());
                     }
@@ -128,12 +128,12 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     }
     
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumn.isPresent() && valueCount < insertStatement.getColumns().size()) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        if (generateKeyColumnName.isPresent() && valueCount < insertStatement.getColumns().size()) {
             List<ItemsToken> itemsTokens = insertStatement.getItemsTokens();
-            insertStatement.getColumns().remove(new Column(generateKeyColumn.get().getName(), insertStatement.getTables().getSingleTableName()));
+            insertStatement.getColumns().remove(new Column(generateKeyColumnName.get(), insertStatement.getTables().getSingleTableName()));
             for (ItemsToken each : itemsTokens) {
-                each.getItems().remove(generateKeyColumn.get().getName());
+                each.getItems().remove(generateKeyColumnName.get());
                 insertStatement.setGenerateKeyColumnIndex(-1);
             }
         }

@@ -79,7 +79,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         insertStatement.addSQLToken(new InsertValuesToken(beginPosition, DefaultKeyword.SET));
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         int count = 0;
         do {
             SQLExpression left = basicExpressionParser.parse(insertStatement);
@@ -94,12 +94,13 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
                 column = new Column(SQLUtil.getExactlyValue(((SQLIgnoreExpression) left).getExpression()), insertStatement.getTables().getSingleTableName());
             }
             Preconditions.checkNotNull(column);
-            if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(column.getName())) {
+            if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(column.getName())) {
                 insertStatement.setGenerateKeyColumnIndex(count);
             }
             lexerEngine.accept(Symbol.EQ);
             SQLExpression right = basicExpressionParser.parse(insertStatement);
-            if (shardingRule.isShardingColumn(column) && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+            if (shardingRule.isShardingColumn(column.getName(), column.getTableName())
+                    && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
                 insertStatement.getRouteConditions().add(new Condition(column, right));
             }
             count++;

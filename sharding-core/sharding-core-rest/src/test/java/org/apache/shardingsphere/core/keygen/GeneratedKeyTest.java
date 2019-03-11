@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.keygen;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
@@ -59,14 +58,14 @@ public final class GeneratedKeyTest {
     @Test
     public void assertGetGenerateKeyWhenCreateWithoutGenerateKeyColumnConfiguration() {
         mockGetGenerateKeyWhenCreate();
-        when(shardingRule.findGenerateKeyColumn("tbl")).thenReturn(Optional.<Column>absent());
+        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.<String>absent());
         assertFalse(GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement).isPresent());
     }
     
     @Test
     public void assertGetGenerateKeyWhenCreateWithGenerateKeyColumnConfiguration() {
         mockGetGenerateKeyWhenCreate();
-        when(shardingRule.findGenerateKeyColumn("tbl")).thenReturn(Optional.of(new Column("id", "tbl")));
+        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedKeys().size(), is(1));

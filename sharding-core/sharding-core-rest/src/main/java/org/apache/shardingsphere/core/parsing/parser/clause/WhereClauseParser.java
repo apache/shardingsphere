@@ -214,7 +214,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         }
         if (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
-            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get().getName(), column.get().getTableName())) {
                 return new Condition(column.get(), right);
             }
         }
@@ -239,7 +239,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         }
         if (!hasComplexExpression) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
-            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get().getName(), column.get().getTableName())) {
                 return new Condition(column.get(), rights);
             }
         }
@@ -266,7 +266,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         }
         if (!hasComplexExpression) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
-            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get().getName(), column.get().getTableName())) {
                 return new Condition(column.get(), rights.get(0), rights.get(1));
             }
         }
