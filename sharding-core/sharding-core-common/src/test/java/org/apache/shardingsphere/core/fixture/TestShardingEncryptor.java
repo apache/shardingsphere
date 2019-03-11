@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core;
+package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.core.config.AllConfigTests;
-import org.apache.shardingsphere.core.constant.AllConstantsTests;
-import org.apache.shardingsphere.core.rule.AllRuleTests;
-import org.apache.shardingsphere.core.spi.AllSPITests;
-import org.apache.shardingsphere.core.strategy.AllStrategyTests;
-import org.apache.shardingsphere.core.util.AllUtilTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class, 
-        AllConstantsTests.class,
-        AllStrategyTests.class,
-        AllSPITests.class,
-        AllRuleTests.class,
-        AllUtilTests.class
-})
-public final class AllCoreTests {
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class TestShardingEncryptor implements ShardingEncryptor {
+    
+    private Properties properties = new Properties();
+    
+    @Override
+    public String getType() {
+        return "test";
+    }
+    
+    @Override
+    public String encrypt(final Object plaintext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String ciphertext) {
+        return "decryptValue";
+    }
 }

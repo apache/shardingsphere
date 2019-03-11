@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core;
+package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.core.config.AllConfigTests;
-import org.apache.shardingsphere.core.constant.AllConstantsTests;
-import org.apache.shardingsphere.core.rule.AllRuleTests;
-import org.apache.shardingsphere.core.spi.AllSPITests;
-import org.apache.shardingsphere.core.strategy.AllStrategyTests;
-import org.apache.shardingsphere.core.util.AllUtilTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class, 
-        AllConstantsTests.class,
-        AllStrategyTests.class,
-        AllSPITests.class,
-        AllRuleTests.class,
-        AllUtilTests.class
-})
-public final class AllCoreTests {
+import java.util.Collection;
+
+public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
+    
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
 }
