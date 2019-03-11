@@ -94,7 +94,6 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             }
             count++;
         } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN) && !lexerEngine.equalAny(Assist.END));
-        insertStatement.setColumnsListLastIndex(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         lexerEngine.nextToken();
         return result;
     }
@@ -102,7 +101,6 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
     private Collection<Column> parseWithoutColumn(
             final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData, final String tableName, final Optional<Column> generateKeyColumn) {
         int count = 0;
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
         Collection<Column> result = new LinkedList<>();
         if (shardingTableMetaData.containsTable(tableName)) {
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
@@ -113,7 +111,6 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
                 count++;
             }
         }
-        insertStatement.setColumnsListLastIndex(beginPosition);
         return result;
     }
 }
