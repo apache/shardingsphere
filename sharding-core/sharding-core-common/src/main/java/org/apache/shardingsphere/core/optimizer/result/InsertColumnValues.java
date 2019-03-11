@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimizer.result;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -149,7 +148,6 @@ public final class InsertColumnValues {
         }
         
         private void fillResultBySet(final StringBuilder result) {
-            result.append(" SET ");
             for (int i = 0; i < columnNames.size(); i++) {
                 result.append(String.format("%s = %s", getColumnName(i), getColumnSQLExpressionValue(i))).append(", ");
             }
@@ -157,7 +155,7 @@ public final class InsertColumnValues {
         }
         
         private void fillResultByValues(final StringBuilder result) {
-            result.append(" (").append(Joiner.on(", ").join(columnNames)).append(") VALUES (");
+            result.append("(");
             for (int i = 0; i < columnNames.size(); i++) {
                 result.append(getColumnSQLExpressionValue(i)).append(", ");
             }
