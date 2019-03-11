@@ -210,8 +210,8 @@ public final class SQLRewriteEngine {
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count) {
         sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getLeftDelimiter(), tableToken.getRightDelimiter()));
-        int beginPosition = tableToken.getStartIndex() + tableToken.getLength();
-        appendRest(sqlBuilder, count, beginPosition);
+        int startIndex = tableToken.getStartIndex() + tableToken.getLength();
+        appendRest(sqlBuilder, count, startIndex);
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
@@ -259,14 +259,14 @@ public final class SQLRewriteEngine {
         } else {
             sqlBuilder.appendLiterals(String.valueOf(limit.isNeedRewriteRowCount(databaseType) ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount()));
         }
-        int beginPosition = rowCountToken.getStartIndex() + String.valueOf(rowCountToken.getRowCount()).length();
-        appendRest(sqlBuilder, count, beginPosition);
+        int startIndex = rowCountToken.getStartIndex() + String.valueOf(rowCountToken.getRowCount()).length();
+        appendRest(sqlBuilder, count, startIndex);
     }
     
     private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
         sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetToken.getOffset()));
-        int beginPosition = offsetToken.getStartIndex() + String.valueOf(offsetToken.getOffset()).length();
-        appendRest(sqlBuilder, count, beginPosition);
+        int startIndex = offsetToken.getStartIndex() + String.valueOf(offsetToken.getOffset()).length();
+        appendRest(sqlBuilder, count, startIndex);
     }
     
     private void appendOrderByToken(final SQLBuilder sqlBuilder, final int count, final boolean isRewrite) {
@@ -288,8 +288,7 @@ public final class SQLRewriteEngine {
             orderByLiterals.append(" ");
             sqlBuilder.appendLiterals(orderByLiterals.toString());
         }
-        int beginPosition = selectStatement.getGroupByLastIndex() + 1;
-        appendRest(sqlBuilder, count, beginPosition);
+        appendRest(sqlBuilder, count, selectStatement.getGroupByLastIndex() + 1);
     }
     
     private void appendSymbolToken(final SQLBuilder sqlBuilder, final InsertColumnToken insertColumnToken, final int count) {
@@ -469,9 +468,9 @@ public final class SQLRewriteEngine {
                 getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
     }
     
-    private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
-        int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
+    private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
+        int stopPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
+        sqlBuilder.appendLiterals(originalSQL.substring(startIndex, stopPosition));
     }
     
     /**
