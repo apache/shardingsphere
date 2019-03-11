@@ -90,7 +90,8 @@ public final class EncryptSQLRewriteEngine {
      * @param sqlStatement SQL statement
      * @param parameters parameters
      */
-    public EncryptSQLRewriteEngine(final EncryptRule encryptRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
+    public EncryptSQLRewriteEngine(final EncryptRule encryptRule, 
+                                   final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.encryptRule = encryptRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -296,6 +297,14 @@ public final class EncryptSQLRewriteEngine {
         return getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1;
     }
     
+    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
+        if (isUsingParameters(encryptColumnToken)) {
+            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+        }
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
+                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
+    }
+    
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
                                                                                      final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         if (isUsingParameters(encryptColumnToken)) {
@@ -310,14 +319,6 @@ public final class EncryptSQLRewriteEngine {
         Optional<String> result = encryptRule.getEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName());
         Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
         return result.get();
-    }
-    
-    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
-        if (isUsingParameters(encryptColumnToken)) {
-            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        }
-        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), 
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
