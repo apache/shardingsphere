@@ -23,8 +23,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;

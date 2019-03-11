@@ -1,0 +1,3 @@
+org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator
+org.apache.shardingsphere.core.strategy.keygen.UUIDShardingKeyGenerator
+org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator

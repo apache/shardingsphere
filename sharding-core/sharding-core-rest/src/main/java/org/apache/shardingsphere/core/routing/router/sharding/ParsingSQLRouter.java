@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
@@ -36,15 +35,16 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatem
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.routing.GeneratedKey;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.core.util.SQLLogger;
 
 import java.util.Collection;
@@ -170,16 +170,16 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private boolean isSameShardingValue(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {
         return isSameLogicTable(shardingValue1, shardingValue2)
-                && shardingValue1.getColumn().getName().equals(shardingValue2.getColumn().getName()) && shardingValue1.getValues().equals(shardingValue2.getValues());
+                && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) && shardingValue1.getValues().equals(shardingValue2.getValues());
     }
     
     private boolean isSameLogicTable(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {
-        return shardingValue1.getColumn().getTableName().equals(shardingValue2.getColumn().getTableName()) || isBindingTable(shardingValue1, shardingValue2);
+        return shardingValue1.getTableName().equals(shardingValue2.getTableName()) || isBindingTable(shardingValue1, shardingValue2);
     }
     
     private boolean isBindingTable(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {
-        Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getColumn().getTableName());
-        return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getColumn().getTableName());
+        Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
+        return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
     }
     
     private void mergeShardingValues(final ShardingConditions shardingConditions) {

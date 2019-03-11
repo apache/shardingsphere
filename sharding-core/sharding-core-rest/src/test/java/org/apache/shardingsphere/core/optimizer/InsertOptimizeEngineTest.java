@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimizer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -35,8 +34,9 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatem
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
@@ -252,7 +252,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithValuesWithPlaceHolderWithGeneratedKey() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
@@ -279,7 +279,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithValuesWithPlaceHolderWithGeneratedKeyWithEncrypt() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolderWithEncrypt, parametersWithValues, generatedKey).optimize();
@@ -306,7 +306,7 @@ public final class InsertOptimizeEngineTest {
     @Test
     public void assertOptimizeWithValuesWithPlaceHolderWithoutGeneratedKey() {
         insertStatementWithValuesWithPlaceHolder.setGenerateKeyColumnIndex(1);
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(1);
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
@@ -328,7 +328,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithValuesWithoutPlaceHolderWithGeneratedKeyWithQueryEncrypt() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt_query"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getColumns().add(new Column("user_id", "t_encrypt_query"));
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getColumns().add(new Column("status", "t_encrypt_query"));
@@ -347,7 +347,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithValuesWithoutPlaceHolderWithGeneratedKey() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         insertStatementWithValuesWithoutPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
         insertStatementWithValuesWithoutPlaceHolder.getColumns().add(new Column("status", "t_order"));
@@ -366,7 +366,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithoutValuesWithPlaceHolderWithGeneratedKey() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = ?, status = ?", 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
@@ -384,7 +384,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithoutValuesWithPlaceHolderWithGeneratedKeyWithQueryEncrypt() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt_query"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = ?, status = ?", 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
@@ -404,7 +404,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithoutValuesWithoutPlaceHolderWithGeneratedKey() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = 12, status = 'a'", 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
@@ -421,7 +421,7 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithoutValuesWithoutPlaceHolderWithGeneratedKeyWithEncrypt() {
-        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt"));
+        GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = 12, status = 'a'", 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));

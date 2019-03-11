@@ -1,2 +1,0 @@
-org.apache.shardingsphere.core.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
-org.apache.shardingsphere.core.masterslave.RandomMasterSlaveLoadBalanceAlgorithm
