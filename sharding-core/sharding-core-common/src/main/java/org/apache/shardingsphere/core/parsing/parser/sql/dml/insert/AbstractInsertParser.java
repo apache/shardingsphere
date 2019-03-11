@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parsing.parser.clause.facade.AbstractInser
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -73,22 +72,5 @@ public abstract class AbstractInsertParser implements SQLParser {
         insertClauseParserFacade.getInsertDuplicateKeyUpdateClauseParser().parse(result);
         processGeneratedKey(result);
         return result;
-    }
-    
-    private void processGeneratedKey(final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
-        if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
-            return;
-        }
-        if (DefaultKeyword.VALUES.equals(insertStatement.getInsertValues().getInsertValues().get(0).getType())) {
-            if (!insertStatement.getItemsTokens().isEmpty()) {
-                insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
-            } else {
-                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
-                columnsToken.getItems().add(generateKeyColumn.get().getName());
-                insertStatement.addSQLToken(columnsToken);
-            }
-        }
     }
 }
