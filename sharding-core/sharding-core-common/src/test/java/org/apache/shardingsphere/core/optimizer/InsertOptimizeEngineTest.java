@@ -191,7 +191,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
         insertStatementWithoutValuesWithPlaceHolder.setParametersIndex(0);
         insertStatementWithoutValuesWithPlaceHolder.setInsertValuesListLastIndex(47);
-        insertStatementWithoutValuesWithPlaceHolder.setColumnsListLastIndex(19);
         insertStatementWithoutValuesWithPlaceHolder.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order", "", ""));
         insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
@@ -207,7 +206,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", Optional.<String>absent()));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setInsertValuesListLastIndex(47);
-        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setColumnsListLastIndex(19);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, 0, "t_encrypt_query", "", ""));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
@@ -223,7 +221,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
         insertStatementWithoutValuesWithoutPlaceHolder.setParametersIndex(0);
         insertStatementWithoutValuesWithoutPlaceHolder.setInsertValuesListLastIndex(50);
-        insertStatementWithoutValuesWithoutPlaceHolder.setColumnsListLastIndex(19);
         insertStatementWithoutValuesWithoutPlaceHolder.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order", "", ""));
         insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
@@ -239,7 +236,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setParametersIndex(0);
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setInsertValuesListLastIndex(50);
-        insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setColumnsListLastIndex(19);
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.addSQLToken(new TableToken(12, 0, "t_encrypt", "", ""));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
