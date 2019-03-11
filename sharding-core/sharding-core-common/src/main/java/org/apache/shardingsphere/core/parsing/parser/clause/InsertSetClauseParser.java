@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.parser.clause;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -74,12 +73,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
             return;
         }
         removeUnnecessaryToken(insertStatement);
-        insertStatement.setGenerateKeyColumnIndex(-1);
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         insertStatement.getInsertValuesToken().setType(DefaultKeyword.SET);
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
-        int count = 0;
         do {
             SQLExpression left = basicExpressionParser.parse(insertStatement);
             Column column = null;
@@ -93,15 +87,11 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
                 column = new Column(SQLUtil.getExactlyValue(((SQLIgnoreExpression) left).getExpression()), insertStatement.getTables().getSingleTableName());
             }
             Preconditions.checkNotNull(column);
-            if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(column.getName())) {
-                insertStatement.setGenerateKeyColumnIndex(count);
-            }
             lexerEngine.accept(Symbol.EQ);
             SQLExpression right = basicExpressionParser.parse(insertStatement);
             if (shardingRule.isShardingColumn(column) && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
                 insertStatement.getRouteConditions().add(new Condition(column, right));
             }
-            count++;
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         int endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, insertStatement.getParametersIndex());
