@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core;
 
-import org.apache.shardingsphere.core.encrypt.AllEncryptorTests;
 import org.apache.shardingsphere.core.executor.AllExecutorTests;
 import org.apache.shardingsphere.core.keygen.AllKeygenTests;
 import org.apache.shardingsphere.core.masterslave.AllMasterSlaveTests;
@@ -45,8 +44,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllMergerTests.class, 
         AllYamlTests.class,
         AllMasterSlaveTests.class, 
-        AllKeygenTests.class, 
-        AllEncryptorTests.class
+        AllKeygenTests.class
     })
 public final class AllCoreTests {
 }

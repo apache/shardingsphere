@@ -23,11 +23,6 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Properties;
 
-/**
- * Test sharding encryptor.
- *
- * @author panjuan
- */
 @Getter
 @Setter
 public final class TestShardingEncryptor implements ShardingEncryptor {
