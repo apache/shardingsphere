@@ -73,9 +73,6 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
         for (ColumnSegment each : sqlSegment.getColumns()) {
             Column column = new Column(each.getName(), tableName);
             insertStatement.getColumns().add(column);
-            if (shardingColumn.isPresent() && shardingColumn.get().getName().equalsIgnoreCase(each.getName())) {
-                insertStatement.setGenerateKeyColumnIndex(index);
-            }
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
                 insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 
                         0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
@@ -85,17 +82,11 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
     }
     
     private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        int count = 0;
         String tableName = insertStatement.getTables().getSingleTableName();
         if (shardingTableMetaData.containsTable(tableName)) {
-            Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(each)) {
-                    insertStatement.setGenerateKeyColumnIndex(count);
-                }
                 Column column = new Column(each, tableName);
                 insertStatement.getColumns().add(column);
-                count++;
             }
         }
     }
@@ -116,7 +107,6 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
             InsertValue insertValue = new InsertValue(each.getType(), each.getParametersCount());
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             parameterIndex += each.getParametersCount();
-            int index = 0;
             AndCondition andCondition = new AndCondition();
             Iterator<Column> iterator = insertStatement.getColumns().iterator();
             for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {
@@ -130,10 +120,6 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
                     }
                     andCondition.getConditions().add(new Condition(column, sqlExpression));
                 }
-                if (index == insertStatement.getGenerateKeyColumnIndex()) {
-                    insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(column, commonExpressionSegment, sql));
-                }
-                index++;
             }
             insertStatement.setParametersIndex(parameterIndex);
             insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
