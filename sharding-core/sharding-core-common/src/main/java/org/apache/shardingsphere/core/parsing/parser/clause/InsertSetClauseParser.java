@@ -104,7 +104,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
             count++;
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         int endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, lexerEngine.getInput().substring(beginPosition, endPosition), insertStatement.getParametersIndex());
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, insertStatement.getParametersIndex());
         insertStatement.getInsertValues().getInsertValues().add(insertValue);
         insertStatement.setInsertValuesListLastIndex(endPosition - 1);
     }
