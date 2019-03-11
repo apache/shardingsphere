@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.impl;
+package org.apache.shardingsphere.core.keygen;
 
 import org.junit.Test;
 

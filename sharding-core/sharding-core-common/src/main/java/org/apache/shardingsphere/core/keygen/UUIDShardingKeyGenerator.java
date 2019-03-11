@@ -17,17 +17,31 @@
 
 package org.apache.shardingsphere.core.keygen;
 
-import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGeneratorTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        GeneratedKeyTest.class, 
-        ShardingKeyGeneratorFactoryTest.class, 
-        SnowflakeShardingKeyGeneratorTest.class, 
-        ShardingKeyGeneratorFactoryTest.class
-})
-public final class AllKeygenTests {
+import java.util.Properties;
+import java.util.UUID;
+
+/**
+ * UUID key generator.
+ *
+ * @author panjuan
+ */
+@Getter
+@Setter
+public final class UUIDShardingKeyGenerator implements ShardingKeyGenerator {
+    
+    private Properties properties = new Properties();
+    
+    @Override
+    public String getType() {
+        return "UUID";
+    }
+    
+    @Override
+    public synchronized Comparable<?> generateKey() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 }

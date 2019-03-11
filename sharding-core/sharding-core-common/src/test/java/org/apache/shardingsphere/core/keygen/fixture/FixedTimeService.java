@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing;
+package org.apache.shardingsphere.core.keygen.fixture;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.keygen.SnowflakeShardingKeyGenerator;
+import org.apache.shardingsphere.core.keygen.TimeService;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * SQL route result.
- * 
- * @author gaohongtao
- * @author zhangliang
- * @author zhaojun
- */
 @RequiredArgsConstructor
-@Getter
-public final class SQLRouteResult {
+public final class FixedTimeService extends TimeService {
     
-    private final SQLStatement sqlStatement;
+    private final int expectedInvokedTimes;
     
-    private final GeneratedKey generatedKey;
+    private final AtomicInteger invokedTimes = new AtomicInteger();
     
-    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    private long current = SnowflakeShardingKeyGenerator.EPOCH;
     
-    public SQLRouteResult(final SQLStatement sqlStatement) {
-        this(sqlStatement, null);
+    @Override
+    public long getCurrentMillis() {
+        if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
+            return current;
+        }
+        invokedTimes.set(0);
+        return ++current;
     }
 }

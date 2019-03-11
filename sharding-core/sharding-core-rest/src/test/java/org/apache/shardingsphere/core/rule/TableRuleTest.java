@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.keygen.fixture.IncrementShardingKeyGenerator;
+import org.apache.shardingsphere.core.fixture.IncrementShardingKeyGenerator;
 import org.junit.Test;
 
 import java.util.Arrays;

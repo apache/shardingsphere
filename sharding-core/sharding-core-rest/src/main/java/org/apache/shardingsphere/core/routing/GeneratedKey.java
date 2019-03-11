@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.core.routing;
 
 import com.google.common.base.Optional;
 import lombok.Getter;

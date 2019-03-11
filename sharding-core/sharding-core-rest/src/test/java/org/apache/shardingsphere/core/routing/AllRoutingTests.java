@@ -43,7 +43,8 @@ import org.junit.runners.Suite.SuiteClasses;
         StandardRoutingEngineTest.class,
         SubqueryRouteTest.class,
         SQLRouteTest.class,
-        ShardingStrategyTest.class
+        ShardingStrategyTest.class,
+        GeneratedKeyTest.class
 })
 public final class AllRoutingTests {
 }

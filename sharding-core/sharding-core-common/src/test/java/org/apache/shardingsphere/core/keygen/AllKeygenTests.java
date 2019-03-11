@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.fixture;
+package org.apache.shardingsphere.core.keygen;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.keygen.TimeService;
-import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-@RequiredArgsConstructor
-public final class FixedTimeService extends TimeService {
-    
-    private final int expectedInvokedTimes;
-    
-    private final AtomicInteger invokedTimes = new AtomicInteger();
-    
-    private long current = SnowflakeShardingKeyGenerator.EPOCH;
-    
-    @Override
-    public long getCurrentMillis() {
-        if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
-            return current;
-        }
-        invokedTimes.set(0);
-        return ++current;
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+        ShardingKeyGeneratorFactoryTest.class, 
+        SnowflakeShardingKeyGeneratorTest.class, 
+        ShardingKeyGeneratorFactoryTest.class
+})
+public final class AllKeygenTests {
 }

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.impl;
+package org.apache.shardingsphere.core.keygen;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.keygen.TimeService;
 import org.apache.shardingsphere.core.keygen.fixture.FixedTimeService;
 import org.junit.Test;
 
