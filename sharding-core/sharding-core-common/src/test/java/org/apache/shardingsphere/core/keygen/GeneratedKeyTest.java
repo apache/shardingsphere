@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.keygen;
 
 import com.google.common.base.Optional;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -73,7 +75,6 @@ public final class GeneratedKeyTest {
     }
     
     private void mockGetGenerateKeyWhenCreate() {
-        when(insertStatement.getGenerateKeyColumnIndex()).thenReturn(-1);
         Tables tables = mock(Tables.class);
         when(insertStatement.getTables()).thenReturn(tables);
         when(tables.getSingleTableName()).thenReturn("tbl");
@@ -89,11 +90,15 @@ public final class GeneratedKeyTest {
     }
     
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     private void mockGetGenerateKeyWhenFind() {
         GeneratedKeyCondition generatedKeyCondition = mock(GeneratedKeyCondition.class);
         when(generatedKeyCondition.getIndex()).thenReturn(-1);
         when(generatedKeyCondition.getValue()).thenReturn((Comparable) 100);
         when(insertStatement.getGeneratedKeyConditions()).thenReturn(Arrays.asList(generatedKeyCondition, mock(GeneratedKeyCondition.class)));
+        when(insertStatement.isContainGenerateKeyColumn(shardingRule)).thenReturn(true);
+        Field field = InsertStatement.class.getDeclaredField("columns");
+        field.setAccessible(true);
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedKeys().size(), is(2));
