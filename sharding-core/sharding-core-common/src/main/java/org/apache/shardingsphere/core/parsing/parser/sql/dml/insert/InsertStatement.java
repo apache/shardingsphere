@@ -107,12 +107,12 @@ public final class InsertStatement extends DMLStatement {
     }
     
     /**
-     * Is contain generated key column.
+     * Is contain generate key column.
      * 
      * @param shardingRule sharding rule.
      * @return contain generated key column or not.
      */
-    public boolean isContainGeneratKeyColumn(final ShardingRule shardingRule) {
+    public boolean isContainGenerateKeyColumn(final ShardingRule shardingRule) {
         Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(getTables().getSingleTableName());
         return generateKeyColumn.isPresent() && columns.contains(generateKeyColumn.get());
     }
