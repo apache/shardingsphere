@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.optimizer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.insert.InsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -54,7 +54,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class InsertOptimizeEngineTest {
     
@@ -191,7 +190,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
         insertStatementWithoutValuesWithPlaceHolder.setParametersIndex(0);
         insertStatementWithoutValuesWithPlaceHolder.setInsertValuesListLastIndex(47);
-        insertStatementWithoutValuesWithPlaceHolder.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order", "", ""));
         insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
         insertStatementWithoutValuesWithPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
@@ -206,7 +204,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", Optional.<String>absent()));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setInsertValuesListLastIndex(47);
-        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, 0, "t_encrypt_query", "", ""));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getColumns().add(new Column("user_id", "t_encrypt_query"));
@@ -221,7 +218,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
         insertStatementWithoutValuesWithoutPlaceHolder.setParametersIndex(0);
         insertStatementWithoutValuesWithoutPlaceHolder.setInsertValuesListLastIndex(50);
-        insertStatementWithoutValuesWithoutPlaceHolder.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order", "", ""));
         insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
         insertStatementWithoutValuesWithoutPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
@@ -236,7 +232,6 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setParametersIndex(0);
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setInsertValuesListLastIndex(50);
-        insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.addSQLToken(new TableToken(12, 0, "t_encrypt", "", ""));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getColumns().add(new Column("user_id", "t_encrypt"));
@@ -270,7 +265,6 @@ public final class InsertOptimizeEngineTest {
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(0), 11);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(1), 2);
-        assertTrue(insertStatementWithValuesWithPlaceHolder.isContainGenerateKey());
     }
     
     @Test
@@ -296,12 +290,10 @@ public final class InsertOptimizeEngineTest {
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(0), 11);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(1).getShardingValues().get(1), 2);
-        assertTrue(insertStatementWithValuesWithPlaceHolderWithEncrypt.isContainGenerateKey());
     }
     
     @Test
     public void assertOptimizeWithValuesWithPlaceHolderWithoutGeneratedKey() {
-        insertStatementWithValuesWithPlaceHolder.setGenerateKeyColumnIndex(1);
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(1);
@@ -339,7 +331,6 @@ public final class InsertOptimizeEngineTest {
                 is(" (user_id, status, order_id, assisted_user_id) VALUES ('encryptValue', 'a', 1, 'assistedEncryptValue')"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
-        assertTrue(insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.isContainGenerateKey());
     }
     
     @Test
@@ -358,7 +349,6 @@ public final class InsertOptimizeEngineTest {
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is(" (user_id, status, order_id) VALUES (12, 'a', 1)"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
-        assertTrue(insertStatementWithValuesWithoutPlaceHolder.isContainGenerateKey());
     }
     
     @Test
@@ -413,7 +403,6 @@ public final class InsertOptimizeEngineTest {
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is(" SET user_id = 12, status = 'a', order_id = 1"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
-        assertTrue(insertStatementWithoutValuesWithoutPlaceHolder.isContainGenerateKey());
     }
     
     @Test
@@ -430,7 +419,6 @@ public final class InsertOptimizeEngineTest {
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is(" SET user_id = 12, status = 'a', order_id = 'encryptValue'"));
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(0), 12);
         assertShardingValue((ListRouteValue) actual.getShardingConditions().getShardingConditions().get(0).getShardingValues().get(1), 1);
-        assertTrue(insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.isContainGenerateKey());
     }
     
     private void assertShardingValue(final ListRouteValue actual, final int expected) {
