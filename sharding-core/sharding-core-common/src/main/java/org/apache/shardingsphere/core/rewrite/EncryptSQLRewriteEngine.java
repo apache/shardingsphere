@@ -36,7 +36,6 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.RemoveToken;
@@ -128,8 +127,6 @@ public final class EncryptSQLRewriteEngine {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertColumnValues().get());
-            } else if (each instanceof InsertColumnToken) {
-                appendSymbolToken(sqlBuilder, (InsertColumnToken) each, count);
             } else if (each instanceof EncryptColumnToken) {
                 appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
@@ -158,11 +155,6 @@ public final class EncryptSQLRewriteEngine {
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
                 insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
-    }
-    
-    private void appendSymbolToken(final SQLBuilder sqlBuilder, final InsertColumnToken insertColumnToken, final int count) {
-        sqlBuilder.appendLiterals(insertColumnToken.getColumnName());
-        appendRest(sqlBuilder, count, insertColumnToken.getStartIndex());
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
