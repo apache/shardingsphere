@@ -55,7 +55,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
-        createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
+        createValue(sqlSegment, insertStatement, sql, shardingRule);
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
         insertStatement.getSQLTokens().add(
                 new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
@@ -64,24 +64,21 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
     
     private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlSegment.getColumns().isEmpty()) {
-            createFromMeta(insertStatement, sqlSegment, shardingRule, shardingTableMetaData);
+            createFromMeta(insertStatement, shardingTableMetaData);
             return;
         }
         String tableName = insertStatement.getTables().getSingleTableName();
-        int index = 0;
-        Optional<Column> shardingColumn = shardingRule.findGenerateKeyColumn(tableName);
         for (ColumnSegment each : sqlSegment.getColumns()) {
             Column column = new Column(each.getName(), tableName);
             insertStatement.getColumns().add(column);
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
+                insertStatement.getSQLTokens().add(
+                        new TableToken(each.getStartIndex(), 0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
             }
-            index++;
         }
     }
     
-    private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private void createFromMeta(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
         if (shardingTableMetaData.containsTable(tableName)) {
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
@@ -91,8 +88,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
         }
     }
     
-    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
-                             final ShardingTableMetaData shardingTableMetaData) {
+    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule) {
         if (insertSegment.getValuesList().isEmpty()) {
             return;
         }
@@ -119,6 +115,10 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", column.getName());
                     }
                     andCondition.getConditions().add(new Condition(column, sqlExpression));
+                }
+                Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(column.getTableName());
+                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equals(column.getName())) {
+                    insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(column, commonExpressionSegment, sql));
                 }
             }
             insertStatement.setParametersIndex(parameterIndex);
