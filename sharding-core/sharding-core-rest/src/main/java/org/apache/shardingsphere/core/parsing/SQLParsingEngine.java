@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parsing;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class SQLParsingEngine {
     
     private final DatabaseType dbType;
@@ -44,14 +46,6 @@ public final class SQLParsingEngine {
     private final ShardingTableMetaData shardingTableMetaData;
     
     private final ParsingResultCache parsingResultCache;
-    
-    public SQLParsingEngine(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        this.dbType = dbType;
-        this.sql = sql;
-        this.shardingRule = shardingRule;
-        this.shardingTableMetaData = shardingTableMetaData;
-        parsingResultCache = shardingRule.getParsingResultCache();
-    }
     
     /**
      * Parse SQL.

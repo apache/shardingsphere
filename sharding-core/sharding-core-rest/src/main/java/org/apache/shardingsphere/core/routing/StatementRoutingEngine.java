@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.routing;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.router.masterslave.ShardingMasterSlaveRouter;
 import org.apache.shardingsphere.core.routing.router.sharding.ShardingRouter;
@@ -39,8 +40,9 @@ public final class StatementRoutingEngine {
     
     private final ShardingMasterSlaveRouter masterSlaveRouter;
     
-    public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
-        shardingRouter = ShardingRouterFactory.newInstance(shardingRule, shardingMetaData, databaseType, showSQL);
+    public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, 
+                                  final DatabaseType databaseType, final ParsingResultCache parsingResultCache, final boolean showSQL) {
+        shardingRouter = ShardingRouterFactory.newInstance(shardingRule, shardingMetaData, databaseType, parsingResultCache, showSQL);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     

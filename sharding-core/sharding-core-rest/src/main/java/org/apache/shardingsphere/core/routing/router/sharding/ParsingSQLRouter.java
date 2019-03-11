@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.SQLParsingEngine;
+import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parsing.hook.ParsingHook;
 import org.apache.shardingsphere.core.parsing.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -68,6 +69,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final DatabaseType databaseType;
     
+    private final ParsingResultCache parsingResultCache;
+    
     private final boolean showSQL;
     
     private final List<Comparable<?>> generatedKeys = new LinkedList<>();
@@ -78,7 +81,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData.getTable()).parse(useCache);
+            SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData.getTable(), parsingResultCache).parse(useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
             // CHECKSTYLE:OFF

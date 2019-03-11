@@ -58,7 +58,8 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
-        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(DatabaseType.PostgreSQL, packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
+                DatabaseType.PostgreSQL, packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         if (!packet.getSql().isEmpty()) {
             SQLStatement sqlStatement = sqlParsingEngine.parse(true);
             int parametersIndex = sqlStatement.getParametersIndex();

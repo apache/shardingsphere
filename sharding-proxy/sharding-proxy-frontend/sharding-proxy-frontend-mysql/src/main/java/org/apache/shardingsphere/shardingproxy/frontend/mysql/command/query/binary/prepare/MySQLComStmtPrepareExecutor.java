@@ -65,7 +65,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
         SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
-                LogicSchemas.getInstance().getDatabaseType(), packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+                LogicSchemas.getInstance().getDatabaseType(), packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = sqlParsingEngine.parse(true);

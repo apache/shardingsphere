@@ -33,7 +33,6 @@ import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
@@ -79,8 +78,6 @@ public class ShardingRule implements SQLStatementFillerRule {
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
     private final ShardingEncryptorEngine shardingEncryptorEngine;
-    
-    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
