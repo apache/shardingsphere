@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.parser.sql.dml.insert;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
