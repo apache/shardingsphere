@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 
 /**
@@ -29,10 +30,16 @@ import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 @Getter
 public final class InsertValuesToken extends SQLToken {
     
-    private final DefaultKeyword type;
+    @Setter
+    private DefaultKeyword type;
     
     public InsertValuesToken(final int startIndex, final DefaultKeyword type) {
         super(startIndex);
         this.type = type;
+    }
+    
+    // TODO: In order to be compatible with old ParsingEngine.
+    public InsertValuesToken(final int startIndex) {
+        super(startIndex);
     }
 }
