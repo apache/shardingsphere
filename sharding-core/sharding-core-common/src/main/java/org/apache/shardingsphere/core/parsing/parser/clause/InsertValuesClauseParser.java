@@ -35,7 +35,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpress
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Arrays;
@@ -86,12 +85,10 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
      * @param insertStatement insert statement
      */
     private void parseValues(final InsertStatement insertStatement) {
-        int beginPosition;
         int endPosition;
         int startParametersIndex;
         insertStatement.getInsertValuesToken().setType(DefaultKeyword.VALUES);
         do {
-            beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             startParametersIndex = insertStatement.getParametersIndex();
             lexerEngine.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
@@ -112,7 +109,8 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
                     }
                     andCondition.getConditions().add(new Condition(each, sqlExpression));
                 }
-                if (insertStatement.getGenerateKeyColumnIndex() == count) {
+                Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(each.getTableName());
+                if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equals(each.getName())) {
                     insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, sqlExpression));
                 }
                 count++;
@@ -129,12 +127,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {
         Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumn.isPresent() && valueCount < insertStatement.getColumns().size()) {
-            List<ItemsToken> itemsTokens = insertStatement.getItemsTokens();
             insertStatement.getColumns().remove(new Column(generateKeyColumn.get().getName(), insertStatement.getTables().getSingleTableName()));
-            for (ItemsToken each : itemsTokens) {
-                each.getItems().remove(generateKeyColumn.get().getName());
-                insertStatement.setGenerateKeyColumnIndex(-1);
-            }
         }
     }
     
