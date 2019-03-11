@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.keygen;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -39,7 +38,7 @@ import java.util.List;
 @Getter
 public final class GeneratedKey {
     
-    private final Column column;
+    private final String columnName;
     
     private final List<Comparable<?>> generatedKeys = new LinkedList<>();
     
@@ -63,7 +62,7 @@ public final class GeneratedKey {
     }
     
     private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final String generateKeyColumnName, final String generateKeyTableName, final int insertValueSize) {
-        GeneratedKey result = new GeneratedKey(new Column(generateKeyColumnName, generateKeyTableName));
+        GeneratedKey result = new GeneratedKey(generateKeyColumnName);
         for (int i = 0; i < insertValueSize; i++) {
             result.getGeneratedKeys().add(shardingRule.generateKey(generateKeyTableName));
         }
@@ -74,7 +73,7 @@ public final class GeneratedKey {
         GeneratedKey result = null;
         for (GeneratedKeyCondition each : insertStatement.getGeneratedKeyConditions()) {
             if (null == result) {
-                result = new GeneratedKey(each.getColumn());
+                result = new GeneratedKey(each.getColumn().getName());
             }
             result.getGeneratedKeys().add(-1 == each.getIndex() ? each.getValue() : (Comparable<?>) parameters.get(each.getIndex()));
         }

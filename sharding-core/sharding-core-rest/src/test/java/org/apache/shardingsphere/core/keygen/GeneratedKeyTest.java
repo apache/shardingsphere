@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.keygen;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
@@ -92,6 +93,7 @@ public final class GeneratedKeyTest {
         GeneratedKeyCondition generatedKeyCondition = mock(GeneratedKeyCondition.class);
         when(generatedKeyCondition.getIndex()).thenReturn(-1);
         when(generatedKeyCondition.getValue()).thenReturn((Comparable) 100);
+        when(generatedKeyCondition.getColumn()).thenReturn(new Column("id", "tbl"));
         when(insertStatement.getGeneratedKeyConditions()).thenReturn(Arrays.asList(generatedKeyCondition, mock(GeneratedKeyCondition.class)));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
