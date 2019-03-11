@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parsing.parser.sql.dml.insert;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,6 +55,8 @@ public final class InsertStatement extends DMLStatement {
     private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
     
     private final InsertValues insertValues = new InsertValues();
+    
+//    private int generateKeyColumnIndex = -1;
     
     private int insertValuesListLastIndex;
     
@@ -100,5 +104,16 @@ public final class InsertStatement extends DMLStatement {
                 return input.getName();
             }
         });
+    }
+    
+    /**
+     * Is contain generated key column.
+     * 
+     * @param shardingRule sharding rule.
+     * @return contain generated key column or not.
+     */
+    public boolean isContainGeneratKeyColumn(final ShardingRule shardingRule) {
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(getTables().getSingleTableName());
+        return generateKeyColumn.isPresent() && columns.contains(generateKeyColumn.get());
     }
 }
