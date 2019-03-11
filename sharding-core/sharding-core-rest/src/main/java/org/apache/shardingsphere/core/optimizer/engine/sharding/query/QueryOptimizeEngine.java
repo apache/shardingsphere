@@ -29,9 +29,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondit
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
-import org.apache.shardingsphere.core.routing.value.BetweenRouteValue;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.BetweenRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -96,13 +96,13 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
             }
         }
         if (null == listValue) {
-            return new BetweenRouteValue<>(column, rangeValue);
+            return new BetweenRouteValue<>(column.getName(), column.getTableName(), rangeValue);
         }
         if (null == rangeValue) {
-            return new ListRouteValue<>(column, listValue);
+            return new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
         }
         listValue = optimize(listValue, rangeValue);
-        return listValue.isEmpty() ? new AlwaysFalseShardingValue() : new ListRouteValue<>(column, listValue);
+        return listValue.isEmpty() ? new AlwaysFalseShardingValue() : new ListRouteValue<>(column.getName(), column.getTableName(), listValue);
     }
     
     private List<Comparable<?>> optimize(final List<Comparable<?>> value1, final List<Comparable<?>> value2) {

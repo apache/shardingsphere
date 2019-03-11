@@ -22,12 +22,11 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,8 +63,8 @@ public final class ComplexRoutingEngineTest {
     @Test
     public void assertRoutingForBindingTables() {
         List<ShardingCondition> shardingConditions = new ArrayList<>();
-        RouteValue shardingValue1 = new ListRouteValue<>(new Column("user_id", "t_order"), Collections.singleton(1L));
-        RouteValue shardingValue2 = new ListRouteValue<>(new Column("order_id", "t_order"), Collections.singleton(1L));
+        RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
+        RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);
@@ -85,8 +84,8 @@ public final class ComplexRoutingEngineTest {
     @Test
     public void assertRoutingForShardingTableJoinBroadcastTable() {
         List<ShardingCondition> shardingConditions = new ArrayList<>();
-        RouteValue shardingValue1 = new ListRouteValue<>(new Column("user_id", "t_order"), Collections.singleton(1L));
-        RouteValue shardingValue2 = new ListRouteValue<>(new Column("order_id", "t_order"), Collections.singleton(1L));
+        RouteValue shardingValue1 = new ListRouteValue<>("user_id", "t_order", Collections.singleton(1L));
+        RouteValue shardingValue2 = new ListRouteValue<>("order_id", "t_order", Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);

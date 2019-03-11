@@ -38,7 +38,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.routing.GeneratedKey;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
@@ -131,7 +131,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private Collection<ListRouteValue> getShardingValues(final AndCondition andCondition) {
         Collection<ListRouteValue> result = new LinkedList<>();
         for (Condition each : andCondition.getConditions()) {
-            result.add(new ListRouteValue<>(each.getColumn(), each.getConditionValues(parameters)));
+            result.add(new ListRouteValue<>(each.getColumn().getName(), each.getColumn().getTableName(), each.getConditionValues(parameters)));
         }
         return result;
     }
@@ -210,7 +210,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         if (shardingRule.isShardingColumn(generateKeyColumnName, tableName)) {
             Column generateKeyColumn = new Column(generateKeyColumnName, tableName);
             List<Comparable<?>> conditionValues = new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters);
-            shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn, conditionValues));
+            shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn.getName(), generateKeyColumn.getTableName(), conditionValues));
         }
         insertStatement.setContainGenerateKey(true);
     }

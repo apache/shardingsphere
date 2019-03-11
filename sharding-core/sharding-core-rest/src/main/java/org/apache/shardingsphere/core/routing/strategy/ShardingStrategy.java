@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.routing.strategy;
 
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
 
 import java.util.Collection;
 

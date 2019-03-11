@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.value;
-
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+package org.apache.shardingsphere.core.routing.strategy.value;
 
 /**
  * Route value.
@@ -27,9 +25,16 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 public interface RouteValue {
     
     /**
-     * Get column.
+     * Get column name.
      * 
-     * @return column
+     * @return column name
      */
-    Column getColumn();
+    String getColumnName();
+    
+    /**
+     * Get table name.
+     * 
+     * @return table name
+     */
+    String getTableName();
 }

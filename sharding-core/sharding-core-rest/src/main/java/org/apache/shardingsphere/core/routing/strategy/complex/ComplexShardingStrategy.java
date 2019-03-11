@@ -24,8 +24,8 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStr
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,8 +58,8 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
         Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingValues.size(), 1);
         String logicTableName = "";
         for (RouteValue each : shardingValues) {
-            columnShardingValues.put(each.getColumn().getName(), ((ListRouteValue) each).getValues());
-            logicTableName = each.getColumn().getTableName();
+            columnShardingValues.put(each.getColumnName(), ((ListRouteValue) each).getValues());
+            logicTableName = each.getTableName();
         }
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue(logicTableName, columnShardingValues));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

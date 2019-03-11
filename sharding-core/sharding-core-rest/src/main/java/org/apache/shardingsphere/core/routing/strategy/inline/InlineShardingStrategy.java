@@ -23,8 +23,8 @@ import groovy.util.Expando;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     private List<PreciseShardingValue> transferToPreciseShardingValues(final ListRouteValue<?> shardingValue) {
         List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
         for (Comparable<?> each : shardingValue.getValues()) {
-            result.add(new PreciseShardingValue(shardingValue.getColumn().getTableName(), shardingValue.getColumn().getName(), each));
+            result.add(new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
         }
         return result;
     }

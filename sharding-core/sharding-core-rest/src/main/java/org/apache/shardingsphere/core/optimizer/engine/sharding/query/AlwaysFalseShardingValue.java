@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
 
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
 
 /**
  * Always false sharding value.
@@ -28,7 +27,12 @@ import org.apache.shardingsphere.core.routing.value.RouteValue;
 public final class AlwaysFalseShardingValue implements RouteValue {
     
     @Override
-    public Column getColumn() {
-        return new Column("", "");
+    public String getColumnName() {
+        return "";
+    }
+    
+    @Override
+    public String getTableName() {
+        return "";
     }
 }

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
-import org.apache.shardingsphere.core.routing.value.BetweenRouteValue;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.BetweenRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -69,14 +69,14 @@ public final class StandardShardingStrategy implements ShardingStrategy {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }
         return rangeShardingAlgorithm.doSharding(availableTargetNames, 
-                new RangeShardingValue(shardingValue.getColumn().getTableName(), shardingValue.getColumn().getName(), shardingValue.getValueRange()));
+                new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
     }
     
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListRouteValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
-            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getColumn().getTableName(), shardingValue.getColumn().getName(), each));
+            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
             if (null != target) {
                 result.add(target);
             }

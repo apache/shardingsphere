@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.value;
+package org.apache.shardingsphere.core.routing.strategy.value;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
 import java.util.Collection;
 
@@ -32,7 +31,9 @@ import java.util.Collection;
 @Getter
 public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
     
-    private final Column column;
+    private final String columnName;
+    
+    private final String tableName;
     
     private final Collection<T> values;
 }
