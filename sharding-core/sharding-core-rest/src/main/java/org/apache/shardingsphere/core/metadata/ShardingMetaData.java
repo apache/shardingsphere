@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.metadata;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.executor.metadata.TableMetaDataConnectionManager;
+import org.apache.shardingsphere.core.executor.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
-import org.apache.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Map;

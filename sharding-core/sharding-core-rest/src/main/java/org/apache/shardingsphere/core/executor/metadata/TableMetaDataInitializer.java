@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table.executor;
+package org.apache.shardingsphere.core.executor.metadata;
 
 import com.google.common.base.Optional;
 import lombok.Getter;

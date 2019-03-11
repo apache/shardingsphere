@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table.executor;
+package org.apache.shardingsphere.core.executor.metadata;
 
 import java.sql.Connection;
 import java.sql.SQLException;
