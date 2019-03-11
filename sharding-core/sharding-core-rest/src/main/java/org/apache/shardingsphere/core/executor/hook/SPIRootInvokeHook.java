@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.opentracing.hook;
+package org.apache.shardingsphere.core.executor.hook;
 
-import org.apache.shardingsphere.core.executor.ShardingExecuteDataMap;
-import org.apache.shardingsphere.core.executor.hook.RootInvokeHook;
-import org.apache.shardingsphere.core.executor.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Collection;
 
-public final class OpenTracingRootInvokeHookTest extends BaseOpenTracingHookTest {
+/**
+ * Root invoke hook for SPI.
+ *
+ * @author zhangliang
+ */
+public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
+    private final Collection<RootInvokeHook> rootInvokeHooks = NewInstanceServiceLoader.newServiceInstances(RootInvokeHook.class);
     
-    @BeforeClass
-    public static void registerSPI() {
+    static {
         NewInstanceServiceLoader.register(RootInvokeHook.class);
     }
     
-    @Test
-    public void assertRootInvoke() {
-        rootInvokeHook.start();
-        assertTrue(ShardingExecuteDataMap.getDataMap().containsKey(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION));
-        rootInvokeHook.finish(1);
+    @Override
+    public void start() {
+        for (RootInvokeHook each : rootInvokeHooks) {
+            each.start();
+        }
+    }
+    
+    @Override
+    public void finish(final int connectionCount) {
+        for (RootInvokeHook each : rootInvokeHooks) {
+            each.finish(connectionCount);
+        }
     }
 }

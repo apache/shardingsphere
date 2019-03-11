@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing;
 
+import org.apache.shardingsphere.core.parsing.hook.SPIParsingHookTest;
 import org.apache.shardingsphere.core.parsing.integrate.AllParsingIntegrateTests;
 import org.apache.shardingsphere.core.parsing.lexer.AllLexerTests;
 import org.apache.shardingsphere.core.parsing.parser.constant.AllConstantTests;
@@ -31,10 +32,11 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllLexerTests.class, 
         AllSQLTests.class, 
-        SQLJudgeEngineTest.class,
-        AllContextTests.class,
-        AllConstantTests.class,
-        InsertValuesTokenTest.class,
+        SQLJudgeEngineTest.class, 
+        AllContextTests.class, 
+        AllConstantTests.class, 
+        InsertValuesTokenTest.class, 
+        SPIParsingHookTest.class, 
         AllParsingIntegrateTests.class
 })
 public final class AllParsingTests {

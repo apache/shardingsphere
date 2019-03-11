@@ -15,37 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.hook;
+package org.apache.shardingsphere.core.rewrite.hook;
 
-import org.apache.shardingsphere.core.executor.hook.RootInvokeHook;
+import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
 
 /**
- * Root invoke hook for SPI.
+ * Rewrite hook for SPI.
  *
- * @author zhangliang
+ * @author yangyi
  */
-public final class SPIRootInvokeHook implements RootInvokeHook {
+public final class SPIRewriteHook implements RewriteHook {
     
-    private final Collection<RootInvokeHook> rootInvokeHooks = NewInstanceServiceLoader.newServiceInstances(RootInvokeHook.class);
+    private final Collection<RewriteHook> rewriteHooks = NewInstanceServiceLoader.newServiceInstances(RewriteHook.class);
     
     static {
-        NewInstanceServiceLoader.register(RootInvokeHook.class);
+        NewInstanceServiceLoader.register(RewriteHook.class);
     }
     
     @Override
-    public void start() {
-        for (RootInvokeHook each : rootInvokeHooks) {
-            each.start();
+    public void start(final TableUnit tableUnit) {
+        for (RewriteHook each : rewriteHooks) {
+            each.start(tableUnit);
         }
     }
     
     @Override
-    public void finish(final int connectionCount) {
-        for (RootInvokeHook each : rootInvokeHooks) {
-            each.finish(connectionCount);
+    public void finishSuccess(final SQLUnit sqlUnit) {
+        for (RewriteHook each : rewriteHooks) {
+            each.finishSuccess(sqlUnit);
+        }
+    }
+    
+    @Override
+    public void finishFailure(final Exception cause) {
+        for (RewriteHook each : rewriteHooks) {
+            each.finishFailure(cause);
         }
     }
 }

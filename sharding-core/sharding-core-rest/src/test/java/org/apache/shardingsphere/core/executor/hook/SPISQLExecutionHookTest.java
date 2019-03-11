@@ -15,40 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.hook.parsing;
+package org.apache.shardingsphere.core.executor.hook;
 
-import org.apache.shardingsphere.core.spi.fixture.ParsingHookFixture;
-import org.apache.shardingsphere.core.spi.hook.SPIParsingHook;
+import org.apache.shardingsphere.core.executor.hook.fixture.SQLExecutionHookFixture;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public final class SPIParsingHookTest {
+public final class SPISQLExecutionHookTest {
     
-    private SPIParsingHook spiParsingHook;
+    private SPISQLExecutionHook spiSQLExecutionHook;
     
     @Before
     public void setUp() {
-        ParsingHookFixture.clearActions();
-        spiParsingHook = new SPIParsingHook();
+        SQLExecutionHookFixture.clearActions();
+        spiSQLExecutionHook = new SPISQLExecutionHook();
     }
     
     @Test
     public void assertStart() {
-        spiParsingHook.start("");
-        assertTrue(ParsingHookFixture.containsAction("start"));
+        spiSQLExecutionHook.start(null, null, true, null);
+        assertTrue(SQLExecutionHookFixture.containsAction("start"));
     }
     
     @Test
     public void assertFinishSuccess() {
-        spiParsingHook.finishSuccess(null, null);
-        assertTrue(ParsingHookFixture.containsAction("finishSuccess"));
+        spiSQLExecutionHook.finishSuccess();
+        assertTrue(SQLExecutionHookFixture.containsAction("finishSuccess"));
     }
     
     @Test
     public void assertFinishFailure() {
-        spiParsingHook.finishFailure(null);
-        assertTrue(ParsingHookFixture.containsAction("finishFailure"));
+        spiSQLExecutionHook.finishFailure(null);
+        assertTrue(SQLExecutionHookFixture.containsAction("finishFailure"));
     }
 }

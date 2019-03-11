@@ -15,40 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.hook.rewrite;
+package org.apache.shardingsphere.core.executor.hook;
 
-import org.apache.shardingsphere.core.spi.fixture.RewriteHookFixture;
-import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
+import org.apache.shardingsphere.core.executor.hook.fixture.RootInvokeHookFixture;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public final class SPIRewriteHookTest {
+public final class SPIRootInvokeHookTest {
     
-    private SPIRewriteHook spiRewriteHook;
+    private SPIRootInvokeHook spiRootInvokeHook;
     
     @Before
     public void setUp() {
-        RewriteHookFixture.clearActions();
-        spiRewriteHook = new SPIRewriteHook();
+        RootInvokeHookFixture.clearActions();
+        spiRootInvokeHook = new SPIRootInvokeHook();
     }
     
     @Test
     public void assertStart() {
-        spiRewriteHook.start(null);
-        assertTrue(RewriteHookFixture.containsAction("start"));
+        spiRootInvokeHook.start();
+        assertTrue(RootInvokeHookFixture.containsAction("start"));
     }
     
     @Test
     public void assertFinishSuccess() {
-        spiRewriteHook.finishSuccess(null);
-        assertTrue(RewriteHookFixture.containsAction("finishSuccess"));
-    }
-    
-    @Test
-    public void assertFinishFailure() {
-        spiRewriteHook.finishFailure(null);
-        assertTrue(RewriteHookFixture.containsAction("finishFailure"));
+        spiRootInvokeHook.finish(0);
+        assertTrue(RootInvokeHookFixture.containsAction("finish"));
     }
 }

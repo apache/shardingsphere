@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.core.spi;
 
 import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactoryTest;
-import org.apache.shardingsphere.core.spi.hook.executor.SPISQLExecutionHookTest;
-import org.apache.shardingsphere.core.spi.hook.parsing.SPIParsingHookTest;
-import org.apache.shardingsphere.core.spi.hook.rewrite.SPIRewriteHookTest;
-import org.apache.shardingsphere.core.spi.hook.root.SPIRootInvokeHookTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -29,10 +25,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         NewInstanceServiceLoaderTest.class, 
-        SPIRootInvokeHookTest.class, 
-        SPIParsingHookTest.class, 
-        SPIRewriteHookTest.class, 
-        SPISQLExecutionHookTest.class, 
         BaseAlgorithmFactoryTest.class
 })
 public final class AllSPITests {

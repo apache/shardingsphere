@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.executor;
 
+import org.apache.shardingsphere.core.executor.hook.SPIRootInvokeHookTest;
+import org.apache.shardingsphere.core.executor.hook.SPISQLExecutionHookTest;
 import org.apache.shardingsphere.core.executor.sql.execute.AllExecuteTests;
 import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplateTest;
 import org.apache.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandlerTest;
@@ -28,7 +30,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         SQLExecutePrepareTemplateTest.class, 
         ExecutorExceptionHandlerTest.class, 
-        ShardingExecuteEngineTest.class,
+        ShardingExecuteEngineTest.class, 
+        SPIRootInvokeHookTest.class, 
+        SPISQLExecutionHookTest.class, 
         AllExecuteTests.class
 })
 public final class AllExecutorTests {

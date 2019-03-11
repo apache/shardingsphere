@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.fixture;
+package org.apache.shardingsphere.core.executor.hook.fixture;
 
 import org.apache.shardingsphere.core.executor.hook.RootInvokeHook;
 

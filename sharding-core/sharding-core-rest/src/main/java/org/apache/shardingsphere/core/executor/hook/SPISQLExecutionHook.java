@@ -15,49 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.fixture;
+package org.apache.shardingsphere.core.executor.hook;
 
-import org.apache.shardingsphere.core.executor.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.routing.RouteUnit;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
-public final class SQLExecutionHookFixture implements SQLExecutionHook {
+/**
+ * SQL Execution hook for SPI.
+ *
+ * @author zhangliang
+ */
+public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private static final Collection<String> ACTIONS = new LinkedList<>();
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = NewInstanceServiceLoader.newServiceInstances(SQLExecutionHook.class);
+    
+    static {
+        NewInstanceServiceLoader.register(SQLExecutionHook.class);
+    }
     
     @Override
     public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-        ACTIONS.add("start");
+        for (SQLExecutionHook each : sqlExecutionHooks) {
+            each.start(routeUnit, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+        }
     }
     
     @Override
     public void finishSuccess() {
-        ACTIONS.add("finishSuccess");
+        for (SQLExecutionHook each : sqlExecutionHooks) {
+            each.finishSuccess();
+        }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        ACTIONS.add("finishFailure");
-    }
-    
-    /**
-     * Contains action or not.
-     * 
-     * @param action action
-     * @return contains action or not
-     */
-    public static boolean containsAction(final String action) {
-        return ACTIONS.contains(action);
-    }
-    
-    /**
-     * Clear actions.
-     */
-    public static void clearActions() {
-        ACTIONS.clear();
+        for (SQLExecutionHook each : sqlExecutionHooks) {
+            each.finishFailure(cause);
+        }
     }
 }
