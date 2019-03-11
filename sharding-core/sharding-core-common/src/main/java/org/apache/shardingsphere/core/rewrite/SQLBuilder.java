@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues.InsertColumnValue;
+import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -183,6 +185,11 @@ public final class SQLBuilder {
     
     private void appendInsertValuesPlaceholder(final TableUnit tableUnit, 
                                                final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        if (DefaultKeyword.SET == insertValuesPlaceholder.getType()) {
+            stringBuilder.append(" SET ");
+        } else {
+            stringBuilder.append(" (").append(Joiner.on(", ").join(insertValuesPlaceholder.getColumnNames())).append(") VALUES ");
+        }
         for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
             if (isToAppendInsertColumnValue(tableUnit, each)) {
                 appendInsertColumnValue(each, insertParameters, stringBuilder);
