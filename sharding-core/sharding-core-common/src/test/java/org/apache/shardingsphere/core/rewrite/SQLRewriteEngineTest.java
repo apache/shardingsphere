@@ -200,7 +200,6 @@ public final class SQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", Optional.<String>absent()));
         insertStatement.setParametersIndex(1);
         insertStatement.addSQLToken(new TableToken(12, 0, "table_x", "`", "`"));
-        insertStatement.setGenerateKeyColumnIndex(0);
         insertStatement.setInsertValuesListLastIndex(31);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
@@ -224,7 +223,6 @@ public final class SQLRewriteEngineTest {
         insertStatement.getColumns().add(new Column("id", "table_x"));
         insertStatement.getTables().add(new Table("table_x", Optional.<String>absent()));
         insertStatement.addSQLToken(new TableToken(12, 0, "table_x", "`", "`"));
-        insertStatement.setGenerateKeyColumnIndex(0);
         insertStatement.setInsertValuesListLastIndex(32);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
@@ -251,7 +249,6 @@ public final class SQLRewriteEngineTest {
         parameters.add("x");
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, 0, "table_x", "`", "`"));
-        insertStatement.setGenerateKeyColumnIndex(0);
         insertStatement.setInsertValuesListLastIndex(35);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
@@ -278,7 +275,6 @@ public final class SQLRewriteEngineTest {
         parameters.add("x");
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, 0, "table_x", "`", "`"));
-        insertStatement.setGenerateKeyColumnIndex(0);
         insertStatement.setInsertValuesListLastIndex(34);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES);
