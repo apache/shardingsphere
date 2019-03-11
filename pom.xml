@@ -103,6 +103,7 @@
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
+        <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -725,6 +726,11 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>${docker-maven-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>${apache-rat-plugin.version}</version>
             </plugin>
             <!--
             <plugin>
