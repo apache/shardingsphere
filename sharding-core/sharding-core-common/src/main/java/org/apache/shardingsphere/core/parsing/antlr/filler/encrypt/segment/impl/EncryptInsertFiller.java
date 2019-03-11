@@ -89,7 +89,7 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
             if (each.getValues().size() != insertStatement.getColumns().size()) {
                 throw new SQLParsingException("INSERT INTO column size mismatch value size.");
             }
-            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getStopIndex() + 1), each.getParametersCount());
+            InsertValue insertValue = new InsertValue(each.getType(), each.getParametersCount());
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             parameterIndex += each.getParametersCount();
             for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {
