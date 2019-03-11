@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorFactory;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Collections;

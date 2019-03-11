@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.core.masterslave;
 
-import org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.core.masterslave.impl.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.core.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.junit.Test;
 
 import java.util.Properties;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.keygen;
 
 import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.impl.UUIDShardingKeyGenerator;
+import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorFactory;
 import org.junit.Test;
 
 import java.util.Properties;

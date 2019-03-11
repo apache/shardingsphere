@@ -15,35 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.masterslave;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import org.apache.shardingsphere.core.spi.BaseAlgorithmFactory;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
 
-/**
- * Master-slave database load-balance algorithm factory.
- * 
- * @author zhangliang
- */
-public final class MasterSlaveLoadBalanceAlgorithmFactory extends BaseAlgorithmFactory<MasterSlaveLoadBalanceAlgorithm> {
+public final class BaseAlgorithmFactoryFixture extends BaseAlgorithmFactory<BaseAlgorithmFixture> {
     
-    private static final MasterSlaveLoadBalanceAlgorithmFactory INSTANCE = new MasterSlaveLoadBalanceAlgorithmFactory();
+    private static final BaseAlgorithmFactoryFixture INSTANCE = new BaseAlgorithmFactoryFixture();
     
     static {
-        NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
     }
     
-    private MasterSlaveLoadBalanceAlgorithmFactory() {
-        super(MasterSlaveLoadBalanceAlgorithm.class);
+    public BaseAlgorithmFactoryFixture() {
+        super(BaseAlgorithmFixture.class);
     }
     
     /**
-     * Get instance of master-slave database load-balance algorithm factory.
+     * Get instance of factory fixture.
      *
-     * @return instance of master-slave database load-balance algorithm factory
+     * @return instance of factory fixture
      */
-    public static MasterSlaveLoadBalanceAlgorithmFactory getInstance() {
+    public static BaseAlgorithmFactoryFixture getInstance() {
         return INSTANCE;
     }
 }

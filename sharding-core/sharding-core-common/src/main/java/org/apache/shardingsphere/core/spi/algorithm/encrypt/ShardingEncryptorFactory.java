@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt;
+package org.apache.shardingsphere.core.spi.algorithm.encrypt;
 
-import org.apache.shardingsphere.core.spi.BaseAlgorithmFactory;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 /**

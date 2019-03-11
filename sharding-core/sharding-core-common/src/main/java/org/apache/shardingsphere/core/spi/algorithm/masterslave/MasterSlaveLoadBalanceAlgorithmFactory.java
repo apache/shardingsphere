@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.core.spi.algorithm.masterslave;
 
-import org.apache.shardingsphere.core.spi.BaseAlgorithmFactory;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
+import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 /**
- * Key generator factory.
+ * Master-slave database load-balance algorithm factory.
  * 
  * @author zhangliang
- * @author panjuan
  */
-public final class ShardingKeyGeneratorFactory extends BaseAlgorithmFactory<ShardingKeyGenerator> {
+public final class MasterSlaveLoadBalanceAlgorithmFactory extends BaseAlgorithmFactory<MasterSlaveLoadBalanceAlgorithm> {
     
-    private static final ShardingKeyGeneratorFactory INSTANCE = new ShardingKeyGeneratorFactory();
+    private static final MasterSlaveLoadBalanceAlgorithmFactory INSTANCE = new MasterSlaveLoadBalanceAlgorithmFactory();
     
     static {
-        NewInstanceServiceLoader.register(ShardingKeyGenerator.class);
+        NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
-    private ShardingKeyGeneratorFactory() {
-        super(ShardingKeyGenerator.class);
+    private MasterSlaveLoadBalanceAlgorithmFactory() {
+        super(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
     /**
-     * Get instance of key generator factory.
-     * 
-     * @return instance of key generator factory
+     * Get instance of master-slave database load-balance algorithm factory.
+     *
+     * @return instance of master-slave database load-balance algorithm factory
      */
-    public static ShardingKeyGeneratorFactory getInstance() {
+    public static MasterSlaveLoadBalanceAlgorithmFactory getInstance() {
         return INSTANCE;
     }
 }

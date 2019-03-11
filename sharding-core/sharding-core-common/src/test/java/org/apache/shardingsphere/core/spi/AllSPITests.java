@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.spi;
 
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

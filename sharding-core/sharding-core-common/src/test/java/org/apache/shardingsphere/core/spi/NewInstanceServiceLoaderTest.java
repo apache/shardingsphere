@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.spi;
 
-import org.apache.shardingsphere.core.spi.fixture.BaseAlgorithmFixture;
+import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixture;
 import org.junit.Test;
 
 import java.util.Collection;

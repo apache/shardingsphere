@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.encrypt;
 import org.apache.shardingsphere.core.encrypt.impl.AESShardingEncryptor;
 import org.apache.shardingsphere.core.encrypt.impl.MD5ShardingEncryptor;
 import org.apache.shardingsphere.core.fixture.TestShardingEncryptor;
+import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorFactory;
 import org.junit.Test;
 
 import java.util.Properties;

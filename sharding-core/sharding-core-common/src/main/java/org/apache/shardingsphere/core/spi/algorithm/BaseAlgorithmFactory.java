@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi;
+package org.apache.shardingsphere.core.spi.algorithm;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.BaseAlgorithm;
 
 import java.util.Collection;
