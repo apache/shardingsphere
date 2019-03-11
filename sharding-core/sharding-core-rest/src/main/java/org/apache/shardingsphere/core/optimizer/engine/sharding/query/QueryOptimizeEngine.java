@@ -29,9 +29,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondit
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
-import org.apache.shardingsphere.core.routing.strategy.value.BetweenRouteValue;
-import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

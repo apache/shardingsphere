@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy;
+package org.apache.shardingsphere.core.strategy.route;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

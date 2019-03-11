@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy;
+package org.apache.shardingsphere.core.strategy.route;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.fixture.PreciseShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.fixture.RangeShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.routing.strategy.complex.ComplexShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.value.BetweenRouteValue;
-import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
+import org.apache.shardingsphere.core.strategy.route.complex.ComplexShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.fixture.ComplexKeysShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.strategy.route.fixture.PreciseShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.strategy.route.fixture.RangeShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.junit.Test;
 
 import java.util.Collection;

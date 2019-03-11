@@ -27,9 +27,9 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.fixture.IncrementShardingKeyGenerator;
 import org.apache.shardingsphere.core.fixture.PreciseShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
+import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

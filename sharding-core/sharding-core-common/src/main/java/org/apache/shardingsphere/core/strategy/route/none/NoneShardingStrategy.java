@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
+package org.apache.shardingsphere.core.strategy.route.none;
 
+import lombok.Getter;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
- * Always false sharding value.
- *
+ * None sharding strategy.
+ * 
  * @author zhangliang
  */
-public final class AlwaysFalseShardingValue implements RouteValue {
+@Getter
+public final class NoneShardingStrategy implements ShardingStrategy {
+    
+    private final Collection<String> shardingColumns = Collections.emptyList();
     
     @Override
-    public String getColumnName() {
-        return "";
-    }
-    
-    @Override
-    public String getTableName() {
-        return "";
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
+        return availableTargetNames;
     }
 }

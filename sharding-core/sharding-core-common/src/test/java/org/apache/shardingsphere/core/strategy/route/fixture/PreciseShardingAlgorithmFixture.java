@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy.none;
+package org.apache.shardingsphere.core.strategy.route.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
+import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 
 import java.util.Collection;
-import java.util.Collections;
 
-/**
- * None sharding strategy.
- * 
- * @author zhangliang
- */
-@Getter
-public final class NoneShardingStrategy implements ShardingStrategy {
-    
-    private final Collection<String> shardingColumns = Collections.emptyList();
+public final class PreciseShardingAlgorithmFixture implements PreciseShardingAlgorithm<Integer> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
-        return availableTargetNames;
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+                return each;
+            }
+        }
+        return null;
     }
 }

@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy.value;
+package org.apache.shardingsphere.core.strategy.route.fixture;
 
-import com.google.common.collect.Range;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
 
-/**
- * Route value for between.
- * 
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public final class BetweenRouteValue<T extends Comparable<?>> implements RouteValue {
+import java.util.Collection;
+import java.util.Collections;
+
+public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
     
-    private final String columnName;
-    
-    private final String tableName;
-    
-    private final Range<T> valueRange;
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
+                return Collections.singletonList(each);
+            }
+        }
+        return null;
+    }
 }

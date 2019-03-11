@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy.value;
+package org.apache.shardingsphere.core.strategy.route.value;
 
+import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
- * Route value for list values.
+ * Route value for between.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
+public final class BetweenRouteValue<T extends Comparable<?>> implements RouteValue {
     
     private final String columnName;
     
     private final String tableName;
     
-    private final Collection<T> values;
+    private final Range<T> valueRange;
 }

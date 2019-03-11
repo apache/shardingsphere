@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy.value;
+package org.apache.shardingsphere.core.strategy.route.fixture;
 
-/**
- * Route value.
- * 
- * @author zhangliang
- */
-public interface RouteValue {
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
+
+import java.util.Collection;
+
+public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
-    /**
-     * Get column name.
-     * 
-     * @return column name
-     */
-    String getColumnName();
-    
-    /**
-     * Get table name.
-     * 
-     * @return table name
-     */
-    String getTableName();
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
+    }
 }

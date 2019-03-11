@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy;
+package org.apache.shardingsphere.core.strategy.route;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,11 +24,11 @@ import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.routing.strategy.complex.ComplexShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.complex.ComplexShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
 
 /**
  * Sharding strategy factory.

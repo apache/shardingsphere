@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy;
+package org.apache.shardingsphere.core.strategy.route.value;
 
-import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
- * Sharding strategy.
+ * Route value for list values.
  * 
  * @author zhangliang
  */
-public interface ShardingStrategy {
+@RequiredArgsConstructor
+@Getter
+public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
     
-    /**
-     * Get sharding columns.
-     * 
-     * @return sharding columns
-     */
-    Collection<String> getShardingColumns();
+    private final String columnName;
     
-    /**
-     * Sharding.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding values
-     * @return sharding results for data sources or tables's names
-     */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues);
+    private final String tableName;
+    
+    private final Collection<T> values;
 }

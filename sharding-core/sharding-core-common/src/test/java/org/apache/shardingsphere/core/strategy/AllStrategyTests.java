@@ -20,12 +20,14 @@ package org.apache.shardingsphere.core.strategy;
 import org.apache.shardingsphere.core.strategy.encrypt.AllEncryptorTests;
 import org.apache.shardingsphere.core.strategy.keygen.AllKeygenTests;
 import org.apache.shardingsphere.core.strategy.masterslave.AllMasterSlaveTests;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategyTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        ShardingStrategyTest.class,
         AllMasterSlaveTests.class,
         AllKeygenTests.class,
         AllEncryptorTests.class

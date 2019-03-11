@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
+package org.apache.shardingsphere.core.strategy.route;
 
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.Collection;
+
 /**
- * Always false sharding value.
- *
+ * Sharding strategy.
+ * 
  * @author zhangliang
  */
-public final class AlwaysFalseShardingValue implements RouteValue {
+public interface ShardingStrategy {
     
-    @Override
-    public String getColumnName() {
-        return "";
-    }
+    /**
+     * Get sharding columns.
+     * 
+     * @return sharding columns
+     */
+    Collection<String> getShardingColumns();
     
-    @Override
-    public String getTableName() {
-        return "";
-    }
+    /**
+     * Sharding.
+     *
+     * @param availableTargetNames available data sources or tables's names
+     * @param shardingValues sharding values
+     * @return sharding results for data sources or tables's names
+     */
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues);
 }

@@ -27,9 +27,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.routing.strategy.value.BetweenRouteValue;
-import org.apache.shardingsphere.core.routing.strategy.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.strategy.value.RouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

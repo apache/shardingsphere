@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
-
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+package org.apache.shardingsphere.core.strategy.route.value;
 
 /**
- * Always false sharding value.
- *
+ * Route value.
+ * 
  * @author zhangliang
  */
-public final class AlwaysFalseShardingValue implements RouteValue {
+public interface RouteValue {
     
-    @Override
-    public String getColumnName() {
-        return "";
-    }
+    /**
+     * Get column name.
+     * 
+     * @return column name
+     */
+    String getColumnName();
     
-    @Override
-    public String getTableName() {
-        return "";
-    }
+    /**
+     * Get table name.
+     * 
+     * @return table name
+     */
+    String getTableName();
 }
