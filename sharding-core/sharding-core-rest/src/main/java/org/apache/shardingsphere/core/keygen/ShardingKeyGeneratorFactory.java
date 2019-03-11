@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.keygen;
 
+import org.apache.shardingsphere.core.spi.BaseAlgorithmFactory;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 /**

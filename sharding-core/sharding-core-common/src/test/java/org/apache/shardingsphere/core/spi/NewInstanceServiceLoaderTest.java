@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.spi;
 
-import org.apache.shardingsphere.core.parsing.hook.ParsingHook;
+import org.apache.shardingsphere.core.spi.fixture.BaseAlgorithmFixture;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -37,8 +37,8 @@ public final class NewInstanceServiceLoaderTest {
     
     @Test
     public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
+        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
+        Collection collection = NewInstanceServiceLoader.newServiceInstances(BaseAlgorithmFixture.class);
         assertThat(collection.size(), is(1));
     }
 }

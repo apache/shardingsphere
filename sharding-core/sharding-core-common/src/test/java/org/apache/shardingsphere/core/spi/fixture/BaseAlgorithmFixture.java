@@ -15,17 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi;
+package org.apache.shardingsphere.core.spi.fixture;
 
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactoryTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.spi.BaseAlgorithm;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        NewInstanceServiceLoaderTest.class, 
-        BaseAlgorithmFactoryTest.class
-})
-public final class AllSPITests {
+public interface BaseAlgorithmFixture extends BaseAlgorithm {
 }

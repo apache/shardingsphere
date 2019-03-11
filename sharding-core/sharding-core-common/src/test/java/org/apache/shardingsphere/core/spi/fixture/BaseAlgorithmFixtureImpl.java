@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm.fixture;
+package org.apache.shardingsphere.core.spi.fixture;
 
 import lombok.Getter;
 import lombok.Setter;

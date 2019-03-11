@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.optimizer.AllOptimizerTests;
 import org.apache.shardingsphere.core.parsing.AllParsingTests;
 import org.apache.shardingsphere.core.rewrite.AllRewriteTests;
 import org.apache.shardingsphere.core.routing.AllRoutingTests;
-import org.apache.shardingsphere.core.spi.AllSPITests;
 import org.apache.shardingsphere.core.util.AllUtilTests;
 import org.apache.shardingsphere.core.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
@@ -45,7 +44,6 @@ import org.junit.runners.Suite.SuiteClasses;
         AllExecutorTests.class, 
         AllMergerTests.class, 
         AllYamlTests.class,
-        AllSPITests.class, 
         AllMasterSlaveTests.class, 
         AllKeygenTests.class, 
         AllEncryptorTests.class

@@ -15,9 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm.fixture;
+package org.apache.shardingsphere.core.spi.fixture;
 
-import org.apache.shardingsphere.spi.BaseAlgorithm;
+import org.apache.shardingsphere.core.spi.BaseAlgorithmFactory;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
-public interface BaseAlgorithmFixture extends BaseAlgorithm {
+public final class BaseAlgorithmFactoryFixture extends BaseAlgorithmFactory<BaseAlgorithmFixture> {
+    
+    private static final BaseAlgorithmFactoryFixture INSTANCE = new BaseAlgorithmFactoryFixture();
+    
+    static {
+        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
+    }
+    
+    public BaseAlgorithmFactoryFixture() {
+        super(BaseAlgorithmFixture.class);
+    }
+    
+    /**
+     * Get instance of factory fixture.
+     *
+     * @return instance of factory fixture
+     */
+    public static BaseAlgorithmFactoryFixture getInstance() {
+        return INSTANCE;
+    }
 }
