@@ -127,7 +127,7 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithValuesWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
         insertStatementWithValuesWithPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
         insertStatementWithValuesWithPlaceHolder.getColumns().add(new Column("status", "t_order"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
         insertStatementWithValuesWithPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
@@ -149,7 +149,7 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithValuesWithPlaceHolderWithEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
         insertStatementWithValuesWithPlaceHolderWithEncrypt.getColumns().add(new Column("user_id", "t_encrypt"));
         insertStatementWithValuesWithPlaceHolderWithEncrypt.getColumns().add(new Column("status", "t_encrypt"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
         insertStatementWithValuesWithPlaceHolderWithEncrypt.getInsertValues().getInsertValues().add(insertValue);
@@ -328,7 +328,7 @@ public final class InsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getColumns().add(new Column("user_id", "t_encrypt_query"));
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getColumns().add(new Column("status", "t_encrypt_query"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getInsertValues().getInsertValues().add(insertValue);
@@ -348,7 +348,7 @@ public final class InsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertStatementWithValuesWithoutPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
         insertStatementWithValuesWithoutPlaceHolder.getColumns().add(new Column("status", "t_order"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
@@ -365,7 +365,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeWithoutValuesWithPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = ?, status = ?", 2);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
         insertStatementWithoutValuesWithPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
@@ -383,7 +383,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeWithoutValuesWithPlaceHolderWithGeneratedKeyWithQueryEncrypt() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt_query"));
         generatedKey.getGeneratedKeys().add(1);
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = ?, status = ?", 2);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getInsertValues().getInsertValues().add(insertValue);
@@ -403,7 +403,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeWithoutValuesWithoutPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = 12, status = 'a'", 0);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithoutValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(insertValue);
@@ -420,7 +420,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeWithoutValuesWithoutPlaceHolderWithGeneratedKeyWithEncrypt() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_encrypt"));
         generatedKey.getGeneratedKeys().add(1);
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, "user_id = 12, status = 'a'", 0);
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getInsertValues().getInsertValues().add(insertValue);
