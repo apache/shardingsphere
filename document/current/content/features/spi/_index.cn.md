@@ -14,7 +14,7 @@ chapter = true
 本章节汇总了ShardingSphere所有通过SPI方式载入的功能模块。初级用户可以使用ShardingSphere提供的内置实现类，并通过简单配置即可实现相应功能；高级用户还可参考各个功能模块的Interface进行自定义实现，从而满足您的现实场景需求。我们非常欢迎大家将您的实现类提交PR到我们的[gitHub上](https://github.com/apache/incubator-shardingsphere/pulls)，从而让更多用户从中收益。
 
 ### 数据脱敏
-数据脱敏的Interface用于规定加解密器的加密、解密、类型获取、属性设置等方式。主要接口有两个：ShardingEncryptor, ShardingQueryAssistedEncryptor，其中ShardingEncryptor的内置实现类有AESShardingEncryptor，MD5ShardingEncryptor。有关加解密介绍，请参考[数据脱敏](/cn/features/orchestration/encrypt/)。相关接口如下所示：
+数据脱敏的Interface用于规定加解密器的加密、解密、类型获取、属性设置等方式。主要接口有两个：ShardingEncryptor和ShardingQueryAssistedEncryptor，其中ShardingEncryptor的内置实现类有AESShardingEncryptor和MD5ShardingEncryptor。有关加解密介绍，请参考[数据脱敏](/cn/features/orchestration/encrypt/)。相关接口如下所示：
 
 ```java
 /**
@@ -87,7 +87,7 @@ public interface ShardingQueryAssistedEncryptor extends ShardingEncryptor {
 ```
 
 ### 分布式主键
-分布式主键的Interface主要用于规定如何生成全局性的自增I。主要接口为ShardingKeyGenerator，其内置实现有UUIDShardingKeyGenerator，SnowflakeShardingKeyGenerator。有关自增主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。相关接口如下所示：
+分布式主键的Interface主要用于规定如何生成全局性的自增、类型获取、属性设置等。主要接口为ShardingKeyGenerator，其内置实现类有UUIDShardingKeyGenerator和SnowflakeShardingKeyGenerator。有关自增主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。相关接口如下所示：
 
 ```java
 /**
