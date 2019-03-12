@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -66,13 +67,13 @@ public final class ShardingEncryptorEngine {
     }
     
     /**
-     * Is has sharding encryptor strategy or not.
+     * Is has sharding query assisted encryptor or not.
      * 
      * @param logicTableName logic table name
-     * @return sharding encryptor strategy or not
+     * @return has sharding query assisted encryptor or not
      */
-    public boolean isHasShardingEncryptorStrategy(final String logicTableName) {
-        return shardingEncryptorStrategies.keySet().contains(logicTableName);
+    public boolean isHasShardingQueryAssistedEncryptor(final String logicTableName) {
+        return shardingEncryptorStrategies.keySet().contains(logicTableName) && shardingEncryptorStrategies.get(logicTableName).getShardingEncryptor() instanceof ShardingQueryAssistedEncryptor;
     }
     
     /**
