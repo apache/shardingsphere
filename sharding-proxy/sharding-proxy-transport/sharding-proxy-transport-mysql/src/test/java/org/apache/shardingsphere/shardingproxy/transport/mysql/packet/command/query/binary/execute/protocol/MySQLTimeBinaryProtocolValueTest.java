@@ -41,7 +41,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     public void assertReadWithZeroByte() {
         assertThat(new MySQLTimeBinaryProtocolValue().read(payload), CoreMatchers.<Object>is(new Timestamp(0)));
     }
-
+    
     @Test
     public void assertReadWithEightBytes() {
         when(payload.readInt1()).thenReturn(8, 0, 10, 59, 0);
@@ -51,7 +51,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
         assertThat(actual.get(Calendar.MINUTE), is(59));
         assertThat(actual.get(Calendar.SECOND), is(0));
     }
-
+    
     @Test
     public void assertReadWithTwelveBytes() {
         when(payload.readInt1()).thenReturn(12, 0, 10, 59, 0);
@@ -61,7 +61,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
         assertThat(actual.get(Calendar.MINUTE), is(59));
         assertThat(actual.get(Calendar.SECOND), is(0));
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertReadWithIllegalArgument() {
         when(payload.readInt1()).thenReturn(100);

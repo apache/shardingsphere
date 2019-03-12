@@ -42,7 +42,7 @@ public final class MySQLDateBinaryProtocolValueTest {
     public void assertReadWithZeroByte() throws SQLException {
         new MySQLDateBinaryProtocolValue().read(payload);
     }
-
+    
     @Test
     public void assertReadWithFourBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(4, 12, 31);
@@ -53,7 +53,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
         assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
     }
-
+    
     @Test
     public void assertReadWithSevenBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(7, 12, 31, 10, 59, 0);
@@ -67,7 +67,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         assertThat(actual.get(Calendar.MINUTE), is(59));
         assertThat(actual.get(Calendar.SECOND), is(0));
     }
-
+    
     @Test
     public void assertReadWithElevenBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(11, 12, 31, 10, 59, 0);
@@ -82,7 +82,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         assertThat(actual.get(Calendar.MINUTE), is(59));
         assertThat(actual.get(Calendar.SECOND), is(0));
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
