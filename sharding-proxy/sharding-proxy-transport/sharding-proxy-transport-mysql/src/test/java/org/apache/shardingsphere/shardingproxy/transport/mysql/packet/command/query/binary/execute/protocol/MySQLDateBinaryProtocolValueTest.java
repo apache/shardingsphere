@@ -30,6 +30,9 @@ import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -87,5 +90,28 @@ public final class MySQLDateBinaryProtocolValueTest {
     public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
         new MySQLDateBinaryProtocolValue().read(payload);
+    }
+    
+    @Test
+    public void assertWriteWithSevenBytes() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        Timestamp timestamp = new Timestamp(1L);
+        timestamp.setNanos(0);
+        actual.write(payload, timestamp);
+        verify(payload).writeInt1(7);
+        verify(payload).writeInt2(1970);
+        verify(payload, times(6)).writeInt1(anyInt());
+    }
+    
+    @Test
+    public void assertWriteWithElevenBytes() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        Timestamp timestamp = new Timestamp(1L);
+        timestamp.setNanos(1000);
+        actual.write(payload, timestamp);
+        verify(payload).writeInt1(11);
+        verify(payload).writeInt2(1970);
+        verify(payload, times(6)).writeInt1(anyInt());
+        verify(payload).writeInt4(1000);
     }
 }
