@@ -23,13 +23,13 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
-import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
+import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorFactory;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -207,21 +207,5 @@ public final class TableRule {
             }
         }
         return false;
-    }
-    
-    /**
-     * Get all sharding columns.
-     * 
-     * @return all sharding columns
-     */
-    public Collection<String> getAllShardingColumns() {
-        Collection<String> result = new LinkedList<>();
-        if (null != databaseShardingStrategy) {
-            result.addAll(databaseShardingStrategy.getShardingColumns());
-        }
-        if (null != tableShardingStrategy) {
-            result.addAll(tableShardingStrategy.getShardingColumns());
-        }
-        return result;
     }
 }

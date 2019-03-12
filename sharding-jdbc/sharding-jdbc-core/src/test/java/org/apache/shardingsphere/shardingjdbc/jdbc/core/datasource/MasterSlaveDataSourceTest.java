@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
@@ -70,7 +70,7 @@ public final class MasterSlaveDataSourceTest {
     @Before
     @After
     public void reset() {
-        HintManagerHolder.clear();
+        HintManager.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
     }

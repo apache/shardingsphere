@@ -23,6 +23,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(BaseAlgorithmFactoryTest.class)
+@SuiteClasses({
+        NewInstanceServiceLoaderTest.class, 
+        BaseAlgorithmFactoryTest.class
+})
 public final class AllSPITests {
 }

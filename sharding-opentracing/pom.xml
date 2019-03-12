@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-common</artifactId>
+            <artifactId>sharding-core-rest</artifactId>
             <version>${project.version}</version>
         </dependency>
         

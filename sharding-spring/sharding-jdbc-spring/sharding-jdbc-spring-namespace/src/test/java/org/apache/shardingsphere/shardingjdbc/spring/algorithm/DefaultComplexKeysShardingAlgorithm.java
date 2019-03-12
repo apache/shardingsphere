@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.algorithm;
 
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
 

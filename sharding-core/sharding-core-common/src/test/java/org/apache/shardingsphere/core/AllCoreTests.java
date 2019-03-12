@@ -19,42 +19,22 @@ package org.apache.shardingsphere.core;
 
 import org.apache.shardingsphere.core.config.AllConfigTests;
 import org.apache.shardingsphere.core.constant.AllConstantsTests;
-import org.apache.shardingsphere.core.encrypt.AllEncryptorTests;
-import org.apache.shardingsphere.core.executor.AllExecutorTests;
-import org.apache.shardingsphere.core.hint.AllHintTests;
-import org.apache.shardingsphere.core.keygen.AllKeygenTests;
-import org.apache.shardingsphere.core.masterslave.AllMasterSlaveTests;
-import org.apache.shardingsphere.core.merger.AllMergerTests;
-import org.apache.shardingsphere.core.metadata.AllMetaDataTests;
-import org.apache.shardingsphere.core.optimizer.AllOptimizerTests;
-import org.apache.shardingsphere.core.parsing.AllParsingTests;
-import org.apache.shardingsphere.core.rewrite.AllRewriteTests;
-import org.apache.shardingsphere.core.routing.AllRoutingTests;
+import org.apache.shardingsphere.core.rule.AllRuleTests;
 import org.apache.shardingsphere.core.spi.AllSPITests;
+import org.apache.shardingsphere.core.strategy.AllStrategyTests;
 import org.apache.shardingsphere.core.util.AllUtilTests;
-import org.apache.shardingsphere.core.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllConstantsTests.class, 
         AllConfigTests.class, 
-        AllUtilTests.class, 
-        AllMetaDataTests.class, 
-        AllParsingTests.class, 
-        AllOptimizerTests.class, 
-        AllRewriteTests.class, 
-        AllRoutingTests.class, 
-        AllExecutorTests.class, 
-        AllMergerTests.class, 
-        AllHintTests.class, 
-        AllYamlTests.class,
-        AllSPITests.class, 
-        AllMasterSlaveTests.class, 
-        AllKeygenTests.class, 
-        AllEncryptorTests.class
-    })
+        AllConstantsTests.class,
+        AllStrategyTests.class,
+        AllSPITests.class,
+        AllRuleTests.class,
+        AllUtilTests.class
+})
 public final class AllCoreTests {
 }

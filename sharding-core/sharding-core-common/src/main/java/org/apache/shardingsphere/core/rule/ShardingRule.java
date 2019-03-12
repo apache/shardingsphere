@@ -29,18 +29,16 @@ import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
-import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
-import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
-import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorFactory;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
+import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,8 +77,6 @@ public class ShardingRule implements SQLStatementFillerRule {
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
     private final ShardingEncryptorEngine shardingEncryptorEngine;
-    
-    private final ParsingResultCache parsingResultCache = new ParsingResultCache();
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
@@ -328,32 +324,33 @@ public class ShardingRule implements SQLStatementFillerRule {
     /**
      * Judge is sharding column or not.
      *
-     * @param column column object
+     * @param columnName column name
+     * @param tableName table name
      * @return is sharding column or not
      */
-    public boolean isShardingColumn(final Column column) {
+    public boolean isShardingColumn(final String columnName, final String tableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(column.getTableName()) && isShardingColumn(each, column)) {
+            if (each.getLogicTable().equalsIgnoreCase(tableName) && isShardingColumn(each, columnName)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isShardingColumn(final TableRule tableRule, final Column column) {
-        return getDatabaseShardingStrategy(tableRule).getShardingColumns().contains(column.getName()) || getTableShardingStrategy(tableRule).getShardingColumns().contains(column.getName());
+    private boolean isShardingColumn(final TableRule tableRule, final String columnName) {
+        return getDatabaseShardingStrategy(tableRule).getShardingColumns().contains(columnName) || getTableShardingStrategy(tableRule).getShardingColumns().contains(columnName);
     }
     
     /**
-     * Find column of generated key.
+     * Find column name of generated key.
      *
      * @param logicTableName logic table name
-     * @return generated key's column
+     * @return column name of generated key
      */
-    public Optional<Column> findGenerateKeyColumn(final String logicTableName) {
+    public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
-                return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
+                return Optional.of(each.getGenerateKeyColumn());
             }
         }
         return Optional.absent();

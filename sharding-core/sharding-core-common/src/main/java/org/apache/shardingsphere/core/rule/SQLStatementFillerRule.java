@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.core.rule;
 
 /**
- * SQL Statement Filler Rule.
+ * SQL statement filler rule.
  *
  * @author duhongjun
  */
 public interface SQLStatementFillerRule {
-
 }
