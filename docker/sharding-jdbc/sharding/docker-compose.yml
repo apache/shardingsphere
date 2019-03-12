@@ -5,7 +5,7 @@ services:
     image: "mysql:5.7"
     ## default port is 3306, you could change to 33060 or any other port doesn't conflict MySQL on your OS
     ports:
-      - "33060:3306"
+      - "3306:3306"
     container_name: sharding-sphere-mysql
     ## launch mysql without password
     ## you could access the mysql in container by following command :
