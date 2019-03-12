@@ -64,7 +64,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
                 parametersCount = parametersCount + insertValue.getParametersCount();
             }
             insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
-            if (isNeededToEncrypt()) {
+            if (isNeededToAppendQueryAssistedColumn()) {
                 encryptInsertColumnValues(insertColumnValues, i);
             }
         }
@@ -82,9 +82,9 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         result.addAll(parameters.subList(beginCount, beginCount + increment));
         return result;
     }
-        
-    private boolean isNeededToEncrypt() {
-        return encryptRule.getEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
+    
+    private boolean isNeededToAppendQueryAssistedColumn() {
+        return encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
     }
     
     private void encryptInsertColumnValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
