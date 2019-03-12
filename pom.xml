@@ -523,6 +523,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                        <excludes>
+                            <exclude>**/*Tests.java</exclude>
+                        </excludes>
                     </configuration>
                 </plugin>
                 <plugin>
