@@ -43,32 +43,6 @@ import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.Iterator;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parsing.lexer.token.Keyword;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLIdentifierExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
-import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.SQLUtil;
-
-import java.util.Iterator;
-
 /**
  * Insert set clause parser.
  *
@@ -116,7 +90,8 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
             Preconditions.checkNotNull(column);
             lexerEngine.accept(Symbol.EQ);
             SQLExpression right = basicExpressionParser.parse(insertStatement);
-            if (shardingRule.isShardingColumn(column.getName(), column.getTableName()) && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+            if (shardingRule.isShardingColumn(column.getName(), column.getTableName()) 
+                    && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
                 insertStatement.getRouteConditions().add(new Condition(column, right));
             }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));

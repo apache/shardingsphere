@@ -180,8 +180,8 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Preconditions.checkState(column.isPresent());
         ParserRuleContext valueNode = leftNode.isPresent() ? (ParserRuleContext) comparisionNode.get().parent.getChild(2) : (ParserRuleContext) comparisionNode.get().parent.getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(placeholderIndexes, valueNode);
-        return sqlExpression.isPresent()
-                ? Optional.of(new ConditionSegment(column.get(), comparisionNode.get().getText(), new CompareValueExpressionSegment(sqlExpression.get(), comparisionNode.get().getText()), predicateNode.getStop().getStopIndex())) : Optional.<ConditionSegment>absent();
+        return sqlExpression.isPresent() ? Optional.of(new ConditionSegment(column.get(), comparisionNode.get().getText(), 
+                new CompareValueExpressionSegment(sqlExpression.get(), comparisionNode.get().getText()), predicateNode.getStop().getStopIndex())) : Optional.<ConditionSegment>absent();
     }
     
     private Optional<ConditionSegment> buildBetweenCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext predicateNode) {
@@ -192,7 +192,8 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Optional<? extends ExpressionSegment> beginSQLExpression = expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) predicateNode.getChild(2));
         Optional<? extends ExpressionSegment> endSQLExpression = expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) predicateNode.getChild(4));
         if (beginSQLExpression.isPresent() && endSQLExpression.isPresent()) {
-            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.BETWEEN.name(), new BetweenValueExpressionSegment(beginSQLExpression.get(), endSQLExpression.get()), predicateNode.getStop().getStopIndex()));
+            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.BETWEEN.name(), 
+                    new BetweenValueExpressionSegment(beginSQLExpression.get(), endSQLExpression.get()), predicateNode.getStop().getStopIndex()));
         }
         return Optional.absent();
     }

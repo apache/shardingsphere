@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
 
-
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 
 /**

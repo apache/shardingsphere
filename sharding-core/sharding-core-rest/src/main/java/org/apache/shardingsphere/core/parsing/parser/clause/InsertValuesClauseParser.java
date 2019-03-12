@@ -42,31 +42,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parsing.lexer.token.Keyword;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
-import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
-import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Insert values clause parser.
  *
