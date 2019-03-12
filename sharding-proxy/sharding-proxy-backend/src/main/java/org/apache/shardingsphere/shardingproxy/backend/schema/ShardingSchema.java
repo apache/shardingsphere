@@ -20,7 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.executor.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
@@ -37,7 +39,6 @@ import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorC
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     @Override
-    public void refreshTableMetaData(final SQLStatement sqlStatement) throws SQLException {
+    public void refreshTableMetaData(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
             refreshTableMetaData((CreateTableStatement) sqlStatement);
         } else if (sqlStatement instanceof AlterTableStatement) {
@@ -112,19 +113,27 @@ public final class ShardingSchema extends LogicSchema {
         }
     }
     
-    private void refreshTableMetaData(final CreateTableStatement createTableStatement) throws SQLException {
+    private void refreshTableMetaData(final CreateTableStatement createTableStatement) {
         String tableName = createTableStatement.getTables().getSingleTableName();
-        getMetaData().getTable().put(tableName, getMetaData().getTableInitialize().getTableMetaDataLoader().load(tableName, shardingRule));
+        getMetaData().getTable().put(tableName, getTableMetaDataInitializer().load(tableName, shardingRule));
     }
     
-    private void refreshTableMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
+    private void refreshTableMetaData(final AlterTableStatement alterTableStatement) {
         String tableName = alterTableStatement.getTables().getSingleTableName();
-        getMetaData().getTable().put(tableName, getMetaData().getTableInitialize().getTableMetaDataLoader().load(tableName, shardingRule));
+        getMetaData().getTable().put(tableName, getTableMetaDataInitializer().load(tableName, shardingRule));
     }
     
     private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
         for (String each : dropTableStatement.getTables().getTableNames()) {
             getMetaData().getTable().remove(each);
         }
+    }
+    
+    private TableMetaDataInitializer getTableMetaDataInitializer() {
+        ShardingProperties shardingProperties = ShardingProxyContext.getInstance().getShardingProperties();
+        return new TableMetaDataInitializer(
+                metaData.getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
+                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
 }

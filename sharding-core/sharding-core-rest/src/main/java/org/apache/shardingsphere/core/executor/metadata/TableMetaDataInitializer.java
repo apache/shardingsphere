@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.executor.metadata;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.executor.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
@@ -47,7 +46,6 @@ public final class TableMetaDataInitializer {
     
     private final TableMetaDataConnectionManager connectionManager;
     
-    @Getter
     private final TableMetaDataLoader tableMetaDataLoader;
     
     public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, final ShardingExecuteEngine executeEngine, 
@@ -112,5 +110,17 @@ public final class TableMetaDataInitializer {
         } catch (final AbstractMethodError | SQLFeatureNotSupportedException ignore) {
             return null;
         }
+    }
+    
+    /**
+     * Load table meta data.
+     *
+     * @param logicTableName logic table name
+     * @param shardingRule sharding rule
+     * @return table meta data
+     */
+    @SneakyThrows
+    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
+        return tableMetaDataLoader.load(logicTableName, shardingRule);
     }
 }
