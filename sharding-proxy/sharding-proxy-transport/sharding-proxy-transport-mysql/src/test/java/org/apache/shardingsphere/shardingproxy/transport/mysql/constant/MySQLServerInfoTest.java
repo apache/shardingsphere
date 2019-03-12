@@ -17,18 +17,25 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.constant;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        MySQLCapabilityFlagTest.class, 
-        MySQLColumnTypeTest.class, 
-        MySQLNewParametersBoundFlagTest.class, 
-        MySQLServerErrorCodeTest.class, 
-        MySQLStatusFlagTest.class,
-        MySQLServerInfoTest.class
-})
-public final class AllMySQLConstantTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLServerInfoTest {
+    
+    @Test
+    public void assertProtocolVersion() {
+        assertThat(MySQLServerInfo.PROTOCOL_VERSION, is(0x0A));
+    }
+    
+    @Test
+    public void assertServerVersion() {
+        assertThat(MySQLServerInfo.SERVER_VERSION, is("5.6.0-Sharding-Proxy 4.0.0.M1-SNAPSHOT"));
+    }
+    
+    @Test
+    public void assertCharset() {
+        assertThat(MySQLServerInfo.CHARSET, is(0x21));
+    }
 }
