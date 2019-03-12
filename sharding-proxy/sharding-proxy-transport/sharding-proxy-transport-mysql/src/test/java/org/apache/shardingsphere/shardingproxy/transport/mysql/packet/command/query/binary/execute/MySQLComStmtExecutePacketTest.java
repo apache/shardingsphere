@@ -28,7 +28,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +46,28 @@ public final class MySQLComStmtExecutePacketTest {
     @After
     public void reset() {
         BinaryStatementRegistryUtil.reset();
+    }
+    
+    @Test
+    public void assertNewWithNotNullParameters() throws SQLException {
+        MySQLBinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
+        when(payload.readInt4()).thenReturn(1);
+        when(payload.readInt1()).thenReturn(0, 0, 1);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload);
+        assertThat(actual.getSequenceId(), is(0));
+        assertThat(actual.getSql(), is("SELECT id FROM tbl WHERE id=?"));
+        assertThat(actual.getParameters(), is(Collections.<Object>singletonList(1)));
+    }
+    
+    @Test
+    public void assertNewWithNullParameters() throws SQLException {
+        MySQLBinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
+        when(payload.readInt4()).thenReturn(1);
+        when(payload.readInt1()).thenReturn(0, 1);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload);
+        assertThat(actual.getSequenceId(), is(0));
+        assertThat(actual.getSql(), is("SELECT id FROM tbl WHERE id=?"));
+        assertThat(actual.getParameters(), is(Collections.singletonList(null)));
     }
     
     @Test
