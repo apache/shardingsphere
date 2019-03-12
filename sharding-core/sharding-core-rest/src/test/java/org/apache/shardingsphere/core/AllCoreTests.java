@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core;
 
 import org.apache.shardingsphere.core.executor.AllExecutorTests;
 import org.apache.shardingsphere.core.merger.AllMergerTests;
-import org.apache.shardingsphere.core.metadata.AllMetaDataTests;
 import org.apache.shardingsphere.core.optimizer.AllOptimizerTests;
 import org.apache.shardingsphere.core.parsing.AllParsingTests;
 import org.apache.shardingsphere.core.rewrite.AllRewriteTests;
@@ -33,7 +32,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllUtilTests.class, 
-        AllMetaDataTests.class, 
         AllParsingTests.class, 
         AllOptimizerTests.class, 
         AllRewriteTests.class, 
