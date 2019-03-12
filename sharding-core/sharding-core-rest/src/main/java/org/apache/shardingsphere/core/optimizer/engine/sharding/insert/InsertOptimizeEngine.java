@@ -140,22 +140,20 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void encryptInsertColumnValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
-        for (int i = 0; i < insertColumnValues.getColumnNames().size(); i++) {
-            Optional<ShardingEncryptor> shardingEncryptor =
-                    shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), insertColumnValues.getColumnName(i));
+        for (String each : insertColumnValues.getColumnNames()) {
+            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), each);
             if (shardingEncryptor.isPresent()) {
-                handleEncryptColumnsAndValues(insertColumnValues, insertColumnValueIndex, i, shardingEncryptor.get());
+                handleEncryptColumnsAndValues(insertColumnValues, insertColumnValueIndex, each, shardingEncryptor.get());
             }
         }
     }
     
-    private void handleEncryptColumnsAndValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex, final int columnIndex, final ShardingEncryptor shardingEncryptor) {
+    private void handleEncryptColumnsAndValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex, final String columnName, final ShardingEncryptor shardingEncryptor) {
         InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            String columnName = insertColumnValues.getColumnName(columnIndex);
             String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), columnName).get();
             insertColumnValues.getColumnNames().add(assistedColumnName);
-            fillInsertColumnValueWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(columnIndex));
+            fillInsertColumnValueWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(columnName));
         }
     }
     
