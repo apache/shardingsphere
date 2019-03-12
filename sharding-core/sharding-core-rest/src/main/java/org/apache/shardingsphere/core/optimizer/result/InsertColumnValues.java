@@ -119,17 +119,7 @@ public final class InsertColumnValues {
          * @return column value
          */
         public Object getColumnValue(final String columnName) {
-            return getColumnValue(getColumnIndex(columnName));
-        }
-        
-        /**
-         * Get column value.
-         *
-         * @param columnValueIndex column value index
-         * @return column value
-         */
-        public Object getColumnValue(final int columnValueIndex) {
-            SQLExpression sqlExpression = values.get(columnValueIndex);
+            SQLExpression sqlExpression = values.get(getColumnIndex(columnName));
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 return parameters.get(getParameterIndex(sqlExpression));
             } else if (sqlExpression instanceof SQLTextExpression) {
