@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
+import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -242,9 +243,33 @@ public final class SQLRewriteEngine {
     }
     
     private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertColumnValues insertColumnValues) {
+        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().
+        for (InsertColumnValue each : insertColumnValues.getColumnValues()) {
+            
+        }
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
                 insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
+    }
+    
+    private void encryptInsertColumnValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
+        for (int i = 0; i < insertColumnValues.getColumnNames().size(); i++) {
+            Optional<ShardingEncryptor> shardingEncryptor =
+                    shardingRule.getShardingEncryptorEngine().getShardingEncryptor(sqlStatement.getTables().getSingleTableName(), insertColumnValues.getColumnName(i));
+            if (shardingEncryptor.isPresent()) {
+                encryptInsertColumnValues(insertColumnValues, insertColumnValueIndex, i, shardingEncryptor.get());
+            }
+        }
+    }
+    
+    private void encryptInsertColumnValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex, final int columnIndex, final ShardingEncryptor shardingEncryptor) {
+        InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
+        String columnName = insertColumnValues.getColumnName(columnIndex);
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(sqlStatement.getTables().getSingleTableName(), columnName).get();
+            insertColumnValue.setColumnValue(assistedColumnName, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(insertColumnValue.getColumnValue(columnIndex).toString()))
+        }
+        insertColumnValue.setColumnValue(columnName, shardingEncryptor.encrypt(insertColumnValue.getColumnValue(columnIndex)));
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
