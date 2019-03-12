@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.optimizer.AllOptimizerTests;
 import org.apache.shardingsphere.core.parsing.AllParsingTests;
 import org.apache.shardingsphere.core.rewrite.AllRewriteTests;
 import org.apache.shardingsphere.core.routing.AllRoutingTests;
-import org.apache.shardingsphere.core.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -35,8 +34,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllRewriteTests.class, 
         AllRoutingTests.class, 
         AllExecutorTests.class, 
-        AllMergerTests.class, 
-        AllYamlTests.class
+        AllMergerTests.class
 })
 public final class AllCoreTests {
 }
