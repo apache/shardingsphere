@@ -30,8 +30,6 @@ import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -93,25 +91,39 @@ public final class MySQLDateBinaryProtocolValueTest {
     }
     
     @Test
+    public void assertWriteWithFourBytes() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        actual.write(payload, Timestamp.valueOf("1970-01-14 0:0:0"));
+        verify(payload).writeInt1(4);
+        verify(payload).writeInt2(1970);
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+    }
+    
+    @Test
     public void assertWriteWithSevenBytes() {
         MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
-        Timestamp timestamp = new Timestamp(1L);
-        timestamp.setNanos(0);
-        actual.write(payload, timestamp);
+        actual.write(payload, Timestamp.valueOf("1970-01-14 12:10:30"));
         verify(payload).writeInt1(7);
         verify(payload).writeInt2(1970);
-        verify(payload, times(6)).writeInt1(anyInt());
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+        verify(payload).writeInt1(12);
+        verify(payload).writeInt1(10);
+        verify(payload).writeInt1(30);
     }
     
     @Test
     public void assertWriteWithElevenBytes() {
         MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
-        Timestamp timestamp = new Timestamp(1L);
-        timestamp.setNanos(1000);
-        actual.write(payload, timestamp);
+        actual.write(payload, Timestamp.valueOf("1970-01-14 12:10:30.1"));
         verify(payload).writeInt1(11);
         verify(payload).writeInt2(1970);
-        verify(payload, times(6)).writeInt1(anyInt());
-        verify(payload).writeInt4(1000);
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+        verify(payload).writeInt1(12);
+        verify(payload).writeInt1(10);
+        verify(payload).writeInt1(30);
+        verify(payload).writeInt4(100000000);
     }
 }
