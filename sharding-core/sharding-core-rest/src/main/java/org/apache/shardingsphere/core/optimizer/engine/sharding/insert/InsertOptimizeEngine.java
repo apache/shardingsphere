@@ -85,7 +85,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 fillShardingCondition(shardingCondition, currentGeneratedKey);
             }
             if (isNeededToAppendQueryAssistedColumn()) {
-                encryptInsertColumnValues(insertColumnValues, i);
+                fillWithQueryAssistedColumn(insertColumnValues, i);
             }
             shardingConditions.add(shardingCondition);
         }
@@ -137,7 +137,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return shardingRule.getShardingEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
     }
     
-    private void encryptInsertColumnValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
+    private void fillWithQueryAssistedColumn(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
         for (String each : insertColumnValues.getColumnNames()) {
             InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
             String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).get();
