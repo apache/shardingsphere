@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimizer.result;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
@@ -85,19 +84,23 @@ public final class InsertColumnValues {
         /**
          * Update column value.
          *
-         * @param columnValueIndex column value index
+         * @param columnName column name
          * @param columnValue column value
          */
-        public void setColumnValue(final int columnValueIndex, final Object columnValue) {
-            SQLExpression sqlExpression = values.get(columnValueIndex);
+        public void setColumnValue(final String columnName, final Object columnValue) {
+            SQLExpression sqlExpression = values.get(getColumnIndex(columnName));
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parameters.set(getParameterIndex(sqlExpression), columnValue);
             } else {
                 SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
-                values.set(columnValueIndex, columnExpression);
+                values.set(getColumnIndex(columnName), columnExpression);
             }
         }
-        
+    
+        private int getColumnIndex(final String columnName) {
+            return new ArrayList<>(columnNames).indexOf(columnName);
+        }
+    
         private int getParameterIndex(final SQLExpression sqlExpression) {
             List<SQLExpression> sqlPlaceholderExpressions = new ArrayList<>(Collections2.filter(values, new Predicate<SQLExpression>() {
                 
@@ -115,14 +118,10 @@ public final class InsertColumnValues {
          * @param columnName column Name
          * @return column value
          */
-        public Optional<Object> getColumnValue(final String columnName) {
-            return columnNames.contains(columnName) ? Optional.of(getColumnValue(getColumnIndex(columnName))) : Optional.absent();
+        public Object getColumnValue(final String columnName) {
+            return getColumnValue(getColumnIndex(columnName));
         }
-    
-        private int getColumnIndex(final String columnName) {
-            return new ArrayList<>(columnNames).indexOf(columnName);
-        }
-    
+        
         /**
          * Get column value.
          *
