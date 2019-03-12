@@ -39,7 +39,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <bean id="demo_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -47,7 +46,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_1"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />

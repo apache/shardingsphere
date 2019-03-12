@@ -37,7 +37,7 @@ public class JavaConfigurationTransactionExample {
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
-    
+//
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
     
@@ -50,8 +50,10 @@ public class JavaConfigurationTransactionExample {
         transactionService.initEnvironment();
         transactionService.processSuccessWithLocal();
         transactionService.processSuccessWithXA();
+        transactionService.processSuccessWithBase();
         transactionService.processFailureWithLocal();
         transactionService.processFailureWithXA();
+        transactionService.processFailureWithBase();
         transactionService.cleanEnvironment();
     }
 }

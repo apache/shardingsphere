@@ -48,12 +48,14 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration("order_id"));
         return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration("order_item_id"));
+        return result;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -63,7 +65,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
         return result;
     }
     
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration(final String columnName) {
+        return new KeyGeneratorConfiguration("SNOWFLAKE", columnName, new Properties());
     }
 }

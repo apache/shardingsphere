@@ -42,7 +42,6 @@
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
-        <property name="maxActive" value="16"/>
     </bean>
     
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />

@@ -42,8 +42,10 @@ public class JavaConfigurationTransactionExample {
         transactionService.initEnvironment();
         transactionService.processSuccessWithLocal();
         transactionService.processSuccessWithXA();
+        transactionService.processSuccessWithBase();
         transactionService.processFailureWithLocal();
         transactionService.processFailureWithXA();
+        transactionService.processFailureWithBase();
         transactionService.cleanEnvironment();
     }
 }

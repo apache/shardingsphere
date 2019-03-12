@@ -19,6 +19,9 @@ shardingRule:
         column: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_item_id
   bindingTables:
     - t_order,t_order_item
   

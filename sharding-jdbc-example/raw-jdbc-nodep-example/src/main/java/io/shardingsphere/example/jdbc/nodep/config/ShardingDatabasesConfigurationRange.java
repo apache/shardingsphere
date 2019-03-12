@@ -47,12 +47,14 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration("order_id"));
         return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration("order_item_id"));
+        return result;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -62,7 +64,7 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         return result;
     }
     
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration(final String columnName) {
+        return new KeyGeneratorConfiguration("SNOWFLAKE", columnName, new Properties());
     }
 }
