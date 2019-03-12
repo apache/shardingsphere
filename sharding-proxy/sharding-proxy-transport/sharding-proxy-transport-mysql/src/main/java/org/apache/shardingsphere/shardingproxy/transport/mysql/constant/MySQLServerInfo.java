@@ -36,7 +36,7 @@ public final class MySQLServerInfo {
     /**
      * Server version.
      */
-    public static final String SERVER_VERSION = "5.6.0-Sharding-Proxy 4.0.0.M1-SNAPSHOT";
+    public static final String SERVER_VERSION = "5.6.0-Sharding-Proxy 4.0.0-RC2-SNAPSHOT";
     
     /**
      * Charset code 0x21 is utf8_general_ci.

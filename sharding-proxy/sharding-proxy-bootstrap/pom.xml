@@ -125,7 +125,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <configuration>
-                    <imageName>shardingsphere/sharding-proxy:4.0.0.M1-SNAPSHOT</imageName>
+                    <imageName>shardingsphere/sharding-proxy:4.0.0-RC2-SNAPSHOT</imageName>
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>
