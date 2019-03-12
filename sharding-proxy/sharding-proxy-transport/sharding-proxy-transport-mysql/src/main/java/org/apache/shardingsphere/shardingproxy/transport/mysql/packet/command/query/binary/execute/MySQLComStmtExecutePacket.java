@@ -41,7 +41,7 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
-public final class MySQLQueryComStmtExecutePacket extends MySQLCommandPacket {
+public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private static final int ITERATION_COUNT = 1;
     
@@ -63,7 +63,7 @@ public final class MySQLQueryComStmtExecutePacket extends MySQLCommandPacket {
     @Getter
     private final List<Object> parameters;
     
-    public MySQLQueryComStmtExecutePacket(final MySQLPacketPayload payload) throws SQLException {
+    public MySQLComStmtExecutePacket(final MySQLPacketPayload payload) throws SQLException {
         super(MySQLCommandPacketType.COM_STMT_EXECUTE);
         statementId = payload.readInt4();
         binaryStatement = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
