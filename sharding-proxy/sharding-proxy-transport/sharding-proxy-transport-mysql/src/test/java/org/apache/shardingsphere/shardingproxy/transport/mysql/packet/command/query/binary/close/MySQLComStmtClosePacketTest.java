@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,6 +32,13 @@ public final class MySQLComStmtClosePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
+    
+    @Test
+    public void assertNew() {
+        when(payload.readInt4()).thenReturn(1);
+        MySQLComStmtClosePacket actual = new MySQLComStmtClosePacket(payload);
+        assertThat(actual.getStatementId(), is(1));
+    }
     
     @Test
     public void assertWrite() {

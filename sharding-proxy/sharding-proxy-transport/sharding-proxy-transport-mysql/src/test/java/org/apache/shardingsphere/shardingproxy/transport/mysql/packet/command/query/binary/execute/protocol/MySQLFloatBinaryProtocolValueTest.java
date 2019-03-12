@@ -40,7 +40,7 @@ public final class MySQLFloatBinaryProtocolValueTest {
         when(byteBuf.readFloatLE()).thenReturn(1f);
         assertThat(new MySQLFloatBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf)), CoreMatchers.<Object>is(1f));
     }
-
+    
     @Test
     public void assertWrite() {
         new MySQLFloatBinaryProtocolValue().write(new MySQLPacketPayload(byteBuf), 1f);

@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,14 @@ public final class MySQLComStmtPreparePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
+    
+    @Test
+    public void assertNew() {
+        when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl WHERE id=?");
+        MySQLComStmtPreparePacket actual = new MySQLComStmtPreparePacket(payload);
+        assertThat(actual.getSequenceId(), is(0));
+        assertThat(actual.getSql(), is("SELECT id FROM tbl WHERE id=?"));
+    }
     
     @Test
     public void assertWrite() {

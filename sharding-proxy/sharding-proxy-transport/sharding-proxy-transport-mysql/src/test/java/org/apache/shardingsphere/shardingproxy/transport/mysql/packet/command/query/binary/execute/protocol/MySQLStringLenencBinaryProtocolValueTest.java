@@ -35,14 +35,20 @@ public final class MySQLStringLenencBinaryProtocolValueTest {
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertReadStringLenenc() {
+    public void assertRead() {
         when(payload.readStringLenenc()).thenReturn("value");
         assertThat(new MySQLStringLenencBinaryProtocolValue().read(payload), is((Object) "value"));
     }
     
     @Test
-    public void assertWriteStringLenenc() {
+    public void assertWriteString() {
         new MySQLStringLenencBinaryProtocolValue().write(payload, "value");
         verify(payload).writeStringLenenc("value");
+    }
+    
+    @Test
+    public void assertWriteByteArray() {
+        new MySQLStringLenencBinaryProtocolValue().write(payload, new byte[] {});
+        verify(payload).writeBytesLenenc(new byte[] {});
     }
 }
