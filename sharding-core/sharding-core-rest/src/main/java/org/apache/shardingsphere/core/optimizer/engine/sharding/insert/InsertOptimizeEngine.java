@@ -37,8 +37,6 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatem
 import org.apache.shardingsphere.core.routing.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -141,18 +139,11 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void encryptInsertColumnValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
         for (String each : insertColumnValues.getColumnNames()) {
-            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), each);
-            if (shardingEncryptor.isPresent() && shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-                fillInsertColumnValuesWithAssistedColumn(insertColumnValues, insertColumnValueIndex, each);
-            }
+            InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
+            String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).get();
+            insertColumnValues.getColumnNames().add(assistedColumnName);
+            fillInsertColumnValueWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(each));
         }
-    }
-    
-    private void fillInsertColumnValuesWithAssistedColumn(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex, final String columnName) {
-        InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
-        String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), columnName).get();
-        insertColumnValues.getColumnNames().add(assistedColumnName);
-        fillInsertColumnValueWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(columnName));
     }
     
     private void fillInsertColumnValueWithColumnValue(final InsertColumnValue insertColumnValue, final Comparable<?> columnValue) {
