@@ -84,6 +84,9 @@ public final class ShardingEncryptorEngine {
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn(final String logicTableName, final String columnName) {
+        if (!shardingEncryptorStrategies.containsKey(logicTableName)) {
+            return Optional.absent();
+        }
         return shardingEncryptorStrategies.get(logicTableName).getAssistedQueryColumn(columnName);
     }
 }
