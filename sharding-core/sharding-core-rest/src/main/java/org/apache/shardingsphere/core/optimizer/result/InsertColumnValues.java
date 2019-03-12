@@ -62,16 +62,6 @@ public final class InsertColumnValues {
         this.columnValues.add(result);
     }
     
-    /**
-     * get column name.
-     *
-     * @param index index
-     * @return column name
-     */
-    public String getColumnName(final int index) {
-        return new ArrayList<>(columnNames).get(index);
-    }
-    
     @Getter
     public final class InsertColumnValue {
         
@@ -142,7 +132,7 @@ public final class InsertColumnValues {
         
         private void fillResultBySet(final StringBuilder result) {
             for (int i = 0; i < columnNames.size(); i++) {
-                result.append(String.format("%s = %s", getColumnName(i), getColumnSQLExpressionValue(i))).append(", ");
+                result.append(String.format("%s = %s", new ArrayList<>(columnNames).get(i), getColumnSQLExpressionValue(i))).append(", ");
             }
             result.delete(result.length() - 2, result.length());
         }
