@@ -882,34 +882,7 @@
         </plugins>
     </reporting>
     
-    <repositories>
-        <repository>
-            <id>alfresco-maven-repo</id>
-            <url>https://maven.alfresco.com/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>java-net</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>terracotta-releases</id>
-            <url>http://terracotta.org/download/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-    
-    <url>http://shardingsphere.io</url>
+    <url>http://shardingsphere.apache.org</url>
     <description>Distributed database middleware ecosphere</description>
     <licenses>
         <license>
@@ -924,7 +897,7 @@
         <developerConnection>scm:git:https://github.com/sharding-sphere/sharding-sphere</developerConnection>
         <url>https://github.com/sharding-sphere/sharding-sphere</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
     
     <mailingLists>
         <mailingList>
@@ -951,15 +924,4 @@
             <timezone>8</timezone>
         </developer>
     </developers>
-    
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-releases</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-    </distributionManagement>
 </project>
