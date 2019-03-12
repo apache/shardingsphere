@@ -116,9 +116,13 @@ public final class InsertColumnValues {
          * @return column value
          */
         public Optional<Object> getColumnValue(final String columnName) {
-            return columnNames.contains(columnName) ? Optional.of(getColumnValue(new ArrayList<>(columnNames).indexOf(columnName))) : Optional.absent();
+            return columnNames.contains(columnName) ? Optional.of(getColumnValue(getColumnIndex(columnName))) : Optional.absent();
         }
-        
+    
+        private int getColumnIndex(final String columnName) {
+            return new ArrayList<>(columnNames).indexOf(columnName);
+        }
+    
         /**
          * Get column value.
          *
