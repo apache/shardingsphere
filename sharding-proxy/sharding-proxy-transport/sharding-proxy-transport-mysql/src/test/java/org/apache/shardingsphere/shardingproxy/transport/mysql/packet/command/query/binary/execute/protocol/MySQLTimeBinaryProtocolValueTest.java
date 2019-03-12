@@ -75,16 +75,14 @@ public final class MySQLTimeBinaryProtocolValueTest {
     @Test
     public void assertWriteWithZeroByte() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
-        Time time = Time.valueOf("00:00:00");
-        actual.write(payload, time);
+        actual.write(payload, Time.valueOf("00:00:00"));
         verify(payload).writeInt1(0);
     }
     
     @Test
     public void assertWriteWithEightBytes() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
-        Time time = Time.valueOf("01:30:10");
-        actual.write(payload, time);
+        actual.write(payload, Time.valueOf("01:30:10"));
         verify(payload).writeInt1(8);
         verify(payload).writeInt1(0);
         verify(payload).writeInt4(0);
@@ -98,8 +96,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     @Test
     public void assertWriteWithTwelveBytes() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
-        Time time = new Time(1L);
-        actual.write(payload, time);
+        actual.write(payload, new Time(1L));
         verify(payload).writeInt1(12);
         verify(payload, times(5)).writeInt1(anyInt());
         verify(payload).writeInt4(0);
