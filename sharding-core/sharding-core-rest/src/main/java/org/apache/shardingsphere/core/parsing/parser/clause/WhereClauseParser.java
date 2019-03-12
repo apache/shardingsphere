@@ -46,8 +46,8 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.OffsetToken;
 import org.apache.shardingsphere.core.parsing.parser.token.RowCountToken;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.Arrays;
 import java.util.LinkedList;

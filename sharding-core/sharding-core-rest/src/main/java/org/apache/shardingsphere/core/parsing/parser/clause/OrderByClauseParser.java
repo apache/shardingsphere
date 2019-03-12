@@ -36,7 +36,7 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderEx
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 import java.util.LinkedList;
 import java.util.List;

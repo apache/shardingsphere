@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.definition.colu
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 /**
  * Column definition segment.

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 /**
  * Column select item segment.

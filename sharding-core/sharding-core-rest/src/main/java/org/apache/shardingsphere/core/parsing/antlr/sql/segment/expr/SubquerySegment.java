@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySeg
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 /**
  * Subquery expression segment.

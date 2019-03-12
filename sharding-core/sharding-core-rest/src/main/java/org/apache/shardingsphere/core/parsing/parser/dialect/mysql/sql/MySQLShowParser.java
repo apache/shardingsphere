@@ -36,8 +36,8 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dal.show.AbstractShowPa
 import org.apache.shardingsphere.core.parsing.parser.token.RemoveToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SchemaToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Show parser for MySQL.

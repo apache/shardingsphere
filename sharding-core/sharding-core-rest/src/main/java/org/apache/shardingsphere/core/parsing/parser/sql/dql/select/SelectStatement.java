@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.OffsetToken;
 import org.apache.shardingsphere.core.parsing.parser.token.RowCountToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.Iterator;

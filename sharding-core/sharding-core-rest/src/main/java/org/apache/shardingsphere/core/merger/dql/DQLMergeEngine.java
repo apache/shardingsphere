@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMe
 import org.apache.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

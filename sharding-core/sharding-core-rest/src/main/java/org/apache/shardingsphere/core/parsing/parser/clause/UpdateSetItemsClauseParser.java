@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parsing.parser.clause.expression.BasicExpr
 import org.apache.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 /**
  * Update set items clause parser.

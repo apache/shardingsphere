@@ -30,8 +30,8 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLPropertyExpre
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 import org.apache.shardingsphere.core.util.NumberUtil;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Basic expression parser.

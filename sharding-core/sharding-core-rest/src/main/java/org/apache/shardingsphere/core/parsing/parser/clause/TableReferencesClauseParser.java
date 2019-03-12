@@ -36,8 +36,8 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatem
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.Arrays;
 import java.util.LinkedList;

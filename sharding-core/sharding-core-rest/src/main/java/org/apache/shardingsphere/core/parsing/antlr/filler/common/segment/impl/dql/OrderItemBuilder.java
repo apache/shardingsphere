@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.item.Order
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 import java.util.List;
 

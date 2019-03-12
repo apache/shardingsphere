@@ -26,8 +26,8 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Insert duplicate key update clause parser.

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.util;
+package org.apache.shardingsphere.core.parsing.util;
 
 import com.google.common.base.CharMatcher;
 import lombok.AccessLevel;

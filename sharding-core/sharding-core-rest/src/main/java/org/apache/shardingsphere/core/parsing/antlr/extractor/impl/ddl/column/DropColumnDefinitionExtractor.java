@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.CollectionSQLSegme
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.DropColumnDefinitionSegment;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLIdentifierExp
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;

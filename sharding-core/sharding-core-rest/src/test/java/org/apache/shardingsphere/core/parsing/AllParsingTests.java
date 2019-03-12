@@ -23,13 +23,15 @@ import org.apache.shardingsphere.core.parsing.lexer.AllLexerTests;
 import org.apache.shardingsphere.core.parsing.parser.constant.AllConstantTests;
 import org.apache.shardingsphere.core.parsing.parser.context.AllContextTests;
 import org.apache.shardingsphere.core.parsing.parser.sql.AllSQLTests;
+import org.apache.shardingsphere.core.parsing.util.SQLUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllLexerTests.class, 
+        AllLexerTests.class,
+        SQLUtilTest.class,
         AllSQLTests.class,
         SQLJudgeEngineTest.class, 
         AllContextTests.class, 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parsing.parser.token;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.util.SQLUtil;
 
 /**
  * Index token.
