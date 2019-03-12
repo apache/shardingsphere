@@ -28,7 +28,6 @@ public interface ShardingEncryptor extends BaseAlgorithm {
     
     /**
      * Initialize.
-     * 
      */
     void init();
     
