@@ -24,6 +24,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
+import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
@@ -34,7 +36,6 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.RemoveToken;
@@ -78,6 +79,8 @@ public final class EncryptSQLRewriteEngine {
     
     private final List<Object> parameters;
     
+    private final OptimizeResult optimizeResult;
+    
     /**
      * Constructs encrypt SQL rewrite engine.
      * 
@@ -87,13 +90,15 @@ public final class EncryptSQLRewriteEngine {
      * @param sqlStatement SQL statement
      * @param parameters parameters
      */
-    public EncryptSQLRewriteEngine(final EncryptRule encryptRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public EncryptSQLRewriteEngine(final EncryptRule encryptRule, 
+                                   final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.encryptRule = encryptRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
         this.parameters = parameters;
+        this.optimizeResult = optimizeResult;
     }
     
     /**
@@ -122,9 +127,7 @@ public final class EncryptSQLRewriteEngine {
             if (each instanceof ItemsToken) {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count);
             } else if (each instanceof InsertValuesToken) {
-                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count);
-            } else if (each instanceof InsertColumnToken) {
-                appendSymbolToken(sqlBuilder, (InsertColumnToken) each, count);
+                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertColumnValues().get());
             } else if (each instanceof EncryptColumnToken) {
                 appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
@@ -149,15 +152,10 @@ public final class EncryptSQLRewriteEngine {
         appendRest(sqlBuilder, count, itemsToken.getStartIndex());
     }
     
-    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count) {
+    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertColumnValues insertColumnValues) {
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
-                insertValuesToken.getType(), insertValuesToken.getColumnNames(), insertValuesToken.getColumnValues()));
+                insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
-    }
-    
-    private void appendSymbolToken(final SQLBuilder sqlBuilder, final InsertColumnToken insertColumnToken, final int count) {
-        sqlBuilder.appendLiterals(insertColumnToken.getColumnName());
-        appendRest(sqlBuilder, count, insertColumnToken.getStartIndex());
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
@@ -299,6 +297,14 @@ public final class EncryptSQLRewriteEngine {
         return getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1;
     }
     
+    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
+        if (isUsingParameters(encryptColumnToken)) {
+            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+        }
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
+                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
+    }
+    
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
                                                                                      final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         if (isUsingParameters(encryptColumnToken)) {
@@ -313,14 +319,6 @@ public final class EncryptSQLRewriteEngine {
         Optional<String> result = encryptRule.getEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName());
         Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
         return result.get();
-    }
-    
-    private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
-        if (isUsingParameters(encryptColumnToken)) {
-            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        }
-        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), 
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {

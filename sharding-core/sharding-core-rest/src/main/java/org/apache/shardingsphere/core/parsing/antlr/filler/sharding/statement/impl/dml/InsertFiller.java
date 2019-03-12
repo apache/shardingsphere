@@ -35,15 +35,12 @@ import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingExcepti
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Insert filler.
@@ -58,63 +55,40 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
-        createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
-        insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastIndex());
+        createValue(sqlSegment, insertStatement, sql, shardingRule);
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
         insertStatement.getSQLTokens().add(
-                new InsertValuesToken(sqlSegment.getInsertValueStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
-        processGeneratedKey(shardingRule, insertStatement);
+                new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
         processDuplicateKey(shardingRule, sqlSegment, sqlStatement.getTables().getSingleTableName());
     }
     
     private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlSegment.getColumns().isEmpty()) {
-            createFromMeta(insertStatement, sqlSegment, shardingRule, shardingTableMetaData);
+            createFromMeta(insertStatement, shardingTableMetaData);
             return;
         }
         String tableName = insertStatement.getTables().getSingleTableName();
-        int index = 0;
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         for (ColumnSegment each : sqlSegment.getColumns()) {
             Column column = new Column(each.getName(), tableName);
             insertStatement.getColumns().add(column);
-            if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(each.getName())) {
-                insertStatement.setGenerateKeyColumnIndex(index);
-            }
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
+                insertStatement.getSQLTokens().add(
+                        new TableToken(each.getStartIndex(), 0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
             }
-            index++;
         }
     }
     
-    private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        int count = 0;
+    private void createFromMeta(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        int startIndex = sqlSegment.getColumnClauseStartIndex();
-        insertStatement.addSQLToken(new InsertColumnToken(startIndex, "("));
-        ItemsToken columnsToken = new ItemsToken(startIndex);
-        columnsToken.setFirstOfItemsSpecial(true);
         if (shardingTableMetaData.containsTable(tableName)) {
-            Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-                if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(each)) {
-                    insertStatement.setGenerateKeyColumnIndex(count);
-                }
                 Column column = new Column(each, tableName);
                 insertStatement.getColumns().add(column);
-                columnsToken.getItems().add(each);
-                count++;
             }
         }
-        insertStatement.addSQLToken(columnsToken);
-        insertStatement.addSQLToken(new InsertColumnToken(startIndex, ")"));
-        insertStatement.setColumnsListLastIndex(startIndex);
     }
     
-    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
-                             final ShardingTableMetaData shardingTableMetaData) {
+    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule) {
         if (insertSegment.getValuesList().isEmpty()) {
             return;
         }
@@ -126,10 +100,9 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
             if (each.getValues().size() != insertStatement.getColumns().size()) {
                 throw new SQLParsingException("INSERT INTO column size mismatch value size.");
             }
-            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getStopIndex() + 1), each.getParametersCount());
+            InsertValue insertValue = new InsertValue(each.getType(), each.getParametersCount());
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             parameterIndex += each.getParametersCount();
-            int index = 0;
             AndCondition andCondition = new AndCondition();
             Iterator<Column> iterator = insertStatement.getColumns().iterator();
             for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {
@@ -143,10 +116,10 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
                     }
                     andCondition.getConditions().add(new Condition(column, sqlExpression));
                 }
-                if (index == insertStatement.getGenerateKeyColumnIndex()) {
+                Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+                if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equals(column.getName())) {
                     insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(column, commonExpressionSegment, sql));
                 }
-                index++;
             }
             insertStatement.setParametersIndex(parameterIndex);
             insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
@@ -156,12 +129,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final ShardingRule shardingRule, final int valueCount) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumnName.isPresent() && valueCount < insertStatement.getColumns().size()) {
-            List<ItemsToken> itemsTokens = insertStatement.getItemsTokens();
             insertStatement.getColumns().remove(new Column(generateKeyColumnName.get(), insertStatement.getTables().getSingleTableName()));
-            for (ItemsToken each : itemsTokens) {
-                each.getItems().remove(generateKeyColumnName.get());
-                insertStatement.setGenerateKeyColumnIndex(-1);
-            }
         }
     }
     
@@ -175,27 +143,11 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
         return new GeneratedKeyCondition(column, -1, sql.substring(sqlExpression.getStartIndex(), sqlExpression.getStopIndex() + 1));
     }
     
-    private void processGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumnName.isPresent()) {
-            return;
-        }
-        if (DefaultKeyword.VALUES.equals(insertStatement.getInsertValues().getInsertValues().get(0).getType())) {
-            if (!insertStatement.getItemsTokens().isEmpty()) {
-                insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumnName.get());
-            } else {
-                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
-                columnsToken.getItems().add(generateKeyColumnName.get());
-                insertStatement.addSQLToken(columnsToken);
-            }
-        }
-    }
-    
     private void processDuplicateKey(final ShardingRule shardingRule, final InsertSegment insertSegment, final String tableName) {
         for (String each : insertSegment.getDuplicateKeyColumns()) {
             if (shardingRule.isShardingColumn(SQLUtil.getExactlyValue(each), tableName)) {
-                throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support on sharding column, token is '%s', literals is '%s'.", Literals.IDENTIFIER, each);
+                throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support on sharding column, token is '%s', literals is '%s'.",
+                        Literals.IDENTIFIER, each);
             }
         }
     }

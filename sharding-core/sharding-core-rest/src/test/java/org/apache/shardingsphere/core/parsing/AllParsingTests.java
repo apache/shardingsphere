@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parsing.lexer.AllLexerTests;
 import org.apache.shardingsphere.core.parsing.parser.constant.AllConstantTests;
 import org.apache.shardingsphere.core.parsing.parser.context.AllContextTests;
 import org.apache.shardingsphere.core.parsing.parser.sql.AllSQLTests;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesTokenTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -31,11 +30,10 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllLexerTests.class, 
-        AllSQLTests.class, 
+        AllSQLTests.class,
         SQLJudgeEngineTest.class, 
         AllContextTests.class, 
         AllConstantTests.class, 
-        InsertValuesTokenTest.class, 
         SPIParsingHookTest.class, 
         AllParsingIntegrateTests.class
 })

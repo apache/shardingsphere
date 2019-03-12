@@ -40,8 +40,6 @@ public final class InsertValue {
     
     private final DefaultKeyword type;
     
-    private final String expression;
-    
     private final int parametersCount;
     
     private final List<SQLExpression> columnValues = new LinkedList<>();

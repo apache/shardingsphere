@@ -19,10 +19,9 @@ package org.apache.shardingsphere.core.optimizer;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptDefaultOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptOptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.engine.sharding.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.query.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -73,7 +72,7 @@ public final class OptimizeEngineFactory {
      * @param parameters parameters
      * @return encrypt optimize engine instance
      */
-    public static EncryptOptimizeEngine newInstance(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
+    public static OptimizeEngine newInstance(final EncryptRule encryptRule, final SQLStatement sqlStatement, final List<Object> parameters) {
         if (sqlStatement instanceof InsertStatement) {
             return new EncryptInsertOptimizeEngine(encryptRule, (InsertStatement) sqlStatement, parameters);
         }

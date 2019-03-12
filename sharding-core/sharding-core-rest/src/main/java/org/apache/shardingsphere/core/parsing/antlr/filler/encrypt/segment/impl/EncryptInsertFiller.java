@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingExcepti
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -48,10 +47,9 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         createColumn(sqlSegment, insertStatement, encryptRule, shardingTableMetaData);
         createValue(sqlSegment, insertStatement, sql, encryptRule, shardingTableMetaData);
-        insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastIndex());
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
         insertStatement.getSQLTokens().add(
-                new InsertValuesToken(sqlSegment.getInsertValueStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
+                new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
     }
     
     private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
@@ -69,7 +67,6 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
     private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
         int startIndex = sqlSegment.getColumnClauseStartIndex();
-        insertStatement.addSQLToken(new InsertColumnToken(startIndex, "("));
         ItemsToken columnsToken = new ItemsToken(startIndex);
         columnsToken.setFirstOfItemsSpecial(true);
         if (shardingTableMetaData.containsTable(tableName)) {
@@ -80,8 +77,6 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
             }
         }
         insertStatement.addSQLToken(columnsToken);
-        insertStatement.addSQLToken(new InsertColumnToken(startIndex, ")"));
-        insertStatement.setColumnsListLastIndex(startIndex);
     }
     
     private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final EncryptRule encryptRule,
@@ -94,7 +89,7 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
             if (each.getValues().size() != insertStatement.getColumns().size()) {
                 throw new SQLParsingException("INSERT INTO column size mismatch value size.");
             }
-            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getStopIndex() + 1), each.getParametersCount());
+            InsertValue insertValue = new InsertValue(each.getType(), each.getParametersCount());
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             parameterIndex += each.getParametersCount();
             for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {

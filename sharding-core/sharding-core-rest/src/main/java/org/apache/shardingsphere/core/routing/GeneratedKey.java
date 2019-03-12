@@ -51,7 +51,7 @@ public final class GeneratedKey {
      * @return generate key
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final List<Object> parameters, final InsertStatement insertStatement) {
-        return -1 == insertStatement.getGenerateKeyColumnIndex() ? createGeneratedKey(shardingRule, insertStatement) : findGeneratedKey(parameters, insertStatement);
+        return insertStatement.isContainGenerateKeyColumn(shardingRule) ? findGeneratedKey(parameters, insertStatement) : createGeneratedKey(shardingRule, insertStatement);
     }
     
     private static Optional<GeneratedKey> createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement) {

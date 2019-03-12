@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.parser.sql.dml.insert;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -70,24 +68,6 @@ public abstract class AbstractInsertParser implements SQLParser {
         insertClauseParserFacade.getInsertValuesClauseParser().parse(result);
         insertClauseParserFacade.getInsertSetClauseParser().parse(result);
         insertClauseParserFacade.getInsertDuplicateKeyUpdateClauseParser().parse(result);
-        processGeneratedKey(result);
         return result;
-    }
-    
-    private void processGeneratedKey(final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumnName.isPresent()) {
-            return;
-        }
-        if (DefaultKeyword.VALUES.equals(insertStatement.getInsertValues().getInsertValues().get(0).getType())) {
-            if (!insertStatement.getItemsTokens().isEmpty()) {
-                insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumnName.get());
-            } else {
-                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
-                columnsToken.getItems().add(generateKeyColumnName.get());
-                insertStatement.addSQLToken(columnsToken);
-            }
-        }
     }
 }

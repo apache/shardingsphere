@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parsing.parser.sql.dml.insert;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -29,10 +30,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Generated
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,28 +54,7 @@ public final class InsertStatement extends DMLStatement {
     
     private final InsertValues insertValues = new InsertValues();
     
-    private int columnsListLastIndex;
-    
-    private int generateKeyColumnIndex = -1;
-    
     private int insertValuesListLastIndex;
-    
-    private boolean containGenerateKey;
-    
-    /**
-     * Get items tokens.
-     *
-     * @return items token list.
-     */
-    public List<ItemsToken> getItemsTokens() {
-        List<ItemsToken> result = new ArrayList<>();
-        for (SQLToken each : getSQLTokens()) {
-            if (each instanceof ItemsToken) {
-                result.add((ItemsToken) each);
-            }
-        }
-        return result;
-    }
     
     /**
      * Get insert values token.
@@ -104,5 +83,16 @@ public final class InsertStatement extends DMLStatement {
                 return input.getName();
             }
         });
+    }
+    
+    /**
+     * Is contain generate key column.
+     * 
+     * @param shardingRule sharding rule.
+     * @return contain generated key column or not.
+     */
+    public boolean isContainGenerateKeyColumn(final ShardingRule shardingRule) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(getTables().getSingleTableName());
+        return generateKeyColumnName.isPresent() && columns.contains(new Column(generateKeyColumnName.get(), getTables().getSingleTableName()));
     }
 }

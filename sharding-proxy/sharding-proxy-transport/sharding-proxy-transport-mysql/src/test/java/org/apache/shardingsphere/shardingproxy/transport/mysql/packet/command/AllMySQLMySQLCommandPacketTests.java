@@ -52,7 +52,7 @@ import org.junit.runners.Suite.SuiteClasses;
         MySQLComFieldListPacketTest.class, 
         MySQLComQueryPacketTest.class, 
         MySQLComStmtPreparePacketTest.class, 
-        MySQLComStmtPrepareMySQLOKPacketTest.class, 
+        MySQLComStmtPrepareMySQLOKPacketTest.class,
         MySQLBinaryResultSetRowPacketTest.class, 
         MySQLComStmtExecutePacketTest.class, 
         MySQLComStmtClosePacketTest.class, 

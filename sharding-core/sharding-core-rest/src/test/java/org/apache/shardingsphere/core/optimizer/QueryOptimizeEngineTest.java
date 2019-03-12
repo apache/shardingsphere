@@ -53,7 +53,7 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
@@ -66,7 +66,7 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
@@ -79,7 +79,7 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize().getShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
     
@@ -93,7 +93,7 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         RouteValue shardingValue = shardingCondition.getShardingValues().get(0);
@@ -112,7 +112,7 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         RouteValue shardingValue = shardingCondition.getShardingValues().get(0);
@@ -131,7 +131,7 @@ public final class QueryOptimizeEngineTest {
         andCondition.getConditions().add(condition2);
         OrCondition orCondition = new OrCondition();
         orCondition.getAndConditions().add(andCondition);
-        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize();
+        ShardingConditions shardingConditions = new QueryOptimizeEngine(orCondition, Collections.emptyList()).optimize().getShardingConditions();
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         RouteValue shardingValue = shardingCondition.getShardingValues().get(0);
