@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
@@ -85,11 +86,14 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void fillWithQueryAssistedColumn(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
-        for (String each : insertColumnValues.getColumnNames()) {
+        for (int i = 0; i < insertColumnValues.getColumnNames().size(); i++) {
+            String columnName = insertColumnValues.getColumnName(i);
             InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
-            String assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).get();
-            insertColumnValues.getColumnNames().add(assistedColumnName);
-            fillWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(each));
+            Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), columnName);
+            if (assistedColumnName.isPresent()) {
+                insertColumnValues.getColumnNames().add(assistedColumnName.get());
+                fillWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(columnName));
+            }
         }
     }
     
