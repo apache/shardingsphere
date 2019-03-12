@@ -177,12 +177,9 @@ public final class SQLRewriteEngineTest {
         sqlExpressions.add(new SQLPlaceholderExpression(0));
         sqlExpressions.add(new SQLPlaceholderExpression(1));
         sqlExpressions.add(new SQLPlaceholderExpression(2));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES);
+        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "age", "id"));
         insertColumnValues.addInsertColumnValue(sqlExpressions, parameters);
         insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
-        insertColumnValues.getColumnNames().add("name");
-        insertColumnValues.getColumnNames().add("age");
-        insertColumnValues.getColumnNames().add("id");
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", 
@@ -205,9 +202,7 @@ public final class SQLRewriteEngineTest {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLPlaceholderExpression(0));
         sqlExpressions.add(new SQLPlaceholderExpression(1));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES);
-        insertColumnValues.getColumnNames().add("name");
-        insertColumnValues.getColumnNames().add("id");
+        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         insertColumnValues.addInsertColumnValue(sqlExpressions, parameters);
         insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
@@ -228,9 +223,7 @@ public final class SQLRewriteEngineTest {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLNumberExpression(10));
         sqlExpressions.add(new SQLNumberExpression(1));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES);
-        insertColumnValues.getColumnNames().add("name");
-        insertColumnValues.getColumnNames().add("id");
+        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         insertColumnValues.addInsertColumnValue(sqlExpressions, new LinkedList<>());
         insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
@@ -254,9 +247,7 @@ public final class SQLRewriteEngineTest {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLNumberExpression(10));
         sqlExpressions.add(new SQLNumberExpression(1));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES);
-        insertColumnValues.getColumnNames().add("name");
-        insertColumnValues.getColumnNames().add("id");
+        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         insertColumnValues.addInsertColumnValue(sqlExpressions, new LinkedList<>());
         insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
@@ -277,9 +268,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(new TableToken(12, 0, "table_x", "`", "`"));
         insertStatement.setInsertValuesListLastIndex(34);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES);
-        insertColumnValues.getColumnNames().add("name");
-        insertColumnValues.getColumnNames().add("id");
+        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLPlaceholderExpression(0));
         sqlExpressions.add(new SQLPlaceholderExpression(1));

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,15 +35,9 @@ import static org.junit.Assert.assertThat;
 
 public class InsertColumnValuesTest {
     
-    private InsertColumnValues insertColumnValuesWithSet = new InsertColumnValues(DefaultKeyword.SET);
+    private InsertColumnValues insertColumnValuesWithSet = new InsertColumnValues(DefaultKeyword.SET, Lists.newArrayList("id", "value", "status"));
     
-    private InsertColumnValues insertColumnValuesWithValues = new InsertColumnValues(DefaultKeyword.VALUES);
-    
-    @Before
-    public void setUp() {
-        insertColumnValuesWithSet.getColumnNames().addAll(Lists.newArrayList("id", "value", "status"));
-        insertColumnValuesWithValues.getColumnNames().addAll(Lists.newArrayList("id", "value", "status"));
-    }
+    private InsertColumnValues insertColumnValuesWithValues = new InsertColumnValues(DefaultKeyword.VALUES, Lists.newArrayList("id", "value", "status"));
     
     @Test
     public void assertAddInsertColumnValueWithSet() {

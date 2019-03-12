@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.optimizer.result;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
@@ -40,7 +39,6 @@ import java.util.Set;
  * @author panjuan
  */
 @Getter
-@RequiredArgsConstructor
 public final class InsertColumnValues {
     
     private final DefaultKeyword type;
@@ -49,17 +47,19 @@ public final class InsertColumnValues {
     
     private final List<InsertColumnValue> columnValues = new LinkedList<>();
     
+    public InsertColumnValues(final DefaultKeyword type, final List<String> columnNames) {
+        this.type = type;
+        this.columnNames.addAll(columnNames);
+    }
+    
     /**
      * Add insert column value.
      *
      * @param columnValues column values
-     * @param columnParameters  column parameters
+     * @param columnParameters column parameters
      */
     public void addInsertColumnValue(final List<SQLExpression> columnValues, final List<Object> columnParameters) {
-        InsertColumnValue result = new InsertColumnValue();
-        result.values.addAll(columnValues);
-        result.parameters.addAll(columnParameters);
-        this.columnValues.add(result);
+        this.columnValues.add(new InsertColumnValue(columnValues, columnParameters));
     }
     
     /**
@@ -81,8 +81,13 @@ public final class InsertColumnValues {
         
         private final List<DataNode> dataNodes = new LinkedList<>();
         
+        public InsertColumnValue(final List<SQLExpression> values, final List<Object> parameters) {
+            this.values.addAll(values);
+            this.parameters.addAll(parameters);
+        }
+        
         /**
-         * Update column value.
+         * Set column value.
          *
          * @param columnName column name
          * @param columnValue column value

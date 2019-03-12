@@ -93,9 +93,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private InsertColumnValues createInsertColumnValues() {
-        InsertColumnValues result = new InsertColumnValues(insertStatement.getInsertValuesToken().getType());
-        result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
-        return result;
+        return new InsertColumnValues(insertStatement.getInsertValuesToken().getType(), insertStatement.getInsertColumnNames());
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {

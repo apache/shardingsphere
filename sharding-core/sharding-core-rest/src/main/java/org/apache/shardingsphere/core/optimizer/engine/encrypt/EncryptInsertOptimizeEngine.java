@@ -70,9 +70,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     }
     
     private InsertColumnValues createInsertColumnValues() {
-        InsertColumnValues result = new InsertColumnValues(insertStatement.getInsertValuesToken().getType());
-        result.getColumnNames().addAll(insertStatement.getInsertColumnNames());
-        return result;
+        return new InsertColumnValues(insertStatement.getInsertValuesToken().getType(), insertStatement.getInsertColumnNames());
     }
     
     private List<Object> getCurrentParameters(final int beginCount, final int increment) {
