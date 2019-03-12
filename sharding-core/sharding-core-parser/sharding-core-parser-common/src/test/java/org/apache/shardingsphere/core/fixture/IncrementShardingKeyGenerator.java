@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core;
+package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.core.executor.AllExecutorTests;
-import org.apache.shardingsphere.core.merger.AllMergerTests;
-import org.apache.shardingsphere.core.optimizer.AllOptimizerTests;
-import org.apache.shardingsphere.core.rewrite.AllRewriteTests;
-import org.apache.shardingsphere.core.routing.AllRoutingTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllOptimizerTests.class, 
-        AllRewriteTests.class, 
-        AllRoutingTests.class, 
-        AllExecutorTests.class, 
-        AllMergerTests.class
-})
-public final class AllCoreTests {
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
+    
+    @Getter
+    private final String type = "INCREMENT";
+    
+    private final AtomicInteger count = new AtomicInteger();
+    
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
+    
+    @Override
+    public Comparable<?> generateKey() {
+        return count.incrementAndGet();
+    }
 }

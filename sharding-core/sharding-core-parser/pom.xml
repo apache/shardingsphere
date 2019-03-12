@@ -28,6 +28,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>sharding-core-parser-common</module>
         <module>sharding-core-parser-mysql</module>
         <module>sharding-core-parser-postgresql</module>
         <module>sharding-core-parser-oracle</module>
