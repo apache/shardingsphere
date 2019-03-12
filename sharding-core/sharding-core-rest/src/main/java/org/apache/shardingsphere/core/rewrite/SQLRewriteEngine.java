@@ -244,16 +244,14 @@ public final class SQLRewriteEngine {
     }
     
     private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertColumnValues insertColumnValues) {
-        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().
         for (InsertColumnValue each : insertColumnValues.getColumnValues()) {
-            encryptInsertColumnValues(insertColumnValues.getColumnNames(), each);
+            encryptInsertColumnValue(insertColumnValues.getColumnNames(), each);
         }
-        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
-                insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
+        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
     }
     
-    private void encryptInsertColumnValues(final Set<String> columnNames, final InsertColumnValue insertColumnValue) {
+    private void encryptInsertColumnValue(final Set<String> columnNames, final InsertColumnValue insertColumnValue) {
         for (String each : columnNames) {
             Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(sqlStatement.getTables().getSingleTableName(), each);
             if (shardingEncryptor.isPresent()) {
