@@ -32,7 +32,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
 import org.apache.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
@@ -92,6 +94,9 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         final int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         String literals = lexerEngine.getCurrentToken().getLiterals();
         int skippedSchemaNameLength = 0;
+        if (sqlStatement instanceof InsertStatement) {
+            sqlStatement.addSQLToken(new InsertValuesToken(lexerEngine.getCurrentToken().getEndPosition()));
+        }
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             skippedSchemaNameLength = literals.length() + Symbol.DOT.getLiterals().length();

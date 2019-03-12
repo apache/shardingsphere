@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.parser.clause;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
@@ -31,8 +30,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLIdentifierExp
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
-import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
@@ -48,14 +45,11 @@ import java.util.LinkedList;
  */
 public final class InsertColumnsClauseParser implements SQLClauseParser {
     
-    private final ShardingRule shardingRule;
-    
     private final LexerEngine lexerEngine;
     
     private final BasicExpressionParser basicExpressionParser;
     
     public InsertColumnsClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        this.shardingRule = shardingRule;
         this.lexerEngine = lexerEngine;
         basicExpressionParser = ExpressionParserFactory.createBasicExpressionParser(lexerEngine);
     }
@@ -68,13 +62,11 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
      */
     public void parse(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         insertStatement.getColumns().addAll(lexerEngine.equalAny(Symbol.LEFT_PAREN)
-                ? parseWithColumn(insertStatement, tableName, generateKeyColumnName) : parseWithoutColumn(insertStatement, shardingTableMetaData, tableName, generateKeyColumnName));
+                ? parseWithColumn(insertStatement, tableName) : parseWithoutColumn(shardingTableMetaData, tableName));
     }
     
-    private Collection<Column> parseWithColumn(final InsertStatement insertStatement, final String tableName, final Optional<String> generateKeyColumnName) {
-        int count = 0;
+    private Collection<Column> parseWithColumn(final InsertStatement insertStatement, final String tableName) {
         Collection<Column> result = new LinkedList<>();
         do {
             lexerEngine.nextToken();
@@ -91,37 +83,18 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             }
             Preconditions.checkNotNull(columnName);
             result.add(new Column(columnName, tableName));
-            if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(columnName)) {
-                insertStatement.setGenerateKeyColumnIndex(count);
-            }
-            count++;
         } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN) && !lexerEngine.equalAny(Assist.END));
-        insertStatement.setColumnsListLastIndex(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         lexerEngine.nextToken();
         return result;
     }
     
-    private Collection<Column> parseWithoutColumn(
-            final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData, final String tableName, final Optional<String> generateKeyColumn) {
-        int count = 0;
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, "("));
-        ItemsToken columnsToken = new ItemsToken(beginPosition);
-        columnsToken.setFirstOfItemsSpecial(true);
+    private Collection<Column> parseWithoutColumn(final ShardingTableMetaData shardingTableMetaData, final String tableName) {
         Collection<Column> result = new LinkedList<>();
         if (shardingTableMetaData.containsTable(tableName)) {
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
                 result.add(new Column(each, tableName));
-                if (generateKeyColumn.isPresent() && generateKeyColumn.get().equalsIgnoreCase(each)) {
-                    insertStatement.setGenerateKeyColumnIndex(count);
-                }
-                columnsToken.getItems().add(each);
-                count++;
             }
         }
-        insertStatement.addSQLToken(columnsToken);
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, ")"));
-        insertStatement.setColumnsListLastIndex(beginPosition);
         return result;
     }
 }
