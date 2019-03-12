@@ -41,6 +41,10 @@ public final class MD5ShardingEncryptor implements ShardingEncryptor {
     }
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public String encrypt(final Object plaintext) {
         return DigestUtils.md5Hex(String.valueOf(plaintext));
     }

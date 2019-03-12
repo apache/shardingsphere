@@ -46,6 +46,10 @@ public final class TestShardingEncryptor implements ShardingEncryptor {
     }
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public String encrypt(final Object plaintext) {
         return "";
     }

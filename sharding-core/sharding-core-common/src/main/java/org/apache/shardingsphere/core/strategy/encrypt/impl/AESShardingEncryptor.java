@@ -53,6 +53,10 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     }
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     @SneakyThrows
     public String encrypt(final Object plaintext) {
         byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));

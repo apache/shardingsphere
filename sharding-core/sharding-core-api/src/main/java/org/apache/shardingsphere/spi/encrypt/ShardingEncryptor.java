@@ -27,6 +27,11 @@ import org.apache.shardingsphere.spi.BaseAlgorithm;
 public interface ShardingEncryptor extends BaseAlgorithm {
     
     /**
+     * Initialize.
+     */
+    void init();
+    
+    /**
      * Encode.
      * 
      * @param plaintext plaintext
