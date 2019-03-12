@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimizer;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -54,19 +53,18 @@ public class InsertColumnValuesTest {
         expressions.add(new SQLPlaceholderExpression(1));
         expressions.add(new SQLTextExpression("test"));
         insertColumnValuesWithSet.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
-        assertThat(insertColumnValuesWithSet.getColumnName(0), is("id"));
         assertThat(insertColumnValuesWithSet.getColumnNames().size(), is(3));
         assertThat(insertColumnValuesWithSet.getType(), is(DefaultKeyword.SET));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getValues(), is(expressions));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getParameters().get(0), is((Object) "parameter"));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getDataNodes().size(), is(0));
-        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue(1), is((Object) "parameter"));
-        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("status"), is(Optional.of((Object) "test")));
+        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("value"), is((Object) "parameter"));
+        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("status"), is((Object) "test"));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).toString(), is("id = 1, value = ?, status = 'test'"));
-        insertColumnValuesWithSet.getColumnValues().get(0).setColumnValue(0, 2);
-        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue(0), is((Object) 2));
-        insertColumnValuesWithSet.getColumnValues().get(0).setColumnValue(1, "parameter1");
-        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue(1), is((Object) "parameter1"));
+        insertColumnValuesWithSet.getColumnValues().get(0).setColumnValue("id", 2);
+        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("id"), is((Object) 2));
+        insertColumnValuesWithSet.getColumnValues().get(0).setColumnValue("value", "parameter1");
+        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("value"), is((Object) "parameter1"));
     }
     
     @Test

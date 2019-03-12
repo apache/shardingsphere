@@ -107,7 +107,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            reviseInsertStatement(each, dataNodes);
+            reviseInsertColumnValues(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -121,7 +121,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
-            reviseInsertStatement(each, dataNodes);
+            reviseInsertColumnValues(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -205,7 +205,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private void reviseInsertStatement(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
+    private void reviseInsertColumnValues(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
             for (InsertColumnValue each : optimizeResult.getInsertColumnValues().get().getColumnValues()) {
                 if (isQualifiedInsertColumnValue(each, shardingCondition)) {
@@ -217,8 +217,8 @@ public final class StandardRoutingEngine implements RoutingEngine {
     
     private boolean isQualifiedInsertColumnValue(final InsertColumnValue insertColumnValue, final ShardingCondition shardingCondition) {
         for (RouteValue each : shardingCondition.getShardingValues()) {
-            Optional<Object> columnValue = insertColumnValue.getColumnValue(each.getColumnName());
-            if (!columnValue.isPresent() || !columnValue.get().equals(((ListRouteValue) each).getValues().iterator().next())) {
+            Object columnValue = insertColumnValue.getColumnValue(each.getColumnName());
+            if (!columnValue.equals(((ListRouteValue) each).getValues().iterator().next())) {
                 return false;
             }
         }
