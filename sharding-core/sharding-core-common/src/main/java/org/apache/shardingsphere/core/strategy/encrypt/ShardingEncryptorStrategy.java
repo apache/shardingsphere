@@ -63,6 +63,6 @@ public final class ShardingEncryptorStrategy {
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn(final String column) {
-        return assistedQueryColumns.size() - 1 >= columns.indexOf(column) ? Optional.of(assistedQueryColumns.get(columns.indexOf(column))) : Optional.<String>absent();
+        return columns.contains(column) ? Optional.of(assistedQueryColumns.get(columns.indexOf(column))) : Optional.<String>absent();
     }
 }
