@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimizer.engine.encrypt;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
@@ -30,8 +29,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderEx
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +62,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
             }
             insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendQueryAssistedColumn()) {
-                encryptInsertColumnValues(insertColumnValues, i);
+                fillWithQueryAssistedColumn(insertColumnValues, i);
             }
         }
         return new OptimizeResult(insertColumnValues);
@@ -87,29 +84,16 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         return encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
     }
     
-    private void encryptInsertColumnValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
-        for (int i = 0; i < insertColumnValues.getColumnNames().size(); i++) {
-            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getEncryptorEngine().getShardingEncryptor(
-                    insertStatement.getTables().getSingleTableName(), insertColumnValues.getColumnName(i));
-            if (shardingEncryptor.isPresent()) {
-                handleEncryptColumnsAndValues(insertColumnValues, insertColumnValueIndex, i, shardingEncryptor.get());
-            }
-        }
-    }
-    
-    private void handleEncryptColumnsAndValues(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex, final int columnIndex, final ShardingEncryptor shardingEncryptor) {
-        InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            String columnName = insertColumnValues.getColumnName(columnIndex);
-            String assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), columnName).get();
+    private void fillWithQueryAssistedColumn(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
+        for (String each : insertColumnValues.getColumnNames()) {
+            InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
+            String assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each).get();
             insertColumnValues.getColumnNames().add(assistedColumnName);
-            fillInsertColumnValueWithColumnValue(
-                    insertColumnValue, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(insertColumnValue.getColumnValue(columnIndex).toString()));
+            fillWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(each));
         }
-        insertColumnValue.setColumnValue(columnIndex, shardingEncryptor.encrypt(insertColumnValue.getColumnValue(columnIndex)));
     }
     
-    private void fillInsertColumnValueWithColumnValue(final InsertColumnValue insertColumnValue, final Comparable<?> columnValue) {
+    private void fillWithColumnValue(final InsertColumnValue insertColumnValue, final Comparable<?> columnValue) {
         if (!parameters.isEmpty()) {
             insertColumnValue.getValues().add(new SQLPlaceholderExpression(parameters.size() - 1));
             insertColumnValue.getParameters().add(columnValue);
