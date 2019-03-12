@@ -754,6 +754,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/target/**</exclude>
+                        <exclude>**/logs/**</exclude>
                         <!-- IDE files -->
                         <exclude>**/*.iml</exclude>
                         <exclude>**/.idea/**</exclude>
