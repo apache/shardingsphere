@@ -20,6 +20,7 @@
         <project.build.locale>zh_CN</project.build.locale>
         
         <sharding-sphere.version>4.0.0-RC1-SNAPSHOT</sharding-sphere.version>
+        <sharding-sphere.spi.impl.version>4.0.0.M1-SNAPSHOT</sharding-sphere.spi.impl.version>
     
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
@@ -73,6 +74,11 @@
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-transaction-xa-core</artifactId>
                 <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-transaction-base-saga</artifactId>
+                <version>${sharding-sphere.spi.impl.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>

@@ -11,4 +11,20 @@
 
     <artifactId>transaction-saga-raw-jdbc-example</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>repository-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-transaction-base-saga</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>
