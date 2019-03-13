@@ -117,6 +117,7 @@ CREATE TABLE IF NOT EXISTS saga_event(
 当`saga.persistence.enabled`设置为`true`且Saga引擎监测到有持久化SPI时，Saga引擎将通过用户实现的SPI代替默认持久化进行持久化工作。
 用户只需要实现接口`io.shardingsphere.transaction.saga.persistence.SagaPersistence`即可实现持久化SPI。
 具体可参考项目`sharding-transaction-base-saga-persistence-jpa`，Maven引入：
+
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
@@ -151,6 +152,7 @@ TransactionTypeHolder.set(TransactionType.BASE);
 
 ### SpringBootStarter使用方式
 引入Maven依赖：
+
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -180,6 +182,7 @@ TransactionTypeHolder.set(TransactionType.BASE);
 ```
 
 AutoConfiguration配置
+
 ```java
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 @ComponentScan("org.apache.shardingsphere.transaction.aspect")
@@ -213,6 +216,7 @@ public class StartMain {
 <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
 ```
 加载切面配置信息
+
 ```xml
 <import resource="classpath:META-INF/shardingTransaction.xml"/>
 
