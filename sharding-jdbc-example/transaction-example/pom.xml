@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-transaction-2pc-xa</module>
+        <module>transaction-2pc-xa-example</module>
         <module>sharding-transaction-base-saga</module>
     </modules>
 

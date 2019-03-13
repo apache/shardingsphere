@@ -5,9 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-transaction-2pc-xa</artifactId>
+        <artifactId>transaction-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
+    <artifactId>transaction-2pc-xa-example</artifactId>
+    <packaging>pom</packaging>
 
-    <artifactId>sharding-transaction-xa-spring-namespace-quickstart</artifactId>
+    <modules>
+        <module>sharding-transaction-xa-raw-jdbc-quickstart</module>
+        <module>sharding-transaction-xa-spring-namespace-quickstart</module>
+        <module>sharding-transaction-xa-spring-boot-quickstart</module>
+    </modules>
+
 </project>
