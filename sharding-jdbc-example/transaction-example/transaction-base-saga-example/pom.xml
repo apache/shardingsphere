@@ -14,6 +14,6 @@
     <modules>
         <module>sharding-transaction-saga-raw-jdbc-quickstart</module>
         <module>transaction-saga-spring-boot-example</module>
-        <module>sharding-transaction-saga-spring-namespace-quickstart</module>
+        <module>transaction-saga-spring-namespace-example</module>
     </modules>
 </project>
