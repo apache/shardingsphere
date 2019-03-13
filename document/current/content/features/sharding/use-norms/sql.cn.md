@@ -103,6 +103,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 | SQL                                                                                           | 不支持原因                      |
 | -------------------------------------------------------------------------------------         | ------------------------------ |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                    | VALUES语句不支持运算表达式      |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?    | INSERT .. SEL                  |
 | INSERT INTO tbl_name SET col1 = ?                                                             | INSERT .. SET                  |
 | SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?          | HAVING                         |
