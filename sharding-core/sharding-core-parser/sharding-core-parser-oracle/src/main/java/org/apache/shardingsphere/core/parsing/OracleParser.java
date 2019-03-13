@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect;
+package org.apache.shardingsphere.core.parsing;
 
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.MySQLStatementParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedErrorStrategy;
-import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedMatchHandler;
-import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedParserATNSimulator;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.SQLParser;
+import org.apache.shardingsphere.core.parsing.advanced.AdvancedErrorStrategy;
+import org.apache.shardingsphere.core.parsing.advanced.AdvancedMatchHandler;
+import org.apache.shardingsphere.core.parsing.advanced.AdvancedParserATNSimulator;
+import org.apache.shardingsphere.core.parsing.antlr.autogen.OracleStatementParser;
+import org.apache.shardingsphere.core.parsing.api.SQLParser;
 
 /**
- * SQL parser for MySQL.
+ * SQL parser for Oracle.
  * 
  * @author duhongjun
  */
-public final class MySQLParser extends MySQLStatementParser implements SQLParser {
+public final class OracleParser extends OracleStatementParser implements SQLParser {
     
     private final AdvancedMatchHandler advancedMatchHandler;
     
-    public MySQLParser(final TokenStream input) {
+    public OracleParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         _errHandler = new AdvancedErrorStrategy(ID);

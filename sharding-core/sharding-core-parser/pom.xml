@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-core</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-core-parser</artifactId>
     <name>${project.artifactId}</name>
@@ -33,6 +33,7 @@
         <module>sharding-core-parser-postgresql</module>
         <module>sharding-core-parser-oracle</module>
         <module>sharding-core-parser-sqlserver</module>
+        <module>sharding-core-parser-spi</module>
     </modules>
     
     <dependencies>
