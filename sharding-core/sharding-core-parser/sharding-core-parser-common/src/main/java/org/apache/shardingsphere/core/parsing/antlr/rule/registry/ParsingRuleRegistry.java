@@ -66,26 +66,25 @@ public abstract class ParsingRuleRegistry {
     private void initParserRuleDefinition() {
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
+                if (!needParser(each)) {
+                    continue;
+                }
                 List<String> fillerFilePaths = new LinkedList<>();
                 List<String> extractorFilePaths = new LinkedList<>();
                 List<String> sqlStateRuleFilePaths = new LinkedList<>();
-                fillSelfCommonFilePath(each, fillerFilePaths, extractorFilePaths, sqlStateRuleFilePaths);
+                fillRuleFilePaths(each, fillerFilePaths, extractorFilePaths, sqlStateRuleFilePaths);
                 ParserRuleDefinition shardingRuleDefinition = new ParserRuleDefinition();
-                extractorFilePaths.add(getExtractorRuleDefinitionFileName(each));
-                sqlStateRuleFilePaths.add(getStatementRuleDefinitionFileName(each));
                 initParserRuleDefinitionFromCommon(shardingRuleDefinition, fillerFilePaths, extractorFilePaths, sqlStateRuleFilePaths);
                 parserRuleDefinitions.put(each, shardingRuleDefinition);
             }
         }
     }
     
-    protected void fillSelfCommonFilePath(final DatabaseType databaseType, final List<String> fillerFilePaths, final List<String> extractorFilePaths, final List<String> sqlStateRuleFilePaths) {
-        
+    protected boolean needParser(final DatabaseType databaseType) { 
+        return true;
     }
     
-    protected abstract String getExtractorRuleDefinitionFileName(DatabaseType databaseType);
-    
-    protected abstract String getStatementRuleDefinitionFileName(DatabaseType databaseType);
+    protected abstract void fillRuleFilePaths(DatabaseType databaseType, List<String> fillerFilePaths, List<String> extractorFilePaths, List<String> sqlStateRuleFilePaths);
     
     private void initParserRuleDefinitionFromCommon(final ParserRuleDefinition parserRuleDefinition, final List<String> fillerFilePaths, final List<String> extractorFilePaths,
                                                     final List<String> sqlStateRuleFilePaths) {

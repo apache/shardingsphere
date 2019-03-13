@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
@@ -50,11 +49,10 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
-        List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
         InsertColumnValues insertColumnValues = createInsertColumnValues();
         int parametersCount = 0;
-        for (int i = 0; i < andConditions.size(); i++) {
+        for (int i = 0; i < insertValues.size(); i++) {
             InsertValue insertValue = insertValues.get(i);
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
             if (0 != insertValue.getParametersCount()) {

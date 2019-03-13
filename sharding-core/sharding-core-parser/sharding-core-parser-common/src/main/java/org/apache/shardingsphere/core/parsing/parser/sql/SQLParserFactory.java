@@ -124,8 +124,7 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final String sql) {
         if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
-            // TODO :hongjun return new AntlrParsingEngine(dbType, sql, encryptRule, shardingTableMetaData);
-            return SetParserFactory.newInstance();
+            return new AntlrParsingEngine(dbType, sql, encryptRule, shardingTableMetaData);
         }
         throw new SQLParsingUnsupportedException(String.format("Can not support %s", dbType)); 
     }

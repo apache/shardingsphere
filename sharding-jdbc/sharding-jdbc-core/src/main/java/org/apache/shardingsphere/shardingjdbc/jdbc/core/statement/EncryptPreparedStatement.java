@@ -128,11 +128,15 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
             boolean result = preparedStatement.execute();
-            this.resultSet = new EncryptResultSet(this, preparedStatement.getResultSet(), preparedStatementGenerator.connection.getEncryptRule());
+            this.resultSet = createEncryptResultSet(preparedStatement);
             return result;
         } finally {
             clearParameters();
         }
+    }
+    
+    private EncryptResultSet createEncryptResultSet(final PreparedStatement preparedStatement) throws SQLException {
+        return null == preparedStatement.getResultSet() ? null : new EncryptResultSet(this, preparedStatement.getResultSet(), preparedStatementGenerator.connection.getEncryptRule());
     }
     
     @Override
@@ -144,7 +148,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getEncryptSQLParsingEngine().parse(false, sql);
-        OptimizeResult optimizeResult =  OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, getParameters()).optimize();
         SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, getParameters(), optimizeResult).rewrite();
         return sqlBuilder.toSQL();
     }
