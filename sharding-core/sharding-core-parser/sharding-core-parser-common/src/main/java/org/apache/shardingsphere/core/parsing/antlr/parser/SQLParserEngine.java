@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parsing.antlr.parser.impl.SQLParserFactory
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
 
 /**
  * SQL parser engine.
@@ -43,16 +42,10 @@ public final class SQLParserEngine {
     
     private final String sql;
     
-    public SQLParserEngine(final ParsingRuleRegistry parsingRuleRegistry, final SQLStatementFillerRule sqlStatementFillerRule, final DatabaseType databaseType, final String sql) {
-        this.parsingRuleRegistry = parsingRuleRegistry;
-        this.databaseType = databaseType;
-        this.sql = sql;
-    }
-    
     /**
-     * Parse SQL to AST.
+     * Parse SQL to abstract syntax tree.
      * 
-     * @return Abstract syntax tree of SQL
+     * @return abstract syntax tree of SQL
      */
     public SQLAST parse() {
         ParseTree parseTree = SQLParserFactory.newInstance(databaseType, sql).execute().getChild(0);
