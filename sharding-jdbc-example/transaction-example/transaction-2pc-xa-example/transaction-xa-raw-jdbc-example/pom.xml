@@ -8,5 +8,5 @@
         <artifactId>transaction-2pc-xa-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-xa-raw-jdbc-quickstart</artifactId>
+    <artifactId>transaction-xa-raw-jdbc-example</artifactId>
 </project>
