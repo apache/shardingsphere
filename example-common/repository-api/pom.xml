@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>quickstart-common</artifactId>
+        <artifactId>example-common</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>repository-api</artifactId>

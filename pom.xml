@@ -7,7 +7,7 @@
     <artifactId>sharding-sphere-example</artifactId>
     <version>4.0.0-RC2-SNAPSHOT</version>
     <modules>
-        <module>quickstart-common</module>
+        <module>example-common</module>
         <module>sharding-jdbc-example</module>
         <module>sharding-proxy-example</module>
     </modules>

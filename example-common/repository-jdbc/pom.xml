@@ -5,16 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>quickstart-common</artifactId>
+        <artifactId>example-common</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-
-    <artifactId>config-utility</artifactId>
+    <artifactId>repository-jdbc</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-api</artifactId>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>config-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>repository-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
