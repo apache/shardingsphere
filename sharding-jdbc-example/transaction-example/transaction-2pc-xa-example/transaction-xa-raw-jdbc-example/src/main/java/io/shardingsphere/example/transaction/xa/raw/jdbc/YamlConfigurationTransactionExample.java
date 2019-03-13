@@ -22,8 +22,6 @@ import io.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
 import io.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
 import io.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
 import io.shardingsphere.example.common.service.CommonService;
-import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -39,26 +37,15 @@ import java.sql.Statement;
 
 public class YamlConfigurationTransactionExample {
     
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
+    private static String configFile = "/META-INF/sharding-databases-tables.yaml";
+    //    private static String configFile = "/META-INF/master-slave.yaml";
     
     public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = getDataSource(shardingType);
+        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         processXATransaction(dataSource, commonService);
         commonService.cleanEnvironment();
-    }
-    
-    private static DataSource getDataSource(final ShardingType shardingType) throws SQLException, IOException {
-        switch (shardingType) {
-            case SHARDING_DATABASES_AND_TABLES:
-                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
-            case MASTER_SLAVE:
-                return YamlMasterSlaveDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml"));
-            default:
-                throw new UnsupportedOperationException(shardingType.name());
-        }
     }
     
     private static File getFile(final String fileName) {
