@@ -9,6 +9,6 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sharding-transaction-saga-raw-jdbc-quickstart</artifactId>
+    <artifactId>transaction-saga-raw-jdbc-example</artifactId>
 
 </project>

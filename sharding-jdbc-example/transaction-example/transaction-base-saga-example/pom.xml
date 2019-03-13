@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-transaction-saga-raw-jdbc-quickstart</module>
+        <module>transaction-saga-raw-jdbc-example</module>
         <module>transaction-saga-spring-boot-example</module>
         <module>transaction-saga-spring-namespace-example</module>
     </modules>
