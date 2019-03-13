@@ -39,7 +39,9 @@ ShardingSphere默认的XA事务管理器为Atomikos。
 可以通过在项目的classpath中添加`jta.properties`来定制化Atomikos配置项。
 具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
 
-## BASE-Saga
+## 第三方BASE实现-Saga
+
+目前Apache/incubator-shardingsphere暂无BASE事务的实现，但是仍然可以使用第三方实现的Saga事务。
 
 ### 引入Maven依赖
 
