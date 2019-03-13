@@ -107,6 +107,7 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 
 | SQL                                                                                         |  The reason of unavailability      |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                  | VALUES clause does not support operation expression|
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                   |
 | INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                      |
 | SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                             |
