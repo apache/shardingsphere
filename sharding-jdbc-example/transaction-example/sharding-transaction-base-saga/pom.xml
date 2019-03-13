@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-jdbc-example</artifactId>
+        <artifactId>transaction-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction</artifactId>
+    <artifactId>sharding-transation-base-saga</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-transaction-2pc-xa</module>
-        <module>sharding-transaction-base-saga</module>
+        <module>sharding-transaction-saga-raw-jdbc-quickstart</module>
+        <module>sharding-transaction-saga-spring-boot-quickstart</module>
+        <module>sharding-transaction-saga-spring-namespace-quickstart</module>
     </modules>
-
 </project>
