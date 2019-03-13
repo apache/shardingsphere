@@ -9,5 +9,5 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sharding-transaction-xa-spring-namespace-quickstart</artifactId>
+    <artifactId>transaction-xa-spring-namespace-example</artifactId>
 </project>

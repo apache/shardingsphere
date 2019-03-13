@@ -13,7 +13,7 @@
 
     <modules>
         <module>transaction-xa-raw-jdbc-example</module>
-        <module>sharding-transaction-xa-spring-namespace-quickstart</module>
+        <module>transaction-xa-spring-namespace-example</module>
         <module>sharding-transaction-xa-spring-boot-quickstart</module>
     </modules>
 
