@@ -312,14 +312,6 @@
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int, 2:int" expected-data-file="select_pagination_with_offset_and_row_count.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="select_pagination_with_limit_with_double_quotes">
-        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int, 2:int" expected-data-file="select_pagination_with_offset_and_row_count.xml" />
-    </dql-test-case>
-    
-    <dql-test-case sql-case-id="select_pagination_with_offset_and_limit">
-        <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 2:int, 2:int" expected-data-file="select_pagination_with_offset_and_limit.xml" />
-    </dql-test-case>
-    
     <dql-test-case sql-case-id="select_pagination_with_top_for_greater_than">
         <assertion parameters="4:int, 10:int, 19:int, 1000:int, 1909:int, 2:int" expected-data-file="select_pagination_with_top_and_limit.xml" />
     </dql-test-case>

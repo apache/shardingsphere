@@ -17,7 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl.dml;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.ColumnSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.ExpressionExtractor;
@@ -26,12 +34,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.InsertValuesSegment;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Insert extractor.
@@ -55,6 +57,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             extractSetColumn(placeholderIndexes, ancestorNode, result);
         }
         extractDuplicateKeys(ancestorNode, result);
+        result.setInsertValuesListLastPosition(ancestorNode.getStop().getStopIndex());
         return Optional.of(result);
     }
     

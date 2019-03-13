@@ -85,35 +85,6 @@
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="select_pagination_with_limit_with_double_quotes" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="&quot;t_order&quot;" />
-            <table-token begin-position="33" original-literals="&quot;t_order_item&quot;" />
-            <offset-token begin-position="195" offset="5" />
-            <row-count-token begin-position="198" row-count="3" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
-    </parser-result>
-    
     <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" />

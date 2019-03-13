@@ -42,7 +42,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
-    private PredicateExtractor predicateSegmentExtractor;
+    private PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
     
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
@@ -59,7 +59,6 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
         FromWhereSegment result = new FromWhereSegment();
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(result, rootNode);
-        predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, questionNodeIndexMap);
         if (whereNode.isPresent()) {
             extractAndFillWhere(result, questionNodeIndexMap, whereNode.get());
@@ -112,7 +111,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode.get());
         Preconditions.checkState(tableSegment.isPresent());
         TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
-        Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap);
+        Optional<OrConditionSegment> conditionResult = buildCondition(fromWhereSegment.getTableAliases(), joinConditionNode.get(), questionNodeIndexMap);
         if (conditionResult.isPresent()) {
             tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
             fromWhereSegment.getConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
@@ -129,14 +128,14 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     }
     
     private void extractAndFillWhere(final FromWhereSegment fromWhereSegment, final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext whereNode) {
-        Optional<OrConditionSegment> conditions = buildCondition((ParserRuleContext) whereNode.getChild(1), questionNodeIndexMap);
+        Optional<OrConditionSegment> conditions = buildCondition(fromWhereSegment.getTableAliases(), (ParserRuleContext) whereNode.getChild(1), questionNodeIndexMap);
         if (conditions.isPresent()) {
             fromWhereSegment.getConditions().getAndConditions().addAll(conditions.get().getAndConditions());
         }
     }
     
-    private Optional<OrConditionSegment> buildCondition(final ParserRuleContext node, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
+    private Optional<OrConditionSegment> buildCondition(final Map<String, String> tableAlias, final ParserRuleContext node, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode(node, RuleName.EXPR);
-        return exprNode.isPresent() ? predicateSegmentExtractor.extractCondition(questionNodeIndexMap, exprNode.get()) : Optional.<OrConditionSegment>absent();
+        return exprNode.isPresent() ? predicateSegmentExtractor.extractCondition(tableAlias, questionNodeIndexMap, exprNode.get()) : Optional.<OrConditionSegment>absent();
     }
 }

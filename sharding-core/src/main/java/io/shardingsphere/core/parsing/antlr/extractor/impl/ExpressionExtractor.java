@@ -49,8 +49,6 @@ import io.shardingsphere.core.util.SQLUtil;
  */
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
-    
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext ancestorNode) {
         throw new RuntimeException();
@@ -69,7 +67,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             return Optional.of(extractStarExpressionSegment(expressionNode, firstChildText));
         }
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(extractExpressionWithAliasSegment(placeholderIndexes, expressionNode));
+        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get()) : Optional.of(extractExpressionWithAliasSegment(placeholderIndexes, expressionNode));
     }
     
     private ExpressionSegment extractStarExpressionSegment(final ParserRuleContext expressionNode, final String text) {
