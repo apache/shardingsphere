@@ -5,7 +5,7 @@ title = "BASE Transaction"
 weight = 3
 +++
 
-## Concept
+## Function
 
 * Fully support cross-database transactions.
 
