@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-orchestration-raw-jdbc-quickstart</module>
+        <module>orchestration-raw-jdbc-example</module>
         <module>orchestration-spring-boot-example</module>
         <module>sharding-orchestration-spring-namespace-quickstart</module>
     </modules>
