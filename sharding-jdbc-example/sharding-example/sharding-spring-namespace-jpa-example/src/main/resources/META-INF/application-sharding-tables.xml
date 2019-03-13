@@ -14,14 +14,14 @@
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <context:annotation-config />
-    <context:component-scan base-package="io.shardingsphere.quickstart.common.jpa"/>
+    <context:component-scan base-package="io.shardingsphere.example.common.jpa"/>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="io.shardingsphere.quickstart.common.jpa.entity" />
+        <property name="packagesToScan" value="io.shardingsphere.example.common.jpa.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>

@@ -12,7 +12,7 @@
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">
-    <context:component-scan base-package="io.shardingsphere.quickstart.common.mybatis" />
+    <context:component-scan base-package="io.shardingsphere.example.common.mybatis" />
     
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -58,7 +58,7 @@
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="io.shardingsphere.quickstart.common.mybatis.repository"/>
+        <property name="basePackage" value="io.shardingsphere.example.common.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </beans>

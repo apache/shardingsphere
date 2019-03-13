@@ -17,8 +17,8 @@ shardingRule:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: io.shardingsphere.quickstart.algorithm.PreciseModuloShardingTableAlgorithm
-          rangeAlgorithmClassName: io.shardingsphere.quickstart.algorithm.RangeModuloShardingTableAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
@@ -27,16 +27,16 @@ shardingRule:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: io.shardingsphere.quickstart.algorithm.PreciseModuloShardingTableAlgorithm
-          rangeAlgorithmClassName: io.shardingsphere.quickstart.algorithm.RangeModuloShardingTableAlgorithm
+          preciseAlgorithmClassName: io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm
   bindingTables:
     - t_order,t_order_item
   
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      preciseAlgorithmClassName: io.shardingsphere.quickstart.algorithm.PreciseModuloShardingDatabaseAlgorithm
-      rangeAlgorithmClassName: io.shardingsphere.quickstart.algorithm.RangeModuloShardingDatabaseAlgorithm
+      preciseAlgorithmClassName: io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm
+      rangeAlgorithmClassName: io.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm
   defaultTableStrategy:
     none:
 
