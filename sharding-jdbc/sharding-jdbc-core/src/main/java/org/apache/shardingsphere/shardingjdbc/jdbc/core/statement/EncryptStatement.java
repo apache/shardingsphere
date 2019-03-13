@@ -132,6 +132,10 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         return result;
     }
     
+    private EncryptResultSet createEncryptResultSet(final Statement statement) throws SQLException {
+        return null == statement.getResultSet() ? null : new EncryptResultSet(this, statement.getResultSet(), connection.getEncryptRule());
+    }
+    
     @Override
     public void close() throws SQLException {
         statement.close();
