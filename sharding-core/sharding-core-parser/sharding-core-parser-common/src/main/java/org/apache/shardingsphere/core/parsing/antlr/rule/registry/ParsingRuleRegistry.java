@@ -66,7 +66,7 @@ public abstract class ParsingRuleRegistry {
     private void initParserRuleDefinition() {
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
-                if(!needParser(each)){
+                if (!needParser(each)) {
                     continue;
                 }
                 List<String> fillerFilePaths = new LinkedList<>();
@@ -84,7 +84,7 @@ public abstract class ParsingRuleRegistry {
         return true;
     }
     
-    protected abstract void fillRuleFilePaths(final DatabaseType databaseType, final List<String> fillerFilePaths, final List<String> extractorFilePaths, final List<String> sqlStateRuleFilePaths);
+    protected abstract void fillRuleFilePaths(DatabaseType databaseType, List<String> fillerFilePaths, List<String> extractorFilePaths, List<String> sqlStateRuleFilePaths);
     
     private void initParserRuleDefinitionFromCommon(final ParserRuleDefinition parserRuleDefinition, final List<String> fillerFilePaths, final List<String> extractorFilePaths,
                                                     final List<String> sqlStateRuleFilePaths) {
