@@ -33,6 +33,8 @@ import javax.transaction.Status;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +47,13 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     private final Map<String, SingleXADataSource> singleXADataSourceMap = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
+    
+    private ThreadLocal<List<String>> enlistedXAResource = new ThreadLocal<List<String>>() {
+        @Override
+        public List<String> initialValue() {
+            return new LinkedList<>();
+        }
+    };
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
@@ -75,7 +84,10 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     @Override
     public Connection getConnection(final String dataSourceName) {
         SingleXAConnection singleXAConnection = singleXADataSourceMap.get(dataSourceName).getXAConnection();
-        xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
+        if (!enlistedXAResource.get().contains(dataSourceName)) {
+            xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
+            enlistedXAResource.get().add(dataSourceName);
+        }
         return singleXAConnection.getConnection();
     }
     
@@ -88,13 +100,21 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     @SneakyThrows
     @Override
     public void commit() {
-        xaTransactionManager.getTransactionManager().commit();
+        try {
+            xaTransactionManager.getTransactionManager().commit();
+        } finally {
+            enlistedXAResource.remove();
+        }
     }
     
     @SneakyThrows
     @Override
     public void rollback() {
-        xaTransactionManager.getTransactionManager().rollback();
+        try {
+            xaTransactionManager.getTransactionManager().rollback();
+        } finally {
+            enlistedXAResource.remove();
+        }
     }
     
     @Override
@@ -104,5 +124,6 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
         }
         singleXADataSourceMap.clear();
         xaTransactionManager.close();
+        enlistedXAResource = null;
     }
 }
