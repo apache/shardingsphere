@@ -1,0 +1,6 @@
+orchestration:
+  name: demo_yaml_ds_ms
+  overwrite: false
+  registry:
+    serverLists: localhost:2181
+    namespace: orchestration-yaml-demo

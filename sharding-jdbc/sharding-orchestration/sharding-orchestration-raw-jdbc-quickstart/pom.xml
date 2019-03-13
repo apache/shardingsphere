@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-orchestration</artifactId>
+        <version>4.0.0-RC2-SNAPSHOT</version>
+    </parent>
+    <artifactId>sharding-orchestration-raw-jdbc-quickstart</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>repository-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>config-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.apache.shardingsphere</groupId>-->
+        <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
+        <!--</dependency>-->
+    </dependencies>
+</project>

@@ -1,0 +1,31 @@
+dataSources:
+  ds: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
+    username: root
+    password:
+
+shardingRule:
+  tables:
+    t_order: 
+      actualDataNodes: ds.t_order_${0..1}
+      tableStrategy: 
+        standard:
+          shardingColumn: order_id
+          preciseAlgorithmClassName: io.shardingsphere.quickstart.algorithm.PreciseModuloShardingTableAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.quickstart.algorithm.RangeModuloShardingTableAlgorithm
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+    t_order_item:
+      actualDataNodes: ds.t_order_item_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          preciseAlgorithmClassName: io.shardingsphere.quickstart.algorithm.PreciseModuloShardingTableAlgorithm
+          rangeAlgorithmClassName: io.shardingsphere.quickstart.algorithm.RangeModuloShardingTableAlgorithm
+  bindingTables:
+    - t_order,t_order_item
+
+props:
+  sql.show: false

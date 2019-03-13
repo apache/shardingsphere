@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <modules>
+        <module>sharding-transaction-2pc-xa</module>
+        <module>sharding-transaction-base-saga</module>
+    </modules>
+    <parent>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-jdbc</artifactId>
+        <version>4.0.0-RC2-SNAPSHOT</version>
+    </parent>
+    <artifactId>sharding-transaction</artifactId>
+
+</project>
