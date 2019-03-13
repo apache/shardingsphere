@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.integrate.jaxb.token;
+package org.apache.shardingsphere.core.parse;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parse.ddl.IntegrateDDLParsingCompatibleTest;
+import org.apache.shardingsphere.core.parse.integrate.AllParsingIntegrateTests;
+import org.apache.shardingsphere.core.parse.rule.AllRuleTests;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedOrderByToken {
-    
-    @XmlAttribute(name = "placeholder-begin-position")
-    private int placeholderBeginPosition;
-    
-    @XmlAttribute(name = "literal-begin-position")
-    private int literalBeginPosition;
+@RunWith(Suite.class)
+@SuiteClasses({
+        AllRuleTests.class,
+        AntlrIntegrateParsingTest.class,
+        IntegrateDDLParsingCompatibleTest.class,
+        AllParsingIntegrateTests.class
+})
+public final class AllParseTests {
 }

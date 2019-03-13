@@ -42,26 +42,6 @@
             <artifactId>sharding-core-parser-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parser-mysql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parser-postgresql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parser-oracle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parser-sqlserver</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
