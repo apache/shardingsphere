@@ -39,8 +39,8 @@ import java.sql.Statement;
 
 public class YamlConfigurationTransactionExample {
     
-        private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//        private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
+    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = getDataSource(shardingType);
