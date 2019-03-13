@@ -54,7 +54,7 @@
         <property name="password" value=""/>
     </bean>
 
-    <bean id="randomStrategy" class="org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" strategy-ref="randomStrategy" />
 </beans>
