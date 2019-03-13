@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementP
 import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedErrorStrategy;
 import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedMatchHandler;
 import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedParserATNSimulator;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.SQLParser;
+import org.apache.shardingsphere.core.parsing.api.SQLParser;
 
 /**
  * SQL parser for PostgreSQL.

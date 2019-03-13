@@ -19,20 +19,10 @@ package org.apache.shardingsphere.core.parsing.antlr.parser.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
+import org.apache.shardingsphere.core.parsing.api.SQLParser;
+import org.apache.shardingsphere.core.parsing.spi.ShardingParseEngine;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 /**
  * SQL parser factory.
@@ -43,6 +33,10 @@ import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServe
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
+    static {
+        NewInstanceServiceLoader.register(ShardingParseEngine.class);
+    }
+    
     /** 
      * New instance of SQL parser.
      * 
@@ -51,40 +45,11 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
-        return createSQLParser(databaseType, createLexer(databaseType, sql));
-    }
-    
-    private static Lexer createLexer(final DatabaseType databaseType, final String sql) {
-        CharStream sqlCharStream = CharStreams.fromString(sql);
-        switch (databaseType) {
-            case H2:
-            case MySQL:
-                return new MySQLStatementLexer(sqlCharStream);
-            case PostgreSQL:
-                return new PostgreSQLStatementLexer(sqlCharStream);
-            case SQLServer:
-                return new SQLServerStatementLexer(sqlCharStream);
-            case Oracle:
-                return new OracleStatementLexer(sqlCharStream);
-            default:
-                throw new UnsupportedOperationException(String.format("Can not support database type [%s].", databaseType));
+        for (ShardingParseEngine each : NewInstanceServiceLoader.newServiceInstances(ShardingParseEngine.class)) {
+            if (DatabaseType.valueOf(each.getDatabaseType()) == databaseType) {
+                return each.createSQLParser(sql);
+            }
         }
-    }
-    
-    private static SQLParser createSQLParser(final DatabaseType databaseType, final Lexer lexer) {
-        TokenStream tokenStream = new CommonTokenStream(lexer);
-        switch (databaseType) {
-            case H2:
-            case MySQL:
-                return new MySQLParser(tokenStream);
-            case PostgreSQL:
-                return new PostgreSQLParser(tokenStream);
-            case SQLServer:
-                return new SQLServerParser(tokenStream);
-            case Oracle:
-                return new OracleParser(tokenStream);
-            default:
-                throw new UnsupportedOperationException(String.format("Can not support database type [%s].", databaseType));
-        }
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
     }
 }
