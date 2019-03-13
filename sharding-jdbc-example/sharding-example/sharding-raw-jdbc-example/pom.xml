@@ -8,7 +8,7 @@
         <artifactId>sharding-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-data-raw-jdbc-quickstart</artifactId>
+    <artifactId>sharding-raw-jdbc-example</artifactId>
 
     <dependencies>
         <dependency>

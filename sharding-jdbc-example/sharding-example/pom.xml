@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-data-raw-jdbc-quickstart</module>
+        <module>sharding-raw-jdbc-example</module>
         <module>sharding-data-spring-boot</module>
         <module>sharding-data-spring-namespace</module>
     </modules>
