@@ -1,6 +1,0 @@
-orchestration:
-  name: demo_yaml_ds_sharding
-  overwrite: false
-  registry:
-    serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
