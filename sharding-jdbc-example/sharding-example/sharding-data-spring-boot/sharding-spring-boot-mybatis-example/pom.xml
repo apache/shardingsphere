@@ -8,7 +8,7 @@
         <artifactId>sharding-data-spring-boot</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-spring-boot-mybatis-quickstart</artifactId>
+    <artifactId>sharding-spring-boot-mybatis-example</artifactId>
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>

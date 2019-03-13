@@ -12,8 +12,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-data-spring-boot-mybatis-quickstart</module>
-        <module>sharding-data-spring-boot-jpa-quickstart</module>
+        <module>sharding-spring-boot-mybatis-example</module>
+        <module>sharding-spring-boot-jpa-example</module>
     </modules>
 
 </project>
