@@ -14,7 +14,6 @@
     <modules>
         <module>transaction-xa-raw-jdbc-example</module>
         <module>transaction-xa-spring-namespace-example</module>
-        <module>sharding-transaction-xa-spring-boot-quickstart</module>
+        <module>transaction-xa-spring-boot-example</module>
     </modules>
-
 </project>
