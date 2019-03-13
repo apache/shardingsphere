@@ -21,7 +21,7 @@ import io.shardingsphere.example.common.mybatis.service.SpringPojoService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class SpringNamespaceMybatisMain {
+public class SpringNamespaceExample {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
     
