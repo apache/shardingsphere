@@ -13,7 +13,8 @@
 
     <modules>
         <module>sharding-raw-jdbc-example</module>
-        <module>sharding-data-spring-boot</module>
         <module>sharding-data-spring-namespace</module>
+        <module>sharding-spring-boot-jpa-example</module>
+        <module>sharding-spring-boot-mybatis-example</module>
     </modules>
 </project>
