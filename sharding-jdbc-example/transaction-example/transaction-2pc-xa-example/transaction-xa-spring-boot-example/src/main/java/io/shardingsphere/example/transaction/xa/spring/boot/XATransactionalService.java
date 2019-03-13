@@ -51,4 +51,8 @@ public class XATransactionalService {
     public void processFailure() {
         jpaCommonService.processFailure();
     }
+    
+    public void printData() {
+        jpaCommonService.printData();
+    }
 }
