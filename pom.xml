@@ -8,7 +8,7 @@
     <version>4.0.0-RC2-SNAPSHOT</version>
     <modules>
         <module>quickstart-common</module>
-        <module>sharding-jdbc</module>
+        <module>sharding-jdbc-example</module>
         <module>sharding-proxy</module>
     </modules>
     <packaging>pom</packaging>
