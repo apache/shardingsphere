@@ -14,7 +14,7 @@
     <modules>
         <module>orchestration-raw-jdbc-example</module>
         <module>orchestration-spring-boot-example</module>
-        <module>sharding-orchestration-spring-namespace-quickstart</module>
+        <module>orchestration-spring-namespace-example</module>
     </modules>
 
 </project>
