@@ -24,16 +24,24 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan("io.shardingsphere.example.common.jpa")
+@ComponentScan({"io.shardingsphere.example.common.jpa", "io.shardingsphere.example.transaction.xa.spring.boot"})
 @EntityScan(basePackages = "io.shardingsphere.example.common.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootExample {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            XATransactionalService transactionalService = applicationContext.getBean(XATransactionalService.class);
-            transactionalService.processSuccess();
+            processXATransaction(applicationContext);
+        }
+    }
+    
+    private static void processXATransaction(final ConfigurableApplicationContext applicationContext) {
+        XATransactionalService transactionalService = applicationContext.getBean(XATransactionalService.class);
+        transactionalService.processSuccess();
+        try {
             transactionalService.processFailure();
+        } catch (final Exception ex) {
+            transactionalService.printData();
         }
     }
 }
