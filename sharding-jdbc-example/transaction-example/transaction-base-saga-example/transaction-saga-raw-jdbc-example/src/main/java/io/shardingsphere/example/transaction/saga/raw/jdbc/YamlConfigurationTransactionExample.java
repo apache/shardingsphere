@@ -22,8 +22,6 @@ import io.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
 import io.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
 import io.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
 import io.shardingsphere.example.common.service.CommonService;
-import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -46,7 +44,7 @@ public class YamlConfigurationTransactionExample {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        processBaseTransaction(dataSource, commonService);
+        processSagaTransaction(dataSource, commonService);
         commonService.cleanEnvironment();
     }
     
@@ -58,7 +56,7 @@ public class YamlConfigurationTransactionExample {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
-    private static void processBaseTransaction(final DataSource dataSource, final CommonService commonService) throws SQLException {
+    private static void processSagaTransaction(final DataSource dataSource, final CommonService commonService) throws SQLException {
         TransactionTypeHolder.set(TransactionType.BASE);
         System.out.println("------ start succeed transaction ------");
         try (Connection connection = dataSource.getConnection()) {

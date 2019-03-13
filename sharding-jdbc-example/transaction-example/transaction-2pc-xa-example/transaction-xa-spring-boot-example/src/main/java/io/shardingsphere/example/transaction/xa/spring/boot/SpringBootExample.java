@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({"io.shardingsphere.example.common.jpa", "io.shardingsphere.example.transaction.xa.spring.boot"})
+@ComponentScan({"io.shardingsphere.example"})
 @EntityScan(basePackages = "io.shardingsphere.example.common.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootExample {
