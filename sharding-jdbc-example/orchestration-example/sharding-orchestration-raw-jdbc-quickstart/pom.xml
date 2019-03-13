@@ -5,28 +5,34 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-orchestration</artifactId>
+        <artifactId>orchestration-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-spring-boot-quickstart</artifactId>
+    <artifactId>sharding-orchestration-raw-jdbc-quickstart</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>repository-jpa</artifactId>
+            <artifactId>repository-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>config-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.apache.shardingsphere</groupId>-->
+        <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

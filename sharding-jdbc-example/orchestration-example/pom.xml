@@ -8,7 +8,7 @@
         <artifactId>sharding-jdbc-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration</artifactId>
+    <artifactId>orchestration-example</artifactId>
     <packaging>pom</packaging>
 
     <modules>
