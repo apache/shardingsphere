@@ -23,12 +23,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class SpringNamespaceExample {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases-tables.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-master-slave.xml";
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            XATransactionalService transactionalService = applicationContext.getBean(XATransactionalService.class);
-            transactionalService.initEnvironment();
-            transactionalService.processSuccess();
+            processXATransaction(applicationContext);
+        }
+    }
+    
+    private static void processXATransaction(final ConfigurableApplicationContext applicationContext) {
+        XATransactionalService transactionalService = applicationContext.getBean(XATransactionalService.class);
+        transactionalService.initEnvironment();
+        transactionalService.processSuccess();
+        try {
+            transactionalService.processFailure();
+        } catch (final Exception ex) {
+            transactionalService.printData();
+        } finally {
             transactionalService.cleanEnvironment();
         }
     }
