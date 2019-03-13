@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.core.parsing.advanced.AdvancedErrorStrategy;
+import org.apache.shardingsphere.core.parsing.advanced.AdvancedMatchHandler;
+import org.apache.shardingsphere.core.parsing.advanced.AdvancedParserATNSimulator;
 import org.apache.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedErrorStrategy;
-import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedMatchHandler;
-import org.apache.shardingsphere.core.parsing.antlr.parser.advanced.AdvancedParserATNSimulator;
 import org.apache.shardingsphere.core.parsing.api.SQLParser;
 
 /**

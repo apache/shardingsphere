@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.spi;
+package org.apache.shardingsphere.core.parsing;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
 import org.apache.shardingsphere.core.parsing.spi.ShardingParseEngine;
 
 /**

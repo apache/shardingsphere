@@ -32,6 +32,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.parsing.antlr.spi.PostgreSQLShardingParseEngine
-org.apache.shardingsphere.core.parsing.antlr.spi.SQLServerShardingParseEngine
-org.apache.shardingsphere.core.parsing.antlr.spi.OracleShardingParseEngine
+org.apache.shardingsphere.core.parsing.MySQLShardingParseEngine
+org.apache.shardingsphere.core.parsing.H2ShardingParseEngine

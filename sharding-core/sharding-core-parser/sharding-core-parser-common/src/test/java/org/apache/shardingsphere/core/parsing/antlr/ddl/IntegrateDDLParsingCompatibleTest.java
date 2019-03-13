@@ -20,24 +20,12 @@ package org.apache.shardingsphere.core.parsing.antlr.ddl;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
+import org.apache.shardingsphere.core.parsing.antlr.parser.impl.SQLParserFactory;
+import org.apache.shardingsphere.core.parsing.api.SQLParser;
 import org.apache.shardingsphere.core.parsing.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
@@ -47,7 +35,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,24 +64,16 @@ public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegra
     @Test
     public void parsingSupportedSQL() throws Exception {
         String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        CodePointCharStream charStream = CharStreams.fromString(sql);
-        switch (databaseType) {
-            case H2:
-            case MySQL:
-                execute(MySQLStatementLexer.class, MySQLParser.class, charStream);
-                break;
-            case Oracle:
-                execute(OracleStatementLexer.class, OracleParser.class, charStream);
-                break;
-            case PostgreSQL:
-                execute(PostgreSQLStatementLexer.class, PostgreSQLParser.class, charStream);
-                break;
-            case SQLServer:
-                execute(SQLServerStatementLexer.class, SQLServerParser.class, charStream);
-                break;
-            default:
-                break;
-        }
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseType, sql);
+        Method addErrorListener = sqlParser.getClass().getMethod("addErrorListener", ANTLRErrorListener.class);
+        addErrorListener.invoke(sqlParser, new BaseErrorListener() {
+        
+            @Override
+            public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String msg, final RecognitionException ex) {
+                throw new RuntimeException();
+            }
+        });
+        sqlParser.execute();
     }
     
     @Test
@@ -106,30 +85,5 @@ public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegra
         }
         new SQLStatementAssert(new AntlrParsingEngine(
                 execDatabaseType, sql, getShardingRule(), getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
-    }
-    
-    /**
-     * Execute.
-     * @param lexerClass lexer class
-     * @param parserClass parser class
-     * @param charStream char stream
-     * @throws Exception exception
-     */
-    public void execute(final Class<?> lexerClass, final Class<?> parserClass, final CharStream charStream) throws Exception {
-        Constructor<?> lexerCon = lexerClass.getConstructor(CharStream.class);
-        Lexer lexer = (Lexer) lexerCon.newInstance(charStream);
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        Constructor<?> parserCon = parserClass.getConstructor(TokenStream.class);
-        Object parser = parserCon.newInstance(tokenStream);
-        Method addErrorListener = parserClass.getMethod("addErrorListener", ANTLRErrorListener.class);
-        addErrorListener.invoke(parser, new BaseErrorListener() {
-            
-            @Override
-            public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String msg, final RecognitionException ex) {
-                throw new RuntimeException();
-            }
-        });
-        Method execute = parserClass.getMethod("execute");
-        execute.invoke(parser);
     }
 }
