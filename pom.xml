@@ -9,7 +9,7 @@
     <modules>
         <module>quickstart-common</module>
         <module>sharding-jdbc-example</module>
-        <module>sharding-proxy</module>
+        <module>sharding-proxy-example</module>
     </modules>
     <packaging>pom</packaging>
     

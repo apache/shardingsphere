@@ -8,5 +8,5 @@
         <artifactId>sharding-sphere-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-proxy</artifactId>
+    <artifactId>sharding-proxy-example</artifactId>
 </project>
