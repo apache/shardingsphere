@@ -9,4 +9,20 @@
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>transaction-xa-raw-jdbc-example</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>repository-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-xa-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>
