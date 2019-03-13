@@ -17,13 +17,10 @@
 
 package io.shardingsphere.example.common.jpa.service;
 
-import io.shardingsphere.example.common.entity.Order;
-import io.shardingsphere.example.common.entity.OrderItem;
 import io.shardingsphere.example.common.jpa.entity.OrderEntity;
 import io.shardingsphere.example.common.jpa.entity.OrderItemEntity;
 import io.shardingsphere.example.common.repository.OrderItemRepository;
 import io.shardingsphere.example.common.repository.OrderRepository;
-import io.shardingsphere.example.common.service.CommonService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

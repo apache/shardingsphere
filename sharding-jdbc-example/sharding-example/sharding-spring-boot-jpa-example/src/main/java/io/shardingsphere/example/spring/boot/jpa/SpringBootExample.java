@@ -28,10 +28,10 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("io.shardingsphere.example.common.jpa")
 @EntityScan(basePackages = "io.shardingsphere.example.common.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class SpringBootJPAMain {
+public class SpringBootExample {
     
     public static void main(final String[] args) {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootJPAMain.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
             JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
             commonService.processSuccess();
         }
