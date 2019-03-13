@@ -1,0 +1,58 @@
+######################################################################################################
+# 
+# Here you can configure the rules for the proxy.
+# This example is configuration of sharding rule.
+#   
+# If you want to use sharding, please refer to this file; 
+# if you want to use master-slave, please refer to the config-master_slave.yaml.
+# 
+######################################################################################################
+
+schemaName: sharding_db
+
+dataSources:
+  ds_0:
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+  ds_1:
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/ds_1?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+
+shardingRule:
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGenerator:
+        column: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}
+      keyGenerator:
+        column: order_item_id
+  bindingTables:
+    - t_order,t_order_item
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
+  defaultKeyGenerator:
+    type: SNOWFLAKE
