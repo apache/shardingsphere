@@ -17,8 +17,8 @@
 
 package io.shardingsphere.example.proxy.spring.boot.mybatis;
 
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
+import io.shardingsphere.example.common.mybatis.service.SpringPojoService;
+import io.shardingsphere.example.common.service.CommonService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,8 +31,8 @@ import org.springframework.context.annotation.ComponentScan;
  *    If you want to use sharding only, please select config-sharding.yaml
  * 2. Please make sure sharding-proxy is running before you run this example.
  */
-@ComponentScan("io.shardingsphere.example.repository.mybatis")
-@MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
+@ComponentScan("io.shardingsphere.example")
+@MapperScan(basePackages = "io.shardingsphere.example.common.mybatis.repository")
 @SpringBootApplication
 public class SpringBootStarterExample {
     

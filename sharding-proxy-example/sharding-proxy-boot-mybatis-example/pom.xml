@@ -6,15 +6,20 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-proxy-example</artifactId>
-        <version>4.0.0.M1-SNAPSHOT</version>
+        <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy-boot-mybatis-example</artifactId>
     
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>mybatis-repository</artifactId>
+            <artifactId>repository-mybatis</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-spring-boot-starter</artifactId>
         </dependency>
         
         <dependency>

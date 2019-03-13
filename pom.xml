@@ -5,15 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-sphere-example</artifactId>
-    <version>4.0.0.M1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    
+    <version>4.0.0-RC1-SNAPSHOT</version>
     <modules>
-        <module>common-repository</module>
-        <module>example-utility</module>
+        <module>example-common</module>
         <module>sharding-jdbc-example</module>
         <module>sharding-proxy-example</module>
     </modules>
+    <packaging>pom</packaging>
     
     <properties>
         <java.version>1.7</java.version>
@@ -21,7 +19,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <sharding-sphere.version>4.0.0.M1-SNAPSHOT</sharding-sphere.version>
+        <sharding-sphere.version>4.0.0-RC1-SNAPSHOT</sharding-sphere.version>
+        <sharding-sphere.spi.impl.version>4.0.0.M1-SNAPSHOT</sharding-sphere.spi.impl.version>
     
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
@@ -53,7 +52,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-core</artifactId>
+                <artifactId>sharding-core-api</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
@@ -78,31 +77,36 @@
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-transaction-base-saga</artifactId>
+                <version>${sharding-sphere.spi.impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-spring-namespace</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-transaction-spring</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-transaction-spring-boot-starter</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
@@ -114,11 +118,6 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
-                <version>${sharding-sphere.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-transaction-base-saga</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
     
@@ -295,3 +294,4 @@
         </plugins>
     </build>
 </project>
+

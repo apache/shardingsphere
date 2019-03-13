@@ -17,58 +17,37 @@
 
 package io.shardingsphere.example.proxy.spring.boot.mybatis;
 
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactionService;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.example.common.service.CommonService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan("io.shardingsphere.example.repository.mybatis")
-@MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
-@SpringBootApplication
+@ComponentScan("io.shardingsphere.example")
+@MapperScan(basePackages = "io.shardingsphere.example.common.mybatis.repository")
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootStarterTransactionExample {
     
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootStarterTransactionExample.class, args)) {
-            process(applicationContext);
+            CommonService sagaTransactionService = (CommonService) applicationContext.getBean("sagaTransactionService");
+            CommonService xaTransactionService = (CommonService) applicationContext.getBean("xaTransactionService");
+            processTransaction(sagaTransactionService);
+            processTransaction(xaTransactionService);
         }
     }
     
-    private static void process(final ConfigurableApplicationContext applicationContext) {
-        TransactionService transactionService = getTransactionService(applicationContext);
+    private static void processTransaction(final CommonService transactionService) {
         transactionService.initEnvironment();
         transactionService.processSuccess();
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        transactionService.cleanEnvironment();
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
         try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXA();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            transactionService.processFailure();
+        } catch (final Exception ex) {
             transactionService.printData();
+        } finally {
+            transactionService.cleanEnvironment();
         }
-    }
-    
-    private static TransactionService getTransactionService(final ConfigurableApplicationContext applicationContext) {
-        return applicationContext.getBean("proxyTransactionService", SpringPojoTransactionService.class);
     }
 }

@@ -6,20 +6,11 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere-example</artifactId>
-        <version>4.0.0.M1-SNAPSHOT</version>
+        <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy-example</artifactId>
-    <packaging>pom</packaging>
-    
+
     <modules>
-        <module>sharding-proxy-boot-jpa-example</module>
         <module>sharding-proxy-boot-mybatis-example</module>
     </modules>
-    
-    <dependencies>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-spring-boot-starter</artifactId>
-        </dependency>
-    </dependencies>
 </project>
