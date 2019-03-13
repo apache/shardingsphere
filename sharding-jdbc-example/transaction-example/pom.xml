@@ -13,7 +13,7 @@
 
     <modules>
         <module>transaction-2pc-xa-example</module>
-        <module>sharding-transaction-base-saga</module>
+        <module>transaction-base-saga-example</module>
     </modules>
 
 </project>
