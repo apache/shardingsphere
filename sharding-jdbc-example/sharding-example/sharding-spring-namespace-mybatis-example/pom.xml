@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-data-spring-namespace</artifactId>
+        <artifactId>sharding-example</artifactId>
         <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-spring-namespace-mybatis-example</artifactId>

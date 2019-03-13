@@ -21,5 +21,4 @@
             <artifactId>sharding-jdbc-core</artifactId>
         </dependency>
     </dependencies>
-
 </project>
