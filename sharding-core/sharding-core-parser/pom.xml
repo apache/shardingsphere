@@ -28,12 +28,13 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>sharding-core-parser-spi</module>
         <module>sharding-core-parser-common</module>
         <module>sharding-core-parser-mysql</module>
         <module>sharding-core-parser-postgresql</module>
         <module>sharding-core-parser-oracle</module>
         <module>sharding-core-parser-sqlserver</module>
-        <module>sharding-core-parser-spi</module>
+        <module>sharding-core-parser-test</module>
     </modules>
     
     <dependencies>
