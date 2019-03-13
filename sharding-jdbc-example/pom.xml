@@ -13,7 +13,7 @@
 
     <modules>
         <module>sharding-orchestration</module>
-        <module>sharding-data</module>
+        <module>sharding-example</module>
         <module>sharding-transaction</module>
     </modules>
 </project>

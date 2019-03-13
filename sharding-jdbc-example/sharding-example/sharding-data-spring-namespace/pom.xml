@@ -8,18 +8,11 @@
         <artifactId>sharding-data</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-data-raw-jdbc-quickstart</artifactId>
+    <artifactId>sharding-data-spring-namespace</artifactId>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>repository-jdbc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
-        </dependency>
-    </dependencies>
-
+    <modules>
+        <module>sharding-data-spring-namespace-jpa-quickstart</module>
+        <module>sharding-data-spring-namespace-mybatis-quickstart</module>
+    </modules>
 </project>

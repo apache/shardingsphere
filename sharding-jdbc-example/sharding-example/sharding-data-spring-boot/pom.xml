@@ -3,16 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-example</artifactId>
+        <version>4.0.0-RC2-SNAPSHOT</version>
+    </parent>
+    <artifactId>sharding-data-spring-boot</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>sharding-data-spring-boot-mybatis-quickstart</module>
         <module>sharding-data-spring-boot-jpa-quickstart</module>
     </modules>
-    <parent>
-        <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-data</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
-    </parent>
-    <artifactId>sharding-data-spring-boot</artifactId>
 
 </project>
