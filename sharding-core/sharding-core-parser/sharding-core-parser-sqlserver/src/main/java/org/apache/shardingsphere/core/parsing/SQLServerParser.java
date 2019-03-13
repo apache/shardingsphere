@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.parser.impl.dialect;
+package org.apache.shardingsphere.core.parsing;
 
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
@@ -23,19 +23,19 @@ import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.parsing.advanced.AdvancedErrorStrategy;
 import org.apache.shardingsphere.core.parsing.advanced.AdvancedMatchHandler;
 import org.apache.shardingsphere.core.parsing.advanced.AdvancedParserATNSimulator;
-import org.apache.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementParser;
 import org.apache.shardingsphere.core.parsing.api.SQLParser;
 
 /**
- * SQL parser for PostgreSQL.
+ * SQL parser for SQLServer.
  * 
  * @author duhongjun
  */
-public final class PostgreSQLParser extends PostgreSQLStatementParser implements SQLParser {
+public final class SQLServerParser extends SQLServerStatementParser implements SQLParser {
     
     private final AdvancedMatchHandler advancedMatchHandler;
     
-    public PostgreSQLParser(final TokenStream input) {
+    public SQLServerParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         _errHandler = new AdvancedErrorStrategy(ID);

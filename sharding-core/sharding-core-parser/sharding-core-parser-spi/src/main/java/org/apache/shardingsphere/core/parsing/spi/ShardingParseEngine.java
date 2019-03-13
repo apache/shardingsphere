@@ -35,7 +35,7 @@ public interface ShardingParseEngine {
     
     /**
      * Create SQL parser.
-     * 
+     *
      * @param sql SQL
      * @return instance of SQL parser
      */

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.parser.impl;
+package org.apache.shardingsphere.core.parsing.antlr.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

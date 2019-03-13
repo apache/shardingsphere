@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parsing.antlr.parser.impl.SQLParserFactory;
+import org.apache.shardingsphere.core.parsing.antlr.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parsing.api.SQLParser;
 import org.apache.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import org.apache.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
