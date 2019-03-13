@@ -8,12 +8,12 @@
         <artifactId>sharding-data-spring-namespace</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-spring-namespace-jpa-quickstart</artifactId>
+    <artifactId>sharding-spring-namespace-mybatis-example</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>repository-jpa</artifactId>
+            <artifactId>repository-mybatis</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -23,16 +23,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
+            <artifactId>spring-jdbc</artifactId>
         </dependency>
     </dependencies>
 </project>

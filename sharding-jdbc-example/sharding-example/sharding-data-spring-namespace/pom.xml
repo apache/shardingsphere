@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-data-spring-namespace-jpa-quickstart</module>
-        <module>sharding-data-spring-namespace-mybatis-quickstart</module>
+        <module>sharding-spring-namespace-jpa-example</module>
+        <module>sharding-spring-namespace-mybatis-example</module>
     </modules>
 </project>
