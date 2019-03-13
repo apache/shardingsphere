@@ -50,43 +50,6 @@ public class YamlConfigurationTransactionExample {
         commonService.cleanEnvironment();
     }
     
-    private static void processXATransaction(final DataSource dataSource, final CommonService commonService) throws SQLException {
-        TransactionTypeHolder.set(TransactionType.XA);
-        try (Connection connection = dataSource.getConnection()) {
-            insertSuccess(connection, commonService);
-            connection.commit();
-            commonService.printData();
-        }
-    }
-    
-    private static void insertSuccess(final Connection connection, final CommonService commonService) throws SQLException {
-        connection.setAutoCommit(false);
-        for (int i = 0; i < 100; i++) {
-            Order order = new Order();
-            order.setUserId(i);
-            order.setStatus("INIT");
-            insertOrder(connection, order);
-        }
-        commonService.printData();
-    }
-    
-    
-    private static Long insertOrder(final Connection connection, final Order order) {
-        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setString(2, order.getStatus());
-            preparedStatement.executeUpdate();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    order.setOrderId(resultSet.getLong(1));
-                }
-            }
-        } catch (final SQLException ignored) {
-        }
-        return order.getOrderId();
-    }
-    
     private static DataSource getDataSource(final ShardingType shardingType) throws SQLException, IOException {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
@@ -104,5 +67,60 @@ public class YamlConfigurationTransactionExample {
     
     private static CommonService getCommonService(final DataSource dataSource) {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    }
+    
+    private static void processXATransaction(final DataSource dataSource, final CommonService commonService) throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        System.out.println("------ start succeed transaction ------");
+        try (Connection connection = dataSource.getConnection()) {
+            insertSuccess(connection, commonService);
+            connection.commit();
+            commonService.printData();
+        }
+        truncateTable(dataSource);
+        System.out.println("------ end succeed transaction ------");
+        System.out.println("------ start failure transaction ------");
+        Connection connection = dataSource.getConnection();
+        try {
+            insertSuccess(connection, commonService);
+            throw new SQLException("exception occur!");
+        } catch (final SQLException ex) {
+            connection.rollback();
+        }
+        commonService.printData();
+        System.out.println("------ end failure transaction ------");
+        truncateTable(dataSource);
+    }
+    
+    private static void insertSuccess(final Connection connection, final CommonService commonService) throws SQLException {
+        connection.setAutoCommit(false);
+        for (int i = 0; i < 10; i++) {
+            Order order = new Order();
+            order.setUserId(i);
+            order.setStatus("INIT");
+            insertOrder(connection, order);
+        }
+        commonService.printData();
+    }
+    
+    private static Long insertOrder(final Connection connection, final Order order) {
+        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, order.getUserId());
+            preparedStatement.setString(2, order.getStatus());
+            preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    order.setOrderId(resultSet.getLong(1));
+                }
+            }
+        } catch (final SQLException ignored) {
+        }
+        return order.getOrderId();
+    }
+    
+    private static void truncateTable(final DataSource dataSource) {
+        OrderRepositoryImpl orderRepository = new OrderRepositoryImpl(dataSource);
+        orderRepository.truncateTable();
     }
 }
