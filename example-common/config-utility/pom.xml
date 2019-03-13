@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>example-common</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
 
     <artifactId>config-utility</artifactId>

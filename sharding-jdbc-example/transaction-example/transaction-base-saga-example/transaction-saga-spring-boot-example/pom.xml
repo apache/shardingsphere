@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>transation-base-saga-example</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>transaction-saga-spring-boot-example</artifactId>
 
