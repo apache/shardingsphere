@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.common.SQLSegmentCommonFiller;
-import org.apache.shardingsphere.core.parsing.antlr.filler.encrypt.SQLStatementEncryptFiller;
+import org.apache.shardingsphere.core.parsing.antlr.filler.encrypt.SQLSegmentEncryptFiller;
 import org.apache.shardingsphere.core.parsing.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
@@ -80,8 +80,8 @@ public final class SQLStatementFillerEngine {
                     ((SQLSegmentCommonFiller<SQLSegment>) filler.get()).fill(each, result, sql, shardingTableMetaData);
                 } else if (filler.get() instanceof SQLSegmentShardingFiller) {
                     ((SQLSegmentShardingFiller<SQLSegment>) filler.get()).fill(each, result, sql, (ShardingRule) sqlStatementFillerRule, shardingTableMetaData);
-                } else if (filler.get() instanceof SQLStatementEncryptFiller) {
-                    ((SQLStatementEncryptFiller<SQLSegment>) filler.get()).fill(each, result, sql, (EncryptRule) sqlStatementFillerRule, shardingTableMetaData);
+                } else if (filler.get() instanceof SQLSegmentEncryptFiller) {
+                    ((SQLSegmentEncryptFiller<SQLSegment>) filler.get()).fill(each, result, sql, (EncryptRule) sqlStatementFillerRule, shardingTableMetaData);
                 }
             }
         }
