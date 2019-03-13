@@ -8,7 +8,7 @@
         <artifactId>orchestration-example</artifactId>
         <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-spring-boot-quickstart</artifactId>
+    <artifactId>orchestration-spring-boot-example</artifactId>
 
     <dependencies>
         <dependency>

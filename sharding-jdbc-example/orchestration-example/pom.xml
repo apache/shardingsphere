@@ -13,7 +13,7 @@
 
     <modules>
         <module>sharding-orchestration-raw-jdbc-quickstart</module>
-        <module>sharding-orchestration-spring-boot-quickstart</module>
+        <module>orchestration-spring-boot-example</module>
         <module>sharding-orchestration-spring-namespace-quickstart</module>
     </modules>
 
