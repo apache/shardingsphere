@@ -7,14 +7,15 @@ weight = 3
 
 ShardingSphere的柔性事务已实现[Saga](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf)事务，Saga引擎使用[Servicecomb-Saga](https://github.com/apache/servicecomb-saga-actuator)。
 
-##功能
+## 功能
 
 * 完全支持跨库事务。
 * 支持失败SQL重试及最大努力送达。
 * 支持反向SQL、自动生成更新快照以及自动补偿。
+* 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化。
 * 不支持资源隔离。
 
-##设计
+## 设计
 
 为了更好地理解柔性事务的设计思路，需要先解释数个概念
 
@@ -31,6 +32,6 @@ ShardingSphere的柔性事务已实现[Saga](https://www.cs.cornell.edu/andru/cs
 
 最后当用户提交事务时，Saga引擎按照分支事务组的顺序，使用其中分支事务的路由SQL进行重试或反向SQL进行回滚。
 
-##支持情况
+## 支持情况
 
 * 预计4.0.0支持

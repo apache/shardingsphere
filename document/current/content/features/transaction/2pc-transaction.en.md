@@ -5,7 +5,7 @@ title = "2PC Transaction"
 weight = 2
 +++
 
-## Concept
+## Function
 
 * Fully support cross-database transactions.
 
