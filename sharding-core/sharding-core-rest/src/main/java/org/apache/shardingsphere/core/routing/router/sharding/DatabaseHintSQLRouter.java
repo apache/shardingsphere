@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.RouteUnit;
+import org.apache.shardingsphere.core.routing.SQLLogger;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.routing.type.hint.DatabaseHintRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
-import org.apache.shardingsphere.core.util.SQLLogger;
 
 import java.util.ArrayList;
 import java.util.List;
