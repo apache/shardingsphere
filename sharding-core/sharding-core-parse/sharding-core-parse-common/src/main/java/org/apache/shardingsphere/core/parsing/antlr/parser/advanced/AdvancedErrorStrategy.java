@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.advanced;
+package org.apache.shardingsphere.core.parsing.antlr.parser.advanced;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CommonToken;
