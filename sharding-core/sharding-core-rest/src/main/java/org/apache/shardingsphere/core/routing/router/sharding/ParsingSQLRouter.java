@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.SQLParsingEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
@@ -108,7 +107,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             needMerge = isNeedMergeShardingValues((SelectStatement) sqlStatement);
         }
         if (needMerge) {
-            checkSubqueryShardingValues(result, sqlStatement, sqlStatement.getRouteConditions(), optimizeResult.getShardingConditions());
+            checkSubqueryShardingValues(sqlStatement, optimizeResult.getShardingConditions());
             mergeShardingValues(optimizeResult.getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
@@ -132,7 +131,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return !selectStatement.getSubqueryConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(selectStatement.getTables().getTableNames()).isEmpty();
     }
     
-    private void checkSubqueryShardingValues(final SQLRouteResult sqlRouteResult, final SQLStatement sqlStatement, final Conditions conditions, final ShardingConditions shardingConditions) {
+    private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         for (String each : sqlStatement.getTables().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManager.getDatabaseShardingValues(each).isEmpty()
