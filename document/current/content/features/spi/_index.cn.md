@@ -28,3 +28,8 @@ Apache ShardingSphere之所以采用SPI方式进行扩展，是出于整体架�
 分布式主键的接口主要用于规定如何生成全局性的自增、类型获取、属性设置等。
 主要接口为`ShardingKeyGenerator`，其内置实现类有`UUIDShardingKeyGenerator`和`SnowflakeShardingKeyGenerator`。
 有关自增主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。
+
+### 注册中心
+
+注册中心的接口主要用于规定注册中心初始化、存取数据、更新数据、监控等行为。
+主要接口为`RegistryCenter`，其内置实现类有Zookeeper, ETCD。相关介绍请参考[注册中心](/cn/features/orchestration/supported-registry-repo/)。
