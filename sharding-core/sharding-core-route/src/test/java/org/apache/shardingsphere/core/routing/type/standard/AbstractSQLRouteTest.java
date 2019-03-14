@@ -22,7 +22,6 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.routing.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Arrays;

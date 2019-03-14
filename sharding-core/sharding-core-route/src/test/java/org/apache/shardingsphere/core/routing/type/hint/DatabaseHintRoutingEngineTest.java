@@ -21,7 +21,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.fixture.HintShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.routing.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
