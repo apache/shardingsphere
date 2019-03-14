@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler;
 
-import java.util.Collection;
-
+import com.google.common.base.Optional;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.common.SQLSegmentCommonFiller;
@@ -32,9 +32,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import com.google.common.base.Optional;
-
-import lombok.SneakyThrows;
+import java.util.Collection;
 
 /**
  * SQL statement filler engine.
