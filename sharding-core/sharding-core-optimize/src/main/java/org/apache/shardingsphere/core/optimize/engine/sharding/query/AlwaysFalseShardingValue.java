@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
+package org.apache.shardingsphere.core.optimize.engine.sharding.query;
 
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 

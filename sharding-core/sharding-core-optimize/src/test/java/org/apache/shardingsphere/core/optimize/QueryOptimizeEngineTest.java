@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer;
+package org.apache.shardingsphere.core.optimize;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimizer.engine.sharding.query.QueryOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.engine.sharding.query.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parse.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;

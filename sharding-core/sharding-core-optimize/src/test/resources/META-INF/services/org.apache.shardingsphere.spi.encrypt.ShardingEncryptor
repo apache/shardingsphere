@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.optimizer.fixture.TestShardingEncryptor
-org.apache.shardingsphere.core.optimizer.fixture.TestQueryAssistedShardingEncryptor
+org.apache.shardingsphere.core.optimize.fixture.TestShardingEncryptor
+org.apache.shardingsphere.core.optimize.fixture.TestQueryAssistedShardingEncryptor

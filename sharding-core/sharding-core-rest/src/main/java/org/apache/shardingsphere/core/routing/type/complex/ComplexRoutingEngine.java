@@ -22,7 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.type.RoutingEngine;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;

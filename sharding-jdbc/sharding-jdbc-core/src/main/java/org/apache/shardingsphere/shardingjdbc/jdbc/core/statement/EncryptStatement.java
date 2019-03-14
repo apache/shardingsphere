@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;

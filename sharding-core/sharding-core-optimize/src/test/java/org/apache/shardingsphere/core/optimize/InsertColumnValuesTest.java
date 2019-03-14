@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer;
+package org.apache.shardingsphere.core.optimize;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
+import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;

@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
+package org.apache.shardingsphere.core.optimize.engine.sharding.query;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;

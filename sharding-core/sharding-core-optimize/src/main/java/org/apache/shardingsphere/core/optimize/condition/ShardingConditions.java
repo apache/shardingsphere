@@ -15,22 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine;
+package org.apache.shardingsphere.core.optimize.condition;
 
-import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimize.engine.sharding.query.AlwaysFalseShardingCondition;
+
+import java.util.List;
 
 /**
- * Optimize engine.
+ * Sharding conditions.
  *
+ * @author zhangliang
  * @author maxiaoguang
- * @author panjuan
  */
-public interface OptimizeEngine {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingConditions {
+    
+    private final List<ShardingCondition> shardingConditions;
     
     /**
-     * Optimize sharding conditions.
+     * Judge sharding conditions is always false or not.
      *
-     * @return sharding conditions
+     * @return sharding conditions is always false or not
      */
-    OptimizeResult optimize();
+    public boolean isAlwaysFalse() {
+        if (shardingConditions.isEmpty()) {
+            return false;
+        }
+        for (ShardingCondition each : shardingConditions) {
+            if (!(each instanceof AlwaysFalseShardingCondition)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

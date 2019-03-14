@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.result;
+package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 
 import java.util.Collections;
 

@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer;
+package org.apache.shardingsphere.core.optimize;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptDefaultOptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptInsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.engine.sharding.insert.InsertOptimizeEngine;
-import org.apache.shardingsphere.core.optimizer.engine.sharding.query.QueryOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptDefaultOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.insert.InsertOptimizeEngine;
+import org.apache.shardingsphere.core.optimize.engine.sharding.query.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;

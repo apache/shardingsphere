@@ -15,36 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.fixture;
+package org.apache.shardingsphere.core.optimize.engine.sharding.query;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
-    
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return "decryptValue";
-    }
+/**
+ * Always false sharding condition.
+ *
+ * @author maxiaoguang
+ */
+public final class AlwaysFalseShardingCondition extends ShardingCondition {
 }

@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer;
+package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        InsertOptimizeEngineTest.class, 
-        QueryOptimizeEngineTest.class,
-        InsertColumnValuesTest.class,
-        GeneratedKeyTest.class
-})
-public final class AllOptimizerTests {
+/**
+ * Encrypt default optimize engine.
+ *
+ * @author panjuan
+ */
+public final class EncryptDefaultOptimizeEngine implements OptimizeEngine {
+    
+    @Override
+    public OptimizeResult optimize() {
+        return new OptimizeResult(null, null);
+    }
 }

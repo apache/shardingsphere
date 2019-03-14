@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.condition;
+package org.apache.shardingsphere.core.optimize.condition;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimizer.engine.sharding.query.AlwaysFalseShardingCondition;
+import lombok.ToString;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding conditions.
- *
- * @author zhangliang
+ * Sharding condition.
+ * 
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingConditions {
+@ToString
+public class ShardingCondition {
     
-    private final List<ShardingCondition> shardingConditions;
-    
-    /**
-     * Judge sharding conditions is always false or not.
-     *
-     * @return sharding conditions is always false or not
-     */
-    public boolean isAlwaysFalse() {
-        if (shardingConditions.isEmpty()) {
-            return false;
-        }
-        for (ShardingCondition each : shardingConditions) {
-            if (!(each instanceof AlwaysFalseShardingCondition)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    private final List<RouteValue> shardingValues = new LinkedList<>();
 }

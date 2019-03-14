@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer;
+package org.apache.shardingsphere.core.optimize;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;

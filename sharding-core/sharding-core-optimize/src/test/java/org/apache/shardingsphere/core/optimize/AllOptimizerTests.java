@@ -15,14 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.engine.sharding.query;
+package org.apache.shardingsphere.core.optimize;
 
-import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Always false sharding condition.
- *
- * @author maxiaoguang
- */
-public final class AlwaysFalseShardingCondition extends ShardingCondition {
+@RunWith(Suite.class)
+@SuiteClasses({
+        InsertOptimizeEngineTest.class, 
+        QueryOptimizeEngineTest.class,
+        InsertColumnValuesTest.class,
+        GeneratedKeyTest.class
+})
+public final class AllOptimizerTests {
 }

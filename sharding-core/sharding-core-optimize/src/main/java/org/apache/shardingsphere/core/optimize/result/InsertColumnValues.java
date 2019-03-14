@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.result;
+package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;

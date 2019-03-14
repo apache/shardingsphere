@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTableStatusStatement;

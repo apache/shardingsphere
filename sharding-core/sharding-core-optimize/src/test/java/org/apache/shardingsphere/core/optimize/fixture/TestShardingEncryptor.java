@@ -15,23 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.condition;
+package org.apache.shardingsphere.core.optimize.fixture;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Properties;
 
-/**
- * Sharding condition.
- * 
- * @author maxiaoguang
- */
 @Getter
-@ToString
-public class ShardingCondition {
+@Setter
+public final class TestShardingEncryptor implements ShardingEncryptor {
     
-    private final List<RouteValue> shardingValues = new LinkedList<>();
+    private Properties properties = new Properties();
+    
+    @Override
+    public String getType() {
+        return "test";
+    }
+    
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public String encrypt(final Object plaintext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String ciphertext) {
+        return "decryptValue";
+    }
 }
