@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing;
+package org.apache.shardingsphere.core.optimizer;
 
 import com.google.common.base.Optional;
 import lombok.Getter;

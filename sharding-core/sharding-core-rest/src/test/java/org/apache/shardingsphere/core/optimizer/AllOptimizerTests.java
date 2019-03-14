@@ -25,7 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         InsertOptimizeEngineTest.class, 
         QueryOptimizeEngineTest.class,
-        InsertColumnValuesTest.class
+        InsertColumnValuesTest.class,
+        GeneratedKeyTest.class
 })
 public final class AllOptimizerTests {
 }

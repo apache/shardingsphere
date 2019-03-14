@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.optimizer.engine.sharding.insert;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.optimizer.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.engine.OptimizeEngine;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpress
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.routing.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 

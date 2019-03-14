@@ -41,8 +41,7 @@ import org.junit.runners.Suite.SuiteClasses;
         IgnoreRoutingEngineTest.class,
         StandardRoutingEngineTest.class,
         SubqueryRouteTest.class,
-        SQLRouteTest.class,
-        GeneratedKeyTest.class
+        SQLRouteTest.class
 })
 public final class AllRoutingTests {
 }

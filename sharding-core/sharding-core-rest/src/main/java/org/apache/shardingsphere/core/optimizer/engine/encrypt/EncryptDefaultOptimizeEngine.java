@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimizer.result.OptimizeResult;
  *
  * @author panjuan
  */
-public class EncryptDefaultOptimizeEngine implements OptimizeEngine {
+public final class EncryptDefaultOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
