@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.routing;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
@@ -36,6 +37,7 @@ import java.util.List;
  */
 public final class PreparedStatementRoutingEngine {
     
+    @Getter
     private final String logicSQL;
     
     private final ShardingRouter shardingRouter;
@@ -45,9 +47,9 @@ public final class PreparedStatementRoutingEngine {
     private SQLStatement sqlStatement;
     
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, 
-                                          final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final ParsingResultCache parsingResultCache, final boolean showSQL) {
+                                          final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final ParsingResultCache parsingResultCache) {
         this.logicSQL = logicSQL;
-        shardingRouter = ShardingRouterFactory.newInstance(shardingRule, shardingMetaData, databaseType, parsingResultCache, showSQL);
+        shardingRouter = ShardingRouterFactory.newInstance(shardingRule, shardingMetaData, databaseType, parsingResultCache);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     

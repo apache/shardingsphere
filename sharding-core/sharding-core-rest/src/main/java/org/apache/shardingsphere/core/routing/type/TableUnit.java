@@ -43,7 +43,14 @@ public final class TableUnit {
     
     private final String dataSourceName;
     
+    private final String masterSlaveLogicDataSourceName;
+    
     private final List<RoutingTable> routingTables = new LinkedList<>();
+    
+    public TableUnit(final String dataSourceName) {
+        this.dataSourceName = dataSourceName;
+        masterSlaveLogicDataSourceName = dataSourceName;
+    }
     
     /**
      * Get routing table via data source name and actual table name.
@@ -54,7 +61,7 @@ public final class TableUnit {
      */
     public Optional<RoutingTable> getRoutingTable(final String dataSourceName, final String actualTableName) {
         for (RoutingTable each : routingTables) {
-            if (dataSourceName.equalsIgnoreCase(this.dataSourceName) && each.getActualTableName().equalsIgnoreCase(actualTableName)) {
+            if (dataSourceName.equalsIgnoreCase(masterSlaveLogicDataSourceName) && each.getActualTableName().equalsIgnoreCase(actualTableName)) {
                 return Optional.of(each);
             }
         }

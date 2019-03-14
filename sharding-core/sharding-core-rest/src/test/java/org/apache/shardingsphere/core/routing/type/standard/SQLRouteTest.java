@@ -41,7 +41,7 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         SQLRouteResult result = assertRoute(sql, parameters);
-        assertEquals("assert default datasource name", "main", result.getRouteUnits().iterator().next().getDataSourceName());
+        assertEquals("assert default datasource name", "main", result.getRoutingResult().getTableUnits().getTableUnits().iterator().next().getDataSourceName());
     }
     
     @Test

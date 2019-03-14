@@ -35,21 +35,14 @@ import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
-import org.apache.shardingsphere.core.rewrite.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLLogger;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
-import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,8 +64,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
     private final DatabaseType databaseType;
     
     private final ParsingResultCache parsingResultCache;
-    
-    private final boolean showSQL;
     
     private final List<Comparable<?>> generatedKeys = new LinkedList<>();
     
@@ -111,13 +102,14 @@ public final class ParsingSQLRouter implements ShardingRouter {
             mergeShardingValues(optimizeResult.getShardingConditions());
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
-        result.getRouteUnits().addAll(rewrite(logicSQL, parameters, sqlStatement, routingResult, optimizeResult));
+        if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
+            processLimit(parameters, (SelectStatement) sqlStatement, routingResult.isSingleRouting());
+        }
         if (needMerge) {
-            Preconditions.checkState(1 == result.getRouteUnits().size(), "Must have one sharding with subquery.");
+            Preconditions.checkState(1 == routingResult.getTableUnits().getTableUnits().size(), "Must have one sharding with subquery.");
         }
-        if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
-        }
+        result.setRoutingResult(routingResult);
+        result.setOptimizeResult(optimizeResult);
         return result;
     }
     
@@ -189,20 +181,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
             shardingConditions.getShardingConditions().clear();
             shardingConditions.getShardingConditions().add(shardingCondition);
         }
-    }
-    
-    private Collection<RouteUnit> rewrite(final String logicSQL, final List<Object> parameters,
-                                          final SQLStatement sqlStatement, final RoutingResult routingResult, final OptimizeResult optimizeResult) {
-        if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
-            processLimit(parameters, (SelectStatement) sqlStatement, routingResult.isSingleRouting());
-        }
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, parameters, optimizeResult);
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(routingResult.isSingleRouting());
-        Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingMetaData.getDataSource())));
-        }
-        return result;
     }
     
     private void processLimit(final List<Object> parameters, final SelectStatement selectStatement, final boolean isSingleRouting) {

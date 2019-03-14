@@ -19,8 +19,11 @@ package org.apache.shardingsphere.core.routing;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.routing.type.RoutingResult;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -34,11 +37,16 @@ import java.util.LinkedHashSet;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class SQLRouteResult {
     
     private final SQLStatement sqlStatement;
     
     private final GeneratedKey generatedKey;
+    
+    private RoutingResult routingResult;
+    
+    private OptimizeResult optimizeResult;
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     

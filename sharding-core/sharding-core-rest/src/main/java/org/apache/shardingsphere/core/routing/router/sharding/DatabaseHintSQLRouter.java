@@ -20,17 +20,12 @@ package org.apache.shardingsphere.core.routing.router.sharding;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLLogger;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
-import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
-import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.routing.type.hint.DatabaseHintRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,8 +40,6 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     
     private final ShardingRule shardingRule;
     
-    private final boolean showSQL;
-    
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         return new SQLJudgeEngine(logicSQL).judge();
@@ -58,12 +51,7 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         RoutingResult routingResult = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
-        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(parameters))));
-        }
-        if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
-        }
+        result.setRoutingResult(routingResult);
         return result;
     }
 }
