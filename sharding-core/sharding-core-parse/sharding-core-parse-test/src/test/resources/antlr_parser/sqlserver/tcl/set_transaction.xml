@@ -17,5 +17,5 @@
   -->
 
 <parser-result-sets namespace="sqlserver.tcl.setTransaction">
-    <parser-result sql-case-id="set_transaction" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
+    <parser-result sql-case-id="set_transaction" tcl-actual-statement-class-type="org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetTransactionStatement" />
 </parser-result-sets>

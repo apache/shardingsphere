@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.routing.router.masterslave;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parsing.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.util.SQLLogger;
 

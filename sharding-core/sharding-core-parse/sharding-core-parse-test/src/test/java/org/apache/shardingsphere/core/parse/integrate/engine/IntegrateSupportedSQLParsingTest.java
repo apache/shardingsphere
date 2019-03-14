@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.parse.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parse.SQLParsingEngine;
+import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
-import org.apache.shardingsphere.core.parsing.SQLParsingEngine;
-import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;

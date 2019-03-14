@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.routing;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.router.masterslave.ShardingMasterSlaveRouter;
 import org.apache.shardingsphere.core.routing.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.routing.router.sharding.ShardingRouterFactory;

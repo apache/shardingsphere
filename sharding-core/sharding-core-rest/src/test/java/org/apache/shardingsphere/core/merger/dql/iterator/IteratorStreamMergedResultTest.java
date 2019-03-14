@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 

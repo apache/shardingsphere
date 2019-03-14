@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.rule.jaxb.segment;
 
-import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
-import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
+import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
+import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

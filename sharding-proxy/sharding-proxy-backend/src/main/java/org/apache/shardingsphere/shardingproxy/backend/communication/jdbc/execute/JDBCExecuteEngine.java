@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxyJDBCExecutePrepareCallback;

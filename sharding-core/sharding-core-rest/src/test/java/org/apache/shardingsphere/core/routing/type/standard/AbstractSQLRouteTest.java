@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;

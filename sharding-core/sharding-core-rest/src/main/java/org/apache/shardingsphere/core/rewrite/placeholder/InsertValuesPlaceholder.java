@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues.InsertColumnValue;
-import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.List;
 import java.util.Set;

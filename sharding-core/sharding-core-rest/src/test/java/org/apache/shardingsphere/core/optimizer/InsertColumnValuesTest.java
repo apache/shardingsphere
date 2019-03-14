@@ -19,11 +19,11 @@ package org.apache.shardingsphere.core.optimizer;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimizer.result.InsertColumnValues;
-import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
 import org.junit.Test;
 
 import java.util.Collections;

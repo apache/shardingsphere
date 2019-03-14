@@ -23,8 +23,8 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.optimizer;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
-import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
-import org.apache.shardingsphere.core.parsing.parser.context.table.Tables;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKeyCondition;
+import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValues;
+import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;

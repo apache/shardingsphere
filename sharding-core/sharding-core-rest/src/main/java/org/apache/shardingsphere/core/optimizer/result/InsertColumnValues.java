@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.optimizer.result;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;

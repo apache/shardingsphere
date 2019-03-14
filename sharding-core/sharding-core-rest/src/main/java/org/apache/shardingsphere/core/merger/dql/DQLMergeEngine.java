@@ -33,9 +33,9 @@ import org.apache.shardingsphere.core.merger.dql.orderby.OrderByStreamMergedResu
 import org.apache.shardingsphere.core.merger.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import org.apache.shardingsphere.core.parsing.util.SQLUtil;
+import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

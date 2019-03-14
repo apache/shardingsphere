@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.parsing.SQLJudgeEngine;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.MasterSlaveSQLRewriteEngine;
 import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.routing.RouteUnit;

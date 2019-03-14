@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.optimizer;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKeyCondition;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.LinkedList;

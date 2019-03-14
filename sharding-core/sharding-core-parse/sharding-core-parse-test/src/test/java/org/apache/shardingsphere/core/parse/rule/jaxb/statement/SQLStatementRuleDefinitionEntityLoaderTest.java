@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.rule.jaxb.statement;
 
-import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
-import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoader;
+import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
+import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoader;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

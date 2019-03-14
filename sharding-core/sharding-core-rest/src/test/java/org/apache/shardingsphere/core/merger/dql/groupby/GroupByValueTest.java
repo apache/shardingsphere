@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merger.dql.groupby;
 
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.limit;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.limit.ExpectedLimit;
-import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -23,8 +23,8 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedDistinctSelectItem;
-import org.apache.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
-import org.apache.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
+import org.apache.shardingsphere.core.parse.parser.context.selectitem.DistinctSelectItem;
+import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem;
 
 import java.util.Set;
 

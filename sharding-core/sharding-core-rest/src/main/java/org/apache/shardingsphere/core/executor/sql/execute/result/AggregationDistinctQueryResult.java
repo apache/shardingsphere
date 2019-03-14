@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
 
 import java.io.InputStream;
 import java.sql.SQLException;

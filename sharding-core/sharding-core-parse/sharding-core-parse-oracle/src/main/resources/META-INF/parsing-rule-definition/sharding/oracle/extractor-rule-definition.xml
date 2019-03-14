@@ -17,7 +17,7 @@
   -->
 
 <extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.AddColumnDefinitionExtractor"/>
-    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parsing.extractor.OracleModifyColumnDefinitionExtractor" />
-    <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parsing.extractor.OracleDropPrimaryKeyExtractor" />
+    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.AddColumnDefinitionExtractor"/>
+    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.OracleModifyColumnDefinitionExtractor" />
+    <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.OracleDropPrimaryKeyExtractor" />
 </extractor-rule-definition>

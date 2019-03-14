@@ -23,11 +23,11 @@ import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowCreateTableStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowOtherStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTablesStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
 import org.junit.Before;
 import org.junit.Test;
 

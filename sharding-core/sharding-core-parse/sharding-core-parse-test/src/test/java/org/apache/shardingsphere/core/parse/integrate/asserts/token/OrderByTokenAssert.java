@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedOrderByToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
-import org.apache.shardingsphere.core.parsing.parser.token.OrderByToken;
-import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
+import org.apache.shardingsphere.core.parse.parser.token.OrderByToken;
+import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.Collection;

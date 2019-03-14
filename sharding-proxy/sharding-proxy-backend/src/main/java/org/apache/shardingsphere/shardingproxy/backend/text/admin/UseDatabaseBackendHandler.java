@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parsing.util.SQLUtil;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;

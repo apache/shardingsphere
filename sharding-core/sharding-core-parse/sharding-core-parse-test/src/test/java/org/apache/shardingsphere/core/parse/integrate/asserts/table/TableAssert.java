@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
-import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
-import org.apache.shardingsphere.core.parsing.parser.context.table.Tables;
+import org.apache.shardingsphere.core.parse.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
 
 import java.util.List;
 

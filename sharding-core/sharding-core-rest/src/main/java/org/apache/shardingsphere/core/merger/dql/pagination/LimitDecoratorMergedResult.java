@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merger.dql.pagination;
 
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dql.common.DecoratorMergedResult;
-import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 
 import java.sql.SQLException;
 

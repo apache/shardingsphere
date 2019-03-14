@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.index.IndexAssert;
@@ -28,11 +31,8 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAs
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.token.TokenAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 

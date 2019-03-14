@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.groupby;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroupByColumn;
-import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
 
 import java.util.List;
 

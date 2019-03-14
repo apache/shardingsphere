@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.rule.jaxb.loader;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;
+import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

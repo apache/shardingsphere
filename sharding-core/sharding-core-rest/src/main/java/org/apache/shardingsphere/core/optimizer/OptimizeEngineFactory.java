@@ -24,10 +24,10 @@ import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptDefaultOpt
 import org.apache.shardingsphere.core.optimizer.engine.encrypt.EncryptInsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.engine.sharding.query.QueryOptimizeEngine;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
