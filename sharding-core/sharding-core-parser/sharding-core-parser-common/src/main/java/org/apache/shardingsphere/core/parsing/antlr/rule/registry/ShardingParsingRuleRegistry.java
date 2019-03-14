@@ -61,4 +61,3 @@ public class ShardingParsingRuleRegistry extends ParsingRuleRegistry {
         sqlStateRuleFilePaths.add(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
     }
 }
-

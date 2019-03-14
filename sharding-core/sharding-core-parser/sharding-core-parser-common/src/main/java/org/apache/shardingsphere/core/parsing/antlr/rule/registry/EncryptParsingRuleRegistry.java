@@ -19,11 +19,10 @@ package org.apache.shardingsphere.core.parsing.antlr.rule.registry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;
+
+import java.util.List;
 
 /**
  * Sharding parsing rule registry.
@@ -60,8 +59,8 @@ public class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
     }
     
     @Override
-    protected boolean needParser(final DatabaseType databaseType){
-        if(DatabaseType.MySQL == databaseType){
+    protected boolean needParser(final DatabaseType databaseType) {
+        if (DatabaseType.MySQL == databaseType) {
             return true;
         }
         return false;
