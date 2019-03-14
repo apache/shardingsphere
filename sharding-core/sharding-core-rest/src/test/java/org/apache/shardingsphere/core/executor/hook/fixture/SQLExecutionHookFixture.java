@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.executor.hook.fixture;
 
 import org.apache.shardingsphere.core.executor.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.core.routing.RouteUnit;
+import org.apache.shardingsphere.core.route.RouteUnit;
 
 import java.util.Collection;
 import java.util.LinkedList;
