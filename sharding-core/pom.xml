@@ -31,6 +31,7 @@
         <module>sharding-core-api</module>
         <module>sharding-core-common</module>
         <module>sharding-core-parse</module>
+        <module>sharding-core-optimize</module>
         <module>sharding-core-rest</module>
     </modules>
 </project>
