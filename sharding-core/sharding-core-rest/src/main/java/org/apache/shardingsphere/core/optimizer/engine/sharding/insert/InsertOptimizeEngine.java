@@ -139,6 +139,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             List<Comparable<?>> conditionValues = new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters);
             shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn.getName(), generateKeyColumn.getTableName(), conditionValues));
         }
+        insertStatement.setContainGenerateKey(true);
     }
     
     private boolean isNeededToAppendQueryAssistedColumn() {
