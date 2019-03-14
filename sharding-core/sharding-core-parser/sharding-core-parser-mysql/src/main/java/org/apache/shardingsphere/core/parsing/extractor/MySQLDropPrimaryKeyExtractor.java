@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dal.dialect.postgresql;
+package org.apache.shardingsphere.core.parsing.extractor;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint.DropPrimaryKeySegment;
 
 /**
- * PostgreSQL show param extractor.
+ * Drop primary key extractor for MySQL.
  *
- * @author loxp
+ * @author duhongjun
  */
-public final class ShowParamExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> showParamNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_PARAM);
-        if (!showParamNode.isPresent()) {
-            return Optional.absent();
-        }
-        String result = showParamNode.get().getText();
-        return Optional.of(new ShowParamSegment(result));
+    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
+        return ExtractorUtils.findFirstChildNode(
+                ancestorNode, RuleName.DROP_PRIMARY_KEY_SPECIFICATION).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
     }
 }

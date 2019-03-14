@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ddl.constraint.dialect.sqlserver;
+package org.apache.shardingsphere.core.parsing.extractor;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;

@@ -28,7 +28,7 @@
     
     <sql-statement-rule context="select" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement" 
                         extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit, subqueryCondition"
-                        optimizer-class="org.apache.shardingsphere.core.parsing.antlr.optimizer.impl.dql.dialect.mysql.MySQLSelectOptimizer" />
+                        optimizer-class="org.apache.shardingsphere.core.parsing.optimizer.MySQLSelectOptimizer" />
     
     <sql-statement-rule context="Delete" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,deleteFromWhere"/>
     <sql-statement-rule context="Update" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,updateWhere"/>

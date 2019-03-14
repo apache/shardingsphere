@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.optimizer.impl.dql.dialect.mysql;
+package org.apache.shardingsphere.core.parsing.optimizer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

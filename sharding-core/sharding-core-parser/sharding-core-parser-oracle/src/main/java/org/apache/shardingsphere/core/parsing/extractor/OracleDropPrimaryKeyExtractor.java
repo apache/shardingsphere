@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ddl.constraint.dialect.mysql;
+package org.apache.shardingsphere.core.parsing.extractor;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -25,15 +25,18 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint.DropPrimaryKeySegment;
 
 /**
- * Drop primary key extractor for MySQL.
+ * Drop primary key extractor for Oracle.
  *
  * @author duhongjun
  */
-public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
+public final class OracleDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
-        return ExtractorUtils.findFirstChildNode(
-                ancestorNode, RuleName.DROP_PRIMARY_KEY_SPECIFICATION).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
+        Optional<ParserRuleContext> dropConstraintNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_CONSTRAINT_CLAUSE);
+        if (!dropConstraintNode.isPresent()) {
+            return Optional.absent();
+        }
+        return ExtractorUtils.findFirstChildNode(dropConstraintNode.get(), RuleName.PRIMARY_KEY).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
     }
 }

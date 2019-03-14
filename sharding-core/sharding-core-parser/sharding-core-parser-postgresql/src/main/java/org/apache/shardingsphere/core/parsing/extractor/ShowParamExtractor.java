@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ddl.constraint.dialect.oracle;
+package org.apache.shardingsphere.core.parsing.extractor;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint.DropPrimaryKeySegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
 
 /**
- * Drop primary key extractor for Oracle.
+ * PostgreSQL show param extractor.
  *
- * @author duhongjun
+ * @author loxp
  */
-public final class OracleDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
+public final class ShowParamExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> dropConstraintNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_CONSTRAINT_CLAUSE);
-        if (!dropConstraintNode.isPresent()) {
+    public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> showParamNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_PARAM);
+        if (!showParamNode.isPresent()) {
             return Optional.absent();
         }
-        return ExtractorUtils.findFirstChildNode(dropConstraintNode.get(), RuleName.PRIMARY_KEY).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
+        String result = showParamNode.get().getText();
+        return Optional.of(new ShowParamSegment(result));
     }
 }
