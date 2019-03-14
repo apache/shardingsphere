@@ -100,7 +100,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sqlUnit.getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlUnit.getSql());
         for (int i = 0; i < sqlUnit.getParameters().size(); i++) {
-            result.setObject(i + 1, parameters.get(i));
+            result.setObject(i + 1, sqlUnit.getParameters().get(i));
         }
         return result;
     }
