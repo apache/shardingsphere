@@ -69,7 +69,7 @@ public final class CommandExecutorTask implements Runnable {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
-            context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
         } finally {
             if (isNeedFlush) {
                 context.flush();
