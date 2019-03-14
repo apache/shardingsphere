@@ -16,7 +16,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/</guid>
-      <description> 概念  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
+      <description> 功能  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
  完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。
  不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交。
   支持情况  Sharding-JDBC可以支持由用户自行配置不使用XA数据源
@@ -30,7 +30,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/</guid>
-      <description> 概念  完全支持跨库事务。
+      <description> 功能  完全支持跨库事务。
  默认使用Atomikos，支持使用SPI的方式加载其他XA事务管理器。
   支持情况  Sharding-JDBC可以支持由用户自行配置XA数据源
  Sharding-Proxy支持
@@ -43,10 +43,11 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/</guid>
-      <description> 概念  完全支持跨库事务。
- 使用Servicecomb-Saga。
- 支持反向SQL以及更新快照自动生成以及自动补偿。
-  支持情况  预计4.0.0支持  </description>
+      <description>功能  完全支持跨库事务。 支持失败SQL重试及最大努力送达。 支持反向SQL、自动生成更新快照以及自动补偿。 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化。 暂不支持资源隔离。  设计 ShardingSphere的柔性事务需要实现Sharding事务管理器的SPI接口，用于管理事务的生命周期。 同时柔性事务还需要通过ShardingSphere的内部SQL Hook，获取与SQL相关的必要信息，帮助事务管理器控制分布式事务。 事务隔离引擎还处于计划阶段，因此柔性事务暂不支持资源隔离功能。
+支持情况 ShardingSphere的柔性事务已通过第三方SPI实现Saga事务，Saga引擎使用Servicecomb-Saga。
+Saga事务 为了更好地理解柔性事务的设计思路，需要先解释数个概念
+ 分支事务(BranchTransaction)： 分布式事务中，被路由到不同节点的实际SQL。 分支事务组(BranchTransactionGroup)： 分布式事务中，由同一个逻辑SQL生成的分支事务的组合。  当ShardingSphere对SQL进行解析时，事务引擎会将当前事务切换到新的分支事务组。 在开始并行执行路由后的实际SQL前，事务引擎会对这些SQL进行快照并注册对应分支事务到当前的分支事务组中。 当事务中所有的SQL均被解析并执行后，事务中可能存在数个分支事务组，每个分支事务组中也可能存在数个分支事务，如下图：
+最后当用户提交事务时，Saga引擎按照分支事务组的顺序，使用其中分支事务的路由SQL进行重试或反向SQL进行回滚。</description>
     </item>
     
   </channel>
