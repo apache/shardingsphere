@@ -58,7 +58,7 @@ Realizing common sharding algorithms with Java codes is not helpful to the unifi
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</guid>
-      <description>Concept  Fully support none-cross-database transactions, for example, table sharding only or database sharding with route result in the single database.
+      <description>Function  Fully support none-cross-database transactions, for example, table sharding only or database sharding with route result in the single database.
  Fully support cross-database transactions caused by logic exceptions, for example, the update of two databases in one transaction. After the update, the null cursor is thrown and the content in both databases can be rolled back.
  Do not support the cross-database transactions caused by network or hardware exceptions.</description>
     </item>
@@ -131,7 +131,7 @@ It is inevitably to have some SQLs that have not been listed yet, welcome to sup
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</guid>
-      <description> Concept  Fully support cross-database transactions.
+      <description> Function  Fully support cross-database transactions.
  Use Atomikos by default; support to use SPI to upload other XA transaction managers.
   Supported Situation  Sharding-JDBC can support users&amp;rsquo; own configurations of XA data source.
  Sharding-Proxy support.
@@ -253,7 +253,7 @@ ShardingSphere uses SPI to load data to the registry center and disable instance
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</guid>
-      <description> Concept  Fully support cross-database transactions.
+      <description> Function  Fully support cross-database transactions.
  Use Servicecomb-Saga.
  Support reverted SQL, auto-generation of update snapshot and auto-compensation.
   Supported  Will support at 4.0.0  </description>

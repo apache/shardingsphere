@@ -89,7 +89,7 @@ Spring注解方式 引入Maven依赖：
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/</guid>
-      <description> 概念  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
+      <description> 功能  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
  完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。
  不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交。
   支持情况  Sharding-JDBC可以支持由用户自行配置不使用XA数据源
@@ -191,7 +191,7 @@ ds_0: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/</guid>
-      <description> 概念  完全支持跨库事务。
+      <description> 功能  完全支持跨库事务。
  默认使用Atomikos，支持使用SPI的方式加载其他XA事务管理器。
   支持情况  Sharding-JDBC可以支持由用户自行配置XA数据源
  Sharding-Proxy支持
@@ -437,10 +437,11 @@ SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=` t_or
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/</guid>
-      <description> 概念  完全支持跨库事务。
- 使用Servicecomb-Saga。
- 支持反向SQL以及更新快照自动生成以及自动补偿。
-  支持情况  预计4.0.0支持  </description>
+      <description>功能  完全支持跨库事务。 支持失败SQL重试及最大努力送达。 支持反向SQL、自动生成更新快照以及自动补偿。 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化。 暂不支持资源隔离。  设计 ShardingSphere的柔性事务需要实现Sharding事务管理器的SPI接口，用于管理事务的生命周期。 同时柔性事务还需要通过ShardingSphere的内部SQL Hook，获取与SQL相关的必要信息，帮助事务管理器控制分布式事务。 事务隔离引擎还处于计划阶段，因此柔性事务暂不支持资源隔离功能。
+支持情况 ShardingSphere的柔性事务已通过第三方SPI实现Saga事务，Saga引擎使用Servicecomb-Saga。
+Saga事务 为了更好地理解柔性事务的设计思路，需要先解释数个概念
+ 分支事务(BranchTransaction)： 分布式事务中，被路由到不同节点的实际SQL。 分支事务组(BranchTransactionGroup)： 分布式事务中，由同一个逻辑SQL生成的分支事务的组合。  当ShardingSphere对SQL进行解析时，事务引擎会将当前事务切换到新的分支事务组。 在开始并行执行路由后的实际SQL前，事务引擎会对这些SQL进行快照并注册对应分支事务到当前的分支事务组中。 当事务中所有的SQL均被解析并执行后，事务中可能存在数个分支事务组，每个分支事务组中也可能存在数个分支事务，如下图：
+最后当用户提交事务时，Saga引擎按照分支事务组的顺序，使用其中分支事务的路由SQL进行重试或反向SQL进行回滚。</description>
     </item>
     
     <item>
@@ -559,13 +560,11 @@ orchestration: name: orchestration-sharding-data-source overwrite: false registr
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/</guid>
-      <description>引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
+      <description>两阶段提交-XA 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
 连接池配置 ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。 其它连接池需要用户实现DataSourceMapConverter的SPI接口进行扩展，可以参考org.apache.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper的实现。 若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
-   属性名称 默认值     connectionTimeoutMilliseconds 30 * 1000   idleTimeoutMilliseconds 60 * 1000   maintenanceIntervalMilliseconds 30 * 1000   maxLifetimeMilliseconds 0 (无限制)   maxPoolSize 50   minPoolSize 1    事务类型切换 ShardingSphere的事务类型存放在TransactionTypeHolder的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。
-注意：数据库连接创建之后，事务类型将无法更改。
-API方式 TransactionTypeHolder.set(TransactionType.LOCAL);  或
-TransactionTypeHolder.set(TransactionType.XA);  SpringBootStarter使用方式 引入Maven依赖：
-&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring-boot-starter&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  SpringBoot使用方式 引入Maven依赖：</description>
+   属性名称 默认值     connectionTimeoutMilliseconds 30 * 1000   idleTimeoutMilliseconds 60 * 1000   maintenanceIntervalMilliseconds 30 * 1000   maxLifetimeMilliseconds 0 (无限制)   maxPoolSize 50   minPoolSize 1    Atomikos参数配置 ShardingSphere默认的XA事务管理器为Atomikos。 可以通过在项目的classpath中添加jta.properties来定制化Atomikos配置项。 具体的配置规则请参考Atomikos的官方文档。
+第三方BASE实现-Saga 目前Apache/incubator-shardingsphere暂无BASE事务的实现，但是仍然可以使用第三方实现的Saga事务。
+引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-base-saga&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。</description>
     </item>
     
     <item>
@@ -604,10 +603,18 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY score DESC;  那么�
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/cn/features/orchestration/encrypt/</guid>
-      <description>背景 安全控制一直是数据治理的重要环节，数据脱敏属于安全控制的范畴。对互联网公司、传统行业来说，数据安全一直是极为重视和敏感的话题。数据脱敏是指对某些敏感信息通过脱敏规则进行数据的变形，实现敏感隐私数据的可靠保护。 涉及客户安全数据或者一些商业性敏感数据，如身份证号、手机号、卡号、客户号等个人信息按照相关部门规定，都需要进行数据脱敏。 ShardingSphere为此提供了数据脱敏的功能，它将用户的敏感信息经过加密存储到数据库中。当用户查询敏感信息的时候，再对敏感信息进行自动解密，为用户返回原始数据。 它将该加解密过程对用户完全透明化，使用户在无感知情况下即可实现对数据脱敏存储、获取原始数据信息等。此外，ShardingSphere提供了内置的脱敏算法，用户可直接使用内置方案。同时我们还提供了脱敏算法的相关接口，用户可按照实际需求进行自定义实现， 再通过简单配置，即可让ShardingSphere调用用户提供的算法进行加解密、脱敏操作。
-解决方案 ShardingSphere提供了两种解决方案用于数据脱敏，该两种解决方案分别对应ShardingSphere的两种加解密的接口，即ShardingEncryptor和ShardingQueryAssistedEncryptor。 一方面，ShardingSphere为用户提供了内置的加解密实现类，用户只需进行配置即可使用；另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据该两种类型的接口提供具体实现类。再进行简单配置，即可让ShardingSphere 调用用户自定义的加解密方案进行数据脱敏。
-ShardingEncryptor 该解决方案通过提供encrypt(), decrypt()两种方法对需要脱敏的数据进行加解密。在用户进行INSERT, DELETE, UPDATE时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并会调用encrypt()将数据加密后存储到数据库, 而在SELECT时，则调用decrypt()方法 将从数据库中取出的脱敏数据进行逆向解密，最终将原始数据返回给用户。 当前，ShardingSphere针对这种类型的脱敏解决方案提供了两种具体实现类，分别是MD5(不可逆)，AES(可逆)，用户只需配置即可使用这两种内置的方案。
-ShardingQueryAssistedEncryptor 相比较于第一种脱敏方案，该方案更为安全和复杂。它的理念是：即使是相同的数据，如两个用户的密码相同，它们在数据库里存储的脱敏数据也应当是不一样的。这种理念更有利于保护用户信息，防止撞库成功。 它提供三种函数进行实现，分别是encrypt(), decrypt(), queryAssistedEncrypt()。在encrypt()阶段，用户通过设置某个变动种子，例如时间戳。针对原始数据+变动种子组合的内容进行加密，就能保证 即使原始数据相同，也因为有变动种子的存在，致使加密后的脱敏数据是不一样的。在decrypt()可依据之前规定的加密算法，利用种子数据进行解密。 虽然这种方式确实可以增加数据的保密性，但是另一个问题却随之出现：相同的数据在数据库里存储的内容是不一样的，那么当用户按照这个加密列进行等值查询(SELECT FROM table WHERE encryptedColumnn = ?)时会发现 无法将所有相同的原始数据查询出来。为此，我们提出了辅助查询列的概念。该辅助查询列通过queryAssistedEncrypt()生成，与decrypt()不同的是，该方法通过对原始数据进行另一种方式的加密， 但是针对原始数据相同的数据，这种加密方式产生的加密数据是一致的。将queryAssistedEncrypt()后的数据存储到数据中用于辅助查询真实数据。因此，数据库表中多出这一个辅助查询列。 由于queryAssistedEncrypt()和encrypt()产生不同加密数据进行存储，而decrypt()可逆，queryAssistedEncrypt()不可逆。 在查询原始数据的时候，我们会自动对SQL进行解析、改写、路由，利用辅助查询列进行 WHERE条件的查询，却利用 decrypt()对encrypt()加密后的数据进行解密，并将原始数据返回给用户。这一切都是对用户透明化的。 当前，ShardingSphere针对这种类型的脱敏解决方案并没有提供具体实现类，却将该理念抽象成接口，提供给用户自行实现。ShardingSphere将调用用户提供的该方案的具体实现类进行数据脱敏。</description>
+      <description>背景 安全控制一直是数据治理的重要环节，数据脱敏属于安全控制的范畴。对互联网公司、传统行业来说，数据安全一直是极为重视和敏感的话题。数据脱敏是指对某些敏感信息通过脱敏规则进行数据的变形，实现敏感隐私数据的可靠保护。涉及客户安全数据或者一些商业性敏感数据，如身份证号、手机号、卡号、客户号等个人信息按照相关部门规定，都需要进行数据脱敏。
+ShardingSphere为此提供了数据脱敏的功能，它将用户的敏感信息经过加密存储到数据库中。当用户查询敏感信息的时候，再对敏感信息进行自动解密，为用户返回原始数据。
+它将该加解密过程对用户完全透明化，使用户在无感知情况下即可实现对数据脱敏存储、获取原始数据信息等。此外，ShardingSphere提供了内置的脱敏算法，用户可直接使用内置方案。同时我们还提供了脱敏算法的相关接口，用户可按照实际需求进行自定义实现，再通过简单配置，即可让ShardingSphere调用用户提供的算法进行加解密、脱敏操作。
+解决方案 ShardingSphere提供了两种解决方案用于数据脱敏，该两种解决方案分别对应ShardingSphere的两种加解密的接口，即ShardingEncryptor和ShardingQueryAssistedEncryptor。
+一方面，ShardingSphere为用户提供了内置的加解密实现类，用户只需进行配置即可使用；另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据该两种类型的接口提供具体实现类。再进行简单配置，即可让ShardingSphere调用用户自定义的加解密方案进行数据脱敏。
+ShardingEncryptor 该解决方案通过提供encrypt(), decrypt()两种方法对需要脱敏的数据进行加解密。在用户进行INSERT, DELETE, UPDATE时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并会调用encrypt()将数据加密后存储到数据库, 而在SELECT时，则调用decrypt()方法将从数据库中取出的脱敏数据进行逆向解密，最终将原始数据返回给用户。
+当前，ShardingSphere针对这种类型的脱敏解决方案提供了两种具体实现类，分别是MD5(不可逆)，AES(可逆)，用户只需配置即可使用这两种内置的方案。
+ShardingQueryAssistedEncryptor 相比较于第一种脱敏方案，该方案更为安全和复杂。它的理念是：即使是相同的数据，如两个用户的密码相同，它们在数据库里存储的脱敏数据也应当是不一样的。这种理念更有利于保护用户信息，防止撞库成功。
+它提供三种函数进行实现，分别是encrypt(), decrypt(), queryAssistedEncrypt()。在encrypt()阶段，用户通过设置某个变动种子，例如时间戳。针对原始数据+变动种子组合的内容进行加密，就能保证即使原始数据相同，也因为有变动种子的存在，致使加密后的脱敏数据是不一样的。在decrypt()可依据之前规定的加密算法，利用种子数据进行解密。
+虽然这种方式确实可以增加数据的保密性，但是另一个问题却随之出现：相同的数据在数据库里存储的内容是不一样的，那么当用户按照这个加密列进行等值查询(SELECT FROM table WHERE encryptedColumnn = ?)时会发现无法将所有相同的原始数据查询出来。为此，我们提出了辅助查询列的概念。该辅助查询列通过queryAssistedEncrypt()生成，与decrypt()不同的是，该方法通过对原始数据进行另一种方式的加密，但是针对原始数据相同的数据，这种加密方式产生的加密数据是一致的。将queryAssistedEncrypt()后的数据存储到数据中用于辅助查询真实数据。因此，数据库表中多出这一个辅助查询列。
+由于queryAssistedEncrypt()和encrypt()产生不同加密数据进行存储，而decrypt()可逆，queryAssistedEncrypt()不可逆。 在查询原始数据的时候，我们会自动对SQL进行解析、改写、路由，利用辅助查询列进行 WHERE条件的查询，却利用 decrypt()对encrypt()加密后的数据进行解密，并将原始数据返回给用户。这一切都是对用户透明化的。
+当前，ShardingSphere针对这种类型的脱敏解决方案并没有提供具体实现类，却将该理念抽象成接口，提供给用户自行实现。ShardingSphere将调用用户提供的该方案的具体实现类进行数据脱敏。</description>
     </item>
     
     <item>
