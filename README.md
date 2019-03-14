@@ -32,3 +32,33 @@ before we use docker compose, please install docker first : https://docs.docker.
 
 to clean the docker container , you could use docker rm `docker ps -a -q` (be careful)
 
+## sharding-sphere-example module design
+```
+sharding-sphere-example
+  ├── example-common
+  │   ├── config-utility
+  │   ├── repository-api
+  │   ├── repository-jdbc
+  │   ├── repository-jpa
+  │   └── repository-mybatis
+  ├── sharding-jdbc-example
+  │   ├── orchestration-example
+  │   │   ├── orchestration-raw-jdbc-example
+  │   │   ├── orchestration-spring-boot-example
+  │   │   ├── orchestration-spring-namespace-example
+  │   ├── sharding-example
+  │   │   ├── sharding-raw-jdbc-example
+  │   │   ├── sharding-spring-boot-jpa-example
+  │   │   ├── sharding-spring-boot-mybatis-example
+  │   │   ├── sharding-spring-namespace-jpa-example
+  │   │   └── sharding-spring-namespace-mybatis-example
+  │   └── transaction-example
+  │       ├── transaction-2pc-xa-example
+  │       └── transaction-base-saga-example
+  ├── sharding-proxy-example
+  │   └── sharding-proxy-boot-mybatis-example
+  ├── src/resources
+  │    ├── manual_schema.sql
+```
+
+
