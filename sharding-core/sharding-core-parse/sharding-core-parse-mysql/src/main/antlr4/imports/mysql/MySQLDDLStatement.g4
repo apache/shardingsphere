@@ -40,7 +40,7 @@ dataType
     ;
 
 dataTypeName_
-    : ID ID?
+    : uid uid?
     ;
 
 characterSet_

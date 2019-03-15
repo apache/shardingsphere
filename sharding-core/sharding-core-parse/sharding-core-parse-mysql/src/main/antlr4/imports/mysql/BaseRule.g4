@@ -20,27 +20,45 @@ grammar BaseRule;
 import Keyword, DataType, Symbol;
 
 ID 
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    ;
+    
+REVERSE_QUOTE_ID
+    : '`' ~'`'+ '`'
+    ;
+    
+uid
+    : ID
+    | REVERSE_QUOTE_ID
+    | keywordCanBeID
+    ;
+    
+keywordCanBeID
+    : DATE | PASSWORD
+    ;
+    
+fullID
+    : uid (DOT_ uid)?
     ;
 
 schemaName
-    : ID
+    : fullID
     ;
 
 tableName
-    : ID
+    : fullID
     ;
 
 columnName
-    : ID
+    : fullID
     ;
 
 indexName
-    : ID
+    : fullID
     ;
 
 alias
-    : ID
+    : uid | STRING_
     ;
 
 dataTypeLength
@@ -149,7 +167,7 @@ simpleExpr
     ;
 
 functionCall
-    : ID LP_ distinct? (exprs | ASTERISK_)? RP_
+    : fullID LP_ distinct? (exprs | ASTERISK_)? RP_
     ;
 
 distinct
@@ -181,7 +199,7 @@ literal
     | LBE_ ID STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | ID STRING_ collateClause?
+    | uid STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
     | ID? BIT_NUM_ collateClause?
     ;
@@ -219,7 +237,7 @@ asterisk
     ;
 
 ignoredIdentifier_
-    : ID
+    : fullID
     ;
 
 ignoredIdentifiers_

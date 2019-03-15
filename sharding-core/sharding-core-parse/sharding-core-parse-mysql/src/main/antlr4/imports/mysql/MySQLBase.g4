@@ -20,11 +20,11 @@ grammar MySQLBase;
 import MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 alias
-    : ID | PASSWORD | STRING_
+    : uid | STRING_
     ;
 
 tableName
-    : ID | ID DOT_ASTERISK_ | ASTERISK_
+    : fullID | uid DOT_ASTERISK_ | ASTERISK_
     ;
 
 assignmentValueList
@@ -40,7 +40,7 @@ assignmentValue
     ;
 
 functionCall
-    : (ID | DATE) LP_ distinct? (exprs | ASTERISK_)? RP_ | groupConcat | windowFunction
+    : uid LP_ distinct? (exprs | ASTERISK_)? RP_ | groupConcat | windowFunction
     ;
 
 groupConcat
@@ -48,15 +48,15 @@ groupConcat
     ;
 
 windowFunction
-    : ID exprList overClause
+    : uid exprList overClause
     ;
 
 overClause
-    : OVER LP_ windowSpec RP_ | OVER ID
+    : OVER LP_ windowSpec RP_ | OVER uid
     ;
 
 windowSpec
-    : ID? windowPartitionClause? orderByClause? frameClause?
+    : fullID? windowPartitionClause? orderByClause? frameClause?
     ;
 
 windowPartitionClause
@@ -92,7 +92,7 @@ frameEnd
     ;
 
 variable
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? ID
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? uid
     ;
 
 assignmentList
