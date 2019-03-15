@@ -247,7 +247,8 @@ public final class SQLRewriteEngine {
         for (InsertColumnValue each : insertColumnValues.getColumnValues()) {
             encryptInsertColumnValue(insertColumnValues.getColumnNames(), each);
         }
-        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
+        sqlBuilder.appendPlaceholder(
+                new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
     }
     

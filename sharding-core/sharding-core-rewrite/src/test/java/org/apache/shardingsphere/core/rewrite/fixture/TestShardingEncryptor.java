@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.fixture;
+package org.apache.shardingsphere.core.rewrite.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
+@Getter
+@Setter
+public final class TestShardingEncryptor implements ShardingEncryptor {
     
-    @Getter
-    private final String type = "INCREMENT";
-    
-    private final AtomicInteger count = new AtomicInteger();
-    
-    @Getter
-    @Setter
     private Properties properties = new Properties();
     
     @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
+    public String getType() {
+        return "test";
+    }
+    
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public String encrypt(final Object plaintext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String ciphertext) {
+        return "decryptValue";
     }
 }
