@@ -35,5 +35,6 @@
         <module>sharding-core-route</module>
         <module>sharding-core-rewrite</module>
         <module>sharding-core-rest</module>
+        <module>sharding-core-execute</module>
     </modules>
 </project>
