@@ -30,8 +30,8 @@ public final class AggregationDistinctSelectItemSegment extends AggregationSelec
     
     private final String distinctExpression;
     
-    public AggregationDistinctSelectItemSegment(final AggregationType type, final String innerExpression, final int startIndex, final int stopIndex, final String distinctExpression) {
-        super(type, innerExpression, startIndex, stopIndex);
+    public AggregationDistinctSelectItemSegment(final AggregationType type, final int innerExpressionStartIndex, final int startIndex, final int stopIndex, final String distinctExpression) {
+        super(type, innerExpressionStartIndex, startIndex, stopIndex);
         this.distinctExpression = distinctExpression;
     }
 }
