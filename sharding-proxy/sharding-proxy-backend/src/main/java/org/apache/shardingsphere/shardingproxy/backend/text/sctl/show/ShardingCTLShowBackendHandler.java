@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.merger.MergedResult;
-import org.apache.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResult;
+import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
