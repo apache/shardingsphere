@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merger;
+package org.apache.shardingsphere.core.executor.sql.execute.result;
 
 import java.io.InputStream;
 import java.sql.SQLException;
