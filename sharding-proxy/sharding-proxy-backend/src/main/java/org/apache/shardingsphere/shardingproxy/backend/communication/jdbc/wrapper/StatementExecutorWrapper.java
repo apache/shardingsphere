@@ -23,11 +23,15 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.MasterSlaveSQLRewriteEngine;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
-import org.apache.shardingsphere.core.routing.SQLUnit;
-import org.apache.shardingsphere.core.routing.StatementRoutingEngine;
-import org.apache.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLLogger;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.StatementRoutingEngine;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
@@ -36,7 +40,9 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 
 /**
  * Executor wrapper for statement.
@@ -67,9 +73,25 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData(),
-                databaseType, logicSchema.getParsingResultCache(), SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        return routingEngine.route(sql);
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
+                ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
+        SQLRouteResult result = routingEngine.route(sql);
+        result.getRouteUnits().addAll(getRouteUnits(sql, databaseType, (ShardingSchema) logicSchema, result));
+        return result;
+    }
+    
+    private Collection<RouteUnit> getRouteUnits(final String logicSQL, final DatabaseType databaseType, final ShardingSchema logicSchema, final SQLRouteResult routeResult) {
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
+                logicSchema.getShardingRule(), logicSQL, databaseType, routeResult.getSqlStatement(), Collections.emptyList(), routeResult.getOptimizeResult());
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(routeResult.getRoutingResult().isSingleRouting());
+        Collection<RouteUnit> result = new LinkedHashSet<>();
+        for (TableUnit each : routeResult.getRoutingResult().getTableUnits().getTableUnits()) {
+            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, logicSchema.getMetaData().getDataSource())));
+        }
+        if (ShardingProxyContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.SQL_SHOW)) {
+            SQLLogger.logSQL(logicSQL, routeResult.getSqlStatement(), routeResult.getRouteUnits());
+        }
+        return result;
     }
     
     @Override

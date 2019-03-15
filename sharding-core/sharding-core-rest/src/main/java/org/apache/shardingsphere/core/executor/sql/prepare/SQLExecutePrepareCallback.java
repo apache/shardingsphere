@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.executor.sql.prepare;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.core.routing.RouteUnit;
+import org.apache.shardingsphere.core.route.RouteUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;

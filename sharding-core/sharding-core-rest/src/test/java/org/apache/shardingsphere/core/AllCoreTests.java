@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core;
 import org.apache.shardingsphere.core.executor.AllExecutorTests;
 import org.apache.shardingsphere.core.merger.AllMergerTests;
 import org.apache.shardingsphere.core.rewrite.AllRewriteTests;
-import org.apache.shardingsphere.core.routing.AllRoutingTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,7 +27,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllRewriteTests.class, 
-        AllRoutingTests.class, 
         AllExecutorTests.class, 
         AllMergerTests.class
 })

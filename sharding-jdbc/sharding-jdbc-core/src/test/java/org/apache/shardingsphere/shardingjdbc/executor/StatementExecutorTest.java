@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.executor.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.junit.Test;
 
 import java.lang.reflect.Field;

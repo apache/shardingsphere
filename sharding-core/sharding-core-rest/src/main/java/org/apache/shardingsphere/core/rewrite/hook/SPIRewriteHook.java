@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.rewrite.hook;
 
-import org.apache.shardingsphere.core.routing.SQLUnit;
-import org.apache.shardingsphere.core.routing.type.TableUnit;
+import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
