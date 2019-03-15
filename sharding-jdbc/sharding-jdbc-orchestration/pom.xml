@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-merge</artifactId>
+            <artifactId>sharding-core-entry</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -36,5 +36,6 @@
         <module>sharding-core-rewrite</module>
         <module>sharding-core-execute</module>
         <module>sharding-core-merge</module>
+        <module>sharding-core-entry</module>
     </modules>
 </project>
