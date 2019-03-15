@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.merger.MergedResult;
-import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.core.merger.dql.groupby.GroupByStreamMergedResult;
 import org.apache.shardingsphere.core.merger.dql.iterator.IteratorStreamMergedResult;

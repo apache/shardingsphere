@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.merger.dql.groupby;
 
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
