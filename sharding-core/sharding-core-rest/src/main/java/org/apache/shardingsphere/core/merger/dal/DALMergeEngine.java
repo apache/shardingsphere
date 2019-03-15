@@ -28,12 +28,12 @@ import org.apache.shardingsphere.core.merger.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowCreateTableStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowIndexStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTableStatusStatement;
+import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTablesStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.sql.SQLException;

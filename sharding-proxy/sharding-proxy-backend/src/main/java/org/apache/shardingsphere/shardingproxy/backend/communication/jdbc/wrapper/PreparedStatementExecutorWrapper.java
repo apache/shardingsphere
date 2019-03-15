@@ -20,14 +20,18 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.parsing.SQLJudgeEngine;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.MasterSlaveSQLRewriteEngine;
-import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
-import org.apache.shardingsphere.core.routing.SQLUnit;
-import org.apache.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLLogger;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
@@ -37,6 +41,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -71,15 +77,30 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        return new PreparedStatementRoutingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData(),
-                databaseType, logicSchema.getParsingResultCache(), SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(parameters);
+        SQLRouteResult result = new PreparedStatementRoutingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(), 
+                logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache()).route(parameters);
+        result.getRouteUnits().addAll(getRouteUnits(sql, databaseType, (ShardingSchema) logicSchema, result));
+        return result;
+    }
+    
+    private Collection<RouteUnit> getRouteUnits(final String logicSQL, final DatabaseType databaseType, final ShardingSchema logicSchema, final SQLRouteResult routeResult) {
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSchema.getShardingRule(), logicSQL, databaseType, routeResult.getSqlStatement(), parameters, routeResult.getOptimizeResult());
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(routeResult.getRoutingResult().isSingleRouting());
+        Collection<RouteUnit> result = new LinkedHashSet<>();
+        for (TableUnit each : routeResult.getRoutingResult().getTableUnits().getTableUnits()) {
+            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, logicSchema.getMetaData().getDataSource())));
+        }
+        if (ShardingProxyContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.SQL_SHOW)) {
+            SQLLogger.logSQL(logicSQL, routeResult.getSqlStatement(), routeResult.getRouteUnits());
+        }
+        return result;
     }
     
     @Override
     public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
         PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sqlUnit.getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlUnit.getSql());
         for (int i = 0; i < sqlUnit.getParameters().size(); i++) {
-            result.setObject(i + 1, parameters.get(i));
+            result.setObject(i + 1, sqlUnit.getParameters().get(i));
         }
         return result;
     }

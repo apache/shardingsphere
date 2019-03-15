@@ -22,10 +22,10 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.merger.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merger.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 

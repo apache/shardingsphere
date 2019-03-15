@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<parser-result-sets>
+    <parser-result sql-case-id="insert_with_all_placeholders" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_without_parameters">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_with_multiple_values">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="2" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="2" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_with_special_characters">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" left-delimiter="`" right-delimiter="`" />
+            <insert-values-token begin-position="21" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_with_special_syntax">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="33" table-name="t_order" />
+            <insert-values-token begin-position="40" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="21" table-name="t_order" />
+            <table-token start-index="39" table-name="t_order" />
+            <table-token start-index="56" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_without_columns_with_all_placeholders" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_with_all_placeholders" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="SET" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_with_partial_placeholders" parameters="1, 1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_with_partial_placeholders" parameters="1, 1">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="SET" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_with_generate_key_column" parameters="10000, 1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" />
+            <insert-values-token begin-position="24" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_without_generate_key_column" parameters="1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" />
+            <insert-values-token begin-position="24" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_with_generate_key_column" parameters="10000, 1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" />
+            <insert-values-token begin-position="24" type="SET" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_without_generate_key_column" parameters="1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" />
+            <insert-values-token begin-position="24" type="SET" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_on_duplicate_key_update" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="SET" />
+            <table-token start-index="24" table-name="t_order" />
+            <table-token start-index="46" table-name="t_order" />
+            <table-token start-index="67" table-name="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <!--<parser-result sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
+        <!--<tables>-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="12" table-name="t_order" />-->
+            <!--<table-token start-index="21" table-name="t_order" />-->
+            <!--<table-token start-index="39" table-name="t_order" />-->
+            <!--<table-token start-index="56" table-name="t_order" />-->
+            <!--<insert-values-token begin-position="79" table-name="t_order"/>-->
+            <!--<table-token start-index="113" table-name="t_order" />-->
+            <!--<table-token start-index="137" table-name="t_order" />-->
+        <!--</tokens>-->
+        <!--<or-condition>-->
+            <!--<and-condition>-->
+                <!--<condition column-name="order_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="0" literal="1" type="int" />-->
+                <!--</condition>-->
+                <!--<condition column-name="user_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="1" literal="1" type="int" />-->
+                <!--</condition>-->
+            <!--</and-condition>-->
+        <!--</or-condition>-->
+    <!--</parser-result>-->
+    
+    <parser-result sql-case-id="insert_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="3" literal="1100" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="4" literal="11" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <parser-result sql-case-id="insert_with_batch_and_irregular_parameters" parameters="1, 2, 2, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="2" literal="2" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+
+    <!--<parser-result sql-case-id="insert_with_batch_and_composite_expression" parameters="1, 1, 'init', 2, 2, 'init'">-->
+        <!--<tables>-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="12" table-name="t_order" />-->
+            <!--<insert-values-token begin-position="55" table-name="t_order"/>-->
+        <!--</tokens>-->
+        <!--<or-condition>-->
+            <!--<and-condition>-->
+                <!--<condition column-name="order_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="0" literal="1" type="int" />-->
+                <!--</condition>-->
+                <!--<condition column-name="user_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="1" literal="1" type="int" />-->
+                <!--</condition>-->
+            <!--</and-condition>-->
+            <!--<and-condition>-->
+                <!--<condition column-name="order_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="3" literal="2" type="int" />-->
+                <!--</condition>-->
+                <!--<condition column-name="user_id" table-name="t_order" operator="EQUAL">-->
+                    <!--<value index="4" literal="2" type="int" />-->
+                <!--</condition>-->
+            <!--</and-condition>-->
+        <!--</or-condition>-->
+    <!--</parser-result>-->
+    
+    <parser-result sql-case-id="insert_with_batch_and_with_generate_key_column" parameters="10000, 1000, 10, 10010, 1001, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" />
+            <insert-values-token begin-position="24" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="10" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="3" literal="10010" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="4" literal="1001" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="5" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <!--<parser-result sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">-->
+        <!--<tables>-->
+            <!--<table name="t_order_item" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token start-index="12" table-name="t_order_item" />-->
+            <!--<items-token begin-position="65">-->
+                <!--<items>-->
+                    <!--<item>item_id</item>-->
+                <!--</items>-->
+            <!--</items-token>-->
+            <!--<insert-values-token begin-position="74" table-name="t_order_item"/>-->
+        <!--</tokens>-->
+        <!--<or-condition>-->
+            <!--<and-condition>-->
+                <!--<condition column-name="order_id" table-name="t_order_item" operator="EQUAL">-->
+                    <!--<value index="0" literal="1000" type="int" />-->
+                <!--</condition>-->
+                <!--<condition column-name="user_id" table-name="t_order_item" operator="EQUAL">-->
+                    <!--<value index="1" literal="10" type="int" />-->
+                <!--</condition>-->
+            <!--</and-condition>-->
+            <!--<and-condition>-->
+                <!--<condition column-name="order_id" table-name="t_order_item" operator="EQUAL">-->
+                    <!--<value index="2" literal="1001" type="int" />-->
+                <!--</condition>-->
+                <!--<condition column-name="user_id" table-name="t_order_item" operator="EQUAL">-->
+                    <!--<value index="3" literal="10" type="int" />-->
+                <!--</condition>-->
+            <!--</and-condition>-->
+        <!--</or-condition>-->
+    <!--</parser-result>-->
+    
+    <parser-result sql-case-id="insert_with_geography" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
+        <tables>
+            <table name="t_place" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_place" />
+            <insert-values-token begin-position="19" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                    <value index="0" literal="7" type="int" />
+                </condition>
+                <condition column-name="guid" table-name="t_place" operator="EQUAL">
+                    <value index="1" literal="200" type="int"/>
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" />
+            <insert-values-token begin-position="24" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_without_columns_and_without_generate_key_column" parameters="1000, 10">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order_item" />
+            <insert-values-token begin-position="24" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <!-- // TODO
+    <parser-result sql-case-id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+           <condition-context/>
+        </condition-contexts>
+    </parser-result>
+    -->
+</parser-result-sets>

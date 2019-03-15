@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.common.StreamMergedResult;
-import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -32,10 +32,10 @@ import org.apache.shardingsphere.core.merger.dql.pagination.LimitDecoratorMerged
 import org.apache.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
-import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
-import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 

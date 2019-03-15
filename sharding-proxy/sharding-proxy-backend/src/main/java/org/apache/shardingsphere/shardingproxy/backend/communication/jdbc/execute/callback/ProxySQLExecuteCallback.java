@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.core.routing.RouteUnit;
+import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;

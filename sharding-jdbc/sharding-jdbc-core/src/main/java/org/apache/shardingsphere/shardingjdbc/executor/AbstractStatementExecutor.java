@@ -32,10 +32,10 @@ import org.apache.shardingsphere.core.executor.metadata.TableMetaDataInitializer
 import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;

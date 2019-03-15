@@ -127,6 +127,16 @@ public final class XAShardingTransactionManagerTest {
     }
     
     @Test
+    public void assertGetConnectionWithoutEnlist() {
+        setCachedSingleXADataSourceMap("ds1");
+        Connection actual = xaShardingTransactionManager.getConnection("ds1");
+        assertThat(actual, instanceOf(Connection.class));
+        xaShardingTransactionManager.getConnection("ds1");
+        assertThat(actual, instanceOf(Connection.class));
+        verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
+    }
+    
+    @Test
     public void assertClose() throws Exception {
         setCachedSingleXADataSourceMap("ds1");
         xaShardingTransactionManager.close();
