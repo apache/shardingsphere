@@ -343,8 +343,8 @@ public final class EncryptSQLRewriteEngine {
         return result.get();
     }
     
-    private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
-        int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
+    private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
+        int stopPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
+        sqlBuilder.appendLiterals(originalSQL.substring(startIndex, stopPosition));
     }
 }
