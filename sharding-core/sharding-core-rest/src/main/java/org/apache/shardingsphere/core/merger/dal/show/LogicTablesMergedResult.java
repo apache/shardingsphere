@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.merger.dal.show;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;

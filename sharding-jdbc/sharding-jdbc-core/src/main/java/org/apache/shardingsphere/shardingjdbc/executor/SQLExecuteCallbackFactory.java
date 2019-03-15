@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.route.RouteUnit;
 
 import java.sql.PreparedStatement;

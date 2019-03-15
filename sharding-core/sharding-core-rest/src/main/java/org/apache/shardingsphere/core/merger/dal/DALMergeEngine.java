@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.merger.dal;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.MergeEngine;
 import org.apache.shardingsphere.core.merger.MergedResult;
-import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowIndexMergedResult;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.merger.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 
 import java.io.InputStream;
 import java.io.Reader;

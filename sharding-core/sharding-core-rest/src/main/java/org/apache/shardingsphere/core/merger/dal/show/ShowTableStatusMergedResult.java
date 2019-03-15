@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merger.dal.show;
 
-import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
