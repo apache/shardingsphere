@@ -21,7 +21,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendTransactionManagerTest;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStateHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceTest;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCXABackendDataSourceFactoryTest;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.AllRecognizerTests;
 import org.apache.shardingsphere.shardingproxy.backend.executor.ExecutorContextTest;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyTableMetaDataConnectionManagerTest;
@@ -46,8 +45,7 @@ import org.junit.runners.Suite.SuiteClasses;
         TransactionBackendHandlerTest.class, 
         UnicastBackendHandlerTest.class, 
         UseDatabaseBackendHandlerTest.class,
-        JDBCXABackendDataSourceFactoryTest.class, 
-        JDBCBackendDataSourceTest.class, 
+        JDBCBackendDataSourceTest.class,
         BackendConnectionTest.class, 
         BackendTransactionManagerTest.class, 
         ConnectionStateHandlerTest.class, 
