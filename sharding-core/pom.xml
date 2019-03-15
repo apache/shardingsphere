@@ -33,6 +33,7 @@
         <module>sharding-core-parse</module>
         <module>sharding-core-optimize</module>
         <module>sharding-core-route</module>
+        <module>sharding-core-rewrite</module>
         <module>sharding-core-rest</module>
     </modules>
 </project>
