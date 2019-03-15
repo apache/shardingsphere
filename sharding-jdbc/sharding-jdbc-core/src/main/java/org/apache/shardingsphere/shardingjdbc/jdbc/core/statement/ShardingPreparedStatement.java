@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merger.MergeEngine;
 import org.apache.shardingsphere.core.merger.MergeEngineFactory;
-import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
