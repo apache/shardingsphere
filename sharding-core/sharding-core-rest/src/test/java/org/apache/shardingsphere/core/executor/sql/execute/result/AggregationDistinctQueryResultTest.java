@@ -22,7 +22,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.AggregationType;
-import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 import org.junit.Before;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merger.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.dql.common.StreamMergedResult;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
 

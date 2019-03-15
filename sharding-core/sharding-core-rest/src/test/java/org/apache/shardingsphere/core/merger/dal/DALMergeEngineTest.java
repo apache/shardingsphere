@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merger.dal;
 
-import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowOtherMergedResult;

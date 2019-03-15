@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.merger;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.executor.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merger.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merger.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;

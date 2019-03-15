@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.executor.sql.execute.result;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.merger.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 
