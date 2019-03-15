@@ -92,7 +92,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
                 fillWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(each));
             }
         }
-        if (Strings.isNullOrEmpty(assistedColumnName)) {
+        if (!Strings.isNullOrEmpty(assistedColumnName)) {
             insertColumnValues.getColumnNames().add(assistedColumnName);
         }
     }
