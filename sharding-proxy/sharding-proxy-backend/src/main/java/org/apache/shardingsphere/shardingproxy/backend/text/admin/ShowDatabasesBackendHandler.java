@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
-import org.apache.shardingsphere.core.merger.MergedResult;
-import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
+import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;

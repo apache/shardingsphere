@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.executor;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.executor.ShardingExecutorService;
+import org.apache.shardingsphere.core.execute.ShardingExecutorService;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 /**

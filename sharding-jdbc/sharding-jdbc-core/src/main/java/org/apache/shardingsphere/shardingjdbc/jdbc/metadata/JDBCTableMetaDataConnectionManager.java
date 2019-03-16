@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.executor.metadata.TableMetaDataConnectionManager;
+import org.apache.shardingsphere.core.execute.metadata.TableMetaDataConnectionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

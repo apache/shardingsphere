@@ -45,6 +45,7 @@ import java.util.Map;
  * @author gaohongtao
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public final class SQLBuilder {
     
