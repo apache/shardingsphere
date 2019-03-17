@@ -709,7 +709,7 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/core/parsing/antlr/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/core/parse/antlr/autogen/*.class</exclude>
                             <exclude>authpb/*.class</exclude>
                             <exclude>mvccpb/*.class</exclude>
                             <exclude>etcdserverpb/*.class</exclude>
