@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
@@ -50,7 +49,6 @@ import java.util.LinkedHashSet;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class SimpleQueryShardingEngine {
     
     private final ShardingRule shardingRule;
@@ -61,7 +59,16 @@ public final class SimpleQueryShardingEngine {
     
     private final DatabaseType databaseType;
     
-    private final ParsingResultCache cache;
+    private final StatementRoutingEngine routingEngine;
+    
+    public SimpleQueryShardingEngine(final ShardingRule shardingRule, 
+                                     final ShardingProperties shardingProperties, final ShardingMetaData metaData, final DatabaseType databaseType, final ParsingResultCache cache) {
+        this.shardingRule = shardingRule;
+        this.shardingProperties = shardingProperties;
+        this.metaData = metaData;
+        this.databaseType = databaseType;
+        routingEngine = new StatementRoutingEngine(shardingRule, metaData, databaseType, cache);
+    }
     
     /**
      * Shard.
@@ -70,7 +77,7 @@ public final class SimpleQueryShardingEngine {
      * @return SQL route result
      */
     public SQLRouteResult shard(final String sql) {
-        SQLRouteResult result = new StatementRoutingEngine(shardingRule, metaData, databaseType, cache).route(sql);
+        SQLRouteResult result = routingEngine.route(sql);
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, result) : rewriteAndConvert(sql, result));
         if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
             SQLLogger.logSQL(sql, result.getSqlStatement(), result.getRouteUnits());
