@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,7 @@ import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 
 import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
-public class EncryptColumnTokenAssert {
+public final class EncryptColumnTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
@@ -50,11 +51,10 @@ public class EncryptColumnTokenAssert {
     private void assertEncryptColumnToken(final EncryptColumnToken actual, final ExpectedEncryptColumnToken expected) {
         assertThat(assertMessage.getFullAssertMessage("Encrypt column start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertMessage.getFullAssertMessage("Encrypt column stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
-        if(null != expected.getColumn()) {
-            assertTrue(assertMessage.getFullAssertMessage("Missing encrypt column assertion error: "), actual.getColumn() != null);
-            assertThat(assertMessage.getFullAssertMessage("Encrypt column name assertion error: "), actual.getColumn().getName(), is(expected.getColumn().getName()));
-            assertThat(assertMessage.getFullAssertMessage("Encrypt column table name assertion error: "), actual.getColumn().getTableName(), is(expected.getColumn().getTableName()));
-        }
+        assertNotNull(assertMessage.getFullAssertMessage("Encrypt column does not exist assertion error: "), expected.getColumn());
+        assertTrue(assertMessage.getFullAssertMessage("Missing encrypt column assertion error: "), actual.getColumn() != null);
+        assertThat(assertMessage.getFullAssertMessage("Encrypt column name assertion error: "), actual.getColumn().getName(), is(expected.getColumn().getName()));
+        assertThat(assertMessage.getFullAssertMessage("Encrypt column table name assertion error: "), actual.getColumn().getTableName(), is(expected.getColumn().getTableName()));
         assertThat(assertMessage.getFullAssertMessage("Encrypt column isInWhere assertion error: "), actual.isInWhere(), is(expected.isInWhere()));
     }
     

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +35,6 @@ public final class ExpectedEncryptColumnToken {
     @XmlAttribute(name = "stop-index")
     private int stopIndex;
     
-    @XmlElement(name = "column")
     private ExpectedColumn column;
     
     @XmlAttribute(name = "is-in-where")

@@ -27,7 +27,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedColumn {
+public final class ExpectedColumn {
     
     @XmlAttribute(name = "name")
     private String name;
