@@ -62,6 +62,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Getter
     private final ShardingConnection connection;
     
+    private final String sql;
+    
     private final PreparedQueryShardingEngine shardingEngine;
     
     private final PreparedStatementExecutor preparedStatementExecutor;
@@ -91,6 +93,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private ShardingPreparedStatement(
             final ShardingConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys) {
         this.connection = connection;
+        this.sql = sql;
         ShardingContext shardingContext = connection.getShardingContext();
         shardingEngine = new PreparedQueryShardingEngine(sql, 
                 shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
@@ -218,7 +221,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void shard() {
-        routeResult = shardingEngine.shard(getParameters());
+        routeResult = shardingEngine.shard(sql, getParameters());
     }
     
     @Override

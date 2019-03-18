@@ -43,6 +43,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -58,8 +59,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Getter
     private final ShardingConnection connection;
-    
-    private final SimpleQueryShardingEngine shardingEngine;
     
     private final StatementExecutor statementExecutor;
     
@@ -80,9 +79,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        ShardingContext shardingContext = connection.getShardingContext();
-        shardingEngine = new SimpleQueryShardingEngine(
-                shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
         statementExecutor = new StatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, connection);
     }
     
@@ -254,7 +250,10 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private void shard(final String sql) {
-        routeResult = shardingEngine.shard(sql);
+        ShardingContext shardingContext = connection.getShardingContext();
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(
+                shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
+        routeResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     
     private void clearPrevious() throws SQLException {

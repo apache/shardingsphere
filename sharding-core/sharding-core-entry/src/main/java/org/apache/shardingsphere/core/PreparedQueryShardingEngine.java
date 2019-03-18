@@ -17,25 +17,15 @@
 
 package org.apache.shardingsphere.core;
 
-import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.rewrite.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -50,61 +40,23 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-public final class PreparedQueryShardingEngine {
-    
-    private final String sql;
-    
-    private final ShardingRule shardingRule;
-    
-    private final ShardingProperties shardingProperties;
-    
-    private final ShardingMetaData metaData;
-    
-    private final DatabaseType databaseType;
+public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     
     private final PreparedStatementRoutingEngine routingEngine;
     
     public PreparedQueryShardingEngine(final String sql, final ShardingRule shardingRule, final ShardingProperties shardingProperties,
                                        final ShardingMetaData metaData, final DatabaseType databaseType, final ParsingResultCache cache) {
-        this.sql = sql;
-        this.shardingRule = shardingRule;
-        this.shardingProperties = shardingProperties;
-        this.metaData = metaData;
-        this.databaseType = databaseType;
+        super(shardingRule, shardingProperties, metaData, databaseType);
         routingEngine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, databaseType, cache);
     }
     
-    /**
-     * Shard.
-     * 
-     * @param parameters SQL parameters
-     * @return SQL route result
-     */
-    public SQLRouteResult shard(final List<Object> parameters) {
-        List<Object> rewriteParameters = new ArrayList<>(parameters);
-        SQLRouteResult result = routingEngine.route(rewriteParameters);
-        result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(rewriteParameters, result) : rewriteAndConvert(rewriteParameters, result));
-        if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
-            SQLLogger.logSQL(sql, result.getSqlStatement(), result.getRouteUnits());
-        }
-        return result;
+    @Override
+    protected List<Object> cloneParameters(final List<Object> parameters) {
+        return new ArrayList<>(parameters);
     }
     
-    private Collection<RouteUnit> convert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sql, parameters)));
-        }
-        return result;
-    }
-    
-    private Collection<RouteUnit> rewriteAndConvert(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult.getSqlStatement(), parameters, sqlRouteResult.getOptimizeResult());
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(sqlRouteResult.getRoutingResult().isSingleRouting());
-        Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, metaData.getDataSource())));
-        }
-        return result;
+    @Override
+    protected SQLRouteResult route(final String sql, final List<Object> parameters) {
+        return routingEngine.route(parameters);
     }
 }
