@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
@@ -66,17 +65,11 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
     
     private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        int startIndex = sqlSegment.getColumnClauseStartIndex();
-        ItemsToken columnsToken = new ItemsToken(startIndex);
-        columnsToken.setFirstOfItemsSpecial(true);
         if (shardingTableMetaData.containsTable(tableName)) {
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-                Column column = new Column(each, tableName);
-                insertStatement.getColumns().add(column);
-                columnsToken.getItems().add(each);
+                insertStatement.getColumns().add(new Column(each, tableName));
             }
         }
-        insertStatement.addSQLToken(columnsToken);
     }
     
     private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final EncryptRule encryptRule,
