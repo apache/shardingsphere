@@ -71,9 +71,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        ShardingSchema shardingSchema = (ShardingSchema) logicSchema;
-        PreparedStatementShardingEngine shardingEngine = new PreparedStatementShardingEngine(sql,
-                shardingSchema.getShardingRule(), ShardingProxyContext.getInstance().getShardingProperties(), shardingSchema.getMetaData(), databaseType, shardingSchema.getParsingResultCache());
+        PreparedStatementShardingEngine shardingEngine = new PreparedStatementShardingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(), 
+                ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
         return shardingEngine.shard(parameters);
     }
     
