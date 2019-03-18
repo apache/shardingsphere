@@ -39,11 +39,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * Sharding engine for prepared statement.
- *
+ * Sharding engine for prepared query.
+ * 
+ * <pre>
+ *     Prepared query:  
+ *       for JDBC is PreparedStatement; 
+ *       for MyQL is COM_STMT; 
+ *       for PostgreSQL is Extended Query;
+ * </pre>
+ * 
  * @author zhangliang
  */
-public final class PreparedStatementShardingEngine {
+public final class PreparedQueryShardingEngine {
     
     private final String sql;
     
@@ -57,8 +64,8 @@ public final class PreparedStatementShardingEngine {
     
     private final PreparedStatementRoutingEngine routingEngine;
     
-    public PreparedStatementShardingEngine(final String sql, final ShardingRule shardingRule, final ShardingProperties shardingProperties, 
-                                           final ShardingMetaData metaData, final DatabaseType databaseType, final ParsingResultCache cache) {
+    public PreparedQueryShardingEngine(final String sql, final ShardingRule shardingRule, final ShardingProperties shardingProperties,
+                                       final ShardingMetaData metaData, final DatabaseType databaseType, final ParsingResultCache cache) {
         this.sql = sql;
         this.shardingRule = shardingRule;
         this.shardingProperties = shardingProperties;

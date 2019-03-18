@@ -39,12 +39,19 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 
 /**
- * Sharding engine for statement.
+ * Sharding engine for simple query.
+ * 
+ * <pre>
+ *     Simple query:  
+ *       for JDBC is Statement; 
+ *       for MyQL is COM_QUERY; 
+ *       for PostgreSQL is Simple Query;
+ * </pre>
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class StatementShardingEngine {
+public final class SimpleQueryShardingEngine {
     
     private final ShardingRule shardingRule;
     

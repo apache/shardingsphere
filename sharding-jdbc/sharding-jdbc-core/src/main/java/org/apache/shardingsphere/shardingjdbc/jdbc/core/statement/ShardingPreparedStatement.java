@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import org.apache.shardingsphere.core.PreparedStatementShardingEngine;
+import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
@@ -62,7 +62,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Getter
     private final ShardingConnection connection;
     
-    private final PreparedStatementShardingEngine shardingEngine;
+    private final PreparedQueryShardingEngine shardingEngine;
     
     private final PreparedStatementExecutor preparedStatementExecutor;
     
@@ -92,7 +92,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             final ShardingConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys) {
         this.connection = connection;
         ShardingContext shardingContext = connection.getShardingContext();
-        shardingEngine = new PreparedStatementShardingEngine(sql, 
+        shardingEngine = new PreparedQueryShardingEngine(sql, 
                 shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);

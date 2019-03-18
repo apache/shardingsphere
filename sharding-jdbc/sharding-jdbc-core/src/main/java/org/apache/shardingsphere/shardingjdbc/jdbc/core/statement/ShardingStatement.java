@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.StatementShardingEngine;
+import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
@@ -59,7 +59,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     @Getter
     private final ShardingConnection connection;
     
-    private final StatementShardingEngine shardingEngine;
+    private final SimpleQueryShardingEngine shardingEngine;
     
     private final StatementExecutor statementExecutor;
     
@@ -81,7 +81,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         super(Statement.class);
         this.connection = connection;
         ShardingContext shardingContext = connection.getShardingContext();
-        shardingEngine = new StatementShardingEngine(
+        shardingEngine = new SimpleQueryShardingEngine(
                 shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
         statementExecutor = new StatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, connection);
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.StatementShardingEngine;
+import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
@@ -67,7 +67,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        StatementShardingEngine shardingEngine = new StatementShardingEngine(((ShardingSchema) logicSchema).getShardingRule(), 
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(((ShardingSchema) logicSchema).getShardingRule(), 
                 ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), databaseType, logicSchema.getParsingResultCache());
         return shardingEngine.shard(sql);
     }
