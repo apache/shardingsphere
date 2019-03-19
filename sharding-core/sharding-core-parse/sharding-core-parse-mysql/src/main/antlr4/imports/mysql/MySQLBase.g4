@@ -40,7 +40,11 @@ assignmentValue
     ;
 
 functionCall
-    : uid LP_ distinct? (exprs | ASTERISK_)? RP_ | groupConcat | windowFunction
+    : functionName LP_ distinct? (exprs | ASTERISK_)? RP_ | groupConcat | windowFunction
+    ;
+    
+functionName
+    : uid | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE
     ;
 
 groupConcat
