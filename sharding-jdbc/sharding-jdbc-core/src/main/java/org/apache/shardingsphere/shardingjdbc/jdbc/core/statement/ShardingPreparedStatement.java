@@ -21,8 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
@@ -32,14 +31,7 @@ import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.DQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
-import org.apache.shardingsphere.core.rewrite.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.executor.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
@@ -55,7 +47,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -71,7 +62,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Getter
     private final ShardingConnection connection;
     
-    private final PreparedStatementRoutingEngine routingEngine;
+    private final String sql;
+    
+    private final PreparedQueryShardingEngine shardingEngine;
     
     private final PreparedStatementExecutor preparedStatementExecutor;
     
@@ -100,9 +93,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private ShardingPreparedStatement(
             final ShardingConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys) {
         this.connection = connection;
+        this.sql = sql;
         ShardingContext shardingContext = connection.getShardingContext();
-        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), 
-                shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
+        shardingEngine = new PreparedQueryShardingEngine(sql, 
+                shardingContext.getShardingRule(), shardingContext.getShardingProperties(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getParsingResultCache());
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
@@ -112,7 +106,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ResultSet result;
         try {
             clearPrevious();
-            sqlRoute();
+            shard();
             initPreparedStatementExecutor();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(), connection.getShardingContext().getShardingRule(), 
                     routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable(), preparedStatementExecutor.executeQuery());
@@ -161,7 +155,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public int executeUpdate() throws SQLException {
         try {
             clearPrevious();
-            sqlRoute();
+            shard();
             initPreparedStatementExecutor();
             return preparedStatementExecutor.executeUpdate();
         } finally {
@@ -173,7 +167,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public boolean execute() throws SQLException {
         try {
             clearPrevious();
-            sqlRoute();
+            shard();
             initPreparedStatementExecutor();
             return preparedStatementExecutor.execute();
         } finally {
@@ -218,7 +212,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public void addBatch() {
         try {
-            sqlRoute();
+            shard();
             batchPreparedStatementExecutor.addBatchForRouteUnits(routeResult);
         } finally {
             currentResultSet = null;
@@ -226,34 +220,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
     }
     
-    private void sqlRoute() {
-        List<Object> parameters = new ArrayList<>(getParameters());
-        routeResult = routingEngine.route(parameters);
-        routeResult.getRouteUnits().addAll(
-                HintManager.isDatabaseShardingOnly() ? getRouteUnitsForHint(routingEngine.getLogicSQL(), getParameters()) : getRouteUnits(routingEngine.getLogicSQL(), parameters));
-    }
-    
-    private Collection<RouteUnit> getRouteUnitsForHint(final String logicSQL, final List<Object> parameters) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : routeResult.getRoutingResult().getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(logicSQL, parameters)));
-        }
-        return result;
-    }
-    
-    private Collection<RouteUnit> getRouteUnits(final String logicSQL, final List<Object> parameters) {
-        ShardingContext shardingContext = connection.getShardingContext();
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(
-                shardingContext.getShardingRule(), logicSQL, shardingContext.getDatabaseType(), routeResult.getSqlStatement(), parameters, routeResult.getOptimizeResult());
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(routeResult.getRoutingResult().isSingleRouting());
-        Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : routeResult.getRoutingResult().getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingContext.getMetaData().getDataSource())));
-        }
-        if (shardingContext.getShardingProperties().getValue(ShardingPropertiesConstant.SQL_SHOW)) {
-            SQLLogger.logSQL(logicSQL, routeResult.getSqlStatement(), routeResult.getRouteUnits());
-        }
-        return result;
+    private void shard() {
+        routeResult = shardingEngine.shard(sql, getParameters());
     }
     
     @Override
