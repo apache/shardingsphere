@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.route;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
@@ -37,7 +36,6 @@ import java.util.List;
  */
 public final class PreparedStatementRoutingEngine {
     
-    @Getter
     private final String logicSQL;
     
     private final ShardingRouter shardingRouter;
