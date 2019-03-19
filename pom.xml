@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-sphere</artifactId>
-    <version>3.1.0.1-SNAPSHOT</version>
+    <version>3.1.0.1</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
