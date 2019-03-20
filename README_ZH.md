@@ -113,3 +113,11 @@ ShardingSphere是多接入端共同组成的生态圈。
 ## Roadmap
 
 ![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_cn.png)
+
+## 如何编译
+
+安装`maven`至您的开发环境并且执行命令：
+
+```shell
+mvn install
+``` 
