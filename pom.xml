@@ -24,7 +24,7 @@
         <version>21</version>
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-sphere</artifactId>
+    <artifactId>shardingsphere</artifactId>
     <version>4.0.0-RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
