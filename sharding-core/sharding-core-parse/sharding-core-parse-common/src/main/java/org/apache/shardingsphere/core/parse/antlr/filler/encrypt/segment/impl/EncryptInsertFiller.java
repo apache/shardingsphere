@@ -53,7 +53,7 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
     
     private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlSegment.getColumns().isEmpty()) {
-            createFromMeta(insertStatement, sqlSegment, encryptRule, shardingTableMetaData);
+            createFromMeta(insertStatement, shardingTableMetaData);
             return;
         }
         String tableName = insertStatement.getTables().getSingleTableName();
@@ -63,7 +63,7 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
         }
     }
     
-    private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    private void createFromMeta(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
         if (shardingTableMetaData.containsTable(tableName)) {
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
