@@ -245,7 +245,7 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>source-distribution</id>
+                                <id>src</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
@@ -257,14 +257,14 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>jar-distribution</id>
+                                <id>bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
                                     <descriptors>
-                                        <descriptor>src/main/assembly/jar-distribution.xml</descriptor>
+                                        <descriptor>src/main/assembly/binary-distribution.xml</descriptor>
                                     </descriptors>
                                 </configuration>
                             </execution>
