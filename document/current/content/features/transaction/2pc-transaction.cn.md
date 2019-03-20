@@ -59,7 +59,7 @@ XAResource2.prepare     -- ack: yes
 XAResource1.commit
 XAResource2.commit
      
-XAResource1.prepare     -- ack: ok
+XAResource1.prepare     -- ack: yes
 XAResource2.prepare     -- ack: no
 XAResource1.rollback
 XAResource2.rollback

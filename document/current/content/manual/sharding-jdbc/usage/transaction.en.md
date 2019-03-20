@@ -9,29 +9,12 @@ weight = 5
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-2pc-xa</artifactId>
+    <artifactId>sharding-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
 XA transaction manager will be uploaded by Sharding-JDBC in SPI form.
-
-## Connection Pool Configuration
-
-ShardingSphere supports to transform normal database connection pools to connection pools that support XA transactions; 
-they also provide  internal support for HikariCP, Druid and DBCP2, requiring no extra configurations. 
-Other connection pools require users to use SPI interface that implements `DataSourceMapConverter` to expand, please refer to the implementation of `org.apache.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`. 
-If ShardingSphere cannot find a proper implementation, it will create XA transaction connection pools according to default configurations. 
-Default properties are as follow:
-
-| *Property*                      | *Default Value*   |
-| ------------------------------- | ----------------- |
-| connectionTimeoutMilliseconds   | 30 * 1000         |
-| idleTimeoutMilliseconds         | 60 * 1000         |
-| maintenanceIntervalMilliseconds | 30 * 1000         |
-| maxLifetimeMilliseconds         | 0 (no limitation) |
-| maxPoolSize                     | 50                |
-| minPoolSize                     | 1                 |
 
 ## Transaction Type Switch
 
