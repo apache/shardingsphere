@@ -31,12 +31,12 @@
             </includes>
         </fileSet>
     </fileSets>
-
+    
     <dependencySets>
         <dependencySet>
             <useProjectArtifact>true</useProjectArtifact>
             <unpack>false</unpack>
-            <outputDirectory>/libs</outputDirectory>
+            <outputDirectory>/lib</outputDirectory>
             <scope>runtime</scope>
             <includes>
                 <include>org.apache.shardingsphere:*</include>
