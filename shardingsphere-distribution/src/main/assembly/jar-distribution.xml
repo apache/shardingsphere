@@ -17,29 +17,30 @@
 
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-    <id>assembly</id>
+    <id>jar-distribution</id>
     <formats>
-        <format>tar.gz</format>
+        <format>zip</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
     
     <fileSets>
         <fileSet>
-            <directory>src/resources/bin</directory>
-            <outputDirectory>bin</outputDirectory>
-            <fileMode>0755</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>src/resources/conf</directory>
-            <outputDirectory>conf</outputDirectory>
-            <fileMode>0644</fileMode>
+            <directory>../</directory>
+            <includes>
+                <include>DISCLAIMER</include>
+            </includes>
         </fileSet>
     </fileSets>
-    
+
     <dependencySets>
         <dependencySet>
-            <outputDirectory>lib</outputDirectory>
-            <fileMode>0644</fileMode>
+            <useProjectArtifact>true</useProjectArtifact>
+            <unpack>false</unpack>
+            <outputDirectory>/libs</outputDirectory>
+            <scope>runtime</scope>
+            <includes>
+                <include>org.apache.shardingsphere:*</include>
+            </includes>
         </dependencySet>
     </dependencySets>
 </assembly>
