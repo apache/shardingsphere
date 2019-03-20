@@ -37,24 +37,24 @@ keywordCanBeID
     : DATE | PASSWORD
     ;
     
-fullID
-    : uid (DOT_ uid)?
-    ;
-
 schemaName
-    : fullID
+    : uid
     ;
-
+    
 tableName
-    : fullID
+    : (schemaName DOT_)? uid
     ;
-
+    
+ownerName
+    : uid
+    ;
+    
 columnName
-    : fullID
+    : (ownerName DOT_)? uid
     ;
 
 indexName
-    : fullID
+    : (schemaName DOT_)? uid
     ;
 
 alias
@@ -167,7 +167,7 @@ simpleExpr
     ;
 
 functionCall
-    : fullID LP_ distinct? (exprs | ASTERISK_)? RP_
+    : matchNone
     ;
 
 distinct
@@ -237,7 +237,7 @@ asterisk
     ;
 
 ignoredIdentifier_
-    : fullID
+    : uid (DOT_ uid)?
     ;
 
 ignoredIdentifiers_

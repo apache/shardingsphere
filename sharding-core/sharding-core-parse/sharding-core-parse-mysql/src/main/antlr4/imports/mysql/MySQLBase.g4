@@ -24,7 +24,7 @@ alias
     ;
 
 tableName
-    : fullID | uid DOT_ASTERISK_ | ASTERISK_
+    : (schemaName DOT_)? uid | uid DOT_ASTERISK_ | ASTERISK_
     ;
 
 assignmentValueList
@@ -60,7 +60,7 @@ overClause
     ;
 
 windowSpec
-    : fullID? windowPartitionClause? orderByClause? frameClause?
+    : uid? windowPartitionClause? orderByClause? frameClause?
     ;
 
 windowPartitionClause
