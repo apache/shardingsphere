@@ -4,46 +4,31 @@ title = "分布式事务"
 weight = 5
 +++
 
-## 两阶段提交-XA
+## 1. 两阶段提交-XA
 
-### 引入Maven依赖
+### 1.1 引入Maven依赖
 
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-2pc-xa</artifactId>
+    <artifactId>sharding-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
 XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
 
-### 连接池配置
+### 1.2 Atomikos参数配置 (可选)
 
-ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。
-其它连接池需要用户实现`DataSourceMapConverter`的SPI接口进行扩展，可以参考`org.apache.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`的实现。
-若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
+ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中会生成`xa_tx.log`, 这是XA崩溃恢复时所需的日志，请勿删除。
 
-| *属性名称*                          | *默认值*   |
-| -----------------------------------| ----------|
-| connectionTimeoutMilliseconds      | 30 * 1000 |
-| idleTimeoutMilliseconds            | 60 * 1000 |
-| maintenanceIntervalMilliseconds    | 30 * 1000 |
-| maxLifetimeMilliseconds            | 0 (无限制) |
-| maxPoolSize                        | 50        |
-| minPoolSize                        | 1         |
+也可以通过在项目的classpath中添加`jta.properties`来定制化Atomikos配置项。具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
 
-### Atomikos参数配置
-
-ShardingSphere默认的XA事务管理器为Atomikos。
-可以通过在项目的classpath中添加`jta.properties`来定制化Atomikos配置项。
-具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
-
-## 第三方BASE实现-Saga
+## 2. 第三方BASE实现-Saga
 
 目前Apache/incubator-shardingsphere暂无BASE事务的实现，但是仍然可以使用第三方实现的Saga事务。
 
-### 引入Maven依赖
+### 2.1 引入Maven依赖
 
 ```xml
 <dependency>
@@ -55,7 +40,7 @@ ShardingSphere默认的XA事务管理器为Atomikos。
 
 Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。
 
-### Saga相关配置
+### 2.2 Saga相关配置
 
 可以通过在项目的classpath中添加`saga.properties`来定制化Saga事务的配置项。
 配置项的属性及说明如下：
@@ -70,7 +55,7 @@ Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。
 | saga.persistence.enabled                         |  false  | Saga引擎对快照及执行日志进行持久化  |
 | saga.actuator.recovery.policy                    | ForwardRecovery | Saga引擎对失败事务的补偿策略，ForwardRecovery为最大努力送达，BackwardRecovery为反向SQL补偿|
 
-### Saga 快照及日志持久化
+### 2.3 Saga 快照及日志持久化
 
 当`saga.persistence.enabled`设置为`true`时，Saga引擎将会对事务的快照及执行日志进行持久化操作。
 持久化操作默认通过HikariCP链接池写入到MySQL、H2或PostgreSQL数据库中。
@@ -113,7 +98,7 @@ CREATE TABLE IF NOT EXISTS saga_event(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8
 ```
 
-### Saga 快照及日志持久化SPI定制
+### 2.4 Saga 快照及日志持久化SPI定制
 
 默认通过数据库来持久化快照和日志并不一定能够满足用户对业务和性能的需求。因此Saga引擎提供SPI允许用户定制化持久化部分。
 当`saga.persistence.enabled`设置为`true`且Saga引擎监测到有持久化SPI时，Saga引擎将通过用户实现的SPI代替默认持久化进行持久化工作。
@@ -128,13 +113,13 @@ CREATE TABLE IF NOT EXISTS saga_event(
 </dependency>
 ```
 
-## 事务类型切换
+## 3. 分布式事务接入端
 
 ShardingSphere的事务类型存放在`TransactionTypeHolder`的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。
 
 注意：数据库连接创建之后，事务类型将无法更改。
 
-### API方式
+### 3.1 原生API
 
 ```java
 TransactionTypeHolder.set(TransactionType.LOCAL);
@@ -151,8 +136,31 @@ TransactionTypeHolder.set(TransactionType.LOCAL);
 ```java
 TransactionTypeHolder.set(TransactionType.BASE);
 ```
+### 3.2 Spring注解
+#### 使用方式
 
-### SpringBootStarter使用方式
+```java
+@ShardingTransactionType(TransactionType.LOCAL)
+@Transactional
+```
+
+或
+
+```java
+@ShardingTransactionType(TransactionType.XA)
+@Transactional
+```
+
+或
+
+```java
+@ShardingTransactionType(TransactionType.BASE)
+@Transactional
+```
+
+注意：`@ShardingTransactionType`需要同Spring的`@Transactional`配套使用，事务才会生效。
+
+#### Spring boot starter
 引入Maven依赖：
 
 ```xml
@@ -163,36 +171,7 @@ TransactionTypeHolder.set(TransactionType.BASE);
 </dependency>
 ```
 
-### SpringBoot使用方式
-引入Maven依赖：
-
-```xml
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
-
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-aop</artifactId>
-    <version>${spring-boot.version}</version>
-</dependency>
-
-<spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
-
-```
-
-AutoConfiguration配置
-
-```java
-@SpringBootApplication(exclude = JtaAutoConfiguration.class)
-@ComponentScan("org.apache.shardingsphere.transaction.aspect")
-public class StartMain {
-}
-```
-
-### Spring Namespace使用方式
+#### Spring namespace
 
 引入Maven依赖：
 
@@ -224,26 +203,5 @@ public class StartMain {
 
 ```
 
-### 业务代码
-在需要事务的方法或类中添加相关注解即可，例如：
-
-```java
-@ShardingTransactionType(TransactionType.LOCAL)
-@Transactional
-```
-
-或
-
-```java
-@ShardingTransactionType(TransactionType.XA)
-@Transactional
-```
-
-或
-
-```java
-@ShardingTransactionType(TransactionType.BASE)
-@Transactional
-```
-
-注意：`@ShardingTransactionType`需要同Spring的`@Transactional`配套使用，事务才会生效。
+## 分布式事务example
+[transaction-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/transaction-example)
