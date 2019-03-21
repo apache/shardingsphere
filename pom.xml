@@ -25,7 +25,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>4.0.0-RC1-SNAPSHOT</version>
+    <version>4.0.0-RC1</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -909,7 +909,7 @@
         <connection>scm:git:https://github.com/apache/incubator-shardingsphere.git</connection>
         <developerConnection>scm:git:https://github.com/apache/incubator-shardingsphere.git</developerConnection>
         <url>https://github.com/apache/incubator-shardingsphere.git</url>
-      <tag>HEAD</tag>
+      <tag>4.0.0-RC1</tag>
     </scm>
     
     <mailingLists>
