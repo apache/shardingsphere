@@ -108,4 +108,15 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().get(0), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
     }
+    
+    public void assertDeleteWithPlaceholderWithEncrypt() {
+        String sql = "DELETE FROM t_encrypt WHERE col1 = ? and col2 = ?";
+        
+    }
+    
+    private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
+        SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
+        return new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, parameters, optimizeResult).rewrite().toSQL();
+    }
 }
