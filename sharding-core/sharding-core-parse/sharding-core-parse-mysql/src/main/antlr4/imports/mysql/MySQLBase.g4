@@ -40,17 +40,66 @@ assignmentValue
     ;
 
 functionCall
-    : functionName LP_ distinct? (exprs | ASTERISK_)? RP_ | groupConcat | windowFunction
+    : functionName LP_ distinct? (exprs | ASTERISK_)? RP_ | specialFunction
+    ;
+
+specialFunction
+    : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
     ;
     
 functionName
-    : uid | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE
+    : uid | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHARSET | CHAR | TRIM | WEIGHT_STRING
     ;
 
 groupConcat
     : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
     ;
 
+castFunction
+    : CAST LP_ expr AS dataType RP_
+    ;
+    
+convertFunction
+    : CONVERT LP_ expr ',' dataType RP_
+    | CONVERT LP_ expr USING ignoredIdentifier_ RP_ 
+    ;
+    
+positionFunction
+    : POSITION LP_ expr IN expr RP_
+    ;
+    
+substringFunction
+    :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
+    ;
+    
+extractFunction
+    : EXTRACT LP_ uid FROM expr RP_
+    ;
+    
+charFunction
+    : CHAR LP_ exprs (USING ignoredIdentifier_)? RP_
+    ;
+
+trimFunction
+    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    ;
+    
+weightStringFunction
+    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
+    ;
+    
+levelClause
+    : LEVEL (levelInWeightListElements | (NUMBER_ MINUS_ NUMBER_))
+    ;
+    
+levelInWeightListElements
+    : levelInWeightListElement (COMMA_ levelInWeightListElement)*
+    ;
+
+levelInWeightListElement
+    : NUMBER_ (ASC | DESC)? REVERSE?
+    ;
+    
 windowFunction
     : uid exprList overClause
     ;
@@ -113,4 +162,20 @@ tableReferences
 
 whereClause
     : WHERE expr
+    ;
+
+dataType
+    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    ;
+
+dataTypeName_
+    : uid uid?
+    ;
+
+characterSet_
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
+    ;
+
+collateClause_
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
