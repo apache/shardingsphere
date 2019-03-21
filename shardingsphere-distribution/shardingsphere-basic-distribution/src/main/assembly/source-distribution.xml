@@ -30,6 +30,7 @@
             <useDefaultExcludes>true</useDefaultExcludes>
             <includes>
                 <include>**/*</include>
+                <include>README.md</include>
             </includes>
             <excludes>
                 <!-- github ignore -->
@@ -48,6 +49,7 @@
                 
                 <!-- maven plugin ignore -->
                 <exclude>release.properties</exclude>
+                <exclude>**/pom.xml.releaseBackup</exclude>
                 <exclude>**/cobertura.ser</exclude>
                 <exclude>*.gpg</exclude>
                 
