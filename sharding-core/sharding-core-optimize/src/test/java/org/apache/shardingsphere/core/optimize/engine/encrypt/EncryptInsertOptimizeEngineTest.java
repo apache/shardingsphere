@@ -17,21 +17,37 @@
 
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 public final class EncryptInsertOptimizeEngineTest {
     
     private EncryptRule encryptRule;
     
+    private final List<Object> parametersWithValues = Arrays.asList((Object) 1, (Object) 2);
+    
+    private final List<Object> parametersWithoutValues = Collections.emptyList();
+    
     @Before
     public void setUp() {
-
+        encryptRule = new EncryptRule(createEncryptRuleConfiguration());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -39,13 +55,32 @@ public final class EncryptInsertOptimizeEngineTest {
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
         encryptTableRuleConfig.setTable("t_encrypt");
         encryptTableRuleConfig.setEncryptorConfig(encryptorConfig);
-        EncryptorConfiguration encryptorQueryConfig = new EncryptorConfiguration("assistedTest", "col3, col4", "query3, query4", new Properties());
+        EncryptorConfiguration encryptorQueryConfig = new EncryptorConfiguration("assistedTest", "col1, col1", "query1, query1", new Properties());
         EncryptTableRuleConfiguration encryptQueryTableRuleConfig = new EncryptTableRuleConfiguration();
         encryptQueryTableRuleConfig.setTable("t_query_encrypt");
         encryptQueryTableRuleConfig.setEncryptorConfig(encryptorQueryConfig);
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         result.getTableRuleConfigs().add(encryptTableRuleConfig);
         result.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
+        return result;
+    }
+    
+    public void assertInsertStatementWithValuesWithPlaceHolderWithEncrypt() {
+        InsertStatement insertStatement = createInsertStatementWithValuesWithPlaceHolderWithEncrypt();
+    }
+    
+    private InsertStatement c{
+        InsertStatement result = new InsertStatement();
+        result.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
+        result.addSQLToken(new TableToken(12, 0, "t_encrypt", "", ""));
+        result.addSQLToken(new InsertValuesToken(34, DefaultKeyword.VALUES));
+        result.getColumns().add(new Column("col1", "t_encrypt"));
+        result.getColumns().add(new Column("col2", "t_encrypt"));
+        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 2);
+        insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
+        insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
+        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getInsertValues().add(insertValue);
         return result;
     }
 }
