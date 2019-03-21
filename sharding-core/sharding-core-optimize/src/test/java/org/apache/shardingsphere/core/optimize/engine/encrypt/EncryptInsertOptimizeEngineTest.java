@@ -17,11 +17,30 @@
 
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
+
+import java.util.Properties;
 
 public final class EncryptInsertOptimizeEngineTest {
     
+    private EncryptRule encryptRule;
+    
     @Before
     public void setUp() {
+        EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("test", "col1, col2", new Properties());
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
+        encryptTableRuleConfig.setTable("t_encrypt");
+        encryptTableRuleConfig.setEncryptorConfig(encryptorConfig);
+        EncryptorConfiguration encryptorQueryConfig = new EncryptorConfiguration("assistedTest", "col3, col4", "query3, query4", new Properties());
+        EncryptTableRuleConfiguration encryptQueryTableRuleConfig = new EncryptTableRuleConfiguration();
+        encryptQueryTableRuleConfig.setTable("t_query_encrypt");
+        encryptQueryTableRuleConfig.setEncryptorConfig(encryptorQueryConfig);
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
+        encryptRuleConfig.getTableRuleConfigs().add(encryptTableRuleConfig);
+        encryptRuleConfig.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
     }
 }
