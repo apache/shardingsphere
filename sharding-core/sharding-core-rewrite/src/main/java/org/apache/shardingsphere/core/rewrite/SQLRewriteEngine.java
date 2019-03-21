@@ -108,6 +108,8 @@ public final class SQLRewriteEngine {
     
     private final List<Object> parameters;
     
+    private final Map<Integer, Object> appendedIndexAndParameters;
+    
     private final OptimizeResult optimizeResult;
     
     private final RewriteHook rewriteHook = new SPIRewriteHook();
@@ -129,6 +131,7 @@ public final class SQLRewriteEngine {
         this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
         this.parameters = parameters;
+        appendedIndexAndParameters = new LinkedHashMap<>();
         this.optimizeResult = optimizeResult;
     }
     
@@ -145,6 +148,7 @@ public final class SQLRewriteEngine {
         }
         appendInitialLiterals(!isSingleRouting, result);
         appendTokensAndPlaceholders(!isSingleRouting, result);
+        reviseParameters();
         return result;
     }
     
@@ -533,5 +537,11 @@ public final class SQLRewriteEngine {
             }
         }
         return result;
+    }
+    
+    private void reviseParameters() {
+        for (Entry<Integer, Object> entry : appendedIndexAndParameters.entrySet()) {
+            parameters.add(entry.getKey(), entry.getValue());
+        }
     }
 }
