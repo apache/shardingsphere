@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -90,9 +90,7 @@ public final class EncryptSQLRewriteEngineTest {
     @Test
     public void assertSelectWithoutPlaceholderWithEncrypt() {
         String sql = "SELECT * FROM t_encrypt WHERE col1 = 1 or col2 = 2";
-        SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, new LinkedList<>()).optimize();
-        SQLUnit actual = new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, new LinkedList<>(), optimizeResult).rewrite().toSQL();
+        SQLUnit actual = getSQLUnit(sql, Collections.emptyList());
         assertThat(actual.getSql(), is("SELECT * FROM t_encrypt WHERE col1 = 'encryptValue' or col2 = 'encryptValue'"));
         assertThat(actual.getParameters().size(), is(0));
     }
@@ -100,17 +98,21 @@ public final class EncryptSQLRewriteEngineTest {
     @Test
     public void assertSelectWithPlaceholderWithQueryEncrypt() {
         String sql = "SELECT * FROM t_query_encrypt WHERE col1 = ? or col2 = ?";
-        SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
-        SQLUnit actual = new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, parameters, optimizeResult).rewrite().toSQL();
+        SQLUnit actual = getSQLUnit(sql, parameters);
         assertThat(actual.getSql(), is("SELECT * FROM t_query_encrypt WHERE query1 = ? or query2 = ?"));
         assertThat(actual.getParameters().size(), is(2));
         assertThat(actual.getParameters().get(0), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
     }
     
+    @Test
     public void assertDeleteWithPlaceholderWithEncrypt() {
         String sql = "DELETE FROM t_encrypt WHERE col1 = ? and col2 = ?";
+        SQLUnit actual = getSQLUnit(sql, parameters);
+        assertThat(actual.getSql(), is("DELETE FROM t_encrypt WHERE col1 = ? and col2 = ?"));
+        assertThat(actual.getParameters().size(), is(2));
+        assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
         
     }
     
