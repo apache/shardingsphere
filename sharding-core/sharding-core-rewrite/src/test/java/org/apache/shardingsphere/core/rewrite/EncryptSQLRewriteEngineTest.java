@@ -174,6 +174,18 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().size(), is(0));
     }
     
+    @Test
+    public void assertInsertWithSetWithPlaceholderWithQueryEncrypt() {
+        String sql = "INSERT INTO t_query_encrypt SET col1 = ?, col2 = ?";
+        SQLUnit actual = getSQLUnit(sql, parameters);
+        assertThat(actual.getSql(), is("INSERT INTO t_query_encrypt SET col1 = ?, col2 = ?, query1 = ?, query2 = ?"));
+        assertThat(actual.getParameters().size(), is(4));
+        assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(3), is((Object) "assistedEncryptValue"));
+    }
+    
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
