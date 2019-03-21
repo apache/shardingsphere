@@ -36,6 +36,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -51,11 +52,14 @@ public final class EncryptSQLRewriteEngineTest {
     
     private EncryptSQLParsingEngine sqlParsingEngine;
     
-    private final List<Object> parameters = Arrays.asList((Object) 1, (Object) 2);
+    private List<Object> parameters;
     
     @Before
     public void setUp() {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
+        parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(2);
         sqlParsingEngine = new EncryptSQLParsingEngine(databaseType, encryptRule, createShardingTableMetaData());
     }
     
@@ -130,6 +134,17 @@ public final class EncryptSQLRewriteEngineTest {
         SQLUnit actual = getSQLUnit(sql, Collections.emptyList());
         assertThat(actual.getSql(), is("UPDATE t_encrypt set col1 = 'encryptValue' where col2 = 'encryptValue'"));
         assertThat(actual.getParameters().size(), is(0));
+    }
+    
+    @Test
+    public void assertUpdateWithPlaceholderWithQueryEncrypt() {
+        String sql = "UPDATE t_query_encrypt set col1 = ? where col2 = ?";
+        SQLUnit actual = getSQLUnit(sql, parameters);
+        assertThat(actual.getSql(), is("UPDATE t_query_encrypt set col1 = ?, query1 = ? where query2 = ?"));
+        assertThat(actual.getParameters().size(), is(3));
+        assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
     }
     
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
