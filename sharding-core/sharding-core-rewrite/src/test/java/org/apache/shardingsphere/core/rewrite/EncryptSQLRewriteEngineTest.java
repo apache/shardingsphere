@@ -122,7 +122,14 @@ public final class EncryptSQLRewriteEngineTest {
         SQLUnit actual = getSQLUnit(sql, Collections.emptyList());
         assertThat(actual.getSql(), is("DELETE FROM t_query_encrypt WHERE query1 = 'assistedEncryptValue' and query2 = 'assistedEncryptValue'"));
         assertThat(actual.getParameters().size(), is(0));
-        
+    }
+    
+    @Test
+    public void assertUpdateWithoutPlaceholderWithEncrypt() {
+        String sql = "UPDATE t_encrypt set col1 = 3 where col2 = 2";
+        SQLUnit actual = getSQLUnit(sql, Collections.emptyList());
+        assertThat(actual.getSql(), is("UPDATE t_encrypt set col1 = 'encryptValue' where col2 = 'encryptValue'"));
+        assertThat(actual.getParameters().size(), is(0));
     }
     
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
