@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
@@ -94,6 +95,34 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
+        result.getInsertValues().getInsertValues().add(insertValue);
+        return result;
+    }
+    
+    @Test
+    public void assertInsertStatementWithValuesWithoutPlaceHolderWithEncrypt() {
+        InsertStatement insertStatement = createInsertStatementWithValuesWithoutPlaceHolderWithEncrypt();
+        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithoutValues);
+        OptimizeResult actual = optimizeEngine.optimize();
+        assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col1"), is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col2"), is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("(1, 2)"));
+        
+    }
+    
+    private InsertStatement createInsertStatementWithValuesWithoutPlaceHolderWithEncrypt() {
+        InsertStatement result = new InsertStatement();
+        result.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
+        result.addSQLToken(new TableToken(12, 0, "t_encrypt", "", ""));
+        result.addSQLToken(new InsertValuesToken(34, DefaultKeyword.VALUES));
+        result.getColumns().add(new Column("col1", "t_encrypt"));
+        result.getColumns().add(new Column("col2", "t_encrypt"));
+        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 0);
+        insertValue.getColumnValues().add(new SQLNumberExpression(1));
+        insertValue.getColumnValues().add(new SQLNumberExpression(2));
         result.getInsertValues().getInsertValues().add(insertValue);
         return result;
     }
