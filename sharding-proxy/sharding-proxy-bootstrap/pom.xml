@@ -103,7 +103,7 @@
                 <configuration>
                     <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
                     <descriptors>
-                        <descriptor>src/main/resources/assembly/assembly.xml</descriptor>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
@@ -120,7 +120,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <configuration>
-                    <imageName>shardingsphere/sharding-proxy:4.0.0-RC1-SNAPSHOT</imageName>
+                    <imageName>shardingsphere/sharding-proxy:4.0.0-RC1</imageName>
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>

@@ -1,21 +1,30 @@
-## 3.1.0
+## 4.0.0.RC1
+
+Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First apache release.
 
 ### API Changes
 
 1. Adjust persist structure for orchestration's registry center.
 1. Adjust Sharding-JDBC configuration API.
+1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
 
 ### New Features
 
 1. XA Transaction available.
 1. All SQL 100% compatible if route to single data node (MySQL Only).
 1. DISTINCT SQL syntax available.
-1. Broadcast table available.
+1. Broadcast table .
 1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
+1. Data encrypt available.
+1. Use PostgreSQL protocol access Sharding-Proxy available.
 
 ###  Change Logs
+
 1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+1. [MILESTONE #5](https://github.com/sharding-sphere/sharding-sphere/milestone/5)
+1. [MILESTONE #6](https://github.com/sharding-sphere/sharding-sphere/milestone/6)
+
 
 ## 3.0.0
 
