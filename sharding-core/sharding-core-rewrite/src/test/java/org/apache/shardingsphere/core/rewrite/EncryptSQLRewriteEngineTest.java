@@ -24,23 +24,32 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
+import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.EncryptSQLParsingEngine;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 public final class EncryptSQLRewriteEngineTest {
     
+    private EncryptRule encryptRule;
+    
     private EncryptSQLParsingEngine sqlParsingEngine;
+    
+    private final List<Object> parameters = Arrays.asList((Object) 1, (Object) 2);
     
     @Before
     public void setUp() {
-        sqlParsingEngine = new EncryptSQLParsingEngine(DatabaseType.MySQL, new EncryptRule(createEncryptRuleConfiguration()), createShardingTableMetaData());
-        
+        encryptRule = new EncryptRule(createEncryptRuleConfiguration());
+        sqlParsingEngine = new EncryptSQLParsingEngine(DatabaseType.MySQL, encryptRule, createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -69,5 +78,11 @@ public final class EncryptSQLRewriteEngineTest {
         tables.put("t_encrypt", encryptTableMetaData);
         tables.put("t_query_encrypt", queryTableMetaData);
         return new ShardingTableMetaData(tables);
+    }
+    
+    public void assertSelectWithoutPlaceholderWithEncrypt() {
+        String sql = "SELECT * FROM t_encrypt WHERE col1 = 1 or col2 = 2";
+        SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(, sqlStatement, new LinkedList<>()).optimize();
     }
 }
