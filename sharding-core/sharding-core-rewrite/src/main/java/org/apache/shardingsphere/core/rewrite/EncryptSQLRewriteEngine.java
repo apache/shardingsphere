@@ -278,7 +278,7 @@ public final class EncryptSQLRewriteEngine {
         List<Comparable<?>> encryptAssistedColumnValues = shardingEncryptor instanceof ShardingQueryAssistedEncryptor 
                 ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, originalColumnValues) : new LinkedList<Comparable<?>>();
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
-        appendParameters(encryptColumnToken, encryptAssistedColumnValues);
+        appendIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues);
         return shardingEncryptor instanceof ShardingQueryAssistedEncryptor ? getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues) 
                 : getEncryptUpdateItemColumnPlaceholder(encryptColumnToken, encryptColumnValues);
     }
@@ -304,14 +304,14 @@ public final class EncryptSQLRewriteEngine {
         return new LinkedHashMap<>();
     }
     
-    private void appendParameters(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptAssistedColumnValues) {
+    private void appendIndexAndParameters(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptAssistedColumnValues) {
         if (encryptAssistedColumnValues.isEmpty()) {
             return;
         }
         if (!isUsingParameters(encryptColumnToken)) {
             return;
         }
-        parameters.add(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
+        appendedIndexAndParameters.put(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
     }
     
     private boolean isUsingParameters(final EncryptColumnToken encryptColumnToken) {
