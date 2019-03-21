@@ -17,11 +17,32 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.junit.Before;
+
+import java.util.Properties;
 
 public final class EncryptSQLRewriteEngineTest {
     
     @Before
     public void setUp() {
+        
+    }
+    
+    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
+        EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("test", "col1, col2", new Properties());
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
+        encryptTableRuleConfig.setTable("t_encrypt");
+        encryptTableRuleConfig.setEncryptorConfig(encryptorConfig);
+        EncryptorConfiguration encryptorQueryConfig = new EncryptorConfiguration("assistedTest", "col1, col2", "query1, query2", new Properties());
+        EncryptTableRuleConfiguration encryptQueryTableRuleConfig = new EncryptTableRuleConfiguration();
+        encryptQueryTableRuleConfig.setTable("t_query_encrypt");
+        encryptQueryTableRuleConfig.setEncryptorConfig(encryptorQueryConfig);
+        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
+        result.getTableRuleConfigs().add(encryptTableRuleConfig);
+        result.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
+        return result;
     }
 }
