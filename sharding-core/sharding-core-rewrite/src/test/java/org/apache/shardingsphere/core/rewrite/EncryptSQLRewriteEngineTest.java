@@ -40,6 +40,8 @@ import java.util.Properties;
 
 public final class EncryptSQLRewriteEngineTest {
     
+    private final DatabaseType databaseType = DatabaseType.MySQL;
+    
     private EncryptRule encryptRule;
     
     private EncryptSQLParsingEngine sqlParsingEngine;
@@ -49,7 +51,7 @@ public final class EncryptSQLRewriteEngineTest {
     @Before
     public void setUp() {
         encryptRule = new EncryptRule(createEncryptRuleConfiguration());
-        sqlParsingEngine = new EncryptSQLParsingEngine(DatabaseType.MySQL, encryptRule, createShardingTableMetaData());
+        sqlParsingEngine = new EncryptSQLParsingEngine(databaseType, encryptRule, createShardingTableMetaData());
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -83,6 +85,7 @@ public final class EncryptSQLRewriteEngineTest {
     public void assertSelectWithoutPlaceholderWithEncrypt() {
         String sql = "SELECT * FROM t_encrypt WHERE col1 = 1 or col2 = 2";
         SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
-        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(, sqlStatement, new LinkedList<>()).optimize();
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, new LinkedList<>()).optimize();
+        SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, new LinkedList<>(), optimizeResult).rewrite();
     }
 }
