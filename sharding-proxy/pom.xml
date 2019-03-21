@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>4.0.0-RC1-SNAPSHOT</version>
+        <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy</artifactId>
     <packaging>pom</packaging>
@@ -34,8 +34,4 @@
         <module>sharding-proxy-backend</module>
         <module>sharding-proxy-bootstrap</module>
     </modules>
-    
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
 </project>
