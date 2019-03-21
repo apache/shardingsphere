@@ -53,7 +53,7 @@ public final class EncryptRule implements SQLStatementFillerRule {
             tableRules.add(tableRule);
             shardingEncryptorStrategies.put(tableRule.getTable(), tableRule.getShardingEncryptorStrategy());
         }
-        defaultEncryptorStrategy = new ShardingEncryptorStrategy(encryptRuleConfiguration.getDefaultEncryptorConfig());
+        defaultEncryptorStrategy = null != encryptRuleConfiguration.getDefaultEncryptorConfig() ? new ShardingEncryptorStrategy(encryptRuleConfiguration.getDefaultEncryptorConfig()) : null;
         encryptorEngine = new ShardingEncryptorEngine(shardingEncryptorStrategies, defaultEncryptorStrategy);
     }
     
