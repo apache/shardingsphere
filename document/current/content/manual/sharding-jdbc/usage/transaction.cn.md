@@ -202,3 +202,6 @@ TransactionTypeHolder.set(TransactionType.BASE);
 <import resource="classpath:META-INF/shardingTransaction.xml"/>
 
 ```
+
+## 分布式事务example
+[transaction-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/transaction-example)
