@@ -37,7 +37,6 @@
             <useProjectArtifact>true</useProjectArtifact>
             <unpack>false</unpack>
             <outputDirectory>/lib</outputDirectory>
-            <scope>runtime</scope>
             <includes>
                 <include>org.apache.shardingsphere:*</include>
             </includes>
