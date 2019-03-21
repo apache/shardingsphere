@@ -26,14 +26,14 @@
     
     <fileSets>
         <fileSet>
-            <directory>../</directory>
+            <directory>../../</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <includes>
                 <include>**/*</include>
             </includes>
             <excludes>
                 <!-- github ignore -->
-                <exclude>.github</exclude>
+                <exclude>**/.github/**</exclude>
                 <exclude>**/*.md</exclude>
                 <exclude>.travis.yml</exclude>
                 

@@ -491,6 +491,7 @@
     </dependencies>
     
     <build>
+        <finalName>apache-shardingsphere-incubating-${project.version}</finalName>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
