@@ -116,6 +116,15 @@ public final class EncryptSQLRewriteEngineTest {
         
     }
     
+    @Test
+    public void assertDeleteWithoutPlaceholderWithQueryEncrypt() {
+        String sql = "DELETE FROM t_query_encrypt WHERE col1 = 1 and col2 = 2";
+        SQLUnit actual = getSQLUnit(sql, Collections.emptyList());
+        assertThat(actual.getSql(), is("DELETE FROM t_query_encrypt WHERE query1 = 'assistedEncryptValue' and query2 = 'assistedEncryptValue'"));
+        assertThat(actual.getParameters().size(), is(0));
+        
+    }
+    
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
