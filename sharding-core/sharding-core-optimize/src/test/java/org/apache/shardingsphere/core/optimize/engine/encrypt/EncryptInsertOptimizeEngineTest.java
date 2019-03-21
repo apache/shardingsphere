@@ -31,6 +31,10 @@ public final class EncryptInsertOptimizeEngineTest {
     
     @Before
     public void setUp() {
+
+    }
+    
+    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("test", "col1, col2", new Properties());
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
         encryptTableRuleConfig.setTable("t_encrypt");
@@ -39,8 +43,9 @@ public final class EncryptInsertOptimizeEngineTest {
         EncryptTableRuleConfiguration encryptQueryTableRuleConfig = new EncryptTableRuleConfiguration();
         encryptQueryTableRuleConfig.setTable("t_query_encrypt");
         encryptQueryTableRuleConfig.setEncryptorConfig(encryptorQueryConfig);
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
-        encryptRuleConfig.getTableRuleConfigs().add(encryptTableRuleConfig);
-        encryptRuleConfig.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
+        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
+        result.getTableRuleConfigs().add(encryptTableRuleConfig);
+        result.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
+        return result;
     }
 }
