@@ -26,6 +26,8 @@ import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.junit.Before;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public final class EncryptSQLRewriteEngineTest {
@@ -53,10 +55,13 @@ public final class EncryptSQLRewriteEngineTest {
     private ShardingTableMetaData createShardingTableMetaData() {
         ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "VARCHAR(10)", false);
         ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "VARCHAR(10)", false);
-        ColumnMetaData queryColumnnMetaData1 = new ColumnMetaData("col1", "VARCHAR(10)", false);
-        ColumnMetaData queryColumnMetaData2 = new ColumnMetaData("col2", "VARCHAR(10)", false);
+        ColumnMetaData queryColumnMetaData1 = new ColumnMetaData("query1", "VARCHAR(10)", false);
+        ColumnMetaData queryColumnMetaData2 = new ColumnMetaData("query2", "VARCHAR(10)", false);
         TableMetaData encryptTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2));
-        
-        ShardingTableMetaData result = new ShardingTableMetaData();
+        TableMetaData queryTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, queryColumnMetaData1, queryColumnMetaData2));
+        Map<String, TableMetaData> tables = new LinkedHashMap<>();
+        tables.put("t_encrypt", encryptTableMetaData);
+        tables.put("t_query_encrypt", queryTableMetaData);
+        return new ShardingTableMetaData(tables);
     }
 }
