@@ -93,7 +93,7 @@ public final class EncryptSQLRewriteEngineTest {
         SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, new LinkedList<>()).optimize();
         SQLUnit actual = new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, new LinkedList<>(), optimizeResult).rewrite().toSQL();
-        assertThat(actual.getSql(), is("SELECT * FROM t_encrypt WHERE col1 = 1 or col2 = 2"));
+        assertThat(actual.getSql(), is("SELECT * FROM t_encrypt WHERE col1 = 'encryptValue' or col2 = 'encryptValue'"));
         assertThat(actual.getParameters().size(), is(0));
     }
 }
