@@ -20,8 +20,12 @@ package org.apache.shardingsphere.core.rewrite;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.junit.Before;
 
+import java.util.Arrays;
 import java.util.Properties;
 
 public final class EncryptSQLRewriteEngineTest {
@@ -44,5 +48,15 @@ public final class EncryptSQLRewriteEngineTest {
         result.getTableRuleConfigs().add(encryptTableRuleConfig);
         result.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
         return result;
+    }
+    
+    private ShardingTableMetaData createShardingTableMetaData() {
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "VARCHAR(10)", false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "VARCHAR(10)", false);
+        ColumnMetaData queryColumnnMetaData1 = new ColumnMetaData("col1", "VARCHAR(10)", false);
+        ColumnMetaData queryColumnMetaData2 = new ColumnMetaData("col2", "VARCHAR(10)", false);
+        TableMetaData encryptTableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2));
+        
+        ShardingTableMetaData result = new ShardingTableMetaData();
     }
 }
