@@ -96,4 +96,16 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getSql(), is("SELECT * FROM t_encrypt WHERE col1 = 'encryptValue' or col2 = 'encryptValue'"));
         assertThat(actual.getParameters().size(), is(0));
     }
+    
+    @Test
+    public void assertSelectWithPlaceholderWithQueryEncrypt() {
+        String sql = "SELECT * FROM t_query_encrypt WHERE col1 = ? or col2 = ?";
+        SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
+        OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, parameters).optimize();
+        SQLUnit actual = new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, parameters, optimizeResult).rewrite().toSQL();
+        assertThat(actual.getSql(), is("SELECT * FROM t_query_encrypt WHERE query1 = ? or query2 = ?"));
+        assertThat(actual.getParameters().size(), is(2));
+        assertThat(actual.getParameters().get(0), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
+    }
 }
