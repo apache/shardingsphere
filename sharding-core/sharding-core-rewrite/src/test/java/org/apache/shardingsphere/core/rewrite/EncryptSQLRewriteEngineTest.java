@@ -20,9 +20,12 @@ package org.apache.shardingsphere.core.rewrite;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.parse.EncryptSQLParsingEngine;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
 
 import java.util.Arrays;
@@ -32,8 +35,11 @@ import java.util.Properties;
 
 public final class EncryptSQLRewriteEngineTest {
     
+    private EncryptSQLParsingEngine sqlParsingEngine;
+    
     @Before
     public void setUp() {
+        sqlParsingEngine = new EncryptSQLParsingEngine(DatabaseType.MySQL, new EncryptRule(createEncryptRuleConfiguration()), createShardingTableMetaData());
         
     }
     
