@@ -30,12 +30,10 @@
             <useDefaultExcludes>true</useDefaultExcludes>
             <includes>
                 <include>**/*</include>
-                <include>README.md</include>
             </includes>
             <excludes>
                 <!-- github ignore -->
                 <exclude>**/.github/**</exclude>
-                <exclude>**/*.md</exclude>
                 <exclude>.travis.yml</exclude>
                 
                 <!-- maven ignore -->
