@@ -34,8 +34,4 @@
         <module>sharding-proxy-backend</module>
         <module>sharding-proxy-bootstrap</module>
     </modules>
-    
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
 </project>

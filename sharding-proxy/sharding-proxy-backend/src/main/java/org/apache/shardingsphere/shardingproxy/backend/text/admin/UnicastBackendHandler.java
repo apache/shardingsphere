@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 
@@ -46,7 +47,12 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(LogicSchemas.getInstance().getLogicSchemas().values().iterator().next(), sql, backendConnection);
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
+        if (null == logicSchema) {
+            logicSchema = LogicSchemas.getInstance().getLogicSchemas().values().iterator().next();
+            backendConnection.setCurrentSchema(logicSchema.getName());
+        }
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(logicSchema, sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     

@@ -17,38 +17,32 @@
 
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-    <id>assembly</id>
+    <id>bin</id>
     <formats>
-        <format>tar.gz</format>
+        <format>zip</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${project.build.finalName}-bin-release</baseDirectory>
     
     <fileSets>
         <fileSet>
-            <directory>src/main/resources/bin</directory>
-            <outputDirectory>bin</outputDirectory>
-            <fileMode>0755</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/resources/conf</directory>
-            <outputDirectory>conf</outputDirectory>
-            <fileMode>0644</fileMode>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/resources</directory>
+            <directory>../../</directory>
             <includes>
-                <include>logback.xml</include>
-                <include>jta.properties</include>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>DISCLAIMER</include>
             </includes>
-            <outputDirectory>conf</outputDirectory>
-            <fileMode>0644</fileMode>
         </fileSet>
     </fileSets>
     
     <dependencySets>
         <dependencySet>
-            <outputDirectory>lib</outputDirectory>
-            <fileMode>0644</fileMode>
+            <useProjectArtifact>true</useProjectArtifact>
+            <unpack>false</unpack>
+            <outputDirectory>/lib</outputDirectory>
+            <includes>
+                <include>org.apache.shardingsphere:*</include>
+            </includes>
         </dependencySet>
     </dependencySets>
 </assembly>
