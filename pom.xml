@@ -924,27 +924,10 @@
     
     <mailingLists>
         <mailingList>
-            <name>Zhangliang</name>
-            <post>zhangliang@apache.org</post>
-        </mailingList>
-        <mailingList>
-            <name>Caohao</name>
-            <post>caohaoch@gmail.com</post>
+            <name>ShardingSphere Developer List</name>
+            <post>dev@shardingsphere.incubator.apache.org</post>
+            <subscribe>dev-subscribe@shardingsphere.incubator.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@shardingsphere.incubator.apache.org</unsubscribe>
         </mailingList>
     </mailingLists>
-    
-    <developers>
-        <developer>
-            <id>zhangliang</id>
-            <name>ZhangLiang</name>
-            <email>zhangliang@apache.org</email>
-            <timezone>8</timezone>
-        </developer>
-        <developer>
-            <id>caohao</id>
-            <name>CaoHao</name>
-            <email>caohaoch@gmail.com</email>
-            <timezone>8</timezone>
-        </developer>
-    </developers>
 </project>
