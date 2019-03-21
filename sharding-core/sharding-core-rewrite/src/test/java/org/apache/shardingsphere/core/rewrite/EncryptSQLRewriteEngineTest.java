@@ -28,8 +28,10 @@ import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.EncryptSQLParsingEngine;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -37,6 +39,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class EncryptSQLRewriteEngineTest {
     
@@ -82,10 +87,13 @@ public final class EncryptSQLRewriteEngineTest {
         return new ShardingTableMetaData(tables);
     }
     
+    @Test
     public void assertSelectWithoutPlaceholderWithEncrypt() {
         String sql = "SELECT * FROM t_encrypt WHERE col1 = 1 or col2 = 2";
         SQLStatement sqlStatement = sqlParsingEngine.parse(false, sql);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(encryptRule, sqlStatement, new LinkedList<>()).optimize();
-        SQLBuilder sqlBuilder = new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, new LinkedList<>(), optimizeResult).rewrite();
+        SQLUnit actual = new EncryptSQLRewriteEngine(encryptRule, sql, databaseType, sqlStatement, new LinkedList<>(), optimizeResult).rewrite().toSQL();
+        assertThat(actual.getSql(), is("SELECT * FROM t_encrypt WHERE col1 = 1 or col2 = 2"));
+        assertThat(actual.getParameters().size(), is(0));
     }
 }
