@@ -44,6 +44,14 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>../../</directory>
+            <includes>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>DISCLAIMER</include>
+            </includes>
+        </fileSet>
     </fileSets>
     
     <dependencySets>
