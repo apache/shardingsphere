@@ -169,7 +169,7 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2), is((Object) 1));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(3), is((Object) 2));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is(""));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("col1 = ?, col2 = ?, query1 = ?, query2 = ?"));
         
     }
     
@@ -186,6 +186,4 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getInsertValues().getInsertValues().add(insertValue);
         return result;
     }
-    
-    
 }
