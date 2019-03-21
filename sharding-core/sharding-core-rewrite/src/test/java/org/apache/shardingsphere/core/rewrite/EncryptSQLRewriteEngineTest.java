@@ -164,7 +164,14 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getSql(), is("INSERT INTO t_query_encrypt (col1, col2, query1, query2) " 
                 + "VALUES ('encryptValue', 'encryptValue', 'assistedEncryptValue', 'assistedEncryptValue'), ('encryptValue', 'encryptValue', 'assistedEncryptValue', 'assistedEncryptValue')"));
         assertThat(actual.getParameters().size(), is(0));
-        
+    }
+    
+    @Test
+    public void assertInsertWithSetWithoutPlaceholderWithEncrypt() {
+        String sql = "INSERT INTO t_encrypt SET col1 = 1, col2 = 2";
+        SQLUnit actual = getSQLUnit(sql, Collections.emptyList());
+        assertThat(actual.getSql(), is("INSERT INTO t_encrypt SET col1 = 'encryptValue', col2 = 'encryptValue'"));
+        assertThat(actual.getParameters().size(), is(0));
     }
     
     private SQLUnit getSQLUnit(final String sql, final List<Object> parameters) {
