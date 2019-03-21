@@ -120,11 +120,11 @@
         <profile>
             <id>release</id>
             <build>
+                <finalName>apache-shardingsphere-incubating-${project.version}</finalName>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
-                            <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/assembly.xml</descriptor>
                             </descriptors>

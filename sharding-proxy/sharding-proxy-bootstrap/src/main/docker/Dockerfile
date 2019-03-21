@@ -18,6 +18,6 @@
 FROM java:7
 MAINTAINER caohao "caohaoch@gmail.com"
 
-ADD sharding-proxy-4.0.0-RC1.tar.gz /
-RUN mv /sharding-proxy-4.0.0-RC1 /opt/sharding-proxy
+ADD apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz /
+RUN mv /apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy /opt/sharding-proxy
 ENTRYPOINT /opt/sharding-proxy/bin/start.sh $PORT && tail -f /opt/sharding-proxy/logs/stdout.log
