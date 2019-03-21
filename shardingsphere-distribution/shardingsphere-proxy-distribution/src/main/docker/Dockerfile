@@ -16,7 +16,7 @@
 #
 
 FROM java:7
-MAINTAINER caohao "caohaoch@gmail.com"
+MAINTAINER ShardingSphere "dev@shardingsphere.incubator.apache.org"
 
 ADD apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz /
 RUN mv /apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy /opt/sharding-proxy
