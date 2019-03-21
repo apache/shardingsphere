@@ -22,6 +22,7 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${project.build.finalName}-src-release</baseDirectory>
     
     <fileSets>
         <fileSet>
