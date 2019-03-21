@@ -132,7 +132,7 @@ public final class EncryptInsertOptimizeEngineTest {
     @Test
     public void assertInsertStatementWithSetWithoutPlaceHolderWithEncrypt() {
         InsertStatement insertStatement = createInsertStatementWithSetWithoutPlaceHolderWithEncrypt();
-        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithValues);
+        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithoutValues);
         OptimizeResult actual = optimizeEngine.optimize();
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
@@ -156,5 +156,36 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getInsertValues().getInsertValues().add(insertValue);
         return result;
     }
+    
+    @Test
+    public void assertInsertStatementWithSetWithPlaceHolderWithQueryEncrypt() {
+        InsertStatement insertStatement = createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt();
+        EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithValues);
+        OptimizeResult actual = optimizeEngine.optimize();
+        assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(4));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(4));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2), is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(3), is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is(""));
+        
+    }
+    
+    private InsertStatement createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt() {
+        InsertStatement result = new InsertStatement();
+        result.getTables().add(new Table("t_query_encrypt", Optional.<String>absent()));
+        result.addSQLToken(new TableToken(12, 0, "t_query_encrypt", "", ""));
+        result.addSQLToken(new InsertValuesToken(40, DefaultKeyword.SET));
+        result.getColumns().add(new Column("col1", "t_query_encrypt"));
+        result.getColumns().add(new Column("col2", "t_query_encrypt"));
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 2);
+        insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
+        insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
+        result.getInsertValues().getInsertValues().add(insertValue);
+        return result;
+    }
+    
     
 }
