@@ -26,9 +26,9 @@ You can report a bug, submit a new feature enhancement recommendation, or commit
 
  - Please choose a interested issue, or create a new issue and then settle a correct label.
  - Reply a deadline message to pickup this issue. 
- - Find a mentor in [Core developers list](/en/organization/), he will give you feedback for design and implements.
+ - Find a mentor in [Core developers list](http://incubator.apache.org/projects/shardingsphere.html), he will give you feedback for design and implements.
  - Fork to your github repo and begin to work.
- - Please follow Sharding's [Development conventions](/en/contribute/convention/), and complete check before pull request submit.
+ - Please follow Sharding's [Development conventions](https://shardingsphere.apache.org/community/en/contribute/code-conduct/), and complete check before pull request submit.
  - Submit a pull request to dev branch when finished, please do not submit pull request to master.
  - Mentor will do code review and discuss some details, include design, implement, performance and code style. Code will be merged until mentor accepted.
  - Finally, congratulations that you have become the official contributor for Sharding!
