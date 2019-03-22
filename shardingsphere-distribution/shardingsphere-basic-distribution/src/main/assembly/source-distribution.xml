@@ -34,7 +34,6 @@
             <excludes>
                 <!-- github ignore -->
                 <exclude>**/.github/**</exclude>
-                <exclude>**/*.md</exclude>
                 <exclude>.travis.yml</exclude>
                 
                 <!-- maven ignore -->
@@ -48,6 +47,7 @@
                 
                 <!-- maven plugin ignore -->
                 <exclude>release.properties</exclude>
+                <exclude>**/pom.xml.releaseBackup</exclude>
                 <exclude>**/cobertura.ser</exclude>
                 <exclude>*.gpg</exclude>
                 

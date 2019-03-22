@@ -50,6 +50,7 @@
                 <include>LICENSE</include>
                 <include>NOTICE</include>
                 <include>DISCLAIMER</include>
+                <include>README.md</include>
             </includes>
         </fileSet>
     </fileSets>
