@@ -253,9 +253,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
 
     antlr4-runtime 4.7.1: https://github.com/antlr/antlr4, BSD-3-Clause
     jline 0.9.94: https://github.com/jline/jline1, BSD-3-Clause
-    org.abego.treelayout.core 1.0.3: https://github.com/abego/treelayout, BSD 3-Clause
     postgresql 42.2.5: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
-    ST4 4.0.8: https://github.com/antlr/antlr4, BSD 3-Clause
 
 ========================================================================
 CDDL licenses
@@ -275,15 +273,6 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
 
     logback-classic 1.2.0: https://github.com/qos-ch/logback: EPL 1.0
     logback-core 1.2.0: https://github.com/qos-ch/logback: EPL 1.0
-
-========================================================================
-ICU licenses
-========================================================================
-
-The following components are provided under the ICU License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    icu4j 58.2: http://icu-project.org, ICU 58
 
 ========================================================================
 MIT licenses
