@@ -123,5 +123,5 @@ Architects can adjust the system architecture to the most applicable one to curr
 Install `maven` in your computer and run command:
 
 ```shell
-mvn install
+mvn clean install -Prelease
 ``` 

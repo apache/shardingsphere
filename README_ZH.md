@@ -119,5 +119,5 @@ ShardingSphere是多接入端共同组成的生态圈。
 安装`maven`至您的开发环境并且执行命令：
 
 ```shell
-mvn install
+mvn clean install -Prelease
 ``` 
