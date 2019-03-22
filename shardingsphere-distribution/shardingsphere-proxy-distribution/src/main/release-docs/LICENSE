@@ -251,7 +251,7 @@ BSD licenses
 The following components are provided under a BSD license. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    antlr4-runtime 4.7.1: http://www.antlr.org/license.html, BSD-3-Clause
+    antlr4-runtime 4.7.1: https://github.com/antlr/antlr4, BSD-3-Clause
     jline 0.9.94: https://github.com/jline/jline1, BSD-3-Clause
     org.abego.treelayout.core 1.0.3: https://github.com/abego/treelayout, BSD 3-Clause
     postgresql 42.2.5: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
