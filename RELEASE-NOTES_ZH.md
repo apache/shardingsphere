@@ -1,10 +1,35 @@
-## 3.0.1
+## 4.0.0.RC1
+
+将3.1.0.M1, 3.1.0, 3.1.0.1 和 4.0.0.M1版本全部合并至此版本发布。首个Apache Release。
+
+### API调整
+
+1. 调整数据库治理模块的注册中心存储结构。
+1. 调整Sharding-JDBC的配置相关API。
+1. 将包名和maven的groupId从`io.shardingsphere`改为`org.apache.shardingsphere`。
+
+### 新功能
+
+1. 支持XA强一致事务。
+1. 路由至单一数据节点的SQL 100%全兼容（仅MySQL）。
+1. 支持DISTINCT语句。
+1. 支持广播表。
+1. 解决使用默认分布式自增主键在TPS不高的情况下可能导致数据倾斜的问题。
+1. 支持数据脱敏。
+1. 支持使用PostgreSQL协议访问Sharding-Proxy。
+
+###  更新日志
+
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+1. [MILESTONE #5](https://github.com/sharding-sphere/sharding-sphere/milestone/5)
+1. [MILESTONE #6](https://github.com/sharding-sphere/sharding-sphere/milestone/6)
 
 ## 3.0.0
 
 ### 里程碑
 
-1. Sharding-Proxy发布. 支持以数据库的形式使用Sharding-Sphere, 全面提供对MySQL命令行以及图形化客户端的支持
+1. Sharding-Proxy发布. 支持以数据库的形式使用ShardingSphere, 全面提供对MySQL命令行以及图形化客户端的支持
 
 ### 新功能
 
