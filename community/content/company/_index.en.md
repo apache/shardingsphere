@@ -74,6 +74,7 @@ The list here will be shown in the registered order.
 * [BBGame](http://www.bbgameonline.com/)
 * [500px](https://500px.me/)
 * [Bilibili](https://www.bilibili.com/)
+* [DOUYU.com](https://www.douyu.com/)
 
 ## Intelligent Hardware
 

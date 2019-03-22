@@ -74,6 +74,7 @@ chapter = true
 * [BBGame](http://www.bbgameonline.com/)
 * [视觉中国](https://500px.me/)
 * [哔哩哔哩弹幕网](https://www.bilibili.com/)
+* [斗鱼](https://www.douyu.com/)
 
 ## 智能硬件
 
