@@ -45,7 +45,7 @@ sharding-sphere-example
   │   ├── orchestration-example
   │   │   ├── orchestration-raw-jdbc-example
   │   │   ├── orchestration-spring-boot-example
-  │   │   ├── orchestration-spring-namespace-example
+  │   │   └── orchestration-spring-namespace-example
   │   ├── sharding-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
@@ -57,8 +57,8 @@ sharding-sphere-example
   │       └── transaction-base-saga-example
   ├── sharding-proxy-example
   │   └── sharding-proxy-boot-mybatis-example
-  ├── src/resources
-  │    ├── manual_schema.sql
+  └── src/resources
+        └── manual_schema.sql
 ```
 
 
