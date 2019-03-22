@@ -47,11 +47,15 @@
         <fileSet>
             <directory>../../</directory>
             <includes>
-                <include>LICENSE</include>
-                <include>NOTICE</include>
                 <include>DISCLAIMER</include>
-                <include>README.md</include>
             </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/release-docs</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
         </fileSet>
     </fileSets>
     
