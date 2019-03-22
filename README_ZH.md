@@ -55,10 +55,10 @@ __目前所有的可用发布都是进入Apache孵化器之前的发布版本，
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
-目前先提供MySQL版本，它可以使用任何兼容MySQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench等)操作数据，对DBA更加友好。
+目前先提供MySQL和PostgreSQL版本，它可以使用任何兼容MySQL和PostgreSQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench, Navicat等)操作数据，对DBA更加友好。
 
-* 向应用程序完全透明，可直接当做MySQL使用。
-* 适用于任何兼容MySQL协议的的客户端。
+* 向应用程序完全透明，可直接当做MySQL或PostgreSQL使用。
+* 适用于任何兼容MySQL或PostgreSQL协议的的客户端。
 
 ![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
 
@@ -74,7 +74,7 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 |           | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | --------- | --------------- | ---------------- | ------------------ |
-| 数据库     | 任意            | MySQL            | MySQL              |
+| 数据库     | 任意            | MySQL/PostgreSQL | MySQL/PostgreSQL   |
 | 连接消耗数 | 高              | 低               | 高                  |
 | 异构语言   | 仅Java          | 任意             | 任意                |
 | 性能       | 损耗低          | 损耗略高          | 损耗低              |
