@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -39,11 +40,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class UnicastBackendHandlerTest {
     
+    @Spy
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Mock
@@ -61,6 +64,7 @@ public final class UnicastBackendHandlerTest {
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
+        verify(backendConnection).setCurrentSchema(null);
         backendHandler.execute();
     }
     

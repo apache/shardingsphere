@@ -25,7 +25,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>4.0.0-RC2-SNAPSHOT</version>
+    <version>4.0.0-RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -67,10 +67,6 @@
         <atomikos.version>4.0.6</atomikos.version>
         
         <curator.version>2.10.0</curator.version>
-        <grpc.version>1.7.0</grpc.version>
-        <protobuf.version>3.4.0</protobuf.version>
-        <guava-retrying.version>2.0.0</guava-retrying.version>
-        
         <opentracing.version>0.30.0</opentracing.version>
         
         <lombok.version>1.16.4</lombok.version>
@@ -101,6 +97,7 @@
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-site-plugin.version>3.4</maven-site-plugin.version>
         <maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
         <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
@@ -118,7 +115,6 @@
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-        <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
@@ -220,26 +216,6 @@
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-recipes</artifactId>
                 <version>${curator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-netty</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-protobuf</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-stub</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.rholder</groupId>
-                <artifactId>guava-retrying</artifactId>
-                <version>${guava-retrying.version}</version>
             </dependency>
             
             <dependency>
@@ -491,6 +467,7 @@
     </dependencies>
     
     <build>
+        <finalName>apache-shardingsphere-incubating-${project.version}</finalName>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
@@ -537,6 +514,14 @@
                     <version>${maven-deploy-plugin.version}</version>
                     <configuration>
                         <skip>${maven.deploy.skip}</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${maven-release-plugin.version}</version>
+                    <configuration>
+                        <tagNameFormat>@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -676,24 +661,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>${protobuf-maven-plugin.version}</version>
-                <configuration>
-                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
-                    <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>compile-custom</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>${coveralls-maven-plugin.version}</version>
@@ -723,11 +690,7 @@
                         </ignoreMethodAnnotations>
                         <excludes>
                             <exclude>org/apache/shardingsphere/core/parse/antlr/autogen/*.class</exclude>
-                            <exclude>authpb/*.class</exclude>
-                            <exclude>mvccpb/*.class</exclude>
-                            <exclude>etcdserverpb/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/orchestration/reg/etcd/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
                         </excludes>
@@ -914,27 +877,10 @@
     
     <mailingLists>
         <mailingList>
-            <name>Zhangliang</name>
-            <post>zhangliang@apache.org</post>
-        </mailingList>
-        <mailingList>
-            <name>Caohao</name>
-            <post>caohaoch@gmail.com</post>
+            <name>ShardingSphere Developer List</name>
+            <post>dev@shardingsphere.incubator.apache.org</post>
+            <subscribe>dev-subscribe@shardingsphere.incubator.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@shardingsphere.incubator.apache.org</unsubscribe>
         </mailingList>
     </mailingLists>
-    
-    <developers>
-        <developer>
-            <id>zhangliang</id>
-            <name>ZhangLiang</name>
-            <email>zhangliang@apache.org</email>
-            <timezone>8</timezone>
-        </developer>
-        <developer>
-            <id>caohao</id>
-            <name>CaoHao</name>
-            <email>caohaoch@gmail.com</email>
-            <timezone>8</timezone>
-        </developer>
-    </developers>
 </project>
