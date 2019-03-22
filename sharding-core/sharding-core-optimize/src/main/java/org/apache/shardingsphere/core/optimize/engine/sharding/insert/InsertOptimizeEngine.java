@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.optimize.engine.sharding.insert;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
@@ -148,17 +147,17 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void fillWithQueryAssistedColumn(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
-        String assistedColumnName = null;
+        Collection<String> assistedColumnNames = new LinkedList<>();
         for (String each : insertColumnValues.getColumnNames()) {
             InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
-            Optional<String> assistedColumnNameOptional = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
-            if (assistedColumnNameOptional.isPresent()) {
-                assistedColumnName = assistedColumnNameOptional.get();
+            Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
+            if (assistedColumnName.isPresent()) {
+                assistedColumnNames.add(assistedColumnName.get());
                 fillWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(each));
             }
         }
-        if (!Strings.isNullOrEmpty(assistedColumnName)) {
-            insertColumnValues.getColumnNames().add(assistedColumnName);
+        if (!assistedColumnNames.isEmpty()) {
+            insertColumnValues.getColumnNames().addAll(assistedColumnNames);
         }
     }
     

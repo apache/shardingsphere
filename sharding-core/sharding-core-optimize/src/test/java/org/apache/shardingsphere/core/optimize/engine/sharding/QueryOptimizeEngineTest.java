@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize;
+package org.apache.shardingsphere.core.optimize.engine.sharding;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
