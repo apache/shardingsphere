@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
 public class SpringPojoServiceImpl implements SpringPojoService {
     
     @Resource
@@ -53,6 +52,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     }
     
     @Override
+    @Transactional
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
@@ -63,6 +63,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     }
     
     @Override
+    @Transactional
     public void processFailure() {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();

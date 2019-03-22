@@ -33,6 +33,8 @@ before we use docker compose, please install docker first : https://docs.docker.
 to clean the docker container , you could use docker rm `docker ps -a -q` (be careful)
 
 ## sharding-sphere-example module design
+
+### project module
 ```
 sharding-sphere-example
   ├── example-common
@@ -45,7 +47,7 @@ sharding-sphere-example
   │   ├── orchestration-example
   │   │   ├── orchestration-raw-jdbc-example
   │   │   ├── orchestration-spring-boot-example
-  │   │   ├── orchestration-spring-namespace-example
+  │   │   └── orchestration-spring-namespace-example
   │   ├── sharding-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
@@ -57,8 +59,51 @@ sharding-sphere-example
   │       └── transaction-base-saga-example
   ├── sharding-proxy-example
   │   └── sharding-proxy-boot-mybatis-example
-  ├── src/resources
-  │    ├── manual_schema.sql
+  └── src/resources
+        └── manual_schema.sql
 ```
 
+### Best practice for sharding data
+* sharding databases
+* sharding tables
+* sharding databases and tables
+* master-slave
+* sharding & master-slave
+
+you can get more detail from **[sharding-example](./sharding-jdbc-example/sharding-example)**
+
+### Best practice for sharding + orchestration
+* local zookeeper/etcd & sharding
+
+    local sharding configuration can override the configuration of zookeeper/etcd.
+
+* cloud zookeeper/etcd & sharding
+
+    shardingsphere will load the sharding configuration form zookeeper/etcd directly.
+
+you can get more detail from **[orchestration-example](./sharding-jdbc-example/orchestration-example)**
+
+### Best Practice for sharding + distribution-transaction
+* 2pc-xa transaction
+* base-saga transaction
+
+you can get more detail from **[transaction-example](./sharding-jdbc-example/transaction-example)**
+
+### how to use hint routing
+we will add hint example recently.
+
+### how to config none-sharding tables
+we will add none-sharding example recently.
+
+### how to config broadcast-table
+we will add broadcast-table example recently.
+
+### how to use APM with shardingsphere
+we will add APM example recently.
+
+### how to encrypt & decrypt data in shardingsphere
+we prefer to add encrypt & decrypt example recently.
+
+### how to use sharding-proxy with jdbc.
+we prefer to add a docker base example recently.
 
