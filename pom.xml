@@ -36,7 +36,7 @@
         <module>sharding-proxy</module>
         
         <module>sharding-transaction</module>
-        <module>sharding-orchestration</module>
+        <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
     
         <module>sharding-spring</module>
