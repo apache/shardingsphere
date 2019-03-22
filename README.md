@@ -118,7 +118,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)
 
-## How to Compile
+## How to Build
 
 Install `maven` in your computer and run command:
 
