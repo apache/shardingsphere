@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize;
+package org.apache.shardingsphere.core.optimize.engine.sharding;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;

@@ -55,10 +55,10 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-Friendlier to DBA, the MySQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL protocol to operate data.
+Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
 
-* Totally transparent to applications, it can be used directly as MySQL.
-* Applicable to any kind of compatible of client end that is compatible of MySQL protocol.
+* Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
+* Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
 
 ![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
 
@@ -76,7 +76,7 @@ They are all governed by mesh layer.
 
 |                         | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | ----------------------- | --------------- | -------------------- | ------------------ |
-| Database                | Any             | MySQL                | MySQL              |
+| Database                | Any             | MySQL/PostgreSQL     | MySQL/PostgreSQL   |
 | Connections Cost Number | High            | Low                  | High               |
 | Heterogeneous Language  | Java Only       | Any                  | Any                |
 | Performance             | Low loss        | Relatively High loss | Low loss           |
@@ -118,10 +118,10 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)
 
-## How to Compile
+## How to Build
 
 Install `maven` in your computer and run command:
 
 ```shell
-mvn install
+mvn clean install -Prelease
 ``` 

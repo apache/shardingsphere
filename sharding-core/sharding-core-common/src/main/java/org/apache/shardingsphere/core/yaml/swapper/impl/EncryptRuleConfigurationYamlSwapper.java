@@ -45,7 +45,9 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlSwapper<Ya
     @Override
     public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration) {
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.setDefaultEncryptorConfig(new EncryptorConfigurationYamlSwapper().swap(yamlEncryptRuleConfiguration.getDefaultEncryptor()));
+        if (null != yamlEncryptRuleConfiguration.getDefaultEncryptor()) {
+            result.setDefaultEncryptorConfig(new EncryptorConfigurationYamlSwapper().swap(yamlEncryptRuleConfiguration.getDefaultEncryptor()));
+        }
         for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlEncryptRuleConfiguration.getTables().entrySet()) {
             YamlEncryptTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setTable(entry.getKey());
