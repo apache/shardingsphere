@@ -52,7 +52,7 @@ chapter = true
 
  - 测试代码和生产代码需遵守相同代码规范。
  - 单元测试需遵循AIR（Automatic, Independent, Repeatable）设计理念。
-   - 自动化（Automatic）：单元测试应全自动执行，而非交互式。禁止人工检查输出结果，不允许使用System.out，log等，必须使用assert进行验证。
+   - 自动化（Automatic）：单元测试应全自动执行，而非交互式。禁止人工检查输出结果，不允许使用`System.out`，`log`等，必须使用断言进行验证。
    - 独立性（Independent）：禁止单元测试用例间的互相调用，禁止依赖执行的先后次序。每个单元测试均可独立运行。
    - 可重复执行（Repeatable）：单元测试不能受到外界环境的影响，可以重复执行。
  - 单元测试需遵循BCDE（Border, Correct, Design, Error）设计原则。
