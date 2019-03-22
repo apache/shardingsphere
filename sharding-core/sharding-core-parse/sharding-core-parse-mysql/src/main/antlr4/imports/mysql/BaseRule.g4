@@ -21,19 +21,15 @@ import Keyword, DataType, Symbol;
 
 ID 
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    ;
-    
-REVERSE_QUOTE_ID
-    : '`' ~'`'+ '`'
+    |  '`' ~'`'+ '`'
     ;
     
 uid
     : ID
-    | REVERSE_QUOTE_ID
-    | keywordCanBeID
+    | keywordIdentifier_
     ;
     
-keywordCanBeID
+keywordIdentifier_
     : DATE | PASSWORD
     ;
     
