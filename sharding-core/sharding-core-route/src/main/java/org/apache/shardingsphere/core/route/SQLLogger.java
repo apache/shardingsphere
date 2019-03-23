@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * SQL logger.
@@ -39,19 +41,31 @@ public final class SQLLogger {
      * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
+     * @param maxLogicSqlLength max length of logic SQL
      * @param sqlStatement SQL statement
      * @param routeUnits route units
      */
-    public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
+    public static void logSQL(final String logicSQL, final int maxLogicSqlLength, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
         log("Rule Type: sharding");
-        log("Logic SQL: {}", logicSQL);
-        log("SQLStatement: {}", sqlStatement);
-        for (RouteUnit each : routeUnits) {
-            if (each.getSqlUnit().getParameters().isEmpty()) {
-                log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
-            } else {
-                log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
+        int logicSqlLength = logicSQL.length();
+        if (logicSqlLength <= maxLogicSqlLength) {
+            log("Logic SQL: {}", logicSQL);
+            log("SQLStatement: {}", sqlStatement);
+            for (RouteUnit each : routeUnits) {
+                if (each.getSqlUnit().getParameters().isEmpty()) {
+                    log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
+                } else {
+                    log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
+                }
             }
+        } else {
+            log("Logic SQL(simple): {}", logicSQL.substring(0, maxLogicSqlLength));
+            log("SQLStatement: {}", sqlStatement);
+            Set<String> dataSourceNames = new HashSet<>(routeUnits.size());
+            for (RouteUnit each : routeUnits) {
+                dataSourceNames.add(each.getDataSourceName());
+            }
+            log("Actual SQL(simple): {} ::: {}", dataSourceNames, routeUnits.size());
         }
     }
     

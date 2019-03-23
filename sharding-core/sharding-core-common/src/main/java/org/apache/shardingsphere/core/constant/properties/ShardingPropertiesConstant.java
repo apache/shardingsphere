@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  * 
  * @author gaohongtao
  * @author caohao
+ * @author cookie
  */
 @RequiredArgsConstructor
 @Getter
@@ -41,7 +42,16 @@ public enum ShardingPropertiesConstant {
      * </p>
      */
     SQL_SHOW("sql.show", String.valueOf(Boolean.FALSE), boolean.class),
-    
+
+    /**
+     *<p>
+     * Maximum length of logic SQL.
+     * In sharding mode, if the length of logic SQL longer than the number, log will display in simple style to avoid too much content .
+     * Default: Integer.MAX_VALUE
+     *</p>
+     */
+    SQL_SIMPLE_LENGTH("sql.simple.length", String.valueOf(Integer.MAX_VALUE), int.class),
+
     /**
      * Worker group or user group thread max size.
      *

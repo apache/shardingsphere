@@ -64,7 +64,8 @@ public abstract class BaseShardingEngine {
         SQLRouteResult result = route(sql, clonedParameters);
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
         if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
-            SQLLogger.logSQL(sql, result.getSqlStatement(), result.getRouteUnits());
+            int maxLogicSqlLength = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE_LENGTH);
+            SQLLogger.logSQL(sql, maxLogicSqlLength, result.getSqlStatement(), result.getRouteUnits());
         }
         return result;
     }
