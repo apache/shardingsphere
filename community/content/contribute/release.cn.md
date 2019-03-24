@@ -21,13 +21,13 @@ gpg --version
 
 安装完成后，执行以下命令创建key。
 
-GnuPG-2.x可使用：
+`GnuPG-2.x`可使用：
 
 ```shell
 gpg --full-gen-key
 ```
 
-GnuPG-1.x可使用：
+`GnuPG-1.x`可使用：
 
 ```shell
 gpg --gen-key
