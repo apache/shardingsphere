@@ -432,7 +432,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://github.com/apache/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+https://shardingsphere.apache.org/community/en/contribute/release/
 
 The vote will be open for at least 72 hours or until necessary number of
 votes are reached.
