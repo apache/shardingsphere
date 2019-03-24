@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "测试引擎"
-weight = 7
+weight = 8
 +++
 
 ShardingSphere提供了完善的测试引擎。它以XML方式定义SQL，每条SQL由SQL解析单元测试引擎和整合测试引擎驱动，每个引擎分别为H2、MySQL、PostgreSQL、SQLServer和Oracle数据库运行测试用例。

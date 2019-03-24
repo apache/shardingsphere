@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "外部依赖"
-weight = 6
+weight = 7
 +++
 
 | *Dependency*                        | *License*       | *scope*   |

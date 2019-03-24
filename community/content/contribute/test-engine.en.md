@@ -1,7 +1,7 @@
 +++
 toc = true
 title = "Test Engine"
-weight = 7
+weight = 8
 +++
 
 ShardingSphere has provided a full test engine, which defines SQL in the form of XML. 
