@@ -475,7 +475,7 @@ svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1
 
 2. 在Apache Staging仓库找到ShardingSphere并点击`Release`
 
-3. 合并Github的release分支到dev
+3. 合并Github的release分支到dev, 合并完成后删除release分支
 
 4. 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布。
 
