@@ -7,10 +7,11 @@ chapter = true
 ## GPG设置
 
 ### 安装GPG
-在GnuPG官网下载安装包：https://www.gnupg.org/download/index.html。
-GnuPG的1.x版本和2.x版本的命令有细微差别，以下说明均以GnuPG-2.1.23版本为例。
 
-安装完成后，执行命令查看版本号。
+在[GnuPG官网](https://www.gnupg.org/download/index.html)下载安装包。
+GnuPG的1.x版本和2.x版本的命令有细微差别，下列说明以`GnuPG-2.1.23`版本为例。
+
+安装完成后，执行以下命令查看版本号。
 
 ```shell
 gpg --version
@@ -18,20 +19,21 @@ gpg --version
 
 ### 创建key
 
-安装完成后，执行命令创建key。
+安装完成后，执行以下命令创建key。
 
 GnuPG-2.x可使用：
 
 ```shell
 gpg --full-gen-key
 ```
+
 GnuPG-1.x可使用：
 
 ```shell
 gpg --gen-key
 ```
 
-执行命令后，根据提示完成key：
+根据提示完成key：
 
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
@@ -61,14 +63,15 @@ GnuPG needs to construct a user ID to identify your key.
 
 Real name: ${输入用户名}
 Email address: ${输入邮件地址}
-Comment: CODE SIGNING KEY
+Comment: ${输入注释}
 You selected this USER-ID:
-   "${输入的用户名} (CODE SIGNING KEY) <${输入的邮件地址}>"
+   "${输入的用户名} (${输入的注释}) <${输入的邮件地址}>"
 
 Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
 You need a Passphrase to protect your secret key. # 输入密码
+```
 
-#### 检查生成的key
+### 查看生成的key
 
 ```shell
 gpg --list-keys
@@ -77,7 +80,6 @@ gpg --list-keys
 执行结果：
 
 ```shell
--------------------------------
 pub   4096R/700E6065 2019-03-20
 uid                  ${用户名} (${注释}) <{邮件地址}>
 sub   4096R/0B7EF5B2 2019-03-20
@@ -93,29 +95,27 @@ sub   4096R/0B7EF5B2 2019-03-20
 gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 ```
 
-`pool.sks-keyservers.net`为随意挑选的公钥服务器，公钥服务器列表为：https://sks-keyservers.net/status/，每个服务器之间是自动同步的，选任意一个即可。
+`pool.sks-keyservers.net`为随意挑选的[公钥服务器](https://sks-keyservers.net/status/)，每个服务器之间是自动同步的，选任意一个即可。
 
 ## 发布Apache Maven中央仓库
 
 ### 设置settings.xml文件
 
-将以下模板添加到 `~/.m2/settings.xml`中，所有密码必须加密后再填入。
-加密设置可参考：http://maven.apache.org/guides/mini/guide-encryption.html。
+将以下模板添加到 `~/.m2/settings.xml`中，所有密码需要加密后再填入。
+加密设置可参考[这里](http://maven.apache.org/guides/mini/guide-encryption.html)。
 
 ```xml
 <settings>
   <servers>
-    <!-- To publish a snapshot of some part of Maven -->
     <server>
       <id>apache.snapshots.https</id>
-      <username> <!-- YOUR APACHE LDAP USERNAME --> </username>
-      <password> <!-- YOUR APACHE LDAP PASSWORD (encrypted) --> </password>
+      <username> <!-- APACHE LDAP 用户名 --> </username>
+      <password> <!-- APACHE LDAP 加密后的密码 --> </password>
     </server>
-    <!-- To stage a release of some part of Maven -->
     <server>
       <id>apache.releases.https</id>
-      <username> <!-- YOUR APACHE LDAP USERNAME --> </username>
-      <password> <!-- YOUR APACHE LDAP PASSWORD (encrypted) --> </password>
+      <username> <!-- APACHE LDAP 用户名 --> </username>
+      <password> <!-- APACHE LDAP 加密后的密码 --> </password>
     </server>
   </servers>
 </settings>
@@ -149,29 +149,32 @@ git checkout 4.0.0-RC1-release
 ### 发布预校验
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Your Github ID}
+mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease: 选择release的profile，这个profile会打包所有源码、jar包以及sharding-proxy的可执行二进制包。
+-Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及sharding-proxy的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
 -DdryRun=true：演练，即不产生版本号提交，不生成新的tag。
 
-#### 清理发布预校验本地信息
+### 准备发布
+
+首先清理发布预校验本地信息。
 
 ```shell
 mvn release:clean
 ```
 
-### 准备发布
+然后准备执行发布。
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Your Github ID}
+mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github用户名}
 ```
 
 和上一步演练的命令基本相同，去掉了-DdryRun=true参数。
--DpushChanges=false：指示不要将修改后的版本号和tag自动提交至Github。
+
+-DpushChanges=false：不要将修改后的版本号和tag自动提交至Github。
 
 将本地文件检查无误后，提交至github。
 
@@ -183,12 +186,13 @@ git push origin --tags
 ### 部署发布
 
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Your Github ID}
+mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github用户名}
 ```
 
 执行完该命令后，待发布版本会自动上传到Apache的临时筹备仓库(staging repository)。
 访问https://repository.apache.org/#stagingRepositories, 使用Apache的LDAP账户登录后，就会看到上传的版本。
 点击`Close`来告诉Nexus这个构建已经完成，只有这样该版本才是可用的。
+如果电子签名等出现问题，`Close`会失败，可以通过`Activity`查看失败信息。
 
 ## 发布Apache SVN仓库
 
@@ -204,7 +208,7 @@ cd ~/ss_svn/dev/
 创建完毕后，从Apache SVN检出shardingsphere发布目录。
 
 ```shell
-svn --username=${Your Apache LDAP ID} co https://dist.apache.org/repos/dist/dev/incubator/shardingsphere
+svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/dev/incubator/shardingsphere
 cd ~/ss_svn/dev/shardingsphere
 ```
 
@@ -246,7 +250,7 @@ shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.g
 
 ```shell
 svn add *
-svn --username=${Your Apache LDAP ID} commit -m "release 4.0.0-RC1"
+svn --username=${APACHE LDAP 用户名} commit -m "release 4.0.0-RC1"
 ```
 ## 检查发布结果
 
@@ -265,7 +269,7 @@ shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha51
 ```shell
 curl https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS >> KEYS
 gpg --import KEYS
-gpg --edit-key "${发布人gpg的用户名}"
+gpg --edit-key "${发布人的gpg用户名}"
   > trust
   > save
 ```
@@ -301,23 +305,23 @@ gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.as
 - 存在`DISCLAIMER`文件
 - 存在`LICENSE`和`NOTICE`文件
 - 所有文本文件开头都有ASF许可证
-- 配置正确后能够运行 (./start.sh)
+- `sharding-proxy`二进制包配置正确后能够运行 (./start.sh)
 - 检查第三方依赖许可证：
   - 第三方依赖的许可证兼容
   - 所有第三方依赖的许可证都在`LICENSE`文件中声名
   - 依赖许可证的完整版全部在`license`目录
   - 如果依赖的是Apache许可证并且存在`NOTICE`文件，那么这些`NOTICE`文件也需要加入到版本的`NOTICE`文件中
 
-全部的checklist参见：https://wiki.apache.org/incubator/IncubatorReleaseChecklist
+全部的检查列表参见[这里](https://wiki.apache.org/incubator/IncubatorReleaseChecklist)。
 
 ## 发起投票
 
 ### 投票阶段
 
 1. ShardingSphere社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PPMC需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少72小时并统计到3个"+1 binding"票后（只有PPMC的票才是binding），即可进入下一阶段的投票。
+经过至少72小时并统计到3个`+1 binding`票后（只有PPMC的票才是binding），即可进入下一阶段的投票。
 
-2. Apache社区投票，发起投票邮件到`general@incubator.apache.org`。经过至少72小时并统计到3个"+1 binding"票后（只有IPMC Member的票才是binding），即可进行正式发布。
+2. Apache社区投票，发起投票邮件到`general@incubator.apache.org`。经过至少72小时并统计到3个`+1 binding`票后（只有IPMC的票才是binding），即可进行正式发布。
 
 3. 宣布投票结果,发起投票结果邮件到`general@incubator.apache.org`。
 
@@ -344,7 +348,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/
+https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
@@ -389,10 +393,22 @@ They both provide functions of data sharding, distributed transaction and databa
 Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
+
+Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
+With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+
+* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
+* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
+* Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
+
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
+
 * Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
+
 * Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
+
 
 ShardingSphere community vote and result thread:
 https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
@@ -404,7 +420,7 @@ The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
 
 Maven 2 staging repository:
-https://repository.apache.org/content/repositories/staging/org/apache/
+https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
 
 Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
@@ -452,13 +468,16 @@ I will process to publish the release and send ANNOUNCE.
 ## 完成发布
 
 1. 将源码和二进制包从svn的dev目录移动到release目录
+
+```shell
 svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/ https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
+```
 
 2. 在Apache Staging仓库找到ShardingSphere并点击`Release`
 
 3. 合并Github的release分支到dev
 
-4. 发送邮件到general@incubator.apache.org和dev@shardingsphere.apache.org通知完成版本发布。
+4. 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布。
 
 通知邮件模板：
 
@@ -480,10 +499,22 @@ They both provide functions of data sharding, distributed transaction and databa
 Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
+
+Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
+With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+
+* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
+* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
+* Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
+
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
+
 * Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
+
 * Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
+
 
 Vote Thread: 
 
