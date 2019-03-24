@@ -12,19 +12,19 @@
     <title>Code of Conduct :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1552559553" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1552559553" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1552559553" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1552559553" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1552559553" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1552559553" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/theme.css?1552559553" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1552559553" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/theme.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1553471720" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1552559553" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1553471720" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1552559553"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1553471720"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -125,6 +125,25 @@
       <li data-nav-id="/en/contribute/committer/" title="Committer Guide" class="dd-item ">
         <a href="https://shardingsphere.apache.org/community/en/contribute/committer/">
         Committer Guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/release/" title="Release Guide" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/release/">
+        Release Guide
         
         </a>
     </li>
@@ -414,6 +433,21 @@
 
 <ul>
 <li>Test codes and production codes should follow the same kind of code of conduct.</li>
+<li>Unit test should follow AIR (Automatic, Independent, Repeatable) principle.
+
+<ul>
+<li>Automatic: Unit test should run automatically, not interactively. Check test result manually and <code>System.out</code>, <code>log</code> are prohibited, use assert to check test results.</li>
+<li>Independent: Call each other and sequence dependency during unit test cases are prohibited. Every test case should run independent.</li>
+<li>Repeatable: Unit test case should not dependency external environment, they can run repeatable.</li>
+</ul></li>
+<li>Unit test should follow BCDE (Border, Correct, Design, Error) design principle.
+
+<ul>
+<li>Border: Border value test, test for loop border, special value and value sequence to get expect result.</li>
+<li>Correct: Correct value test, test for correct value to get expect result.</li>
+<li>Design: Design with production codes.</li>
+<li>Error: Error value test, test for error input, exception to get expect result.</li>
+</ul></li>
 <li>Without particular reasons, test cases should be fully covered.</li>
 <li>Every test case need precised assertion.</li>
 <li>Environment preparation codes should be separate from test codes.</li>
@@ -572,6 +606,22 @@
             
                 
                     
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
                     
                 
                 
@@ -657,20 +707,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1552559553"></script>
+    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1553471720"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/learn.js?1552559553"></script>
-    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1552559553"></script>
+    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/learn.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1553471720"></script>
 
-    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1552559553" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1552559553"></script>
+    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1553471720" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1553471720"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

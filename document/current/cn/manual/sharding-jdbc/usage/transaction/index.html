@@ -12,19 +12,19 @@
     <title>分布式事务 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1552559552" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1552559552" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1552559552" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1552559552" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1552559552" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1552559552" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1552559552" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1552559552" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553471719" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1552559552" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553471719" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1552559552"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553471719"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -861,9 +861,9 @@
  
   
     
-      <li data-nav-id="/cn/features/transaction/2pc-transaction/" title="两阶段事务" class="dd-item ">
+      <li data-nav-id="/cn/features/transaction/2pc-transaction/" title="两阶段事务-XA" class="dd-item ">
         <a href="https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/">
-        <b>3.4.2. </b>两阶段事务
+        <b>3.4.2. </b>两阶段事务-XA
         
         </a>
     </li>
@@ -1565,27 +1565,29 @@
 <ul>
 <li>
 <ul>
-<li><a href="#两阶段提交-xa">两阶段提交-XA</a>
+<li><a href="#1-两阶段提交-xa">1. 两阶段提交-XA</a>
 <ul>
-<li><a href="#引入maven依赖">引入Maven依赖</a></li>
-<li><a href="#连接池配置">连接池配置</a></li>
-<li><a href="#atomikos参数配置">Atomikos参数配置</a></li>
+<li><a href="#1-1-引入maven依赖">1.1 引入Maven依赖</a></li>
+<li><a href="#1-2-atomikos参数配置-可选">1.2 Atomikos参数配置 (可选)</a></li>
 </ul></li>
-<li><a href="#第三方base实现-saga">第三方BASE实现-Saga</a>
+<li><a href="#2-第三方base实现-saga">2. 第三方BASE实现-Saga</a>
 <ul>
-<li><a href="#引入maven依赖-1">引入Maven依赖</a></li>
-<li><a href="#saga相关配置">Saga相关配置</a></li>
-<li><a href="#saga-快照及日志持久化">Saga 快照及日志持久化</a></li>
-<li><a href="#saga-快照及日志持久化spi定制">Saga 快照及日志持久化SPI定制</a></li>
+<li><a href="#2-1-引入maven依赖">2.1 引入Maven依赖</a></li>
+<li><a href="#2-2-saga相关配置">2.2 Saga相关配置</a></li>
+<li><a href="#2-3-saga-快照及日志持久化">2.3 Saga 快照及日志持久化</a></li>
+<li><a href="#2-4-saga-快照及日志持久化spi定制">2.4 Saga 快照及日志持久化SPI定制</a></li>
 </ul></li>
-<li><a href="#事务类型切换">事务类型切换</a>
+<li><a href="#3-分布式事务接入端">3. 分布式事务接入端</a>
 <ul>
-<li><a href="#api方式">API方式</a></li>
-<li><a href="#springbootstarter使用方式">SpringBootStarter使用方式</a></li>
-<li><a href="#springboot使用方式">SpringBoot使用方式</a></li>
-<li><a href="#spring-namespace使用方式">Spring Namespace使用方式</a></li>
-<li><a href="#业务代码">业务代码</a></li>
+<li><a href="#3-1-原生api">3.1 原生API</a></li>
+<li><a href="#3-2-spring注解">3.2 Spring注解</a>
+<ul>
+<li><a href="#使用方式">使用方式</a></li>
+<li><a href="#spring-boot-starter">Spring boot starter</a></li>
+<li><a href="#spring-namespace">Spring namespace</a></li>
 </ul></li>
+</ul></li>
+<li><a href="#分布式事务example">分布式事务example</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -1608,77 +1610,30 @@
 
 
 
-<h2 id="两阶段提交-xa">两阶段提交-XA</h2>
+<h2 id="1-两阶段提交-xa">1. 两阶段提交-XA</h2>
 
-<h3 id="引入maven依赖">引入Maven依赖</h3>
+<h3 id="1-1-引入maven依赖">1.1 引入Maven依赖</h3>
 
 <pre><code class="language-xml">&lt;dependency&gt;
     &lt;groupId&gt;org.apache.shardingsphere&lt;/groupId&gt;
-    &lt;artifactId&gt;sharding-transaction-2pc-xa&lt;/artifactId&gt;
+    &lt;artifactId&gt;sharding-transaction-xa-core&lt;/artifactId&gt;
     &lt;version&gt;${shardingsphere.version}&lt;/version&gt;
 &lt;/dependency&gt;
 </code></pre>
 
 <p>XA事务管理器将以SPI的方式被Sharding-JDBC所加载。</p>
 
-<h3 id="连接池配置">连接池配置</h3>
+<h3 id="1-2-atomikos参数配置-可选">1.2 Atomikos参数配置 (可选)</h3>
 
-<p>ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。
-其它连接池需要用户实现<code>DataSourceMapConverter</code>的SPI接口进行扩展，可以参考<code>org.apache.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper</code>的实现。
-若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：</p>
+<p>ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中会生成<code>xa_tx.log</code>, 这是XA崩溃恢复时所需的日志，请勿删除。</p>
 
-<table>
-<thead>
-<tr>
-<th><em>属性名称</em></th>
-<th><em>默认值</em></th>
-</tr>
-</thead>
+<p>也可以通过在项目的classpath中添加<code>jta.properties</code>来定制化Atomikos配置项。具体的配置规则请参考Atomikos的<a href="https://www.atomikos.com/Documentation/JtaProperties">官方文档</a>。</p>
 
-<tbody>
-<tr>
-<td>connectionTimeoutMilliseconds</td>
-<td>30 * 1000</td>
-</tr>
-
-<tr>
-<td>idleTimeoutMilliseconds</td>
-<td>60 * 1000</td>
-</tr>
-
-<tr>
-<td>maintenanceIntervalMilliseconds</td>
-<td>30 * 1000</td>
-</tr>
-
-<tr>
-<td>maxLifetimeMilliseconds</td>
-<td>0 (无限制)</td>
-</tr>
-
-<tr>
-<td>maxPoolSize</td>
-<td>50</td>
-</tr>
-
-<tr>
-<td>minPoolSize</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="atomikos参数配置">Atomikos参数配置</h3>
-
-<p>ShardingSphere默认的XA事务管理器为Atomikos。
-可以通过在项目的classpath中添加<code>jta.properties</code>来定制化Atomikos配置项。
-具体的配置规则请参考Atomikos的<a href="https://www.atomikos.com/Documentation/JtaProperties">官方文档</a>。</p>
-
-<h2 id="第三方base实现-saga">第三方BASE实现-Saga</h2>
+<h2 id="2-第三方base实现-saga">2. 第三方BASE实现-Saga</h2>
 
 <p>目前Apache/incubator-shardingsphere暂无BASE事务的实现，但是仍然可以使用第三方实现的Saga事务。</p>
 
-<h3 id="引入maven依赖-1">引入Maven依赖</h3>
+<h3 id="2-1-引入maven依赖">2.1 引入Maven依赖</h3>
 
 <pre><code class="language-xml">&lt;dependency&gt;
     &lt;groupId&gt;io.shardingsphere&lt;/groupId&gt;
@@ -1689,7 +1644,7 @@
 
 <p>Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。</p>
 
-<h3 id="saga相关配置">Saga相关配置</h3>
+<h3 id="2-2-saga相关配置">2.2 Saga相关配置</h3>
 
 <p>可以通过在项目的classpath中添加<code>saga.properties</code>来定制化Saga事务的配置项。
 配置项的属性及说明如下：</p>
@@ -1748,7 +1703,7 @@
 </tbody>
 </table>
 
-<h3 id="saga-快照及日志持久化">Saga 快照及日志持久化</h3>
+<h3 id="2-3-saga-快照及日志持久化">2.3 Saga 快照及日志持久化</h3>
 
 <p>当<code>saga.persistence.enabled</code>设置为<code>true</code>时，Saga引擎将会对事务的快照及执行日志进行持久化操作。
 持久化操作默认通过HikariCP链接池写入到MySQL、H2或PostgreSQL数据库中。
@@ -1839,7 +1794,7 @@ CREATE TABLE IF NOT EXISTS saga_event(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8
 </code></pre>
 
-<h3 id="saga-快照及日志持久化spi定制">Saga 快照及日志持久化SPI定制</h3>
+<h3 id="2-4-saga-快照及日志持久化spi定制">2.4 Saga 快照及日志持久化SPI定制</h3>
 
 <p>默认通过数据库来持久化快照和日志并不一定能够满足用户对业务和性能的需求。因此Saga引擎提供SPI允许用户定制化持久化部分。
 当<code>saga.persistence.enabled</code>设置为<code>true</code>且Saga引擎监测到有持久化SPI时，Saga引擎将通过用户实现的SPI代替默认持久化进行持久化工作。
@@ -1853,13 +1808,13 @@ CREATE TABLE IF NOT EXISTS saga_event(
 &lt;/dependency&gt;
 </code></pre>
 
-<h2 id="事务类型切换">事务类型切换</h2>
+<h2 id="3-分布式事务接入端">3. 分布式事务接入端</h2>
 
 <p>ShardingSphere的事务类型存放在<code>TransactionTypeHolder</code>的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。</p>
 
 <p>注意：数据库连接创建之后，事务类型将无法更改。</p>
 
-<h3 id="api方式">API方式</h3>
+<h3 id="3-1-原生api">3.1 原生API</h3>
 
 <pre><code class="language-java">TransactionTypeHolder.set(TransactionType.LOCAL);
 </code></pre>
@@ -1874,7 +1829,29 @@ CREATE TABLE IF NOT EXISTS saga_event(
 <pre><code class="language-java">TransactionTypeHolder.set(TransactionType.BASE);
 </code></pre>
 
-<h3 id="springbootstarter使用方式">SpringBootStarter使用方式</h3>
+<h3 id="3-2-spring注解">3.2 Spring注解</h3>
+
+<h4 id="使用方式">使用方式</h4>
+
+<pre><code class="language-java">@ShardingTransactionType(TransactionType.LOCAL)
+@Transactional
+</code></pre>
+
+<p>或</p>
+
+<pre><code class="language-java">@ShardingTransactionType(TransactionType.XA)
+@Transactional
+</code></pre>
+
+<p>或</p>
+
+<pre><code class="language-java">@ShardingTransactionType(TransactionType.BASE)
+@Transactional
+</code></pre>
+
+<p>注意：<code>@ShardingTransactionType</code>需要同Spring的<code>@Transactional</code>配套使用，事务才会生效。</p>
+
+<h4 id="spring-boot-starter">Spring boot starter</h4>
 
 <p>引入Maven依赖：</p>
 
@@ -1885,35 +1862,7 @@ CREATE TABLE IF NOT EXISTS saga_event(
 &lt;/dependency&gt;
 </code></pre>
 
-<h3 id="springboot使用方式">SpringBoot使用方式</h3>
-
-<p>引入Maven依赖：</p>
-
-<pre><code class="language-xml">&lt;dependency&gt;
-    &lt;groupId&gt;org.apache.shardingsphere&lt;/groupId&gt;
-    &lt;artifactId&gt;sharding-transaction-spring&lt;/artifactId&gt;
-    &lt;version&gt;${sharding-sphere.version}&lt;/version&gt;
-&lt;/dependency&gt;
-
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;
-    &lt;version&gt;${spring-boot.version}&lt;/version&gt;
-&lt;/dependency&gt;
-
-&lt;spring-boot.version&gt;[1.5.0.RELEASE,2.0.0.M1)&lt;/spring-boot.version&gt;
-
-</code></pre>
-
-<p>AutoConfiguration配置</p>
-
-<pre><code class="language-java">@SpringBootApplication(exclude = JtaAutoConfiguration.class)
-@ComponentScan(&quot;org.apache.shardingsphere.transaction.aspect&quot;)
-public class StartMain {
-}
-</code></pre>
-
-<h3 id="spring-namespace使用方式">Spring Namespace使用方式</h3>
+<h4 id="spring-namespace">Spring namespace</h4>
 
 <p>引入Maven依赖：</p>
 
@@ -1944,27 +1893,9 @@ public class StartMain {
 
 </code></pre>
 
-<h3 id="业务代码">业务代码</h3>
+<h2 id="分布式事务example">分布式事务example</h2>
 
-<p>在需要事务的方法或类中添加相关注解即可，例如：</p>
-
-<pre><code class="language-java">@ShardingTransactionType(TransactionType.LOCAL)
-@Transactional
-</code></pre>
-
-<p>或</p>
-
-<pre><code class="language-java">@ShardingTransactionType(TransactionType.XA)
-@Transactional
-</code></pre>
-
-<p>或</p>
-
-<pre><code class="language-java">@ShardingTransactionType(TransactionType.BASE)
-@Transactional
-</code></pre>
-
-<p>注意：<code>@ShardingTransactionType</code>需要同Spring的<code>@Transactional</code>配套使用，事务才会生效。</p>
+<p><a href="https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/transaction-example">transaction-example</a></p>
 
 
 <footer class=" footline" >
@@ -2998,20 +2929,20 @@ public class StartMain {
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1552559552"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553471719"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1552559552"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1552559552"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553471719"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1552559552" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1552559552"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553471719" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553471719"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

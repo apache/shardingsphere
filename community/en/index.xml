@@ -42,6 +42,18 @@ Submit an Issue  Before submitting an issue, please go through a comprehensive s
     </item>
     
     <item>
+      <title>Release Guide</title>
+      <link>https://shardingsphere.apache.org/community/en/contribute/release/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/community/en/contribute/release/</guid>
+      <description>GPG Settings Install GPG Download installation package on official GnuPG website. The command of GnuPG 1.x version can differ a little from that of 2.x version. The following instructions take GnuPG-2.1.23 version for example. After the installation, execute the following command to check the version number.
+gpg --version  Create Key After the installation, execute the following command to create key.
+This command indicates GnuPG-2.x can be used:
+gpg --full-gen-key  This command indicates GnuPG-1.</description>
+    </item>
+    
+    <item>
       <title>2FA</title>
       <link>https://shardingsphere.apache.org/community/en/contribute/2fa/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/current/img/favicon.png" type="image/x-icon" />
+
+    <title>Release Guide :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/theme.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1553471720" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1553471720" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1553471720"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/en/contribute/release/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="https://shardingsphere.apache.org/document/current/img/logo_v2.png" />
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/contribute/" title="Get Involved" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/community/en/contribute/">
+          <b>1. </b>Get Involved
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/subscribe/" title="Subscribe Guide" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/subscribe/">
+        Subscribe Guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/contributor/" title="Contributor Guide" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/contributor/">
+        Contributor Guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/committer/" title="Committer Guide" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/committer/">
+        Committer Guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/release/" title="Release Guide" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/release/">
+        Release Guide
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/2fa/" title="2FA" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/2fa/">
+        2FA
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/code-conduct/" title="Code of Conduct" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/code-conduct/">
+        Code of Conduct
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/external-dependency/" title="External dependencies" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/external-dependency/">
+        External dependencies
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/contribute/test-engine/" title="Test Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/community/en/contribute/test-engine/">
+        Test Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/company/" title="Using Companies" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/community/en/company/">
+          <b>2. </b>Using Companies
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/community/en/contribute/release/" selected>English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/community/cn/contribute/release/">Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/community/en/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/community/en/contribute/'>Get Involved</a> > Release Guide
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+              </div>
+            </div>
+            
+
+        
+          <div id="chapter">
+        
+        <div id="body-inner">
+          
+
+        
+
+
+
+
+<h2 id="gpg-settings">GPG Settings</h2>
+
+<h3 id="install-gpg">Install GPG</h3>
+
+<p>Download installation package on <a href="https://www.gnupg.org/download/index.html">official GnuPG website</a>.
+The command of GnuPG 1.x version can differ a little from that of 2.x version.
+The following instructions take <code>GnuPG-2.1.23</code> version for example.
+After the installation, execute the following command to check the version number.</p>
+
+<pre><code class="language-shell">gpg --version
+</code></pre>
+
+<h3 id="create-key">Create Key</h3>
+
+<p>After the installation, execute the following command to create key.</p>
+
+<p>This command indicates <code>GnuPG-2.x</code> can be used:</p>
+
+<pre><code class="language-shell">gpg --full-gen-key
+</code></pre>
+
+<p>This command indicates <code>GnuPG-1.x</code> can be used:</p>
+
+<pre><code class="language-shell">gpg --gen-key
+</code></pre>
+
+<p>Finish the key creation according to instructions:</p>
+
+<pre><code class="language-shell">gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Please select what kind of key you want:
+  (1) RSA and RSA (default)
+  (2) DSA and Elgamal
+  (3) DSA (sign only)
+  (4) RSA (sign only)
+Your selection? 1
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (2048) 4096
+Requested keysize is 4096 bits
+Please specify how long the key should be valid.
+        0 = key does not expire
+     &lt;n&gt;  = key expires in n days
+     &lt;n&gt;w = key expires in n weeks
+     &lt;n&gt;m = key expires in n months
+     &lt;n&gt;y = key expires in n years
+Key is valid for? (0) 
+Key does not expire at all
+Is this correct? (y/N) y
+
+GnuPG needs to construct a user ID to identify your key.
+
+Real name: ${Input username}
+Email address: ${Input email}
+Comment: ${Input comment}
+You selected this USER-ID:
+   &quot;${Inputed username} (${Inputed comment}) &lt;${Inputed email}&gt;&quot;
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+You need a Passphrase to protect your secret key. # Input passwords
+</code></pre>
+
+<h3 id="check-generated-key">Check Generated Key</h3>
+
+<pre><code class="language-shell">gpg --list-keys
+</code></pre>
+
+<p>Execution Result:</p>
+
+<pre><code class="language-shell">pub   4096R/700E6065 2019-03-20
+uid                  ${Username} (${Comment}) &lt;{Email}&gt;
+sub   4096R/0B7EF5B2 2019-03-20
+</code></pre>
+
+<p>Among them, 700E6065 is public key ID.</p>
+
+<h3 id="upload-the-public-key-to-key-server">Upload the Public Key to Key Server</h3>
+
+<p>The command is as follow:</p>
+
+<pre><code class="language-shell">gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
+</code></pre>
+
+<p><code>pool.sks-keyservers.net</code> is arbitrarily chosen <a href="https://sks-keyservers.net/status/">public key server</a>.
+Each server will automatically synchronize with one another, so it would be okay to choose any one.</p>
+
+<h2 id="release-apache-maven-central-repository">Release Apache Maven Central Repository</h2>
+
+<h3 id="set-settings-xml">Set settings.xml</h3>
+
+<p>Add the following template to <code>~/.m2/settings.xml</code>, all the passwords need to be filled in after encryption.
+For encryption settings, please see <a href="http://maven.apache.org/guides/mini/guide-encryption.html">here</a>.</p>
+
+<pre><code class="language-xml">&lt;settings&gt;
+    &lt;servers&gt;
+      &lt;server&gt;
+          &lt;id&gt;apache.snapshots.https&lt;/id&gt;
+          &lt;username&gt; &lt;!-- APACHE LDAP username --&gt; &lt;/username&gt;
+          &lt;password&gt; &lt;!-- APACHE LDAP encrypted password --&gt; &lt;/password&gt;
+      &lt;/server&gt;
+      &lt;server&gt;
+          &lt;id&gt;apache.releases.https&lt;/id&gt;
+          &lt;username&gt; &lt;!-- APACHE LDAP username --&gt; &lt;/username&gt;
+          &lt;password&gt; &lt;!-- APACHE LDAP encrypted password --&gt; &lt;/password&gt;
+      &lt;/server&gt;
+    &lt;/servers&gt;
+&lt;/settings&gt;
+</code></pre>
+
+<h3 id="extend-apache-s-parent-pom">Extend Apache&rsquo;s Parent POM</h3>
+
+<p>Apache&rsquo;s parent POM will be set as the default value.
+If the POM in the project has this element, it needs to be deleted.</p>
+
+<pre><code class="language-xml">&lt;parent&gt;
+    &lt;groupId&gt;org.apache&lt;/groupId&gt;
+    &lt;artifactId&gt;apache&lt;/artifactId&gt;
+    &lt;version&gt;21&lt;/version&gt;
+&lt;/parent&gt;
+</code></pre>
+
+<h3 id="create-release-branch">Create Release Branch</h3>
+
+<p>Suppose ShardingSphere source codes downloaded from github is under <code>~/incubator-shardingsphere/</code> directory and the version to be released is <code>4.0.0-RC</code>.
+Create <code>4.0.0-RC1-release</code> branch, where all the following operations are performed.</p>
+
+<pre><code class="language-shell">cd ~/incubator-shardingsphere/
+git pull
+git branch 4.0.0-RC1-release
+git push origin 4.0.0-RC1-release
+git checkout 4.0.0-RC1-release
+</code></pre>
+
+<h3 id="pre-release-check">Pre-Release Check</h3>
+
+<pre><code class="language-shell">mvn release:prepare -Prelease -Darguments=&quot;-DskipTests&quot; -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
+</code></pre>
+
+<p>-Prelease: choose release profile, which will pack all the source codes, jar documents and executable binary packages of sharding-proxy.</p>
+
+<p>-DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.</p>
+
+<p>-DdryRun=true: rehearsal, which means not to generate new submitting edition number or new tag.</p>
+
+<h3 id="prepare-for-the-release">Prepare for the Release</h3>
+
+<p>First, clean local pre-release check information.</p>
+
+<pre><code class="language-shell">mvn release:clean
+</code></pre>
+
+<p>Then, prepare to execute the release.</p>
+
+<pre><code class="language-shell">mvn release:prepare -Prelease -Darguments=&quot;-DskipTests&quot; -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
+</code></pre>
+
+<p>It is basically the same as the following rehearsal command, but deleting -DdryRun=true parameter.</p>
+
+<p>-DpushChanges=false: do not submit the edited version number and tag to Github automatically.</p>
+
+<p>After making sure there is no mistake in local files, submit them to GitHub.</p>
+
+<pre><code class="language-shell">git push
+git push origin --tags
+</code></pre>
+
+<h3 id="deploy-the-release">Deploy the Release</h3>
+
+<pre><code class="language-shell">mvn release:perform -Prelease -Darguments=&quot;-DskipTests&quot; -DautoVersionSubmodules=true -Dusername=${Github username}
+</code></pre>
+
+<p>After that command is executed, the version to be released will be uploaded to Apache staging repository automatically.
+Visit <a href="https://repository.apache.org/#stagingRepositories">https://repository.apache.org/#stagingRepositories</a> and use Apache LDAP account to log in; then you can see the uploaded version.
+Click <code>Close</code> to tell Nexus that the construction is finished, because only in this way, this version can be usable.
+If there is any problem in gpg signature, <code>Close</code> will fail, but you can see the failure information through <code>Activity</code>.</p>
+
+<h2 id="release-apache-svn-repository">Release Apache SVN Repository</h2>
+
+<h3 id="check-shardingsphere-release-directory">Check ShardingSphere Release Directory</h3>
+
+<p>If there is no local work directory, create one at first.</p>
+
+<pre><code class="language-shell">mkdir -p ~/ss_svn/dev/
+cd ~/ss_svn/dev/
+</code></pre>
+
+<p>After the creation, detect ShardingSphere release directory from Apache SVN.</p>
+
+<pre><code class="language-shell">svn --username=${APACHE LDAP username} co https://dist.apache.org/repos/dist/dev/incubator/shardingsphere
+cd ~/ss_svn/dev/shardingsphere
+</code></pre>
+
+<h3 id="add-gpg-public-key">Add gpg Public Key</h3>
+
+<p>Only the account in its first deployment needs to add that.
+It is alright for <code>KEYS</code> to only include the public key of the deployed account.</p>
+
+<pre><code class="language-shell">gpg -a --export ${GPG username} &gt;&gt; KEYS
+</code></pre>
+
+<h3 id="add-the-release-content-to-svn-directory">Add the Release Content to SVN Directory</h3>
+
+<p>Create folder by version number.</p>
+
+<pre><code class="language-shell">mkdir -p ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cd ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+</code></pre>
+
+<p>Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN work directory.</p>
+
+<pre><code class="language-shell">cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+</code></pre>
+
+<h3 id="generate-shasum">Generate shasum</h3>
+
+<pre><code class="language-shell">shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip &gt; apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-bin.zip &gt; apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz &gt; apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha512
+</code></pre>
+
+<h3 id="commit-to-apache-svn">Commit to Apache SVN</h3>
+
+<pre><code class="language-shell">svn add *
+svn --username=${APACHE LDAP username} commit -m &quot;release 4.0.0-RC1&quot;
+</code></pre>
+
+<h2 id="check-release">Check Release</h2>
+
+<h3 id="check-sha512-shasum">Check sha512 shasum</h3>
+
+<pre><code class="language-shell">shasum -c apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
+shasum -c apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
+shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha512
+</code></pre>
+
+<h3 id="check-gpg-signature">Check gpg Signature</h3>
+
+<p>First, import releaser&rsquo;s public key.
+Import KEYS from SVN repository to the local. (The releaser does not need to introduce again; the checking assistant needs to import it, with the user name filled as the releaser&rsquo;s. )</p>
+
+<pre><code class="language-shell">curl https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS &gt;&gt; KEYS
+gpg --import KEYS
+gpg --edit-key &quot;${GPG username of releaser}&quot;
+  &gt; trust
+  &gt; save
+</code></pre>
+
+<p>Then, check the gpg signature.</p>
+
+<pre><code class="language-shell">gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-src.zip.asc apache-shardingsphere-incubating-4.0.0-RC1-src.zip
+gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.asc apache-shardingsphere-incubating-4.0.0-RC1-bin.zip
+gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz
+</code></pre>
+
+<h3 id="check-released-files">Check Released Files</h3>
+
+<h4 id="check-source-package">Check source package</h4>
+
+<p>Decompress <code>apache-shardingsphere-incubating-4.0.0-RC1-src.zip</code> and check the following items:</p>
+
+<ul>
+<li>The folder contains the word <code>incubating</code></li>
+<li>There is <code>DISCLAIMER</code> file</li>
+<li>There are <code>LICENSE</code> and <code>NOTICE</code> files</li>
+<li>There is only txt files but no binary file</li>
+<li>All the files have ASF licenses at the beginning</li>
+<li>They can be rightly compiled and pass the unit test (mvn install)</li>
+<li>The version content is the same as GitHub tag content (diff -r a verify_dir tag_dir)</li>
+<li>Check if there is any extra files or folders, empty folders for example</li>
+</ul>
+
+<h4 id="check-binary-packages">Check binary packages</h4>
+
+<p>Extract <code>apache-shardingsphere-incubating-4.0.0-RC1-bin.zip</code> and <code>apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz</code> to check the following items:</p>
+
+<ul>
+<li>The folder contains the word <code>incubating</code></li>
+<li>There is <code>DISCLAIMER</code> file</li>
+<li>There are <code>LICENSE</code> and <code>NOTICE</code> files</li>
+<li>All the files have ASF licenses at the beginning</li>
+<li>After the <code>sharding-proxy</code> binary package is rightly configured, it can run well (./start.sh)</li>
+<li>Check the third party dependency license:
+
+<ul>
+<li>The third party dependency license is compatible</li>
+<li>All the third party dependency licenses are declared in <code>LICENSE</code> file</li>
+<li>All the third party dependency licenses are under <code>licenses</code> folder</li>
+<li>If it depends on Apache license and has <code>NOTICE</code> file, these <code>NOTICE</code> file need to be added to <code>NOTICE</code> file of that version</li>
+</ul></li>
+</ul>
+
+<p>For the whole check list, please see <a href="https://wiki.apache.org/incubator/IncubatorReleaseChecklist">here</a>.</p>
+
+<h2 id="call-for-a-vote">Call for a Vote</h2>
+
+<h3 id="vote">Vote</h3>
+
+<ol>
+<li><p>ShardingSphere community vote: send the vote e-mail to <code>dev@shardingsphere.apache.org</code>.
+PPMC needs to check the rightness of the version according to the document, before they vote.
+After at least 72 hours and with at least 3 <code>+1 binding</code> votes (only PPMC&rsquo;s votes are binding), it can come to the next stage of the vote.</p></li>
+
+<li><p>Apache community vote: send the vote e-mail to <code>general@incubator.apache.org</code>.
+After at least 72 hours and with at least 3 <code>+1 binding</code> votes (only IPMC&rsquo;s votes are binding), it can be officially released.</p></li>
+
+<li><p>Announce the vote result: send the result vote e-mail to <code>general@incubator.apache.org</code>.</p></li>
+</ol>
+
+<h3 id="vote-template">Vote Template</h3>
+
+<ol>
+<li>ShardingSphere Community Vote Template</li>
+</ol>
+
+<p>Title:</p>
+
+<pre><code>[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0 [RC1]
+
+</code></pre>
+
+<p>Body:</p>
+
+<pre><code>Hello ShardingSphere Community,
+
+This is a call for vote to release Apache ShardingSphere (Incubating) version 4.0.0-RC1
+
+Release notes:
+https://github.com/apache/incubator-shardingsphere/releases/edit/untagged-90bdf1e5cbba8422332f
+
+The release candidates:
+https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
+
+Maven 2 staging repository:
+https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+
+Git tag for the release:
+https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
+
+Release Commit ID:
+https://github.com/apache/incubator-shardingsphere/commit/90a17fd3ac5af99d0fe1bd8018ba1393b1864672
+
+Keys to verify the Release Candidate:
+https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS
+
+The vote will be open for at least 72 hours or until necessary number of votes are reached.
+
+Please vote accordingly:
+
+[ ] +1 approve 
+[ ] +0 no opinion 
+[ ] -1 disapprove with the reason
+
+</code></pre>
+
+<ol>
+<li>Apache Community Vote Template:</li>
+</ol>
+
+<p>Title:</p>
+
+<pre><code>[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0 [RC1]
+
+</code></pre>
+
+<p>Body:</p>
+
+<pre><code>Hello all,
+
+This is a call for vote to release Apache ShardingSphere (Incubating) version 4.0.0-RC1.
+
+The Apache ShardingSphere community has voted on and approved a proposal to release
+Apache ShardingSphere (Incubating) version 4.0.0-RC1.
+
+We now kindly request the Incubator PMC members review and vote on this
+incubator release.
+
+ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC &amp; Sharding-Proxy. 
+They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
+Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
+As the cornerstone of many enterprises, relational database still takes a huge market share. 
+Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
+
+Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
+With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+
+* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
+* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
+* Support any kind of database that conforms to JDBC standard: MySQL£¬Oracle£¬SQLServer and PostgreSQL for now.
+
+Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
+Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
+
+* Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
+
+* Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
+
+ShardingSphere community vote and result thread:
+https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
+
+Release notes:
+https://github.com/apache/incubator-shardingsphere/releases/edit/untagged-90bdf1e5cbba8422332f
+
+The release candidates:
+https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
+
+Maven 2 staging repository:
+https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
+
+Git tag for the release:
+https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
+
+Release Commit ID:
+https://github.com/apache/incubator-shardingsphere/commit/90a17fd3ac5af99d0fe1bd8018ba1393b1864672
+
+Keys to verify the Release Candidate:
+https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS
+
+Look at here for how to verify this release candidate:
+https://shardingsphere.apache.org/community/en/contribute/release/
+
+The vote will be open for at least 72 hours or until necessary number of
+votes are reached.
+
+Please vote accordingly:
+[ ] +1 approve
+[ ] +0 no opinion
+[ ] -1 disapprove with the reason
+
+</code></pre>
+
+<ol>
+<li>Announce the vote result:</li>
+</ol>
+
+<p>Title:</p>
+
+<pre><code>[RESULT] [VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0 [RC1]
+
+</code></pre>
+
+<p>Body:</p>
+
+<pre><code>We’ve received 3 +1 binding votes and one +1 non-binding vote:
+
++1 binding, xxx
++1 binding, xxx
++1 binding, xxx
+
++1 non-binding, xxx
+
+Thank you everyone for taking the time to review the release and help us. 
+I will process to publish the release and send ANNOUNCE.
+
+</code></pre>
+
+<h2 id="finish-the-release">Finish the Release</h2>
+
+<ol>
+<li>Move source packages and binary packages from the <code>dev</code> directory to <code>release</code> directory</li>
+</ol>
+
+<pre><code class="language-shell">svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/ https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
+</code></pre>
+
+<ol>
+<li><p>Find ShardingSphere in staging repository and click <code>Release</code></p></li>
+
+<li><p>Merge release branch to <code>dev</code> and delete it on Github</p></li>
+
+<li><p>Send e-mail to <code>general@incubator.apache.org</code> and <code>dev@shardingsphere.apache.org</code> to announce the release is finished.</p></li>
+</ol>
+
+<p>Announcement e-mail template:</p>
+
+<p>Title:</p>
+
+<pre><code>[ANN] Apache ShardingSphere 4.0.0 [RC1] available
+
+</code></pre>
+
+<p>Body:</p>
+
+<pre><code>Hi all,
+
+Apache ShardingSphere (incubating) Team is glad to announce the first release of Apache ShardingSphere Incubating 4.0.0-RC1.
+
+ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC &amp; Sharding-Proxy. 
+They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
+Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
+As the cornerstone of many enterprises, relational database still takes a huge market share. 
+Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
+
+Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
+With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+
+* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
+* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
+* Support any kind of database that conforms to JDBC standard: MySQL£¬Oracle£¬SQLServer and PostgreSQL for now.
+
+Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
+Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
+
+* Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
+
+* Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
+
+Vote Thread: 
+
+Download Links: 
+
+Release Notes: 
+
+Website: https://shardingsphere.apache.org/
+
+SkyWalking Resources:
+- Issue: https://github.com/apache/incubator-shardingsphere/issues
+- Mailing list: dev@shardingsphere.apache.org
+- Documents: https://github.com/apache/incubator-shardingsphere/blob/dev/README.md
+</code></pre>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+            </div> 
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/community/en/contribute/committer/" title="Committer Guide"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/community/en/contribute/2fa/" title="2FA" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1553471720"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/learn.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1553471720"></script>
+
+    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1553471720" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1553471720"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
