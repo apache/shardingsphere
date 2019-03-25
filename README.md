@@ -102,7 +102,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 * Read-write splitting
 * Distributed primary key
 
-### Distributed Transaction (Doing)
+### Distributed Transaction
 
 * Unified Transaction API
 * XA transaction
