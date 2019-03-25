@@ -23,7 +23,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 |                        | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | ---------------------- | --------------- | -------------------- | ------------------ |
-| Database               | `Any`           | MySQL                | MySQL              |
+| Database               | `Any`           | MySQL/PostgreSQL     | MySQL/PostgreSQL   |
 | Connections Cost       | `More`          | Less                 | More               |
 | Heterogeneous Language | `Java Only`     | Any                  | Any                |
 | Performance            | `Low loss`      | Relatively High loss | Low loss           |
