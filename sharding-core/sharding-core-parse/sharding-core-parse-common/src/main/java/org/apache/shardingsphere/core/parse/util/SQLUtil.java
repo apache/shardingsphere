@@ -46,34 +46,6 @@ public final class SQLUtil {
     }
     
     /**
-     * Get left delimiter.
-     * 
-     * @param value value
-     * @return left delimiter
-     */
-    public static String getLeftDelimiter(final String value) {
-        int index = CharMatcher.anyOf("[`'\"").indexIn(value);
-        if (-1 == index) {
-            return "";
-        }
-        return String.valueOf(value.charAt(index));
-    }
-    
-    /**
-     * Get right delimiter.
-     *
-     * @param value value
-     * @return right delimiter
-     */
-    public static String getRightDelimiter(final String value) {
-        int index = CharMatcher.anyOf("]`'\"").indexIn(value);
-        if (-1 == index) {
-            return "";
-        }
-        return String.valueOf(value.charAt(index));
-    }
-    
-    /**
      * Get exactly SQL expression.
      *
      * <p>remove space for SQL expression</p>

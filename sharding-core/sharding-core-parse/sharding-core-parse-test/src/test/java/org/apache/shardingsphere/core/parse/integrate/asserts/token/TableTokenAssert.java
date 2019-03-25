@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTableToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
@@ -58,10 +59,8 @@ final class TableTokenAssert {
             assertThat(assertMessage.getFullAssertMessage("Table tokens skipped schema name length assertion error: "), actual.getSkippedSchemaNameLength(), is(expected.getSkippedSchemaNameLength()));
         }
         assertThat(assertMessage.getFullAssertMessage("Table tokens table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
-        assertThat(assertMessage.getFullAssertMessage("Table tokens left delimiter assertion error: "), 
-                actual.getLeftDelimiter(), is(null == expected.getLeftDelimiter() ? "" : expected.getLeftDelimiter()));
-        assertThat(assertMessage.getFullAssertMessage("Table tokens right delimiter assertion error: "), 
-                actual.getRightDelimiter(), is(null == expected.getRightDelimiter() ? "" : expected.getRightDelimiter()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens left delimiter assertion error: "), actual.getDelimiter(), 
+                is(QuoteCharacter.getQuoteCharacter(null == expected.getLeftDelimiter() ? "" : expected.getLeftDelimiter())));
     }
     
     private List<TableToken> getTableTokens(final Collection<SQLToken> actual) {
