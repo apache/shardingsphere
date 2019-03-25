@@ -42,17 +42,17 @@ public enum ShardingPropertiesConstant {
      * </p>
      */
     SQL_SHOW("sql.show", String.valueOf(Boolean.FALSE), boolean.class),
-
+    
     /**
      * Enable or Disable to show SQL details in simple style.
      *
-     *<p>
+     * <p>
      * In sharding mode, if this properties is true, log will display in simple style to avoid too much contents.
-     * Default: False
-     *</p>
+     * Default: false
+     * </p>
      */
     SQL_SIMPLE("sql.simple", String.valueOf(Boolean.FALSE), boolean.class),
-
+    
     /**
      * Worker group or user group thread max size.
      *

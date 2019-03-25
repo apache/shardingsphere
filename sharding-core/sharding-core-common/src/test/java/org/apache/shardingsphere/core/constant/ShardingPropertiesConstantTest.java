@@ -29,8 +29,8 @@ public class ShardingPropertiesConstantTest {
     @Test
     public void assertFindByKey() {
         assertThat(ShardingPropertiesConstant.findByKey("sql.show"), is(ShardingPropertiesConstant.SQL_SHOW));
-        assertThat(ShardingPropertiesConstant.findByKey("executor.size"), is(ShardingPropertiesConstant.EXECUTOR_SIZE));
         assertThat(ShardingPropertiesConstant.findByKey("sql.simple"), is(ShardingPropertiesConstant.SQL_SIMPLE));
+        assertThat(ShardingPropertiesConstant.findByKey("executor.size"), is(ShardingPropertiesConstant.EXECUTOR_SIZE));
     }
     
     @Test
