@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * SQL logger.
@@ -39,19 +41,28 @@ public final class SQLLogger {
      * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
+     * @param showSimple whether show SQL in simple style
      * @param sqlStatement SQL statement
      * @param routeUnits route units
      */
-    public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
+    public static void logSQL(final String logicSQL, final boolean showSimple, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
         log("Rule Type: sharding");
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatement);
-        for (RouteUnit each : routeUnits) {
-            if (each.getSqlUnit().getParameters().isEmpty()) {
-                log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
-            } else {
-                log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
+        if (!showSimple) {
+            for (RouteUnit each : routeUnits) {
+                if (each.getSqlUnit().getParameters().isEmpty()) {
+                    log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
+                } else {
+                    log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
+                }
             }
+        } else {
+            Set<String> dataSourceNames = new HashSet<>(routeUnits.size());
+            for (RouteUnit each : routeUnits) {
+                dataSourceNames.add(each.getDataSourceName());
+            }
+            log("Actual SQL(simple): {} ::: {}", dataSourceNames, routeUnits.size());
         }
     }
     
