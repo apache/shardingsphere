@@ -13,7 +13,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. XA Transaction available.
 1. All SQL 100% compatible if route to single data node (MySQL Only).
 1. DISTINCT SQL syntax available.
-1. Broadcast table .
+1. Broadcast table.
 1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
 1. Data encrypt available.
 1. Use PostgreSQL protocol access Sharding-Proxy available.

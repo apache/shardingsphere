@@ -76,10 +76,18 @@ public final class EncryptDataSource extends AbstractUnsupportedOperationDataSou
         Map<String, TableMetaData> tables = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             for (String each : encryptRule.getEncryptTableNames()) {
-                tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each)));
+                if (isTableExist(connection, each)) {
+                    tables.put(each, new TableMetaData(getColumnMetaDataList(connection, each)));
+                }
             }
         }
         return new ShardingTableMetaData(tables);
+    }
+    
+    private boolean isTableExist(final Connection connection, final String tableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, tableName, null)) {
+            return resultSet.next();
+        }
     }
     
     private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String tableName) throws SQLException {

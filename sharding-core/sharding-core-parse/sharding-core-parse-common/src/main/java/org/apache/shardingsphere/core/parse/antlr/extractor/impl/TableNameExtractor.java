@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -44,22 +45,23 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
         if (!tableNameNode.isPresent()) {
             return Optional.absent();
         }
-        String tableText = tableNameNode.get().getText();
+        String nodeText = tableNameNode.get().getText();
         String tableName;
         Optional<String> schemaName;
         int skippedSchemaNameLength;
-        if (tableText.contains(Symbol.DOT.getLiterals())) {
-            List<String> tableTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(tableText);
-            tableName = tableTextSegments.get(tableTextSegments.size() - 1);
-            schemaName = Optional.of(tableTextSegments.get(tableTextSegments.size() - 2));
-            skippedSchemaNameLength = tableText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
+        if (nodeText.contains(Symbol.DOT.getLiterals())) {
+            List<String> nodeTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
+            tableName = nodeTextSegments.get(nodeTextSegments.size() - 1);
+            schemaName = Optional.of(nodeTextSegments.get(nodeTextSegments.size() - 2));
+            skippedSchemaNameLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
         } else {
-            tableName = tableText;
+            tableName = nodeText;
             schemaName = Optional.absent();
             skippedSchemaNameLength = 0;
         }
-        TableSegment result = new TableSegment(new TableToken(tableNameNode.get().getStart().getStartIndex(), 
-                skippedSchemaNameLength, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
+        TableToken tableToken = new TableToken(
+                tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, SQLUtil.getExactlyValue(tableName), QuoteCharacter.valueFrom(SQLUtil.getStartDelimiter(tableName)));
+        TableSegment result = new TableSegment(tableToken);
         result.setSchemaName(schemaName.orNull());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.get().getParent(), RuleName.ALIAS);
         if (aliasNode.isPresent()) {
