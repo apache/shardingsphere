@@ -1,8 +1,8 @@
 +++
-pre = "<b>3.4.2.1 </b>"
+pre = "<b>3.4.2.2 </b>"
 toc = true
 title = "两阶段事务-XA"
-weight = 1
+weight = 2
 +++
 
 * 支持数据分片后的跨库XA事务

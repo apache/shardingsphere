@@ -9,5 +9,6 @@ chapter = true
 
 本小节主要介绍ShardingSphere分布式事务的主要功能
 
+* 本地事务
 * 两阶段XA事务
 * Saga柔性事务
