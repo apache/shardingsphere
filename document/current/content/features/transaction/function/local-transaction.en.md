@@ -17,6 +17,4 @@ For example, after the update of two databases in one transaction, one database 
 
 ## Supported Situation
 
-* Sharding-JDBC can support users' own configurations without the use of XA data source.
-
-* Sharding-Proxy do not need support; just use XA or BASE transactions.
+* Sharding-JDBC and Sharding-Proxy can support LOCAL transaction originally.
