@@ -100,18 +100,21 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 * Database sharding & Table sharding
 * Read-write splitting
-* Distributed primary key
+* Sharding strategy customization
+* Centre-less Distributed primary key
 
-### Distributed Transaction (Doing)
+### Distributed Transaction
 
+* Unified Transaction API
 * XA transaction
 * BASE transaction
 
 ### Database Orchestration
 
-* Dynamic configuration
-* Fusing & Disabling
-* Tracing
+* Dynamic Configuration
+* Orchestration & Governance
+* Data Encryption
+* Tracing & Observability
 * Elastic scaling out (Planing)
 
 ## Roadmap
