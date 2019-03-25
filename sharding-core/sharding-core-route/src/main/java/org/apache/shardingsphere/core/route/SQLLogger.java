@@ -41,16 +41,15 @@ public final class SQLLogger {
      * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
-     * @param maxLogicSqlLength max length of logic SQL
+     * @param showSimple whether show SQL in simple style
      * @param sqlStatement SQL statement
      * @param routeUnits route units
      */
-    public static void logSQL(final String logicSQL, final int maxLogicSqlLength, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
+    public static void logSQL(final String logicSQL, final boolean showSimple, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
         log("Rule Type: sharding");
-        int logicSqlLength = logicSQL.length();
-        if (logicSqlLength <= maxLogicSqlLength) {
-            log("Logic SQL: {}", logicSQL);
-            log("SQLStatement: {}", sqlStatement);
+        log("Logic SQL: {}", logicSQL);
+        log("SQLStatement: {}", sqlStatement);
+        if (!showSimple) {
             for (RouteUnit each : routeUnits) {
                 if (each.getSqlUnit().getParameters().isEmpty()) {
                     log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
@@ -59,8 +58,6 @@ public final class SQLLogger {
                 }
             }
         } else {
-            log("Logic SQL(simple): {}", logicSQL.substring(0, maxLogicSqlLength));
-            log("SQLStatement: {}", sqlStatement);
             Set<String> dataSourceNames = new HashSet<>(routeUnits.size());
             for (RouteUnit each : routeUnits) {
                 dataSourceNames.add(each.getDataSourceName());

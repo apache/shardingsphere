@@ -44,13 +44,14 @@ public enum ShardingPropertiesConstant {
     SQL_SHOW("sql.show", String.valueOf(Boolean.FALSE), boolean.class),
 
     /**
+     * Enable or Disable to show SQL details in simple style.
+     *
      *<p>
-     * Maximum length of logic SQL.
-     * In sharding mode, if the length of logic SQL longer than the number, log will display in simple style to avoid too much content .
-     * Default: Integer.MAX_VALUE
+     * In sharding mode, if this properties is true, log will display in simple style to avoid too much contents.
+     * Default: False
      *</p>
      */
-    SQL_SIMPLE_LENGTH("sql.simple.length", String.valueOf(Integer.MAX_VALUE), int.class),
+    SQL_SIMPLE("sql.simple", String.valueOf(Boolean.FALSE), boolean.class),
 
     /**
      * Worker group or user group thread max size.

@@ -46,7 +46,6 @@ public abstract class BaseShardingEngineTest {
     protected final ShardingProperties getShardingProperties() {
         Properties result = new Properties();
         result.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        result.setProperty(ShardingPropertiesConstant.SQL_SIMPLE_LENGTH.getKey(), "10");
         return new ShardingProperties(result);
     }
     
