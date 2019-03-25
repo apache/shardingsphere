@@ -89,7 +89,7 @@ Among them, 700E6065 is public key ID.
 
 ### Upload the Public Key to Key Server
 
-The command is as following:
+The command is as follow:
 
 ```shell
 gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
@@ -158,7 +158,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 -DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.
 
--DdryRun=true: rehearsal, which means not to generate and submit new version number or new tag.
+-DdryRun=true: rehearsal, which means not to generate or submit new version number and new tag.
 
 ### Prepare for the Release
 
@@ -269,7 +269,7 @@ shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha51
 ### Check gpg Signature
 
 First, import releaser's public key. 
-Import KEYS from SVN repository to local. (The releaser does not need to introduce again; the checking assistant needs to import it, with the user name filled as the releaser's. )
+Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser's. )
 
 ```shell
 curl https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS >> KEYS
