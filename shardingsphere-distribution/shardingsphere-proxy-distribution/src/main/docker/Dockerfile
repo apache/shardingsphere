@@ -18,6 +18,12 @@
 FROM java:7
 MAINTAINER ShardingSphere "dev@shardingsphere.incubator.apache.org"
 
-ADD apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz /
-RUN mv /apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy /opt/sharding-proxy
+ENV CURRENT_VERSION sharding-proxy-3.0.0
+ENV LOCAL_PATH /opt/sharding-proxy
+
+RUN wget https://raw.githubusercontent.com/apache/incubator-shardingsphere-doc/master/dist/${CURRENT_VERSION}.tar.gz && \
+    tar -xzvf ${CURRENT_VERSION}.tar.gz && \
+    mv ${CURRENT_VERSION} ${LOCAL_PATH} && \
+    rm -rf ${CURRENT_VERSION}.tar.gz
+
 ENTRYPOINT /opt/sharding-proxy/bin/start.sh $PORT && tail -f /opt/sharding-proxy/logs/stdout.log
