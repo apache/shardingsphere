@@ -38,6 +38,17 @@ import java.util.Set;
 public final class SQLLogger {
     
     /**
+     * Print SQL log for master slave rule.
+     *
+     * @param logicSQL logic SQL
+     * @param dataSourceNames data source names
+     */
+    public static void logSQL(final String logicSQL, final Collection<String> dataSourceNames) {
+        log("Rule Type: master-slave");
+        log("SQL: {} ::: DataSources: {}", logicSQL, Joiner.on(",").join(dataSourceNames));
+    }
+    
+    /**
      * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
@@ -49,32 +60,29 @@ public final class SQLLogger {
         log("Rule Type: sharding");
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatement);
-        if (!showSimple) {
-            for (RouteUnit each : routeUnits) {
-                if (each.getSqlUnit().getParameters().isEmpty()) {
-                    log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
-                } else {
-                    log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
-                }
-            }
+        if (showSimple) {
+            logSimpleMode(routeUnits);
         } else {
-            Set<String> dataSourceNames = new HashSet<>(routeUnits.size());
-            for (RouteUnit each : routeUnits) {
-                dataSourceNames.add(each.getDataSourceName());
-            }
-            log("Actual SQL(simple): {} ::: {}", dataSourceNames, routeUnits.size());
+            logNormalMode(routeUnits);
         }
     }
     
-    /**
-     * Print SQL log for master slave rule.
-     *
-     * @param logicSQL logic SQL
-     * @param dataSourceNames data source names
-     */
-    public static void logSQL(final String logicSQL, final Collection<String> dataSourceNames) {
-        log("Rule Type: master-slave");
-        log("SQL: {} ::: DataSources: {}", logicSQL, Joiner.on(",").join(dataSourceNames));
+    private static void logSimpleMode(final Collection<RouteUnit> routeUnits) {
+        Set<String> dataSourceNames = new HashSet<>(routeUnits.size());
+        for (RouteUnit each : routeUnits) {
+            dataSourceNames.add(each.getDataSourceName());
+        }
+        log("Actual SQL(simple): {} ::: {}", dataSourceNames, routeUnits.size());
+    }
+    
+    private static void logNormalMode(final Collection<RouteUnit> routeUnits) {
+        for (RouteUnit each : routeUnits) {
+            if (each.getSqlUnit().getParameters().isEmpty()) {
+                log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
+            } else {
+                log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
+            }
+        }
     }
     
     private static void log(final String pattern, final Object... arguments) {
