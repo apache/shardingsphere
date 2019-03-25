@@ -5,8 +5,6 @@ title = "两阶段事务-XA"
 weight = 2
 +++
 
-### 处理流程
-
 #### 1. begin
 
 通常收到接入端的`set autoCommit=0`时，`XAShardingTransactionManager`会调用具体的XA事务管理器开启XA的全局事务，通常以XID的形式进行标记。
