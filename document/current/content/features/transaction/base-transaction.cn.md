@@ -7,11 +7,14 @@ weight = 3
 
 ## 功能
 
-* 完全支持跨库事务。
-* 支持失败SQL重试及最大努力送达。
-* 支持反向SQL、自动生成更新快照以及自动补偿。
-* 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化。
-* 暂不支持资源隔离。
+* 完全支持跨库事务
+* 支持失败SQL重试及最大努力送达
+* 支持反向SQL、自动生成更新快照以及自动补偿
+* 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化
+
+## 不支持项
+
+* 暂不支持资源隔离
 
 ## 设计
 
@@ -27,7 +30,7 @@ ShardingSphere的柔性事务已通过第三方SPI实现[Saga](https://www.cs.co
 
 ### Saga事务
 
-为了更好地理解柔性事务的设计思路，需要先解释数个概念
+为了更好地理解柔性事务的设计思路，需要先解释数个概念：
 
 * 分支事务(BranchTransaction)： 分布式事务中，被路由到不同节点的实际SQL。
 * 分支事务组(BranchTransactionGroup)： 分布式事务中，由同一个逻辑SQL生成的分支事务的组合。
@@ -41,4 +44,3 @@ ShardingSphere的柔性事务已通过第三方SPI实现[Saga](https://www.cs.co
 ![Saga事务内容](https://shardingsphere.apache.org/document/current/img/transaction/saga-transaction-context_cn.jpg)
 
 最后当用户提交事务时，Saga引擎按照分支事务组的顺序，使用其中分支事务的路由SQL进行重试或反向SQL进行回滚。
-
