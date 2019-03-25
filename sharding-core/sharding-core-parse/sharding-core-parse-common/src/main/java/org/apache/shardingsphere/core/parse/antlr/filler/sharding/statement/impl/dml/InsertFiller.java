@@ -73,7 +73,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
             Column column = new Column(each.getName(), tableName);
             insertStatement.getColumns().add(column);
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 0, SQLUtil.getExactlyValue(tableName), QuoteCharacter.valueFrom(SQLUtil.getStartDelimiter(tableName))));
+                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 0, SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName)));
             }
         }
     }

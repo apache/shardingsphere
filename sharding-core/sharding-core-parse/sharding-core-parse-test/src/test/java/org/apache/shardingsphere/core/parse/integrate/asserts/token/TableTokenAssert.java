@@ -60,7 +60,7 @@ final class TableTokenAssert {
         }
         assertThat(assertMessage.getFullAssertMessage("Table tokens table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
         assertThat(assertMessage.getFullAssertMessage("Table tokens left delimiter assertion error: "), actual.getDelimiter(), 
-                is(QuoteCharacter.valueFrom(null == expected.getLeftDelimiter() ? "" : expected.getLeftDelimiter())));
+                is(QuoteCharacter.getQuoteCharacter(null == expected.getLeftDelimiter() ? "" : expected.getLeftDelimiter())));
     }
     
     private List<TableToken> getTableTokens(final Collection<SQLToken> actual) {

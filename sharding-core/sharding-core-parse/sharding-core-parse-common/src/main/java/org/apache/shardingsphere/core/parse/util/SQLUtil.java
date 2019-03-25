@@ -46,17 +46,6 @@ public final class SQLUtil {
     }
     
     /**
-     * Get start delimiter.
-     * 
-     * @param value value
-     * @return start delimiter
-     */
-    public static String getStartDelimiter(final String value) {
-        int index = CharMatcher.anyOf("[`'\"").indexIn(value);
-        return -1 == index ? "" : String.valueOf(value.charAt(index));
-    }
-    
-    /**
      * Get exactly SQL expression.
      *
      * <p>remove space for SQL expression</p>

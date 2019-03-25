@@ -59,7 +59,7 @@ public final class OrderItemBuilder {
                 // TODO check if order by `xxx`.xx, maybe has problem
                 String owner = result.getOwner().get();
                 selectStatement.addSQLToken(new TableToken(
-                        ((ColumnNameOrderByItemSegment) orderByItemSegment).getStartIndex(), 0, SQLUtil.getExactlyValue(owner), QuoteCharacter.valueFrom(SQLUtil.getStartDelimiter(owner))));
+                        ((ColumnNameOrderByItemSegment) orderByItemSegment).getStartIndex(), 0, SQLUtil.getExactlyValue(owner), QuoteCharacter.getQuoteCharacter(owner)));
             }
             return result;
         }
