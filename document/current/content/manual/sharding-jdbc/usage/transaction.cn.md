@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS saga_event(
 ### 2.5 Saga 注意事项
 * 反向SQL需要**主键**，请确保在表结构中定义**主键**。
 * 对于`INSERT`语句， 需要在SQL中显示插入**主键值**，如`INSERT INTO ${table_name} (id, value, ...) VALUES (11111, '', ....) (其中id为表主键)`。
-* 若需要自动生成主键，可使用ShardingSphere的分布式主键。
+* 若需要自动生成主键，可使用ShardingSphere的分布式主键（分布式主键不能为联合主键）。
 
 ## 3. 分布式事务接入端
 
