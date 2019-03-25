@@ -276,7 +276,7 @@ Copyright (c) 2008 Alexander Beider & Stephen P. Morse.
 
 ========================================================================
 
-Apache Commons Collections
+Apache Commons Collections NOTICE
 
 ========================================================================
 
@@ -289,7 +289,7 @@ The Apache Software Foundation (http://www.apache.org/).
 
 ========================================================================
 
-Apache Curator
+Apache Curator NOTICE
 
 ========================================================================
 
@@ -301,24 +301,7 @@ The Apache Software Foundation (http://www.apache.org/).
 
 ========================================================================
 
-Apache Groovy
-
-========================================================================
-
-Apache Groovy
-Copyright 2003-2018 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-This product bundles icons from the famfamfam.com silk icons set
-http://www.famfamfam.com/lab/icons/silk/
-Licensed under the Creative Commons Attribution Licence v2.5
-http://creativecommons.org/licenses/by/2.5/
-
-========================================================================
-
-Apache log4j
+Apache log4j NOTICE
 
 ========================================================================
 
@@ -330,7 +313,7 @@ The Apache Software Foundation (http://www.apache.org/).
 
 ========================================================================
 
-Apache ZooKeeper
+Apache ZooKeeper NOTICE
 
 ========================================================================
 

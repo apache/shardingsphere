@@ -1,3 +1,6 @@
+Atomikos License
+---------------
+
 This code X, by itself, is being distributed under the 
  Apache License, Version 2.0 ("AL"), 
  the terms of which may be found below. 
