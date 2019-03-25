@@ -89,16 +89,16 @@ Among them, 700E6065 is public key ID.
 
 ### Upload the Public Key to Key Server
 
-The command is as follow:
+The command is as following:
 
 ```shell
 gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 ```
 
-`pool.sks-keyservers.net` is arbitrarily chosen [public key server](https://sks-keyservers.net/status/). 
+`pool.sks-keyservers.net` is randomly chosen from [public key server](https://sks-keyservers.net/status/). 
 Each server will automatically synchronize with one another, so it would be okay to choose any one.
 
-## Release Apache Maven Central Repository
+## Apache Maven Central Repository Release
 
 ### Set settings.xml
 
@@ -122,10 +122,10 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-### Extend Apache's Parent POM
+### Inherit the Apache Parent POM
 
-Apache's parent POM will be set as the default value. 
-If the POM in the project has this element, it needs to be deleted.
+This parent POM sets up the defaults for your \<distributionManagement\> section to use the correct release and snapshot repositories. 
+Be sure to remove \<distributionManagement\> section from your POM so they inherit correctly.
 
 ```xml
 <parent>
@@ -154,11 +154,11 @@ git checkout 4.0.0-RC1-release
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
--Prelease: choose release profile, which will pack all the source codes, jar documents and executable binary packages of sharding-proxy.
+-Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of sharding-proxy.
 
 -DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.
 
--DdryRun=true: rehearsal, which means not to generate new submitting edition number or new tag.
+-DdryRun=true: rehearsal, which means not to generate and submit new version number or new tag.
 
 ### Prepare for the Release
 
@@ -174,7 +174,7 @@ Then, prepare to execute the release.
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
 ```
 
-It is basically the same as the following rehearsal command, but deleting -DdryRun=true parameter.
+It is basically the same as the previous rehearsal command, but deleting -DdryRun=true parameter.
 
 -DpushChanges=false: do not submit the edited version number and tag to Github automatically.
 
@@ -196,9 +196,9 @@ Visit [https://repository.apache.org/#stagingRepositories](https://repository.ap
 Click `Close` to tell Nexus that the construction is finished, because only in this way, this version can be usable. 
 If there is any problem in gpg signature, `Close` will fail, but you can see the failure information through `Activity`.
 
-##  Release Apache SVN Repository
+## Apache SVN Repository Release
 
-### Check ShardingSphere Release Directory
+### Checkout ShardingSphere Release Directory
 
 If there is no local work directory, create one at first.
 
@@ -207,7 +207,7 @@ mkdir -p ~/ss_svn/dev/
 cd ~/ss_svn/dev/
 ```
 
-After the creation, detect ShardingSphere release directory from Apache SVN.
+After the creation, checkout ShardingSphere release directory from Apache SVN.
 
 ```shell
 svn --username=${APACHE LDAP username} co https://dist.apache.org/repos/dist/dev/incubator/shardingsphere
@@ -232,7 +232,7 @@ mkdir -p ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 cd ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 ```
 
-Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN work directory.
+Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN working directory.
 
 ```shell
 cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
@@ -241,7 +241,7 @@ cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-d
 cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 ```
 
-### Generate shasum
+### Generate sign files
 
 ```shell
 shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip > apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
@@ -258,7 +258,7 @@ svn --username=${APACHE LDAP username} commit -m "release 4.0.0-RC1"
 
 ## Check Release
 
-### Check sha512 shasum
+### Check sha512 hash
 
 ```shell
 shasum -c apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
@@ -269,7 +269,7 @@ shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha51
 ### Check gpg Signature
 
 First, import releaser's public key. 
-Import KEYS from SVN repository to the local. (The releaser does not need to introduce again; the checking assistant needs to import it, with the user name filled as the releaser's. )
+Import KEYS from SVN repository to local. (The releaser does not need to introduce again; the checking assistant needs to import it, with the user name filled as the releaser's. )
 
 ```shell
 curl https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS >> KEYS
@@ -296,15 +296,15 @@ Decompress `apache-shardingsphere-incubating-4.0.0-RC1-src.zip` and check the fo
 *   The folder contains the word `incubating`
 *   There is `DISCLAIMER` file
 *   There are `LICENSE` and `NOTICE` files
-*   There is only txt files but no binary file
+*   There is only text files but no binary files
 *   All the files have ASF licenses at the beginning
-*   They can be rightly compiled and pass the unit test (mvn install)
-*   The version content is the same as GitHub tag content (diff -r a verify_dir tag_dir)
+*   Codes can be compiled and pass the unit tests (mvn install)
+*   Contents are the same as the GitHub tag contents (diff -r a verify_dir tag_dir)
 *   Check if there is any extra files or folders, empty folders for example
 
 #### Check binary packages
 
-Extract `apache-shardingsphere-incubating-4.0.0-RC1-bin.zip` and `apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz` to check the following items:
+Decompress `apache-shardingsphere-incubating-4.0.0-RC1-bin.zip` and `apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz` to check the following items:
 
 *   The folder contains the word `incubating`
 *   There is `DISCLAIMER` file
@@ -315,16 +315,16 @@ Extract `apache-shardingsphere-incubating-4.0.0-RC1-bin.zip` and `apache-shardin
     *   The third party dependency license is compatible
     *   All the third party dependency licenses are declared in `LICENSE` file
     *   All the third party dependency licenses are under `licenses` folder
-    *   If it depends on Apache license and has `NOTICE` file, these `NOTICE` file need to be added to `NOTICE` file of that version
+    *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
 
 For the whole check list, please see [here](https://wiki.apache.org/incubator/IncubatorReleaseChecklist).
 
 ## Call for a Vote
 
-### Vote
+### Vote procedure
 
 1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`. 
-PPMC needs to check the rightness of the version according to the document, before they vote. 
+PPMC needs to check the rightness of the version according to the document before they vote. 
 After at least 72 hours and with at least 3 `+1 binding` votes (only PPMC's votes are binding), it can come to the next stage of the vote.
 
 2. Apache community vote: send the vote e-mail to `general@incubator.apache.org`.
@@ -332,7 +332,7 @@ After at least 72 hours and with at least 3 `+1 binding` votes (only IPMC's vote
 
 3. Announce the vote result: send the result vote e-mail to `general@incubator.apache.org`.
 
-### Vote Template
+### Vote Templates
 
 1. ShardingSphere Community Vote Template
 
@@ -490,7 +490,7 @@ svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1
 
 2. Find ShardingSphere in staging repository and click `Release`
 
-3. Merge release branch to `dev` and delete it on Github
+3. Merge `release` branch to `dev` and delete `release` branch on Github
 
 4. Send e-mail to `general@incubator.apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished.
 
