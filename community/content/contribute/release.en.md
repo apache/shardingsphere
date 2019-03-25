@@ -490,7 +490,7 @@ svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1
 
 2. Find ShardingSphere in staging repository and click `Release`
 
-3. Merge `release` branch to `dev` and delete `release` branch on Github
+3. Merge release branch to `dev` and delete release branch on Github
 
 4. Send e-mail to `general@incubator.apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished.
 
