@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.token;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 
 /**
  * Table token.
@@ -34,16 +35,13 @@ public final class TableToken extends SQLToken {
     
     private final String tableName;
     
-    private final String leftDelimiter;
+    private final QuoteCharacter delimiter;
     
-    private final String rightDelimiter;
-    
-    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final String leftDelimiter, final String rightDelimiter) {
+    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final QuoteCharacter delimiter) {
         super(startIndex);
         this.skippedSchemaNameLength = skippedSchemaNameLength;
         this.tableName = tableName;
-        this.leftDelimiter = leftDelimiter;
-        this.rightDelimiter = rightDelimiter;
+        this.delimiter = delimiter;
     }
     
     /**
@@ -52,6 +50,6 @@ public final class TableToken extends SQLToken {
      * @return table token length
      */
     public int getLength() {
-        return skippedSchemaNameLength + tableName.length() + leftDelimiter.length() + rightDelimiter.length();
+        return QuoteCharacter.NONE == delimiter ? skippedSchemaNameLength + tableName.length() : skippedSchemaNameLength + tableName.length() + 2;
     }
 }

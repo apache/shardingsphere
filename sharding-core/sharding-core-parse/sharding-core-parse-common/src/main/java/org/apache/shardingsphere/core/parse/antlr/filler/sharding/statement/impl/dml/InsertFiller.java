@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.imp
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegment;
@@ -54,7 +55,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
-        createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
+        createColumn(sqlSegment, insertStatement, shardingTableMetaData);
         createValue(sqlSegment, insertStatement, sql, shardingRule);
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
         insertStatement.getSQLTokens().add(
@@ -62,7 +63,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
         processDuplicateKey(shardingRule, sqlSegment, sqlStatement.getTables().getSingleTableName());
     }
     
-    private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlSegment.getColumns().isEmpty()) {
             createFromMeta(insertStatement, shardingTableMetaData);
             return;
@@ -72,8 +73,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
             Column column = new Column(each.getName(), tableName);
             insertStatement.getColumns().add(column);
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(
-                        new TableToken(each.getStartIndex(), 0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
+                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 0, SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName)));
             }
         }
     }
