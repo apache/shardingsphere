@@ -47,7 +47,7 @@ public enum QuoteCharacter {
     /**
      * Get quote character.
      * 
-     * @param value value to get delimiter
+     * @param value value to be get quote character
      * @return value of quote character
      */
     public static QuoteCharacter getQuoteCharacter(final String value) {
