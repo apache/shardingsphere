@@ -293,27 +293,27 @@ gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.as
 
 Decompress `apache-shardingsphere-incubating-4.0.0-RC1-src.zip` and check the following items:
 
-*   The folder contains the word `incubating`
-*   There is `DISCLAIMER` file
-*   There are `LICENSE` and `NOTICE` files
+*   The release files have the word `incubating` in their name
+*   `DISCLAIMER` file exists
+*   `LICENSE` and `NOTICE` files exist
 *   There is only text files but no binary files
-*   All the files have ASF licenses at the beginning
+*   All source files have ASF headers
 *   Codes can be compiled and pass the unit tests (mvn install)
-*   Contents are the same as the GitHub tag contents (diff -r a verify_dir tag_dir)
+*   The contents of the release match with what's tagged in version control (diff -r a verify_dir tag_dir)
 *   Check if there is any extra files or folders, empty folders for example
 
 #### Check binary packages
 
 Decompress `apache-shardingsphere-incubating-4.0.0-RC1-bin.zip` and `apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz` to check the following items:
 
-*   The folder contains the word `incubating`
-*   There is `DISCLAIMER` file
-*   There are `LICENSE` and `NOTICE` files
-*   All the files have ASF licenses at the beginning
+*   The release files have the word `incubating` in their name
+*   `DISCLAIMER` file exists
+*   `LICENSE` and `NOTICE` files exist
+*   All text files have ASF headers
 *   After the `sharding-proxy` binary package is rightly configured, it can run well (./start.sh)
 *   Check the third party dependency license:
-    *   The third party dependency license is compatible
-    *   All the third party dependency licenses are declared in `LICENSE` file
+    *   The software have a compatible license
+    *   All software licenses mentioned in `LICENSE`
     *   All the third party dependency licenses are under `licenses` folder
     *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
 
