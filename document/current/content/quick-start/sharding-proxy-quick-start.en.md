@@ -16,7 +16,7 @@ Edit `%SHARDING_PROXY_HOME%\conf\server.yaml`. More details please reference [Co
 * Use default configuration to start
 
 ```sh
-${sharding-proxy}\bin\start.sh ${port}
+${sharding-proxy}\bin\start.sh
 ```
 
 * Set port to start

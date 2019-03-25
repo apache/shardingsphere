@@ -20,8 +20,8 @@ Sharding-JDBC是ShardingSphere的第一个产品，也是ShardingSphere的前身
 
 |           | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | --------- | --------------- | ---------------- | ------------------ |
-| 数据库     | `任意`          | MySQL            | MySQL               |
-| 连接消耗数 | `高`            | 低               | 高                  |
+| 数据库     | `任意`          | MySQL/PostgreSQL | MySQL/PostgreSQL    |
+| 连接消耗数 | `高`            | 低                | 高                  |
 | 异构语言   | `仅Java`        | 任意              | 任意                |
 | 性能       | `损耗低`        | 损耗略高          | 损耗低               |
 | 无中心化   | `是`            | 否               | 是                   |

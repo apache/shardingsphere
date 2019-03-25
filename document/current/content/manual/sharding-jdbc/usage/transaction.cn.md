@@ -113,6 +113,11 @@ CREATE TABLE IF NOT EXISTS saga_event(
 </dependency>
 ```
 
+### 2.5 Saga 注意事项
+* 反向SQL需要**主键**，请确保在表结构中定义**主键**。
+* 对于`INSERT`语句， 需要在SQL中显示插入**主键值**，如`INSERT INTO ${table_name} (id, value, ...) VALUES (11111, '', ....) (其中id为表主键)`。
+* 若需要自动生成主键，可使用ShardingSphere的分布式主键（分布式主键不能为联合主键）。
+
 ## 3. 分布式事务接入端
 
 ShardingSphere的事务类型存放在`TransactionTypeHolder`的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。
@@ -169,6 +174,14 @@ TransactionTypeHolder.set(TransactionType.BASE);
     <artifactId>sharding-transaction-spring-boot-starter</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+    <version>${spring-boot.version}</version>
+</dependency>
+
+<spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
 ```
 
 #### Spring namespace
