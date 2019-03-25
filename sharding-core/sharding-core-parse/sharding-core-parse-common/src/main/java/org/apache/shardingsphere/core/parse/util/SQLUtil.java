@@ -46,31 +46,14 @@ public final class SQLUtil {
     }
     
     /**
-     * Get left delimiter.
+     * Get start delimiter.
      * 
      * @param value value
-     * @return left delimiter
+     * @return start delimiter
      */
-    public static String getLeftDelimiter(final String value) {
+    public static String getStartDelimiter(final String value) {
         int index = CharMatcher.anyOf("[`'\"").indexIn(value);
-        if (-1 == index) {
-            return "";
-        }
-        return String.valueOf(value.charAt(index));
-    }
-    
-    /**
-     * Get right delimiter.
-     *
-     * @param value value
-     * @return right delimiter
-     */
-    public static String getRightDelimiter(final String value) {
-        int index = CharMatcher.anyOf("]`'\"").indexIn(value);
-        if (-1 == index) {
-            return "";
-        }
-        return String.valueOf(value.charAt(index));
+        return -1 == index ? "" : String.valueOf(value.charAt(index));
     }
     
     /**
