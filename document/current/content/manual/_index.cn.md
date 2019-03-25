@@ -1,6 +1,6 @@
 +++
 pre = "<b>4. </b>"
-title = "使用手册"
+title = "用户手册"
 weight = 4
 chapter = true
 +++

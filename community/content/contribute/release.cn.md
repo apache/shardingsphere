@@ -123,7 +123,7 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 
 ### 继承Apache父POM
 
-Apache的父POM会为<distributionManagement>设置默认值，如果项目的POM中有这个标签，则需要删除。
+Apache的父POM会为\<distributionManagement\>设置默认值，如果项目的POM中有这个标签，则需要删除。
 
 ```xml
 <parent>

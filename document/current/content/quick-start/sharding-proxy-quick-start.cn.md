@@ -16,7 +16,7 @@ weight = 2
 * 使用默认配置项
 
 ```sh
-${sharding-proxy}\bin\start.sh ${port}
+${sharding-proxy}\bin\start.sh
 ```
 
 * 配置端口
