@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.4.1. </b>"
+pre = "<b>3.4.2.1 </b>"
 toc = true
 title = "本地事务"
 weight = 1
@@ -15,6 +15,4 @@ weight = 1
 
 ## 支持情况
 
-* Sharding-JDBC可以支持由用户自行配置不使用XA数据源
-
-* Sharding-Proxy无需支持，使用XA或柔性事务即可
+* Sharding-JDBC和Sharding-Proxy原生支持本地事务
