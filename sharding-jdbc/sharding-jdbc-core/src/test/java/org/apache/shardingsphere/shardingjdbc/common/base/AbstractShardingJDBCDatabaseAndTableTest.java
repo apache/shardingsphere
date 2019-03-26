@@ -26,10 +26,14 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.fixture.PreciseOrderShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.fixture.RangeOrderShardingAlgorithm;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.h2.tools.RunScript;
+import org.junit.AfterClass;
 import org.junit.Before;
 
 import javax.sql.DataSource;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -39,10 +43,22 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
-
+    
+    private static ShardingDataSource shardingDataSource;
+    
     @Before
     public void cleanAndInitTable() {
         importDataSet();
+    }
+    
+    protected final void importDataSet() {
+        try {
+            ShardingConnection conn = shardingDataSource.getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_data.sql")));
+            conn.close();
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Before
@@ -83,5 +99,14 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     
     protected final ShardingDataSource getShardingDataSource() {
         return shardingDataSource;
+    }
+    
+    @AfterClass
+    public static void clear() throws Exception {
+        if (shardingDataSource == null) {
+            return;
+        }
+        shardingDataSource.close();
+        shardingDataSource = null;
     }
 }
