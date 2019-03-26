@@ -15,7 +15,7 @@ This chapter has provided all the Apache ShardingSphere functional modules that 
 
 ### Data Masking
 
-Data masking interface is used to regulate the encryption, decryption, access type, property configuration and other methods of the encryptor. There are mainly two interfaces, `ShardingEncryptor` and `ShardingQueryAssistedEncryptor`, in which the built-in implementations of  `ShardingEncryptor` include `AESShardingEncryptor` and `MD5ShardingEncryptor`. Please refer to [Data Masking](https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/) for the introduction of encryption.
+Data masking interface is used to regulate the encryption, decryption, access type, property configuration and other methods of the encryptor. There are mainly two interfaces, `ShardingEncryptor` and `ShardingQueryAssistedEncryptor`, in which the built-in implementations of  `ShardingEncryptor` include `AESShardingEncryptor` and `MD5ShardingEncryptor`. Please refer to [Data Masking](/en/features/orchestration/encrypt/) for the introduction of encryption.
 
 ### Distributed Primary Key
 
