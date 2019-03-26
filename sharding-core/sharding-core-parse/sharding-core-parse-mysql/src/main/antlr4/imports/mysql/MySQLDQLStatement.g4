@@ -32,10 +32,10 @@ selectExpression
     ;
 
 selectClause
-    : SELECT selectSpec_ selectExprs
+    : SELECT selectSpecification selectExprs
     ;
 
-selectSpec_
+selectSpecification
     : (ALL | distinct | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT? SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
     ;
 

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SelectClauseSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 /**
  * Select clause extractor.
@@ -58,6 +57,6 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
     }
     
     private boolean hasDistinct(final ParserRuleContext selectClauseNode) {
-        return selectClauseNode.getChildCount() > 2 && DefaultKeyword.DISTINCT.name().equalsIgnoreCase(selectClauseNode.getChild(1).getText());
+        return ExtractorUtils.findFirstChildNode(ExtractorUtils.getFirstChildNode(selectClauseNode, RuleName.SELECT_SPECIFICATION), RuleName.DISTINCT).isPresent();
     }
 }
