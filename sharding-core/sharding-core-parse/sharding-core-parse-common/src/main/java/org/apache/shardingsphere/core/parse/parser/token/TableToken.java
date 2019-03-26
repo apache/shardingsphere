@@ -35,13 +35,13 @@ public final class TableToken extends SQLToken {
     
     private final String tableName;
     
-    private final QuoteCharacter delimiter;
+    private final QuoteCharacter quoteCharacter;
     
-    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final QuoteCharacter delimiter) {
+    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final QuoteCharacter quoteCharacter) {
         super(startIndex);
         this.skippedSchemaNameLength = skippedSchemaNameLength;
         this.tableName = tableName;
-        this.delimiter = delimiter;
+        this.quoteCharacter = quoteCharacter;
     }
     
     /**
@@ -50,6 +50,6 @@ public final class TableToken extends SQLToken {
      * @return table token length
      */
     public int getLength() {
-        return QuoteCharacter.NONE == delimiter ? skippedSchemaNameLength + tableName.length() : skippedSchemaNameLength + tableName.length() + 2;
+        return skippedSchemaNameLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
     }
 }
