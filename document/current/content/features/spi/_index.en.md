@@ -19,8 +19,8 @@ Data masking interface is used to regulate the encryption, decryption, access ty
 
 ### Distributed Primary Key
 
-Distributed primary key interface is used to regulate how to generate overall self-increment, type access and property configurations. Its main interface is `ShardingKeyGenerator`, built-in implementation types are `UUIDShardingKeyGenerator` and `SnowflakeShardingKeyGenerator`.  Please refer to [Distributed Primary Key](https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/key-generator/) for the introduction.
+Distributed primary key interface is used to regulate how to generate overall self-increment, type access and property configurations. Its main interface is `ShardingKeyGenerator`, built-in implementation types are `UUIDShardingKeyGenerator` and `SnowflakeShardingKeyGenerator`.  Please refer to [Distributed Primary Key](/en/features/sharding/other-features/key-generator/) for the introduction.
 
 ### Registry Center
 
-Registry center interface is used to regulate the initialization, data storage, data upgrade, monitoring and other registry center actions. Its main interface is `RegistryCenter` and built-in implementation types are Zookeeper and ETCD. Please refer to [Available Registry Center](https://shardingsphere.apache.org/document/current/en/features/orchestration/supported-registry-repo/) for the introduction.
+Registry center interface is used to regulate the initialization, data storage, data upgrade, monitoring and other registry center actions. Its main interface is `RegistryCenter` and built-in implementation types are Zookeeper and ETCD. Please refer to [Available Registry Center](/en/features/orchestration/supported-registry-repo/) for the introduction.
