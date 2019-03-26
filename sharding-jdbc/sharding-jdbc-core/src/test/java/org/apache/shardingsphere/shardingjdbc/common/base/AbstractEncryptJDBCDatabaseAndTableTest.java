@@ -26,16 +26,16 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.fixture.PreciseOrderShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.fixture.RangeOrderShardingAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
 
 import javax.sql.DataSource;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,51 +44,16 @@ import java.util.Properties;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
-    private static ShardingDataSource shardingDataSource;
-    
-    @Before
-    public void cleanAndInitTable() {
-        importDataSet();
-    }
-    
-    private void importDataSet() {
-        try {
-            ShardingConnection conn = shardingDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_data.sql")));
-            conn.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
+    private static EncryptDataSource encryptDataSource;
 
     @Before
-    public void initShardingDataSources() throws SQLException {
-        if (null != shardingDataSource) {
+    public void initEncryptDataSource() throws SQLException {
+        if (null != encryptDataSource) {
             return;
         }
-        Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap(Arrays.asList("jdbc_0", "jdbc_1"));
-        for (Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
-            final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-            List<String> orderActualDataNodes = new LinkedList<>();
-            for (String dataSourceName : entry.getValue().keySet()) {
-                orderActualDataNodes.add(dataSourceName + ".t_order_${0..1}");
-            }
-            TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order", Joiner.on(",").join(orderActualDataNodes));
-            shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-            List<String> orderItemActualDataNodes = new LinkedList<>();
-            for (String dataSourceName : entry.getValue().keySet()) {
-                orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..1}");
-            }
-            TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration("t_order_item", Joiner.on(",").join(orderItemActualDataNodes));
-            orderItemTableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("INCREMENT", "item_id", new Properties()));
-            shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
-            TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration("t_config");
-            shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);
-            shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-            shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
-            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
-            ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, entry.getValue().keySet());
-            shardingDataSource = new ShardingDataSource(entry.getValue(), shardingRule);
+        Map<DatabaseType, Map<String, DataSource>> dataSources = createDataSourceMap(Collections.singleton("encrypt"));
+            
+            encryptDataSource = new ShardingDataSource(entry.getValue(), shardingRule);
         }
     }
 
@@ -97,11 +62,11 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     }
     
     @AfterClass
-    public static void clear() throws Exception {
-        if (shardingDataSource == null) {
+    public static void clear() {
+        if (encryptDataSource == null) {
             return;
         }
-        shardingDataSource.close();
-        shardingDataSource = null;
+        encryptDataSource.close();
+        encryptDataSource = null;
     }
 }
