@@ -21,10 +21,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.h2.tools.RunScript;
-import org.junit.AfterClass;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -39,8 +36,6 @@ import java.util.Properties;
 import java.util.Set;
 
 public abstract class AbstractSQLTest {
-    
-    protected static ShardingDataSource shardingDataSource;
     
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
     
@@ -77,14 +72,6 @@ public abstract class AbstractSQLTest {
         return databaseTypes;
     }
     
-    private static String getDatabaseName(final String dataSetFile) {
-        String fileName = new File(dataSetFile).getName();
-        if (-1 == fileName.lastIndexOf(".")) {
-            return fileName;
-        }
-        return fileName.substring(0, fileName.lastIndexOf("."));
-    }
-    
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
         DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
         BasicDataSource result = new BasicDataSource();
@@ -108,17 +95,16 @@ public abstract class AbstractSQLTest {
         return databaseTypeMap;
     }
     
-    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
-        return buildDataSource(dbName, type).getConnection();
+    private static String getDatabaseName(final String dataSetFile) {
+        String fileName = new File(dataSetFile).getName();
+        if (-1 == fileName.lastIndexOf(".")) {
+            return fileName;
+        }
+        return fileName.substring(0, fileName.lastIndexOf("."));
     }
     
-    @AfterClass
-    public static void clear() throws Exception {
-        if (shardingDataSource == null) {
-            return;
-        }
-        shardingDataSource.close();
-        shardingDataSource = null;
+    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
+        return buildDataSource(dbName, type).getConnection();
     }
     
     private void createDataSources(final String dbName, final DatabaseType type) {
@@ -130,15 +116,5 @@ public abstract class AbstractSQLTest {
         }
         BasicDataSource result = buildDataSource(dbName, type);
         dataSourceMap.put(dataSource, result);
-    }
-    
-    protected final void importDataSet() {
-        try {
-            ShardingConnection conn = shardingDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_data.sql")));
-            conn.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
     }
 }
