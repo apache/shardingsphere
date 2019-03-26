@@ -24,7 +24,6 @@ import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -85,9 +84,8 @@ public abstract class AbstractSQLTest {
     
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap(final Collection<String> databaseNames) {
         for (String each : databaseNames) {
-            String dbName = getDatabaseName(each);
             for (DatabaseType type : databaseTypes) {
-                createDataSources(dbName, type);
+                createDataSources(each, type);
             }
         }
         return databaseTypeMap;
