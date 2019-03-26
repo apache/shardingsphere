@@ -61,10 +61,10 @@ import java.util.Map;
  * @author panjuan
  */
 @Configuration
-@ConditionalOnProperty(prefix = "sharding.jdbc.datasource", name = "names")
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
         SpringBootPropertiesConfigurationProperties.class, SpringBootOrchestrationConfigurationProperties.class})
+@ConditionalOnProperty(prefix = "sharding.jdbc", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
