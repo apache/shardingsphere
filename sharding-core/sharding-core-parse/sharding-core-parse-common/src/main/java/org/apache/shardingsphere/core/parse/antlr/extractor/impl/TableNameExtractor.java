@@ -48,28 +48,26 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
         String nodeText = tableNameNode.get().getText();
         String tableName;
         Optional<String> schemaName;
-        int skippedSchemaNameLength;
+        int schemaNameLength;
         if (nodeText.contains(Symbol.DOT.getLiterals())) {
             List<String> nodeTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
             tableName = nodeTextSegments.get(nodeTextSegments.size() - 1);
             schemaName = Optional.of(nodeTextSegments.get(nodeTextSegments.size() - 2));
-            skippedSchemaNameLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
+            schemaNameLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
         } else {
             tableName = nodeText;
             schemaName = Optional.absent();
-            skippedSchemaNameLength = 0;
+            schemaNameLength = 0;
         }
-        TableToken token = new TableToken(tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName));
-        TableSegment result = new TableSegment(token, schemaName.orNull());
-        setAlias(tableNameNode.get(), result);
-        return Optional.of(result);
+        return Optional.of(new TableSegment(getTableToken(tableNameNode.get(), tableName, schemaNameLength), schemaName.orNull(), getTableAlias(tableNameNode.get()).orNull()));
     }
     
-    private void setAlias(final ParserRuleContext tableNameNode, final TableSegment tableSegment) {
+    private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int schemaNameLength) {
+        return new TableToken(tableNameNode.getStart().getStartIndex(), SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName), schemaNameLength);
+    }
+    
+    private Optional<String> getTableAlias(final ParserRuleContext tableNameNode) {
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.getParent(), RuleName.ALIAS);
-        if (aliasNode.isPresent()) {
-            tableSegment.setAlias(aliasNode.get().getText());
-            tableSegment.setAliasStartIndex(aliasNode.get().getStart().getStartIndex());
-        }
+        return aliasNode.isPresent() ? Optional.of(aliasNode.get().getText()) : Optional.<String>absent();
     }
 }

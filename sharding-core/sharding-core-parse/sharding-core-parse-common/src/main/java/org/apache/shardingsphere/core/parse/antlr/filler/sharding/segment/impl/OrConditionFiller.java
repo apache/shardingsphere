@@ -142,7 +142,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
             String owner = column.getOwner().get();
             Optional<Table> logicTable = sqlStatement.getTables().find(owner);
             if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
-                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), 0, SQLUtil.getExactlyValue(owner), QuoteCharacter.getQuoteCharacter(owner)));
+                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), SQLUtil.getExactlyValue(owner), QuoteCharacter.getQuoteCharacter(owner), 0));
             }
         }
     }

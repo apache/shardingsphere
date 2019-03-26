@@ -82,8 +82,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get())));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
     }
@@ -93,8 +92,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get())));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));
