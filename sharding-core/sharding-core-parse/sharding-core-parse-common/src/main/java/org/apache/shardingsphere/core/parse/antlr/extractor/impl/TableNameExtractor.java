@@ -60,8 +60,7 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
             skippedSchemaNameLength = 0;
         }
         TableToken token = new TableToken(tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName));
-        TableSegment result = new TableSegment(token);
-        result.setSchemaName(schemaName.orNull());
+        TableSegment result = new TableSegment(token, schemaName.orNull());
         setAlias(tableNameNode.get(), result);
         return Optional.of(result);
     }
