@@ -22,7 +22,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="16" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -34,7 +34,7 @@
             <schema name="sharding_db" />
         </schemas>
         <tokens>
-            <table-token start-index="18" table-name="t_order" />
+            <table-token start-index="18" table-name="t_order" length="7" />
             <schema-token start-index="31" stop-index="41" table-name="t_order" />
         </tokens>
     </parser-result>
@@ -44,7 +44,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="15" table-name="t_order" />
+            <table-token start-index="15" table-name="t_order" length="19" />
         </tokens>
     </parser-result>
     
@@ -56,7 +56,7 @@
             <schema name="sharding_db" />
         </schemas>
         <tokens>
-            <table-token start-index="18" table-name="t_order" left-delimiter="`" right-delimiter="`" />
+            <table-token start-index="18" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
             <schema-token start-index="33" stop-index="43" table-name="t_order" />
         </tokens>
     </parser-result>
@@ -69,7 +69,7 @@
             <schema name="sharding_db" />
         </schemas>
         <tokens>
-            <table-token start-index="18" table-name="t_order" />
+            <table-token start-index="18" table-name="t_order" length="7" />
             <schema-token start-index="31" stop-index="43" table-name="t_order" />
         </tokens>
     </parser-result>
@@ -79,7 +79,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="15" table-name="t_order" left-delimiter="`" right-delimiter="`" />
+            <table-token start-index="15" table-name="t_order" left-delimiter="`" right-delimiter="`" length="23" />
         </tokens>
     </parser-result>
     

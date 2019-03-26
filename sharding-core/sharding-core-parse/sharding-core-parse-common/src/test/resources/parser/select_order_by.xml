@@ -22,7 +22,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
@@ -36,8 +36,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="27" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="27" table-name="t_order_item" length="12" />
             <items-token begin-position="11">
                 <items>
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
@@ -55,7 +55,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token start-index="40" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
@@ -68,8 +68,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="27" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="27" table-name="t_order_item" length="12" />
             <items-token begin-position="11">
                 <items>
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
@@ -89,7 +89,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token start-index="40" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
@@ -102,7 +102,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token start-index="40" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-direction="ASC" />
@@ -114,7 +114,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token start-index="29" table-name="t_order" />
+            <table-token start-index="29" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
@@ -126,7 +126,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="16" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
@@ -138,7 +138,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
@@ -151,7 +151,7 @@
             <!--<table name="t_order" alias="o" />-->
         <!--</tables>-->
         <!--<tokens>-->
-            <!--<table-token start-index="14" table-name="t_order" />-->
+            <!--<table-token start-index="14" table-name="t_order" length="7" />-->
         <!--</tokens>-->
         <!--<order-by-columns>-->
             <!--<order-by-column name="order_id" order-direction="ASC" />-->
@@ -163,9 +163,9 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="7" table-name="t_order" />
-            <table-token start-index="22" table-name="t_order" />
-            <table-token start-index="39" table-name="t_order" />
+            <table-token start-index="7" table-name="t_order" length="7" />
+            <table-token start-index="22" table-name="t_order" length="7" />
+            <table-token start-index="39" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
@@ -177,7 +177,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
@@ -190,8 +190,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="21" table-name="t_order" />
-            <table-token start-index="36" table-name="t_order_item" />
+            <table-token start-index="21" table-name="t_order" length="7" />
+            <table-token start-index="36" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />

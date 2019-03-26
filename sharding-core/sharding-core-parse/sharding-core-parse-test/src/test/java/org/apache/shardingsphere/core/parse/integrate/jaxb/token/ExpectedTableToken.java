@@ -32,9 +32,6 @@ public final class ExpectedTableToken {
     @XmlAttribute(name = "start-index")
     private int startIndex;
     
-    @XmlAttribute(name = "skipped-schema-name-length")
-    private int skippedSchemaNameLength;
-    
     @XmlAttribute(name = "table-name")
     private String tableName;
     
@@ -43,4 +40,7 @@ public final class ExpectedTableToken {
     
     @XmlAttribute(name = "right-delimiter")
     private String rightDelimiter;
+    
+    @XmlAttribute(name = "length")
+    private int length;
 }

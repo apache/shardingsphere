@@ -27,14 +27,15 @@ import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 @ToString
 public final class TableToken extends SQLToken {
     
     private final int skippedSchemaNameLength;
     
+    @Getter
     private final String tableName;
     
+    @Getter
     private final QuoteCharacter quoteCharacter;
     
     public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final QuoteCharacter quoteCharacter) {

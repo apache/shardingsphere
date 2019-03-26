@@ -22,7 +22,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="40" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <select-items>
             <aggregation-select-items>
@@ -36,7 +36,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="37" table-name="t_order" />
+            <table-token start-index="37" table-name="t_order" length="7" />
         </tokens>
         <select-items>
             <aggregation-select-items>
@@ -50,7 +50,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="37" table-name="t_order" />
+            <table-token start-index="37" table-name="t_order" length="7" />
         </tokens>
         <select-items>
             <aggregation-select-items>
@@ -64,7 +64,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="37" table-name="t_order" />
+            <table-token start-index="37" table-name="t_order" length="7" />
         </tokens>
         <select-items>
             <aggregation-select-items>
@@ -78,7 +78,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="40" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <select-items>
             <aggregation-select-items>
@@ -92,7 +92,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="40" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
         </tokens>
         <select-items>
             <aggregation-select-items>
@@ -106,7 +106,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="40" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order" length="7" />
             <items-token begin-position="35">
                 <items>
                     <item>COUNT(user_id) AS AVG_DERIVED_COUNT_0 </item>
@@ -130,8 +130,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="36" table-name="t_order" />
-            <table-token start-index="47" table-name="t_order_item" />
+            <table-token start-index="36" table-name="t_order" length="7" />
+            <table-token start-index="47" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -158,8 +158,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="36" table-name="t_order" />
-            <table-token start-index="51" table-name="t_order_item" />
+            <table-token start-index="36" table-name="t_order" length="7" />
+            <table-token start-index="51" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -185,7 +185,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="46" table-name="t_order" />
+            <table-token start-index="46" table-name="t_order" length="7" />
         </tokens>
         <select-items>
             <aggregation-select-items>
