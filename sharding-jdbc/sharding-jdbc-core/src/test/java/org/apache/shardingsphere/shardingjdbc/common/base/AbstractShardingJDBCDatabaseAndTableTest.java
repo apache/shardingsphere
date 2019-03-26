@@ -48,10 +48,6 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     
     @Before
     public void cleanAndInitTable() {
-        importDataSet();
-    }
-    
-    private void importDataSet() {
         try {
             ShardingConnection conn = shardingDataSource.getConnection();
             RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_data.sql")));
@@ -60,7 +56,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             ex.printStackTrace();
         }
     }
-
+    
     @Before
     public void initShardingDataSources() throws SQLException {
         if (null != shardingDataSource) {
