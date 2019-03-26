@@ -68,8 +68,8 @@ public abstract class AbstractSQLTest {
         }
     }
     
-    static Set<DatabaseType> getDatabaseTypes() {
-        return databaseTypes;
+    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
+        return buildDataSource(dbName, type).getConnection();
     }
     
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
@@ -83,8 +83,6 @@ public abstract class AbstractSQLTest {
         return result;
     }
     
-    protected abstract List<String> getInitDataSetFiles();
-    
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getInitDataSetFiles()) {
             String dbName = getDatabaseName(each);
@@ -95,6 +93,8 @@ public abstract class AbstractSQLTest {
         return databaseTypeMap;
     }
     
+    protected abstract List<String> getInitDataSetFiles();
+    
     private static String getDatabaseName(final String dataSetFile) {
         String fileName = new File(dataSetFile).getName();
         if (-1 == fileName.lastIndexOf(".")) {
@@ -103,9 +103,10 @@ public abstract class AbstractSQLTest {
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
     
-    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
-        return buildDataSource(dbName, type).getConnection();
+    static Set<DatabaseType> getDatabaseTypes() {
+        return databaseTypes;
     }
+    
     
     private void createDataSources(final String dbName, final DatabaseType type) {
         String dataSource = "dataSource_" + dbName;
