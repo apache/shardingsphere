@@ -86,7 +86,7 @@ public abstract class AbstractSQLTest {
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getInitDataSetFiles()) {
             String dbName = getDatabaseName(each);
-            for (DatabaseType type : getDatabaseTypes()) {
+            for (DatabaseType type : databaseTypes) {
                 createDataSources(dbName, type);
             }
         }
@@ -102,11 +102,6 @@ public abstract class AbstractSQLTest {
         }
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
-    
-    static Set<DatabaseType> getDatabaseTypes() {
-        return databaseTypes;
-    }
-    
     
     private void createDataSources(final String dbName, final DatabaseType type) {
         String dataSource = "dataSource_" + dbName;
