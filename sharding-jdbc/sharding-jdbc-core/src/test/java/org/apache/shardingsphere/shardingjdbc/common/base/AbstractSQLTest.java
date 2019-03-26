@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -83,24 +83,14 @@ public abstract class AbstractSQLTest {
         return result;
     }
     
-    protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
-        for (String each : getInitDataSetFiles()) {
+    protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap(final Collection<String> databaseNames) {
+        for (String each : databaseNames) {
             String dbName = getDatabaseName(each);
             for (DatabaseType type : databaseTypes) {
                 createDataSources(dbName, type);
             }
         }
         return databaseTypeMap;
-    }
-    
-    protected abstract List<String> getInitDataSetFiles();
-    
-    private static String getDatabaseName(final String dataSetFile) {
-        String fileName = new File(dataSetFile).getName();
-        if (-1 == fileName.lastIndexOf(".")) {
-            return fileName;
-        }
-        return fileName.substring(0, fileName.lastIndexOf("."));
     }
     
     private void createDataSources(final String dbName, final DatabaseType type) {
