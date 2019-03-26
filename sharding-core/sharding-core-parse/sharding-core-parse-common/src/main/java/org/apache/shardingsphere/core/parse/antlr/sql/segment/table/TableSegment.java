@@ -37,15 +37,16 @@ public class TableSegment implements SQLSegment {
     
     private final TableToken token;
     
-    private String schemaName;
+    private final String schemaName;
     
     private String alias;
     
     private int aliasStartIndex = -1;
     
-    public TableSegment(final TableToken token) {
+    public TableSegment(final TableToken token, final String schemaName) {
         name = token.getTableName();
         this.token = token;
+        this.schemaName = schemaName;
     }
     
     /**

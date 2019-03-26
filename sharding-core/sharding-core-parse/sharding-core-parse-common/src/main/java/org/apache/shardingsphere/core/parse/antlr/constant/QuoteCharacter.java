@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.constant;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -44,17 +45,20 @@ public enum QuoteCharacter {
     private final String endDelimiter;
     
     /**
-     * Get quote character value from start delimiter.
+     * Get quote character.
      * 
-     * @param startDelimiter start delimiter
+     * @param value value to be get quote character
      * @return value of quote character
      */
-    public static QuoteCharacter valueFrom(final String startDelimiter) {
+    public static QuoteCharacter getQuoteCharacter(final String value) {
+        if (Strings.isNullOrEmpty(value)) {
+            return QuoteCharacter.NONE;
+        }
         for (QuoteCharacter each : QuoteCharacter.values()) {
-            if (each.startDelimiter.equals(startDelimiter)) {
+            if (QuoteCharacter.NONE != each && each.startDelimiter.charAt(0) == value.charAt(0)) {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Invalid support start delimiter: %s ", startDelimiter));
+        return QuoteCharacter.NONE;
     }
 }

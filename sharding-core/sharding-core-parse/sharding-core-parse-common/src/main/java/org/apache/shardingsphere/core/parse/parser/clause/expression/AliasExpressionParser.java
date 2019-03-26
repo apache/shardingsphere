@@ -68,7 +68,7 @@ public abstract class AliasExpressionParser {
         String literals = lexerEngine.getCurrentToken().getLiterals();
         String alias = SQLUtil.getExactlyValue(literals);
         if (setTableToken && alias.equals(tableName)) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, 0, SQLUtil.getExactlyValue(literals), QuoteCharacter.valueFrom(SQLUtil.getStartDelimiter(literals))));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, 0, SQLUtil.getExactlyValue(literals), QuoteCharacter.getQuoteCharacter(literals)));
         }
         lexerEngine.nextToken();
         return Optional.of(SQLUtil.getExactlyValue(literals));

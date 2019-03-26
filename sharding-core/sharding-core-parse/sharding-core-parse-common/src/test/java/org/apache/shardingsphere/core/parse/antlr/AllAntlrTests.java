@@ -15,29 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.antlr;
 
-import org.apache.shardingsphere.core.parse.antlr.AllAntlrTests;
-import org.apache.shardingsphere.core.parse.hook.SPIParsingHookTest;
-import org.apache.shardingsphere.core.parse.lexer.AllLexerTests;
-import org.apache.shardingsphere.core.parse.parser.constant.AllConstantTests;
-import org.apache.shardingsphere.core.parse.parser.context.AllContextTests;
-import org.apache.shardingsphere.core.parse.parser.sql.AllSQLTests;
-import org.apache.shardingsphere.core.parse.util.SQLUtilTest;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        AllAntlrTests.class,
-        AllLexerTests.class,
-        SQLUtilTest.class,
-        AllSQLTests.class,
-        SQLJudgeEngineTest.class, 
-        AllContextTests.class, 
-        AllConstantTests.class, 
-        SPIParsingHookTest.class
-})
-public final class AllParsingTests {
+@SuiteClasses(QuoteCharacterTest.class)
+public final class AllAntlrTests {
 }

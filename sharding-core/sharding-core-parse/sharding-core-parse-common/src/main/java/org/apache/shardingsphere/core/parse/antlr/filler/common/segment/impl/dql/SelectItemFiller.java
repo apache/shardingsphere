@@ -83,7 +83,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
                 selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.valueFrom(SQLUtil.getStartDelimiter(owner.get()))));
+                        0, SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get())));
             }
         }
     }
@@ -94,7 +94,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
                 selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.valueFrom(SQLUtil.getStartDelimiter(owner.get()))));
+                        0, SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get())));
             }
         }
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));

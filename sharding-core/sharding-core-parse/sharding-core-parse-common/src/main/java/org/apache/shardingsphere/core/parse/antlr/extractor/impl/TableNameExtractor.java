@@ -59,15 +59,17 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
             schemaName = Optional.absent();
             skippedSchemaNameLength = 0;
         }
-        TableToken tableToken = new TableToken(
-                tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, SQLUtil.getExactlyValue(tableName), QuoteCharacter.valueFrom(SQLUtil.getStartDelimiter(tableName)));
-        TableSegment result = new TableSegment(tableToken);
-        result.setSchemaName(schemaName.orNull());
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.get().getParent(), RuleName.ALIAS);
-        if (aliasNode.isPresent()) {
-            result.setAlias(aliasNode.get().getText());
-            result.setAliasStartIndex(aliasNode.get().getStart().getStartIndex());
-        }
+        TableToken token = new TableToken(tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName));
+        TableSegment result = new TableSegment(token, schemaName.orNull());
+        setAlias(tableNameNode.get(), result);
         return Optional.of(result);
+    }
+    
+    private void setAlias(final ParserRuleContext tableNameNode, final TableSegment tableSegment) {
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.getParent(), RuleName.ALIAS);
+        if (aliasNode.isPresent()) {
+            tableSegment.setAlias(aliasNode.get().getText());
+            tableSegment.setAliasStartIndex(aliasNode.get().getStart().getStartIndex());
+        }
     }
 }
