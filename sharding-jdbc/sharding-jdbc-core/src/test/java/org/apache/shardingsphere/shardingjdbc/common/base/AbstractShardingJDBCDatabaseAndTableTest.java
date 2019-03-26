@@ -51,7 +51,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         importDataSet();
     }
     
-    protected final void importDataSet() {
+    private void importDataSet() {
         try {
             ShardingConnection conn = shardingDataSource.getConnection();
             RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_data.sql")));
@@ -66,7 +66,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         if (null != shardingDataSource) {
             return;
         }
-        Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
+        Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap(Arrays.asList("jdbc_0", "jdbc_1"));
         for (Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             List<String> orderActualDataNodes = new LinkedList<>();
@@ -91,12 +91,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             shardingDataSource = new ShardingDataSource(entry.getValue(), shardingRule);
         }
     }
-    
-    @Override
-    protected final List<String> getInitDataSetFiles() {
-        return Arrays.asList("integrate/dataset/jdbc/jdbc_0.xml", "integrate/dataset/jdbc/jdbc_1.xml");
-    }
-    
+
     protected final ShardingDataSource getShardingDataSource() {
         return shardingDataSource;
     }
