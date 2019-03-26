@@ -305,7 +305,6 @@ gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.as
 - 存在`DISCLAIMER`文件
 - 存在`LICENSE`和`NOTICE`文件
 - 所有文本文件开头都有ASF许可证
-- `sharding-proxy`二进制包配置正确后能够运行 (./start.sh)
 - 检查第三方依赖许可证：
   - 第三方依赖的许可证兼容
   - 所有第三方依赖的许可证都在`LICENSE`文件中声名

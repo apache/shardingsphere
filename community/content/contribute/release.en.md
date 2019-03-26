@@ -310,7 +310,6 @@ Decompress `apache-shardingsphere-incubating-4.0.0-RC1-bin.zip` and `apache-shar
 *   `DISCLAIMER` file exists
 *   `LICENSE` and `NOTICE` files exist
 *   All text files have ASF headers
-*   After the `sharding-proxy` binary package is rightly configured, it can run well (./start.sh)
 *   Check the third party dependency license:
     *   The software have a compatible license
     *   All software licenses mentioned in `LICENSE`
