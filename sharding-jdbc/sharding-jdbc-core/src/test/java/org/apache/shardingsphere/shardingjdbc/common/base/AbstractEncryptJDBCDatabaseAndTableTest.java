@@ -17,48 +17,49 @@
 
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
-import com.google.common.base.Joiner;
-import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.fixture.PreciseOrderShardingAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.fixture.RangeOrderShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.AfterClass;
-import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
     private static EncryptDataSource encryptDataSource;
 
-    @Before
-    public void initEncryptDataSource() throws SQLException {
+    @BeforeClass
+    public void initEncryptDataSource() {
         if (null != encryptDataSource) {
             return;
         }
         Map<DatabaseType, Map<String, DataSource>> dataSources = createDataSourceMap(Collections.singleton("encrypt"));
-            
-            encryptDataSource = new ShardingDataSource(entry.getValue(), shardingRule);
-        }
+        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next().values().iterator().next(), createEncryptRuleConfiguration());
+    }
+    
+    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
+        EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("test", "pwd", new Properties());
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
+        encryptTableRuleConfig.setTable("t_encrypt");
+        encryptTableRuleConfig.setEncryptorConfig(encryptorConfig);
+        EncryptorConfiguration encryptorQueryConfig = new EncryptorConfiguration("assistedTest", "pwd", "assist_pwd", new Properties());
+        EncryptTableRuleConfiguration encryptQueryTableRuleConfig = new EncryptTableRuleConfiguration();
+        encryptQueryTableRuleConfig.setTable("t_query_encrypt");
+        encryptQueryTableRuleConfig.setEncryptorConfig(encryptorQueryConfig);
+        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
+        result.getTableRuleConfigs().add(encryptTableRuleConfig);
+        result.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
+        return result;
     }
 
-    protected final ShardingDataSource getShardingDataSource() {
-        return shardingDataSource;
+    protected final EncryptDataSource getEncryptDataSource() {
+        return encryptDataSource;
     }
     
     @AfterClass
