@@ -35,7 +35,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     private static EncryptDataSource encryptDataSource;
 
     @BeforeClass
-    public void initEncryptDataSource() {
+    public void setUp() {
         if (null != encryptDataSource) {
             return;
         }
