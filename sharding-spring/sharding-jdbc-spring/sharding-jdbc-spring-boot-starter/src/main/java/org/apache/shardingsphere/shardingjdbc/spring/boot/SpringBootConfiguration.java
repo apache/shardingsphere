@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Configuration
+@ConditionalOnProperty(prefix = "sharding.jdbc.datasource", name = "names")
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class
 })
