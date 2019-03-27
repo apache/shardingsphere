@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-
-import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = SpringBootRawDataSourceTest.class)
@@ -37,10 +36,10 @@ import static org.junit.Assert.assertFalse;
 public class SpringBootRawDataSourceTest {
     
     @Resource
-    private DataSource datasource;
+    private ApplicationContext context;
     
-    @Test
+    @Test(expected = NoSuchBeanDefinitionException.class)
     public void assertDataSource() {
-        assertFalse(datasource instanceof AbstractDataSourceAdapter);
+        context.getBean(DataSource.class);
     }
 }
