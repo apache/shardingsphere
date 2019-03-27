@@ -60,6 +60,20 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
         assertResultSet(2, 2, "encryptValue", "assistedEncryptValue");
     }
     
+    @Test
+    public void assertInsertWithBatchExecute() throws SQLException {
+        try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_SQL)) {
+            statement.setObject(1, batchParameters.get(0));
+            statement.setObject(2, batchParameters.get(1));
+            statement.addBatch();
+            statement.setObject(1, batchParameters.get(2));
+            statement.setObject(2, batchParameters.get(3));
+            statement.addBatch();
+            statement.executeBatch();
+        }
+        assertResultSet(3, 4, "encryptValue", "assistedEncryptValue");
+    }
+    
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assist_pwd) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection(); 
              Statement stmt = conn.createStatement()) {
