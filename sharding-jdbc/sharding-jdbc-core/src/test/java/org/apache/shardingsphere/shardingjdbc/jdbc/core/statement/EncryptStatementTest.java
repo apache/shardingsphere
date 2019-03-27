@@ -32,6 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
+    
     private static final String INSERT_SQL = "insert into t_encrypt(id, pwd) values(2,'b')";
     
     private static final String DELETE_SQL = "delete from t_encrypt where pwd = 'a' and id = 1";
@@ -54,7 +55,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         try (Statement statement = encryptConnection.createStatement()) {
             statement.execute(INSERT_SQL);
         }
-        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
+        assertResultSet(3, 2, "encryptValue");
     }
     
     @Test
@@ -62,7 +63,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         try (Statement statement = encryptConnection.createStatement()) {
             statement.execute(DELETE_SQL);
         }
-        assertResultSet(1, 5, "encryptValue", "assistedEncryptValue");
+        assertResultSet(1, 5, "encryptValue");
     }
     
     @Test
@@ -72,7 +73,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
             result = statement.executeUpdate(UPDATE_SQL);
         }
         assertThat(result, is(2));
-        assertResultSet(2, 1, "encryptValue", "assistedEncryptValue");
+        assertResultSet(2, 1, "encryptValue");
     }
     
     @Test
