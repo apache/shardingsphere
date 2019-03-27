@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,7 +38,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String UPDATE_SQL = "update t_query_encrypt set pwd ='f' where pwd = 'a'";
     
-    private static final String SELECT_SQL = "select * from t_query_encrypt where pwd = ? ";
+    private static final String SELECT_SQL = "select * from t_query_encrypt where pwd = 'a' ";
     
     private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
     
@@ -78,9 +77,8 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     @Test
     public void assertSelectWithExecuteQuery() throws SQLException {
-        try (PreparedStatement statement = encryptConnection.prepareStatement(SELECT_SQL)) {
-            statement.setObject(1, 'a');
-            ResultSet resultSet = statement.executeQuery();
+        try (Statement statement = encryptConnection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL);
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(1));
             assertThat(resultSet.getString(2), is("decryptValue"));
