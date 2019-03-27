@@ -22,3 +22,4 @@ CREATE TABLE t_order_item_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_i
 CREATE TABLE t_config (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE t_global (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE t_encrypt (id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE t_query_encrypt (id INT NOT NULL, pwd VARCHAR(45) NULL, assist_pwd VARCHAR(45) NULL, PRIMARY KEY (id));
