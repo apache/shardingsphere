@@ -51,45 +51,17 @@ public abstract class AbstractSQLTest {
         try {
             Properties prop = new Properties();
             prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-            createJdbcSchema(DatabaseType.H2);
+            createDataSources();
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
-    }
-    
-    private static void createJdbcSchema(final DatabaseType dbType) {
-        try {
-            createDataSources();
-            Connection conn;
-            for (String each : DB_NAMES) {
-                conn = initialConnection(each, dbType);
-                RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
-                conn.close();
-            }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
-        return buildDataSource(dbName, type).getConnection();
-    }
-    
-    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
-        DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(dbEnv.getDriverClassName());
-        result.setUrl(dbEnv.getURL(dbName));
-        result.setUsername(dbEnv.getUsername());
-        result.setPassword(dbEnv.getPassword());
-        result.setMaxTotal(50);
-        return result;
     }
     
     private static void createDataSources() {
         for (String each : DB_NAMES) {
             for (DatabaseType type : databaseTypes) {
                 createDataSources(each, type);
+                
             }
         }
     }
@@ -103,5 +75,27 @@ public abstract class AbstractSQLTest {
         }
         BasicDataSource result = buildDataSource(dbName, type);
         dataSourceMap.put(dataSource, result);
+        createSchema(dbName, type);
+    }
+    
+    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
+        DatabaseEnvironment dbEnv = new DatabaseEnvironment(type);
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName(dbEnv.getDriverClassName());
+        result.setUrl(dbEnv.getURL(dbName));
+        result.setUsername(dbEnv.getUsername());
+        result.setPassword(dbEnv.getPassword());
+        result.setMaxTotal(50);
+        return result;
+    }
+    
+    private static void createSchema(final String dbName, final DatabaseType dbType) {
+        try {
+            Connection conn = databaseTypeMap.get(dbType).get(dbName).getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
+            conn.close();
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 }
