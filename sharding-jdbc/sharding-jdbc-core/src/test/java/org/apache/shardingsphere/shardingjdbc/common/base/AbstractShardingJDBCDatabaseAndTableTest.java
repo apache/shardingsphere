@@ -44,6 +44,8 @@ import java.util.Properties;
 
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
+    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
+    
     private static ShardingDataSource shardingDataSource;
     
     @Before
@@ -62,7 +64,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         if (null != shardingDataSource) {
             return;
         }
-        Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap(Arrays.asList("jdbc_0", "jdbc_1"));
+        Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap(DB_NAMES);
         for (Entry<DatabaseType, Map<String, DataSource>> entry : dataSourceMap.entrySet()) {
             final ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
             List<String> orderActualDataNodes = new LinkedList<>();
