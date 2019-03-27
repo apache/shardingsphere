@@ -37,11 +37,13 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String INSERT_SQL = "insert into t_query_encrypt(id, pwd) values(?,?)";
     
-    private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
-    
     private static final String DELETE_SQL = "delete from t_query_encrypt where pwd = ? and id = ?";
     
     private static final String UPDATE_SQL = "update t_query_encrypt set pwd =? where pwd = ?";
+    
+    private static final String SELECT_SQL = "select * from t_query_encrypt where pwd = ? ";
+    
+    private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
     
     private static final List<Object> parameters = Arrays.asList((Object) 2, 'b');
     
@@ -100,6 +102,15 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
         assertResultSet(2, 1, "encryptValue", "assistedEncryptValue");
     }
     
+    @Test
+    public void assertSelectWithExecuteQuery() throws SQLException {
+        try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_SQL)) {
+            statement.setObject(1, parameters.get(0));
+            statement.setObject(2, parameters.get(1));
+            statement.execute();
+        }
+        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
+    }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assist_pwd) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection(); 
