@@ -89,4 +89,17 @@ public final class ShardingEncryptorEngine {
         }
         return shardingEncryptorStrategies.get(logicTableName).getAssistedQueryColumn(columnName);
     }
+    
+    /**
+     * Get assisted query column count.
+     * 
+     * @param logicTableName logic table name
+     * @return assisted query column count
+     */
+    public Optional<Integer> getAssistedQueryColumnCount(final String logicTableName) {
+        if (!shardingEncryptorStrategies.containsKey(logicTableName)) {
+            return Optional.absent();
+        }
+        return Optional.of(shardingEncryptorStrategies.get(logicTableName).getAssistedQueryColumns().size());
+    }
 }
