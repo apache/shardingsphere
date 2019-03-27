@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -34,8 +34,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static EncryptDataSource encryptDataSource;
 
-    @BeforeClass
-    public void setUp() {
+    @Before
+    public void init() {
         if (null != encryptDataSource) {
             return;
         }
@@ -63,7 +63,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     }
     
     @AfterClass
-    public static void clear() {
+    public static void close() {
         if (encryptDataSource == null) {
             return;
         }
