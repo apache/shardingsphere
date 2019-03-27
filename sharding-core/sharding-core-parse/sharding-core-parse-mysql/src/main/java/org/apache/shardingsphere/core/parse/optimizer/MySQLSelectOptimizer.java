@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimizer;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableNameOrAliasSegment;
 import org.apache.shardingsphere.core.parse.parser.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
@@ -35,7 +36,11 @@ import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.parser.token.OrderByToken;
+import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
+import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,16 +52,30 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     
     @Override
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        addTableTokensIfIsNotAlias(sqlStatement);
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
         postExtractInternal(sqlStatement);
     }
     
-    private void postExtractInternal(final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (OrCondition each : selectStatement.getSubqueryConditions()) {
-            selectStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
+    private void addTableTokensIfIsNotAlias(final SQLStatement sqlStatement) {
+        List<SQLToken> toBeAdded = new LinkedList<>();
+        final Collection<String> tableNames = sqlStatement.getTables().getTableNames();
+        for (TableNameOrAliasSegment each : sqlStatement.getTables().getTableNameOrAliasSegment()) {
+            if (!isAlias(tableNames, each)) {
+                toBeAdded.add(new TableToken(each.getStartIndex(), each.getName(), each.getQuoteCharacter(), 0));
+            }
         }
+        sqlStatement.getSQLTokens().addAll(toBeAdded);
+    }
+    
+    private boolean isAlias(final Collection<String> tableNames, final TableNameOrAliasSegment tableNameOrAliasSegment) {
+        for (String each : tableNames) {
+            if (each.equalsIgnoreCase(tableNameOrAliasSegment.getName())) {
+                return false;
+            }    
+        }
+        return true;
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
@@ -181,6 +200,13 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
             selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
+        }
+    }
+    
+    private void postExtractInternal(final SQLStatement sqlStatement) {
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        for (OrCondition each : selectStatement.getSubqueryConditions()) {
+            selectStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
         }
     }
 }

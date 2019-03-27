@@ -29,6 +29,8 @@ public enum RuleName {
     
     TABLE_NAME("TableName"),
     
+    TABLE_NAME_OR_ALIAS("TableNameOrAlias"),
+    
     COLUMN_DEFINITION("ColumnDefinition"),
     
     COLUMN_NAME("ColumnName"),

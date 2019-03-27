@@ -23,28 +23,32 @@ ID
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
     |  '`' ~'`'+ '`'
     ;
-    
+
 uid
     : ID
     | keywordIdentifier_
     ;
-    
+
 keywordIdentifier_
     : DATE | PASSWORD
     ;
-    
+
 schemaName
     : uid
     ;
-    
+
 tableName
     : (schemaName DOT_)? uid
     ;
-    
+
+tableNameOrAlias
+    : uid
+    ;
+
 ownerName
     : uid
     ;
-    
+
 columnName
     : (ownerName DOT_)? uid
     ;

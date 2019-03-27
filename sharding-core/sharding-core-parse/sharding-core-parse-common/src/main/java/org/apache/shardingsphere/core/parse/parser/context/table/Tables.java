@@ -19,11 +19,14 @@ package org.apache.shardingsphere.core.parse.parser.context.table;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableNameOrAliasSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -37,6 +40,9 @@ import java.util.TreeSet;
 public final class Tables {
     
     private final List<Table> tables = new ArrayList<>();
+    
+    @Getter
+    private final Collection<TableNameOrAliasSegment> tableNameOrAliasSegment = new LinkedList<>();
     
     /**
      * Add table.
@@ -128,5 +134,14 @@ public final class Tables {
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Add table name or alias.
+     *
+     * @param segment table name or alias segment
+     */
+    public void addTableNameOrAlias(final TableNameOrAliasSegment segment) {
+        tableNameOrAliasSegment.add(segment);
     }
 }
