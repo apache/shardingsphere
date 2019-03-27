@@ -56,6 +56,18 @@ public final class TableMetaDataInitializer {
     }
     
     /**
+     * Load table meta data.
+     *
+     * @param logicTableName logic table name
+     * @param shardingRule sharding rule
+     * @return table meta data
+     */
+    @SneakyThrows
+    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
+        return tableMetaDataLoader.load(logicTableName, shardingRule);
+    }
+    
+    /**
      * Load all table meta data.
      * 
      * @param shardingRule sharding rule
@@ -110,17 +122,5 @@ public final class TableMetaDataInitializer {
         } catch (final AbstractMethodError | SQLFeatureNotSupportedException ignore) {
             return null;
         }
-    }
-    
-    /**
-     * Load table meta data.
-     *
-     * @param logicTableName logic table name
-     * @param shardingRule sharding rule
-     * @return table meta data
-     */
-    @SneakyThrows
-    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) {
-        return tableMetaDataLoader.load(logicTableName, shardingRule);
     }
 }
