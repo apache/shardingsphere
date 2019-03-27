@@ -17,21 +17,68 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.junit.Before;
 import org.junit.Test;
 
-public final class EncryptPreparedStatementTest {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
+    
+    private static final String INSERT_SQL = "insert into t_query_encrypt(id, pwd) values(?,?)";
+    
+    private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
+    
+    private static final List<Object> parameters = Arrays.asList((Object) 2, 'b');
+    
+    private static final List<Object> batchParameters = Arrays.asList((Object) 3, 'c', 4, 'd');
+    
+    private EncryptConnection encryptConnection;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        encryptConnection = getEncryptDataSource().getConnection();
     }
     
     @Test
-    public void testExecuteQuery() {
+    private void assertInsertWithExecute() throws SQLException {
+        try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_SQL)) {
+            statement.setObject(1, parameters.get(0));
+            statement.setObject(2, parameters.get(1));
+            statement.execute();
+        }
+        
     }
     
+    private void assertResultSet(final int resultSetCount, final int id, final Object pwd) throws SQLException {
+        try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection(); 
+             Statement stmt = conn.createStatement()) {
+            ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
+            int count = 1;
+            while (resultSet.next()) {
+                if (id == count) {
+                    assertThat(pwd, is(resultSet.getObject("pwd")));
+                }
+                count += 1;
+            }
+            assertThat(count, is(resultSetCount));
+        }
+    }
+    
+    
     @Test
-    public void testGetResultSet() {
+    public void testGetResultSet() throws SQLException {
+        assertInsertWithExecute();
     }
     
     @Test
