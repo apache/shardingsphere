@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dql.item;
 
-import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
@@ -28,6 +28,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.Aggregation
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.SelectItemSegment;
+
+import com.google.common.base.Optional;
 
 /**
  * Function select item segment extractor.
@@ -66,22 +68,11 @@ public final class FunctionSelectItemSegmentExtractor implements OptionalSQLSegm
     }
     
     private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext functionNode) {
+        int innerExpressionStartIndex = ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex();
         return ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent()
                 ? new AggregationDistinctSelectItemSegment(
-                        type, getInnerExpression(functionNode), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), getDistinctExpression(functionNode)) 
-                : new AggregationSelectItemSegment(type, getInnerExpression(functionNode), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex()); 
-    }
-    
-    private String getInnerExpression(final ParserRuleContext functionNode) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 1; i < functionNode.getChildCount(); i++) {
-            String text = functionNode.getChild(i).getText();
-            result.append(text);
-            if ("DISTINCT".equals(text)) {
-                result.append(" ");
-            }
-        }
-        return result.toString();
+                type, innerExpressionStartIndex, functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), getDistinctExpression(functionNode))
+                : new AggregationSelectItemSegment(type, innerExpressionStartIndex, functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
     }
     
     private String getDistinctExpression(final ParserRuleContext functionNode) {

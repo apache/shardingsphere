@@ -75,7 +75,11 @@ public enum RuleName {
     
     SELECT_CLAUSE("SelectClause"),
     
+    SELECT_SPECIFICATION("SelectSpecification"),
+    
     SELECT_EXPRS("SelectExprs"),
+    
+    ASTERISK("Asterisk"),
     
     SELECT_EXPR("SelectExpr"),
     

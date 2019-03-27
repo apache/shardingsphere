@@ -24,7 +24,7 @@
             <table name="t_order" alias="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="22" table-name="t_order" />
+            <table-token start-index="22" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -43,7 +43,7 @@
             <table name="t_order" alias="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="52" table-name="t_order" />
+            <table-token start-index="52" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -62,7 +62,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -74,7 +74,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -86,7 +86,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -98,7 +98,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -110,7 +110,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -129,7 +129,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -148,7 +148,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -173,7 +173,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -199,7 +199,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -223,7 +223,7 @@
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-token start-index="37" table-name="t_order" />
+            <table-token start-index="37" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -250,8 +250,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="31" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -276,8 +276,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="31" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
@@ -290,8 +290,8 @@
             <table name="T_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="T_ORDER" />
-            <table-token start-index="31" table-name="T_order_item" />
+            <table-token start-index="16" table-name="T_ORDER" length="7" />
+            <table-token start-index="31" table-name="T_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -316,8 +316,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="31" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -342,8 +342,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="31" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -368,8 +368,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="31" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -394,8 +394,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="31" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -419,7 +419,7 @@
             <table name="t_order_item" alias="length" />
         </tables>
         <tokens>
-            <table-token start-index="36" table-name="t_order_item" />
+            <table-token start-index="36" table-name="t_order_item" length="12" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -436,8 +436,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" table-name="t_order" />
-            <table-token start-index="56" table-name="t_order_item" />
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="56" table-name="t_order_item" length="12" />
             <index-token start-index="38" stop-index="48" table-name="t_order" />
         </tokens>
         <or-condition>
@@ -454,7 +454,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -473,7 +473,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -492,7 +492,7 @@
             <table name="t_place" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_place" />
+            <table-token start-index="14" table-name="t_place" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -508,7 +508,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order_item" left-delimiter="&quot;" right-delimiter="&quot;" />
+            <table-token start-index="14" table-name="t_order_item" left-delimiter="&quot;" right-delimiter="&quot;" length="14" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -527,7 +527,7 @@
             </distinct-select-item>
         </select-items>
         <tokens>
-            <table-token start-index="29" table-name="t_order_item" />
+            <table-token start-index="29" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -548,7 +548,7 @@
             </distinct-select-item>
         </select-items>
         <tokens>
-            <table-token start-index="47" table-name="t_order" />
+            <table-token start-index="47" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
@@ -566,7 +566,7 @@
             </distinct-select-item>
         </select-items>
         <tokens>
-            <table-token start-index="23" table-name="t_order" />
+            <table-token start-index="23" table-name="t_order" length="7" />
         </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
@@ -583,7 +583,7 @@
             </aggregation-select-items>
         </select-items>
         <tokens>
-            <table-token start-index="37" table-name="t_order" />
+            <table-token start-index="37" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="s" />
         </tokens>
     </parser-result>
@@ -598,7 +598,7 @@
             </aggregation-select-items>
         </select-items>
         <tokens>
-            <table-token start-index="39" table-name="t_order" />
+            <table-token start-index="39" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
@@ -616,7 +616,7 @@
             </aggregation-select-items>
         </select-items>
         <tokens>
-            <table-token start-index="35" table-name="t_order" />
+            <table-token start-index="35" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
         </tokens>
     </parser-result>
@@ -632,7 +632,7 @@
             </aggregation-select-items>
         </select-items>
         <tokens>
-            <table-token start-index="61" table-name="t_order" />
+            <table-token start-index="61" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
             <aggregation-distinct-token start-index="33" stop-index="54" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
         </tokens>
@@ -654,7 +654,7 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
         <tokens>
-            <table-token start-index="49" table-name="t_order" />
+            <table-token start-index="49" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="17" stop-index="40" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
@@ -675,7 +675,7 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
         <tokens>
-            <table-token start-index="49" table-name="t_order" />
+            <table-token start-index="49" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
@@ -692,7 +692,7 @@
             </distinct-select-item>
         </select-items>
         <tokens>
-            <table-token start-index="30" table-name="t_order_item" />
+            <table-token start-index="30" table-name="t_order_item" length="12" />
         </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -705,11 +705,11 @@
         </tables>
         <select-items>
             <aggregation-select-items>
-                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT user_id+order_id)" distinct-column="user_id+order_id" alias="c" />
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-column="user_id+order_id" alias="c" />
             </aggregation-select-items>
         </select-items>
         <tokens>
-            <table-token start-index="49" table-name="t_order" />
+            <table-token start-index="49" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="7" stop-index="40" column-name="user_id+order_id" alias="c" />
         </tokens>
     </parser-result>
@@ -726,7 +726,7 @@
             </aggregation-select-items>
         </select-items>
         <tokens>
-            <table-token start-index="77" table-name="t_order" />
+            <table-token start-index="77" table-name="t_order" length="7" />
             <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
             <aggregation-distinct-token start-index="30" stop-index="53" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
         </tokens>
@@ -737,7 +737,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" skipped-schema-name-length = "4" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length = "11"  />
         </tokens>
     </parser-result>
     
@@ -746,7 +746,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -755,7 +755,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="14" table-name="t_order" />
+            <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -764,7 +764,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="83" table-name="t_order" />
+            <table-token start-index="83" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -773,7 +773,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="77" table-name="t_order" />
+            <table-token start-index="77" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -782,7 +782,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="31" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -791,7 +791,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="31" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
 </parser-result-sets>

@@ -111,7 +111,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (isSingleTableOnly || shardingRule.findTableRule(tableName).isPresent()
                 || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, tableName, QuoteCharacter.getQuoteCharacter(literals)));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, tableName, QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
             sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
         } else {
             aliasExpressionParser.parseTableAlias();
@@ -200,7 +200,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             literals = lexerEngine.getCurrentToken().getLiterals();
             lexerEngine.nextToken();
         }
-        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, SQLUtil.getExactlyValue(literals), QuoteCharacter.getQuoteCharacter(literals)));
+        sqlStatement.addSQLToken(new TableToken(beginPosition, SQLUtil.getExactlyValue(literals), QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
         sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
     }
 }

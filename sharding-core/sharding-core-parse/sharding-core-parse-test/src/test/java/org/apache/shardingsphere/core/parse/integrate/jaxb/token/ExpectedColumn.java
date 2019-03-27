@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
 
-import org.apache.shardingsphere.transaction.handler.AllHandlerTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-    AllHandlerTests.class,
-    ShardingTransactionalNameSpaceTest.class
-})
-public class AllTests {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedColumn {
+    
+    @XmlAttribute(name = "name")
+    private String name;
+    
+    @XmlAttribute(name = "table-name")
+    private String tableName;
 }

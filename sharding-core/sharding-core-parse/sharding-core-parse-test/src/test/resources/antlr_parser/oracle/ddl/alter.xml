@@ -22,7 +22,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -31,7 +31,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="24" table-name="t_order" />
+            <table-token start-index="24" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
 
@@ -40,7 +40,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" />
+            <table-token start-index="12" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
         </tokens>
     </parser-result>
     
@@ -49,7 +49,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
             <add-columns>
@@ -63,7 +63,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
             <add-columns>
@@ -79,7 +79,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
             <update-columns>
@@ -93,7 +93,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
             <update-columns>
@@ -109,7 +109,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table drop-columns="user_id" />
     </parser-result>
@@ -119,7 +119,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table drop-columns="user_id,column5" />
     </parser-result>
@@ -129,7 +129,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
             <update-columns>
@@ -143,7 +143,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
             <update-columns>
@@ -159,7 +159,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -169,8 +169,8 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order_item" />
-            <table-token start-index="86" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order_item" length="12" />
+            <table-token start-index="86" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -179,7 +179,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -189,8 +189,8 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order_item" />
-            <table-token start-index="125" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order_item" length="12" />
+            <table-token start-index="125" table-name="t_order" length="7" />
         </tokens>
         <alter-table>
             <update-columns>
@@ -204,7 +204,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table drop-primary-key="true" />
     </parser-result>
@@ -214,7 +214,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -223,7 +223,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -232,7 +232,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <alter-table drop-primary-key="true"/>
     </parser-result>
@@ -242,7 +242,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     

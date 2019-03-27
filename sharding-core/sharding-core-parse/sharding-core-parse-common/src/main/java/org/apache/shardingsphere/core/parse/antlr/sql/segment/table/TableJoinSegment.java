@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.table;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
 /**
  * Table join segment.
@@ -31,15 +30,7 @@ public final class TableJoinSegment extends TableSegment {
     
     private final OrConditionSegment joinConditions = new OrConditionSegment();
     
-    public TableJoinSegment(final String alias, final String schemaName, final TableToken token) {
-        super(token);
-        setAlias(alias);
-        setSchemaName(schemaName);
-    }
-    
     public TableJoinSegment(final TableSegment parent) {
-        super(parent.getToken());
-        setAlias(parent.getAlias().orNull());
-        setSchemaName(parent.getSchemaName().orNull());
+        super(parent.getToken(), parent.getSchemaName().orNull(), parent.getAlias().orNull());
     }
 }

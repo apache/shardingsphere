@@ -22,7 +22,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -41,7 +41,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" />
+            <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
 
@@ -50,7 +50,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_order" left-delimiter="`" right-delimiter="`" />
+            <table-token start-index="12" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
         </tokens>
     </parser-result>
 
@@ -59,7 +59,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="33" table-name="t_order" />
+            <table-token start-index="33" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
 
@@ -68,7 +68,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="34" table-name="t_order" />
+            <table-token start-index="34" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
 </parser-result-sets>

@@ -67,12 +67,20 @@ BINLOG_ADMIN
     : B I N L O G UL_ A D M I N
     ;
     
+BOTH
+    : B O T H
+    ;
+    
 BTREE
     : B T R E E
     ;
     
 CASE
     : C A S E
+    ;
+    
+CAST
+    : C A S T
     ;
     
 CHAIN
@@ -255,6 +263,10 @@ EXPIRE
     : E X P I R E
     ;
     
+EXTRACT
+    : E X T R A C T
+    ;
+    
 FILE
     : F I L E
     ;
@@ -373,6 +385,10 @@ KEY_BLOCK_SIZE
     
 LAST
     : L A S T
+    ;
+    
+LEADING
+    : L E A D I N G
     ;
     
 LEFT
@@ -523,6 +539,10 @@ PERSIST_ONLY
     : P E R S I S T UL_ O N L Y
     ;
     
+POSITION
+    : P O S I T I O N
+    ;
+    
 PRECEDING
     : P R E C E D I N G
     ;
@@ -617,6 +637,10 @@ RETAIN
     
 REUSE
     : R E U S E
+    ;
+    
+REVERSE
+    : R E V E R S E
     ;
     
 RIGHT
@@ -759,6 +783,14 @@ SUPER
     : S U P E R
     ;
     
+SUBSTR
+    : S U B S T R
+    ;
+    
+SUBSTRING
+    : S U B S T R I N G
+    ;
+    
 SYSTEM_VARIABLES_ADMIN
     : S Y S T E M UL_ V A R I A B L E S UL_ A D M I N
     ;
@@ -783,8 +815,16 @@ THEN
     : T H E N
     ;
     
+TRAILING
+    : T R A I L I N G
+    ;
+    
 TRIGGER
     : T R I G G E R
+    ;
+    
+TRIM
+    : T R I M
     ;
     
 UNBOUNDED
@@ -845,6 +885,10 @@ VIEW
     
 VIRTUAL
     : V I R T U A L
+    ;
+    
+WEIGHT_STRING
+    : W E I G H T UL_ S T R I N G
     ;
     
 WHEN

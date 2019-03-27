@@ -86,7 +86,7 @@ objectType_
     ;
 
 privilegeLevel_
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | ID DOT_ASTERISK_ | tableName
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | uid DOT_ASTERISK_ | tableName
     ;
 
 createUser

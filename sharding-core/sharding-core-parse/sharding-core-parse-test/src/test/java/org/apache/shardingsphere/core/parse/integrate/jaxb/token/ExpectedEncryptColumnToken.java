@@ -15,13 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
 
-/**
- * Target environment of switch the transaction type.
- *
- * @author yangyi
- */
-public enum ShardingEnvironment {
-    JDBC, PROXY
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedEncryptColumnToken {
+    
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
+    
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
+    
+    private ExpectedColumn column;
+    
+    @XmlAttribute(name = "is-in-where")
+    private boolean isInWhere;
 }
