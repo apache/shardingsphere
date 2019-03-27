@@ -74,6 +74,12 @@
   ],
   "properties": [
     {
+      "name": "sharding.jdbc.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether enable shardingjdbc or not.",
+      "defaultValue": true
+    },
+    {
       "name": "sharding.jdbc.datasource.names",
       "type": "java.lang.String",
       "sourceType": "org.apache.shardingsphere.shardingjdbc.spring.boot.SpringBootConfiguration"

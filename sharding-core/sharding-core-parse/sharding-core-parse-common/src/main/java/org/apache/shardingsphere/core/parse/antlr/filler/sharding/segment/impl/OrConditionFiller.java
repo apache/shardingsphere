@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.AndConditionSegment;
@@ -67,12 +68,12 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
      * @param shardingTableMetaData sharding table meta data
      * @return or condition
      */
-    public OrCondition buildCondition(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
-                                      final ShardingTableMetaData shardingTableMetaData) {
+    public OrCondition buildCondition(
+            final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        return filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, sql, shardingRule, columnNameToTable, columnNameCount);
+        return filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, sql, shardingRule);
     }
     
     private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
@@ -95,8 +96,8 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
         }
     }
     
-    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql,
-                                        final ShardingRule shardingRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+    private OrCondition filterCondition(
+            final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql, final ShardingRule shardingRule) {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
@@ -144,7 +145,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
             String owner = column.getOwner().get();
             Optional<Table> logicTable = sqlStatement.getTables().find(owner);
             if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
-                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), 0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
+                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), SQLUtil.getExactlyValue(owner), QuoteCharacter.getQuoteCharacter(owner), 0));
             }
         }
     }
@@ -157,7 +158,8 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
         AndCondition andConditionResult = new AndCondition();
         orCondition.getAndConditions().add(andConditionResult);
         for (ConditionSegment eachCondition : shardingCondition) {
-            Column column = new Column(eachCondition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, eachCondition));
+            Optional<String> tableName = getTableName(sqlStatement, eachCondition);
+            Column column = new Column(eachCondition.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(shardingTableMetaData, shardingRule, sqlStatement, eachCondition));
             andConditionResult.getConditions().add(eachCondition.getExpression().buildCondition(column, sql));
         }
     }
@@ -195,6 +197,16 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
             }
         }
         return getTableName(shardingTableMetaData, shardingRule, currentSelectStatement.getTables(), conditionSegment);
+    }
+    
+    private Optional<String> getTableName(final SQLStatement sqlStatement, final ConditionSegment conditionSegment) {
+        if (conditionSegment.getColumn().getOwner().isPresent()) {
+            Optional<Table> table = sqlStatement.getTables().find(conditionSegment.getColumn().getOwner().get());
+            if (table.isPresent()) {
+                return Optional.of(table.get().getName());
+            }
+        }
+        return Optional.absent();
     }
     
     private String getTableName(final ShardingTableMetaData shardingTableMetaData, final ShardingRule shardingRule, final Tables tables, final ConditionSegment conditionSegment) {

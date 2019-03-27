@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -44,28 +45,29 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
         if (!tableNameNode.isPresent()) {
             return Optional.absent();
         }
-        String tableText = tableNameNode.get().getText();
+        String nodeText = tableNameNode.get().getText();
         String tableName;
         Optional<String> schemaName;
-        int skippedSchemaNameLength;
-        if (tableText.contains(Symbol.DOT.getLiterals())) {
-            List<String> tableTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(tableText);
-            tableName = tableTextSegments.get(tableTextSegments.size() - 1);
-            schemaName = Optional.of(tableTextSegments.get(tableTextSegments.size() - 2));
-            skippedSchemaNameLength = tableText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
+        int schemaNameLength;
+        if (nodeText.contains(Symbol.DOT.getLiterals())) {
+            List<String> nodeTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
+            tableName = nodeTextSegments.get(nodeTextSegments.size() - 1);
+            schemaName = Optional.of(nodeTextSegments.get(nodeTextSegments.size() - 2));
+            schemaNameLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
         } else {
-            tableName = tableText;
+            tableName = nodeText;
             schemaName = Optional.absent();
-            skippedSchemaNameLength = 0;
+            schemaNameLength = 0;
         }
-        TableSegment result = new TableSegment(new TableToken(tableNameNode.get().getStart().getStartIndex(), 
-                skippedSchemaNameLength, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
-        result.setSchemaName(schemaName.orNull());
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.get().getParent(), RuleName.ALIAS);
-        if (aliasNode.isPresent()) {
-            result.setAlias(aliasNode.get().getText());
-            result.setAliasStartIndex(aliasNode.get().getStart().getStartIndex());
-        }
-        return Optional.of(result);
+        return Optional.of(new TableSegment(getTableToken(tableNameNode.get(), tableName, schemaNameLength), schemaName.orNull(), getTableAlias(tableNameNode.get()).orNull()));
+    }
+    
+    private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int schemaNameLength) {
+        return new TableToken(tableNameNode.getStart().getStartIndex(), SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName), schemaNameLength);
+    }
+    
+    private Optional<String> getTableAlias(final ParserRuleContext tableNameNode) {
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.getParent(), RuleName.ALIAS);
+        return aliasNode.isPresent() ? Optional.of(aliasNode.get().getText()) : Optional.<String>absent();
     }
 }

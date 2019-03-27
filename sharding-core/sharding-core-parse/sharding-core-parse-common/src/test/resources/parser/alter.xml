@@ -22,7 +22,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token start-index="12" table-name="t_log" />
+            <table-token start-index="12" table-name="t_log" length="5" />
         </tokens>
     </parser-result>
     
@@ -31,7 +31,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token start-index="27" table-name="t_log" />
+            <table-token start-index="27" table-name="t_log" length="5" />
         </tokens>
     </parser-result>
 </parser-result-sets>

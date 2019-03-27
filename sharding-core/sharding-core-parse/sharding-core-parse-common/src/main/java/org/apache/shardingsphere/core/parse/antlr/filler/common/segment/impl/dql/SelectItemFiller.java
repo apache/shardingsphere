@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dq
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.SubquerySegment;
@@ -81,8 +82,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(owner.get()), SQLUtil.getLeftDelimiter(owner.get()), SQLUtil.getRightDelimiter(owner.get())));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
     }
@@ -92,8 +92,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
-                        0, SQLUtil.getExactlyValue(owner.get()), SQLUtil.getLeftDelimiter(owner.get()), SQLUtil.getRightDelimiter(owner.get())));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));

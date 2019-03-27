@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 
 /**
  * Table placeholder for rewrite.
@@ -33,21 +34,10 @@ public final class TablePlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
     
-    private final String leftDelimiter;
-    
-    private final String rightDelimiter;
+    private final QuoteCharacter quoteCharacter;
     
     @Override
     public String toString() {
-        return hasDelimiter() ? leftDelimiter + logicTableName + rightDelimiter : logicTableName;
-    }
-    
-    /**
-     * Judge has delimiter or not.
-     *
-     * @return has delimiter or not
-     */
-    public boolean hasDelimiter() {
-        return !(Strings.isNullOrEmpty(leftDelimiter) || Strings.isNullOrEmpty(rightDelimiter));
+        return Joiner.on("").join(quoteCharacter.getStartDelimiter(), logicTableName, quoteCharacter.getEndDelimiter());
     }
 }

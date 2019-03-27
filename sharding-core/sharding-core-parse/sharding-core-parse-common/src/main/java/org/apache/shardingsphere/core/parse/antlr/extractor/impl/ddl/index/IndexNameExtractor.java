@@ -35,7 +35,10 @@ public final class IndexNameExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
-        return indexNameNode.isPresent() ? Optional.of(new IndexSegment(new IndexToken(indexNameNode.get().getStop().getStartIndex(), indexNameNode.get().getStop().getStopIndex())))
-                : Optional.<IndexSegment>absent();
+        return indexNameNode.isPresent() ? Optional.of(new IndexSegment(getIndexToken(indexNameNode.get()))) : Optional.<IndexSegment>absent();
+    }
+    
+    private IndexToken getIndexToken(final ParserRuleContext indexNameNode) {
+        return new IndexToken(indexNameNode.getStop().getStartIndex(), indexNameNode.getStop().getStopIndex());
     }
 }

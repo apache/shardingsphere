@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.token;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 
 /**
  * Table token.
@@ -26,24 +27,22 @@ import lombok.ToString;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 @ToString
 public final class TableToken extends SQLToken {
     
-    private final int skippedSchemaNameLength;
-    
+    @Getter
     private final String tableName;
     
-    private final String leftDelimiter;
+    @Getter
+    private final QuoteCharacter quoteCharacter;
     
-    private final String rightDelimiter;
+    private final int schemaNameLength;
     
-    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final String leftDelimiter, final String rightDelimiter) {
+    public TableToken(final int startIndex, final String tableName, final QuoteCharacter quoteCharacter, final int schemaNameLength) {
         super(startIndex);
-        this.skippedSchemaNameLength = skippedSchemaNameLength;
         this.tableName = tableName;
-        this.leftDelimiter = leftDelimiter;
-        this.rightDelimiter = rightDelimiter;
+        this.quoteCharacter = quoteCharacter;
+        this.schemaNameLength = schemaNameLength;
     }
     
     /**
@@ -52,6 +51,6 @@ public final class TableToken extends SQLToken {
      * @return table token length
      */
     public int getLength() {
-        return skippedSchemaNameLength + tableName.length() + leftDelimiter.length() + rightDelimiter.length();
+        return schemaNameLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
     }
 }

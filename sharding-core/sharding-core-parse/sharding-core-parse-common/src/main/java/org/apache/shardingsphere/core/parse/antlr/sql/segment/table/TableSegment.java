@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.table;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
@@ -30,22 +29,27 @@ import org.apache.shardingsphere.core.parse.parser.token.TableToken;
  * @author panjuan
  */
 @Getter
-@Setter
 public class TableSegment implements SQLSegment {
-    
-    private final String name;
     
     private final TableToken token;
     
-    private String schemaName;
+    private final String schemaName;
     
-    private String alias;
+    private final String alias;
     
-    private int aliasStartIndex = -1;
-    
-    public TableSegment(final TableToken token) {
-        name = token.getTableName();
+    public TableSegment(final TableToken token, final String schemaName, final String alias) {
         this.token = token;
+        this.schemaName = schemaName;
+        this.alias = alias;
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    public String getName() {
+        return token.getTableName();
     }
     
     /**

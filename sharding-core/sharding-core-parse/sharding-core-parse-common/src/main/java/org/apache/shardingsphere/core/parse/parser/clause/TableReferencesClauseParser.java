@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -110,7 +111,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (isSingleTableOnly || shardingRule.findTableRule(tableName).isPresent()
                 || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, tableName, SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, tableName, QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
             sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
         } else {
             aliasExpressionParser.parseTableAlias();
@@ -199,7 +200,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             literals = lexerEngine.getCurrentToken().getLiterals();
             lexerEngine.nextToken();
         }
-        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, SQLUtil.getExactlyValue(literals), SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
+        sqlStatement.addSQLToken(new TableToken(beginPosition, SQLUtil.getExactlyValue(literals), QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
         sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
     }
 }

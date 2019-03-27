@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.imp
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegment;
@@ -72,8 +73,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
             Column column = new Column(each.getName(), tableName);
             insertStatement.getColumns().add(column);
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(
-                        new TableToken(each.getStartIndex(), 0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
+                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName), 0));
             }
         }
         return false;

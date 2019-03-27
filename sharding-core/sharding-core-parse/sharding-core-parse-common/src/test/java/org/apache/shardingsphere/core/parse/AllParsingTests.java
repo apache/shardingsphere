@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse;
 
+import org.apache.shardingsphere.core.parse.antlr.AllAntlrTests;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHookTest;
 import org.apache.shardingsphere.core.parse.lexer.AllLexerTests;
 import org.apache.shardingsphere.core.parse.parser.constant.AllConstantTests;
@@ -29,6 +30,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        AllAntlrTests.class,
         AllLexerTests.class,
         SQLUtilTest.class,
         AllSQLTests.class,

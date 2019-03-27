@@ -162,13 +162,7 @@ public final class SQLBuilder {
     }
     
     private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
-        if (null == actualTableName) {
-            stringBuilder.append(tablePlaceholder.toString());
-        } else if (tablePlaceholder.hasDelimiter()) {
-            stringBuilder.append(tablePlaceholder.getLeftDelimiter()).append(actualTableName).append(tablePlaceholder.getRightDelimiter());
-        } else {
-            stringBuilder.append(actualTableName);
-        }
+        stringBuilder.append(null == actualTableName ? tablePlaceholder : new TablePlaceholder(actualTableName, tablePlaceholder.getQuoteCharacter()));
     }
     
     private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData,
