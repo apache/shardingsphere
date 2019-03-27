@@ -37,7 +37,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String DELETE_SQL = "delete from t_query_encrypt where pwd = 'a' and id = 1";
     
-    private static final String UPDATE_SQL = "update t_query_encrypt set pwd =? where pwd = ?";
+    private static final String UPDATE_SQL = "update t_query_encrypt set pwd ='f' where pwd = 'a'";
     
     private static final String SELECT_SQL = "select * from t_query_encrypt where pwd = ? ";
     
@@ -69,10 +69,8 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     @Test
     public void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (PreparedStatement statement = encryptConnection.prepareStatement(UPDATE_SQL)) {
-            statement.setObject(1, 'f');
-            statement.setObject(2, 'a');
-            result = statement.executeUpdate();
+        try (Statement statement = encryptConnection.createStatement()) {
+            result = statement.executeUpdate(UPDATE_SQL);
         }
         assertThat(result, is(2));
         assertResultSet(2, 1, "encryptValue", "assistedEncryptValue");
