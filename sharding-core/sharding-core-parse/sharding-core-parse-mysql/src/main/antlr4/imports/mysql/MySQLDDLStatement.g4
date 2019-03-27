@@ -35,22 +35,6 @@ columnDefinition
     : columnName dataType (inlineDataType_* | generatedDataType_*)
     ;
 
-dataType
-    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
-    ;
-
-dataTypeName_
-    : ID ID?
-    ;
-
-characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
-    ;
-
-collateClause_
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
-    ;
-
 inlineDataType_
     : commonDataTypeOption_
     | AUTO_INCREMENT

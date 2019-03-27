@@ -130,6 +130,9 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
                 if (null == condition.getColumn()) {
                     continue;
                 }
+                if (condition.getExpression() instanceof ColumnSegment) {
+                    continue;
+                }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
                 fillEncryptCondition(column, condition, shardingRule, sqlStatement, sql);
             }

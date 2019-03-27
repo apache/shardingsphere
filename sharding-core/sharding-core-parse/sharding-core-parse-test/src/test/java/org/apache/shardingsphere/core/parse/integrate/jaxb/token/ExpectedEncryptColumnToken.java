@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.select;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.AggregationType;
+import lombok.Setter;
 
-/**
- * Aggregation distinct select item segment.
- * 
- * @author zhangliang
- */
 @Getter
-public final class AggregationDistinctSelectItemSegment extends AggregationSelectItemSegment {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedEncryptColumnToken {
     
-    private final String distinctExpression;
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
     
-    public AggregationDistinctSelectItemSegment(final AggregationType type, final int innerExpressionStartIndex, final int startIndex, final int stopIndex, final String distinctExpression) {
-        super(type, innerExpressionStartIndex, startIndex, stopIndex);
-        this.distinctExpression = distinctExpression;
-    }
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
+    
+    private ExpectedColumn column;
+    
+    @XmlAttribute(name = "is-in-where")
+    private boolean isInWhere;
 }

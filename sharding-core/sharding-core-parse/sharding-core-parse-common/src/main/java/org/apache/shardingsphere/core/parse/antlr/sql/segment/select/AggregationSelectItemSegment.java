@@ -35,7 +35,7 @@ public class AggregationSelectItemSegment implements SelectItemSegment, AliasAva
     
     private final AggregationType type;
     
-    private final String innerExpression;
+    private final int innerExpressionStartIndex;
     
     private final int startIndex;
     
