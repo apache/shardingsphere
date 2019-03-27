@@ -23,6 +23,9 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" />
+            <encrypt-column-token start-index="59" stop-index="67">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -34,6 +37,13 @@
                 </condition>
             </and-condition>
         </or-condition>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="2" literal="'init'" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="delete_without_sharding_value" parameters="'init'">

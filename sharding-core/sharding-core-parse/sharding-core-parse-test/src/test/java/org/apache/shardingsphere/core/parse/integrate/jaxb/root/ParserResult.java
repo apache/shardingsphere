@@ -87,6 +87,9 @@ public final class ParserResult {
     @XmlAttribute(name = "tcl-actual-statement-class-type")
     private String tclActualStatementClassType;
     
+    @XmlElement(name = "encrypt-condition")
+    private ExpectedOrCondition encryptCondition = new ExpectedOrCondition();
+    
     /**
      * Get parameters.
      * 
