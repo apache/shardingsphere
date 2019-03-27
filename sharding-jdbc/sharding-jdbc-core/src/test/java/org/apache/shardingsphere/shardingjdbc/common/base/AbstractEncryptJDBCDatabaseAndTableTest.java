@@ -17,30 +17,44 @@
 
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.junit.AfterClass;
 import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
     private static EncryptDataSource encryptDataSource;
-
+    
+    private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
+    
     @Before
-    public void init() {
+    public void initEncryptDataSource() {
         if (null != encryptDataSource) {
             return;
         }
-        Map<DatabaseType, Map<String, DataSource>> dataSources = createDataSourceMap(Collections.singleton("encrypt"));
-        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next().values().iterator().next(), createEncryptRuleConfiguration());
+        Map<String, DataSource> dataSources = getDataSources();
+        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), createEncryptRuleConfiguration());
+    }
+    
+    private static Map<String, DataSource> getDataSources() {
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), new Predicate<String>() {
+            
+            @Override
+            public boolean apply(final String input) {
+                return ENCRYPT_DB_NAMES.contains(input);
+            }
+        });
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
