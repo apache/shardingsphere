@@ -27,7 +27,7 @@
             <artifactId>sharding-jdbc-spring-namespace</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
+            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-transaction-spring</artifactId>
         </dependency>
 
