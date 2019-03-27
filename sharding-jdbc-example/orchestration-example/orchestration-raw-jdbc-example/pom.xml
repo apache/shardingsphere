@@ -31,8 +31,8 @@
             <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
         </dependency>
         <!--<dependency>-->
-        <!--<groupId>org.apache.shardingsphere</groupId>-->
-        <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
+            <!--<groupId>io.shardingsphere</groupId>-->
+            <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
         <!--</dependency>-->
     </dependencies>
 </project>

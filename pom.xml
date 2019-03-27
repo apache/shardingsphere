@@ -101,14 +101,14 @@
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
+                <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-transaction-spring</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${sharding-sphere.spi.impl.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
+                <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-transaction-spring-boot-starter</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${sharding-sphere.spi.impl.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
@@ -116,9 +116,9 @@
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
+                <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
-                <version>${sharding-sphere.version}</version>
+                <version>${sharding-sphere.spi.impl.version}</version>
             </dependency>
     
             <dependency>

@@ -21,7 +21,7 @@
             <artifactId>sharding-transaction-base-saga</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
+            <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-transaction-spring-boot-starter</artifactId>
         </dependency>
         <dependency>

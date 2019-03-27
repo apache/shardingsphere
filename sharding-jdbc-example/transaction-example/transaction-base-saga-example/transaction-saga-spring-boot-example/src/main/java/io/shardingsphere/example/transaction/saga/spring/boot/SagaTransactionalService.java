@@ -18,7 +18,7 @@
 package io.shardingsphere.example.transaction.saga.spring.boot;
 
 import io.shardingsphere.example.common.jpa.service.JPACommonService;
-import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
+import io.shardingsphere.transaction.annotation.ShardingTransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
