@@ -39,6 +39,8 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
     
+    private static final String DELETE_SQL = "delete from t_query_encrypt where pwd = ? and id = ?;";
+    
     private static final List<Object> parameters = Arrays.asList((Object) 2, 'b');
     
     private static final List<Object> batchParameters = Arrays.asList((Object) 3, 'c', 4, 'd');
@@ -57,7 +59,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             statement.setObject(2, parameters.get(1));
             statement.execute();
         }
-        assertResultSet(2, 2, "encryptValue", "assistedEncryptValue");
+        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
     }
     
     @Test
@@ -71,8 +73,19 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             statement.addBatch();
             statement.executeBatch();
         }
-        assertResultSet(3, 4, "encryptValue", "assistedEncryptValue");
+        assertResultSet(4, 3, "encryptValue", "assistedEncryptValue");
     }
+    
+    @Test
+    public void assertDeleteWithExecute() throws SQLException {
+        try (PreparedStatement statement = encryptConnection.prepareStatement(DELETE_SQL)) {
+            statement.setObject(1, 'a');
+            statement.setObject(2, 1);
+            statement.execute();
+        }
+        assertResultSet(1, 5, "encryptValue", "assistedEncryptValue");
+    }
+    
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assist_pwd) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection(); 
