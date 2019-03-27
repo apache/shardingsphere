@@ -27,8 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,10 +44,6 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
     
-    private static final List<Object> parameters = Arrays.asList((Object) 2, 'b');
-    
-    private static final List<Object> batchParameters = Arrays.asList((Object) 3, 'c', 4, 'd');
-    
     private EncryptConnection encryptConnection;
     
     @Before
@@ -60,8 +54,8 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     @Test
     public void assertInsertWithExecute() throws SQLException {
         try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, parameters.get(0));
-            statement.setObject(2, parameters.get(1));
+            statement.setObject(1, 2);
+            statement.setObject(2, 'b');
             statement.execute();
         }
         assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
@@ -70,11 +64,11 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     @Test
     public void assertInsertWithBatchExecute() throws SQLException {
         try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, batchParameters.get(0));
-            statement.setObject(2, batchParameters.get(1));
+            statement.setObject(1, 3);
+            statement.setObject(2, 'c');
             statement.addBatch();
-            statement.setObject(1, batchParameters.get(2));
-            statement.setObject(2, batchParameters.get(3));
+            statement.setObject(1, 4);
+            statement.setObject(2, 'd');
             statement.addBatch();
             statement.executeBatch();
         }
@@ -117,7 +111,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
         }
     }
     
-    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assist_pwd) throws SQLException {
+    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assistPwd) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection(); 
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
@@ -125,7 +119,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             while (resultSet.next()) {
                 if (id == count) {
                     assertThat(pwd, is(resultSet.getObject("pwd")));
-                    assertThat(assist_pwd, is(resultSet.getObject("assist_pwd")));
+                    assertThat(assistPwd, is(resultSet.getObject("assist_pwd")));
                 }
                 count += 1;
             }
