@@ -32,15 +32,15 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
-    private static final String INSERT_SQL = "insert into t_query_encrypt(id, pwd) values(2,'b')";
+    private static final String INSERT_SQL = "insert into t_encrypt(id, pwd) values(2,'b')";
     
-    private static final String DELETE_SQL = "delete from t_query_encrypt where pwd = 'a' and id = 1";
+    private static final String DELETE_SQL = "delete from t_encrypt where pwd = 'a' and id = 1";
     
-    private static final String UPDATE_SQL = "update t_query_encrypt set pwd ='f' where pwd = 'a'";
+    private static final String UPDATE_SQL = "update t_encrypt set pwd ='f' where pwd = 'a'";
     
-    private static final String SELECT_SQL = "select * from t_query_encrypt where pwd = 'a' ";
+    private static final String SELECT_SQL = "select * from t_encrypt where pwd = 'a' ";
     
-    private static final String SELECT_ALL_SQL = "select id, pwd, assist_pwd from t_query_encrypt";
+    private static final String SELECT_ALL_SQL = "select id, pwd from t_encrypt";
     
     private EncryptConnection encryptConnection;
     
@@ -88,7 +88,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         }
     }
     
-    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assistPwd) throws SQLException {
+    private void assertResultSet(final int resultSetCount, final int id, final Object pwd) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection();
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
@@ -96,7 +96,6 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
             while (resultSet.next()) {
                 if (id == count) {
                     assertThat(pwd, is(resultSet.getObject("pwd")));
-                    assertThat(assistPwd, is(resultSet.getObject("assist_pwd")));
                 }
                 count += 1;
             }
