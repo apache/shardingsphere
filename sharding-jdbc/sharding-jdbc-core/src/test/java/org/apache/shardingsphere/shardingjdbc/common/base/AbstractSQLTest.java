@@ -28,17 +28,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
+    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt");
+    
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
     
-    private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
+    private static Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
     static {
         init();
@@ -56,9 +59,10 @@ public abstract class AbstractSQLTest {
     
     private static void createJdbcSchema(final DatabaseType dbType) {
         try {
+            createDataSources();
             Connection conn;
-            for (int i = 0; i < 2; i++) {
-                conn = initialConnection("jdbc_" + i, dbType);
+            for (String each : DB_NAMES) {
+                conn = initialConnection(each, dbType);
                 RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
                 conn.close();
             }
@@ -82,16 +86,15 @@ public abstract class AbstractSQLTest {
         return result;
     }
     
-    protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap(final Collection<String> databaseNames) {
-        for (String each : databaseNames) {
+    private static void createDataSources() {
+        for (String each : DB_NAMES) {
             for (DatabaseType type : databaseTypes) {
                 createDataSources(each, type);
             }
         }
-        return databaseTypeMap;
     }
     
-    private void createDataSources(final String dbName, final DatabaseType type) {
+    private static void createDataSources(final String dbName, final DatabaseType type) {
         String dataSource = "dataSource_" + dbName;
         Map<String, DataSource> dataSourceMap = databaseTypeMap.get(type);
         if (null == dataSourceMap) {
