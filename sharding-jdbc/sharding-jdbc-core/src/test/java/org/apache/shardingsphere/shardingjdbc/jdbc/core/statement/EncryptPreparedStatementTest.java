@@ -51,16 +51,16 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     }
     
     @Test
-    private void assertInsertWithExecute() throws SQLException {
+    public void assertInsertWithExecute() throws SQLException {
         try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_SQL)) {
             statement.setObject(1, parameters.get(0));
             statement.setObject(2, parameters.get(1));
             statement.execute();
         }
-        
+        assertResultSet(2, 2, "encryptValue", "assistedEncryptValue");
     }
     
-    private void assertResultSet(final int resultSetCount, final int id, final Object pwd) throws SQLException {
+    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assist_pwd) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection(); 
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
@@ -68,13 +68,13 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             while (resultSet.next()) {
                 if (id == count) {
                     assertThat(pwd, is(resultSet.getObject("pwd")));
+                    assertThat(assist_pwd, is(resultSet.getObject("assist_pwd")));
                 }
                 count += 1;
             }
-            assertThat(count, is(resultSetCount));
+            assertThat(count - 1, is(resultSetCount));
         }
     }
-    
     
     @Test
     public void testGetResultSet() throws SQLException {
