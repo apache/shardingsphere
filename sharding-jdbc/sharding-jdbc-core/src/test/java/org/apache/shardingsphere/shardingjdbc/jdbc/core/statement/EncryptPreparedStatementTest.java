@@ -32,6 +32,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
     
@@ -104,12 +105,16 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     @Test
     public void assertSelectWithExecuteQuery() throws SQLException {
-        try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, parameters.get(0));
-            statement.setObject(2, parameters.get(1));
-            statement.execute();
+        try (PreparedStatement statement = encryptConnection.prepareStatement(SELECT_SQL)) {
+            statement.setObject(1, 'a');
+            ResultSet resultSet = statement.executeQuery();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(1));
+            assertThat(resultSet.getString(2), is("decryptValue"));
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(5));
+            assertThat(resultSet.getString(2), is("decryptValue"));
         }
-        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assist_pwd) throws SQLException {
@@ -126,58 +131,5 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             }
             assertThat(count - 1, is(resultSetCount));
         }
-    }
-    
-    @Test
-    public void testGetResultSet() throws SQLException {
-        assertInsertWithExecute();
-    }
-    
-    @Test
-    public void testExecuteUpdate() {
-    }
-    
-    @Test
-    public void testExecute() {
-    }
-    
-    @Test
-    public void testAddBatch() {
-    }
-    
-    @Test
-    public void testExecuteBatch() {
-    }
-    
-    @Test
-    public void testClearBatch() {
-    }
-    
-    @Test
-    public void testGetGeneratedKeys() {
-    }
-    
-    @Test
-    public void testGetConnection() {
-    }
-    
-    @Test
-    public void testGetResultSetConcurrency() {
-    }
-    
-    @Test
-    public void testGetResultSetType() {
-    }
-    
-    @Test
-    public void testGetResultSetHoldability() {
-    }
-    
-    @Test
-    public void testIsAccumulate() {
-    }
-    
-    @Test
-    public void testGetRoutedStatements() {
     }
 }
