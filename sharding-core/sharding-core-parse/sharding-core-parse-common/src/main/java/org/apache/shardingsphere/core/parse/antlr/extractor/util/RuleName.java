@@ -79,6 +79,8 @@ public enum RuleName {
     
     SELECT_EXPRS("SelectExprs"),
     
+    ASTERISK("Asterisk"),
+    
     SELECT_EXPR("SelectExpr"),
     
     FUNCTION_CALL("FunctionCall"),
