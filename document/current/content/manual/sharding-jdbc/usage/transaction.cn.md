@@ -28,13 +28,17 @@ ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中�
 
 目前Apache/incubator-shardingsphere暂无BASE事务的实现，但是仍然可以使用第三方实现的Saga事务。
 
+项目地址: [shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)
+
+文中涉及`${shardingsphere-spi-impl.version}` 的jar暂未发布到maven中央仓，因此需要您根据源码自行部署。
+
 ### 2.1 引入Maven依赖
 
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-saga</artifactId>
-    <version>${shardingsphere.version}</version>
+    <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 ```
 
@@ -109,7 +113,7 @@ CREATE TABLE IF NOT EXISTS saga_event(
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-saga-persistence-jpa</artifactId>
-    <version>${shardingsphere.version}</version>
+    <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 ```
 
@@ -141,8 +145,8 @@ TransactionTypeHolder.set(TransactionType.LOCAL);
 ```java
 TransactionTypeHolder.set(TransactionType.BASE);
 ```
+
 ### 3.2 Spring注解
-#### 使用方式
 
 ```java
 @ShardingTransactionType(TransactionType.LOCAL)
@@ -166,13 +170,14 @@ TransactionTypeHolder.set(TransactionType.BASE);
 注意：`@ShardingTransactionType`需要同Spring的`@Transactional`配套使用，事务才会生效。
 
 #### Spring boot starter
+
 引入Maven依赖：
 
 ```xml
 <dependency>
-    <groupId>org.apache.shardingsphere</groupId>
+    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring-boot-starter</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 
 <dependency>
@@ -190,9 +195,9 @@ TransactionTypeHolder.set(TransactionType.BASE);
 
 ```xml
 <dependency>
-    <groupId>org.apache.shardingsphere</groupId>
+    <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 
 <dependency>
