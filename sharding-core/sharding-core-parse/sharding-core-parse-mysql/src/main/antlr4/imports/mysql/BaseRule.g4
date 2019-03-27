@@ -41,10 +41,6 @@ tableName
     : (schemaName DOT_)? uid
     ;
 
-tableNameOrAlias
-    : uid
-    ;
-
 ownerName
     : uid
     ;

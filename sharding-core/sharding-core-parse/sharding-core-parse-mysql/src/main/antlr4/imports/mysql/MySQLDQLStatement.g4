@@ -44,7 +44,7 @@ selectExprs
     ; 
 
 selectExpr
-    : (columnName | expr) AS? alias? | tableNameOrAlias DOT_ASTERISK_
+    : (columnName | expr) AS? alias? | ownerName DOT_ASTERISK_
     ;
 
 fromClause

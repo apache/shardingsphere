@@ -22,27 +22,27 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableNameOrAliasSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.OwnerSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- *  Table names or aliases extractor.
+ * Owner names extractor.
  *
  * @author zhangliang
  */
-public final class TableNamesOrAliasesExtractor implements CollectionSQLSegmentExtractor {
+public final class OwnerNamesExtractor implements CollectionSQLSegmentExtractor {
     
-    private final TableNameOrAliasExtractor tableNameOrAliasExtractor = new TableNameOrAliasExtractor();
+    private final OwnerNameExtractor ownerNameExtractor = new OwnerNameExtractor();
     
     @Override
-    public Collection<TableNameOrAliasSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<TableNameOrAliasSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME_OR_ALIAS)) {
-            Optional<TableNameOrAliasSegment> tableNameOrAliasSegment = tableNameOrAliasExtractor.extract(each);
-            if (tableNameOrAliasSegment.isPresent()) {
-                result.add(tableNameOrAliasSegment.get());
+    public Collection<OwnerSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<OwnerSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.OWNER_NAME)) {
+            Optional<OwnerSegment> ownerSegment = ownerNameExtractor.extract(each);
+            if (ownerSegment.isPresent()) {
+                result.add(ownerSegment.get());
             }
         }
         return result;

@@ -18,7 +18,7 @@
 
 <filler-rule-definition>
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.TableFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableNameOrAliasSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.TableNameOrAliasFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.table.OwnerSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.OwnerFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.FromWhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.SubqueryConditionSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.dql.SubqueryConditionFiller" />
 </filler-rule-definition>

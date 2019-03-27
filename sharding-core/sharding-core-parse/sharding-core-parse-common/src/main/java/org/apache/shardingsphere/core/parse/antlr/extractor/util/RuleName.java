@@ -29,7 +29,7 @@ public enum RuleName {
     
     TABLE_NAME("TableName"),
     
-    TABLE_NAME_OR_ALIAS("TableNameOrAlias"),
+    OWNER_NAME("OwnerName"),
     
     COLUMN_DEFINITION("ColumnDefinition"),
     

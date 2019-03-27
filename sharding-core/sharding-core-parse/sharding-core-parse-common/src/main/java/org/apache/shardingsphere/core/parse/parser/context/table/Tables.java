@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableNameOrAliasSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.OwnerSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public final class Tables {
     private final List<Table> tables = new ArrayList<>();
     
     @Getter
-    private final Collection<TableNameOrAliasSegment> tableNameOrAliasSegment = new LinkedList<>();
+    private final Collection<OwnerSegment> ownerSegments = new LinkedList<>();
     
     /**
      * Add table.

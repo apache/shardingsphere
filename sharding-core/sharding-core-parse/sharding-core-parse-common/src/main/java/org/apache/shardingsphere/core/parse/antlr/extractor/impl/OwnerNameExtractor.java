@@ -23,23 +23,23 @@ import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableNameOrAliasSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.OwnerSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- *  Table name or alias extractor.
+ *  Owner name extractor.
  *
  * @author zhangliang
  */
-public final class TableNameOrAliasExtractor implements OptionalSQLSegmentExtractor {
+public final class OwnerNameExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<TableNameOrAliasSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> tableNameOrAliasNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME_OR_ALIAS);
-        if (!tableNameOrAliasNode.isPresent()) {
+    public Optional<OwnerSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> ownerNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.OWNER_NAME);
+        if (!ownerNameNode.isPresent()) {
             return Optional.absent();
         }
-        String name = tableNameOrAliasNode.get().getText();
-        return Optional.of(new TableNameOrAliasSegment(tableNameOrAliasNode.get().getStart().getStartIndex(), SQLUtil.getExactlyValue(name), QuoteCharacter.getQuoteCharacter(name)));
+        String name = ownerNameNode.get().getText();
+        return Optional.of(new OwnerSegment(ownerNameNode.get().getStart().getStartIndex(), SQLUtil.getExactlyValue(name), QuoteCharacter.getQuoteCharacter(name)));
     }
 }

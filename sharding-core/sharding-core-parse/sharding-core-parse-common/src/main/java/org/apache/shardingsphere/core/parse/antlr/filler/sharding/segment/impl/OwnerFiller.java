@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.table;
+package org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.OwnerSegment;
+import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Table name or alias segment.
- * 
+ * Owner filler.
+ *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public class TableNameOrAliasSegment implements SQLSegment {
+public final class OwnerFiller implements SQLSegmentShardingFiller<OwnerSegment> {
     
-    private final int startIndex;
-    
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
+    @Override
+    public void fill(final OwnerSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        sqlStatement.getTables().getOwnerSegments().add(sqlSegment);
+    }
 }
