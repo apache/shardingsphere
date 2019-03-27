@@ -22,11 +22,16 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
+import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +43,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
-    @Before
-    public void initEncryptDataSource() {
+    @BeforeClass
+    public static void initEncryptDataSource() {
         if (null != encryptDataSource) {
             return;
         }
@@ -57,7 +62,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         });
     }
     
-    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
+    private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
         EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("test", "pwd", new Properties());
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
         encryptTableRuleConfig.setTable("t_encrypt");
@@ -70,6 +75,17 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         result.getTableRuleConfigs().add(encryptTableRuleConfig);
         result.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
         return result;
+    }
+    
+    @Before
+    public void initTable() {
+        try {
+            EncryptConnection conn = encryptDataSource.getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/encrypt_data.sql")));
+            conn.close();
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected final EncryptDataSource getEncryptDataSource() {
