@@ -135,13 +135,4 @@ public final class Tables {
         }
         return Optional.absent();
     }
-    
-    /**
-     * Add table name or alias.
-     *
-     * @param segment table name or alias segment
-     */
-    public void addTableNameOrAlias(final TableNameOrAliasSegment segment) {
-        tableNameOrAliasSegment.add(segment);
-    }
 }

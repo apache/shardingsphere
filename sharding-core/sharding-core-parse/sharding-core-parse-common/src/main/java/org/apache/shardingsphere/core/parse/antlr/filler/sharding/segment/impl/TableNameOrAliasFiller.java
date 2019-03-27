@@ -32,6 +32,6 @@ public final class TableNameOrAliasFiller implements SQLSegmentShardingFiller<Ta
     
     @Override
     public void fill(final TableNameOrAliasSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        sqlStatement.getTables().addTableNameOrAlias(sqlSegment);
+        sqlStatement.getTables().getTableNameOrAliasSegment().add(sqlSegment);
     }
 }
