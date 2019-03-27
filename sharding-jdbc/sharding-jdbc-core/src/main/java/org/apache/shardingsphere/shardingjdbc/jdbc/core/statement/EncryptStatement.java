@@ -69,7 +69,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
         this.resultSet = new EncryptResultSet(this, resultSet, connection.getEncryptRule());
-        return resultSet;
+        return this.resultSet;
     }
     
     @Override
