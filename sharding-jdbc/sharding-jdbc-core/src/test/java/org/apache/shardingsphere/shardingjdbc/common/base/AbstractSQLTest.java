@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.collect.Sets;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
 import org.h2.tools.RunScript;
+import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -41,13 +44,11 @@ public abstract class AbstractSQLTest {
     
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
     
+    @Getter(AccessLevel.PROTECTED)
     private static Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
-    static {
-        init();
-    }
-    
-    private static synchronized void init() {
+    @BeforeClass
+    public static synchronized void initDataSource() {
         try {
             Properties prop = new Properties();
             prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
@@ -61,20 +62,18 @@ public abstract class AbstractSQLTest {
         for (String each : DB_NAMES) {
             for (DatabaseType type : databaseTypes) {
                 createDataSources(each, type);
-                
             }
         }
     }
     
     private static void createDataSources(final String dbName, final DatabaseType type) {
-        String dataSource = "dataSource_" + dbName;
         Map<String, DataSource> dataSourceMap = databaseTypeMap.get(type);
         if (null == dataSourceMap) {
             dataSourceMap = new HashMap<>();
             databaseTypeMap.put(type, dataSourceMap);
         }
         BasicDataSource result = buildDataSource(dbName, type);
-        dataSourceMap.put(dataSource, result);
+        dataSourceMap.put(dbName, result);
         createSchema(dbName, type);
     }
     
