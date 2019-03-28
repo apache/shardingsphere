@@ -46,7 +46,7 @@ functionCall
 specialFunction
     : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
     ;
-    
+
 functionName
     : uid | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHARSET | CHAR | TRIM | WEIGHT_STRING
     ;
@@ -58,24 +58,24 @@ groupConcat
 castFunction
     : CAST LP_ expr AS dataType RP_
     ;
-    
+
 convertFunction
     : CONVERT LP_ expr ',' dataType RP_
     | CONVERT LP_ expr USING ignoredIdentifier_ RP_ 
     ;
-    
+
 positionFunction
     : POSITION LP_ expr IN expr RP_
     ;
-    
+
 substringFunction
     :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
     ;
-    
+
 extractFunction
     : EXTRACT LP_ uid FROM expr RP_
     ;
-    
+
 charFunction
     : CHAR LP_ exprs (USING ignoredIdentifier_)? RP_
     ;
@@ -83,15 +83,15 @@ charFunction
 trimFunction
     : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
     ;
-    
+
 weightStringFunction
     : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
     ;
-    
+
 levelClause
     : LEVEL (levelInWeightListElements | (NUMBER_ MINUS_ NUMBER_))
     ;
-    
+
 levelInWeightListElements
     : levelInWeightListElement (COMMA_ levelInWeightListElement)*
     ;
@@ -99,7 +99,7 @@ levelInWeightListElements
 levelInWeightListElement
     : NUMBER_ (ASC | DESC)? REVERSE?
     ;
-    
+
 windowFunction
     : uid exprList overClause
     ;

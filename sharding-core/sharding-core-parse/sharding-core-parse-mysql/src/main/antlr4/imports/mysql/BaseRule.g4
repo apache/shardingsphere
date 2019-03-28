@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Keyword, DataType, Symbol;
+import Keyword, Symbol, DataType;
 
 ID 
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
