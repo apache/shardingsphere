@@ -49,7 +49,7 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static final String SET_AUTOCOMMIT_1 = "SET AUTOCOMMIT=1";
     
-    private static final List<String> GUI_SQL = Arrays.asList("SET NAMES", "SET", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION");
+    private static final List<String> GUI_SQL = Arrays.asList("SET", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION");
     
     /**
      * Create new instance of text protocol backend handler.
