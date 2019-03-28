@@ -29,12 +29,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
     
     private static final String INSERT_SQL = "insert into t_query_encrypt(id, pwd) values(?,?)";
+    
+    private static final String INSERT_GENERATED_KEY_SQL = "insert into t_query_encrypt(pwd) values('b')";
     
     private static final String DELETE_SQL = "delete from t_query_encrypt where pwd = ? and id = ?";
     
@@ -76,6 +79,18 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     }
     
     @Test
+    public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
+        try (PreparedStatement statement = encryptConnection.prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            statement.execute();
+            ResultSet resultSet = statement.getGeneratedKeys();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(6));
+            assertFalse(resultSet.next());
+        }
+        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
+    }
+    
+    @Test
     public void assertDeleteWithExecute() throws SQLException {
         try (PreparedStatement statement = encryptConnection.prepareStatement(DELETE_SQL)) {
             statement.setObject(1, 'a');
@@ -108,6 +123,17 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(5));
             assertThat(resultSet.getString(2), is("decryptValue"));
+        }
+    }
+    
+    @Test
+    public void assertSelectWithExecuteWithProperties() throws SQLException {
+        try (PreparedStatement statement = encryptConnection.prepareStatement(SELECT_ALL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            Boolean result = statement.execute();
+            assertTrue(result);
+            assertThat(statement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
+            assertThat(statement.getResultSetConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
+            assertThat(statement.getResultSetHoldability(), is(ResultSet.HOLD_CURSORS_OVER_COMMIT));
         }
     }
     

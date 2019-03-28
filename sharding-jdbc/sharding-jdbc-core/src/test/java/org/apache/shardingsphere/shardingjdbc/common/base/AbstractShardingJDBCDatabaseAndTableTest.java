@@ -98,14 +98,14 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
             ex.printStackTrace();
         }
     }
-
+    
     protected final ShardingDataSource getShardingDataSource() {
         return shardingDataSource;
     }
     
     @AfterClass
     public static void clear() throws Exception {
-        if (shardingDataSource == null) {
+        if (null == shardingDataSource) {
             return;
         }
         shardingDataSource.close();
