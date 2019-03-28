@@ -18,11 +18,7 @@
 package org.apache.shardingsphere.core.parse.parser.context.orderby;
 
 import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 
 /**
@@ -33,7 +29,6 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 public final class OrderItem {
     
@@ -116,16 +111,39 @@ public final class OrderItem {
     public boolean isIndex() {
         return -1 != index;
     }
-    
+
+    @Override
+    public int hashCode() {
+        int PRIME = 59;
+        int result = 1;
+        Object owner = getOwner();
+        result = result * PRIME + (owner == null ? 0 : owner.hashCode());
+        Object name = getName();
+        result = result * PRIME + (name == null ? 0 : name.hashCode());
+        Object orderDirection = getOrderDirection();
+        result = result * PRIME + (orderDirection == null ? 0 : orderDirection.hashCode());
+        Object nullOrderDirection = getNullOrderDirection();
+        result = result * PRIME + (nullOrderDirection == null ? 0 : nullOrderDirection.hashCode());
+        result = result * PRIME + getIndex();
+        Object expression = getExpression();
+        result = result * PRIME + (expression == null ? 0 : expression.hashCode());
+        Object alias = getAlias();
+        result = result * PRIME + (alias == null ? 0 : alias.hashCode());
+        return result;
+    }
+
     @Override
     public boolean equals(final Object obj) {
-        if (null == obj || !(obj instanceof OrderItem)) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof OrderItem)) {
             return false;
         }
         OrderItem orderItem = (OrderItem) obj;
         return orderDirection == orderItem.getOrderDirection() && (columnLabelEquals(orderItem) || qualifiedNameEquals(orderItem) || indexEquals(orderItem));
     }
-    
+
     private boolean columnLabelEquals(final OrderItem orderItem) {
         String columnLabel = getColumnLabel();
         return null != columnLabel && columnLabel.equalsIgnoreCase(orderItem.getColumnLabel());
