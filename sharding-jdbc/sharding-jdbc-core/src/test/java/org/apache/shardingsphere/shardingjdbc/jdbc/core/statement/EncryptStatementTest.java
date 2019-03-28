@@ -104,6 +104,18 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         }
     }
     
+    @Test
+    public void assertSelectWithExecuteWithProperties() throws SQLException {
+        try (Statement statement = encryptConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            int[] columnIndexes = {1, 2};
+            Boolean result = statement.execute(SELECT_SQL, columnIndexes);
+            assertTrue(result);
+            assertThat(statement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
+            assertThat(statement.getResultSetConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
+            assertThat(statement.getResultSetHoldability(), is(ResultSet.HOLD_CURSORS_OVER_COMMIT));
+        }
+    }
+    
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd) throws SQLException {
         try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection();
              Statement stmt = conn.createStatement()) {
