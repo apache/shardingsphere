@@ -62,18 +62,6 @@ mysql> sctl: show transaction_type
 
 #### Spring注解方式
 
-引入Maven依赖：
-
-```xml
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-```
-
-然后在需要事务的方法或类中添加相关注解即可，例如：
-
 ```java
 @ShardingTransactionType(TransactionType.LOCAL)
 @Transactional
@@ -88,13 +76,71 @@ mysql> sctl: show transaction_type
 
 注意：`@ShardingTransactionType`需要同Spring的`@Transactional`配套使用，事务才会生效。
 
+#### Spring boot starter
+
+引入Maven依赖：
+
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-spring-boot-starter</artifactId>
+    <version>${shardingsphere-spi-impl.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+    <version>${spring-boot.version}</version>
+</dependency>
+
+<spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
+```
+
+#### Spring namespace
+
+引入Maven依赖：
+
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-spring</artifactId>
+    <version>${shardingsphere-spi-impl.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>${aspectjweaver.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${springframework.version}</version>
+</dependency>
+
+<aspectjweaver.version>1.8.9</aspectjweaver.version>
+<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
+```
+加载切面配置信息
+
+```xml
+<import resource="classpath:META-INF/shardingTransaction.xml"/>
+
+```
+
 ### Atomikos参数配置
 
 ShardingSphere默认的XA事务管理器为Atomikos。
 可以通过在Sharding-Proxy的conf目录中添加`jta.properties`来定制化Atomikos配置项。
 具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
 
+### BASE事务
+
+对[shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)项目中的`sharding-transaction-base-spi-impl`的模块进行打包，copy相关的jar包至lib路径下后，切换事务类型为`BASE`，`saga.properties`的配置同JDBC方式相同。
+
+
 ## 注意事项
+
 
 1. Sharding-Proxy默认使用3307端口，可以通过启动脚本追加参数作为启动端口号。如: `bin/start.sh 3308`
 1. Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
