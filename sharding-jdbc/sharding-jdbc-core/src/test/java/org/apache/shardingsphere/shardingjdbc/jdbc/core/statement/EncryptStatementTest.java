@@ -28,12 +28,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
     
     private static final String INSERT_SQL = "insert into t_encrypt(id, pwd) values(2,'b')";
+    
+    private static final String INSERT_GENERATED_KEY_SQL = "insert into t_encrypt(pwd) values('b')";
     
     private static final String DELETE_SQL = "delete from t_encrypt where pwd = 'a' and id = 1";
     
@@ -54,6 +57,18 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     public void assertInsertWithExecute() throws SQLException {
         try (Statement statement = encryptConnection.createStatement()) {
             statement.execute(INSERT_SQL);
+        }
+        assertResultSet(3, 2, "encryptValue");
+    }
+    
+    @Test
+    public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
+        try (Statement statement = encryptConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            statement.execute(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet = statement.getGeneratedKeys();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(6));
+            assertFalse(resultSet.next());
         }
         assertResultSet(3, 2, "encryptValue");
     }
