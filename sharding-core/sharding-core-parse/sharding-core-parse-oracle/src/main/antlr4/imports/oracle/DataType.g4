@@ -17,7 +17,7 @@
 
 lexer grammar DataType;
 
-import Symbol, Alphabet;
+import Alphabet, Symbol;
 
 STRING_ 
     : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')

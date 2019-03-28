@@ -17,7 +17,7 @@
 
 grammar MySQLDCLStatement;
 
-import MySQLKeyword, Keyword, Symbol, MySQLBase, BaseRule, DataType;
+import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule;
 
 grant
     : GRANT (PROXY ON | privileges_ ON onObjectClause_ | ignoredIdentifiers_)
