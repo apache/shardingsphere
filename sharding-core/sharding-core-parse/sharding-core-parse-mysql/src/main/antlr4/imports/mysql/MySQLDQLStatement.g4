@@ -40,11 +40,11 @@ selectSpecification
     ;
 
 selectExprs
-    : (asterisk | selectExpr) (COMMA_ selectExpr)*
+    : (unqualifiedShorthand | selectExpr) (COMMA_ selectExpr)*
     ; 
 
 selectExpr
-    : (columnName | expr) AS? alias? | ownerName DOT_ASTERISK_
+    : (columnName | expr) AS? alias? | qualifiedShorthand
     ;
 
 fromClause

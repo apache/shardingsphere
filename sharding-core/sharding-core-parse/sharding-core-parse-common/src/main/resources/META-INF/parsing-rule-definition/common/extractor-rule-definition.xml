@@ -19,7 +19,6 @@
 <extractor-rule-definition>
     <extractor-rule id="tableName" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.TableNameExtractor" />
     <extractor-rule id="tableNames" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.TableNamesExtractor" />
-    <extractor-rule id="tableNamesOrAliases" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.OwnerNamesExtractor" />
     <extractor-rule id="indexName" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.index.IndexNameExtractor" />
     <extractor-rule id="indexNames" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.index.IndexNamesExtractor" />
     <extractor-rule id="columnDefinitions" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.ColumnDefinitionsExtractor" />

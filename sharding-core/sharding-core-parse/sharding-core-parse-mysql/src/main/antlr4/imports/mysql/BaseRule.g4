@@ -228,8 +228,12 @@ orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
 
-asterisk
+unqualifiedShorthand
     : ASTERISK_
+    ;
+
+qualifiedShorthand
+    : uid DOT_ASTERISK_
     ;
 
 ignoredIdentifier_

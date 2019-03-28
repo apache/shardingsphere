@@ -41,18 +41,18 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
         ParserRuleContext selectClauseNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
         ParserRuleContext selectExpressionsNode = ExtractorUtils.getFirstChildNode(selectClauseNode, RuleName.SELECT_EXPRS);
         SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex(), hasDistinct(selectClauseNode));
-        Optional<ParserRuleContext> asteriskNode = ExtractorUtils.findFirstChildNode(selectClauseNode, RuleName.ASTERISK);
-        if (asteriskNode.isPresent()) {
-            setStarSelectItemSegment(asteriskNode.get(), result);
+        Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(selectClauseNode, RuleName.UNQUALIFIED_SHORTHAND);
+        if (unqualifiedShorthandNode.isPresent()) {
+            setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result);
         }
         setSelectItemSegment(selectClauseNode, result);
         return Optional.of(result);
     }
     
-    private void setStarSelectItemSegment(final ParserRuleContext asteriskNode, final SelectClauseSegment selectClauseSegment) {
-        Optional<? extends SelectItemSegment> starSelectItemSegment = selectItemExtractor.extract(asteriskNode);
-        if (starSelectItemSegment.isPresent()) {
-            selectClauseSegment.getSelectItems().add(starSelectItemSegment.get());
+    private void setUnqualifiedShorthandSelectItemSegment(final ParserRuleContext unqualifiedShorthandNode, final SelectClauseSegment selectClauseSegment) {
+        Optional<? extends SelectItemSegment> unqualifiedShorthandSelectItemSegment = selectItemExtractor.extract(unqualifiedShorthandNode);
+        if (unqualifiedShorthandSelectItemSegment.isPresent()) {
+            selectClauseSegment.getSelectItems().add(unqualifiedShorthandSelectItemSegment.get());
         }
     }
     

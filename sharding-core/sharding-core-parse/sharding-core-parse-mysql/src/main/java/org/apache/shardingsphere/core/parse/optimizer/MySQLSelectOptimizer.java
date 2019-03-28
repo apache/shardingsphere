@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimizer;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.OwnerSegment;
 import org.apache.shardingsphere.core.parse.parser.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
@@ -36,11 +35,7 @@ import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.parser.token.OrderByToken;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -52,30 +47,9 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     
     @Override
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        addTableTokensIfOwnerIsNotAlias(sqlStatement);
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
         postExtractInternal(sqlStatement);
-    }
-    
-    private void addTableTokensIfOwnerIsNotAlias(final SQLStatement sqlStatement) {
-        List<SQLToken> toBeAdded = new LinkedList<>();
-        final Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        for (OwnerSegment each : sqlStatement.getTables().getOwnerSegments()) {
-            if (!isAlias(tableNames, each)) {
-                toBeAdded.add(new TableToken(each.getStartIndex(), each.getName(), each.getQuoteCharacter(), 0));
-            }
-        }
-        sqlStatement.getSQLTokens().addAll(toBeAdded);
-    }
-    
-    private boolean isAlias(final Collection<String> tableNames, final OwnerSegment ownerSegment) {
-        for (String each : tableNames) {
-            if (each.equalsIgnoreCase(ownerSegment.getName())) {
-                return false;
-            }    
-        }
-        return true;
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
