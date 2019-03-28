@@ -47,6 +47,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
+        // TODO we should remove set default logicSchema after parser can recognize all DAL broadcast SQL.
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         if (null == logicSchema) {
             logicSchema = LogicSchemas.getInstance().getLogicSchemas().values().iterator().next();
