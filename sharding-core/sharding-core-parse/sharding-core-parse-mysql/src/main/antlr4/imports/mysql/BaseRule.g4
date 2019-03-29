@@ -48,12 +48,8 @@ tableName
     : (identifier_ DOT_)? identifier_
     ;
 
-ownerName
-    : identifier_
-    ;
-
 columnName
-    : (ownerName DOT_)? identifier_
+    : (identifier_ DOT_)? identifier_
     ;
 
 indexName
