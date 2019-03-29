@@ -330,7 +330,7 @@ gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.as
 
 标题：
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0 [RC1]
+[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0-RC1
 ```
 
 正文：
@@ -341,7 +341,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere (Incubating) version 4.0.0-RC1
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/releases/edit/untagged-90bdf1e5cbba8422332f
+https://github.com/apache/incubator-shardingsphere/releases/edit/xxxxxxxxxxxxxxxxxxxxxxx
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
@@ -353,10 +353,13 @@ Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
 
 Release Commit ID:
-https://github.com/apache/incubator-shardingsphere/commit/90a17fd3ac5af99d0fe1bd8018ba1393b1864672
+https://github.com/apache/incubator-shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
 Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS
+
+Look at here for how to verify this release candidate:
+https://shardingsphere.apache.org/community/en/contribute/release/
 
 The vote will be open for at least 72 hours or until necessary number of votes are reached.
 
@@ -371,7 +374,7 @@ Please vote accordingly:
 
 标题：
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0 [RC1]
+[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0-RC1
 ```
 
 正文：
@@ -399,7 +402,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 * Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
 * Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
+* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
@@ -413,7 +416,7 @@ ShardingSphere community vote and result thread:
 https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/releases/edit/untagged-90bdf1e5cbba8422332f
+https://github.com/apache/incubator-shardingsphere/releases/edit/xxxxxxxxxxxxxxxxxxxxxxx
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
@@ -425,7 +428,7 @@ Git tag for the release:
 https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
 
 Release Commit ID:
-https://github.com/apache/incubator-shardingsphere/commit/90a17fd3ac5af99d0fe1bd8018ba1393b1864672
+https://github.com/apache/incubator-shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
 Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS
@@ -446,7 +449,7 @@ Please vote accordingly:
 
 标题：
 ```
-[RESULT] [VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0 [RC1]
+[RESULT] [VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0-RC1
 ```
 
 正文：
@@ -483,7 +486,7 @@ svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1
 标题：
 
 ```
-[ANN] Apache ShardingSphere 4.0.0 [RC1] available
+[ANN] Apache ShardingSphere 4.0.0-RC1 available
 ```
 
 正文：
@@ -505,7 +508,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 * Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
 * Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
+* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
@@ -523,7 +526,7 @@ Release Notes:
 
 Website: https://shardingsphere.apache.org/
 
-SkyWalking Resources:
+ShardingSphere Resources:
 - Issue: https://github.com/apache/incubator-shardingsphere/issues
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://github.com/apache/incubator-shardingsphere/blob/dev/README.md
