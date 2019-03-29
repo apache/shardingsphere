@@ -17,7 +17,7 @@
 
 grammar OracleTCLStatement;
 
-import Symbol, Keyword, Literals, OracleBase;
+import Symbol, Keyword, Literals;
 
 setTransaction
     : SET TRANSACTION

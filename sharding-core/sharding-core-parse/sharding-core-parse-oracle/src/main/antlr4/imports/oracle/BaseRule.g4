@@ -24,19 +24,23 @@ schemaName
     ;
 
 tableName
-    : IDENTIFIER_
+    : oracleId
     ;
 
 columnName
-    : IDENTIFIER_
+    : oracleId
+    ;
+
+indexName
+    : oracleId
+    ;
+
+oracleId
+    : IDENTIFIER_ | (STRING_ DOT_)* STRING_
     ;
 
 collationName
     : STRING_ | IDENTIFIER_
-    ;
-
-indexName
-    : IDENTIFIER_
     ;
 
 alias
@@ -77,7 +81,7 @@ expr
     ;
 
 exprRecursive
-    : matchNone
+    : PRIOR expr
     ;
 
 booleanPrimary
@@ -165,7 +169,7 @@ caseExpress
     ;
 
 privateExprOfDb
-    : matchNone
+    : treatFunction | caseExpr | intervalExpression | objectAccessExpression | constructorExpr
     ;
 
 variable
@@ -216,6 +220,86 @@ orderByItem
 
 asterisk
     : ASTERISK_
+    ;
+
+attributeName
+    : oracleId
+    ;
+
+indexTypeName
+    : IDENTIFIER_
+    ;
+
+simpleExprsWithParen
+    : LP_ simpleExprs RP_ 
+    ;
+
+simpleExprs
+    : simpleExpr (COMMA_ simpleExpr)*
+    ;
+
+lobItem
+    : attributeName | columnName
+    ;
+
+lobItems
+    : lobItem (COMMA_ lobItem)*
+    ;
+
+lobItemList
+    : LP_ lobItems RP_
+    ;
+
+dataType
+    : dataTypeName_ dataTypeLength? | specialDatatype | dataTypeName_ dataTypeLength? datetimeTypeSuffix
+    ;
+
+specialDatatype
+    : dataTypeName_ (LP_ NUMBER_ IDENTIFIER_ RP_) | NATIONAL dataTypeName_ VARYING? LP_ NUMBER_ RP_ | dataTypeName_ LP_? columnName RP_?
+    ;
+
+dataTypeName_
+    : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
+    ;
+
+datetimeTypeSuffix
+    : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
+    ;
+
+treatFunction
+    : TREAT LP_ expr AS REF? dataTypeName_ RP_
+    ;
+
+caseExpr
+    : CASE (simpleCaseExpr | searchedCaseExpr) elseClause? END
+    ;
+
+simpleCaseExpr
+    : expr searchedCaseExpr+
+    ;
+
+searchedCaseExpr
+    : WHEN expr THEN simpleExpr
+    ;
+
+elseClause
+    : ELSE expr
+    ;
+
+dateTimeExpr
+    : expr AT (LOCAL | TIME ZONE (STRING_ | DBTIMEZONE | expr))
+    ;
+
+intervalExpression
+    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
+    ;
+
+objectAccessExpression
+    : (LP_ simpleExpr RP_ | treatFunction) DOT_ (attributeName (DOT_ attributeName)* (DOT_ functionCall)? | functionCall)
+    ;
+
+constructorExpr
+    : NEW dataTypeName_ exprList
     ;
 
 ignoredIdentifier_

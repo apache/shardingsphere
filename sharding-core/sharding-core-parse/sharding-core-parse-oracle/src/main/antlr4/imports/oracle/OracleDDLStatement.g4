@@ -17,7 +17,7 @@
 
 grammar OracleDDLStatement;
 
-import Symbol, Keyword, Literals, OracleBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 createTable
     : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
