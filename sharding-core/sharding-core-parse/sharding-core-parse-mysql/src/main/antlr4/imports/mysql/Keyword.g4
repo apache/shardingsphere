@@ -155,6 +155,10 @@ REGEXP
     : R E G E X P
     ;
 
+RLIKE
+    : R L I K E
+    ;
+
 ROLLUP
     : R O L L U P
     ;
