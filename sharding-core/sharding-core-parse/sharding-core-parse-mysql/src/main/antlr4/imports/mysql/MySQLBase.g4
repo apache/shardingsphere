@@ -20,11 +20,7 @@ grammar MySQLBase;
 import Symbol, MySQLKeyword, Keyword, Literals, BaseRule;
 
 alias
-    : identifier | STRING_
-    ;
-
-tableName
-    : (schemaName DOT_)? identifier | identifier DOT_ASTERISK_ | ASTERISK_
+    : identifier_ | STRING_
     ;
 
 assignmentValueList
@@ -48,7 +44,7 @@ specialFunction
     ;
 
 functionName
-    : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHARSET | CHAR | TRIM | WEIGHT_STRING
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHARSET | CHAR | TRIM | WEIGHT_STRING
     ;
 
 groupConcat
@@ -73,7 +69,7 @@ substringFunction
     ;
 
 extractFunction
-    : EXTRACT LP_ identifier FROM expr RP_
+    : EXTRACT LP_ identifier_ FROM expr RP_
     ;
 
 charFunction
@@ -101,15 +97,15 @@ levelInWeightListElement
     ;
 
 windowFunction
-    : identifier exprList overClause
+    : identifier_ exprList overClause
     ;
 
 overClause
-    : OVER LP_ windowSpec RP_ | OVER identifier
+    : OVER LP_ windowSpec RP_ | OVER identifier_
     ;
 
 windowSpec
-    : identifier? windowPartitionClause? orderByClause? frameClause?
+    : identifier_? windowPartitionClause? orderByClause? frameClause?
     ;
 
 windowPartitionClause
@@ -145,7 +141,7 @@ frameEnd
     ;
 
 variable
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
     ;
 
 assignmentList
@@ -165,7 +161,7 @@ dataType
     ;
 
 dataTypeName_
-    : identifier identifier?
+    : identifier_ identifier_?
     ;
 
 characterSet_

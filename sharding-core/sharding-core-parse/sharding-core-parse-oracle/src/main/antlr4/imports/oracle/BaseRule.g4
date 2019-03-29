@@ -141,7 +141,7 @@ simpleExpr
     | ROW exprList
     | subquery
     | EXISTS subquery
-    // | (identifier expr)
+    // | (identifier_ expr)
     //| match_expr
     | caseExpress
     | intervalExpr

@@ -19,7 +19,7 @@ grammar BaseRule;
 
 import Keyword, Symbol, Literals;
 
-identifier
+identifier_
     : IDENTIFIER_ | reservedWord_
     ;
 
@@ -45,27 +45,27 @@ reservedWord_
     ;
 
 schemaName
-    : identifier
+    : identifier_
     ;
 
 tableName
-    : (schemaName DOT_)? identifier
+    : (schemaName DOT_)? identifier_ | identifier_ DOT_ASTERISK_ | ASTERISK_
     ;
 
 ownerName
-    : identifier
+    : identifier_
     ;
 
 columnName
-    : (ownerName DOT_)? identifier
+    : (ownerName DOT_)? identifier_
     ;
 
 indexName
-    : (schemaName DOT_)? identifier
+    : (schemaName DOT_)? identifier_
     ;
 
 alias
-    : identifier | STRING_
+    : identifier_ | STRING_
     ;
 
 dataTypeLength
@@ -166,7 +166,7 @@ simpleExpr
     | ROW exprList
     | subquery
     | EXISTS subquery
-    // | (identifier expr)
+    // | (identifier_ expr)
     //| match_expr
     | caseExpress
     | intervalExpr
@@ -203,12 +203,12 @@ literal
     | TRUE
     | FALSE
     | NULL
-    | LBE_ identifier STRING_ RBE_
+    | LBE_ identifier_ STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | identifier STRING_ collateClause?
+    | identifier_ STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | identifier? BIT_NUM_ collateClause?
+    | identifier_? BIT_NUM_ collateClause?
     ;
 
 question
@@ -244,11 +244,11 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier DOT_ASTERISK_
+    : identifier_ DOT_ASTERISK_
     ;
 
 ignoredIdentifier_
-    : identifier (DOT_ identifier)?
+    : identifier_ (DOT_ identifier_)?
     ;
 
 ignoredIdentifiers_
