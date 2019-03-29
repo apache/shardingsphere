@@ -17,7 +17,7 @@
 
 grammar OracleBase;
 
-import Symbol, OracleKeyword, Keyword, Literals, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 oracleId
     : IDENTIFIER_ | (STRING_ DOT_)* STRING_

@@ -47,14 +47,6 @@ BINARY
     : B I N A R Y
     ;
 
-BIT_INCLUSIVE_OR
-    : B I T UL_ I N C L U S I V E UL_ O R
-    ;
-
-BIT_NUM
-    : B I T UL_ N U M
-    ;
-
 BY
     : B Y
     ;
@@ -95,10 +87,6 @@ HAVING
     : H A V I N G
     ;
 
-HIDDEN_
-    : H I D D E N
-    ;
-
 IN
     : I N
     ;
@@ -131,10 +119,6 @@ NULL
     : N U L L
     ;
 
-OFFSET
-    : O F F S E T
-    ;
-
 OR
     : O R
     ;
@@ -143,20 +127,12 @@ ORDER
     : O R D E R
     ;
 
-PARTITION
-    : P A R T I T I O N
-    ;
-
 PRIMARY
     : P R I M A R Y
     ;
 
 REGEXP
     : R E G E X P
-    ;
-
-ROLLUP
-    : R O L L U P
     ;
 
 ROW
@@ -235,20 +211,12 @@ COMMIT
     : C O M M I T
     ;
 
-COMMITTED
-    : C O M M I T T E D
-    ;
-
 CONSTRAINT
     : C O N S T R A I N T
     ;
 
 CREATE
     : C R E A T E
-    ;
-
-CURRENT
-    : C U R R E N T
     ;
 
 DAY
@@ -299,28 +267,12 @@ INDEX
     : I N D E X
     ;
 
-ISOLATION
-    : I S O L A T I O N
-    ;
-
-LEVEL
-    : L E V E L
-    ;
-
 NO
     : N O
     ;
 
 ON
     : O N
-    ;
-
-OPTION
-    : O P T I O N
-    ;
-
-PASSWORD
-    : P A S S W O R D
     ;
 
 PRIVILEGES
@@ -351,10 +303,6 @@ ROWS
     : R O W S
     ;
 
-SERIALIZABLE
-    : S E R I A L I Z A B L E
-    ;
-
 START
     : S T A R T
     ;
@@ -381,10 +329,6 @@ UNIQUE
 
 USER
     : U S E R
-    ;
-
-WORK
-    : W O R K
     ;
 
 YEAR
@@ -447,7 +391,7 @@ KEEP
     : K E E P
     ;
 
-SEQUENCE
+SEQUENCEE
     : S E Q U E N C E
     ;
 
@@ -469,4 +413,320 @@ MERGE
 
 VIEW
     : V I E W
+    ;
+
+AT
+    : A T
+    ;
+
+BITMAP
+    : B I T M A P
+    ;
+
+CACHE
+    : C A C H E
+    ;
+
+CASE
+    : C A S E
+    ;
+
+CHECKPOINT
+    : C H E C K P O I N T
+    ;
+
+CONNECT
+    : C O N N E C T
+    ;
+
+CONSTRAINTS
+    : C O N S T R A I N T S
+    ;
+
+CYCLE
+    : C Y C L E
+    ;
+
+DBTIMEZONE
+    : D B T I M E Z O N E
+    ;
+
+DECRYPT
+    : D E C R Y P T
+    ;
+
+DEFERRABLE
+    : D E F E R R A B L E
+    ;
+
+DEFERRED
+    : D E F E R R E D
+    ;
+
+DIRECTORY
+    : D I R E C T O R Y
+    ;
+
+EDITION
+    : E D I T I O N
+    ;
+
+ELEMENT
+    : E L E M E N T
+    ;
+
+ELSE
+    : E L S E
+    ;
+
+ENCRYPT
+    : E N C R Y P T
+    ;
+
+END
+    : E N D
+    ;
+
+EXCEPTIONS
+    : E X C E P T I O N S
+    ;
+
+FORCE
+    : F O R C E
+    ;
+
+GLOBAL
+    : G L O B A L
+    ;
+
+IDENTIFIED
+    : I D E N T I F I E D
+    ;
+
+IDENTITY
+    : I D E N T I T Y
+    ;
+
+IMMEDIATE
+    : I M M E D I A T E
+    ;
+
+INCREMENT
+    : I N C R E M E N T
+    ;
+
+INITIALLY
+    : I N I T I A L L Y
+    ;
+
+INTO
+    : I N T O
+    ;
+
+INVALIDATE
+    : I N V A L I D A T E
+    ;
+
+JAVA
+    : J A V A
+    ;
+
+LEVELS
+    : L E V E L S
+    ;
+
+LOCAL
+    : L O C A L
+    ;
+
+MAXVALUE
+    : M A X V A L U E
+    ;
+
+MINING
+    : M I N I N G
+    ;
+
+MINVALUE
+    : M I N V A L U E
+    ;
+
+MODEL
+    : M O D E L
+    ;
+
+MODIFY
+    : M O D I F Y
+    ;
+
+MONTH
+    : M O N T H
+    ;
+
+NATIONAL
+    : N A T I O N A L
+    ;
+
+NEW
+    : N E W
+    ;
+
+NOCACHE
+    : N O C A C H E
+    ;
+
+NOCYCLE
+    : N O C Y C L E
+    ;
+
+NOMAXVALUE
+    : N O M A X V A L U E
+    ;
+
+NOMINVALUE
+    : N O M I N V A L U E
+    ;
+
+NOORDER
+    : N O O R D E R
+    ;
+
+NORELY
+    : N O R E L Y
+    ;
+
+NOVALIDATE
+    : N O V A L I D A T E
+    ;
+
+OF
+    : O F
+    ;
+
+ONLY
+    : O N L Y
+    ;
+
+PRESERVE
+    : P R E S E R V E
+    ;
+
+PRIOR
+    : P R I O R
+    ;
+
+PROFILE
+    : P R O F I L E
+    ;
+
+REF
+    : R E F
+    ;
+
+REKEY
+    : R E K E Y
+    ;
+
+RELY
+    : R E L Y
+    ;
+
+RENAME
+    : R E N A M E
+    ;
+
+REPLACE
+    : R E P L A C E
+    ;
+
+RESOURCE
+    : R E S O U R C E
+    ;
+
+ROWID
+    : R O W I D
+    ;
+
+SALT
+    : S A L T
+    ;
+
+SAVEPOINT
+    : S A V E P O I N T
+    ;
+
+SCOPE
+    : S C O P E
+    ;
+
+SECOND
+    : S E C O N D
+    ;
+
+SORT
+    : S O R T
+    ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+SUBSTITUTABLE
+    : S U B S T I T U T A B L E
+    ;
+
+TABLESPACE
+    : T A B L E S P A C E
+    ;
+
+TEMPORARY
+    : T E M P O R A R Y
+    ;
+
+THEN
+    : T H E N
+    ;
+
+TRANSLATION
+    : T R A N S L A T I O N
+    ;
+
+TREAT
+    : T R E A T
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+UNUSED
+    : U N U S E D
+    ;
+
+USING
+    : U S I N G
+    ;
+
+VALIDATE
+    : V A L I D A T E
+    ;
+
+VALUE
+    : V A L U E
+    ;
+
+VARYING
+    : V A R Y I N G
+    ;
+
+VIRTUAL
+    : V I R T U A L
+    ;
+
+WHEN
+    : W H E N
+    ;
+
+ZONE
+    : Z O N E
     ;
