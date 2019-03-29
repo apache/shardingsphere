@@ -20,7 +20,7 @@
     <sql-case id="drop_table" value="DROP TABLE t_order" />
     <sql-case id="drop_table_with_space" value="    DROP TABLE
         t_order    " />
-    <sql-case id="drop_table_with_back_quota" value="DROP TABLE `t_order" left-delimiter="`" right-delimiter="`" />
+    <sql-case id="drop_table_with_back_quota" value="DROP TABLE `t_order`" left-delimiter="`" right-delimiter="`" />
     <sql-case id="drop_tables" value="DROP TABLE t_order_item, t_order" />
     <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_order" />
 

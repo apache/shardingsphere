@@ -212,16 +212,6 @@
             <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-transaction-spring</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-transaction-spring-boot-starter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
     
     <profiles>

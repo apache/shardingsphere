@@ -136,9 +136,9 @@ public final class BackendTransactionManagerTest {
         verify(shardingTransactionManager, times(0)).rollback();
     }
     
-    private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTrnsaction) {
+    private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
         when(backendConnection.getTransactionType()).thenReturn(transactionType);
-        when(stateHandler.isInTransaction()).thenReturn(inTrnsaction);
+        when(stateHandler.isInTransaction()).thenReturn(inTransaction);
         backendTransactionManager = new BackendTransactionManager(backendConnection);
         setLocalTransactionManager();
     }

@@ -52,13 +52,6 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         postExtractInternal(sqlStatement);
     }
     
-    private void postExtractInternal(final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (OrCondition each : selectStatement.getSubqueryConditions()) {
-            selectStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
-        }
-    }
-    
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListStopIndex() + 1 + " ".length());
         appendAvgDerivedColumns(itemsToken, selectStatement);
@@ -181,6 +174,13 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
             selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
+        }
+    }
+    
+    private void postExtractInternal(final SQLStatement sqlStatement) {
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        for (OrCondition each : selectStatement.getSubqueryConditions()) {
+            selectStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
         }
     }
 }

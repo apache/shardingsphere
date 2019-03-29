@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.collect.Sets;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.h2.tools.RunScript;
-import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,49 +40,41 @@ import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
-    protected static ShardingDataSource shardingDataSource;
+    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt");
     
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseType.H2);
     
-    private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
+    @Getter(AccessLevel.PROTECTED)
+    private static Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
-    static {
-        init();
-    }
-    
-    private static synchronized void init() {
+    @BeforeClass
+    public static synchronized void initDataSource() {
         try {
             Properties prop = new Properties();
             prop.load(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
-            createJdbcSchema(DatabaseType.H2);
+            createDataSources();
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
     }
     
-    private static void createJdbcSchema(final DatabaseType dbType) {
-        try {
-            Connection conn;
-            for (int i = 0; i < 2; i++) {
-                conn = initialConnection("jdbc_" + i, dbType);
-                RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
-                conn.close();
+    private static void createDataSources() {
+        for (String each : DB_NAMES) {
+            for (DatabaseType type : databaseTypes) {
+                createDataSources(each, type);
             }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
         }
     }
     
-    static Set<DatabaseType> getDatabaseTypes() {
-        return databaseTypes;
-    }
-    
-    private static String getDatabaseName(final String dataSetFile) {
-        String fileName = new File(dataSetFile).getName();
-        if (-1 == fileName.lastIndexOf(".")) {
-            return fileName;
+    private static void createDataSources(final String dbName, final DatabaseType type) {
+        Map<String, DataSource> dataSourceMap = databaseTypeMap.get(type);
+        if (null == dataSourceMap) {
+            dataSourceMap = new HashMap<>();
+            databaseTypeMap.put(type, dataSourceMap);
         }
-        return fileName.substring(0, fileName.lastIndexOf("."));
+        BasicDataSource result = buildDataSource(dbName, type);
+        dataSourceMap.put(dbName, result);
+        createSchema(dbName, type);
     }
     
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
@@ -96,46 +88,10 @@ public abstract class AbstractSQLTest {
         return result;
     }
     
-    protected abstract List<String> getInitDataSetFiles();
-    
-    protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
-        for (String each : getInitDataSetFiles()) {
-            String dbName = getDatabaseName(each);
-            for (DatabaseType type : getDatabaseTypes()) {
-                createDataSources(dbName, type);
-            }
-        }
-        return databaseTypeMap;
-    }
-    
-    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
-        return buildDataSource(dbName, type).getConnection();
-    }
-    
-    @AfterClass
-    public static void clear() throws Exception {
-        if (shardingDataSource == null) {
-            return;
-        }
-        shardingDataSource.close();
-        shardingDataSource = null;
-    }
-    
-    private void createDataSources(final String dbName, final DatabaseType type) {
-        String dataSource = "dataSource_" + dbName;
-        Map<String, DataSource> dataSourceMap = databaseTypeMap.get(type);
-        if (null == dataSourceMap) {
-            dataSourceMap = new HashMap<>();
-            databaseTypeMap.put(type, dataSourceMap);
-        }
-        BasicDataSource result = buildDataSource(dbName, type);
-        dataSourceMap.put(dataSource, result);
-    }
-    
-    protected final void importDataSet() {
+    private static void createSchema(final String dbName, final DatabaseType dbType) {
         try {
-            ShardingConnection conn = shardingDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_data.sql")));
+            Connection conn = databaseTypeMap.get(dbType).get(dbName).getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("integrate/cases/jdbc/jdbc_init.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();

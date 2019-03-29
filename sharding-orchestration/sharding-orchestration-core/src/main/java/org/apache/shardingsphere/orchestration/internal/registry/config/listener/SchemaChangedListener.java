@@ -114,7 +114,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private boolean isShardingRule(final DataChangedEvent event) {
-        return event.getValue().contains("tables:\n");
+        return event.getValue().contains("tables:\n") || event.getValue().contains("tables:\r\n");
     }
     
     private ShardingRuleChangedEvent createShardingRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {

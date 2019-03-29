@@ -75,7 +75,13 @@ public enum RuleName {
     
     SELECT_CLAUSE("SelectClause"),
     
+    SELECT_SPECIFICATION("SelectSpecification"),
+    
     SELECT_EXPRS("SelectExprs"),
+    
+    UNQUALIFIED_SHORTHAND("UnqualifiedShorthand"),
+    
+    QUALIFIED_SHORTHAND("QualifiedShorthand"),
     
     SELECT_EXPR("SelectExpr"),
     

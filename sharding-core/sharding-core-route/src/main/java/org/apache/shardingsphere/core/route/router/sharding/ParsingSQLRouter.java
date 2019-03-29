@@ -103,7 +103,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit() && !routingResult.isSingleRouting()) {
-            processLimit(parameters, (SelectStatement) sqlStatement, routingResult.isSingleRouting());
+            processLimit(parameters, (SelectStatement) sqlStatement);
         }
         if (needMerge) {
             Preconditions.checkState(1 == routingResult.getTableUnits().getTableUnits().size(), "Must have one sharding with subquery.");
@@ -183,8 +183,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
     }
     
-    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement, final boolean isSingleRouting) {
+    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll, databaseType, isSingleRouting);
+        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll, databaseType);
     }
 }

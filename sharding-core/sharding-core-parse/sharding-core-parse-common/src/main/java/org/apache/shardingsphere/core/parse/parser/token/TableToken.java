@@ -27,21 +27,22 @@ import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 @ToString
 public final class TableToken extends SQLToken {
     
-    private final int skippedSchemaNameLength;
-    
+    @Getter
     private final String tableName;
     
+    @Getter
     private final QuoteCharacter quoteCharacter;
     
-    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final QuoteCharacter quoteCharacter) {
+    private final int schemaNameLength;
+    
+    public TableToken(final int startIndex, final String tableName, final QuoteCharacter quoteCharacter, final int schemaNameLength) {
         super(startIndex);
-        this.skippedSchemaNameLength = skippedSchemaNameLength;
         this.tableName = tableName;
         this.quoteCharacter = quoteCharacter;
+        this.schemaNameLength = schemaNameLength;
     }
     
     /**
@@ -50,6 +51,6 @@ public final class TableToken extends SQLToken {
      * @return table token length
      */
     public int getLength() {
-        return skippedSchemaNameLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
+        return schemaNameLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
     }
 }

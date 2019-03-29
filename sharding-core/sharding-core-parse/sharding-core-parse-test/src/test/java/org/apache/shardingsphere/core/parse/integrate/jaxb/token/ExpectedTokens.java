@@ -63,4 +63,7 @@ public final class ExpectedTokens {
     
     @XmlElement(name = "aggregation-distinct-token")
     private List<ExpectedAggregationDistinctToken> aggregationDistinctTokens = new LinkedList<>();
+    
+    @XmlElement(name = "encrypt-column-token")
+    private List<ExpectedEncryptColumnToken> encryptColumnTokens = new LinkedList<>();
 }

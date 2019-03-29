@@ -17,7 +17,7 @@
 
 grammar MySQLDDLStatement;
 
-import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, DataType, MySQLBase, BaseRule;
+import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule, MySQLDQLStatement;
 
 createTable
     : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)
@@ -33,22 +33,6 @@ createDefinition_
 
 columnDefinition
     : columnName dataType (inlineDataType_* | generatedDataType_*)
-    ;
-
-dataType
-    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
-    ;
-
-dataTypeName_
-    : ID ID?
-    ;
-
-characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
-    ;
-
-collateClause_
-    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
 
 inlineDataType_

@@ -44,22 +44,23 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
         UpdateSetWhereSegment updateSetWhereSegment = (UpdateSetWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         String updateTable = dmlStatement.getUpdateTableAlias().values().iterator().next();
-        for (Entry<ColumnSegment, ExpressionSegment> each : updateSetWhereSegment.getUpdateColumns().entrySet()) {
-            Column column = new Column(each.getKey().getName(), updateTable);
-            SQLExpression expression = each.getValue().convertToSQLExpression(sql).get();
+        for (Entry<ColumnSegment, ExpressionSegment> entry : updateSetWhereSegment.getUpdateColumns().entrySet()) {
+            Column column = new Column(entry.getKey().getName(), updateTable);
+            SQLExpression expression = entry.getValue().convertToSQLExpression(sql).get();
             dmlStatement.getUpdateColumnValues().put(column, expression);
-            fillEncryptCondition(each, updateTable, sql, shardingRule, dmlStatement);
+            fillEncryptCondition(entry.getKey(), entry.getValue(), updateTable, sql, shardingRule, dmlStatement);
         }
         dmlStatement.setDeleteStatement(false);
     }
     
-    private void fillEncryptCondition(final Entry<ColumnSegment, ExpressionSegment> entry, final String updateTable, final String sql, final ShardingRule shardingRule, final DMLStatement dmlStatement) {
-        Column column = new Column(entry.getKey().getName(), updateTable);
-        SQLExpression expression = entry.getValue().convertToSQLExpression(sql).get();
+    private void fillEncryptCondition(final ColumnSegment columnSegment, final ExpressionSegment expressionSegment, 
+                                      final String updateTable, final String sql, final ShardingRule shardingRule, final DMLStatement dmlStatement) {
+        Column column = new Column(columnSegment.getName(), updateTable);
+        SQLExpression expression = expressionSegment.convertToSQLExpression(sql).get();
         dmlStatement.getUpdateColumnValues().put(column, expression);
         if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
-        dmlStatement.getSQLTokens().add(new EncryptColumnToken(entry.getKey().getStartIndex(), entry.getValue().getStopIndex(), column, false));
+        dmlStatement.getSQLTokens().add(new EncryptColumnToken(columnSegment.getStartIndex(), expressionSegment.getStopIndex(), column, false));
     }
 }

@@ -17,7 +17,7 @@
 
 grammar PostgreSQLDDLStatement;
 
-import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, DataType, BaseRule;
+import Symbol, PostgreSQLKeyword, Keyword, DataType, PostgreSQLBase, BaseRule;
 
 createIndex
     : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 

@@ -17,7 +17,7 @@
 
 grammar SQLServerDDLStatement;
 
-import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
+import Symbol, SQLServerKeyword, Keyword, DataType, SQLServerBase, BaseRule;
 
 createIndex
     : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnNames

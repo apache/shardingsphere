@@ -43,7 +43,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     @Override
     public BackendResponse execute() {
         mergedResult = new ShowDatabasesMergedResult(LogicSchemas.getInstance().getSchemaNames());
-        return new QueryResponse(Collections.singletonList(new QueryHeader("", "", "", "Database", 100, Types.VARCHAR, 0)));
+        return new QueryResponse(Collections.singletonList(new QueryHeader("information_schema", "SCHEMATA", "Database", "SCHEMA_NAME", 100, Types.VARCHAR, 0)));
     }
     
     @Override

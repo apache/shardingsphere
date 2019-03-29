@@ -17,7 +17,7 @@
 
 grammar MySQLDCLStatement;
 
-import MySQLKeyword, Keyword, Symbol, MySQLBase, BaseRule, DataType;
+import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule;
 
 grant
     : GRANT (PROXY ON | privileges_ ON onObjectClause_ | ignoredIdentifiers_)
@@ -86,7 +86,7 @@ objectType_
     ;
 
 privilegeLevel_
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | ID DOT_ASTERISK_ | tableName
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | uid DOT_ASTERISK_ | tableName
     ;
 
 createUser

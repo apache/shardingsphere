@@ -17,30 +17,44 @@
 
 grammar BaseRule;
 
-import Keyword, DataType, Symbol;
+import Keyword, Symbol, DataType;
 
 ID 
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    |  '`' ~'`'+ '`'
+    ;
+
+uid
+    : ID
+    | keywordIdentifier_
+    ;
+
+keywordIdentifier_
+    : DATE | PASSWORD
     ;
 
 schemaName
-    : ID
+    : uid
     ;
 
 tableName
-    : ID
+    : (schemaName DOT_)? uid
+    ;
+
+ownerName
+    : uid
     ;
 
 columnName
-    : ID
+    : (ownerName DOT_)? uid
     ;
 
 indexName
-    : ID
+    : (schemaName DOT_)? uid
     ;
 
 alias
-    : ID
+    : uid | STRING_
     ;
 
 dataTypeLength
@@ -149,7 +163,7 @@ simpleExpr
     ;
 
 functionCall
-    : ID LP_ distinct? (exprs | ASTERISK_)? RP_
+    : matchNone
     ;
 
 distinct
@@ -181,7 +195,7 @@ literal
     | LBE_ ID STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | ID STRING_ collateClause?
+    | uid STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
     | ID? BIT_NUM_ collateClause?
     ;
@@ -214,12 +228,16 @@ orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
 
-asterisk
+unqualifiedShorthand
     : ASTERISK_
     ;
 
+qualifiedShorthand
+    : uid DOT_ASTERISK_
+    ;
+
 ignoredIdentifier_
-    : ID
+    : uid (DOT_ uid)?
     ;
 
 ignoredIdentifiers_
