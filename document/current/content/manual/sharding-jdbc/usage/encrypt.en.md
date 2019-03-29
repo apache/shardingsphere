@@ -22,97 +22,52 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
 ### Rule Configuration Based on Java
 
 ```java
-       // Configure actual data sources
-       Map<String, DataSource> dataSourceMap = new HashMap<>();
+       // 配置数据源
+       BasicDataSource dataSource = new BasicDataSource();
+       dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+       dataSource.setUrl("jdbc:mysql://localhost:3306/encrypt");
+       dataSource.setUsername("root");
+       dataSource.setPassword("");
        
-       // Configure first data source
-       BasicDataSource dataSource1 = new BasicDataSource();
-       dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-       dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
-       dataSource1.setUsername("root");
-       dataSource1.setPassword("");
-       dataSourceMap.put("ds0", dataSource1);
+       // 配置脱敏规则
+       Properties props = new Properties();
+       props..setProperty("aes.key.value", "123456");
+       EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("aes", "user_id", props);
+       EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
+       encryptTableRuleConfig.setTable("t_order");
+       encryptTableRuleConfig.setEncryptorConfig(encryptorConfig);
+       EncryptRuleConfiguration ruleConfiguration = new EncryptRuleConfiguration();
+       ruleConfiguration.getTableRuleConfigs().add(encryptTableRuleConfig);
        
-       // Configure second data source
-       BasicDataSource dataSource2 = new BasicDataSource();
-       dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-       dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
-       dataSource2.setUsername("root");
-       dataSource2.setPassword("");
-       dataSourceMap.put("ds1", dataSource2);
-       
-       // Configure table rule for Order
-       TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-       orderTableRuleConfig.setLogicTable("t_order");
-       orderTableRuleConfig.setActualDataNodes("ds${0..1}.t_order${0..1}");
-       orderTableRuleConfig.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
-       
-       // Configure strategies for database + table sharding 
-       orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
-       orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
-       
-       // Configure sharding rule
-       ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-       shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-       
-       // Configure table rule for order_item
-       // ...
-       
-       // Get data source
-       DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+       // 获取数据源对象
+       DataSource dataSource = EncryptDataSourceFactory.createDataSource(dataSource, ruleConfiguration);
 ```
 
 ### Rule Configuration Based on Yaml
 
 
 ```yaml
-dataSources:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds0
-    username: root
-    password: 
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds1
-    username: root
-    password: 
-
-tables:
-  t_order: 
-    actualDataNodes: ds${0..1}.t_order${0..1}
-    databaseStrategy: 
-      inline:
-        shardingColumn: user_id
-        algorithmInlineExpression: ds${user_id % 2}
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmInlineExpression: t_order${order_id % 2}
-  t_order_item: 
-    actualDataNodes: ds${0..1}.t_order_item${0..1}
-    databaseStrategy: 
-      inline:
-        shardingColumn: user_id
-        algorithmInlineExpression: ds${user_id % 2}
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmInlineExpression: t_order_item${order_id % 2}
+dataSource: !!com.zaxxer.hikari.HikariDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
+  username: root
+  password: 
+  
+encryptRule:
+  tables:
+    t_order:     
       encryptor:
-        type: MD5
-        columns: status
-    t_order_encrypt:
-       encryptor:
-        type: QUERY
-        columns: encrypt_id
-        assistedQueryColumns: query_id
-  bindingTables:
-    - t_order,t_order_item,t_order_encrypt
+        type: aes
+        columns: user_id        
+        props:
+          aes.key.value: 123456
+  defaultEncryptor:
+    type: md5
+    columns: order_id  
 ```
 
 ```java
-    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+    DataSource dataSource = YamlEncryptDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ## Use Native JDBC
@@ -138,39 +93,20 @@ tables:
 ### Rule Configuration Based on Spring Boot
 
 ```properties
-sharding.jdbc.datasource.names=ds0,ds1
+sharding.jdbc.datasource.name=ds
 
-sharding.jdbc.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
-sharding.jdbc.datasource.ds0.username=root
-sharding.jdbc.datasource.ds0.password=
+sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/encrypt
+sharding.jdbc.datasource.ds.username=root
+sharding.jdbc.datasource.ds.password=
 
-sharding.jdbc.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
-sharding.jdbc.datasource.ds1.username=root
-sharding.jdbc.datasource.ds1.password=
+sharding.jdbc.config.encrypt.tables.t_order.encryptor.type=aes
+sharding.jdbc.config.encrypt.tables.t_order.encryptor.columns=user_id
+sharding.jdbc.config.encrypt.tables.t_order.encryptor.props.aes.key.value=123456
 
-sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
-
-sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-
-sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.type=MD5
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.columns=status
-
-sharding.jdbc.config.sharding.tables.t_order_encrypt.actual-data-nodes=ds_$->{0..1}.t_order_encrypt_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.algorithm-expression=t_order_encrypt_$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.type=QUERY
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.columns=encrypt_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColumns=query_id
+sharding.jdbc.config.encrypt.defaultEncryptor.type=md5
+sharding.jdbc.config.encrypt.defaultEncryptor.columns=order_id
 ```
 
 ### Rule Configuration Based on Spring Name Space
@@ -185,36 +121,28 @@ sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColu
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding 
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd 
                         ">
-    <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
-    </bean>
-    <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
+        <property name="url" value="jdbc:mysql://localhost:3306/encrypt" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
-    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds$->{user_id % 2}" />
-    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
-    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
-    <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
+    <bean:properties id="props">
+        <prop key="aes.key.value">123456</prop>
+    </bean:properties>
 
-    <sharding:encryptor id="md5" type="MD5" columns="status" />
-    <sharding:encryptor id="query" type="QUERY" columns="encrypt_id" assisted-query-columns="query_id" />
+    <encrypt:encryptor id="md5" type="MD5" columns="order_id" />
+    <encrypt:encryptor id="aes" type="AES" columns="user_id" props-ref="props" />
     
-    <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds0,ds1">
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" encryptor-ref="md5" />
-                <sharding:table-rule logic-table="t_order_encrypt" actual-data-nodes="demo_ds_${0..1}.t_order_encrypt_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderEncryptTableStrategy" encryptor-ref="query" />
-            </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+    <encrypt:data-source id="encryptDataSource">
+        <encrypt:encrypt-rule data-source-name="ds">
+            <encrypt:table-rules>
+                <encrypt:table-rule logic-table="t_order" encryptor-ref="aes" />
+                <encrypt:default-encryptor encryptor-ref="md5" />
+            </encrypt:table-rules>
+        </encrypt:sharding-rule>
+    </encrypt:data-source>
 </beans>
 ```
 
