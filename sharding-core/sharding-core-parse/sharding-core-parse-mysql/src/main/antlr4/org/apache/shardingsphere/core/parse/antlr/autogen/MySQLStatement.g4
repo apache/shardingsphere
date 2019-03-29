@@ -17,7 +17,7 @@
 
 grammar MySQLStatement;
 
-import MySQLKeyword, Keyword, MySQLComments, Symbol, MySQLDQLStatement, MySQLBase, MySQLDMLStatement, MySQLDDLStatement, MySQLTCLStatement, MySQLDCLStatement;
+import MySQLKeyword, Keyword, MySQLComments, Symbol, MySQLDMLStatement, MySQLDDLStatement, MySQLTCLStatement, MySQLDCLStatement, MySQLBase;
 
 execute
     : (select

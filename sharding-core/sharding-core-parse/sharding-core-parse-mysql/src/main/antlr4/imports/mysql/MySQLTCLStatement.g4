@@ -17,7 +17,7 @@
 
 grammar MySQLTCLStatement;
 
-import Symbol, MySQLKeyword, Keyword, DataType, BaseRule;
+import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule;
 
 setTransaction
     : SET (GLOBAL | SESSION)? TRANSACTION
@@ -44,5 +44,5 @@ rollback
     ;
 
 savepoint
-    : SAVEPOINT 
+    : SAVEPOINT
     ;

@@ -156,10 +156,6 @@ assignment
     : columnName EQ_ assignmentValue
     ;
 
-tableReferences
-    : matchNone
-    ;
-
 whereClause
     : WHERE expr
     ;
