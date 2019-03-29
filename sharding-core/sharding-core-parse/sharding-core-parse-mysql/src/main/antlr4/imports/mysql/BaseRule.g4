@@ -44,12 +44,8 @@ reservedWord_
     | WITHOUT
     ;
 
-schemaName
-    : identifier_
-    ;
-
 tableName
-    : (schemaName DOT_)? identifier_ | identifier_ DOT_ASTERISK_ | ASTERISK_
+    : (identifier_ DOT_)? identifier_ | identifier_ DOT_ASTERISK_ | ASTERISK_
     ;
 
 ownerName
@@ -61,7 +57,7 @@ columnName
     ;
 
 indexName
-    : (schemaName DOT_)? identifier_
+    : identifier_
     ;
 
 alias
