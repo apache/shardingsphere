@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar MySQLDCLStatement;
+grammar DCLStatement;
 
 import Symbol, Keyword, Literals, BaseRule;
 

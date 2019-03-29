@@ -15,9 +15,34 @@
  * limitations under the License.
  */
 
-lexer grammar MySQLComments;
+grammar TCLStatement;
 
-import Symbol;
+import Symbol, Keyword, Literals, BaseRule;
 
-BLOCK_COMMENT:  SLASH_ ASTERISK_ .*? ASTERISK_ SLASH_ -> channel(HIDDEN);
-INLINE_COMMENT: MINUS_ MINUS_ ~[\r\n]* -> channel(HIDDEN);
+setTransaction
+    : SET (GLOBAL | SESSION)? TRANSACTION
+    ;
+
+setAutoCommit
+    : SET AUTOCOMMIT EQ_ autoCommitValue
+    ;
+
+autoCommitValue
+    : NUMBER_
+    ;
+
+beginTransaction
+    : BEGIN | START TRANSACTION
+    ;
+
+commit
+    : COMMIT
+    ;
+
+rollback
+    : ROLLBACK
+    ;
+
+savepoint
+    : SAVEPOINT
+    ;

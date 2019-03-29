@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar MySQLDMLStatement;
+grammar DMLStatement;
 
 import Symbol, Keyword, Literals, BaseRule;
 
