@@ -20,7 +20,7 @@ grammar MySQLDMLStatement;
 import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule, MySQLDQLStatement;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | selectClause) onDuplicateKeyClause?
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | columnNames? select) onDuplicateKeyClause?
     ;
 
 setClause
@@ -33,10 +33,6 @@ columnClause
 
 valueClause
     : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
-    ;
-
-selectClause
-    : columnNames? select
     ;
 
 onDuplicateKeyClause
