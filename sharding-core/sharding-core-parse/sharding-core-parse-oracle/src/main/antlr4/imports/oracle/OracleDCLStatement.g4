@@ -70,7 +70,7 @@ createUser
     ;
 
 dropUser
-    : DROP USER 
+    : DROP USER
     ;
 
 alterUser
@@ -78,13 +78,13 @@ alterUser
     ;
 
 createRole
-    : CREATE ROLE 
+    : CREATE ROLE
     ;
 
 dropRole
-    : DROP ROLE 
+    : DROP ROLE
     ;
 
 alterRole
-    : ALTER ROLE 
+    : ALTER ROLE
     ;
