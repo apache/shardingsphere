@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.parser;
+package org.apache.shardingsphere.core.parse.parser.sql;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLStatementRule;
-
-import com.google.common.base.Optional;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.SQLType;
 
 /**
- * Abstract syntax tree of SQL.
+ * General SQL statement.
  *
- * @author zhangliang
+ * @author duhongjun
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLAST {
+public final class GeneralSQLStatement extends AbstractSQLStatement {
     
-    private final ParserRuleContext parserRuleContext;
+    public GeneralSQLStatement(final SQLType type) {
+        super(type);
+    }
     
-    private final Optional<SQLStatementRule> rule;
+    public GeneralSQLStatement() {
+        super(SQLType.GENERAL);
+    }
 }
