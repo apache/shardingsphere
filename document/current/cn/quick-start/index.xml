@@ -30,7 +30,7 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
       <guid>https://shardingsphere.apache.org/document/current/cn/quick-start/sharding-proxy-quick-start/</guid>
       <description> 1. 规则配置 编辑%SHARDING_PROXY_HOME%\conf\config-xxx.yaml。详情请参见配置手册。
 编辑%SHARDING_PROXY_HOME%\conf\server.yaml。详情请参见配置手册。
-2. 启动服务  使用默认配置项  ${sharding-proxy}\bin\start.sh ${port}   配置端口  ${sharding-proxy}\bin\start.sh ${port}  </description>
+2. 启动服务  使用默认配置项  ${sharding-proxy}\bin\start.sh   配置端口  ${sharding-proxy}\bin\start.sh ${port}  </description>
     </item>
     
   </channel>

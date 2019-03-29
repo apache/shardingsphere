@@ -12,19 +12,19 @@
     <title>Release Guide :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1553471720" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1553471720" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1553471720" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1553471720" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1553471720" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1553471720" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/theme.css?1553471720" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1553471720" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1553832076" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1553832076" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1553832076" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1553832076" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1553832076" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1553832076" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/theme.css?1553832076" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1553832076" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1553471720" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1553832076" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1553832076"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -467,10 +467,10 @@ sub   4096R/0B7EF5B2 2019-03-20
 <pre><code class="language-shell">gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 </code></pre>
 
-<p><code>pool.sks-keyservers.net</code> is arbitrarily chosen <a href="https://sks-keyservers.net/status/">public key server</a>.
+<p><code>pool.sks-keyservers.net</code> is randomly chosen from <a href="https://sks-keyservers.net/status/">public key server</a>.
 Each server will automatically synchronize with one another, so it would be okay to choose any one.</p>
 
-<h2 id="release-apache-maven-central-repository">Release Apache Maven Central Repository</h2>
+<h2 id="apache-maven-central-repository-release">Apache Maven Central Repository Release</h2>
 
 <h3 id="set-settings-xml">Set settings.xml</h3>
 
@@ -493,10 +493,10 @@ For encryption settings, please see <a href="http://maven.apache.org/guides/mini
 &lt;/settings&gt;
 </code></pre>
 
-<h3 id="extend-apache-s-parent-pom">Extend Apache&rsquo;s Parent POM</h3>
+<h3 id="inherit-the-apache-parent-pom">Inherit the Apache Parent POM</h3>
 
-<p>Apache&rsquo;s parent POM will be set as the default value.
-If the POM in the project has this element, it needs to be deleted.</p>
+<p>This parent POM sets up the defaults for your &lt;distributionManagement&gt; section to use the correct release and snapshot repositories.
+Be sure to remove &lt;distributionManagement&gt; section from your POM so they inherit correctly.</p>
 
 <pre><code class="language-xml">&lt;parent&gt;
     &lt;groupId&gt;org.apache&lt;/groupId&gt;
@@ -522,11 +522,11 @@ git checkout 4.0.0-RC1-release
 <pre><code class="language-shell">mvn release:prepare -Prelease -Darguments=&quot;-DskipTests&quot; -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 </code></pre>
 
-<p>-Prelease: choose release profile, which will pack all the source codes, jar documents and executable binary packages of sharding-proxy.</p>
+<p>-Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of sharding-proxy.</p>
 
 <p>-DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.</p>
 
-<p>-DdryRun=true: rehearsal, which means not to generate new submitting edition number or new tag.</p>
+<p>-DdryRun=true: rehearsal, which means not to generate or submit new version number and new tag.</p>
 
 <h3 id="prepare-for-the-release">Prepare for the Release</h3>
 
@@ -540,7 +540,7 @@ git checkout 4.0.0-RC1-release
 <pre><code class="language-shell">mvn release:prepare -Prelease -Darguments=&quot;-DskipTests&quot; -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
 </code></pre>
 
-<p>It is basically the same as the following rehearsal command, but deleting -DdryRun=true parameter.</p>
+<p>It is basically the same as the previous rehearsal command, but deleting -DdryRun=true parameter.</p>
 
 <p>-DpushChanges=false: do not submit the edited version number and tag to Github automatically.</p>
 
@@ -560,9 +560,9 @@ Visit <a href="https://repository.apache.org/#stagingRepositories">https://repos
 Click <code>Close</code> to tell Nexus that the construction is finished, because only in this way, this version can be usable.
 If there is any problem in gpg signature, <code>Close</code> will fail, but you can see the failure information through <code>Activity</code>.</p>
 
-<h2 id="release-apache-svn-repository">Release Apache SVN Repository</h2>
+<h2 id="apache-svn-repository-release">Apache SVN Repository Release</h2>
 
-<h3 id="check-shardingsphere-release-directory">Check ShardingSphere Release Directory</h3>
+<h3 id="checkout-shardingsphere-release-directory">Checkout ShardingSphere Release Directory</h3>
 
 <p>If there is no local work directory, create one at first.</p>
 
@@ -570,7 +570,7 @@ If there is any problem in gpg signature, <code>Close</code> will fail, but you 
 cd ~/ss_svn/dev/
 </code></pre>
 
-<p>After the creation, detect ShardingSphere release directory from Apache SVN.</p>
+<p>After the creation, checkout ShardingSphere release directory from Apache SVN.</p>
 
 <pre><code class="language-shell">svn --username=${APACHE LDAP username} co https://dist.apache.org/repos/dist/dev/incubator/shardingsphere
 cd ~/ss_svn/dev/shardingsphere
@@ -592,7 +592,7 @@ It is alright for <code>KEYS</code> to only include the public key of the deploy
 cd ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 </code></pre>
 
-<p>Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN work directory.</p>
+<p>Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN working directory.</p>
 
 <pre><code class="language-shell">cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
@@ -600,7 +600,7 @@ cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-d
 cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 </code></pre>
 
-<h3 id="generate-shasum">Generate shasum</h3>
+<h3 id="generate-sign-files">Generate sign files</h3>
 
 <pre><code class="language-shell">shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip &gt; apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-bin.zip &gt; apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
@@ -615,7 +615,7 @@ svn --username=${APACHE LDAP username} commit -m &quot;release 4.0.0-RC1&quot;
 
 <h2 id="check-release">Check Release</h2>
 
-<h3 id="check-sha512-shasum">Check sha512 shasum</h3>
+<h3 id="check-sha512-hash">Check sha512 hash</h3>
 
 <pre><code class="language-shell">shasum -c apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
 shasum -c apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
@@ -625,7 +625,7 @@ shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha51
 <h3 id="check-gpg-signature">Check gpg Signature</h3>
 
 <p>First, import releaser&rsquo;s public key.
-Import KEYS from SVN repository to the local. (The releaser does not need to introduce again; the checking assistant needs to import it, with the user name filled as the releaser&rsquo;s. )</p>
+Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser&rsquo;s. )</p>
 
 <pre><code class="language-shell">curl https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS &gt;&gt; KEYS
 gpg --import KEYS
@@ -648,33 +648,32 @@ gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.as
 <p>Decompress <code>apache-shardingsphere-incubating-4.0.0-RC1-src.zip</code> and check the following items:</p>
 
 <ul>
-<li>The folder contains the word <code>incubating</code></li>
-<li>There is <code>DISCLAIMER</code> file</li>
-<li>There are <code>LICENSE</code> and <code>NOTICE</code> files</li>
-<li>There is only txt files but no binary file</li>
-<li>All the files have ASF licenses at the beginning</li>
-<li>They can be rightly compiled and pass the unit test (mvn install)</li>
-<li>The version content is the same as GitHub tag content (diff -r a verify_dir tag_dir)</li>
+<li>The release files have the word <code>incubating</code> in their name</li>
+<li><code>DISCLAIMER</code> file exists</li>
+<li><code>LICENSE</code> and <code>NOTICE</code> files exist</li>
+<li>There is only text files but no binary files</li>
+<li>All source files have ASF headers</li>
+<li>Codes can be compiled and pass the unit tests (mvn install)</li>
+<li>The contents of the release match with what&rsquo;s tagged in version control (diff -r a verify_dir tag_dir)</li>
 <li>Check if there is any extra files or folders, empty folders for example</li>
 </ul>
 
 <h4 id="check-binary-packages">Check binary packages</h4>
 
-<p>Extract <code>apache-shardingsphere-incubating-4.0.0-RC1-bin.zip</code> and <code>apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz</code> to check the following items:</p>
+<p>Decompress <code>apache-shardingsphere-incubating-4.0.0-RC1-bin.zip</code> and <code>apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz</code> to check the following items:</p>
 
 <ul>
-<li>The folder contains the word <code>incubating</code></li>
-<li>There is <code>DISCLAIMER</code> file</li>
-<li>There are <code>LICENSE</code> and <code>NOTICE</code> files</li>
-<li>All the files have ASF licenses at the beginning</li>
-<li>After the <code>sharding-proxy</code> binary package is rightly configured, it can run well (./start.sh)</li>
+<li>The release files have the word <code>incubating</code> in their name</li>
+<li><code>DISCLAIMER</code> file exists</li>
+<li><code>LICENSE</code> and <code>NOTICE</code> files exist</li>
+<li>All text files have ASF headers</li>
 <li>Check the third party dependency license:
 
 <ul>
-<li>The third party dependency license is compatible</li>
-<li>All the third party dependency licenses are declared in <code>LICENSE</code> file</li>
+<li>The software have a compatible license</li>
+<li>All software licenses mentioned in <code>LICENSE</code></li>
 <li>All the third party dependency licenses are under <code>licenses</code> folder</li>
-<li>If it depends on Apache license and has <code>NOTICE</code> file, these <code>NOTICE</code> file need to be added to <code>NOTICE</code> file of that version</li>
+<li>If it depends on Apache license and has a <code>NOTICE</code> file, that <code>NOTICE</code> file need to be added to <code>NOTICE</code> file of the release</li>
 </ul></li>
 </ul>
 
@@ -682,11 +681,11 @@ gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.as
 
 <h2 id="call-for-a-vote">Call for a Vote</h2>
 
-<h3 id="vote">Vote</h3>
+<h3 id="vote-procedure">Vote procedure</h3>
 
 <ol>
 <li><p>ShardingSphere community vote: send the vote e-mail to <code>dev@shardingsphere.apache.org</code>.
-PPMC needs to check the rightness of the version according to the document, before they vote.
+PPMC needs to check the rightness of the version according to the document before they vote.
 After at least 72 hours and with at least 3 <code>+1 binding</code> votes (only PPMC&rsquo;s votes are binding), it can come to the next stage of the vote.</p></li>
 
 <li><p>Apache community vote: send the vote e-mail to <code>general@incubator.apache.org</code>.
@@ -695,7 +694,7 @@ After at least 72 hours and with at least 3 <code>+1 binding</code> votes (only 
 <li><p>Announce the vote result: send the result vote e-mail to <code>general@incubator.apache.org</code>.</p></li>
 </ol>
 
-<h3 id="vote-template">Vote Template</h3>
+<h3 id="vote-templates">Vote Templates</h3>
 
 <ol>
 <li>ShardingSphere Community Vote Template</li>
@@ -855,7 +854,7 @@ I will process to publish the release and send ANNOUNCE.
 <ol>
 <li><p>Find ShardingSphere in staging repository and click <code>Release</code></p></li>
 
-<li><p>Merge release branch to <code>dev</code> and delete it on Github</p></li>
+<li><p>Merge release branch to <code>dev</code> and delete release branch on Github</p></li>
 
 <li><p>Send e-mail to <code>general@incubator.apache.org</code> and <code>dev@shardingsphere.apache.org</code> to announce the release is finished.</p></li>
 </ol>
@@ -1130,20 +1129,20 @@ SkyWalking Resources:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1553832076"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/learn.js?1553471720"></script>
-    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1553471720"></script>
+    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/learn.js?1553832076"></script>
+    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1553832076"></script>
 
-    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1553471720" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1553471720"></script>
+    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1553832076" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1553832076"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>支持功能 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/</link>
+    <description>Recent content in 支持功能 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/current/cn/features/transaction/function/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>本地事务</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/local-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/local-transaction/</guid>
+      <description> 功能  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
+ 完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。
+ 不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交。
+  支持情况  Sharding-JDBC和Sharding-Proxy原生支持本地事务  </description>
+    </item>
+    
+    <item>
+      <title>两阶段事务-XA</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/2pc-xa-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/2pc-xa-transaction/</guid>
+      <description> 功能  支持数据分片后的跨库XA事务 两阶段提交保证操作的原子性和数据的强一致性 服务宕机重启后，提交/回滚中的事务可自动恢复 SPI机制整合主流的XA事务管理器，默认Atomikos，可以选择使用Narayana和Bitronix 同时支持XA和非XA的连接池 提供spring-boot和namespace的接入端  不支持项  服务宕机后，在其它机器上恢复提交/回滚中的数据  </description>
+    </item>
+    
+    <item>
+      <title>柔性事务</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/base-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/base-transaction/</guid>
+      <description> 功能  完全支持跨库事务 支持失败SQL重试及最大努力送达 支持反向SQL、自动生成更新快照以及自动补偿 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化  不支持项  暂不支持资源隔离 暂不支持服务宕机后，自动恢复提交中的commit和rollback  支持情况 ShardingSphere的柔性事务已通过第三方SPI实现Saga事务，Saga引擎使用Servicecomb-Saga。
+注意  反向SQL需要主键，请确保在表结构中定义主键。 对于INSERT语句， 需要在SQL中显示插入主键值，如INSERT INTO ${table_name} (id, value, ...) VALUES (11111, &#39;&#39;, ....) (其中id为表主键)。 若需要自动生成主键，可使用ShardingSphere的分布式主键（分布式主键不能为联合主键）。  </description>
+    </item>
+    
+  </channel>
+</rss>

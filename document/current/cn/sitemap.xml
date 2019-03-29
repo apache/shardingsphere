@@ -73,6 +73,10 @@
   </url>
   
   <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/concept/2pc-xa-transaction/</loc>
+  </url>
+  
+  <url>
     <loc>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/</loc>
     <xhtml:link
                 rel="alternate"
@@ -129,16 +133,16 @@
   </url>
   
   <url>
-    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/local-transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/function/local-transaction/"
                 />
   </url>
   
@@ -168,6 +172,10 @@
                 hreflang="cn"
                 href="https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/"
                 />
+  </url>
+  
+  <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/concept/</loc>
   </url>
   
   <url>
@@ -269,17 +277,11 @@
   </url>
   
   <url>
-    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="cn"
-                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/"
-                />
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/2pc-xa-transaction/</loc>
+  </url>
+  
+  <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/principle/2pc-xa-transaction/</loc>
   </url>
   
   <url>
@@ -350,6 +352,10 @@
                 hreflang="cn"
                 href="https://shardingsphere.apache.org/document/current/cn/quick-start/"
                 />
+  </url>
+  
+  <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/</loc>
   </url>
   
   <url>
@@ -479,6 +485,10 @@
   </url>
   
   <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/concept/base-transaction/</loc>
+  </url>
+  
+  <url>
     <loc>https://shardingsphere.apache.org/document/current/cn/manual/sharding-sidecar/</loc>
     <xhtml:link
                 rel="alternate"
@@ -532,6 +542,10 @@
                 hreflang="cn"
                 href="https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/"
                 />
+  </url>
+  
+  <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/principle/</loc>
   </url>
   
   <url>
@@ -605,17 +619,21 @@
   </url>
   
   <url>
-    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/base-transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/function/base-transaction/"
                 />
+  </url>
+  
+  <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/features/transaction/principle/base-transaction/</loc>
   </url>
   
   <url>
@@ -657,20 +675,6 @@
                 rel="alternate"
                 hreflang="cn"
                 href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-spring-namespace/"
-                />
-  </url>
-  
-  <url>
-    <loc>https://shardingsphere.apache.org/document/current/cn/manual/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://shardingsphere.apache.org/document/current/en/manual/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="cn"
-                href="https://shardingsphere.apache.org/document/current/cn/manual/"
                 />
   </url>
   
@@ -755,6 +759,20 @@
                 rel="alternate"
                 hreflang="cn"
                 href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/orchestration/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://shardingsphere.apache.org/document/current/cn/manual/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://shardingsphere.apache.org/document/current/en/manual/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="cn"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/"
                 />
   </url>
   

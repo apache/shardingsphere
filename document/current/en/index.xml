@@ -54,10 +54,10 @@ Realizing common sharding algorithms with Java codes is not helpful to the unifi
     
     <item>
       <title>Local transaction</title>
-      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/</guid>
       <description>Function  Fully support none-cross-database transactions, for example, table sharding only or database sharding with route result in the single database.
  Fully support cross-database transactions caused by logic exceptions, for example, the update of two databases in one transaction. After the update, the null cursor is thrown and the content in both databases can be rolled back.
  Do not support the cross-database transactions caused by network or hardware exceptions.</description>
@@ -123,19 +123,6 @@ It is inevitably to have some SQLs that have not been listed yet, welcome to sup
       
       <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/usage/</guid>
       <description>Proxy  Download the latest version of Sharding-Proxy from https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz If using docker，execute command docker pull shardingsphere/sharding-proxy to get image. More details please referenceDocker Image. Modify the conf/server.yaml and conf/config-xxx.yaml file after decompression, and configure the sharding rule and master-slave rule. Please reference Configuration Manual. Run bin/start.sh on Linux, or bin/start.bat on Windows to start Sharding-Proxy. If you want to set port and configuration file, please refer to quick-start. Connect to it by means of any client tools, e.</description>
-    </item>
-    
-    <item>
-      <title>2PC Transaction</title>
-      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</guid>
-      <description> Function  Fully support cross-database transactions.
- Use Atomikos by default; support to use SPI to upload other XA transaction managers.
-  Supported Situation  Sharding-JDBC can support users&amp;rsquo; own configurations of XA data source.
- Sharding-Proxy support.
-  </description>
     </item>
     
     <item>
@@ -225,7 +212,7 @@ Sharding Algorithm The sharding of data can be achieved by sharding algorithms t
       <guid>https://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/</guid>
       <description> 1. Configure sharding rule Edit %SHARDING_PROXY_HOME%\conf\config-xxx.yaml. More details please reference Configuration Manual.
 Edit %SHARDING_PROXY_HOME%\conf\server.yaml. More details please reference Configuration Manual.
-2. Start server  Use default configuration to start  ${sharding-proxy}\bin\start.sh ${port}   Set port to start  ${sharding-proxy}\bin\start.sh ${port}  </description>
+2. Start server  Use default configuration to start  ${sharding-proxy}\bin\start.sh   Set port to start  ${sharding-proxy}\bin\start.sh ${port}  </description>
     </item>
     
     <item>
@@ -249,10 +236,10 @@ ShardingSphere uses SPI to load data to the registry center and disable instance
     
     <item>
       <title>BASE Transaction</title>
-      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/</guid>
       <description> Function  Fully support cross-database transactions.
  Use Servicecomb-Saga.
  Support reverted SQL, auto-generation of update snapshot and auto-compensation.
@@ -428,7 +415,7 @@ In function, the result merger supported by ShardingSphere can be divided into i
       
       <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/encrypt/</guid>
       <description>This chapter mainly introduces how to use the feather of Data Masking. On one hand User can use Data Masking and Sharding together, which will create ShardingDataSource, On another hand, when user only adopt the feather of Data Masking, ShardingSphere will create EncryptDataSource.
-Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure first data source BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.</description>
+Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // 配置数据源 BasicDataSource dataSource = new BasicDataSource(); dataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/encrypt&amp;quot;); dataSource.</description>
     </item>
     
   </channel>
