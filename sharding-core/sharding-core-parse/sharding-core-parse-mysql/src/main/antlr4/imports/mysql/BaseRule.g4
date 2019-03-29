@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, MySQLKeyword, Keyword, Literals;
+import Symbol, Keyword, Literals;
 
 identifier_
     : IDENTIFIER_ | reservedWord_

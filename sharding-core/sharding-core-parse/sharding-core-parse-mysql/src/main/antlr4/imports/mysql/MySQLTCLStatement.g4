@@ -17,7 +17,7 @@
 
 grammar MySQLTCLStatement;
 
-import Symbol, MySQLKeyword, Keyword, Literals, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 setTransaction
     : SET (GLOBAL | SESSION)? TRANSACTION
