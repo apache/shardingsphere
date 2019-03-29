@@ -70,7 +70,7 @@ TransactionTypeHolder.set(TransactionType.XA);  SpringBootStarter Usage Introduc
       
       <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/encrypt/</guid>
       <description>This chapter mainly introduces how to use the feather of Data Masking. On one hand User can use Data Masking and Sharding together, which will create ShardingDataSource, On another hand, when user only adopt the feather of Data Masking, ShardingSphere will create EncryptDataSource.
-Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // 配置数据源 BasicDataSource dataSource = new BasicDataSource(); dataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/encrypt&amp;quot;); dataSource.</description>
+Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // Configure actual data source BasicDataSource dataSource = new BasicDataSource(); dataSource.</description>
     </item>
     
   </channel>

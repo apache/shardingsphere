@@ -12,19 +12,19 @@
     <title>两阶段事务-XA :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553832074" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553832074" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553832074" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553832074" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553832074" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553832074" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553832074" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553835460" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553835460" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553835460" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553835460" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553835460" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553835460" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553835460" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553835460" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553832074" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553835460" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553835460"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1747,12 +1747,12 @@
         
 
 
-<p>两阶段事务提交采用的是X/OPEN组织所定义的<a href="﻿http://pubs.opengroup.org/onlinepubs/009680699/toc.pdf">DTP模型</a>，通过抽象出来的<code>AP</code>, <code>TM</code>, <code>RM</code>的概念可以保证事务的强一致性。
+<p>两阶段事务提交采用的是X/OPEN组织所定义的<a href="http://pubs.opengroup.org/onlinepubs/009680699/toc.pdf">DTP模型</a>，通过抽象出来的<code>AP</code>, <code>TM</code>, <code>RM</code>的概念可以保证事务的强一致性。
 其中<code>TM</code>和<code>RM</code>间采用<code>XA</code>的协议进行双向通信。
 与传统的本地事务相比，XA事务增加了prepare阶段，数据库除了被动接受提交指令外，还可以反向通知调用方事务是否可以被提交。
 因此<code>TM</code>可以收集所有分支事务的prepare结果，最后进行原子的提交，保证事务的强一致性。</p>
 
-<p><img src="https://shardingsphere.apache.org/document/current/img/transactoin/2pc-tansaction-modle_cn.png" alt="两阶段提交模型" /></p>
+<p><img src="https://shardingsphere.apache.org/document/current/img/transaction/2pc-tansaction-modle_cn.png" alt="两阶段提交模型" /></p>
 
 <p>Java通定义JTA接口实现了XA的模型，JTA接口里的<code>ResourceManager</code>需要数据库厂商提供XA的驱动实现，而<code>TransactionManager</code>则需要事务管理器的厂商实现，传统的事务管理器需要同应用服务器绑定，因此使用的成本很高。
 而嵌入式的事务管器可以已jar包的形式提供服务，同ShardingSphere集成后，可保证分片后跨库事务强一致性。</p>
@@ -2905,20 +2905,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553835460"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553832074"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553835460"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553835460"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553832074" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553832074"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553835460" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553835460"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
