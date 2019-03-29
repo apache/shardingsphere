@@ -1597,14 +1597,13 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
 
 <h3 id="rule-configuration-based-on-java">Rule Configuration Based on Java</h3>
 
-<pre><code class="language-java">       // 配置数据源
+<pre><code class="language-java">
        BasicDataSource dataSource = new BasicDataSource();
        dataSource.setDriverClassName(&quot;com.mysql.jdbc.Driver&quot;);
        dataSource.setUrl(&quot;jdbc:mysql://localhost:3306/encrypt&quot;);
        dataSource.setUsername(&quot;root&quot;);
        dataSource.setPassword(&quot;&quot;);
        
-       // 配置脱敏规则
        Properties props = new Properties();
        props..setProperty(&quot;aes.key.value&quot;, &quot;123456&quot;);
        EncryptorConfiguration encryptorConfig = new EncryptorConfiguration(&quot;aes&quot;, &quot;user_id&quot;, props);
@@ -1614,7 +1613,6 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
        EncryptRuleConfiguration ruleConfiguration = new EncryptRuleConfiguration();
        ruleConfiguration.getTableRuleConfigs().add(encryptTableRuleConfig);
        
-       // 获取数据源对象
        DataSource dataSource = EncryptDataSourceFactory.createDataSource(dataSource, ruleConfiguration);
 </code></pre>
 
