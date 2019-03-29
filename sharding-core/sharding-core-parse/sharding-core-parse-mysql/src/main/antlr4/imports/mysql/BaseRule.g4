@@ -117,7 +117,7 @@ predicate
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
     | bitExpr SOUNDS LIKE simpleExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
-    | bitExpr NOT? REGEXP simpleExpr
+    | bitExpr NOT? (REGEXP | RLIKE) simpleExpr
     | bitExpr
     ;
 
