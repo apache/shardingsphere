@@ -17,7 +17,7 @@
 
 grammar MySQLDMLStatement;
 
-import Symbol, MySQLKeyword, Keyword, Literals, MySQLBase, BaseRule;
+import Symbol, MySQLKeyword, Keyword, Literals, BaseRule;
 
 insert
     : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | columnNames? select) onDuplicateKeyClause?

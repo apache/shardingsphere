@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Keyword, Symbol, Literals;
+import Symbol, MySQLKeyword, Keyword, Literals;
 
 identifier_
     : IDENTIFIER_ | reservedWord_
@@ -52,12 +52,20 @@ columnName
     : (identifier_ DOT_)? identifier_
     ;
 
-indexName
-    : identifier_
+unqualifiedShorthand
+    : ASTERISK_
+    ;
+
+qualifiedShorthand
+    : identifier_ DOT_ASTERISK_
     ;
 
 alias
     : identifier_ | STRING_
+    ;
+
+indexName
+    : identifier_
     ;
 
 dataTypeLength
@@ -166,7 +174,15 @@ simpleExpr
     ;
 
 functionCall
-    : matchNone
+    : functionName LP_ distinct? (exprs | ASTERISK_)? RP_ | specialFunction
+    ;
+
+functionName
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHARSET | CHAR | TRIM | WEIGHT_STRING
+    ;
+
+specialFunction
+    : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
     ;
 
 distinct
@@ -186,7 +202,7 @@ privateExprOfDb
     ;
 
 variable
-    : matchNone
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
     ;
 
 literal
@@ -231,12 +247,137 @@ orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
 
-unqualifiedShorthand
-    : ASTERISK_
+assignmentValueList
+    : LP_ assignmentValues RP_
     ;
 
-qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+assignmentValues
+    : assignmentValue (COMMA_ assignmentValue)*
+    ;
+
+assignmentValue
+    : DEFAULT | MAXVALUE | expr
+    ;
+
+groupConcat
+    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
+    ;
+
+castFunction
+    : CAST LP_ expr AS dataType RP_
+    ;
+
+convertFunction
+    : CONVERT LP_ expr ',' dataType RP_
+    | CONVERT LP_ expr USING ignoredIdentifier_ RP_ 
+    ;
+
+positionFunction
+    : POSITION LP_ expr IN expr RP_
+    ;
+
+substringFunction
+    :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
+    ;
+
+extractFunction
+    : EXTRACT LP_ identifier_ FROM expr RP_
+    ;
+
+charFunction
+    : CHAR LP_ exprs (USING ignoredIdentifier_)? RP_
+    ;
+
+trimFunction
+    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    ;
+
+weightStringFunction
+    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
+    ;
+
+levelClause
+    : LEVEL (levelInWeightListElements | (NUMBER_ MINUS_ NUMBER_))
+    ;
+
+levelInWeightListElements
+    : levelInWeightListElement (COMMA_ levelInWeightListElement)*
+    ;
+
+levelInWeightListElement
+    : NUMBER_ (ASC | DESC)? REVERSE?
+    ;
+
+windowFunction
+    : identifier_ exprList overClause
+    ;
+
+overClause
+    : OVER LP_ windowSpec RP_ | OVER identifier_
+    ;
+
+windowSpec
+    : identifier_? windowPartitionClause? orderByClause? frameClause?
+    ;
+
+windowPartitionClause
+    : PARTITION BY exprs
+    ;
+
+frameClause
+    : frameUnits frameExtent
+    ;
+
+frameUnits
+    : ROWS | RANGE
+    ;
+
+frameExtent
+    : frameStart | frameBetween
+    ;
+
+frameStart
+    : CURRENT ROW
+    | UNBOUNDED PRECEDING
+    | UNBOUNDED FOLLOWING
+    | expr PRECEDING
+    | expr FOLLOWING
+    ;
+
+frameBetween
+    : BETWEEN frameStart AND frameEnd
+    ;
+
+frameEnd
+    : frameStart
+    ;
+
+assignmentList
+    : assignment (COMMA_ assignment)*
+    ;
+
+assignment
+    : columnName EQ_ assignmentValue
+    ;
+
+whereClause
+    : WHERE expr
+    ;
+
+dataType
+    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    ;
+
+dataTypeName_
+    : identifier_ identifier_?
+    ;
+
+characterSet_
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
+    ;
+
+collateClause_
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
 
 ignoredIdentifier_
