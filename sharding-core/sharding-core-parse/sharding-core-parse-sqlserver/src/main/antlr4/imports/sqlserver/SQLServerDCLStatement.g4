@@ -17,7 +17,7 @@
 
 grammar SQLServerDCLStatement;
 
-import Symbol, SQLServerKeyword, Keyword, DataType, SQLServerBase, BaseRule;
+import Symbol, SQLServerKeyword, Keyword, Literals, SQLServerBase, BaseRule;
 
 grant
     : GRANT (classPrivilegesClause_ | classTypePrivilegesClause_) 

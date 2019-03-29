@@ -17,7 +17,7 @@
 
 grammar PostgreSQLDCLStatement;
 
-import Symbol, PostgreSQLKeyword, Keyword, DataType, PostgreSQLBase, BaseRule;
+import Symbol, PostgreSQLKeyword, Keyword, Literals, PostgreSQLBase, BaseRule;
 
 grant
     : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)

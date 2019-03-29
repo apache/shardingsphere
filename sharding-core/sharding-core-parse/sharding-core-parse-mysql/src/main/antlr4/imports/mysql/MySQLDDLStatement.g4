@@ -17,7 +17,7 @@
 
 grammar MySQLDDLStatement;
 
-import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule;
+import Symbol, MySQLKeyword, Keyword, Literals, MySQLBase, BaseRule;
 
 createTable
     : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)

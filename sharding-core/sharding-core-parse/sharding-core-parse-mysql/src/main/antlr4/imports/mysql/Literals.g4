@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-lexer grammar DataType;
+lexer grammar Literals;
 
 import Alphabet, Symbol;
+
+IDENTIFIER_
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    |  '`' ~'`'+ '`'
+    ;
 
 STRING_ 
     : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')

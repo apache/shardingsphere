@@ -17,7 +17,7 @@
 
 grammar PostgreSQLBase;
 
-import Symbol, PostgreSQLKeyword, Keyword, DataType, BaseRule;
+import Symbol, PostgreSQLKeyword, Keyword, Literals, BaseRule;
 
 columnDefinition
     : columnName dataType collateClause? columnConstraint*

@@ -17,7 +17,7 @@
 
 grammar SQLServerTCLStatement;
 
-import Symbol, SQLServerKeyword, Keyword, DataType, SQLServerBase;
+import Symbol, SQLServerKeyword, Keyword, Literals, SQLServerBase;
 
 setTransaction
     : SET TRANSACTION

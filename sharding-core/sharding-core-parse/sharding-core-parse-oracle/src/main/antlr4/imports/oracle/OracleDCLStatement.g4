@@ -17,7 +17,7 @@
 
 grammar OracleDCLStatement;
 
-import Symbol, OracleKeyword, Keyword, DataType, OracleBase, BaseRule;
+import Symbol, OracleKeyword, Keyword, Literals, OracleBase, BaseRule;
 
 grant
     : GRANT (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)

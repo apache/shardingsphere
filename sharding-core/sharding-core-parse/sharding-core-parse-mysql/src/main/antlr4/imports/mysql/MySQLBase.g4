@@ -17,7 +17,7 @@
 
 grammar MySQLBase;
 
-import Symbol, MySQLKeyword, Keyword, DataType, BaseRule;
+import Symbol, MySQLKeyword, Keyword, Literals, BaseRule;
 
 alias
     : uid | STRING_

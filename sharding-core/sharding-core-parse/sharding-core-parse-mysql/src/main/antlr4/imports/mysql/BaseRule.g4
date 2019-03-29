@@ -17,19 +17,14 @@
 
 grammar BaseRule;
 
-import Keyword, Symbol, DataType;
-
-ID 
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    |  '`' ~'`'+ '`'
-    ;
+import Keyword, Symbol, Literals;
 
 uid
-    : ID
-    | keywordIdentifier_
+    : IDENTIFIER_
+    | reservedWords_
     ;
 
-keywordIdentifier_
+reservedWords_
     : DATE | PASSWORD
     ;
 
@@ -192,12 +187,12 @@ literal
     | TRUE
     | FALSE
     | NULL
-    | LBE_ ID STRING_ RBE_
+    | LBE_ uid STRING_ RBE_
     | HEX_DIGIT_
     | string
     | uid STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | ID? BIT_NUM_ collateClause?
+    | uid? BIT_NUM_ collateClause?
     ;
 
 question

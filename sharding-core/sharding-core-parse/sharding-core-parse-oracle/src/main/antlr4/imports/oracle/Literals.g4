@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-lexer grammar DataType;
+lexer grammar Literals;
 
 import Alphabet, Symbol;
 
