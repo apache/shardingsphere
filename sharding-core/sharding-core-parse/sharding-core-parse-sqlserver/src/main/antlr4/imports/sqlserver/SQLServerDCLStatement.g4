@@ -56,11 +56,11 @@ onClassTypeClause_
     ;
 
 privilegeType_
-    : ID+?
+    : IDENTIFIER_+?
     ;
 
 class_
-    : ID COLON_ COLON_
+    : IDENTIFIER_ COLON_ COLON_
     ;
 
 classType_

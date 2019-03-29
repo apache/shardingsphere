@@ -19,6 +19,10 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
+IDENTIFIER_
+    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT_)* DOT_* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?) | [a-zA-Z0-9_$]+ DOT_ASTERISK_
+    ;
+
 STRING_ 
     : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
     | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')

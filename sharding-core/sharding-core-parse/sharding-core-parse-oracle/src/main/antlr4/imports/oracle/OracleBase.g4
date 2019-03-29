@@ -19,12 +19,8 @@ grammar OracleBase;
 
 import Symbol, OracleKeyword, Keyword, Literals, BaseRule;
 
-ID
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?) | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
-    ;
-
 oracleId
-    : ID | (STRING_ DOT_)* STRING_
+    : IDENTIFIER_ | (STRING_ DOT_)* STRING_
     ;
 
 tableName
@@ -44,7 +40,7 @@ attributeName
     ;
 
 indexTypeName
-    : ID
+    : IDENTIFIER_
     ;
 
 simpleExprsWithParen
@@ -72,11 +68,11 @@ dataType
     ;
 
 specialDatatype
-    : dataTypeName_ (LP_ NUMBER_ ID RP_) | NATIONAL dataTypeName_ VARYING? LP_ NUMBER_ RP_ | dataTypeName_ LP_? columnName RP_?
+    : dataTypeName_ (LP_ NUMBER_ IDENTIFIER_ RP_) | NATIONAL dataTypeName_ VARYING? LP_ NUMBER_ RP_ | dataTypeName_ LP_? columnName RP_?
     ;
 
 dataTypeName_
-    : ID ID | ID
+    : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
     ;
 
 datetimeTypeSuffix

@@ -20,7 +20,7 @@ grammar PostgreSQLDALStatement;
 import Symbol, PostgreSQLKeyword, Keyword, Literals, BaseRule;
 
 show
-    : SHOW (ALL | ID | TRANSACTION ISOLATION LEVEL)
+    : SHOW (ALL | IDENTIFIER_ | TRANSACTION ISOLATION LEVEL)
     ;
 
 setParam
@@ -32,7 +32,7 @@ scope
     ;
 
 setClause
-    : TIME ZONE timeZoneType | ID (TO | EQ_) (STRING_ | DEFAULT)
+    : TIME ZONE timeZoneType | IDENTIFIER_ (TO | EQ_) (STRING_ | DEFAULT)
     ;
 
 timeZoneType
@@ -40,5 +40,5 @@ timeZoneType
     ;
 
 resetParam
-    : RESET (ALL | ID)
+    : RESET (ALL | IDENTIFIER_)
     ;

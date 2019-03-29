@@ -166,7 +166,7 @@ attributeOptions
     ;
 
 attributeOption
-    : ID EQ_ simpleExpr
+    : IDENTIFIER_ EQ_ simpleExpr
     ;
 
 addConstraintSpecification
@@ -186,7 +186,7 @@ storageParameterWithValue
     ;
 
 storageParameter
-    : ID
+    : IDENTIFIER_
     ;
 
 alterTableNameExists

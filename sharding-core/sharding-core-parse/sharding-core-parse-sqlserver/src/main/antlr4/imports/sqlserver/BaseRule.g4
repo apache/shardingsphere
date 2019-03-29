@@ -19,32 +19,28 @@ grammar BaseRule;
 
 import Keyword, Symbol, Literals;
 
-ID 
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
-    ;
-
 schemaName
-    : ID
+    : IDENTIFIER_
     ;
 
 tableName
-    : ID
+    : IDENTIFIER_
     ;
 
 columnName
-    : ID
+    : IDENTIFIER_
     ;
 
 collationName
-    : STRING_ | ID
+    : STRING_ | IDENTIFIER_
     ;
 
 indexName
-    : ID
+    : IDENTIFIER_
     ;
 
 alias
-    : ID
+    : IDENTIFIER_
     ;
 
 dataTypeLength
@@ -153,7 +149,7 @@ simpleExpr
     ;
 
 functionCall
-    : ID LP_ distinct? (exprs | ASTERISK_)? RP_
+    : IDENTIFIER_ LP_ distinct? (exprs | ASTERISK_)? RP_
     ;
 
 distinct
@@ -182,12 +178,12 @@ literal
     | TRUE
     | FALSE
     | NULL
-    | LBE_ ID STRING_ RBE_
+    | LBE_ IDENTIFIER_ STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | ID STRING_ collateClause?
+    | IDENTIFIER_ STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | ID? BIT_NUM_ collateClause?
+    | IDENTIFIER_? BIT_NUM_ collateClause?
     ;
 
 question
@@ -223,7 +219,7 @@ asterisk
     ;
 
 ignoredIdentifier_
-    : ID
+    : IDENTIFIER_
     ;
 
 ignoredIdentifiers_

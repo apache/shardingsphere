@@ -243,7 +243,7 @@ computedColumnDefinition
     ;
 
 columnSetDefinition 
-    : ignoredIdentifier_ ID COLUMN_SET FOR ALL_SPARSE_COLUMNS
+    : ignoredIdentifier_ IDENTIFIER_ COLUMN_SET FOR ALL_SPARSE_COLUMNS
     ;
 
 alterTableOp

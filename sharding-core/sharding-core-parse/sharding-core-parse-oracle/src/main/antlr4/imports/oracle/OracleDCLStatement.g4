@@ -62,7 +62,7 @@ onObjectClause_
     ;
 
 otherPrivileges_
-    : STRING_+ | ID+
+    : STRING_+ | IDENTIFIER_+
     ;
 
 createUser

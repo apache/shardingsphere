@@ -90,11 +90,11 @@ constraintOptionalParam
     ;
 
 dataType
-    : dataTypeName_ intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | ID
+    : dataTypeName_ intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | IDENTIFIER_
     ;
 
 dataTypeName_
-    : ID ID | ID
+    : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
     ;
 
 intervalFields
@@ -123,7 +123,7 @@ pgExpr
     ;
 
 aggregateExpression
-    : ID (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
+    : IDENTIFIER_ (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
     ;
 
 filterClause
@@ -135,15 +135,15 @@ asteriskWithParen
     ;
 
 windowFunction
-    : ID (exprList | asteriskWithParen) filterClause? windowFunctionWithClause
+    : IDENTIFIER_ (exprList | asteriskWithParen) filterClause? windowFunctionWithClause
     ;
 
 windowFunctionWithClause
-    : OVER (ID | LP_ windowDefinition RP_)
+    : OVER (IDENTIFIER_ | LP_ windowDefinition RP_)
     ;
 
 windowDefinition
-    : ID? (PARTITION BY exprs)? (orderByClause (COMMA_ orderByClause)*)? frameClause?
+    : IDENTIFIER_? (PARTITION BY exprs)? (orderByClause (COMMA_ orderByClause)*)? frameClause?
     ;
 
 orderByClause
@@ -200,5 +200,5 @@ arrayConstructor
     ;
 
 extractFromFunction
-    : EXTRACT LP_ ID FROM ID RP_
+    : EXTRACT LP_ IDENTIFIER_ FROM IDENTIFIER_ RP_
     ;
