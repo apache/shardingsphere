@@ -19,37 +19,36 @@ grammar BaseRule;
 
 import Keyword, Symbol, Literals;
 
-uid
-    : IDENTIFIER_
-    | reservedWords_
+identifier
+    : IDENTIFIER_ | reservedWord_
     ;
 
-reservedWords_
-    : DATE | PASSWORD
+reservedWord_
+    : ACCOUNT | ACTION | AFTER | ALGORITHM | ALWAYS | DATE | PASSWORD
     ;
 
 schemaName
-    : uid
+    : identifier
     ;
 
 tableName
-    : (schemaName DOT_)? uid
+    : (schemaName DOT_)? identifier
     ;
 
 ownerName
-    : uid
+    : identifier
     ;
 
 columnName
-    : (ownerName DOT_)? uid
+    : (ownerName DOT_)? identifier
     ;
 
 indexName
-    : (schemaName DOT_)? uid
+    : (schemaName DOT_)? identifier
     ;
 
 alias
-    : uid | STRING_
+    : identifier | STRING_
     ;
 
 dataTypeLength
@@ -187,12 +186,12 @@ literal
     | TRUE
     | FALSE
     | NULL
-    | LBE_ uid STRING_ RBE_
+    | LBE_ identifier STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | uid STRING_ collateClause?
+    | identifier STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | uid? BIT_NUM_ collateClause?
+    | identifier? BIT_NUM_ collateClause?
     ;
 
 question
@@ -228,11 +227,11 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : uid DOT_ASTERISK_
+    : identifier DOT_ASTERISK_
     ;
 
 ignoredIdentifier_
-    : uid (DOT_ uid)?
+    : identifier (DOT_ identifier)?
     ;
 
 ignoredIdentifiers_
