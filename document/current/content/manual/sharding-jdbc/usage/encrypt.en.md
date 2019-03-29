@@ -22,14 +22,14 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
 ### Rule Configuration Based on Java
 
 ```java
-       // 配置数据源
+       // Configure actual data source
        BasicDataSource dataSource = new BasicDataSource();
        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
        dataSource.setUrl("jdbc:mysql://localhost:3306/encrypt");
        dataSource.setUsername("root");
        dataSource.setPassword("");
        
-       // 配置脱敏规则
+       // Configure the encrypt rule
        Properties props = new Properties();
        props..setProperty("aes.key.value", "123456");
        EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("aes", "user_id", props);
@@ -39,7 +39,7 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
        EncryptRuleConfiguration ruleConfiguration = new EncryptRuleConfiguration();
        ruleConfiguration.getTableRuleConfigs().add(encryptTableRuleConfig);
        
-       // 获取数据源对象
+       // Get data source
        DataSource dataSource = EncryptDataSourceFactory.createDataSource(dataSource, ruleConfiguration);
 ```
 
