@@ -27,9 +27,6 @@ ACTION
     : A C T I O N
     ;
 
-ADMIN
-    : A D M I N
-    ;
 
 AFTER
     : A F T E R
@@ -259,10 +256,6 @@ EXECUTE
     : E X E C U T E
     ;
 
-EXPIRE
-    : E X P I R E
-    ;
-
 EXTRACT
     : E X T R A C T
     ;
@@ -323,10 +316,6 @@ HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
     ;
 
-HISTORY
-    : H I S T O R Y
-    ;
-
 IDENTIFIED
     : I D E N T I F I E D
     ;
@@ -367,10 +356,6 @@ INTO
     : I N T O
     ;
 
-ISSUER
-    : I S S U E R
-    ;
-
 JOIN
     : J O I N
     ;
@@ -403,10 +388,6 @@ LINEAR
     : L I N E A R
     ;
 
-LIST
-    : L I S T
-    ;
-
 LOCALTIME
     : L O C A L T I M E
     ;
@@ -431,24 +412,8 @@ MAXVALUE
     : M A X V A L U E
     ;
 
-MAX_CONNECTIONS_PER_HOUR
-    : M A X UL_ C O N N E C T I O N S UL_ P E R UL_ H O U R
-    ;
-
-MAX_QUERIES_PER_HOUR
-    : M A X UL_ Q U E R I E S UL_ P E R UL_ H O U R
-    ;
-
 MAX_ROWS
     : M A X UL_ R O W S
-    ;
-
-MAX_UPDATES_PER_HOUR
-    : M A X UL_ U P D A T E S UL_ P E R UL_ H O U R
-    ;
-
-MAX_USER_CONNECTIONS
-    : M A X UL_ U S E R UL_ C O N N E C T I O N S
     ;
 
 MEMORY
@@ -467,10 +432,6 @@ NATURAL
     : N A T U R A L
     ;
 
-NEVER
-    : N E V E R
-    ;
-
 NONE
     : N O N E
     ;
@@ -483,24 +444,12 @@ OFFLINE
     : O F F L I N E
     ;
 
-OLD
-    : O L D
-    ;
-
 ONLINE
     : O N L I N E
     ;
 
-ONLY
-    : O N L Y
-    ;
-
 OPTIMIZE
     : O P T I M I Z E
-    ;
-
-OPTIONAL
-    : O P T I O N A L
     ;
 
 OUTER
@@ -525,10 +474,6 @@ PARTIAL
 
 PARTITIONING
     : P A R T I T I O N I N G
-    ;
-
-PARTITIONS
-    : P A R T I T I O N S
     ;
 
 PERSIST
@@ -607,16 +552,8 @@ REPAIR
     : R E P A I R
     ;
 
-REPEATABLE
-    : R E P E A T A B L E
-    ;
-
 REPLACE
     : R E P L A C E
-    ;
-
-REPLICATION
-    : R E P L I C A T I O N
     ;
 
 REPLICATION_SLAVE_ADMIN
@@ -629,14 +566,6 @@ REQUIRE
 
 RESTRICT
     : R E S T R I C T
-    ;
-
-RETAIN
-    : R E T A I N
-    ;
-
-REUSE
-    : R E U S E
     ;
 
 REVERSE
@@ -697,10 +626,6 @@ SIMPLE
 
 SLAVE
     : S L A V E
-    ;
-
-SNAPSHOT
-    : S N A P S H O T
     ;
 
 SPATIAL
@@ -767,16 +692,8 @@ STRAIGHT_JOIN
     : S T R A I G H T UL_ J O I N
     ;
 
-SUBJECT
-    : S U B J E C T
-    ;
-
 SUBPARTITION
     : S U B P A R T I T I O N
-    ;
-
-SUBPARTITIONS
-    : S U B P A R T I T I O N S
     ;
 
 SUPER
@@ -829,10 +746,6 @@ TRIM
 
 UNBOUNDED
     : U N B O U N D E D
-    ;
-
-UNCOMMITTED
-    : U N C O M M I T T E D
     ;
 
 UNLOCK

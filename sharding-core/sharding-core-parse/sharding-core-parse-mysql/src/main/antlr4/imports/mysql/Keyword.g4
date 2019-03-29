@@ -303,10 +303,6 @@ INDEX
     : I N D E X
     ;
 
-ISOLATION
-    : I S O L A T I O N
-    ;
-
 LEVEL
     : L E V E L
     ;
@@ -355,10 +351,6 @@ ROWS
     : R O W S
     ;
 
-SERIALIZABLE
-    : S E R I A L I Z A B L E
-    ;
-
 START
     : S T A R T
     ;
@@ -385,12 +377,4 @@ UNIQUE
 
 USER
     : U S E R
-    ;
-
-WORK
-    : W O R K
-    ;
-
-YEAR
-    : Y E A R
     ;
