@@ -20,9 +20,9 @@
 Zookeeper  Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照配置规则进行注册中心的配置，即可使用。  Etcd  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 Maven仓库下载Etcd解决方案的最新稳定版jar包。 将下载下来的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  其他第三方注册中心  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  分布式事务 Sharding-Proxy原生支持XA事务，不需要额外的配置。
 配置默认事务类型 默认事务类型可在server.yaml中进行配置，例如：
 proxy.transaction.type: XA  切换运行时事务类型 命令行方式 mysql&amp;gt; sctl: set transantcion_type=XA mysql&amp;gt; sctl: show transaction_type  原生JDBC方式 如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送sctl:set transaction_type=XA的SQL切换事务类型。
-Spring注解方式 引入Maven依赖：
-&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  然后在需要事务的方法或类中添加相关注解即可，例如：
-@ShardingTransactionType(TransactionType.LOCAL) @Transactional  或</description>
+Spring注解方式 @ShardingTransactionType(TransactionType.LOCAL) @Transactional  或
+@ShardingTransactionType(TransactionType.XA) @Transactional  注意：@ShardingTransactionType需要同Spring的@Transactional配套使用，事务才会生效。
+Spring boot starter 引入Maven依赖：</description>
     </item>
     
     <item>

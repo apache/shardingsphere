@@ -29,7 +29,7 @@
       <guid>https://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/</guid>
       <description> 1. Configure sharding rule Edit %SHARDING_PROXY_HOME%\conf\config-xxx.yaml. More details please reference Configuration Manual.
 Edit %SHARDING_PROXY_HOME%\conf\server.yaml. More details please reference Configuration Manual.
-2. Start server  Use default configuration to start  ${sharding-proxy}\bin\start.sh ${port}   Set port to start  ${sharding-proxy}\bin\start.sh ${port}  </description>
+2. Start server  Use default configuration to start  ${sharding-proxy}\bin\start.sh   Set port to start  ${sharding-proxy}\bin\start.sh ${port}  </description>
     </item>
     
   </channel>

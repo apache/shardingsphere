@@ -12,19 +12,19 @@
     <title>Overview :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553471718" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553471718" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553471718" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553471718" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553471718" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553471718" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553471718" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553471718" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553832074" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553471718" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553832074" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553471718"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553832074"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -842,9 +842,9 @@
  
   
     
-      <li data-nav-id="/en/features/transaction/local-transaction/" title="Local transaction" class="dd-item ">
-        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/">
-        <b>3.4.1. </b>Local transaction
+      <li data-nav-id="/en/features/transaction/function/local-transaction/" title="Local transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/">
+        <b>3.4.2.1 </b>Local transaction
         
         </a>
     </li>
@@ -861,28 +861,9 @@
  
   
     
-      <li data-nav-id="/en/features/transaction/2pc-transaction/" title="2PC Transaction" class="dd-item ">
-        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/">
-        <b>3.4.2. </b>2PC Transaction
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
-      <li data-nav-id="/en/features/transaction/base-transaction/" title="BASE Transaction" class="dd-item ">
-        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/">
-        <b>3.4.3. </b>BASE Transaction
+      <li data-nav-id="/en/features/transaction/function/base-transaction/" title="BASE Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/">
+        <b>3.4.2.3 </b>BASE Transaction
         
         </a>
     </li>
@@ -1698,12 +1679,14 @@ Architects can adjust the system architecture to the most applicable one to curr
 <ul>
 <li>Database sharding &amp; Table sharding</li>
 <li>Read-write splitting</li>
-<li>Distributed primary key</li>
+<li>Sharding strategy customization</li>
+<li>Centre-less Distributed primary key</li>
 </ul>
 
-<h3 id="distributed-transaction-doing">Distributed Transaction (Doing)</h3>
+<h3 id="distributed-transaction">Distributed Transaction</h3>
 
 <ul>
+<li>Unified Transaction API</li>
 <li>XA transaction</li>
 <li>BASE transaction</li>
 </ul>
@@ -1711,10 +1694,11 @@ Architects can adjust the system architecture to the most applicable one to curr
 <h3 id="database-orchestration">Database Orchestration</h3>
 
 <ul>
-<li>Dynamic configuration</li>
-<li>Fusing &amp; Disabling</li>
-<li>Tracing</li>
-<li>Elastic scaling out (Planning)</li>
+<li>Dynamic Configuration</li>
+<li>Orchestration &amp; Governance</li>
+<li>Data Encryption</li>
+<li>Tracing &amp; Observability</li>
+<li>Elastic scaling out (Planing)</li>
 </ul>
 
 <h2 id="roadmap">Roadmap</h2>
@@ -2332,22 +2316,6 @@ Architects can adjust the system architecture to the most applicable one to curr
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -2745,20 +2713,20 @@ Architects can adjust the system architecture to the most applicable one to curr
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553471718"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553832074"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553471718"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553471718"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553832074"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553471718" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553471718"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553832074" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553832074"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

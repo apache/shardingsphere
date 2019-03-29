@@ -12,34 +12,21 @@
     
     <item>
       <title>Local transaction</title>
-      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/</guid>
       <description>Function  Fully support none-cross-database transactions, for example, table sharding only or database sharding with route result in the single database.
  Fully support cross-database transactions caused by logic exceptions, for example, the update of two databases in one transaction. After the update, the null cursor is thrown and the content in both databases can be rolled back.
  Do not support the cross-database transactions caused by network or hardware exceptions.</description>
     </item>
     
     <item>
-      <title>2PC Transaction</title>
-      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</guid>
-      <description> Function  Fully support cross-database transactions.
- Use Atomikos by default; support to use SPI to upload other XA transaction managers.
-  Supported Situation  Sharding-JDBC can support users&amp;rsquo; own configurations of XA data source.
- Sharding-Proxy support.
-  </description>
-    </item>
-    
-    <item>
       <title>BASE Transaction</title>
-      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/</guid>
       <description> Function  Fully support cross-database transactions.
  Use Servicecomb-Saga.
  Support reverted SQL, auto-generation of update snapshot and auto-compensation.

@@ -12,19 +12,19 @@
     <title>Data Masking :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553471719" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553471719" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553471719" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553471719" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553471719" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553471719" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553471719" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553471719" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553832074" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553832074" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553471719" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553832074" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553832074"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -842,9 +842,9 @@
  
   
     
-      <li data-nav-id="/en/features/transaction/local-transaction/" title="Local transaction" class="dd-item ">
-        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/">
-        <b>3.4.1. </b>Local transaction
+      <li data-nav-id="/en/features/transaction/function/local-transaction/" title="Local transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/">
+        <b>3.4.2.1 </b>Local transaction
         
         </a>
     </li>
@@ -861,28 +861,9 @@
  
   
     
-      <li data-nav-id="/en/features/transaction/2pc-transaction/" title="2PC Transaction" class="dd-item ">
-        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/">
-        <b>3.4.2. </b>2PC Transaction
-        
-        </a>
-    </li>
-     
-  
- 
-
-            
-          
-            
-            
-
-
- 
-  
-    
-      <li data-nav-id="/en/features/transaction/base-transaction/" title="BASE Transaction" class="dd-item ">
-        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/">
-        <b>3.4.3. </b>BASE Transaction
+      <li data-nav-id="/en/features/transaction/function/base-transaction/" title="BASE Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/">
+        <b>3.4.2.3 </b>BASE Transaction
         
         </a>
     </li>
@@ -1616,94 +1597,49 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
 
 <h3 id="rule-configuration-based-on-java">Rule Configuration Based on Java</h3>
 
-<pre><code class="language-java">       // Configure actual data sources
-       Map&lt;String, DataSource&gt; dataSourceMap = new HashMap&lt;&gt;();
+<pre><code class="language-java">       // 配置数据源
+       BasicDataSource dataSource = new BasicDataSource();
+       dataSource.setDriverClassName(&quot;com.mysql.jdbc.Driver&quot;);
+       dataSource.setUrl(&quot;jdbc:mysql://localhost:3306/encrypt&quot;);
+       dataSource.setUsername(&quot;root&quot;);
+       dataSource.setPassword(&quot;&quot;);
        
-       // Configure first data source
-       BasicDataSource dataSource1 = new BasicDataSource();
-       dataSource1.setDriverClassName(&quot;com.mysql.jdbc.Driver&quot;);
-       dataSource1.setUrl(&quot;jdbc:mysql://localhost:3306/ds0&quot;);
-       dataSource1.setUsername(&quot;root&quot;);
-       dataSource1.setPassword(&quot;&quot;);
-       dataSourceMap.put(&quot;ds0&quot;, dataSource1);
+       // 配置脱敏规则
+       Properties props = new Properties();
+       props..setProperty(&quot;aes.key.value&quot;, &quot;123456&quot;);
+       EncryptorConfiguration encryptorConfig = new EncryptorConfiguration(&quot;aes&quot;, &quot;user_id&quot;, props);
+       EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
+       encryptTableRuleConfig.setTable(&quot;t_order&quot;);
+       encryptTableRuleConfig.setEncryptorConfig(encryptorConfig);
+       EncryptRuleConfiguration ruleConfiguration = new EncryptRuleConfiguration();
+       ruleConfiguration.getTableRuleConfigs().add(encryptTableRuleConfig);
        
-       // Configure second data source
-       BasicDataSource dataSource2 = new BasicDataSource();
-       dataSource2.setDriverClassName(&quot;com.mysql.jdbc.Driver&quot;);
-       dataSource2.setUrl(&quot;jdbc:mysql://localhost:3306/ds1&quot;);
-       dataSource2.setUsername(&quot;root&quot;);
-       dataSource2.setPassword(&quot;&quot;);
-       dataSourceMap.put(&quot;ds1&quot;, dataSource2);
-       
-       // Configure table rule for Order
-       TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-       orderTableRuleConfig.setLogicTable(&quot;t_order&quot;);
-       orderTableRuleConfig.setActualDataNodes(&quot;ds${0..1}.t_order${0..1}&quot;);
-       orderTableRuleConfig.setEncryptorConfig(new EncryptorConfiguration(&quot;MD5&quot;, &quot;status&quot;, new Properties()));
-       
-       // Configure strategies for database + table sharding 
-       orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&quot;user_id&quot;, &quot;ds${user_id % 2}&quot;));
-       orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(&quot;order_id&quot;, &quot;t_order${order_id % 2}&quot;));
-       
-       // Configure sharding rule
-       ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-       shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-       
-       // Configure table rule for order_item
-       // ...
-       
-       // Get data source
-       DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+       // 获取数据源对象
+       DataSource dataSource = EncryptDataSourceFactory.createDataSource(dataSource, ruleConfiguration);
 </code></pre>
 
 <h3 id="rule-configuration-based-on-yaml">Rule Configuration Based on Yaml</h3>
 
-<pre><code class="language-yaml">dataSources:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds0
-    username: root
-    password: 
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds1
-    username: root
-    password: 
-
-tables:
-  t_order: 
-    actualDataNodes: ds${0..1}.t_order${0..1}
-    databaseStrategy: 
-      inline:
-        shardingColumn: user_id
-        algorithmInlineExpression: ds${user_id % 2}
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmInlineExpression: t_order${order_id % 2}
-  t_order_item: 
-    actualDataNodes: ds${0..1}.t_order_item${0..1}
-    databaseStrategy: 
-      inline:
-        shardingColumn: user_id
-        algorithmInlineExpression: ds${user_id % 2}
-    tableStrategy: 
-      inline:
-        shardingColumn: order_id
-        algorithmInlineExpression: t_order_item${order_id % 2}
+<pre><code class="language-yaml">dataSource: !!com.zaxxer.hikari.HikariDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&amp;useSSL=false
+  username: root
+  password: 
+  
+encryptRule:
+  tables:
+    t_order:     
       encryptor:
-        type: MD5
-        columns: status
-    t_order_encrypt:
-       encryptor:
-        type: QUERY
-        columns: encrypt_id
-        assistedQueryColumns: query_id
-  bindingTables:
-    - t_order,t_order_item,t_order_encrypt
+        type: aes
+        columns: user_id        
+        props:
+          aes.key.value: 123456
+  defaultEncryptor:
+    type: md5
+    columns: order_id  
 </code></pre>
 
-<pre><code class="language-java">    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+<pre><code class="language-java">    DataSource dataSource = YamlEncryptDataSourceFactory.createDataSource(yamlFile);
 </code></pre>
 
 <h2 id="use-native-jdbc">Use Native JDBC</h2>
@@ -1727,39 +1663,20 @@ tables:
 
 <h3 id="rule-configuration-based-on-spring-boot">Rule Configuration Based on Spring Boot</h3>
 
-<pre><code class="language-properties">sharding.jdbc.datasource.names=ds0,ds1
+<pre><code class="language-properties">sharding.jdbc.datasource.name=ds
 
-sharding.jdbc.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
-sharding.jdbc.datasource.ds0.username=root
-sharding.jdbc.datasource.ds0.password=
+sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
+sharding.jdbc.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/encrypt
+sharding.jdbc.datasource.ds.username=root
+sharding.jdbc.datasource.ds.password=
 
-sharding.jdbc.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
-sharding.jdbc.datasource.ds1.username=root
-sharding.jdbc.datasource.ds1.password=
+sharding.jdbc.config.encrypt.tables.t_order.encryptor.type=aes
+sharding.jdbc.config.encrypt.tables.t_order.encryptor.columns=user_id
+sharding.jdbc.config.encrypt.tables.t_order.encryptor.props.aes.key.value=123456
 
-sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$-&gt;{user_id % 2}
-
-sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$-&gt;{0..1}.t_order$-&gt;{0..1}
-sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$-&gt;{order_id % 2}
-
-sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$-&gt;{0..1}.t_order_item$-&gt;{0..1}
-sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$-&gt;{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.type=MD5
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.columns=status
-
-sharding.jdbc.config.sharding.tables.t_order_encrypt.actual-data-nodes=ds_$-&gt;{0..1}.t_order_encrypt_$-&gt;{0..1}
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.algorithm-expression=t_order_encrypt_$-&gt;{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.type=QUERY
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.columns=encrypt_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColumns=query_id
+sharding.jdbc.config.encrypt.defaultEncryptor.type=md5
+sharding.jdbc.config.encrypt.defaultEncryptor.columns=order_id
 </code></pre>
 
 <h3 id="rule-configuration-based-on-spring-name-space">Rule Configuration Based on Spring Name Space</h3>
@@ -1773,36 +1690,28 @@ sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColu
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding 
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd 
                         &quot;&gt;
-    &lt;bean id=&quot;ds0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+    &lt;bean id=&quot;ds&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
         &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
-        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds0&quot; /&gt;
-        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
-        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
-    &lt;/bean&gt;
-    &lt;bean id=&quot;ds1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
-        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
-        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/ds1&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/encrypt&quot; /&gt;
         &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
         &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
     &lt;/bean&gt;
     
-    &lt;sharding:inline-strategy id=&quot;databaseStrategy&quot; sharding-column=&quot;user_id&quot; algorithm-expression=&quot;ds$-&gt;{user_id % 2}&quot; /&gt;
-    &lt;sharding:inline-strategy id=&quot;orderTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order$-&gt;{order_id % 2}&quot; /&gt;
-    &lt;sharding:inline-strategy id=&quot;orderItemTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order_item$-&gt;{order_id % 2}&quot; /&gt;
-    &lt;sharding:inline-strategy id=&quot;orderEncryptTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order_encrypt_${order_id % 2}&quot; /&gt;
+    &lt;bean:properties id=&quot;props&quot;&gt;
+        &lt;prop key=&quot;aes.key.value&quot;&gt;123456&lt;/prop&gt;
+    &lt;/bean:properties&gt;
 
-    &lt;sharding:encryptor id=&quot;md5&quot; type=&quot;MD5&quot; columns=&quot;status&quot; /&gt;
-    &lt;sharding:encryptor id=&quot;query&quot; type=&quot;QUERY&quot; columns=&quot;encrypt_id&quot; assisted-query-columns=&quot;query_id&quot; /&gt;
+    &lt;encrypt:encryptor id=&quot;md5&quot; type=&quot;MD5&quot; columns=&quot;order_id&quot; /&gt;
+    &lt;encrypt:encryptor id=&quot;aes&quot; type=&quot;AES&quot; columns=&quot;user_id&quot; props-ref=&quot;props&quot; /&gt;
     
-    &lt;sharding:data-source id=&quot;shardingDataSource&quot;&gt;
-        &lt;sharding:sharding-rule data-source-names=&quot;ds0,ds1&quot;&gt;
-            &lt;sharding:table-rules&gt;
-                &lt;sharding:table-rule logic-table=&quot;t_order&quot; actual-data-nodes=&quot;ds$-&gt;{0..1}.t_order$-&gt;{0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderTableStrategy&quot; /&gt;
-                &lt;sharding:table-rule logic-table=&quot;t_order_item&quot; actual-data-nodes=&quot;ds$-&gt;{0..1}.t_order_item$-&gt;{0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderItemTableStrategy&quot; encryptor-ref=&quot;md5&quot; /&gt;
-                &lt;sharding:table-rule logic-table=&quot;t_order_encrypt&quot; actual-data-nodes=&quot;demo_ds_${0..1}.t_order_encrypt_${0..1}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderEncryptTableStrategy&quot; encryptor-ref=&quot;query&quot; /&gt;
-            &lt;/sharding:table-rules&gt;
-        &lt;/sharding:sharding-rule&gt;
-    &lt;/sharding:data-source&gt;
+    &lt;encrypt:data-source id=&quot;encryptDataSource&quot;&gt;
+        &lt;encrypt:encrypt-rule data-source-name=&quot;ds&quot;&gt;
+            &lt;encrypt:table-rules&gt;
+                &lt;encrypt:table-rule logic-table=&quot;t_order&quot; encryptor-ref=&quot;aes&quot; /&gt;
+                &lt;encrypt:default-encryptor encryptor-ref=&quot;md5&quot; /&gt;
+            &lt;/encrypt:table-rules&gt;
+        &lt;/encrypt:sharding-rule&gt;
+    &lt;/encrypt:data-source&gt;
 &lt;/beans&gt;
 </code></pre>
 
@@ -2421,22 +2330,6 @@ private DataSource dataSource;
             
         
                     
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
             
         
                     
@@ -2844,20 +2737,20 @@ private DataSource dataSource;
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553832074"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553471719"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553471719"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553832074"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553832074"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553471719" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553471719"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553832074" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553832074"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

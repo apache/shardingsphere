@@ -59,6 +59,17 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
     </item>
     
     <item>
+      <title>两阶段事务-XA</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/concept/2pc-xa-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/concept/2pc-xa-transaction/</guid>
+      <description>两阶段事务提交采用的是X/OPEN组织所定义的DTP模型，通过抽象出来的AP, TM, RM的概念可以保证事务的强一致性。 其中TM和RM间采用XA的协议进行双向通信。 与传统的本地事务相比，XA事务增加了prepare阶段，数据库除了被动接受提交指令外，还可以反向通知调用方事务是否可以被提交。 因此TM可以收集所有分支事务的prepare结果，最后进行原子的提交，保证事务的强一致性。
+Java通定义JTA接口实现了XA的模型，JTA接口里的ResourceManager需要数据库厂商提供XA的驱动实现，而TransactionManager则需要事务管理器的厂商实现，传统的事务管理器需要同应用服务器绑定，因此使用的成本很高。 而嵌入式的事务管器可以已jar包的形式提供服务，同ShardingSphere集成后，可保证分片后跨库事务强一致性。
+通常，只有使用了事务管理器厂商所提供的XA事务连接池，才能支持XA的事务。ShardingSphere整合XA事务时，分离了XA事务管理和连接池管理，这样接入XA时，可以做到对业务的零侵入。</description>
+    </item>
+    
+    <item>
       <title>使用手册</title>
       <link>https://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/usage/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -68,9 +79,9 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
 Zookeeper  Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照配置规则进行注册中心的配置，即可使用。  Etcd  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 Maven仓库下载Etcd解决方案的最新稳定版jar包。 将下载下来的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  其他第三方注册中心  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  分布式事务 Sharding-Proxy原生支持XA事务，不需要额外的配置。
 配置默认事务类型 默认事务类型可在server.yaml中进行配置，例如：
 proxy.transaction.type: XA  切换运行时事务类型 命令行方式 mysql&amp;gt; sctl: set transantcion_type=XA mysql&amp;gt; sctl: show transaction_type  原生JDBC方式 如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送sctl:set transaction_type=XA的SQL切换事务类型。
-Spring注解方式 引入Maven依赖：
-&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  然后在需要事务的方法或类中添加相关注解即可，例如：
-@ShardingTransactionType(TransactionType.LOCAL) @Transactional  或</description>
+Spring注解方式 @ShardingTransactionType(TransactionType.LOCAL) @Transactional  或
+@ShardingTransactionType(TransactionType.XA) @Transactional  注意：@ShardingTransactionType需要同Spring的@Transactional配套使用，事务才会生效。
+Spring boot starter 引入Maven依赖：</description>
     </item>
     
     <item>
@@ -85,16 +96,14 @@ Spring注解方式 引入Maven依赖：
     
     <item>
       <title>本地事务</title>
-      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/local-transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/local-transaction/</guid>
       <description> 功能  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
  完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。
  不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交。
-  支持情况  Sharding-JDBC可以支持由用户自行配置不使用XA数据源
- Sharding-Proxy无需支持，使用XA或柔性事务即可
-  </description>
+  支持情况  Sharding-JDBC和Sharding-Proxy原生支持本地事务  </description>
     </item>
     
     <item>
@@ -173,7 +182,7 @@ ds_0: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
       <guid>https://shardingsphere.apache.org/document/current/cn/quick-start/sharding-proxy-quick-start/</guid>
       <description> 1. 规则配置 编辑%SHARDING_PROXY_HOME%\conf\config-xxx.yaml。详情请参见配置手册。
 编辑%SHARDING_PROXY_HOME%\conf\server.yaml。详情请参见配置手册。
-2. 启动服务  使用默认配置项  ${sharding-proxy}\bin\start.sh ${port}   配置端口  ${sharding-proxy}\bin\start.sh ${port}  </description>
+2. 启动服务  使用默认配置项  ${sharding-proxy}\bin\start.sh   配置端口  ${sharding-proxy}\bin\start.sh ${port}  </description>
     </item>
     
     <item>
@@ -187,21 +196,27 @@ ds_0: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
     
     <item>
       <title>两阶段事务-XA</title>
-      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/2pc-xa-transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/</guid>
-      <description> 概念 ﻿两阶段事务提交采用的是X/OPEN组织所定义的DTP模型，通过抽象出来的AP, TM, RM的概念可以保证事务的强一致性。其中TM和RM间采用XA的协议进行双向通信，与传统的本地事务相比，多了一个prepare阶段，数据库除了被动接受提交指令外，还可以反向通知调用方事务是否可以被提交，因此TM可以收集所有分支事务的prepare结果，最后进行原子的提交，保证事务的强一致性。
-﻿Java通定义JTA接口实现了XA的模型，JTA接口里的ResourceManager需要数据库厂商提供XA的驱动实现，而TransactionManager则需要事务管理器的厂商实现，传统的事务管理器需要同应用服务器绑定，因此使用的成本很高。而嵌入式的事务管器可以已jar包的形式提供服务，同ShardingSphere集成后，可保证分片后跨库事务强一致性。
-﻿通常，只有使用了事务管理器厂商所提供的XA事务连接池，才能支持XA的事务。ShardingSphere整合XA事务时，分离了XA事务管理和连接池管理，这样接入XA时，可以做到对业务的零侵入。
-功能  支持数据分片后的跨库XA事务. 两阶段提交保证操作的原子性和数据的强一致性 服务宕机重启后，提交/回滚中的事务可自动恢复 SPI机制整合主流的XA事务管理器，默认Atomikos，可以选择使用narayana和bitronix 同时支持XA和非XA的连接池 提供spring-boot和namespace的接入端 proxy原生支持XA事务  实现原理 ShardingSphere里定义了分布式事务的SPI接口ShardingTransactionManager，Sharding-JDBC和Sharding-Proxy为分布式事务的两个接入端。XAShardingTransactionManager为分布式事务的XA实现类，通过引入sharding-transaction-xa-core依赖，即可加入ShardingSphere的分布式事务生态中。XAShardingTransactionManager主要负责对actual datasource进行管理和适配，并且将接入端事务的begin/commit/rollback操作委托给具体的XA事务管理器。
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/2pc-xa-transaction/</guid>
+      <description> 功能  支持数据分片后的跨库XA事务 两阶段提交保证操作的原子性和数据的强一致性 服务宕机重启后，提交/回滚中的事务可自动恢复 SPI机制整合主流的XA事务管理器，默认Atomikos，可以选择使用Narayana和Bitronix 同时支持XA和非XA的连接池 提供spring-boot和namespace的接入端  不支持项  服务宕机后，在其它机器上恢复提交/回滚中的数据  </description>
+    </item>
+    
+    <item>
+      <title>两阶段事务-XA</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/principle/2pc-xa-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/principle/2pc-xa-transaction/</guid>
+      <description> 实现原理 ShardingSphere里定义了分布式事务的SPI接口ShardingTransactionManager，Sharding-JDBC和Sharding-Proxy为分布式事务的两个接入端。XAShardingTransactionManager为分布式事务的XA实现类，通过引入sharding-transaction-xa-core依赖，即可加入ShardingSphere的分布式事务生态中。XAShardingTransactionManager主要负责对actual datasource进行管理和适配，并且将接入端事务的begin/commit/rollback操作委托给具体的XA事务管理器。
 处理流程 1. begin 通常收到接入端的set autoCommit=0时，XAShardingTransactionManager会调用具体的XA事务管理器开启XA的全局事务，通常以XID的形式进行标记。
 2. SQL执行 ShardingSphere进行解析/优化/路由后，会生成逻辑SQL的分片SQLUnit，执行引擎为每个物理SQL创建连接的同时，物理连接所对应的XAResource也会被注册到当前XA事务中，事务管理器会在此阶段发送XAResource.start命令给数据库，数据库在收到XAResource.end命令之前的所有SQL操作，会被标记为XA事务。
 例如:
-XAResource1.start -- enlist阶段执行 statement.execute(&amp;quot;sql1&amp;quot;); statement.execute(&amp;quot;sql2&amp;quot;); XAResource1.end -- 提交阶段执行  这里sql1和sql2将会被标记为XA事务.
-3. commit/rollback XAShardingTransactionManager收到接入端的提交命令后，会委托实际的XA事务管理进行提交动作，这时事务管理器会收集当前线程里所有注册的XAResource，首先发送XAResource.end指令，用以标记此XA事务的边界。接着会依次发送prepare指令，收集所有参与XAResource投票，如果所有XAResource的反馈结果都是OK，则会再次调用commit指令进行最终提交，如果有一个XAResource的反馈结果为No，则会调用rollback指令进行回滚。在事务管理器发出提交指令后，任何XAResource产生的异常都会通过recovery日志进行重试，来保证提交阶段的操作原子性，和数据强一致性。
+XAResource1.start -- enlist阶段执行 statement.execute(&amp;quot;sql1&amp;quot;); statement.execute(&amp;quot;sql2&amp;quot;); XAResource1.end -- 提交阶段执行  这里sql1和sql2将会被标记为XA事务。
+3. commit/rollback XAShardingTransactionManager收到接入端的提交命令后，会委托实际的XA事务管理进行提交动作，这时事务管理器会收集当前线程里所有注册的XAResource，首先发送XAResource.end指令，用以标记此XA事务的边界。 接着会依次发送prepare指令，收集所有参与XAResource投票，如果所有XAResource的反馈结果都是OK，则会再次调用commit指令进行最终提交，如果有一个XAResource的反馈结果为No，则会调用rollback指令进行回滚。 在事务管理器发出提交指令后，任何XAResource产生的异常都会通过recovery日志进行重试，来保证提交阶段的操作原子性，和数据强一致性。
 例如:
-XAResource1.prepare -- ack: yes XAResource2.prepare -- ack: yes XAResource1.commit XAResource2.commit XAResource1.prepare -- ack: yes XAResource2.prepare -- ack: no XAResource1.rollback XAResource2.rollback  example  transaction-xa-raw-jdbc-example transaction-xa-spring-namespace-example transaction-xa-spring-boot-example  </description>
+XAResource1.prepare -- ack: yes XAResource2.prepare -- ack: yes XAResource1.commit XAResource2.commit XAResource1.prepare -- ack: yes XAResource2.prepare -- ack: no XAResource1.rollback XAResource2.rollback  </description>
     </item>
     
     <item>
@@ -357,6 +372,17 @@ mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308  FAQ 问题1
     </item>
     
     <item>
+      <title>Saga柔性事务</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/concept/base-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/concept/base-transaction/</guid>
+      <description>Saga事务 为了更好地理解柔性事务的设计思路，需要先解释数个概念：
+ 分支事务(BranchTransaction)： 分布式事务中，被路由到不同节点的实际SQL。 分支事务组(BranchTransactionGroup)： 分布式事务中，由同一个逻辑SQL生成的分支事务的组合。  当ShardingSphere对SQL进行解析时，事务引擎会将当前事务切换到新的分支事务组。 在开始并行执行路由后的实际SQL前，事务引擎会对这些SQL进行快照并注册对应分支事务到当前的分支事务组中。 当事务中所有的SQL均被解析并执行后，事务中可能存在数个分支事务组，每个分支事务组中也可能存在数个分支事务，如下图：
+最后当用户提交事务时，Saga引擎按照分支事务组的顺序，使用其中分支事务的路由SQL进行重试或反向SQL进行回滚。</description>
+    </item>
+    
+    <item>
       <title>Spring Boot配置</title>
       <link>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-spring-boot/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -439,15 +465,21 @@ SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=` t_or
     
     <item>
       <title>柔性事务</title>
-      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/base-transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/</guid>
-      <description>功能  完全支持跨库事务。 支持失败SQL重试及最大努力送达。 支持反向SQL、自动生成更新快照以及自动补偿。 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化。 暂不支持资源隔离。  设计 ShardingSphere的柔性事务需要实现Sharding事务管理器的SPI接口，用于管理事务的生命周期。 同时柔性事务还需要通过ShardingSphere的内部SQL Hook，获取与SQL相关的必要信息，帮助事务管理器控制分布式事务。 事务隔离引擎还处于计划阶段，因此柔性事务暂不支持资源隔离功能。
-支持情况 ShardingSphere的柔性事务已通过第三方SPI实现Saga事务，Saga引擎使用Servicecomb-Saga。
-Saga事务 为了更好地理解柔性事务的设计思路，需要先解释数个概念
- 分支事务(BranchTransaction)： 分布式事务中，被路由到不同节点的实际SQL。 分支事务组(BranchTransactionGroup)： 分布式事务中，由同一个逻辑SQL生成的分支事务的组合。  当ShardingSphere对SQL进行解析时，事务引擎会将当前事务切换到新的分支事务组。 在开始并行执行路由后的实际SQL前，事务引擎会对这些SQL进行快照并注册对应分支事务到当前的分支事务组中。 当事务中所有的SQL均被解析并执行后，事务中可能存在数个分支事务组，每个分支事务组中也可能存在数个分支事务，如下图：
-最后当用户提交事务时，Saga引擎按照分支事务组的顺序，使用其中分支事务的路由SQL进行重试或反向SQL进行回滚。</description>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/function/base-transaction/</guid>
+      <description> 功能  完全支持跨库事务 支持失败SQL重试及最大努力送达 支持反向SQL、自动生成更新快照以及自动补偿 默认使用关系型数据库进行快照及事务日志的持久化，支持使用SPI的方式加载其他类型的持久化  不支持项  暂不支持资源隔离 暂不支持服务宕机后，自动恢复提交中的commit和rollback  支持情况 ShardingSphere的柔性事务已通过第三方SPI实现Saga事务，Saga引擎使用Servicecomb-Saga。
+注意  反向SQL需要主键，请确保在表结构中定义主键。 对于INSERT语句， 需要在SQL中显示插入主键值，如INSERT INTO ${table_name} (id, value, ...) VALUES (11111, &#39;&#39;, ....) (其中id为表主键)。 若需要自动生成主键，可使用ShardingSphere的分布式主键（分布式主键不能为联合主键）。  </description>
+    </item>
+    
+    <item>
+      <title>柔性事务</title>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/transaction/principle/base-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/transaction/principle/base-transaction/</guid>
+      <description>设计 ShardingSphere的柔性事务需要实现Sharding事务管理器的SPI接口，用于管理事务的生命周期。 同时柔性事务还需要通过ShardingSphere的内部SQL Hook，获取与SQL相关的必要信息，帮助事务管理器控制分布式事务。 事务隔离引擎还处于计划阶段，因此柔性事务暂不支持资源隔离功能。</description>
     </item>
     
     <item>
@@ -570,9 +602,11 @@ orchestration: name: orchestration-sharding-data-source overwrite: false registr
 1.2 Atomikos参数配置 (可选) ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中会生成xa_tx.log, 这是XA崩溃恢复时所需的日志，请勿删除。
 也可以通过在项目的classpath中添加jta.properties来定制化Atomikos配置项。具体的配置规则请参考Atomikos的官方文档。
 2. 第三方BASE实现-Saga 目前Apache/incubator-shardingsphere暂无BASE事务的实现，但是仍然可以使用第三方实现的Saga事务。
-2.1 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-base-saga&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。
+项目地址: shardingsphere-spi-impl
+文中涉及${shardingsphere-spi-impl.version} 的jar暂未发布到maven中央仓，因此需要您根据源码自行部署。
+2.1 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-base-saga&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere-spi-impl.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Saga事务管理器将以SPI的方式被Sharding-JDBC所加载。
 2.2 Saga相关配置 可以通过在项目的classpath中添加saga.properties来定制化Saga事务的配置项。 配置项的属性及说明如下：
-   属性名称 默认值 说明     saga.actuator.executor.size 5 Saga引擎所使用的线程池大小   saga.actuator.transaction.max.retries 5 Saga引擎对失败SQL的最大重试次数   saga.actuator.compensation.max.retries 5 Saga引擎对失败SQL的最大尝试补偿次数   saga.actuator.transaction.retry.delay.milliseconds 5000 Saga引擎对失败SQL的重试间隔，单位毫秒   saga.actuator.compensation.retry.delay.milliseconds 3000 Saga引擎对失败SQL的补偿间隔，单位毫秒   saga.persistence.enabled false Saga引擎对快照及执行日志进行持久化   saga.</description>
+   属性名称 默认值 说明     saga.actuator.executor.size 5 Saga引擎所使用的线程池大小   saga.actuator.transaction.max.retries 5 Saga引擎对失败SQL的最大重试次数   saga.actuator.compensation.max.retries 5 Saga引擎对失败SQL的最大尝试补偿次数   saga.actuator.transaction.retry.delay.milliseconds 5000 Saga引擎对失败SQL的重试间隔，单位毫秒   saga.actuator.compensation.retry.delay.milliseconds 3000 Saga引擎对失败SQL的补偿间隔，单位毫秒   saga.</description>
     </item>
     
     <item>
@@ -632,7 +666,8 @@ ShardingQueryAssistedEncryptor 相比较于第一种脱敏方案，该方案更�
       
       <guid>https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/encrypt/</guid>
       <description>该章节主要介绍如何使用数据脱敏功能，如何进行相关配置。数据脱敏功能即可与数据分片功能共同使用，又可作为单独功能组件，独立使用。 与数据分片功能共同使用时，会创建ShardingDataSource；单独使用时，会创建EncryptDataSource来完成数据脱敏功能。
-不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置第一个数据源 BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds0&amp;quot;); dataSource1.setUsername(&amp;quot;root&amp;quot;); dataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds0&amp;quot;, dataSource1); // 配置第二个数据源 BasicDataSource dataSource2 = new BasicDataSource(); dataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds1&amp;quot;); dataSource2.setUsername(&amp;quot;root&amp;quot;); dataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds1&amp;quot;, dataSource2); // 配置Order表规则 + 脱敏规则 TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration(); orderTableRuleConfig.setLogicTable(&amp;quot;t_order&amp;quot;); orderTableRuleConfig.setActualDataNodes(&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); orderTableRuleConfig.setEncryptorConfig(new EncryptorConfiguration(&amp;quot;MD5&amp;quot;, &amp;quot;status&amp;quot;, new Properties())); // 配置分库 + 分表策略 orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); orderTableRuleConfig.</description>
+不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 配置数据源 BasicDataSource dataSource = new BasicDataSource(); dataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/encrypt&amp;quot;); dataSource.setUsername(&amp;quot;root&amp;quot;); dataSource.setPassword(&amp;quot;&amp;quot;); // 配置脱敏规则 Properties props = new Properties(); props..setProperty(&amp;quot;aes.key.value&amp;quot;, &amp;quot;123456&amp;quot;); EncryptorConfiguration encryptorConfig = new EncryptorConfiguration(&amp;quot;aes&amp;quot;, &amp;quot;user_id&amp;quot;, props); EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration(); encryptTableRuleConfig.setTable(&amp;quot;t_order&amp;quot;); encryptTableRuleConfig.setEncryptorConfig(encryptorConfig); EncryptRuleConfiguration ruleConfiguration = new EncryptRuleConfiguration(); ruleConfiguration.getTableRuleConfigs().add(encryptTableRuleConfig); // 获取数据源对象 DataSource dataSource = EncryptDataSourceFactory.createDataSource(dataSource, ruleConfiguration);  基于Yaml的规则配置 或通过Yaml方式配置，与以上配置等价：
+dataSource: !!com.zaxxer.hikari.HikariDataSource driverClassName: com.mysql.jdbc.Driver jdbcUrl: jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&amp;amp;useSSL=false username: root password: encryptRule: tables: t_order: encryptor: type: aes columns: user_id props: aes.</description>
     </item>
     
   </channel>

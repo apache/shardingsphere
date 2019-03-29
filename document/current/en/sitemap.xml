@@ -87,16 +87,16 @@
   </url>
   
   <url>
-    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/function/local-transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/local-transaction/"
                 />
   </url>
   
@@ -223,20 +223,6 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/usage/"
-                />
-  </url>
-  
-  <url>
-    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="cn"
-                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/"
                 />
   </url>
   
@@ -465,16 +451,16 @@
   </url>
   
   <url>
-    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/function/base-transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/function/base-transaction/"
                 />
   </url>
   
