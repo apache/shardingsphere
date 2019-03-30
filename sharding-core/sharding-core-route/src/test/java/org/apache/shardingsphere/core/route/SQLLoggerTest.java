@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.core.route;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.ContextBase;
+import com.google.common.base.Joiner;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,90 +36,65 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.inOrder;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class SQLLoggerTest {
 
     private String sql;
+
     private Collection<String> dataSourceNames;
+
     private Collection<RouteUnit> routeUnits;
 
+    @Mock
+    private Logger logger;
+
     @Before
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         this.sql = "select * from user";
         this.dataSourceNames = Arrays.asList("db1", "db2", "db3");
         this.routeUnits = mockRouteUnits(dataSourceNames,sql);
+        Field field = SQLLogger.class.getDeclaredField("log");
+        setFinalStatic(field, logger);
     }
 
     @Test
     public void assertlogSQLShard() {
-        List<String> actualLogMessages = watchLogMessages(Level.INFO);
         SQLLogger.logSQL(sql, false, null, routeUnits);
-        List<String> expectedLogMessages = buildLogSQLShardExpectedMessages();
-        assertThat(actualLogMessages, is(expectedLogMessages));
+        InOrder inOrder = inOrder(logger);
+        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
+        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
+        inOrder.verify(logger).info("SQLStatement: {}",new Object[]{null});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}",new Object[]{"db1",sql});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}",new Object[]{"db2",sql});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}",new Object[]{"db3",sql});
     }
 
     @Test
     public void assertlogSQLShardSimple() {
-        List<String> actualLogMessages = watchLogMessages(Level.INFO);
         SQLLogger.logSQL(sql, true, null, routeUnits);
-        List<String> expectedLogMessages = buildLogSQLShardSimpleExpectedMessages();
-        assertThat(actualLogMessages, is(expectedLogMessages));
+        InOrder inOrder = inOrder(logger);
+        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
+        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
+        inOrder.verify(logger).info("SQLStatement: {}",new Object[]{null});
+        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}",new Object[]{buildDataSourceNamesSet(),routeUnits.size()});
     }
 
     @Test
     public void assertlogSQLMasterSlave() {
-        List<String> actualLogMessages = watchLogMessages(Level.INFO);
         SQLLogger.logSQL(sql, dataSourceNames);
-        List<String> expectedLogMessages = buildLogSQLMasterSlaveExpectedMessages();
-        assertThat(actualLogMessages, is(expectedLogMessages));
+        InOrder inOrder = inOrder(logger);
+        inOrder.verify(logger).info("Rule Type: master-slave",new Object[]{});
+        inOrder.verify(logger).info("SQL: {} ::: DataSources: {}",new Object[]{sql,Joiner.on(",").join(dataSourceNames)});
     }
 
-    private List<String> buildLogSQLShardExpectedMessages() {
-        List<String> expectedLogMessages = new ArrayList<>();
-        expectedLogMessages.add("Rule Type: sharding");
-        expectedLogMessages.add("Logic SQL: select * from user");
-        expectedLogMessages.add("SQLStatement: null");
-        expectedLogMessages.add("Actual SQL: db1 ::: select * from user");
-        expectedLogMessages.add("Actual SQL: db2 ::: select * from user");
-        expectedLogMessages.add("Actual SQL: db3 ::: select * from user");
-        return expectedLogMessages;
-    }
-
-    private List<String> buildLogSQLShardSimpleExpectedMessages() {
+    private Set<String> buildDataSourceNamesSet() {
         Set<String> dataSourceNamesSet = new HashSet<>(routeUnits.size());
         for (RouteUnit each : routeUnits) {
             dataSourceNamesSet.add(each.getDataSourceName());
         }
-        List<String> expectedLogMessages = new ArrayList<>();
-        expectedLogMessages.add("Rule Type: sharding");
-        expectedLogMessages.add("Logic SQL: select * from user");
-        expectedLogMessages.add("SQLStatement: null");
-        expectedLogMessages.add("Actual SQL(simple): "+dataSourceNamesSet.toString()+" ::: 3");
-        return expectedLogMessages;
-    }
-
-    private List<String> buildLogSQLMasterSlaveExpectedMessages() {
-        List<String> expectedLogMessages = new ArrayList<>();
-        expectedLogMessages.add("Rule Type: master-slave");
-        expectedLogMessages.add("SQL: select * from user ::: DataSources: db1,db2,db3");
-        return expectedLogMessages;
-    }
-
-    private List<String> watchLogMessages(Level level) {
-        final List<String> loggingEvents = new LinkedList<>();
-        ConsoleAppender<ILoggingEvent> appener = new ConsoleAppender<ILoggingEvent>() {
-            @Override
-            public void doAppend(ILoggingEvent eventObject) {
-                loggingEvents.add(eventObject.getFormattedMessage());
-            }
-        };
-        appener.setContext(new ContextBase());
-        Logger logger = (Logger) LoggerFactory.getLogger("ShardingSphere-SQL");
-        logger.setLevel(level);
-        logger.addAppender(appener);
-        return loggingEvents;
+        return dataSourceNamesSet;
     }
 
     private Collection<RouteUnit> mockRouteUnits(Collection<String> dataSourceNames, String sql) {
@@ -134,5 +111,13 @@ public final class SQLLoggerTest {
             result.add(new RouteUnit(dsName, new SQLUnit(sql, new ArrayList<>())));
         }
         return result;
+    }
+
+    private static void setFinalStatic(Field field, Object newValue) throws NoSuchFieldException, IllegalAccessException {
+        field.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        field.set(null, newValue);
     }
 }
