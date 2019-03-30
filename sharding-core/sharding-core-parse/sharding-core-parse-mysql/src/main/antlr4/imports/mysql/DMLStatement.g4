@@ -47,6 +47,14 @@ assignment
     : columnName EQ_ assignmentValue
     ;
 
+assignmentValues
+    : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
+    ;
+
+assignmentValue
+    : expr | DEFAULT
+    ;
+
 update
     : updateClause setClause whereClause?
     ;

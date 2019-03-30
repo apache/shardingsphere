@@ -60,14 +60,6 @@ columnNames
     : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
-assignmentValues
-    : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
-    ;
-
-assignmentValue
-    : DEFAULT | MAXVALUE | expr
-    ;
-
 indexName
     : identifier_
     ;
