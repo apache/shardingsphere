@@ -73,6 +73,22 @@ public enum RuleName {
     
     MODIFY_COL_PROPERTIES("ModifyColProperties"),
     
+    INSERT_COLUMN_CLAUSE("InsertColumnClause"),
+    
+    INSERT_VALUES_CLAUSE("InsertValuesClause"),
+    
+    INSERT_ON_DUPLICATE_KEY_CLAUSE("InsertOnDuplicateKeyClause"),
+    
+    SET_CLAUSE("SetClause"),
+    
+    ASSIGNMENT_VALUES("AssignmentValues"),
+    
+    ASSIGNMENT_VALUE("AssignmentValue"),
+    
+    ASSIGNMENTS("Assignments"),
+    
+    ASSIGNMENT("Assignment"),
+    
     SELECT_CLAUSE("SelectClause"),
     
     SELECT_SPECIFICATION("SelectSpecification"),
@@ -141,23 +157,7 @@ public enum RuleName {
     
     DELETE("Delete"),
     
-    DELETE_CLAUSE("DeleteClause"),
-    
-    COLUMN_CLAUSE("ColumnClause"),
-    
-    SET_CLAUSE("SetClause"),
-    
-    VALUE_CLAUSE("ValueClause"),
-    
-    ASSIGNMENT_VALUES("AssignmentValues"),
-    
-    ASSIGNMENT_VALUE("AssignmentValue"),
-    
-    ASSIGNMENTS("Assignments"),
-    
-    ASSIGNMENT("Assignment"),
-    
-    ON_DUPLICATE_KEY_CLAUSE("OnDuplicateKeyClause");
+    DELETE_CLAUSE("DeleteClause");
     
     private final String name;
     

@@ -70,11 +70,11 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private void extractValuesColumn(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
-        Optional<ParserRuleContext> columnClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_CLAUSE);
+        Optional<ParserRuleContext> columnClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMN_CLAUSE);
         if (!columnClauseNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> valueClauseNode = ExtractorUtils.findFirstChildNode(columnClauseNode.get(), RuleName.VALUE_CLAUSE);
+        Optional<ParserRuleContext> valueClauseNode = ExtractorUtils.findFirstChildNode(columnClauseNode.get(), RuleName.INSERT_VALUES_CLAUSE);
         if (!valueClauseNode.isPresent()) {
             return;
         }
@@ -114,7 +114,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private void extractDuplicateKeys(final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
-        Optional<ParserRuleContext> onDuplicateClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ON_DUPLICATE_KEY_CLAUSE);
+        Optional<ParserRuleContext> onDuplicateClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_ON_DUPLICATE_KEY_CLAUSE);
         if (!onDuplicateClauseNode.isPresent()) {
             return;
         }

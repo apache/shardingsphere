@@ -20,22 +20,18 @@ grammar DMLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION identifier_ (COMMA_ identifier_)*)? (setClause | columnClause | columnNames? select) onDuplicateKeyClause?
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION identifier_ (COMMA_ identifier_)*)? (insertColumnClause | setClause | columnNames? select) insertOnDuplicateKeyClause?
     ;
 
-setClause
-    : SET assignments
+insertColumnClause
+    : columnNames? insertValuesClause
     ;
 
-columnClause
-    : columnNames? valueClause
-    ;
-
-valueClause
+insertValuesClause
     : (VALUES | VALUE) assignmentValues (COMMA_ assignmentValues)*
     ;
 
-onDuplicateKeyClause
+insertOnDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignments
     ;
 
@@ -53,6 +49,10 @@ assignmentValues
 
 assignmentValue
     : expr | DEFAULT
+    ;
+
+setClause
+    : SET assignments
     ;
 
 update
