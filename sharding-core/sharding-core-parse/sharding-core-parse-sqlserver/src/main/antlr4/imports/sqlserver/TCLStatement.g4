@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar SQLServerTCLStatement;
+grammar TCLStatement;
 
 import Symbol, Keyword, Literals;
 
