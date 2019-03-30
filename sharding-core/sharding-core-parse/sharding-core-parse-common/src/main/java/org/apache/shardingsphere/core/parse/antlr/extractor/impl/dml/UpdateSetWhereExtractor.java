@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dql.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
@@ -59,7 +59,7 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
         if (!setClauseNode.isPresent()) {
             return;
         }
-        ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
+        ColumnExtractor columnSegmentExtractor = new ColumnExtractor();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(setClauseNode.get(), RuleName.ASSIGNMENT)) {
             Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract((ParserRuleContext) each.getChild(0));
             updateSetWhereSegment.getUpdateColumns().put(columnSegment.get(), expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) each.getChild(2)).get());

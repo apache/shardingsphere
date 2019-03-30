@@ -27,13 +27,13 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
 
 /**
- * Column extract extractor.
+ * Column extractor.
  *
  * @author duhongjun
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor {
+public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
@@ -41,7 +41,7 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
         if (columnNode.isPresent()) {
             return Optional.of(getColumnSegment(columnNode.get()));
         }
-        return Optional.<ColumnSegment>absent();
+        return Optional.absent();
     }
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {

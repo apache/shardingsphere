@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dql.SubqueryExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -80,7 +80,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor().extract(columnNode);
+        Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode);
         Preconditions.checkState(columnSegment.isPresent());
         return new PropertyExpressionSegment(columnSegment.get().getName(), columnSegment.get().getOwner().orNull(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
     }

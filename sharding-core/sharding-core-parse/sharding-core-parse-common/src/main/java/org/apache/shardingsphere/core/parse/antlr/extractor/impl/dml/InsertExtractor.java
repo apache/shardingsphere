@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -43,7 +43,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     
     private ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
-    private ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
+    private ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
     public Optional<InsertSegment> extract(final ParserRuleContext ancestorNode) {
@@ -75,7 +75,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             return;
         }
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(columnClauseNode.get(), RuleName.COLUMN_NAME)) {
-            insertSegment.getColumns().add(columnSegmentExtractor.extract(each).get());
+            insertSegment.getColumns().add(columnExtractor.extract(each).get());
         }
         Optional<ParserRuleContext> valueClauseNode = ExtractorUtils.findFirstChildNode(columnClauseNode.get(), RuleName.VALUE_CLAUSE);
         if (!valueClauseNode.isPresent()) {
@@ -111,7 +111,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         insertSegment.setInsertValuesListLastIndex(assignmentListNode.get().getStop().getStopIndex());
         for (ParserRuleContext each : assignments) {
             ParserRuleContext columnNode = (ParserRuleContext) each.getChild(0);
-            insertSegment.getColumns().add(columnSegmentExtractor.extract(columnNode).get());
+            insertSegment.getColumns().add(columnExtractor.extract(columnNode).get());
             insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) each.getChild(2)));
         }
     }
