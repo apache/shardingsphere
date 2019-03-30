@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLDDLStatement;
+grammar DDLStatement;
 
 import Symbol, Keyword, Literals, BaseRule;
 
