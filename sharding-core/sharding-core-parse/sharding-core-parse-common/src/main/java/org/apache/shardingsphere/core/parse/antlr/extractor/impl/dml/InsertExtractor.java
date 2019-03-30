@@ -70,7 +70,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private void extractValuesColumn(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
-        Optional<ParserRuleContext> columnClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMN_CLAUSE);
+        Optional<ParserRuleContext> columnClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMNS_CLAUSE);
         if (!columnClauseNode.isPresent()) {
             return;
         }
@@ -91,7 +91,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private void extractSetColumn(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
-        Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_CLAUSE);
+        Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
         if (!setClauseNode.isPresent()) {
             return;
         }

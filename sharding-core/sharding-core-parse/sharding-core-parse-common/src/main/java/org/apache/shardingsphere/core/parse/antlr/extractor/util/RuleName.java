@@ -73,13 +73,13 @@ public enum RuleName {
     
     MODIFY_COL_PROPERTIES("ModifyColProperties"),
     
-    INSERT_COLUMN_CLAUSE("InsertColumnClause"),
+    INSERT_COLUMNS_CLAUSE("InsertColumnsClause"),
     
     INSERT_VALUES_CLAUSE("InsertValuesClause"),
     
     INSERT_ON_DUPLICATE_KEY_CLAUSE("InsertOnDuplicateKeyClause"),
     
-    SET_CLAUSE("SetClause"),
+    SET_ASSIGNMENTS_CLAUSE("SetAssignmentsClause"),
     
     ASSIGNMENT_VALUES("AssignmentValues"),
     

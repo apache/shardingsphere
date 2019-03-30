@@ -55,7 +55,7 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
     }
     
     private void extractSetColumns(final ParserRuleContext ancestorNode, final UpdateSetWhereSegment updateSetWhereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_CLAUSE);
+        Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
         if (!setClauseNode.isPresent()) {
             return;
         }
