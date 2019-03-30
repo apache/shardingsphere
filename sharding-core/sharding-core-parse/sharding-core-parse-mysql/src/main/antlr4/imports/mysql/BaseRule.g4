@@ -52,57 +52,33 @@ columnName
     : (identifier_ DOT_)? identifier_
     ;
 
-unqualifiedShorthand
-    : ASTERISK_
+columnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
-qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+assignmentValues
+    : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
     ;
 
-alias
-    : identifier_ | STRING_
+assignmentValue
+    : DEFAULT | MAXVALUE | expr
     ;
 
 indexName
     : identifier_
     ;
 
-dataTypeLength
-    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
-    ;
-
-primaryKey
-    : PRIMARY? KEY
-    ;
-
-columnNames
-    : LP_ columnName (COMMA_ columnName)* RP_
-    ;
-
-exprs
-    : expr (COMMA_ expr)*
-    ;
-
-exprList
-    : LP_ exprs RP_
-    ;
-
 expr
     : expr AND expr
     | expr AND_ expr
+    | expr OR expr
+    | expr OR_ expr
     | expr XOR expr
     | LP_ expr RP_
     | NOT expr
     | NOT_ expr
-    | expr OR expr
-    | expr OR_ expr
     | booleanPrimary
     | exprRecursive
-    ;
-
-exprRecursive
-    : matchNone
     ;
 
 booleanPrimary
@@ -162,8 +138,8 @@ simpleExpr
     | TILDE_ simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
-    | exprList
-    | ROW exprList
+    | LP_ expr (COMMA_ expr)* RP_
+    | ROW LP_ expr (COMMA_ expr)* RP_
     | subquery
     | EXISTS subquery
     // | (identifier_ expr)
@@ -174,7 +150,7 @@ simpleExpr
     ;
 
 functionCall
-    : functionName LP_ distinct? (exprs | ASTERISK_)? RP_ | specialFunction
+    : functionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ | specialFunction
     ;
 
 functionName
@@ -239,6 +215,10 @@ collateClause
     : matchNone
     ;
 
+exprRecursive
+    : matchNone
+    ;
+
 orderByClause
     : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
@@ -247,20 +227,8 @@ orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
 
-assignmentValueList
-    : LP_ assignmentValues RP_
-    ;
-
-assignmentValues
-    : assignmentValue (COMMA_ assignmentValue)*
-    ;
-
-assignmentValue
-    : DEFAULT | MAXVALUE | expr
-    ;
-
 groupConcat
-    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
     ;
 
 castFunction
@@ -285,7 +253,7 @@ extractFunction
     ;
 
 charFunction
-    : CHAR LP_ exprs (USING ignoredIdentifier_)? RP_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
 trimFunction
@@ -309,7 +277,7 @@ levelInWeightListElement
     ;
 
 windowFunction
-    : identifier_ exprList overClause
+    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause
     ;
 
 overClause
@@ -321,7 +289,7 @@ windowSpec
     ;
 
 windowPartitionClause
-    : PARTITION BY exprs
+    : PARTITION BY expr (COMMA_ expr)*
     ;
 
 frameClause
@@ -352,24 +320,16 @@ frameEnd
     : frameStart
     ;
 
-assignmentList
-    : assignment (COMMA_ assignment)*
-    ;
-
-assignment
-    : columnName EQ_ assignmentValue
-    ;
-
-whereClause
-    : WHERE expr
-    ;
-
 dataType
     : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
 dataTypeName_
     : identifier_ identifier_?
+    ;
+
+dataTypeLength
+    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
 characterSet_

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar SQLServerTCLStatement;
+grammar TCLStatement;
 
-import Symbol, Keyword, Literals, SQLServerBase;
+import Symbol, Keyword, Literals;
 
 setTransaction
     : SET TRANSACTION

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar SQLServerDCLStatement;
+grammar DCLStatement;
 
-import Symbol, Keyword, Literals, SQLServerBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 grant
     : GRANT (classPrivilegesClause_ | classTypePrivilegesClause_) 
