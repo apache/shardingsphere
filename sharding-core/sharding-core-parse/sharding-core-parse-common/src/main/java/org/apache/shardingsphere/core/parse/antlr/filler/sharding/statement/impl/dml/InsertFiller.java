@@ -19,11 +19,9 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.imp
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Literals;
@@ -37,7 +35,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -55,41 +52,15 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
-        boolean createFromMeta = createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
-        createValue(sqlSegment, insertStatement, sql, shardingRule, createFromMeta);
+        createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
         insertStatement.getSQLTokens().add(
                 new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
         processDuplicateKey(shardingRule, sqlSegment, sqlStatement.getTables().getSingleTableName());
     }
     
-    private boolean createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        if (sqlSegment.getColumns().isEmpty()) {
-            createFromMeta(insertStatement, shardingTableMetaData);
-            return true;
-        }
-        String tableName = insertStatement.getTables().getSingleTableName();
-        for (ColumnSegment each : sqlSegment.getColumns()) {
-            Column column = new Column(each.getName(), tableName);
-            insertStatement.getColumns().add(column);
-            if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), 0));
-            }
-        }
-        return false;
-    }
-    
-    private void createFromMeta(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        if (shardingTableMetaData.containsTable(tableName)) {
-            for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-                Column column = new Column(each, tableName);
-                insertStatement.getColumns().add(column);
-            }
-        }
-    }
-    
-    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule, final boolean createFromMeta) {
+    private void createValue(final InsertSegment insertSegment, 
+                             final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (insertSegment.getValuesList().isEmpty()) {
             return;
         }
@@ -97,7 +68,7 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
             removeGenerateKeyColumn(insertStatement, shardingRule, insertSegment.getValuesList().get(0).getValues().size());
         }
         int parameterIndex = 0;
-        int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement, shardingRule, createFromMeta);
+        int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement, shardingRule, shardingTableMetaData);
         for (InsertValuesSegment each : insertSegment.getValuesList()) {
             if (each.getValues().size() != columnCount) {
                 throw new SQLParsingException("INSERT INTO column size mismatch value size.");
@@ -128,12 +99,13 @@ public final class InsertFiller implements SQLSegmentShardingFiller<InsertSegmen
         }
     }
     
-    private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement, final ShardingRule shardingRule, final boolean createFromMeta) {
-        if(!createFromMeta) {
+    private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        String tableName = insertStatement.getTables().getSingleTableName();
+        if (shardingTableMetaData.containsTable(tableName) && shardingTableMetaData.get(tableName).getColumns().size() == insertStatement.getColumns().size()) {
             return insertStatement.getColumns().size();
         }
         Optional<Integer> assistedQueryColumnCount = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
-        if(assistedQueryColumnCount.isPresent()) {
+        if (assistedQueryColumnCount.isPresent()) {
             return insertStatement.getColumns().size() - assistedQueryColumnCount.get();
         }
         return insertStatement.getColumns().size();

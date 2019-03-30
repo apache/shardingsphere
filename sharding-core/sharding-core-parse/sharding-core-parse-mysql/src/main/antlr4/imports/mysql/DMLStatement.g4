@@ -20,7 +20,7 @@ grammar DMLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 insert
-    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | columnNames? select) onDuplicateKeyClause?
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION identifier_ (COMMA_ identifier_)*)? (setClause | columnClause | columnNames? select) onDuplicateKeyClause?
     ;
 
 setClause

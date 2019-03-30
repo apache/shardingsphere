@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegme
  * @author duhongjun
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
