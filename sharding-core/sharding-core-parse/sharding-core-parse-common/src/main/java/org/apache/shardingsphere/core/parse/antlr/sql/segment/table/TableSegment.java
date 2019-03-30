@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Table segment.
@@ -39,7 +40,7 @@ public class TableSegment implements SQLSegment {
     
     public TableSegment(final TableToken token, final String schemaName, final String alias) {
         this.token = token;
-        this.schemaName = schemaName;
+        this.schemaName = SQLUtil.getExactlyValue(schemaName);
         this.alias = alias;
     }
     
