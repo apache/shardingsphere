@@ -17,7 +17,7 @@
 
 grammar SQLServerBase;
 
-import Symbol, SQLServerKeyword, Keyword, Literals, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 dataType
     : dataTypeName_ (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
