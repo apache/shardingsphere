@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar OracleTCLStatement;
+grammar TCLStatement;
 
 import Symbol, Keyword, Literals;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar OracleDCLStatement;
+grammar DCLStatement;
 
 import Symbol, Keyword, Literals, BaseRule;
 

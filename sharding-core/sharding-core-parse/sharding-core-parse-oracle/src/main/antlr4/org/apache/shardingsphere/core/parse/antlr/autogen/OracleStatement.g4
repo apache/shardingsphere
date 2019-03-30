@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import Keyword, Symbol, OracleDDLStatement, OracleTCLStatement, OracleDCLStatement;
+import Keyword, Symbol, DDLStatement, TCLStatement, DCLStatement;
 
 execute
     : (createTable
