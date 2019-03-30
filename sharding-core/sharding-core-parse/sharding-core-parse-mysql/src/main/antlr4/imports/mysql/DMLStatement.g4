@@ -24,7 +24,7 @@ insert
     ;
 
 setClause
-    : SET assignmentList
+    : SET assignments
     ;
 
 columnClause
@@ -32,11 +32,19 @@ columnClause
     ;
 
 valueClause
-    : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
+    : (VALUES | VALUE) assignmentValues (COMMA_ assignmentValues)*
     ;
 
 onDuplicateKeyClause
-    : ON DUPLICATE KEY UPDATE assignmentList
+    : ON DUPLICATE KEY UPDATE assignments
+    ;
+
+assignments
+    : assignment (COMMA_ assignment)*
+    ;
+
+assignment
+    : columnName EQ_ assignmentValue
     ;
 
 update
@@ -99,6 +107,18 @@ selectExpr
     : (columnName | expr) AS? alias? | qualifiedShorthand
     ;
 
+alias
+    : identifier_ | STRING_
+    ;
+
+unqualifiedShorthand
+    : ASTERISK_
+    ;
+
+qualifiedShorthand
+    : identifier_ DOT_ASTERISK_
+    ;
+
 fromClause
     : FROM tableReferences
     ;
@@ -133,6 +153,10 @@ joinTable
 
 joinCondition
     : ON expr | USING columnNames
+    ;
+
+whereClause
+    : WHERE expr
     ;
 
 groupByClause 

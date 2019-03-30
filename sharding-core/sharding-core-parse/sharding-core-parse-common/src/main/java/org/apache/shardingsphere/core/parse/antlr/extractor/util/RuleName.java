@@ -149,11 +149,11 @@ public enum RuleName {
     
     VALUE_CLAUSE("ValueClause"),
     
-    ASSIGNMENT_VALUE_LIST("AssignmentValueList"),
+    ASSIGNMENT_VALUES("AssignmentValues"),
     
     ASSIGNMENT_VALUE("AssignmentValue"),
     
-    ASSIGNMENT_LIST("AssignmentList"),
+    ASSIGNMENTS("Assignments"),
     
     ASSIGNMENT("Assignment"),
     

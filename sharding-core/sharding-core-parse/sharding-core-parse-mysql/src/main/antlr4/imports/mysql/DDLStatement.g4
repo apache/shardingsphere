@@ -81,6 +81,10 @@ primaryKeyOption_
     : primaryKey indexType_? columnNames indexOption_*
     ;
 
+primaryKey
+    : PRIMARY? KEY
+    ;
+
 uniqueOption_
     : UNIQUE (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
@@ -245,11 +249,11 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION ignoredIdentifier_ (VALUES (LESS THAN lessThanValue_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    : PARTITION ignoredIdentifier_ (VALUES (LESS THAN lessThanValue_ | IN assignmentValues))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
     ;
 
 lessThanValue_
-    : LP_ (expr | assignmentValues) RP_ | MAXVALUE
+    : LP_ (expr | assignmentValue (COMMA_ assignmentValue)*) RP_ | MAXVALUE
     ;
 
 partitionDefinitionOption_
