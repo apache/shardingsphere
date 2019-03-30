@@ -65,12 +65,20 @@ indexDefinition_
     : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
-indexOption_
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType_ | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
-    ;
-
 indexType_
     : USING (BTREE | HASH)
+    ;
+
+keyParts_
+    : LP_ keyPart_ (COMMA_ keyPart_)* RP_
+    ;
+
+keyPart_
+    : (columnName (LP_ NUMBER_ RP_)? | expr) (ASC | DESC)?
+    ;
+
+indexOption_
+    : KEY_BLOCK_SIZE EQ_? NUMBER_ | indexType_ | WITH PARSER identifier_ | COMMENT STRING_ | VISIBLE | INVISIBLE
     ;
 
 constraintDefinition_
@@ -91,14 +99,6 @@ uniqueOption_
 
 foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
-    ;
-
-keyParts_
-    : LP_ keyPart_ (COMMA_ keyPart_)* RP_
-    ;
-
-keyPart_
-    : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
     ;
 
 checkConstraintDefinition_
