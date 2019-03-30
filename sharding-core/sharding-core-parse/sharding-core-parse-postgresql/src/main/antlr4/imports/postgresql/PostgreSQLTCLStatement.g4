@@ -17,7 +17,7 @@
 
 grammar PostgreSQLTCLStatement;
 
-import Symbol, PostgreSQLKeyword, Keyword, Literals, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION
