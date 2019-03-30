@@ -19,6 +19,10 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
+literals_
+    : BIT_NUM_ | NUMBER_ | HEX_DIGIT_ | STRING_
+    ;
+
 identifier_
     : IDENTIFIER_ | reservedWord_
     ;

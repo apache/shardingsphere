@@ -249,25 +249,32 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION ignoredIdentifier_ (VALUES (LESS THAN lessThanValue_ | IN assignmentValues))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    : PARTITION identifier_ 
+    (VALUES (LESS THAN partitionLessThanValue_ | IN LP_ partitionValueList_ RP_))?
+    partitionDefinitionOption_* 
+    (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
     ;
 
-lessThanValue_
-    : LP_ (expr | assignmentValue (COMMA_ assignmentValue)*) RP_ | MAXVALUE
+partitionLessThanValue_
+    : LP_ (expr | partitionValueList_) RP_ | MAXVALUE
+    ;
+
+partitionValueList_
+    : literals_ (COMMA_ literals_)*
     ;
 
 partitionDefinitionOption_
-    : STORAGE? ENGINE EQ_? ignoredIdentifier_
+    : STORAGE? ENGINE EQ_? identifier_
     | COMMENT EQ_? STRING_
     | DATA DIRECTORY EQ_? STRING_
     | INDEX DIRECTORY EQ_? STRING_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
-    | TABLESPACE EQ_? ignoredIdentifier_
+    | TABLESPACE EQ_? identifier_
     ;
 
 subpartitionDefinition_
-    : SUBPARTITION ignoredIdentifier_ partitionDefinitionOption_*
+    : SUBPARTITION identifier_ partitionDefinitionOption_*
     ;
 
 dropTable
