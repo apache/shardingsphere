@@ -58,8 +58,7 @@ public final class OrderItemBuilder {
             if (result.getOwner().isPresent() && selectStatement.getTables().getTableNames().contains(result.getOwner().get())) {
                 // TODO check if order by `xxx`.xx, maybe has problem
                 String owner = result.getOwner().get();
-                selectStatement.addSQLToken(new TableToken(
-                        ((ColumnNameOrderByItemSegment) orderByItemSegment).getStartIndex(), SQLUtil.getExactlyValue(owner), QuoteCharacter.getQuoteCharacter(owner), 0));
+                selectStatement.addSQLToken(new TableToken(((ColumnNameOrderByItemSegment) orderByItemSegment).getStartIndex(), owner, QuoteCharacter.getQuoteCharacter(owner), 0));
             }
             return result;
         }
