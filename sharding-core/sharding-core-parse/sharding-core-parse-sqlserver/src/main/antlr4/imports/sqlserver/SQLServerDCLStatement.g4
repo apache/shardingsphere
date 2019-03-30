@@ -17,7 +17,7 @@
 
 grammar SQLServerDCLStatement;
 
-import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
+import Symbol, Keyword, Literals, SQLServerBase, BaseRule;
 
 grant
     : GRANT (classPrivilegesClause_ | classTypePrivilegesClause_) 
@@ -56,11 +56,11 @@ onClassTypeClause_
     ;
 
 privilegeType_
-    : ID+?
+    : IDENTIFIER_+?
     ;
 
 class_
-    : ID COLON_ COLON_
+    : IDENTIFIER_ COLON_ COLON_
     ;
 
 classType_

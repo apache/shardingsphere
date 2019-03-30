@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.table;
+lexer grammar Literals;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import Alphabet, Symbol;
 
-/**
- * Owner segment.
- * 
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public class OwnerSegment implements SQLSegment {
-    
-    private final int startIndex;
-    
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
-}
+IDENTIFIER_ 
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+    ;
+
+STRING_ 
+    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
+    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
+    ;
+
+NUMBER_
+    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
+    ;
+
+HEX_DIGIT_
+    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
+    ;
+
+BIT_NUM_
+    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+    ;
+
+fragment INT_
+    : [0-9]+
+    ;
+
+fragment HEX_
+    : [0-9a-fA-F]
+    ;

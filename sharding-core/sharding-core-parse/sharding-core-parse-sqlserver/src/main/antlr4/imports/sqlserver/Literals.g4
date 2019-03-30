@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLTCLStatement;
+lexer grammar Literals;
 
-import PostgreSQLKeyword, Keyword, Symbol, BaseRule, DataType;
+import Alphabet, Symbol;
 
-setTransaction
-    : SET (SESSION CHARACTERISTICS AS)? TRANSACTION
+IDENTIFIER_
+    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT_)* DOT_* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?) | [a-zA-Z0-9_$]+ DOT_ASTERISK_
     ;
 
-beginTransaction
-    : BEGIN | START TRANSACTION
+STRING_ 
+    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
+    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
     ;
 
-commit
-    : COMMIT
+NUMBER_
+    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
     ;
 
-rollback
-    : ROLLBACK
+HEX_DIGIT_
+    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
     ;
 
-savepoint
-    : SAVEPOINT 
+BIT_NUM_
+    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+    ;
+
+fragment INT_
+    : [0-9]+
+    ;
+
+fragment HEX_
+    : [0-9a-fA-F]
     ;

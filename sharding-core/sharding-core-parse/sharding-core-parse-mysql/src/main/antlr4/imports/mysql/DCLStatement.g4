@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar MySQLDCLStatement;
+grammar DCLStatement;
 
-import MySQLKeyword, Keyword, Symbol, MySQLBase, BaseRule, DataType;
+import Symbol, Keyword, Literals, BaseRule;
 
 grant
     : GRANT (PROXY ON | privileges_ ON onObjectClause_ | ignoredIdentifiers_)
@@ -86,7 +86,7 @@ objectType_
     ;
 
 privilegeLevel_
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | uid DOT_ASTERISK_ | tableName
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier_ DOT_ASTERISK_ | tableName
     ;
 
 createUser

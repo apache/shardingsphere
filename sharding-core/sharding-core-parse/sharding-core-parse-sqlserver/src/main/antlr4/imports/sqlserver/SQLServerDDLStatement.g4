@@ -17,7 +17,7 @@
 
 grammar SQLServerDDLStatement;
 
-import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
+import Symbol, Keyword, Literals, SQLServerBase, BaseRule;
 
 createIndex
     : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnNames
@@ -243,7 +243,7 @@ computedColumnDefinition
     ;
 
 columnSetDefinition 
-    : ignoredIdentifier_ ID COLUMN_SET FOR ALL_SPARSE_COLUMNS
+    : ignoredIdentifier_ IDENTIFIER_ COLUMN_SET FOR ALL_SPARSE_COLUMNS
     ;
 
 alterTableOp

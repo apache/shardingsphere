@@ -15,54 +15,54 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLDCLStatement;
+grammar DCLStatement;
 
-import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, BaseRule, DataType;
+import Symbol, Keyword, Literals, BaseRule;
 
 grant
-    : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
+    : GRANT (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
     ;
 
 revoke
-    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
+    : REVOKE (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
     ;
 
-privileges_
-    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
+objectPrivileges_
+    : objectPrivilegeType_ columnNames? (COMMA_ objectPrivilegeType_ columnNames?)*
     ;
 
-privilegeType_
+objectPrivilegeType_
     : ALL PRIVILEGES?
     | SELECT
     | INSERT
-    | UPDATE
     | DELETE
-    | TRUNCATE
-    | REFERENCES
-    | TRIGGER
-    | CREATE
-    | CONNECT
-    | TEMPORARY
-    | TEMP
+    | UPDATE
+    | ALTER
+    | READ
+    | WRITE
     | EXECUTE
-    | USAGE
+    | USE
+    | INDEX
+    | REFERENCES
+    | DEBUG
+    | UNDER
+    | FLASHBACK ARCHIVE
+    | ON COMMIT REFRESH
+    | QUERY REWRITE
+    | KEEP SEQUENCE
+    | INHERIT PRIVILEGES
+    | TRANSLATE SQL
+    | MERGE VIEW
     ;
 
 onObjectClause_
-    : SEQUENCE
-    | DATABASE
-    | DOMAIN
-    | FOREIGN
-    | FUNCTION
-    | PROCEDURE
-    | ROUTINE
-    | ALL
-    | LANGUAGE
-    | LARGE OBJECT
-    | SCHEMA
-    | TABLESPACE
-    | TYPE
-    | TABLE? tableName (COMMA_ tableName)*
+    : USER | DIRECTORY | EDITION | MINING MODEL | SQL TRANSLATION PROFILE
+    | JAVA (SOURCE | RESOURCE) tableName
+    | tableName
+    ;
+
+otherPrivileges_
+    : STRING_+ | IDENTIFIER_+
     ;
 
 createUser

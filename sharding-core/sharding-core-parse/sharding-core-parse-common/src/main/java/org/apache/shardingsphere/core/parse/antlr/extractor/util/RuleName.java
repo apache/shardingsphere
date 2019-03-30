@@ -29,8 +29,6 @@ public enum RuleName {
     
     TABLE_NAME("TableName"),
     
-    OWNER_NAME("OwnerName"),
-    
     COLUMN_DEFINITION("ColumnDefinition"),
     
     COLUMN_NAME("ColumnName"),
@@ -81,7 +79,9 @@ public enum RuleName {
     
     SELECT_EXPRS("SelectExprs"),
     
-    ASTERISK("Asterisk"),
+    UNQUALIFIED_SHORTHAND("UnqualifiedShorthand"),
+    
+    QUALIFIED_SHORTHAND("QualifiedShorthand"),
     
     SELECT_EXPR("SelectExpr"),
     

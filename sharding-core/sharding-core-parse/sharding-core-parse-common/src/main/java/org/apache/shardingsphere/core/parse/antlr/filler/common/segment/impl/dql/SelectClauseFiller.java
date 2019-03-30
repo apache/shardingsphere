@@ -50,17 +50,14 @@ public final class SelectClauseFiller implements SQLSegmentCommonFiller<SelectCl
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setFirstSelectItemStartIndex(sqlSegment.getFirstSelectItemStartIndex());
         selectStatement.setSelectListStopIndex(sqlSegment.getSelectItemsStopIndex());
-        if (sqlSegment.getSelectItems().isEmpty()) {
-            return;
-        }
         if (sqlSegment.isHasDistinct()) {
             fillDistinct(sqlSegment, selectStatement, sql, shardingTableMetaData);
-        } else {
-            int offset = 0;
-            for (SelectItemSegment each : sqlSegment.getSelectItems()) {
-                offset = setDistinctFunctionAlias(each, offset);
-                selectItemFiller.fill(each, sqlStatement, sql, shardingTableMetaData);
-            }
+            return;
+        }
+        int offset = 0;
+        for (SelectItemSegment each : sqlSegment.getSelectItems()) {
+            offset = setDistinctFunctionAlias(each, offset);
+            selectItemFiller.fill(each, sqlStatement, sql, shardingTableMetaData);
         }
     }
     

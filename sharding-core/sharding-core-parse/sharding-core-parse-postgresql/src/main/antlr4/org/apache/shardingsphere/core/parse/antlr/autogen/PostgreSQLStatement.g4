@@ -17,7 +17,7 @@
 
 grammar PostgreSQLStatement;
 
-import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, PostgreSQLDDLStatement, PostgreSQLTCLStatement, PostgreSQLDCLStatement, PostgreSQLDALStatement;
+import Keyword, Symbol, DDLStatement, TCLStatement, DCLStatement, DALStatement;
 
 execute
     : (createIndex

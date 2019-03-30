@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.antlr.parser;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLStatementRule;
+
+import com.google.common.base.Optional;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Abstract syntax tree of SQL.
@@ -33,5 +36,5 @@ public final class SQLAST {
     
     private final ParserRuleContext parserRuleContext;
     
-    private final SQLStatementRule rule;
+    private final Optional<SQLStatementRule> rule;
 }

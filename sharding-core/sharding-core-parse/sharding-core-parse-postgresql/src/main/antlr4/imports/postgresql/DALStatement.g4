@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-lexer grammar DataType;
+grammar DALStatement;
 
-import Symbol, Alphabet;
+import Symbol, Keyword, Literals, BaseRule;
 
-STRING_ 
-    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
-    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
+show
+    : SHOW (ALL | IDENTIFIER_ | TRANSACTION ISOLATION LEVEL)
     ;
-    
-NUMBER_
-    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
+
+setParam
+    : SET scope? setClause
     ;
-    
-HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
+
+scope
+    : SESSION | LOCAL
     ;
-    
-BIT_NUM_
-    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+
+setClause
+    : TIME ZONE timeZoneType | IDENTIFIER_ (TO | EQ_) (STRING_ | DEFAULT)
     ;
-    
-fragment INT_
-    : [0-9]+
+
+timeZoneType
+    : NUMBER_ | LOCAL | DEFAULT
     ;
-    
-fragment HEX_
-    : [0-9a-fA-F]
+
+resetParam
+    : RESET (ALL | IDENTIFIER_)
     ;

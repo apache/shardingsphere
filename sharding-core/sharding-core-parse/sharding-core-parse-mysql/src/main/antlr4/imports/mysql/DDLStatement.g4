@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar MySQLDDLStatement;
+grammar DDLStatement;
 
-import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, DataType, MySQLBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 createTable
     : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)

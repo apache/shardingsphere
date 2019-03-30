@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLDDLStatement;
+grammar DDLStatement;
 
-import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, DataType, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 createIndex
     : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
@@ -166,7 +166,7 @@ attributeOptions
     ;
 
 attributeOption
-    : ID EQ_ simpleExpr
+    : IDENTIFIER_ EQ_ simpleExpr
     ;
 
 addConstraintSpecification
@@ -186,7 +186,7 @@ storageParameterWithValue
     ;
 
 storageParameter
-    : ID
+    : IDENTIFIER_
     ;
 
 alterTableNameExists

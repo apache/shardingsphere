@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar MySQLTCLStatement;
+package org.apache.shardingsphere.core.parse.parser.sql;
 
-import MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
+import org.apache.shardingsphere.core.constant.SQLType;
 
-setTransaction
-    : SET (GLOBAL | SESSION)? TRANSACTION
-    ;
-
-setAutoCommit
-    : SET AUTOCOMMIT EQ_ autoCommitValue
-    ;
-
-autoCommitValue
-    : NUMBER_
-    ;
-
-beginTransaction
-    : BEGIN | START TRANSACTION
-    ;
-
-commit
-    : COMMIT
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVEPOINT 
-    ;
+/**
+ * General SQL statement.
+ *
+ * @author duhongjun
+ */
+public final class GeneralSQLStatement extends AbstractSQLStatement {
+    
+    public GeneralSQLStatement(final SQLType type) {
+        super(type);
+    }
+    
+    public GeneralSQLStatement() {
+        super(SQLType.GENERAL);
+    }
+}

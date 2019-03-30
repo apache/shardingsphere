@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLDALStatement;
+grammar TCLStatement;
 
-import PostgreSQLKeyword, Keyword, Symbol, BaseRule, DataType;
+import Symbol, Keyword, Literals, BaseRule;
 
-show
-    : SHOW (ALL | ID | TRANSACTION ISOLATION LEVEL)
+setTransaction
+    : SET (SESSION CHARACTERISTICS AS)? TRANSACTION
     ;
 
-setParam
-    : SET scope? setClause
+beginTransaction
+    : BEGIN | START TRANSACTION
     ;
 
-scope
-    : SESSION | LOCAL
+commit
+    : COMMIT
     ;
 
-setClause
-    : TIME ZONE timeZoneType | ID (TO | EQ_) (STRING_ | DEFAULT)
+rollback
+    : ROLLBACK
     ;
 
-timeZoneType
-    : NUMBER_ | LOCAL | DEFAULT
-    ;
-
-resetParam
-    : RESET (ALL | ID)
+savepoint
+    : SAVEPOINT
     ;

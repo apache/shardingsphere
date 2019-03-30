@@ -15,9 +15,35 @@
  * limitations under the License.
  */
 
-lexer grammar MySQLComments;
+lexer grammar Literals;
 
-import Symbol;
+import Alphabet, Symbol;
 
-BLOCK_COMMENT:  SLASH_ ASTERISK_ .*? ASTERISK_ SLASH_ -> channel(HIDDEN);
-INLINE_COMMENT: MINUS_ MINUS_ ~[\r\n]* -> channel(HIDDEN);
+IDENTIFIER_
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?) | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
+    ;
+
+STRING_ 
+    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
+    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
+    ;
+
+NUMBER_
+    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
+    ;
+
+HEX_DIGIT_
+    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
+    ;
+
+BIT_NUM_
+    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+    ;
+
+fragment INT_
+    : [0-9]+
+    ;
+
+fragment HEX_
+    : [0-9a-fA-F]
+    ;

@@ -15,9 +15,61 @@
  * limitations under the License.
  */
 
-grammar MySQLDQLStatement;
+grammar DMLStatement;
 
-import MySQLBase, MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
+import Symbol, Keyword, Literals, BaseRule;
+
+insert
+    : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE? INTO? tableName (PARTITION ignoredIdentifiers_)? (setClause | columnClause | columnNames? select) onDuplicateKeyClause?
+    ;
+
+setClause
+    : SET assignmentList
+    ;
+
+columnClause
+    : columnNames? valueClause
+    ;
+
+valueClause
+    : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
+    ;
+
+onDuplicateKeyClause
+    : ON DUPLICATE KEY UPDATE assignmentList
+    ;
+
+update
+    : updateClause setClause whereClause?
+    ;
+
+updateClause
+    : UPDATE LOW_PRIORITY? IGNORE? tableReferences
+    ;
+
+delete
+    : deleteClause whereClause?
+    ;
+
+deleteClause
+    : DELETE LOW_PRIORITY? QUICK? IGNORE? (fromMulti | fromSingle) 
+    ;
+
+fromSingle
+    : FROM tableName (PARTITION ignoredIdentifiers_)?
+    ;
+
+fromMulti
+    : fromMultiTables FROM tableReferences | FROM fromMultiTables USING tableReferences
+    ;
+
+fromMultiTables
+    : fromMultiTable (COMMA_ fromMultiTable)*
+    ;
+
+fromMultiTable
+    : tableName DOT_ASTERISK_?
+    ;
 
 select 
     : unionSelect | withClause_
@@ -40,11 +92,11 @@ selectSpecification
     ;
 
 selectExprs
-    : (asterisk | selectExpr) (COMMA_ selectExpr)*
+    : (unqualifiedShorthand | selectExpr) (COMMA_ selectExpr)*
     ; 
 
 selectExpr
-    : (columnName | expr) AS? alias? | ownerName DOT_ASTERISK_
+    : (columnName | expr) AS? alias? | qualifiedShorthand
     ;
 
 fromClause

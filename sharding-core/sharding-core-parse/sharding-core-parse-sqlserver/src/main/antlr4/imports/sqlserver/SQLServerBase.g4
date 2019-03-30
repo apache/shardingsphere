@@ -17,18 +17,14 @@
 
 grammar SQLServerBase;
 
-import SQLServerKeyword, Keyword, Symbol, BaseRule, DataType;
-
-ID
-    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT_)* DOT_* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?) | [a-zA-Z0-9_$]+ DOT_ASTERISK_
-    ;
+import Symbol, Keyword, Literals, BaseRule;
 
 dataType
     : dataTypeName_ (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
     ;
 
 dataTypeName_
-    : ID
+    : IDENTIFIER_
     ;
 
 privateExprOfDb
@@ -36,7 +32,7 @@ privateExprOfDb
     ;
 
 atTimeZoneExpr
-    : ID (WITH TIME ZONE)? STRING_
+    : IDENTIFIER_ (WITH TIME ZONE)? STRING_
     ;
 
 castExpr

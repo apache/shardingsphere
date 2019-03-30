@@ -15,54 +15,54 @@
  * limitations under the License.
  */
 
-grammar OracleDCLStatement;
+grammar DCLStatement;
 
-import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
+import Symbol, Keyword, Literals, BaseRule;
 
 grant
-    : GRANT (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
+    : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
 revoke
-    : REVOKE (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
+    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
     ;
 
-objectPrivileges_
-    : objectPrivilegeType_ columnNames? (COMMA_ objectPrivilegeType_ columnNames?)*
+privileges_
+    : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
 
-objectPrivilegeType_
+privilegeType_
     : ALL PRIVILEGES?
     | SELECT
     | INSERT
-    | DELETE
     | UPDATE
-    | ALTER
-    | READ
-    | WRITE
-    | EXECUTE
-    | USE
-    | INDEX
+    | DELETE
+    | TRUNCATE
     | REFERENCES
-    | DEBUG
-    | UNDER
-    | FLASHBACK ARCHIVE
-    | ON COMMIT REFRESH
-    | QUERY REWRITE
-    | KEEP SEQUENCE
-    | INHERIT PRIVILEGES
-    | TRANSLATE SQL
-    | MERGE VIEW
+    | TRIGGER
+    | CREATE
+    | CONNECT
+    | TEMPORARY
+    | TEMP
+    | EXECUTE
+    | USAGE
     ;
 
 onObjectClause_
-    : USER | DIRECTORY | EDITION | MINING MODEL | SQL TRANSLATION PROFILE
-    | JAVA (SOURCE | RESOURCE) tableName
-    | tableName
-    ;
-
-otherPrivileges_
-    : STRING_+ | ID+
+    : SEQUENCE
+    | DATABASE
+    | DOMAIN
+    | FOREIGN
+    | FUNCTION
+    | PROCEDURE
+    | ROUTINE
+    | ALL
+    | LANGUAGE
+    | LARGE OBJECT
+    | SCHEMA
+    | TABLESPACE
+    | TYPE
+    | TABLE? tableName (COMMA_ tableName)*
     ;
 
 createUser
@@ -70,7 +70,7 @@ createUser
     ;
 
 dropUser
-    : DROP USER 
+    : DROP USER
     ;
 
 alterUser
@@ -78,13 +78,13 @@ alterUser
     ;
 
 createRole
-    : CREATE ROLE 
+    : CREATE ROLE
     ;
 
 dropRole
-    : DROP ROLE 
+    : DROP ROLE
     ;
 
 alterRole
-    : ALTER ROLE 
+    : ALTER ROLE
     ;

@@ -60,5 +60,10 @@ public enum SQLType {
     /**
      * Database control Language.
      */
-    DCL
+    DCL,
+    
+    /**
+     * Database general Language.
+     */
+    GENERAL
 }

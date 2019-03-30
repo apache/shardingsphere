@@ -39,7 +39,7 @@ public final class SQLSegmentsExtractorEngine {
      */
     public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
-        for (SQLSegmentExtractor each : ast.getRule().getExtractors()) {
+        for (SQLSegmentExtractor each : ast.getRule().get().getExtractors()) {
             if (each instanceof OptionalSQLSegmentExtractor) {
                 Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext());
                 if (sqlSegment.isPresent()) {

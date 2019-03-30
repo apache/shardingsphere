@@ -17,34 +17,34 @@
 
 grammar BaseRule;
 
-import Keyword, DataType, Symbol;
-
-ID 
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
-    ;
+import Symbol, Keyword, Literals;
 
 schemaName
-    : ID
+    : IDENTIFIER_
     ;
 
 tableName
-    : ID
+    : oracleId
     ;
 
 columnName
-    : ID
-    ;
-
-collationName
-    : STRING_ | ID
+    : oracleId
     ;
 
 indexName
-    : ID
+    : oracleId
+    ;
+
+oracleId
+    : IDENTIFIER_ | (STRING_ DOT_)* STRING_
+    ;
+
+collationName
+    : STRING_ | IDENTIFIER_
     ;
 
 alias
-    : ID
+    : IDENTIFIER_
     ;
 
 dataTypeLength
@@ -81,7 +81,7 @@ expr
     ;
 
 exprRecursive
-    : matchNone
+    : PRIOR expr
     ;
 
 booleanPrimary
@@ -145,7 +145,7 @@ simpleExpr
     | ROW exprList
     | subquery
     | EXISTS subquery
-    // | (identifier expr)
+    // | (identifier_ expr)
     //| match_expr
     | caseExpress
     | intervalExpr
@@ -153,7 +153,7 @@ simpleExpr
     ;
 
 functionCall
-    : ID LP_ distinct? (exprs | ASTERISK_)? RP_
+    : IDENTIFIER_ LP_ distinct? (exprs | ASTERISK_)? RP_
     ;
 
 distinct
@@ -169,7 +169,7 @@ caseExpress
     ;
 
 privateExprOfDb
-    : matchNone
+    : treatFunction | caseExpr | intervalExpression | objectAccessExpression | constructorExpr
     ;
 
 variable
@@ -182,12 +182,12 @@ literal
     | TRUE
     | FALSE
     | NULL
-    | LBE_ ID STRING_ RBE_
+    | LBE_ IDENTIFIER_ STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | ID STRING_ collateClause?
+    | IDENTIFIER_ STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | ID? BIT_NUM_ collateClause?
+    | IDENTIFIER_? BIT_NUM_ collateClause?
     ;
 
 question
@@ -222,8 +222,88 @@ asterisk
     : ASTERISK_
     ;
 
+attributeName
+    : oracleId
+    ;
+
+indexTypeName
+    : IDENTIFIER_
+    ;
+
+simpleExprsWithParen
+    : LP_ simpleExprs RP_ 
+    ;
+
+simpleExprs
+    : simpleExpr (COMMA_ simpleExpr)*
+    ;
+
+lobItem
+    : attributeName | columnName
+    ;
+
+lobItems
+    : lobItem (COMMA_ lobItem)*
+    ;
+
+lobItemList
+    : LP_ lobItems RP_
+    ;
+
+dataType
+    : dataTypeName_ dataTypeLength? | specialDatatype | dataTypeName_ dataTypeLength? datetimeTypeSuffix
+    ;
+
+specialDatatype
+    : dataTypeName_ (LP_ NUMBER_ IDENTIFIER_ RP_) | NATIONAL dataTypeName_ VARYING? LP_ NUMBER_ RP_ | dataTypeName_ LP_? columnName RP_?
+    ;
+
+dataTypeName_
+    : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
+    ;
+
+datetimeTypeSuffix
+    : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
+    ;
+
+treatFunction
+    : TREAT LP_ expr AS REF? dataTypeName_ RP_
+    ;
+
+caseExpr
+    : CASE (simpleCaseExpr | searchedCaseExpr) elseClause? END
+    ;
+
+simpleCaseExpr
+    : expr searchedCaseExpr+
+    ;
+
+searchedCaseExpr
+    : WHEN expr THEN simpleExpr
+    ;
+
+elseClause
+    : ELSE expr
+    ;
+
+dateTimeExpr
+    : expr AT (LOCAL | TIME ZONE (STRING_ | DBTIMEZONE | expr))
+    ;
+
+intervalExpression
+    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
+    ;
+
+objectAccessExpression
+    : (LP_ simpleExpr RP_ | treatFunction) DOT_ (attributeName (DOT_ attributeName)* (DOT_ functionCall)? | functionCall)
+    ;
+
+constructorExpr
+    : NEW dataTypeName_ exprList
+    ;
+
 ignoredIdentifier_
-    : ID
+    : IDENTIFIER_
     ;
 
 ignoredIdentifiers_
