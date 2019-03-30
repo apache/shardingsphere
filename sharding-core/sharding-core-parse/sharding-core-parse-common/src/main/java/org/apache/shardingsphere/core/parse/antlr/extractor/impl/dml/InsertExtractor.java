@@ -74,12 +74,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (!columnClauseNode.isPresent()) {
             return;
         }
-        Optional<ParserRuleContext> columnListNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAMES);
-        if (columnListNode.isPresent()) {
-            insertSegment.setColumnsListLastIndex(columnListNode.get().getStop().getStopIndex());
-        } else {
-            insertSegment.setColumnsListLastIndex(insertSegment.getColumnClauseStartIndex());
-        }
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(columnClauseNode.get(), RuleName.COLUMN_NAME)) {
             insertSegment.getColumns().add(columnSegmentExtractor.extract(each).get());
         }
