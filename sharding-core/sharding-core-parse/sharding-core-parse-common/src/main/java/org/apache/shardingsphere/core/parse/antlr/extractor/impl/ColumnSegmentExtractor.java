@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
@@ -37,7 +38,17 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
-        return columnNode.isPresent() ? Optional.of(new ColumnSegment(columnNode.get().getText(), columnNode.get().getStart().getStartIndex(),
-                columnNode.get().getStop().getStopIndex())) : Optional.<ColumnSegment>absent();
+        if (columnNode.isPresent()) {
+            return Optional.of(getColumnSegment(columnNode.get()));
+        }
+        return Optional.<ColumnSegment>absent();
+    }
+    
+    private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
+        if (1 == columnNode.getChildCount()) {
+            return new ColumnSegment(columnNode.getChild(0).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        }
+        Preconditions.checkState(3 == columnNode.getChildCount());
+        return new ColumnSegment(columnNode.getChild(2).getText(), columnNode.getChild(0).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
     }
 }
