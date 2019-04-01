@@ -42,11 +42,7 @@ public final class InsertSegment implements SQLSegment {
     
     private boolean values;
     
-    private int insertValueStartIndex = -1;
-   
     private int columnClauseStartIndex;
-    
-    private int generateKeyColumnIndex = -1;
     
     private int insertValuesListLastIndex;
 }
