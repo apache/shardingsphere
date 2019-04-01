@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
@@ -84,9 +85,13 @@ public class SpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        return null == masterSlaveProperties.getMasterDataSourceName()
-                ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingSwapper.swap(shardingProperties), propMapProperties.getProps())
-                : MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveSwapper.swap(masterSlaveProperties), propMapProperties.getProps());
+        if (null != masterSlaveProperties.getMasterDataSourceName()) {
+            return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveSwapper.swap(masterSlaveProperties), propMapProperties.getProps());
+        }
+        if (null != shardingProperties) {
+            return ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingSwapper.swap(shardingProperties), propMapProperties.getProps());
+        }
+        return EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), encryptSwapper.swap(encryptProperties));
     }
     
     @Override
@@ -106,6 +111,12 @@ public class SpringBootConfiguration implements EnvironmentAware {
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
         String dataSources = standardEnv.getProperty(prefix + "names");
         return new InlineExpressionParser(dataSources).splitAndEvaluate();
+    }
+    
+    private String getDataSourceName(final Environment environment, final String prefix) {
+        StandardEnvironment standardEnv = (StandardEnvironment) environment;
+        standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
+        return standardEnv.getProperty(prefix + "name");
     }
     
     @SuppressWarnings("unchecked")
