@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.expression.ExpressionExtractor;
@@ -79,7 +78,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             return;
         }
         Collection<ParserRuleContext> insertValuesNodes = ExtractorUtils.getAllDescendantNodes(valueClauseNode.get(), RuleName.ASSIGNMENT_VALUES);
-        insertSegment.setInsertValueStartIndex(((TerminalNode) insertValuesNodes.iterator().next().getChild(0)).getSymbol().getStartIndex());
         for (ParserRuleContext each : insertValuesNodes) {
             Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(each, RuleName.QUESTION);
             InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.VALUES, each.getStart().getStartIndex(), each.getStop().getStopIndex(), questionNodes.size());
@@ -99,7 +97,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (!assignmentListNode.isPresent()) {
             return;
         }
-        insertSegment.setInsertValueStartIndex(assignmentListNode.get().getStart().getStartIndex());
         Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(assignmentListNode.get(), RuleName.QUESTION);
         InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.SET, assignmentListNode.get().getStart().getStartIndex(),
                 assignmentListNode.get().getStop().getStopIndex(), questionNodes.size());
