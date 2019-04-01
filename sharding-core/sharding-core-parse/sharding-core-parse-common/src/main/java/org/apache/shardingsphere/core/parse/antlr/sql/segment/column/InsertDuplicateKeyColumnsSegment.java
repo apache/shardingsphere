@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.encrypt;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.column;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Encrypt rule configuration for YAML.
+ * Insert duplicate key columns segment.
  *
- * @author panjuan
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class YamlEncryptRuleConfiguration implements YamlConfiguration {
+public final class InsertDuplicateKeyColumnsSegment implements SQLSegment {
     
-    private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
-    
-    private YamlEncryptorConfiguration defaultEncryptor;
+    private final Collection<ColumnSegment> columnSegments;
 }

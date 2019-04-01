@@ -19,11 +19,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-distribution</artifactId>
+        <artifactId>sharding-distribution</artifactId>
         <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-proxy-distribution</artifactId>
+    <artifactId>sharding-proxy-distribution</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -81,12 +81,12 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assembly/proxy-distribution.xml</descriptor>
+                                <descriptor>src/main/assembly/sharding-proxy-binary-distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <executions>
                             <execution>
-                                <id>sharding-proxy</id>
+                                <id>sharding-proxy-bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>

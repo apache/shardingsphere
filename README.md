@@ -45,7 +45,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 * Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
 * Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
+* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
 
 ![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
 

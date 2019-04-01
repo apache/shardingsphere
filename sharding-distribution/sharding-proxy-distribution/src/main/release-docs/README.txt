@@ -19,7 +19,7 @@ Getting Started
 To help you get started, try the following links:
 
 Getting Started
-    https://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/ 
+    https://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/
 
 We welcome contributions of all kinds, for details of how you can help
     https://shardingsphere.apache.org/community/en/contribute/

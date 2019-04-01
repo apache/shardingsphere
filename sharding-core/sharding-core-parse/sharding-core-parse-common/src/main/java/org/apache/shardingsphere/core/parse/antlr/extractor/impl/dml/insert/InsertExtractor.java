@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.expression.ExpressionExtractor;
@@ -53,7 +52,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (result.getValuesList().isEmpty()) {
             extractSetColumn(placeholderIndexes, ancestorNode, result);
         }
-        extractDuplicateKeys(ancestorNode, result);
         result.setColumnClauseStartIndex(ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME).get().getStop().getStopIndex() + 1);
         result.setInsertValuesListLastIndex(ancestorNode.getStop().getStopIndex());
         return Optional.of(result);
@@ -79,7 +77,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             return;
         }
         Collection<ParserRuleContext> insertValuesNodes = ExtractorUtils.getAllDescendantNodes(valueClauseNode.get(), RuleName.ASSIGNMENT_VALUES);
-        insertSegment.setInsertValueStartIndex(((TerminalNode) insertValuesNodes.iterator().next().getChild(0)).getSymbol().getStartIndex());
         for (ParserRuleContext each : insertValuesNodes) {
             Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(each, RuleName.QUESTION);
             InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.VALUES, each.getStart().getStartIndex(), each.getStop().getStopIndex(), questionNodes.size());
@@ -99,7 +96,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (!assignmentListNode.isPresent()) {
             return;
         }
-        insertSegment.setInsertValueStartIndex(assignmentListNode.get().getStart().getStartIndex());
         Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(assignmentListNode.get(), RuleName.QUESTION);
         InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.SET, assignmentListNode.get().getStart().getStartIndex(),
                 assignmentListNode.get().getStop().getStopIndex(), questionNodes.size());
@@ -110,16 +106,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             ParserRuleContext columnNode = (ParserRuleContext) each.getChild(0);
             insertSegment.getColumns().add(columnExtractor.extract(columnNode).get());
             insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) each.getChild(2)));
-        }
-    }
-    
-    private void extractDuplicateKeys(final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
-        Optional<ParserRuleContext> onDuplicateClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_ON_DUPLICATE_KEY_CLAUSE);
-        if (!onDuplicateClauseNode.isPresent()) {
-            return;
-        }
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateClauseNode.get(), RuleName.COLUMN_NAME)) {
-            insertSegment.getDuplicateKeyColumns().add(each.getText());
         }
     }
 }

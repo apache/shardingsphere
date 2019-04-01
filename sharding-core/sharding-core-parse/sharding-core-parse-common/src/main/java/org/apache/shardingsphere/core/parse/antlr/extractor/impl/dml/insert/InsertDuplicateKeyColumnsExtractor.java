@@ -15,49 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.InsertColumnsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.InsertDuplicateKeyColumnsSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Insert columns extractor.
+ * Insert duplicate key columns extractor.
  *
  * @author zhangliang
  */
-public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor {
+public final class InsertDuplicateKeyColumnsExtractor implements OptionalSQLSegmentExtractor {
     
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> insertColumnsClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMNS_CLAUSE);
-        if (insertColumnsClause.isPresent()) {
-            return Optional.of(new InsertColumnsSegment(extractColumnSegments(insertColumnsClause.get())));
+    public Optional<InsertDuplicateKeyColumnsSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> onDuplicateKeyClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_ON_DUPLICATE_KEY_CLAUSE);
+        if (!onDuplicateKeyClauseNode.isPresent()) {
+            return Optional.absent();
         }
-        Optional<ParserRuleContext> insertSetClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
-        if (insertSetClause.isPresent()) {
-            return Optional.of(new InsertColumnsSegment(extractColumnSegments(insertSetClause.get())));
-        }
-        return Optional.absent();
-    }
-    
-    private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext ancestorNode) {
         Collection<ColumnSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_NAME)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateKeyClauseNode.get(), RuleName.COLUMN_NAME)) {
             Optional<ColumnSegment> columnSegment = columnExtractor.extract(each);
             if (columnSegment.isPresent()) {
                 result.add(columnSegment.get());
             }
         }
-        return result;
+        return Optional.of(new InsertDuplicateKeyColumnsSegment(result));
     }
 }

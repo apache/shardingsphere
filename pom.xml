@@ -42,7 +42,7 @@
         <module>sharding-spring</module>
         <module>sharding-sql-test</module>
         
-        <module>shardingsphere-distribution</module>
+        <module>sharding-distribution</module>
     </modules>
     
     <properties>
