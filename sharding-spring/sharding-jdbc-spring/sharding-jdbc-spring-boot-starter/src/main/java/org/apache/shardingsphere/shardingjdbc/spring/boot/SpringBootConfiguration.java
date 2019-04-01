@@ -89,7 +89,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
         if (null != masterSlaveProperties.getMasterDataSourceName()) {
             return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveSwapper.swap(masterSlaveProperties), propMapProperties.getProps());
         }
-        if (null != shardingProperties) {
+        if (!shardingProperties.getTables().isEmpty()) {
             return ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingSwapper.swap(shardingProperties), propMapProperties.getProps());
         }
         return EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), encryptSwapper.swap(encryptProperties));
