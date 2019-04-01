@@ -40,35 +40,7 @@ public final class EncryptDataSourceBeanDefinitionParserTag {
     
     public static final String LOGIC_TABLE_ATTRIBUTE = "logic-table";
     
-    public static final String BROADCAST_TABLE_RULES_TAG = "broadcast-table-rules";
-    
-    public static final String BROADCAST_TABLE_RULE_TAG = "broadcast-table-rule";
-    
-    public static final String TABLE_ATTRIBUTE = "table";
-    
-    public static final String ACTUAL_DATA_NODES_ATTRIBUTE = "actual-data-nodes";
-    
-    public static final String DATABASE_STRATEGY_REF_ATTRIBUTE = "database-strategy-ref";
-    
-    public static final String TABLE_STRATEGY_REF_ATTRIBUTE = "table-strategy-ref";
-    
-    public static final String DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE = "default-database-strategy-ref";
-    
-    public static final String DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE = "default-table-strategy-ref";
-    
-    public static final String DEFAULT_KEY_GENERATOR_REF_ATTRIBUTE = "default-key-generator-ref";
-    
-    public static final String KEY_GENERATOR_REF_ATTRIBUTE = "key-generator-ref";
-    
-    public static final String KEY_GENERATOR_REF_TAG = "key-generator";
-    
-    public static final String GENERATE_KEY_COLUMN_ATTRIBUTE = "column";
-    
-    public static final String GENERATE_KEY_TYPE_ATTRIBUTE = "type";
-    
-    public static final String GENERATE_KEY_PROPERTY_REF_ATTRIBUTE = "props-ref";
-    
-    public static final String LOGIC_INDEX = "logic-index";
+    public static final String DEFAULT_ENCRYPTOR_REF_ATTRIBUTE = "default-encryptor-ref";
     
     public static final String ENCRYPTOR_REF_ATTRIBUTE = "encryptor-ref";
     
