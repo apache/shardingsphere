@@ -38,7 +38,7 @@
     <encrypt:data-source id="encryptDataSource">
         <encrypt:encrypt-rule data-source-name="dbtbl_0" default-encryptor-ref="md5">
             <encrypt:table-rules >
-                <encrypt:table-rule logic-table="t_order" encryptor-ref="aes" />
+                <encrypt:table-rule encrypt-table="t_order" encryptor-ref="aes" />
             </encrypt:table-rules>
         </encrypt:encrypt-rule>
     </encrypt:data-source>
