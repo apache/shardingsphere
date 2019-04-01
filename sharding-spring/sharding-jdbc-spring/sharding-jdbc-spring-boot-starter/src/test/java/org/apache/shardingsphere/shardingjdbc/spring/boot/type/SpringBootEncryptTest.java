@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,9 +44,16 @@ public class SpringBootEncryptTest {
     private DataSource dataSource;
     
     @Test
-    public void assertWithMasterSlaveDataSource() {
+    public void assertWithEncryptDataSource() {
         assertTrue(dataSource instanceof EncryptDataSource);
         BasicDataSource basicDataSource = (BasicDataSource) ((EncryptDataSource) dataSource).getDataSource();
         assertThat(basicDataSource.getMaxTotal(), is(100));
+    }
+    
+    @Test
+    public void assertWithEncryptRule() {
+        EncryptRule encryptRule = ((EncryptDataSource) dataSource).getEncryptRule();
+        assertThat(encryptRule.getEncryptTableNames().size(), is(1));
+        assertTrue(encryptRule.getEncryptorEngine().getShardingEncryptor("t_order", "user_id").isPresent());
     }
 }
