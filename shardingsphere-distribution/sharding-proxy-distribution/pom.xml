@@ -81,12 +81,12 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assembly/proxy-distribution.xml</descriptor>
+                                <descriptor>src/main/assembly/sharding-proxy-binary-distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <executions>
                             <execution>
-                                <id>sharding-proxy</id>
+                                <id>sharding-proxy-bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
