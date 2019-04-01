@@ -81,10 +81,6 @@ public final class DQLMergeEngine implements MergeEngine {
         return result.isEmpty() ? queryResults : result;
     }
     
-    private boolean isToHandleDistinctSelectItem() {
-        return selectStatement.getDistinctSelectItem().isPresent() && selectStatement.getGroupByItems().isEmpty();
-    }
-    
     private List<QueryResult> getDividedQueryResults(final DistinctQueryResult distinctQueryResult) {
         return Lists.transform(distinctQueryResult.divide(), new Function<DistinctQueryResult, QueryResult>() {
             
@@ -93,6 +89,10 @@ public final class DQLMergeEngine implements MergeEngine {
                 return input;
             }
         });
+    }
+    
+    private boolean isToHandleDistinctSelectItem() {
+        return selectStatement.getDistinctSelectItem().isPresent() && selectStatement.getGroupByItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
