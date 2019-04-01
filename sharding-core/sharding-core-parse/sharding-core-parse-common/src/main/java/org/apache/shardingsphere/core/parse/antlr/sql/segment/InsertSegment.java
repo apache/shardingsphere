@@ -40,8 +40,6 @@ public final class InsertSegment implements SQLSegment {
     
     private final List<String> duplicateKeyColumns = new LinkedList<>();
     
-    private boolean values;
-    
     private int columnClauseStartIndex;
     
     private int insertValuesListLastIndex;
