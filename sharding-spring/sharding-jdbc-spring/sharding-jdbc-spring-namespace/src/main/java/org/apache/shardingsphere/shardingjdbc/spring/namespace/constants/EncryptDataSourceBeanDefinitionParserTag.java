@@ -38,7 +38,7 @@ public final class EncryptDataSourceBeanDefinitionParserTag {
     
     public static final String TABLE_RULE_TAG = "table-rule";
     
-    public static final String LOGIC_TABLE_ATTRIBUTE = "encrypt-table";
+    public static final String ENCRYPT_TABLE_ATTRIBUTE = "encrypt-table";
     
     public static final String DEFAULT_ENCRYPTOR_REF_ATTRIBUTE = "default-encryptor-ref";
     
