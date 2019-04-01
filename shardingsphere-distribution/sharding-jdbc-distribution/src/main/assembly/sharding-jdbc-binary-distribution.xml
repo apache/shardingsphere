@@ -22,7 +22,7 @@
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${project.build.finalName}-sharding-jdbc-bin-release</baseDirectory>
+    <baseDirectory>${project.build.finalName}-sharding-jdbc-bin</baseDirectory>
     
     <fileSets>
         <fileSet>
@@ -31,8 +31,14 @@
                 <include>LICENSE</include>
                 <include>NOTICE</include>
                 <include>DISCLAIMER</include>
-                <include>README.md</include>
             </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/release-docs</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
         </fileSet>
     </fileSets>
     
