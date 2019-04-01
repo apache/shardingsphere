@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.api.config.encryptor;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 
@@ -29,6 +31,8 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public final class EncryptRuleConfiguration implements RuleConfiguration {
