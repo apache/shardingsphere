@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptorBeanDefinitionParserTag;
@@ -40,16 +41,21 @@ public final class EncryptorBeanDefinitionParser extends AbstractBeanDefinitionP
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_TYPE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_COLUMNS_ATTRIBUTE));
+        parseColumns(element, factory);
         parseAssistedQueryColumns(element, factory);
         parseProperties(element, factory);
         return factory.getBeanDefinition();
     }
     
+    private void parseColumns(final Element element, final BeanDefinitionBuilder factory) {
+        String columnNames = element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_COLUMNS_ATTRIBUTE);
+        factory.addConstructorArgValue(Splitter.on(",").trimResults().splitToList(columnNames));
+    }
+    
     private void parseAssistedQueryColumns(final Element element, final BeanDefinitionBuilder factory) {
         String assistedQueryColumns = element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_ASSISTED_QUERY_COLUMNS_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(assistedQueryColumns)) {
-            factory.addConstructorArgValue(assistedQueryColumns);
+            factory.addConstructorArgValue(Splitter.on(",").trimResults().splitToList(assistedQueryColumns));
         } else {
             factory.addConstructorArgValue(new LinkedList<>());
         }
