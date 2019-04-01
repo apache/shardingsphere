@@ -23,7 +23,7 @@
         <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-basic-distribution</artifactId>
+    <artifactId>shardingsphere-src-distribution</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
