@@ -51,8 +51,8 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     }
     
     private RuntimeBeanReference parseDataSource(final Element element) {
-        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
-        String dataSource = shardingRuleElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAME_TAG);
+        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
+        String dataSource = encryptRuleElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAME_TAG);
         return new RuntimeBeanReference(dataSource);
     }
     
