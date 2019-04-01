@@ -113,15 +113,17 @@ sharding.jdbc.config.encrypt.defaultEncryptor.columns=order_id
 ### 基于Spring命名空间的规则配置
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding" 
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd 
-                        ">
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                        http://www.springframework.org/schema/util 
+                        http://www.springframework.org/schema/util/spring-util.xsd">
+                        
     <bean id="ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/encrypt" />
@@ -132,17 +134,16 @@ sharding.jdbc.config.encrypt.defaultEncryptor.columns=order_id
     <bean:properties id="props">
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
-
+    
     <encrypt:encryptor id="md5" type="MD5" columns="order_id" />
     <encrypt:encryptor id="aes" type="AES" columns="user_id" props-ref="props" />
     
     <encrypt:data-source id="encryptDataSource">
-        <encrypt:encrypt-rule data-source-name="ds">
-            <encrypt:table-rules>
-                <encrypt:table-rule logic-table="t_order" encryptor-ref="aes" />
-                <encrypt:default-encryptor encryptor-ref="md5" />
+        <encrypt:encrypt-rule data-source-name="ds" default-encryptor-ref="md5">
+            <encrypt:table-rules >
+                <encrypt:table-rule encrypt-table="t_order" encryptor-ref="aes" />
             </encrypt:table-rules>
-        </encrypt:sharding-rule>
+        </encrypt:encrypt-rule>
     </encrypt:data-source>
 </beans>
 ```
