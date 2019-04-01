@@ -47,7 +47,7 @@
     </xsd:element>
     <xsd:element name="table-rule">
         <xsd:complexType>
-            <xsd:attribute name="logic-table" type="xsd:string" use="required" />
+            <xsd:attribute name="encrypt-table" type="xsd:string" use="required" />
             <xsd:attribute name="encryptor-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
