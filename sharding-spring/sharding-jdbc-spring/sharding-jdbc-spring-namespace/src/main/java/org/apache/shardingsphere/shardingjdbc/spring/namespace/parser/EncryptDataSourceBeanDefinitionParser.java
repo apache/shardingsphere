@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
@@ -65,23 +65,22 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     }
     
     private BeanDefinition parseEncryptRuleConfiguration(final Element element) {
-        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
-        parseDefaultDataSource(factory, shardingRuleElement);
-        parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
+        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
+        parseDefaultEncryptor(factory, encryptRuleElement);
+    
         parseDefaultTableShardingStrategy(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(shardingRuleElement));
         factory.addPropertyValue("masterSlaveRuleConfigs", parseMasterSlaveRulesConfiguration(shardingRuleElement));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(shardingRuleElement));
         factory.addPropertyValue("broadcastTables", parseBroadcastTables(shardingRuleElement));
-        parseDefaultKeyGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
     }
     
-    private void parseDefaultKeyGenerator(final BeanDefinitionBuilder factory, final Element element) {
-        String defaultKeyGeneratorConfig = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DEFAULT_KEY_GENERATOR_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(defaultKeyGeneratorConfig)) {
-            factory.addPropertyReference("defaultKeyGeneratorConfig", defaultKeyGeneratorConfig);
+    private void parseDefaultEncryptor(final BeanDefinitionBuilder factory, final Element element) {
+        String defaultEncryptorConfig = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DEFAULT_ENCRYPTOR_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(defaultEncryptorConfig)) {
+            factory.addPropertyReference("defaultEncryptorConfig", defaultEncryptorConfig);
         }
     }
     
