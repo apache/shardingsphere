@@ -59,17 +59,9 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     private BeanDefinition parseEncryptRuleConfiguration(final Element element) {
         Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
+        factory.addConstructorArgValue(parseTableRulesConfiguration(encryptRuleElement));
         parseDefaultEncryptor(factory, encryptRuleElement);
-        
-        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(encryptRuleElement));
         return factory.getBeanDefinition();
-    }
-    
-    private void parseDefaultEncryptor(final BeanDefinitionBuilder factory, final Element element) {
-        String defaultEncryptorConfig = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DEFAULT_ENCRYPTOR_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(defaultEncryptorConfig)) {
-            factory.addPropertyReference("defaultEncryptorConfig", defaultEncryptorConfig);
-        }
     }
     
     private List<BeanDefinition> parseTableRulesConfiguration(final Element element) {
@@ -82,6 +74,15 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
         return result;
     }
     
+    private void parseDefaultEncryptor(final BeanDefinitionBuilder factory, final Element element) {
+        String defaultEncryptorConfig = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DEFAULT_ENCRYPTOR_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(defaultEncryptorConfig)) {
+            factory.addConstructorArgReference(defaultEncryptorConfig);
+        } else {
+            factory.addConstructorArgValue(null);
+        }
+    }
+    
     private BeanDefinition parseTableRuleConfiguration(final Element tableElement) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptTableRuleConfiguration.class);
         factory.addConstructorArgValue(tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_TABLE_ATTRIBUTE));
@@ -91,8 +92,6 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     
     private void parseEncryptorConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
         String encryptor = tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(encryptor)) {
-            factory.addPropertyReference("encryptorConfig", encryptor);
-        }
+        factory.addConstructorArgReference(encryptor);
     }
 }
