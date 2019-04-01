@@ -33,6 +33,7 @@
     
     <modules>
         <module>shardingsphere-basic-distribution</module>
+        <module>sharding-jdbc-distribution</module>
         <module>sharding-proxy-distribution</module>
     </modules>
 </project>
