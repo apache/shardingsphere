@@ -54,7 +54,7 @@ public final class SQLLoggerTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         this.sql = "select * from user";
         this.dataSourceNames = Arrays.asList("db1", "db2", "db3");
-        this.routeUnits = mockRouteUnits(dataSourceNames,sql);
+        this.routeUnits = mockRouteUnits(dataSourceNames, sql);
         Field field = SQLLogger.class.getDeclaredField("log");
         setFinalStatic(field, logger);
     }
@@ -65,10 +65,10 @@ public final class SQLLoggerTest {
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
-        inOrder.verify(logger).info("SQLStatement: {}",new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}",new Object[]{"db1",sql});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}",new Object[]{"db2",sql});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}",new Object[]{"db3",sql});
+        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db1", sql});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", sql});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", sql});
     }
 
     @Test
@@ -77,16 +77,16 @@ public final class SQLLoggerTest {
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
-        inOrder.verify(logger).info("SQLStatement: {}",new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}",new Object[]{buildDataSourceNamesSet(),routeUnits.size()});
+        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
+        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNamesSet(), routeUnits.size()});
     }
 
     @Test
     public void assertlogSQLMasterSlave() {
         SQLLogger.logSQL(sql, dataSourceNames);
         InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: master-slave",new Object[]{});
-        inOrder.verify(logger).info("SQL: {} ::: DataSources: {}",new Object[]{sql,Joiner.on(",").join(dataSourceNames)});
+        inOrder.verify(logger).info("Rule Type: master-slave", new Object[]{});
+        inOrder.verify(logger).info("SQL: {} ::: DataSources: {}", new Object[]{sql, Joiner.on(",").join(dataSourceNames)});
     }
 
     private Set<String> buildDataSourceNamesSet() {
@@ -97,7 +97,7 @@ public final class SQLLoggerTest {
         return dataSourceNamesSet;
     }
 
-    private Collection<RouteUnit> mockRouteUnits(Collection<String> dataSourceNames, String sql) {
+    private Collection<RouteUnit> mockRouteUnits(final Collection<String> dataSourceNames, final String sql) {
         List<RouteUnit> results = new LinkedList<>();
         for (String dsName : dataSourceNames) {
             results.addAll(mockOneShard(dsName, 1, sql));
@@ -105,7 +105,7 @@ public final class SQLLoggerTest {
         return results;
     }
 
-    private Collection<RouteUnit> mockOneShard(final String dsName, final int size, String sql) {
+    private Collection<RouteUnit> mockOneShard(final String dsName, final int size, final String sql) {
         Collection<RouteUnit> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             result.add(new RouteUnit(dsName, new SQLUnit(sql, new ArrayList<>())));
@@ -113,7 +113,7 @@ public final class SQLLoggerTest {
         return result;
     }
 
-    private static void setFinalStatic(Field field, Object newValue) throws NoSuchFieldException, IllegalAccessException {
+    private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
