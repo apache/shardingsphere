@@ -12,19 +12,19 @@
     <title>SPI :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553847782" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1554111862" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553847782" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1554111862" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1554111862"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1543,7 +1543,23 @@
 
 <h2 id="background">Background</h2>
 
-<p>TODO</p>
+<p>In Apache ShardingSphere, many functionality implementation uploads are finished through SPI. <a href="https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html">Service Provider Interface (SPI)</a> is a kind of SPI for the third party to implement or expand, which can be applied in framework expansion or component replacement.</p>
+
+<p>Apache ShardingSphere uses SPI to expand in order to optimize overall architecture design at most. It is to enable premier users, who have implemented interfaces provided by Apache ShardingSphere, dynamically load user&rsquo;s self-defined implementation types. Therefore, it can satisfy users&rsquo; practical requirements for different scenarios, while keeping architecture integrity and functional stabilization.</p>
+
+<p>This chapter has provided all the Apache ShardingSphere functional modules that are loaded through SPI. Users with no special requirements can use them to implement corresponding functions after simple configurations. Premier users can develop self-defined implementations, referring to interfaces of existing functional modules. Welcome to feed your self-defined implementations to the <a href="https://github.com/apache/incubator-shardingsphere/pulls">open-source community</a>, benefiting more users.</p>
+
+<h3 id="data-masking">Data Masking</h3>
+
+<p>Data masking interface is used to regulate the encryption, decryption, access type, property configuration and other methods of the encryptor. There are mainly two interfaces, <code>ShardingEncryptor</code> and <code>ShardingQueryAssistedEncryptor</code>, in which the built-in implementations of  <code>ShardingEncryptor</code> include <code>AESShardingEncryptor</code> and <code>MD5ShardingEncryptor</code>. Please refer to <a href="https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/">Data Masking</a> for the introduction of encryption.</p>
+
+<h3 id="distributed-primary-key">Distributed Primary Key</h3>
+
+<p>Distributed primary key interface is used to regulate how to generate overall self-increment, type access and property configurations. Its main interface is <code>ShardingKeyGenerator</code>, built-in implementation types are <code>UUIDShardingKeyGenerator</code> and <code>SnowflakeShardingKeyGenerator</code>.  Please refer to <a href="https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/key-generator/">Distributed Primary Key</a> for the introduction.</p>
+
+<h3 id="registry-center">Registry Center</h3>
+
+<p>Registry center interface is used to regulate the initialization, data storage, data upgrade, monitoring and other registry center actions. Its main interface is <code>RegistryCenter</code> and built-in implementation types are Zookeeper and ETCD. Please refer to <a href="https://shardingsphere.apache.org/document/current/en/features/orchestration/supported-registry-repo/">Available Registry Center</a> for the introduction.</p>
 
 
 <footer class=" footline" >
@@ -2560,20 +2576,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1554111862"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1554111862"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553847782" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553847782"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1554111862" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1554111862"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

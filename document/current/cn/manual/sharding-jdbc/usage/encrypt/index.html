@@ -12,19 +12,19 @@
     <title>数据脱敏 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553847782" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1554111863" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1554111863" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1554111863" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1554111863" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1554111863" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1554111863" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1554111863" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1554111863" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553847782" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1554111863" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1554111863"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1882,15 +1882,17 @@ sharding.jdbc.config.encrypt.defaultEncryptor.columns=order_id
 
 <h3 id="基于spring命名空间的规则配置">基于Spring命名空间的规则配置</h3>
 
-<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
-    xmlns:sharding=&quot;http://shardingsphere.apache.org/schema/shardingsphere/sharding&quot; 
-    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+<pre><code class="language-xml">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:encrypt=&quot;http://shardingsphere.apache.org/schema/shardingsphere/encrypt&quot;
+       xmlns:bean=&quot;http://www.springframework.org/schema/util&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd 
-                        &quot;&gt;
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                        http://www.springframework.org/schema/util 
+                        http://www.springframework.org/schema/util/spring-util.xsd&quot;&gt;
+                        
     &lt;bean id=&quot;ds&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
         &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
         &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/encrypt&quot; /&gt;
@@ -1901,17 +1903,16 @@ sharding.jdbc.config.encrypt.defaultEncryptor.columns=order_id
     &lt;bean:properties id=&quot;props&quot;&gt;
         &lt;prop key=&quot;aes.key.value&quot;&gt;123456&lt;/prop&gt;
     &lt;/bean:properties&gt;
-
+    
     &lt;encrypt:encryptor id=&quot;md5&quot; type=&quot;MD5&quot; columns=&quot;order_id&quot; /&gt;
     &lt;encrypt:encryptor id=&quot;aes&quot; type=&quot;AES&quot; columns=&quot;user_id&quot; props-ref=&quot;props&quot; /&gt;
     
     &lt;encrypt:data-source id=&quot;encryptDataSource&quot;&gt;
-        &lt;encrypt:encrypt-rule data-source-name=&quot;ds&quot;&gt;
-            &lt;encrypt:table-rules&gt;
-                &lt;encrypt:table-rule logic-table=&quot;t_order&quot; encryptor-ref=&quot;aes&quot; /&gt;
-                &lt;encrypt:default-encryptor encryptor-ref=&quot;md5&quot; /&gt;
+        &lt;encrypt:encrypt-rule data-source-name=&quot;ds&quot; default-encryptor-ref=&quot;md5&quot;&gt;
+            &lt;encrypt:table-rules &gt;
+                &lt;encrypt:table-rule encrypt-table=&quot;t_order&quot; encryptor-ref=&quot;aes&quot; /&gt;
             &lt;/encrypt:table-rules&gt;
-        &lt;/encrypt:sharding-rule&gt;
+        &lt;/encrypt:encrypt-rule&gt;
     &lt;/encrypt:data-source&gt;
 &lt;/beans&gt;
 </code></pre>
@@ -3070,20 +3071,20 @@ private DataSource dataSource;
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1554111863"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1554111863"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1554111863"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553847782" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553847782"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1554111863" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1554111863"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

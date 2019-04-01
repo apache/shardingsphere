@@ -12,19 +12,19 @@
     <title>Sharding-Sidecar :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553847782" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1554111862" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553847782" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1554111862" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1554111862"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1543,11 +1543,9 @@
 
 <h2 id="introduction">Introduction</h2>
 
-<p>Sharding-Sidecar is third project of ShardingSphere, we just plan to do it in future.
-It can mesh interactions between applications and databases, must be running in Kubernetes or Mesos environment.
-It is a centre-less solution, and can support any languages, we call it as <code>Database Mesh</code>.</p>
+<p>Sharding-Sidecar defines itself as a cloud native database agent of Kubernetes or Mesos, in charge of all the access to database inDaemonSet form.</p>
 
-<p>Database Mesh is focused on how to connect the distributed data-access-layer and databases together. It pays more attention on interaction, which means the messy interaction among the applications and databases will be effectively orchestrate. By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly.</p>
+<p>Through a decentralized and zero-cost solution, it provides a mesh layer interacting with database, i.e., Database Mesh, also referred to as database grid.Database Mesh emphasizes on how to connect distributed database access application with the database. Focusing on interaction, it effectively organizes the interaction between messy applications and database. The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. They are all governed by mesh layer.</p>
 
 <p><img src="https://shardingsphere.apache.org/document/current/img/sharding-sidecar-brief_v2.png" alt="Sharding-Sidecar Architecture" /></p>
 
@@ -1556,59 +1554,59 @@ It is a centre-less solution, and can support any languages, we call it as <code
 <table>
 <thead>
 <tr>
-<th></th>
-<th><em>Sharding-JDBC</em></th>
-<th><em>Sharding-Proxy</em></th>
-<th><em>Sharding-Sidecar</em></th>
+<th align="left"></th>
+<th align="left"><em>Sharding-JDBC</em></th>
+<th align="left"><em>Sharding-Proxy</em></th>
+<th align="left"><em>Sharding-Sidecar</em></th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
-<td>Database</td>
-<td>Any</td>
-<td>MySQL</td>
-<td><code>MySQL</code></td>
+<td align="left">Database</td>
+<td align="left">Any</td>
+<td align="left">MySQL</td>
+<td align="left"><code>MySQL</code></td>
 </tr>
 
 <tr>
-<td>Connections Cost</td>
-<td>More</td>
-<td>Less</td>
-<td><code>More</code></td>
+<td align="left">Connections Cost Number</td>
+<td align="left">High</td>
+<td align="left">Low</td>
+<td align="left"><code>High</code></td>
 </tr>
 
 <tr>
-<td>Heterogeneous Language</td>
-<td>Java Only</td>
-<td>Any</td>
-<td><code>Any</code></td>
+<td align="left">Heterogeneous Language</td>
+<td align="left">Java Only</td>
+<td align="left">Any</td>
+<td align="left"><code>Any</code></td>
 </tr>
 
 <tr>
-<td>Performance</td>
-<td>Low loss</td>
-<td>High loss</td>
-<td><code>Low loss</code></td>
+<td align="left">Performance</td>
+<td align="left">Low loss</td>
+<td align="left">Relatively High loss</td>
+<td align="left"><code>Low loss</code></td>
 </tr>
 
 <tr>
-<td>Centre-less</td>
-<td>Yes</td>
-<td>No</td>
-<td><code>No</code></td>
+<td align="left">Decentralization</td>
+<td align="left">Yes</td>
+<td align="left">No</td>
+<td align="left"><code>Yes</code></td>
 </tr>
 
 <tr>
-<td>Static Entry</td>
-<td>No</td>
-<td>Yes</td>
-<td><code>No</code></td>
+<td align="left">Static Entry</td>
+<td align="left">No</td>
+<td align="left">Yes</td>
+<td align="left"><code>No</code></td>
 </tr>
 </tbody>
 </table>
 
-<p>Sharding-Proxy can support heterogeneous languages and provide an operation entry for DBA.</p>
+<p>The advantage of Sharding-Sidecar lies in its cloud native support for Kubernetes and Mesos.</p>
 
 
 <footer class=" footline" >
@@ -2625,20 +2623,20 @@ It is a centre-less solution, and can support any languages, we call it as <code
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1554111862"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1554111862"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553847782" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553847782"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1554111862" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1554111862"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
