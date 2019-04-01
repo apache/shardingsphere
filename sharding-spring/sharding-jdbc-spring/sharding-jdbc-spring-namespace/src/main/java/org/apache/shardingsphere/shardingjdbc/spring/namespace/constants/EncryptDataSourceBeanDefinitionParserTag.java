@@ -30,7 +30,7 @@ public final class EncryptDataSourceBeanDefinitionParserTag {
     
     public static final String ROOT_TAG = "data-source";
     
-    public static final String ENCRYPT_RULE_CONFIG_TAG = "sharding-rule";
+    public static final String ENCRYPT_RULE_CONFIG_TAG = "encrypt-rule";
     
     public static final String DATA_SOURCE_NAME_TAG = "data-source-name";
     
