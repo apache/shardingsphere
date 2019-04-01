@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.encrypt;
+package org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Encrypt rule configuration for YAML.
+ * Encrypt rule configuration properties.
  *
  * @author panjuan
  */
-@Getter
-@Setter
-public class YamlEncryptRuleConfiguration implements YamlConfiguration {
-    
-    private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
-    
-    private YamlEncryptorConfiguration defaultEncryptor;
+@ConfigurationProperties(prefix = "sharding.jdbc.config.encrypt")
+public class SpringBootEncryptRuleConfigurationProperties extends YamlEncryptRuleConfiguration {
 }
