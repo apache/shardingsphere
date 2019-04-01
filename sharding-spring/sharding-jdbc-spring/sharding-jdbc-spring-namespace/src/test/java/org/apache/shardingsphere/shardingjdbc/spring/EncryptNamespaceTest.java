@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.spring;
 
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.core.strategy.encrypt.impl.AESShardingEncryptor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,11 +31,10 @@ import static org.junit.Assert.assertTrue;
 public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
-    public void assertTypeMasterSlaveDataSource() {
-        MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSource");
-        MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSource");
-        assertTrue(randomSlaveRule.getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
-        assertTrue(roundRobinSlaveRule.getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
+    public void assertEncryptDataSource() {
+        EncryptRule encryptRule = getEncryptRuleRule();
+        assertTrue(encryptRule.getEncryptorEngine().getShardingEncryptor("t_order", "user_id").isPresent());
+        assertTrue(encryptRule.getEncryptorEngine().getShardingEncryptor("t_order", "user_id").get() instanceof AESShardingEncryptor);
     }
     
     private EncryptRule getEncryptRuleRule() {
