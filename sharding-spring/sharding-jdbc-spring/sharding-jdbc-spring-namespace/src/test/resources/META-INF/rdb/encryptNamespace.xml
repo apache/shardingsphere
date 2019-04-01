@@ -23,7 +23,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/encrypt.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
                         http://www.springframework.org/schema/util 
                         http://www.springframework.org/schema/util/spring-util.xsd">
     <import resource="datasource/dataSource.xml" />
