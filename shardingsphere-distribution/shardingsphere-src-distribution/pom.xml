@@ -234,18 +234,6 @@
                                     </descriptors>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>bin</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>src/main/assembly/binary-distribution.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
