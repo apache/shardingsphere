@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
+import org.apache.shardingsphere.shardingjdbc.spring.boot.type.SpringBootEncryptTest;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.type.SpringBootMasterSlaveTest;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.type.SpringBootShardingTest;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.util.DataSourceUtilTest;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -29,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         DataSourceUtilTest.class,
         SpringBootMasterSlaveTest.class,
-        SpringBootShardingTest.class 
+        SpringBootShardingTest.class,
+        SpringBootEncryptTest.class
     })
 public final class AllTests {
 }

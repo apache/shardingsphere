@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.encryptor;
+package org.apache.shardingsphere.shardingjdbc.spring.namespace.constants;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Encryptor rule configuration.
- *
+ * Encryptor parser tag constants.
+ * 
  * @author panjuan
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public final class EncryptRuleConfiguration implements RuleConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EncryptorBeanDefinitionParserTag {
     
-    private Collection<EncryptTableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
+    public static final String ENCRYPTOR_TYPE_ATTRIBUTE = "type";
     
-    private EncryptorConfiguration defaultEncryptorConfig;
+    public static final String ENCRYPTOR_COLUMNS_ATTRIBUTE = "columns";
+    
+    public static final String ENCRYPTOR_ASSISTED_QUERY_COLUMNS_ATTRIBUTE = "assisted-query-columns";
+    
+    public static final String ENCRYPTOR_PROPERTY_REF_ATTRIBUTE = "props-ref";
 }

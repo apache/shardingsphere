@@ -44,7 +44,8 @@ import org.junit.runners.Suite.SuiteClasses;
         WithNamespaceForMasterSlaveWithStrategyTypeTest.class,
         GenerateKeyJUnitTest.class,
         MasterSlaveNamespaceTest.class,
-        ShardingNamespaceTest.class
+        ShardingNamespaceTest.class,
+        EncryptNamespaceTest.class
     })
 public final class AllTests {
 }
