@@ -17,81 +17,64 @@
 
 grammar BaseRule;
 
-import Keyword, Symbol, DataType;
+import Symbol, Keyword, Literals;
 
-ID 
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    |  '`' ~'`'+ '`'
+literals_
+    : BIT_NUM_ | NUMBER_ | HEX_DIGIT_ | STRING_
     ;
 
-uid
-    : ID
-    | keywordIdentifier_
+identifier_
+    : IDENTIFIER_ | reservedWord_
     ;
 
-keywordIdentifier_
-    : DATE | PASSWORD
-    ;
-
-schemaName
-    : uid
+reservedWord_
+    : ACCOUNT | ACTION | AFTER | ALGORITHM | ALWAYS | ANY | AUTO_INCREMENT 
+    | AVG_ROW_LENGTH | BEGIN | BTREE | CHAIN | CHARSET | CHECKSUM | CIPHER 
+    | CLIENT | COALESCE | COLUMNS | COLUMN_FORMAT| COMMENT | COMMIT | COMMITTED 
+    | COMPACT | COMPRESSED | COMPRESSION | CONNECTION | CONSISTENT | CURRENT| DATA 
+    | DATE | DAY | DELAY_KEY_WRITE | DISABLE | DISCARD | DISK | DUPLICATE 
+    | ENABLE | ENCRYPTION | ENFORCED | END | ENGINE | ESCAPE | EVENT 
+    | EXCHANGE| EXECUTE | FILE | FIRST | FIXED | FOLLOWING | GLOBAL 
+    | HASH| IMPORT_ | INSERT_METHOD | INVISIBLE | KEY_BLOCK_SIZE | LAST | LESS 
+    | LEVEL| MAX_ROWS | MEMORY | MIN_ROWS | MODIFY | NO | NONE 
+    | OFFSET| PACK_KEYS | PARSER | PARTIAL | PARTITIONING | PASSWORD | PERSIST 
+    | PERSIST_ONLY | PRECEDING| PRIVILEGES | PROCESS | PROXY | QUICK | REBUILD 
+    | REDUNDANT | RELOAD| REMOVE | REORGANIZE | REPAIR | REVERSE | ROLLBACK 
+    | ROLLUP | ROW_FORMAT| SAVEPOINT | SESSION | SHUTDOWN | SIMPLE | SLAVE 
+    | SOUNDS | SQL_BIG_RESULT| SQL_BUFFER_RESULT | SQL_CACHE | SQL_NO_CACHE | START | STATS_AUTO_RECALC 
+    | STATS_PERSISTENT | STATS_SAMPLE_PAGES| STORAGE | SUBPARTITION | SUPER | TABLES | TABLESPACE 
+    | TEMPORARY | THAN| TIME | TIMESTAMP | TRANSACTION | TRUNCATE | UNBOUNDED 
+    | UNKNOWN | UPGRADE| VALIDATION | VALUE | VIEW | VISIBLE | WEIGHT_STRING 
+    | WITHOUT
     ;
 
 tableName
-    : (schemaName DOT_)? uid
-    ;
-
-ownerName
-    : uid
+    : (identifier_ DOT_)? identifier_
     ;
 
 columnName
-    : (ownerName DOT_)? uid
-    ;
-
-indexName
-    : (schemaName DOT_)? uid
-    ;
-
-alias
-    : uid | STRING_
-    ;
-
-dataTypeLength
-    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
-    ;
-
-primaryKey
-    : PRIMARY? KEY
+    : (identifier_ DOT_)? identifier_
     ;
 
 columnNames
     : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
-exprs
-    : expr (COMMA_ expr)*
-    ;
-
-exprList
-    : LP_ exprs RP_
+indexName
+    : identifier_
     ;
 
 expr
     : expr AND expr
     | expr AND_ expr
+    | expr OR expr
+    | expr OR_ expr
     | expr XOR expr
     | LP_ expr RP_
     | NOT expr
     | NOT_ expr
-    | expr OR expr
-    | expr OR_ expr
     | booleanPrimary
     | exprRecursive
-    ;
-
-exprRecursive
-    : matchNone
     ;
 
 booleanPrimary
@@ -151,11 +134,11 @@ simpleExpr
     | TILDE_ simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
-    | exprList
-    | ROW exprList
+    | LP_ expr (COMMA_ expr)* RP_
+    | ROW LP_ expr (COMMA_ expr)* RP_
     | subquery
     | EXISTS subquery
-    // | (identifier expr)
+    // | (identifier_ expr)
     //| match_expr
     | caseExpress
     | intervalExpr
@@ -163,7 +146,15 @@ simpleExpr
     ;
 
 functionCall
-    : matchNone
+    : functionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ | specialFunction
+    ;
+
+functionName
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHARSET | CHAR | TRIM | WEIGHT_STRING
+    ;
+
+specialFunction
+    : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
     ;
 
 distinct
@@ -183,7 +174,7 @@ privateExprOfDb
     ;
 
 variable
-    : matchNone
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
     ;
 
 literal
@@ -192,12 +183,12 @@ literal
     | TRUE
     | FALSE
     | NULL
-    | LBE_ ID STRING_ RBE_
+    | LBE_ identifier_ STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | uid STRING_ collateClause?
+    | identifier_ STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | ID? BIT_NUM_ collateClause?
+    | identifier_? BIT_NUM_ collateClause?
     ;
 
 question
@@ -220,6 +211,10 @@ collateClause
     : matchNone
     ;
 
+exprRecursive
+    : matchNone
+    ;
+
 orderByClause
     : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
@@ -228,16 +223,121 @@ orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
 
-unqualifiedShorthand
-    : ASTERISK_
+groupConcat
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
     ;
 
-qualifiedShorthand
-    : uid DOT_ASTERISK_
+castFunction
+    : CAST LP_ expr AS dataType RP_
+    ;
+
+convertFunction
+    : CONVERT LP_ expr ',' dataType RP_
+    | CONVERT LP_ expr USING ignoredIdentifier_ RP_ 
+    ;
+
+positionFunction
+    : POSITION LP_ expr IN expr RP_
+    ;
+
+substringFunction
+    :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
+    ;
+
+extractFunction
+    : EXTRACT LP_ identifier_ FROM expr RP_
+    ;
+
+charFunction
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    ;
+
+trimFunction
+    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    ;
+
+weightStringFunction
+    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
+    ;
+
+levelClause
+    : LEVEL (levelInWeightListElements | (NUMBER_ MINUS_ NUMBER_))
+    ;
+
+levelInWeightListElements
+    : levelInWeightListElement (COMMA_ levelInWeightListElement)*
+    ;
+
+levelInWeightListElement
+    : NUMBER_ (ASC | DESC)? REVERSE?
+    ;
+
+windowFunction
+    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause
+    ;
+
+overClause
+    : OVER LP_ windowSpec RP_ | OVER identifier_
+    ;
+
+windowSpec
+    : identifier_? windowPartitionClause? orderByClause? frameClause?
+    ;
+
+windowPartitionClause
+    : PARTITION BY expr (COMMA_ expr)*
+    ;
+
+frameClause
+    : frameUnits frameExtent
+    ;
+
+frameUnits
+    : ROWS | RANGE
+    ;
+
+frameExtent
+    : frameStart | frameBetween
+    ;
+
+frameStart
+    : CURRENT ROW
+    | UNBOUNDED PRECEDING
+    | UNBOUNDED FOLLOWING
+    | expr PRECEDING
+    | expr FOLLOWING
+    ;
+
+frameBetween
+    : BETWEEN frameStart AND frameEnd
+    ;
+
+frameEnd
+    : frameStart
+    ;
+
+dataType
+    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    ;
+
+dataTypeName_
+    : identifier_ identifier_?
+    ;
+
+dataTypeLength
+    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
+    ;
+
+characterSet_
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
+    ;
+
+collateClause_
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
 
 ignoredIdentifier_
-    : uid (DOT_ uid)?
+    : identifier_ (DOT_ identifier_)?
     ;
 
 ignoredIdentifiers_

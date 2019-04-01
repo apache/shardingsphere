@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar OracleDCLStatement;
+grammar DCLStatement;
 
-import Symbol, OracleKeyword, Keyword, DataType, OracleBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 grant
     : GRANT (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
@@ -62,7 +62,7 @@ onObjectClause_
     ;
 
 otherPrivileges_
-    : STRING_+ | ID+
+    : STRING_+ | IDENTIFIER_+
     ;
 
 createUser
@@ -70,7 +70,7 @@ createUser
     ;
 
 dropUser
-    : DROP USER 
+    : DROP USER
     ;
 
 alterUser
@@ -78,13 +78,13 @@ alterUser
     ;
 
 createRole
-    : CREATE ROLE 
+    : CREATE ROLE
     ;
 
 dropRole
-    : DROP ROLE 
+    : DROP ROLE
     ;
 
 alterRole
-    : ALTER ROLE 
+    : ALTER ROLE
     ;

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar MySQLTCLStatement;
+grammar TCLStatement;
 
-import Symbol, MySQLKeyword, Keyword, DataType, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 setTransaction
     : SET (GLOBAL | SESSION)? TRANSACTION
@@ -44,5 +44,5 @@ rollback
     ;
 
 savepoint
-    : SAVEPOINT 
+    : SAVEPOINT
     ;

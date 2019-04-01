@@ -15,34 +15,9 @@
  * limitations under the License.
  */
 
-grammar SQLServerTCLStatement;
+lexer grammar Comments;
 
-import Symbol, SQLServerKeyword, Keyword, DataType, SQLServerBase;
+import Symbol;
 
-setTransaction
-    : SET TRANSACTION
-    ;
-
-setAutoCommit
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
-    ;
-
-autoCommitValue
-    : ON | OFF
-    ;
-
-beginTransaction
-    : BEGIN (TRAN | TRANSACTION)
-    ;
-
-commit
-    : COMMIT 
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVE (TRAN | TRANSACTION)
-    ;
+BLOCK_COMMENT:  SLASH_ ASTERISK_ .*? ASTERISK_ SLASH_ -> channel(HIDDEN);
+INLINE_COMMENT: MINUS_ MINUS_ ~[\r\n]* -> channel(HIDDEN);

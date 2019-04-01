@@ -15,9 +15,30 @@
  * limitations under the License.
  */
 
-lexer grammar MySQLComments;
+grammar DALStatement;
 
-import Symbol;
+import Symbol, Keyword, Literals, BaseRule;
 
-BLOCK_COMMENT:  SLASH_ ASTERISK_ .*? ASTERISK_ SLASH_ -> channel(HIDDEN);
-INLINE_COMMENT: MINUS_ MINUS_ ~[\r\n]* -> channel(HIDDEN);
+show
+    : SHOW (ALL | IDENTIFIER_ | TRANSACTION ISOLATION LEVEL)
+    ;
+
+setParam
+    : SET scope? setClause
+    ;
+
+scope
+    : SESSION | LOCAL
+    ;
+
+setClause
+    : TIME ZONE timeZoneType | IDENTIFIER_ (TO | EQ_) (STRING_ | DEFAULT)
+    ;
+
+timeZoneType
+    : NUMBER_ | LOCAL | DEFAULT
+    ;
+
+resetParam
+    : RESET (ALL | IDENTIFIER_)
+    ;

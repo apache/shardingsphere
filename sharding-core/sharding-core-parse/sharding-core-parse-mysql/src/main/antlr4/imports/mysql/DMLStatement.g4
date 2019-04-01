@@ -15,9 +15,85 @@
  * limitations under the License.
  */
 
-grammar MySQLDQLStatement;
+grammar DMLStatement;
 
-import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
+
+insert
+    : INSERT insertSpecification_ INTO? tableName partitionNames_? (insertColumnsClause | setAssignmentsClause | columnNames? select) insertOnDuplicateKeyClause?
+    ;
+
+insertSpecification_
+    : (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE?
+    ;
+
+partitionNames_ 
+    : PARTITION identifier_ (COMMA_ identifier_)*
+    ;
+
+insertColumnsClause
+    : columnNames? insertValuesClause
+    ;
+
+insertValuesClause
+    : (VALUES | VALUE) assignmentValues (COMMA_ assignmentValues)*
+    ;
+
+insertOnDuplicateKeyClause
+    : ON DUPLICATE KEY UPDATE assignments
+    ;
+
+assignments
+    : assignment (COMMA_ assignment)*
+    ;
+
+assignment
+    : columnName EQ_ assignmentValue
+    ;
+
+assignmentValues
+    : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
+    ;
+
+assignmentValue
+    : expr | DEFAULT
+    ;
+
+setAssignmentsClause
+    : SET assignments
+    ;
+
+update
+    : updateClause setAssignmentsClause whereClause?
+    ;
+
+updateClause
+    : UPDATE LOW_PRIORITY? IGNORE? tableReferences
+    ;
+
+delete
+    : deleteClause whereClause?
+    ;
+
+deleteClause
+    : DELETE LOW_PRIORITY? QUICK? IGNORE? (fromMulti | fromSingle) 
+    ;
+
+fromSingle
+    : FROM tableName (PARTITION ignoredIdentifiers_)?
+    ;
+
+fromMulti
+    : fromMultiTables FROM tableReferences | FROM fromMultiTables USING tableReferences
+    ;
+
+fromMultiTables
+    : fromMultiTable (COMMA_ fromMultiTable)*
+    ;
+
+fromMultiTable
+    : tableName DOT_ASTERISK_?
+    ;
 
 select 
     : unionSelect | withClause_
@@ -45,6 +121,18 @@ selectExprs
 
 selectExpr
     : (columnName | expr) AS? alias? | qualifiedShorthand
+    ;
+
+alias
+    : identifier_ | STRING_
+    ;
+
+unqualifiedShorthand
+    : ASTERISK_
+    ;
+
+qualifiedShorthand
+    : identifier_ DOT_ASTERISK_
     ;
 
 fromClause
@@ -81,6 +169,10 @@ joinTable
 
 joinCondition
     : ON expr | USING columnNames
+    ;
+
+whereClause
+    : WHERE expr
     ;
 
 groupByClause 

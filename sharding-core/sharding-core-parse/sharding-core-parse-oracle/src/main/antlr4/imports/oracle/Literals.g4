@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
-lexer grammar DataType;
+lexer grammar Literals;
 
 import Alphabet, Symbol;
+
+IDENTIFIER_
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?) | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
+    ;
 
 STRING_ 
     : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')

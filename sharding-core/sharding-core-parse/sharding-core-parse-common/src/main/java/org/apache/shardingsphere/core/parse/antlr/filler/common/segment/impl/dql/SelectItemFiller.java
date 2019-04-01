@@ -38,7 +38,6 @@ import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Select item filler.
@@ -82,7 +81,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
     }
@@ -92,7 +91,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), SQLUtil.getExactlyValue(owner.get()), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar OracleDDLStatement;
+grammar DDLStatement;
 
-import Symbol, OracleKeyword, Keyword, DataType, OracleBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 createTable
     : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable

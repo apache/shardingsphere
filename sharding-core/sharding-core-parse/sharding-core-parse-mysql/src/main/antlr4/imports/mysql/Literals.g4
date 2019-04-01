@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLDALStatement;
+lexer grammar Literals;
 
-import Symbol, PostgreSQLKeyword, Keyword, DataType, BaseRule;
+import Alphabet, Symbol;
 
-show
-    : SHOW (ALL | ID | TRANSACTION ISOLATION LEVEL)
+IDENTIFIER_
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    |  '`' ~'`'+ '`'
     ;
 
-setParam
-    : SET scope? setClause
+STRING_ 
+    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
+    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
     ;
 
-scope
-    : SESSION | LOCAL
+NUMBER_
+    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
     ;
 
-setClause
-    : TIME ZONE timeZoneType | ID (TO | EQ_) (STRING_ | DEFAULT)
+HEX_DIGIT_
+    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
     ;
 
-timeZoneType
-    : NUMBER_ | LOCAL | DEFAULT
+BIT_NUM_
+    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
 
-resetParam
-    : RESET (ALL | ID)
+fragment INT_
+    : [0-9]+
+    ;
+
+fragment HEX_
+    : [0-9a-fA-F]
     ;

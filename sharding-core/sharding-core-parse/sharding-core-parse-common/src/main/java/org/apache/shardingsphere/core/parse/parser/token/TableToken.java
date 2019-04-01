@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.parser.token;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Table token.
@@ -40,7 +41,7 @@ public final class TableToken extends SQLToken {
     
     public TableToken(final int startIndex, final String tableName, final QuoteCharacter quoteCharacter, final int schemaNameLength) {
         super(startIndex);
-        this.tableName = tableName;
+        this.tableName = SQLUtil.getExactlyValue(tableName);
         this.quoteCharacter = quoteCharacter;
         this.schemaNameLength = schemaNameLength;
     }

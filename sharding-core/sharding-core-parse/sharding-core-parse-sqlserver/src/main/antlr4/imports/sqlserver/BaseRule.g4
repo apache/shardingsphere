@@ -17,34 +17,30 @@
 
 grammar BaseRule;
 
-import Keyword, Symbol, DataType;
-
-ID 
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
-    ;
+import Keyword, Symbol, Literals;
 
 schemaName
-    : ID
+    : IDENTIFIER_
     ;
 
 tableName
-    : ID
+    : IDENTIFIER_
     ;
 
 columnName
-    : ID
+    : IDENTIFIER_
     ;
 
 collationName
-    : STRING_ | ID
+    : STRING_ | IDENTIFIER_
     ;
 
 indexName
-    : ID
+    : IDENTIFIER_
     ;
 
 alias
-    : ID
+    : IDENTIFIER_
     ;
 
 dataTypeLength
@@ -56,7 +52,7 @@ primaryKey
     ;
 
 columnNames
-    : LP_ columnName (COMMA_ columnName)* RP_
+    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
 
 exprs
@@ -145,7 +141,7 @@ simpleExpr
     | ROW exprList
     | subquery
     | EXISTS subquery
-    // | (identifier expr)
+    // | (identifier_ expr)
     //| match_expr
     | caseExpress
     | intervalExpr
@@ -153,7 +149,7 @@ simpleExpr
     ;
 
 functionCall
-    : ID LP_ distinct? (exprs | ASTERISK_)? RP_
+    : IDENTIFIER_ LP_ distinct? (exprs | ASTERISK_)? RP_
     ;
 
 distinct
@@ -169,7 +165,7 @@ caseExpress
     ;
 
 privateExprOfDb
-    : matchNone
+    : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
     ;
 
 variable
@@ -182,12 +178,12 @@ literal
     | TRUE
     | FALSE
     | NULL
-    | LBE_ ID STRING_ RBE_
+    | LBE_ IDENTIFIER_ STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | ID STRING_ collateClause?
+    | IDENTIFIER_ STRING_ collateClause?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | ID? BIT_NUM_ collateClause?
+    | IDENTIFIER_? BIT_NUM_ collateClause?
     ;
 
 question
@@ -211,9 +207,9 @@ collateClause
     ;
 
 orderByClause
-    : ORDER BY orderByItem (COMMA_ orderByItem)*
+    : ORDER BY orderByExpr (COMMA_ orderByExpr)*
     ;
-
+    
 orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
@@ -222,8 +218,135 @@ asterisk
     : ASTERISK_
     ;
 
+dataType
+    : dataTypeName_ (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
+    ;
+
+dataTypeName_
+    : IDENTIFIER_
+    ;
+
+atTimeZoneExpr
+    : IDENTIFIER_ (WITH TIME ZONE)? STRING_
+    ;
+
+castExpr
+    : CAST LP_ expr AS dataType (LP_ NUMBER_ RP_)? RP_
+    ;
+
+convertExpr
+    : CONVERT (dataType (LP_ NUMBER_ RP_)? COMMA_ expr (COMMA_ NUMBER_)?)
+    ;
+
+windowedFunction
+    : functionCall overClause
+    ;
+
+overClause
+    : OVER LP_ partitionByClause? orderByClause? rowRangeClause? RP_ 
+    ;
+
+partitionByClause
+    : PARTITION BY expr (COMMA_ expr)*
+    ;
+
+orderByExpr
+    : expr (COLLATE collationName)? (ASC | DESC)? 
+    ;
+
+rowRangeClause 
+    : (ROWS | RANGE) windowFrameExtent
+    ;
+
+windowFrameExtent
+    : windowFramePreceding | windowFrameBetween 
+    ;
+
+windowFrameBetween
+    : BETWEEN windowFrameBound AND windowFrameBound
+    ;
+
+windowFrameBound
+    : windowFramePreceding | windowFrameFollowing 
+    ;
+
+windowFramePreceding
+    : UNBOUNDED PRECEDING | NUMBER_ PRECEDING | CURRENT ROW
+    ;
+
+windowFrameFollowing
+    : UNBOUNDED FOLLOWING | NUMBER_ FOLLOWING | CURRENT ROW
+    ;
+
+columnNameWithSort
+    : columnName (ASC | DESC)?
+    ;
+
+indexOption
+    : FILLFACTOR EQ_ NUMBER_
+    | eqOnOffOption
+    | (COMPRESSION_DELAY | MAX_DURATION) eqTime
+    | MAXDOP EQ_ NUMBER_
+    | compressionOption onPartitionClause?
+    ;
+
+compressionOption
+    : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE)
+    ;
+
+eqTime
+    : EQ_ NUMBER_ (MINUTES)?
+    ;
+
+eqOnOffOption
+    : eqKey eqOnOff 
+    ;
+
+eqKey
+    : PAD_INDEX
+    | SORT_IN_TEMPDB
+    | IGNORE_DUP_KEY
+    | STATISTICS_NORECOMPUTE
+    | STATISTICS_INCREMENTAL
+    | DROP_EXISTING
+    | ONLINE
+    | RESUMABLE
+    | ALLOW_ROW_LOCKS
+    | ALLOW_PAGE_LOCKS
+    | COMPRESSION_DELAY
+    | SORT_IN_TEMPDB
+    ;
+
+eqOnOff
+    : EQ_ (ON | OFF)
+    ;
+
+onPartitionClause
+    : ON PARTITIONS LP_ partitionExpressions RP_
+    ;
+
+partitionExpressions
+    : partitionExpression (COMMA_ partitionExpression)*
+    ;
+
+partitionExpression
+    : NUMBER_ | numberRange
+    ;
+
+numberRange
+    : NUMBER_ TO NUMBER_
+    ;
+
+lowPriorityLockWait
+    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER_ (MINUTES)? COMMA_ ABORT_AFTER_WAIT EQ_ (NONE | SELF | BLOCKERS) RP_
+    ;
+
+onLowPriorLockWait
+    : ON (LP_ lowPriorityLockWait RP_)?
+    ;
+
 ignoredIdentifier_
-    : ID
+    : IDENTIFIER_
     ;
 
 ignoredIdentifiers_

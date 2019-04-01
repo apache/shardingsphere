@@ -223,6 +223,6 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<ColumnSegment> buildColumn(final ParserRuleContext parentNode) {
-        return new ColumnSegmentExtractor().extract(parentNode);
+        return new ColumnExtractor().extract(parentNode);
     }
 }

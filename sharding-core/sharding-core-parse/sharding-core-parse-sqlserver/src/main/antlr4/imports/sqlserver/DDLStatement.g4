@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar SQLServerDDLStatement;
+grammar DDLStatement;
 
-import Symbol, SQLServerKeyword, Keyword, DataType, SQLServerBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 createIndex
     : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnNames
@@ -243,7 +243,7 @@ computedColumnDefinition
     ;
 
 columnSetDefinition 
-    : ignoredIdentifier_ ID COLUMN_SET FOR ALL_SPARSE_COLUMNS
+    : ignoredIdentifier_ IDENTIFIER_ COLUMN_SET FOR ALL_SPARSE_COLUMNS
     ;
 
 alterTableOp

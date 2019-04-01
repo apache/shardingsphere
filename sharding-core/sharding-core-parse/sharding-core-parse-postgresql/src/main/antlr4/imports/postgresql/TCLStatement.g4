@@ -15,33 +15,26 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLStatement;
+grammar TCLStatement;
 
-import Keyword, Symbol, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Keyword, Literals, BaseRule;
 
-execute
-    : (createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | setTransaction
-    | beginTransaction
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | show
-    | setParam
-    | resetParam
-    ) SEMI_?
+setTransaction
+    : SET (SESSION CHARACTERISTICS AS)? TRANSACTION
+    ;
+
+beginTransaction
+    : BEGIN | START TRANSACTION
+    ;
+
+commit
+    : COMMIT
+    ;
+
+rollback
+    : ROLLBACK
+    ;
+
+savepoint
+    : SAVEPOINT
     ;

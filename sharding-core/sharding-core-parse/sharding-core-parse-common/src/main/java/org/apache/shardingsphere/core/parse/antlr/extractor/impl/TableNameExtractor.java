@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.List;
 
@@ -63,7 +62,7 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int schemaNameLength) {
-        return new TableToken(tableNameNode.getStart().getStartIndex(), SQLUtil.getExactlyValue(tableName), QuoteCharacter.getQuoteCharacter(tableName), schemaNameLength);
+        return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), schemaNameLength);
     }
     
     private Optional<String> getTableAlias(final ParserRuleContext tableNameNode) {

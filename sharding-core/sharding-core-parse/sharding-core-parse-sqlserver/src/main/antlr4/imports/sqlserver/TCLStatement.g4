@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-lexer grammar DataType;
+grammar TCLStatement;
 
-import Alphabet, Symbol;
+import Symbol, Keyword, Literals;
 
-STRING_ 
-    : ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"')
-    | ('\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'')
+setTransaction
+    : SET TRANSACTION
     ;
 
-NUMBER_
-    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
+setAutoCommit
+    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
     ;
 
-HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
+autoCommitValue
+    : ON | OFF
     ;
 
-BIT_NUM_
-    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+beginTransaction
+    : BEGIN (TRAN | TRANSACTION)
     ;
 
-fragment INT_
-    : [0-9]+
+commit
+    : COMMIT 
     ;
 
-fragment HEX_
-    : [0-9a-fA-F]
+rollback
+    : ROLLBACK
+    ;
+
+savepoint
+    : SAVE (TRAN | TRANSACTION)
     ;

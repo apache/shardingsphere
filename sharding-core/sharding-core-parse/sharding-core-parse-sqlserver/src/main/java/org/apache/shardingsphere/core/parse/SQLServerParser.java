@@ -37,9 +37,9 @@ public final class SQLServerParser extends SQLServerStatementParser implements S
     
     public SQLServerParser(final TokenStream input) {
         super(input);
-        _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
-        _errHandler = new AdvancedErrorStrategy(ID);
-        advancedMatchHandler = new AdvancedMatchHandler(this, ID);
+        _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, IDENTIFIER_);
+        _errHandler = new AdvancedErrorStrategy(IDENTIFIER_);
+        advancedMatchHandler = new AdvancedMatchHandler(this, IDENTIFIER_);
     }
     
     @Override

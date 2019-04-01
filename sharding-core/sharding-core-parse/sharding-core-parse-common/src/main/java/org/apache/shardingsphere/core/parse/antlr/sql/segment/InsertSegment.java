@@ -46,8 +46,6 @@ public final class InsertSegment implements SQLSegment {
    
     private int columnClauseStartIndex;
     
-    private int columnsListLastIndex;
-    
     private int generateKeyColumnIndex = -1;
     
     private int insertValuesListLastIndex;

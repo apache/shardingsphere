@@ -37,7 +37,6 @@ import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -145,7 +144,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
             String owner = column.getOwner().get();
             Optional<Table> logicTable = sqlStatement.getTables().find(owner);
             if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
-                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), SQLUtil.getExactlyValue(owner), QuoteCharacter.getQuoteCharacter(owner), 0));
+                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), owner, QuoteCharacter.getQuoteCharacter(owner), 0));
             }
         }
     }

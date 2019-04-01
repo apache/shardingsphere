@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.column;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
@@ -26,8 +25,6 @@ import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
-
-import java.util.List;
 
 /**
  * Column segment.
@@ -46,15 +43,13 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     
     private final int stopIndex;
     
-    public ColumnSegment(final String columnText, final int startIndex, final int stopIndex) {
-        List<String> texts = Splitter.on(Symbol.DOT.getLiterals()).splitToList(columnText);
-        if (1 == texts.size()) {
-            name = SQLUtil.getExactlyValue(columnText);
-            owner = null;
-        } else {
-            name = SQLUtil.getExactlyValue(texts.get(texts.size() - 1));
-            owner = SQLUtil.getExactlyValue(texts.get(0));
-        }
+    public ColumnSegment(final String name, final int startIndex, final int stopIndex) {
+        this(name, null, startIndex, stopIndex);
+    }
+    
+    public ColumnSegment(final String name, final String owner, final int startIndex, final int stopIndex) {
+        this.name = SQLUtil.getExactlyValue(name);
+        this.owner = SQLUtil.getExactlyValue(owner);
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
     }

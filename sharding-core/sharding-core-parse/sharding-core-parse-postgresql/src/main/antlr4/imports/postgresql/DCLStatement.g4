@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLDCLStatement;
+grammar DCLStatement;
 
-import Symbol, PostgreSQLKeyword, Keyword, DataType, PostgreSQLBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 grant
     : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)

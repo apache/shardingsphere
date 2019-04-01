@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLTCLStatement;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.column;
 
-import Symbol, PostgreSQLKeyword, Keyword, DataType, BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
-setTransaction
-    : SET (SESSION CHARACTERISTICS AS)? TRANSACTION
-    ;
+import java.util.Collection;
 
-beginTransaction
-    : BEGIN | START TRANSACTION
-    ;
-
-commit
-    : COMMIT
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVEPOINT 
-    ;
+/**
+ * Insert columns segment.
+ *
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public final class InsertColumnsSegment implements SQLSegment {
+    
+    private final Collection<ColumnSegment> columnSegments;
+}

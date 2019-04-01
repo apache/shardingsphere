@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar MySQLDDLStatement;
+grammar DDLStatement;
 
-import Symbol, MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule;
+import Symbol, Keyword, Literals, BaseRule;
 
 createTable
     : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)
@@ -65,12 +65,20 @@ indexDefinition_
     : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
-indexOption_
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType_ | WITH PARSER ignoredIdentifier_ | COMMENT STRING_
-    ;
-
 indexType_
     : USING (BTREE | HASH)
+    ;
+
+keyParts_
+    : LP_ keyPart_ (COMMA_ keyPart_)* RP_
+    ;
+
+keyPart_
+    : (columnName (LP_ NUMBER_ RP_)? | expr) (ASC | DESC)?
+    ;
+
+indexOption_
+    : KEY_BLOCK_SIZE EQ_? NUMBER_ | indexType_ | WITH PARSER identifier_ | COMMENT STRING_ | VISIBLE | INVISIBLE
     ;
 
 constraintDefinition_
@@ -81,20 +89,16 @@ primaryKeyOption_
     : primaryKey indexType_? columnNames indexOption_*
     ;
 
+primaryKey
+    : PRIMARY? KEY
+    ;
+
 uniqueOption_
     : UNIQUE (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
 foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
-    ;
-
-keyParts_
-    : LP_ keyPart_ (COMMA_ keyPart_)* RP_
-    ;
-
-keyPart_
-    : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
     ;
 
 checkConstraintDefinition_
@@ -245,25 +249,32 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION ignoredIdentifier_ (VALUES (LESS THAN lessThanValue_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    : PARTITION identifier_ 
+    (VALUES (LESS THAN partitionLessThanValue_ | IN LP_ partitionValueList_ RP_))?
+    partitionDefinitionOption_* 
+    (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
     ;
 
-lessThanValue_
-    : LP_ (expr | assignmentValues) RP_ | MAXVALUE
+partitionLessThanValue_
+    : LP_ (expr | partitionValueList_) RP_ | MAXVALUE
+    ;
+
+partitionValueList_
+    : literals_ (COMMA_ literals_)*
     ;
 
 partitionDefinitionOption_
-    : STORAGE? ENGINE EQ_? ignoredIdentifier_
+    : STORAGE? ENGINE EQ_? identifier_
     | COMMENT EQ_? STRING_
     | DATA DIRECTORY EQ_? STRING_
     | INDEX DIRECTORY EQ_? STRING_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
-    | TABLESPACE EQ_? ignoredIdentifier_
+    | TABLESPACE EQ_? identifier_
     ;
 
 subpartitionDefinition_
-    : SUBPARTITION ignoredIdentifier_ partitionDefinitionOption_*
+    : SUBPARTITION identifier_ partitionDefinitionOption_*
     ;
 
 dropTable

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar OracleTCLStatement;
+grammar TCLStatement;
 
-import Symbol, OracleKeyword, Keyword, DataType, OracleBase;
+import Symbol, Keyword, Literals;
 
 setTransaction
     : SET TRANSACTION
