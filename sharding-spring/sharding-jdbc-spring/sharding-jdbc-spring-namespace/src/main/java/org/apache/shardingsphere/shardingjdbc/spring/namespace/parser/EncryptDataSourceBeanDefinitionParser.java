@@ -22,7 +22,6 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -91,7 +90,7 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     }
     
     private void parseEncryptorConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String encryptor = tableElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.ENCRYPTOR_REF_ATTRIBUTE);
+        String encryptor = tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(encryptor)) {
             factory.addPropertyReference("encryptorConfig", encryptor);
         }
