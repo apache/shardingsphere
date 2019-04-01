@@ -43,6 +43,7 @@ import org.springframework.core.env.StandardEnvironment;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,14 +110,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private List<String> getDataSourceNames(final Environment environment, final String prefix) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
-        String dataSources = standardEnv.getProperty(prefix + "names");
-        return new InlineExpressionParser(dataSources).splitAndEvaluate();
-    }
-    
-    private String getDataSourceName(final Environment environment, final String prefix) {
-        StandardEnvironment standardEnv = (StandardEnvironment) environment;
-        standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
-        return standardEnv.getProperty(prefix + "name");
+        return null == standardEnv.getProperty(prefix + "name") 
+                ? new InlineExpressionParser(standardEnv.getProperty(prefix + "names")).splitAndEvaluate() : Collections.singletonList(standardEnv.getProperty(prefix + "name"));
     }
     
     @SuppressWarnings("unchecked")
