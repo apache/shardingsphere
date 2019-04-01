@@ -12,19 +12,19 @@
     <title>Configuration manual :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1553847782" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1553847782" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/nucleus.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hybrid.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/featherlight.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/auto-complete.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/theme.css?1554111862" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/current/css/hugo-theme.css?1554111862" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1553847782" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/document/current/css/theme-black.css?1554111862" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1554111862"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1549,37 +1549,27 @@
 
 <h2 id="introduction">Introduction</h2>
 
-<p>As the core of Sharding-JDBC, configuration is the only module in Sharding-JDBC that has something to do with application developers.
-Configuration module is also the portal of Sharding-JDBC, through which users can fast and clearly understand the functions provided by Sharding-JDBC.</p>
+<p>As the core of Sharding-JDBC, configuration is the only module in Sharding-JDBC that has something to do with application developers. Configuration module is also the portal of Sharding-JDBC, through which users can fast and clearly understand the functions provided by Sharding-JDBC.</p>
 
 <p>This part is a configuration manual for Sharding-JDBC, which can also be referred to as a dictionary if necessary.</p>
 
-<p>Sharding-JDBC has provided 4 kinds of configuration methods for different situations.
-By configuration, application developers can flexibly use sharding databases with sharding tables, read-write split or the combination of both.</p>
+<p>Sharding-JDBC has provided 4 kinds of configuration methods for different situations. By configuration, application developers can flexibly use sharding databases with sharding tables, read-write split or the combination of both.</p>
 
 <p><img src="https://shardingsphere.apache.org/document/current/img/config_domain.png" alt="The class diagrams for Domain Model" /></p>
 
 <h2 id="factory-api">Factory API</h2>
 
-<p>The yellow part in the diagram indicates the API entrance of Sharding-JDBC, provided in factory method.
-There are two kinds of factories, <code>ShardingDataSourceFactory</code> and <code>MasterSlaveDataSourceFactory</code> for now.
-<code>ShardingDataSourceFactory</code> is used to create JDBC drivers of sharding databases with sharding tables or sharding databases with sharding tables+read-write split; <code>MasterSlaveDataSourceFactory</code> is used to create JDBC drivers of read-write split.</p>
+<p>The yellow part in the diagram indicates the API entrance of Sharding-JDBC, provided in factory method. There are two kinds of factories, <code>ShardingDataSourceFactory</code> and <code>MasterSlaveDataSourceFactory</code> for now. <code>ShardingDataSourceFactory</code> is used to create JDBC drivers of  sharding databases with sharding tables or sharding databases with sharding tables+read-write split; <code>MasterSlaveDataSourceFactory</code> is used to create JDBC drivers of read-write split.</p>
 
 <h2 id="configuration-object">Configuration Object</h2>
 
-<p>The yellow part in the diagram indicates configuration objects of Sharding-JDBC, which provides flexible configuration methods.
-<code>ShardingRuleConfiguration</code> is the core and entrance of sharding database and sharding table configuration, which can include many <code>TableRuleConfiguration</code> and <code>MasterSlaveRuleConfiguration</code>.
-Each group of sharding tables with same rules is set with a <code>TableRuleConfiguration</code>.
-If sharding databases with sharding tables and read-write split are used together, each logic database of read-write split is set with a <code>MasterSlaveRuleConfiguration</code>.
-Each <code>TableRuleConfiguration</code> is corresponding to a <code>ShardingStrategyConfiguration</code> and it has 5 types to choose.</p>
+<p>The yellow part in the diagram indicates configuration objects of Sharding-JDBC, which provides flexible configuration methods. <code>ShardingRuleConfiguration</code> is the core and entrance of sharding database and sharding table configuration, which can include many <code>TableRuleConfiguration</code> and <code>MasterSlaveRuleConfiguration</code>. Each group of sharding tables with same rules is set with a <code>TableRuleConfiguration</code>. If sharding databases with sharding tables and read-write split are used together, each logic database of read-write split is set with a  <code>MasterSlaveRuleConfiguration</code>. Each <code>TableRuleConfiguration</code> is corresponding to a <code>ShardingStrategyConfiguration</code> and it has 5 types to choose.</p>
 
 <p>Read-write split uses <code>MasterSlaveRuleConfiguration</code>.</p>
 
 <h2 id="internal-object">Internal Object</h2>
 
-<p>The red part in the diagram indicates internal objects, which are used in Sharding-JDBC and needless to be focused by application developers.
-Sharding-JDBC uses <code>ShardingRuleConfiguration</code> and <code>MasterSlaveRuleConfiguration</code> to generate rule objects used by <code>ShardingDataSource</code> and <code>MasterSlaveDataSource</code>.
-Implemented with <code>DataSource</code> interface, <code>ShardingDataSource</code> and <code>MasterSlaveDataSource</code> are complete implementation schemes of JDBC.</p>
+<p>The red part in the diagram indicates internal objects, which are used in Sharding-JDBC and needless to be focused by application developers. Sharding-JDBC uses <code>ShardingRuleConfiguration</code> and <code>MasterSlaveRuleConfiguration</code> to generate rule objects used by  <code>ShardingDataSource</code> and <code>MasterSlaveDataSource</code>. Implemented with <code>DataSource</code> interface, <code>ShardingDataSource</code> and <code>MasterSlaveDataSource</code> are complete implementation schemes of JDBC.</p>
 
 <h2 id="initialization-process">Initialization Process</h2>
 
@@ -1592,8 +1582,7 @@ Implemented with <code>DataSource</code> interface, <code>ShardingDataSource</co
 
 <h2 id="use-convention">Use Convention</h2>
 
-<p>Classes in <code>org.apache.shardingsphere.api</code> and <code>org.apache.shardingsphere.shardingjdbc.api</code> packages are API open to users, the modifications of which will be declared in release notes.
-As internal implementations, classes in other packages can adjust any time, <code>please not use them directly</code>.</p>
+<p>Classes in <code>org.apache.shardingsphere.api</code> and <code>org.apache.shardingsphere.shardingjdbc.api</code> packages are API open to users, the modifications of which will be declared in release notes. As internal implementations, classes in other packages can adjust any time, <code>please not use them directly</code>.</p>
 
 
 <footer class=" footline" >
@@ -2611,20 +2600,20 @@ As internal implementations, classes in other packages can adjust any time, <cod
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/clipboard.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/featherlight.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/highlight.pack.js?1554111862"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1553847782"></script>
-    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1553847782"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/learn.js?1554111862"></script>
+    <script src="https://shardingsphere.apache.org/document/current/js/hugo-learn.js?1554111862"></script>
 
-    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1553847782" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1553847782"></script>
+    <link href="https://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1554111862" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1554111862"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

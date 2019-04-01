@@ -381,8 +381,7 @@ Example Sharding &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://shardingsphere.apache.org/document/current/en/features/orchestration/encrypt/</guid>
-      <description> Background TODO
-Solutions ShardingEncryptor ShardingQueryAssistedEncryptor </description>
+      <description>Background Security control has always been a crucial link of data orchestration; data masking falls into this category. For both Internet enterprises and traditional sectors, data security has always been a highly focused and sensitive topic. Data masking refers to transforming some sensitive information through masking rules to safely protect the private data. Data that involves client security or business sensibility, such as ID number, phone number, card number, client number and other personal information, is required of data masking according to relevant regulations.</description>
     </item>
     
     <item>
