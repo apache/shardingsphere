@@ -33,6 +33,6 @@
     
     <modules>
         <module>shardingsphere-basic-distribution</module>
-        <module>shardingsphere-proxy-distribution</module>
+        <module>sharding-proxy-distribution</module>
     </modules>
 </project>
