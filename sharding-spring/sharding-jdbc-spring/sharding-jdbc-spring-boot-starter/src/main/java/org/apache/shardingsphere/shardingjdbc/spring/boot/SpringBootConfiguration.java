@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.util.DataSourceUtil;
@@ -62,6 +64,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveProperties;
     
+    private final SpringBootEncryptRuleConfigurationProperties encryptProperties;
+    
     private final SpringBootPropertiesConfigurationProperties propMapProperties;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
@@ -69,6 +73,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private final ShardingRuleConfigurationYamlSwapper shardingSwapper = new ShardingRuleConfigurationYamlSwapper();
     
     private final MasterSlaveRuleConfigurationYamlSwapper masterSlaveSwapper = new MasterSlaveRuleConfigurationYamlSwapper();
+    
+    private final EncryptRuleConfigurationYamlSwapper encryptSwapper = new EncryptRuleConfigurationYamlSwapper();
     
     /**
      * Get data source bean.
