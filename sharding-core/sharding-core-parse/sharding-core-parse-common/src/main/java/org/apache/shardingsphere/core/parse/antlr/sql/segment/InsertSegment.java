@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +32,6 @@ import java.util.List;
 @Getter
 @Setter
 public final class InsertSegment implements SQLSegment {
-    
-    private final List<ColumnSegment> columns = new LinkedList<>();
     
     private final List<InsertValuesSegment> valuesList = new LinkedList<>();
     
