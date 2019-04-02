@@ -262,7 +262,7 @@ props:
 ### Data Sharding
 
 ```yaml
-schemaName: #Logic data source name
+schemaName: #Logic data schema name
 
 dataSources: #Data source configuration, which can be multiple data_source_name
   <data_source_name>: #Different from Sharding-JDBC configuration, it does not need to be configured with database connection pool
@@ -282,7 +282,7 @@ shardingRule: #Omit data sharding configuration and be consistent with Sharding-
 ### Read-Write Split
 
 ```yaml
-schemaName: #Logic data source name
+schemaName: #Logic data schema name
 
 dataSources: #Omit data source configurations; keep it consistent with data sharding
 
