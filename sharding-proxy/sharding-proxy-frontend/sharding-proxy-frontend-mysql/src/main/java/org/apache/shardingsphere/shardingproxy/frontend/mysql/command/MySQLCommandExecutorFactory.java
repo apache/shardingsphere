@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.command.admin.initdb.MySQLComInitDbExecutor;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class MySQLCommandExecutorFactory {
     
     /**
@@ -56,6 +58,7 @@ public final class MySQLCommandExecutorFactory {
      * @return command executor
      */
     public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final BackendConnection backendConnection) {
+        log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitExecutor();
