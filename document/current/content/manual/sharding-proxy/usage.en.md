@@ -1,41 +1,103 @@
 +++
 pre = "<b>4.2.1. </b>"
 toc = true
-title = "User Manual"
+title = "Manual"
 weight = 1
-+++
 
-## Proxy
+------
 
-1. Download the latest version of Sharding-Proxy from https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz
-1. If using docker，execute command `docker pull shardingsphere/sharding-proxy` to get image. More details please reference[Docker Image](/en/manual/sharding-proxy/docker/).
-1. Modify the `conf/server.yaml` and `conf/config-xxx.yaml` file after decompression, and configure the sharding rule and master-slave rule. Please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/).
-1. Run `bin/start.sh` on Linux, or `bin/start.bat` on Windows to start Sharding-Proxy. If you want to set port and configuration file, please refer to [quick-start](/en/quick-start/sharding-proxy-quick-start/).
-1. Connect to it by means of any client tools, e.g. `mysql -u root -h 127.0.0.1 -P 3307`
+## Proxy Initialization
 
-## Registry usage
+1. Download the latest version of Sharding-Proxy at <https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz>
+2. If users use docker, they can implement `docker pull shardingsphere/sharding-proxy` to get the clone. Please refer to [Docker Clone](/en/manual/sharding-proxy/docker/) for more details.
+3. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and read-write split rules. Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/) for the configuration method.
+4. Please run `bin/start.sh` for Linux operating system; run `bin/start.bat` for Windows operating system to start Sharding-Proxy. To configure start port and document location, please refer to [Quick Start](/en/quick-start/sharding-proxy-quick-start/).
+5. Use any MySQL server client end to connect, such as `mysql -u root -h 127.0.0.1 -P 3307`.
 
-If you want to use the orchestration for Sharding-Proxy, the registry is necessary. Please refer to [Supported Registry Centers](/en/features/orchestration/supported-registry-repo/) for more detail.
+## Use of Registry Center
 
-## Zookeeper
+If users want to use the database orchestration function of Sharding-Proxy, they need to implement instance disabling and slave database disabling functions in the registry center. Please refer to [Available Registry Centers](/en/features/orchestration/supported-registry-repo/) for more details.
 
-1. Sharding-Proxy provides Zookeeper registry by default. You only need to configure the registry according to [the registry configuration](/en/manual/sharding-proxy/configuration/).
+### Zookeeper
 
-## Etcd
+1. Sharding-Proxy has provided the registry center solution of Zookeeper in default. Users only need to follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
 
-1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` in the lib directory of Sharding-Proxy.
-1. Download Etcd solution jar from Maven repository, here is [the latest version](http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/).
-1. Put the downloaded jar package in the lib directory of Sharding-Proxy.
-1. Configure the registry according to [the registry configuration](/en/manual/sharding-proxy/configuration/).
+### Etcd
 
-## Others
+1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` under the lib catalog of Sharding-Proxy.
+2. Download the jar package of [latest stable version](http://central.maven.org/maven2/io/shardingsphere/sharding-orchestration-reg-etcd/) of Etcd solution under Maven repository.
+3. Put the downloaded jar package to the lib catalog of Sharding-Proxy.
+4. Follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
 
-1. Delete `sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` in the lib directory of Sharding-Proxy.
-1. Implement the logic coding using SPI to create jar package, and put it in the lib directory of Sharding-Proxy.
-1. Configure the registry according to [the registry configuration](/en/manual/sharding-proxy/configuration/).
+### Other Third Party Registry Center
+
+1. Delete`sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar` under the lib catalog of Sharding-Proxy.
+2. Use SPI methods in logic coding and put the generated jar package to the lib catalog of Sharding-Proxy.
+3. Follow [Configuration Rules](/en/manual/sharding-proxy/configuration/) to set the registry center and use it.
+
+## Distributed Transactions
+
+Sharding-Proxy natively supports XA transactions and there is no need for extra configurations.
+
+### Configure Default Transaction Type
+
+Default transaction type can be configured in `server.yaml`, for example:
+
+```yaml
+proxy.transaction.type: XA
+```
+
+### Shift Running Transaction Type
+
+#### Command Line
+
+```shell
+mysql> sctl: set transantcion_type=XA
+mysql> sctl: show transaction_type
+```
+
+#### Native JDBC
+
+If users use JDBC-Driver method to connect Sharding-Proxy, users can send SQL transaction shift type of `sctl:set transaction_type=XA` after connection.
+
+#### Spring Note Method
+
+Introduce Maven dependency:
+
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-spring</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+Then, add relevant notes in methods or types that require transactions, for example:
+
+```java
+@ShardingTransactionType(TransactionType.LOCAL)
+@Transactional
+```
+
+Or
+
+```java
+@ShardingTransactionType(TransactionType.XA)
+@Transactional
+```
+
+To be noticed: `@ShardingTransactionType` needs to be used together with `@Transactional` of Spring, and then transactions will take effect.
+
+### Atomikos Parameter Configuration
+
+Default XA transaction manager of ShardingSphere is Atomikos. Users can customize Atomikos configuration items through adding `jta.properties` in conf catelog of Sharding-Proxy. Please refer to [Official Documents](https://www.atomikos.com/Documentation/JtaProperties) of Atomikos for detailed configurations.
+
+### BASE Transaction
+
+Pack `sharding-transaction-base-spi-impl` module in [shardingsphere-spi-impl](en/shardingsphere-spi-impl) project; copy relevant jar packages to lib; switch the transaction type to`BASE`. The configuration of`saga.properties` is the same as that of JDBC.
 
 ## Notices
 
-1. The default port of Sharding-Proxy is 3307, user can change it by passing the port number on startup script, e.g. `bin/start.sh 3308`.
-1. Sharding-Proxy use conf/server.yaml to configure registry-center, authentication and common properties.
-1. Sharding-Proxy support multiple logic schema, for every configuration file which prefix as `config-`, and suffix as `.yaml`.
+1. Sharding-Proxy uses 3307 port in default. Users can start the script parameter as the start port number, like `bin/start.sh 3308`.
+2. Sharding-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and public properties.
+3. Sharding-Proxy supports multi-logic data source, with each yaml configuration document named by `config-` prefix as a logic data source.
