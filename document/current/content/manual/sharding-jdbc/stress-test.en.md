@@ -16,7 +16,7 @@ weight = 4
 ### Benchmark Test Performance Comparison
 
 | Business scenario                          | JDBC | Sharding-JDBC 1.5.2 | Sharding-JDBC 1.5.2 / JDBC loss |
-| ------------------------------------------ | ---- | ------------------- | ------------------------------- |
+| :----------------------------------------- | ---- | ------------------- | ------------------------------- |
 | Single database with single table `SELECT` | 493  | 470                 | 4.7%                            |
 | Single database with single table `UPDATE` | 6682 | 6303                | 5.7%                            |
 | Single database with single table `INSERT` | 6855 | 6375                | 7%                              |
@@ -24,7 +24,7 @@ weight = 4
 ### Comparison between Single Database Each with Double Tables of JDBC and Double Databases Each with Double Tables of Sharding-JDBC
 
 | Business scenario | JDBC  | Sharding-JDBC | Performance Increase |
-| ----------------- | ----- | ------------- | -------------------- |
+| :---------------- | ----- | ------------- | -------------------- |
 | `SELECT`          | 1736  | 3331          | 192%                 |
 | `UPDATE`          | 9170  | 17997         | 196%                 |
 | `INSERT`          | 11574 | 23043         | 199%                 |
@@ -32,7 +32,7 @@ weight = 4
 ### Comparison between Single Database with One Table of JDBC and Double Databases Each with One Table of Sharding-JDBC
 
 | Business scenario | JDBC  | Sharding-JDBC | Performance Increase |
-| ----------------- | ----- | ------------- | -------------------- |
+| :---------------- | ----- | ------------- | -------------------- |
 | `SELECT`          | 1586  | 2944          | 185%                 |
 | `UPDATE`          | 9548  | 18561         | 194%                 |
 | `INSERT`          | 11182 | 21414         | 192%                 |
@@ -40,7 +40,7 @@ weight = 4
 ### Comparison between Sharding-JDBC v1.4.2 and Sharding-JDBC v1.5.2
 
 | Business scenario | Sharding-JDBC 1.4.2 | Sharding-JDBC 1.5.2 | 1.5.2 / 1.4.2 |
-| ----------------- | ------------------- | ------------------- | ------------- |
+| :---------------- | ------------------- | ------------------- | ------------- |
 | `SELECT`          | 2934                | 2944                | 100.34%       |
 | `UPDATE`          | 18454               | 18561               | 100.58%       |
 | `INSERT`          | 21045               | 21414               | 101.75%       |
@@ -56,7 +56,7 @@ weight = 4
 ### JDBC Business Scenario
 
 | Business scenario                           | Scenario abbreviation |
-| ------------------------------------------- | --------------------- |
+| :------------------------------------------ | --------------------- |
 | Single database with single table `SELECT`  | JSdbStSelect          |
 | Single database with single table `INSERT`  | JSdbStInsert          |
 | Single database with single table `UPDATE`  | JSdbStUpdate          |
@@ -67,7 +67,7 @@ weight = 4
 ### Sharding-JDBC Business Scenario
 
 | Business scenario                                 | Scenario abbreviation |
-| ------------------------------------------------- | --------------------- |
+| :------------------------------------------------ | --------------------- |
 | Single database with single table `SELECT`        | SJSdbStSelect         |
 | Single database with single table `INSERT`        | SJSdbStInsert         |
 | Single database with single table `UPDATE`        | SJSdbStUpdate         |
@@ -84,7 +84,7 @@ weight = 4
 All the test scenario can be divided into the following two categories: the extreme test range includes all the scenarios and the benchmark test range is the following scenarios:
 
 | Business scenario                          | Scenario abbreviation |
-| ------------------------------------------ | --------------------- |
+| :----------------------------------------- | --------------------- |
 | Single database with single table `SELECT` | JSdbStSelect          |
 | Single database with single table `INSERT` | JSdbStInsert          |
 | Single database with single table `UPDATE` | JSdbStUpdate          |
@@ -103,7 +103,7 @@ Extreme test: when the use of server resources has reached its limit and TPS doe
 Server configuration
 
 | Name | Hardware Configuration                                       | Software Configuration | Hybrid Application |
-| :--- | :----------------------------------------------------------- | :--------------------- | :----------------- |
+| ---- | :----------------------------------------------------------- | :--------------------- | :----------------- |
 | DB0  | OS: CentOS 6.6 64bit<br/>CPU: 2C 4core<br/>Memory: 32G<br/>Storage: 250G\*2\_RAID1+600G\*4\_RAID10<br/>Network card: 1000mbps | MySQL 5.7.13           | None               |
 | DB1  | OS: CentOS 6.6 64bit<br/>CPU: 2C 4core<br/>Memory: 32G<br/>Storage: 250G\*2\_RAID1+600G\*4\_RAID10<br/>Network card: 1000mbps | MySQL 5.7.13           | None               |
 
@@ -114,7 +114,7 @@ Server configuration
 ### Single Database with Single Table `SELECT`
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single database with single table `SELECT`                   | 7                                   | 493          |
 | Single database with single table `SELECT` of Sharding-JDBC 1.5.2 | 8                                   | 470          |
 
@@ -129,7 +129,7 @@ Response Time
 ### Single Database with Single Table `UPDATE`
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single database with single table `UPDATE` of JDBC           | 2                                   | 6682         |
 | Single database with single table `UPDATE` of Sharding-JDBC 1.5.2 | 3                                   | 6303         |
 
@@ -144,7 +144,7 @@ Response Time
 ### Single Database with Single Table `INSERT`
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single database with single table `INSERT` of JDBC           | 2                                   | 6855         |
 | Single database with single table `INSERT` of Sharding-JDBC 1.5.2 | 2                                   | 6375         |
 
@@ -161,7 +161,7 @@ Response Time
 ### `SELECT` of Single Database with Single Table and Double Databases Each with Double Tables
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single database with single table `SELECT` of JDBC           | 7                                   | 1586         |
 | Single database with single table `SELECT` of Sharding-JDBC 1.5.2 | 7                                   | 1600         |
 | Double databases each with double tables `SELECT` of Sharding-JDBC 1.5.2 | 13                                  | 2944         |
@@ -179,7 +179,7 @@ Response Time
 ### `SELECT` of Single Database with Double Tables and Double Databases Each with Double Tables
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single database with double tables `SELECT` of JDBC          | 6                                   | 1736         |
 | Single database with double tables `SELECT` of Sharding-JDBC 1.5.2 | 7                                   | 1732         |
 | Double databases each with double tables `SELECT` of Sharding-JDBC 1.5.2 | 10                                  | 3331         |
@@ -195,7 +195,7 @@ Response Time
 ### `UPDATE` of Single Database with Single Table and Double Databases Each with One Table
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single Database with Single Table `UPDATE` of JDBC           | 7                                   | 9548         |
 | Single database with double tables `UPDATE` of Sharding-JDBC 1.5.2 | 7                                   | 9263         |
 | Double databases each with one table `SELECT` of Sharding-JDBC 1.5.2 | 4                                   | 18561        |
@@ -211,7 +211,7 @@ Response Time
 ### `UPDATE` of Single Database with Double Tables and Double Databases Each with Double Tables
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single Database with Double Tables `UPDATE` of JDBC          | 7                                   | 9170         |
 | Single database with double tables `UPDATE` of Sharding-JDBC 1.5.2 | 7                                   | 8941         |
 | Double databases each with double tables `UPDATE` of Sharding-JDBC 1.5.2 | 5                                   | 17997        |
@@ -227,7 +227,7 @@ Response Time
 ### `INSERT` of Single Database with Single Table and Double Databases Each with One Table
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single database with single table `INSERT` of JDBC           | 5                                   | 11182        |
 | Single database with single table `INSERT` of Sharding-JDBC 1.5.2 | 5                                   | 10882        |
 | Double databases each with one table `INSERT` of Sharding-JDBC 1.5.2 | 4                                   | 21414        |
@@ -243,7 +243,7 @@ Response Time
 ### `INSERT` of Single Database with Double Tables and Double Databases Each with Double Tables
 
 | Business scenario                                            | Average business response time (ms) | Business TPS |
-| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| :----------------------------------------------------------- | ----------------------------------- | ------------ |
 | Single database with double tables `INSERT` of JDBC          | 4                                   | 11574        |
 | Single database with double tables `INSERT` of Sharding-JDBC 1.5.2 | 5                                   | 10849        |
 | Double databases each with double tables `INSERT` of Sharding-JDBC 1.5.2 | 4                                   | 23043        |
@@ -261,7 +261,7 @@ Response Time
 ### Comparison of Double Databases Each with One Table between Sharding-JDBC 1.4.2 and Sharding-JDBC 1.5.2
 
 | Business scenario | Sharding-JDBC 1.4.2 | Sharding-JDBC 1.5.2 | 1.5.2 / 1.4.2 |
-| ----------------- | ------------------- | ------------------- | ------------- |
+| :---------------- | ------------------- | ------------------- | ------------- |
 | `SELECT`          | 2934                | 2944                | 100.34%       |
 | `UPDATE`          | 18454               | 18561               | 100.58%       |
 | `INSERT`          | 21045               | 21414               | 101.75%       |
