@@ -103,7 +103,7 @@ Extreme test: when the use of server resources has reached its limit and TPS doe
 Server configuration
 
 | Name | Hardware Configuration                                       | Software Configuration | Hybrid Application |
-| :---- | :----------------------------------------------------------- | :--------------------- | :----------------- |
+| :---- | ----------------------------------------------------------- | ---------------------- | :----------------- |
 | DB0  | OS: CentOS 6.6 64bit<br/>CPU: 2C 4core<br/>Memory: 32G<br/>Storage: 250G\*2\_RAID1+600G\*4\_RAID10<br/>Network card: 1000mbps | MySQL 5.7.13           | None               |
 | DB1  | OS: CentOS 6.6 64bit<br/>CPU: 2C 4core<br/>Memory: 32G<br/>Storage: 250G\*2\_RAID1+600G\*4\_RAID10<br/>Network card: 1000mbps | MySQL 5.7.13           | None               |
 
