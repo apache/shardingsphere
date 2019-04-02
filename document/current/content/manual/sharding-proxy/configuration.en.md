@@ -3,14 +3,16 @@ pre = "<b>4.2.2. </b>"
 toc = true
 title = "Configuration Manual"
 weight = 2
+
 +++
 
-## Data sources and sharding rule configuration example
+## Data Source and Sharding Configuration Instance
 
-Sharding-Proxy support multiple logic schema, for every configuration file which prefix as `config-`, and suffix as `.yaml`. 
-Below is configuration example of `config-xxx.yaml`.
+Sharding-Proxy supports multiple logic data source, each one of which is a `yalm` configuration document named with `config-` prefix. The following is the configuration instance of `config-xxx.yaml`.
 
-### Sharding
+### Data Sharding
+
+dataSources:
 
 ```yaml
 schemaName: sharding_db
@@ -69,7 +71,7 @@ shardingRule:
     type: SNOWFLAKE
 ```
 
-### Read-write splitting
+### Read-Write Split
 
 ```yaml
 schemaName: sharding_master_slave_db
@@ -114,7 +116,7 @@ masterSlaveRule:
     - ds_slave1
 ```
 
-### Sharding + Read-write splitting
+### Data Sharding + Read-Write Split
 
 ```yaml
 schemaName: sharding_master_slave_db
@@ -222,12 +224,14 @@ shardingRule:
         loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
-## Global configuration example
+## Overall Configuration Instance
 
-### Orchestration
+Sharding-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and common properties.
+
+### Data Orchestration
 
 ```yaml
-#Ignore data sources, sharding and read-write splitting configuration
+#Omit data sharding and read-write split configurations
 
 orchestration:
   name: orchestration_ds
@@ -245,7 +249,7 @@ authentication:
   password:
 ```
 
-### Common properties
+### Common property
 
 ```yaml
 props:
@@ -253,58 +257,58 @@ props:
   sql.show: false
 ```
 
-## Data sources and sharding rule configuration reference
+## Data Source and Sharding Configuration Item Explanation
 
-### Sharding
+### Data Sharding
 
 ```yaml
-schemaName: #Logic database schema name
+schemaName: #Logic data source name
 
-dataSources: #Data sources configuration, multiple `data_source_name` available
-  <data_source_name>: #Different with Sharding-JDBC, do not need configure data source pool here.
-    url: #Database URL
+dataSources: #Data source configuration, which can be multiple data_source_name
+  <data_source_name>: #Different from Sharding-JDBC configuration, it does not need to be configured with database connection pool
+    url: #Database url connection
     username: #Database username
     password: #Database password
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 65
-    minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000 #Connection timeout
+    idleTimeoutMilliseconds: 60000 #Idle timeout setting
+    maxLifetimeMilliseconds: 1800000 #Maximum lifetime
+    maxPoolSize: 65 #Maximum connection number in the pool
+    minPoolSize: 1 #Minimum connection number in the pool
+    maintenanceIntervalMilliseconds: 30000 #Interval time for connection maintenance 
 
-shardingRule: #Ignore sharding rule configuration, same as Sharding-JDBC
+shardingRule: #Omit data sharding configuration and be consistent with Sharding-JDBC configuration
 ```
 
-### Read-write splitting
+### Read-Write Split
 
 ```yaml
-schemaName: #Logic database schema name
+schemaName: #Logic data source name
 
-dataSources: #Ignore data source configuration, same as sharding
+dataSources: #Omit data source configurations; keep it consistent with data sharding
 
-masterSlaveRule: #Ignore read-write splitting rule configuration, same as Sharding-JDBC
+masterSlaveRule: #Omit data source configurations; keep it consistent with Sharding-JDBC
 ```
 
-## Global configuration reference
+## Overall Configuration Explanation
 
-### Orchestration
+### Data Orchestration
 
-Same as configuration of Sharding-JDBC.
+It is the same with Sharding-JDBC configuration.
 
-### Proxy Properties
+### Proxy Property
 
 ```yaml
-#Ignore configuration which same as Sharding-JDBC
+#Omit configurations that are the same with Sharding-JDBC
 props:
-  acceptor.size: #Max thread count to handle client's requests, default value is CPU*2
-  proxy.transaction.enabled: #Enable transaction, only support XA now, default value is false
-  proxy.opentracing.enabled: #Enable open tracing, default value is false. More details please reference[APM](/en/features/orchestration/apm/)
-  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
+  acceptor.size: #The thread number of accept connection; default to be 2 times of cpu core
+  proxy.transaction.enabled: #Whether to enable transaction; it only supports XA transactions, default not to enable
+  proxy.opentracing.enabled: #Whether to enable opentracing, default not to enable; refer to [APM](/en/features/orchestration/apm/) for more details
+  check.table.metadata.enabled: #Whether to check metadata consistency of sharding table when it initializes; default value: false
 ```
 
-### Authorization for Proxy
+### Authentication
 
-To perform Authorization for Sharding Proxy when login in. After configuring the username and password, you must use the correct username and password to login into the Proxy.
+It is used to verify the authentication to log in Sharding-Proxy, which must use correct user name and password after the configuration of them.
 
 ```yaml
 authentication:
@@ -312,10 +316,10 @@ authentication:
    password:
 ```
 
-## Yaml syntax
+## Yaml Syntax Explanation
 
-`!!` means class instantiation
+`!!` means instantiation of that class
 
-`-` means one or multiple available
+`-` means one or multiple can be included
 
-`[]` means array, can replace `-` each other
+`[]` means array, substitutable with `-`
