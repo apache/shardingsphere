@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
@@ -38,6 +39,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @Getter
+@ToString
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final String statementId;
