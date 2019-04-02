@@ -34,11 +34,13 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Table rule.
@@ -52,6 +54,9 @@ public final class TableRule {
     private final String logicTable;
     
     private final List<DataNode> actualDataNodes;
+    
+    @Getter(AccessLevel.NONE)
+    private final Set<String> actualTables;
     
     @Getter(AccessLevel.NONE)
     private final Map<DataNode, Integer> dataNodeIndexMap;
@@ -71,6 +76,7 @@ public final class TableRule {
     public TableRule(final String defaultDataSourceName, final String logicTableName) {
         logicTable = logicTableName.toLowerCase();
         actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
+        actualTables = getActualTables();
         dataNodeIndexMap = Collections.emptyMap();
         databaseShardingStrategy = null;
         tableShardingStrategy = null;
@@ -84,6 +90,7 @@ public final class TableRule {
         logicTable = logicTableName.toLowerCase();
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
         actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
+        actualTables = getActualTables();
         databaseShardingStrategy = null;
         tableShardingStrategy = null;
         generateKeyColumn = null;
@@ -98,6 +105,7 @@ public final class TableRule {
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes)
             ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
+        actualTables = getActualTables();
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
@@ -105,6 +113,14 @@ public final class TableRule {
                 ? ShardingKeyGeneratorFactory.getInstance().newAlgorithm(tableRuleConfig.getKeyGeneratorConfig().getType(), tableRuleConfig.getKeyGeneratorConfig().getProperties()) : null;
         shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : new ShardingEncryptorStrategy(tableRuleConfig.getEncryptorConfig());
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
+    }
+    
+    private Set<String> getActualTables() {
+        Set<String> result = new HashSet<>(actualDataNodes.size(), 1);
+        for (DataNode each : actualDataNodes) {
+            result.add(each.getTableName());
+        }
+        return result;
     }
     
     private boolean containsKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
@@ -201,11 +217,6 @@ public final class TableRule {
     }
     
     boolean isExisted(final String actualTableName) {
-        for (DataNode each : actualDataNodes) {
-            if (each.getTableName().equalsIgnoreCase(actualTableName)) {
-                return true;
-            }
-        }
-        return false;
+        return actualTables.contains(actualTableName);
     }
 }
