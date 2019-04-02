@@ -48,7 +48,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter
-@ToString(exclude = "dataNodeIndexMap")
+@ToString(exclude = {"dataNodeIndexMap", "actualTables"})
 public final class TableRule {
     
     private final String logicTable;
