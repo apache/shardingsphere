@@ -25,10 +25,10 @@ import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -85,16 +85,6 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(preparedStatement), SQLType.DQL);
         assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("decryptValue"));
-    }
-    
-    private PreparedStatement getPreparedStatement() throws SQLException {
-        PreparedStatement statement = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(statement.getConnection()).thenReturn(connection);
-        return statement;
     }
     
     @Test
@@ -255,13 +245,22 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         verify(preparedStatement2).execute();
     }
     
+    private PreparedStatement getPreparedStatement() throws SQLException {
+        PreparedStatement statement = mock(PreparedStatement.class);
+        ShardingConnection connection = mock(ShardingConnection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(statement.getConnection()).thenReturn(connection);
+        return statement;
+    }
+    
     @SneakyThrows
     private void setExecuteGroups(final List<PreparedStatement> preparedStatements, final SQLType sqlType) {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
         for (PreparedStatement each : preparedStatements) {
-            List<List<Object>> parameterSets = new LinkedList<>();
             String sql = SQLType.DQL.equals(sqlType) ? DQL_SQL : DML_SQL;
             preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(sql, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }

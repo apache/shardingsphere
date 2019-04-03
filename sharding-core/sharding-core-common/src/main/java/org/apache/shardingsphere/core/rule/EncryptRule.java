@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -71,18 +70,5 @@ public final class EncryptRule implements SQLStatementFillerRule {
                 return input.getTable();
             }
         });
-    }
-    
-    /**
-     * Get all actual table names.
-     *
-     * @return all actual table names
-     */
-    public Map<String, Collection<String>> getAllEncryptTableNames() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (EncryptTableRule each : tableRules) {
-            result.put(each.getTable(), Collections.singletonList(each.getTable()));
-        }
-        return result;
     }
 }

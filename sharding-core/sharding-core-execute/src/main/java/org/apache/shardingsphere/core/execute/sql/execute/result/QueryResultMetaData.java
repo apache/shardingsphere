@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -30,9 +30,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -46,21 +44,21 @@ public final class QueryResultMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final Map<String, Collection<String>> logicAndActualTables;
+    private final ShardingRule shardingRule;
     
     private final ShardingEncryptorEngine shardingEncryptorEngine;
     
     @SneakyThrows 
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final Map<String, Collection<String>> logicAndActualTables, final ShardingEncryptorEngine shardingEncryptorEngine) {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingEncryptorEngine shardingEncryptorEngine) {
         columnLabelAndIndexes = getColumnLabelAndIndexMap(resultSetMetaData);
         this.resultSetMetaData = resultSetMetaData;
-        this.logicAndActualTables = logicAndActualTables;
+        this.shardingRule = shardingRule;
         this.shardingEncryptorEngine = shardingEncryptorEngine;
     }
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        this(resultSetMetaData, Collections.<String, Collection<String>>emptyMap(), new ShardingEncryptorEngine(Collections.<String, ShardingEncryptorStrategy>emptyMap()));
+        this(resultSetMetaData, null, new ShardingEncryptorEngine(Collections.<String, ShardingEncryptorStrategy>emptyMap()));
     }
     
     @SneakyThrows
@@ -70,28 +68,6 @@ public final class QueryResultMetaData {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @param columnIndex column index
-     * @return column name
-     */
-    @SneakyThrows
-    private String getTableName(final int columnIndex) {
-        final String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        if (logicAndActualTables.isEmpty()) {
-            return actualTableName;
-        }
-        Collection<String> logicTableNames = Maps.filterEntries(logicAndActualTables, new Predicate<Entry<String, Collection<String>>>() {
-            
-            @Override
-            public boolean apply(final Entry<String, Collection<String>> input) {
-                return input.getValue().contains(actualTableName);
-            }
-        }).keySet();
-        return logicTableNames.isEmpty() ? actualTableName : logicTableNames.iterator().next();
     }
     
     /**
@@ -148,9 +124,15 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) {
-        if (null == shardingEncryptorEngine) {
-            return Optional.absent();
-        }
         return shardingEncryptorEngine.getShardingEncryptor(getTableName(columnIndex), resultSetMetaData.getColumnName(columnIndex));
+    }
+    
+    private String getTableName(final int columnIndex) throws SQLException {
+        String actualTableName = resultSetMetaData.getTableName(columnIndex);
+        if (null == shardingRule) {
+            return actualTableName;
+        }
+        Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
+        return tableRule.isPresent() ? tableRule.get().getLogicTable() : actualTableName;
     }
 }
