@@ -78,6 +78,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         Statement statement = getStatement();
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
         when(resultSetMetaData.getColumnName(1)).thenReturn("column");
         when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
@@ -96,6 +97,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
         when(resultSetMetaData.getColumnName(1)).thenReturn("column");
         when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);

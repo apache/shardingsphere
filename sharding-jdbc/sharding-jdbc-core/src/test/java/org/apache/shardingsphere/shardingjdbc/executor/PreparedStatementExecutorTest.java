@@ -77,6 +77,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = getPreparedStatement();
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
         when(resultSetMetaData.getColumnName(1)).thenReturn("column");
         when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
@@ -94,6 +95,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("column");
         when(resultSetMetaData.getColumnName(1)).thenReturn("column");
         when(resultSetMetaData.getTableName(1)).thenReturn("table_x");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
