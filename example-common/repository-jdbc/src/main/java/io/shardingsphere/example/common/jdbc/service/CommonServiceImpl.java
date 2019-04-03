@@ -17,50 +17,64 @@
 
 package io.shardingsphere.example.common.jdbc.service;
 
+import io.shardingsphere.example.common.entity.Country;
 import io.shardingsphere.example.common.entity.Order;
 import io.shardingsphere.example.common.entity.OrderItem;
+import io.shardingsphere.example.common.repository.CountryRepository;
 import io.shardingsphere.example.common.repository.OrderItemRepository;
 import io.shardingsphere.example.common.repository.OrderRepository;
 import io.shardingsphere.example.common.service.CommonService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public final class CommonServiceImpl implements CommonService {
-    
+
     private OrderRepository orderRepository;
-    
+
     private OrderItemRepository orderItemRepository;
-    
+
+    private CountryRepository countryRepository;
+
+    public CommonServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository, final CountryRepository countryRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.countryRepository = countryRepository;
+    }
+
     public CommonServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }
-    
+
     @Override
     public void initEnvironment() {
         orderRepository.createTableIfNotExists();
         orderItemRepository.createTableIfNotExists();
+        countryRepository.createTableIfNotExists();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
+        countryRepository.truncateTable();
     }
-    
+
     @Override
     public void cleanEnvironment() {
         orderRepository.dropTable();
         orderItemRepository.dropTable();
+        countryRepository.dropTable();
     }
-    
+
     @Override
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
-        List<Long> orderIds = insertData();
+        InsertResult insertResult = insertData();
         printData();
-        deleteData(orderIds);
+        deleteData(insertResult.getOrderIds(),insertResult.getCountryIds());
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-    
+
     @Override
     public void processFailure() {
         System.out.println("-------------- Process Failure Begin ---------------");
@@ -68,9 +82,15 @@ public final class CommonServiceImpl implements CommonService {
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
-    
-    private List<Long> insertData() {
+
+    private InsertResult insertData(){
         System.out.println("---------------------------- Insert Data ----------------------------");
+        List<Long> orderIds = insertOrderData();
+        List<Long> countryIds = insertCountryData();
+        return new InsertResult(orderIds,countryIds);
+    }
+
+    private List<Long> insertOrderData() {
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
@@ -86,15 +106,40 @@ public final class CommonServiceImpl implements CommonService {
         }
         return result;
     }
-    
-    private void deleteData(final List<Long> orderIds) {
+
+    private List<Long> insertCountryData(){
+        List<Long> result = new ArrayList<>();
+        Locale[] locales = Locale.getAvailableLocales();
+        int i = 0;
+        for(Locale l:locales){
+            final String country = l.getCountry();
+            if(country == null || "".equals(country)){
+                continue;
+            }
+            Country currCountry = new Country();
+            currCountry.setName(l.getDisplayCountry(l));
+            currCountry.setLanguage(l.getLanguage());
+            currCountry.setCode(l.getCountry());
+            countryRepository.insert(currCountry);
+            result.add(currCountry.getId());
+            if(++i == 10){
+                break;
+            }
+        }
+        return result;
+    }
+
+    private void deleteData(final List<Long> orderIds,final List<Long> countryIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
         }
+        for (Long each: countryIds){
+            countryRepository.delete(each);
+        }
     }
-    
+
     @Override
     public void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
@@ -104,6 +149,30 @@ public final class CommonServiceImpl implements CommonService {
         System.out.println("---------------------------- Print OrderItem Data -------------------");
         for (Object each : orderItemRepository.selectAll()) {
             System.out.println(each);
+        }
+        System.out.println("---------------------------- Print Country Data -------------------");
+        for (Object each : countryRepository.selectAll()) {
+            System.out.println(each);
+        }
+    }
+
+    private static class InsertResult{
+
+        private List<Long> orderIds;
+
+        private List<Long> countryIds;
+
+        public InsertResult(List<Long> orderIds, List<Long> countryIds) {
+            this.orderIds = orderIds;
+            this.countryIds = countryIds;
+        }
+
+        public List<Long> getOrderIds() {
+            return orderIds;
+        }
+
+        public List<Long> getCountryIds() {
+            return countryIds;
         }
     }
 }
