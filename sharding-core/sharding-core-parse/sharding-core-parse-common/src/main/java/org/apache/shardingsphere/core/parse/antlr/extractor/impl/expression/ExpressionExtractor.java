@@ -88,7 +88,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     /**
      * Extract common expression segment.
      *
-     * @param placeholderIndexes place holder index
+     * @param placeholderIndexes placeholder index
      * @param expressionNode expression node
      * @return common expression segment
      */
