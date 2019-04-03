@@ -1,19 +1,20 @@
 +++
 pre = "<b>4.2.3. </b>"
 toc = true
-title = "Docker Image"
+title = "Docker Clone"
 weight = 3
-+++
 
-## Pull official docker image
+------
 
-``` 
+## Pull Official Docker Clone
+
+```
 docker pull shardingsphere/sharding-proxy
 ```
 
-## Manual build docker image（Optional）
+## Build Docker Clone Manually (Optional)
 
-``` 
+```
 git clone https://github.com/sharding-sphere/sharding-sphere
 mvn clean install
 cd sharding-sphere/sharding-proxy
@@ -22,25 +23,25 @@ mvn clean package docker:build
 
 ## Configure Sharding-Proxy
 
-Create /${your_work_dir}/conf/config.yaml file to configure sharding rule. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/).
+Create `/${your_work_dir}/conf/config.yaml` document to configure sharding rules. Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/) for the configuration method.
 
-## Run docker
+## Run Docker
 
 ```
 docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
 ```
 
-The port `3308` and `13308` could be customized, `3308` represents port of docker container, `13308` represents port of host machine.
+You can define port `3308` and `13308` by yourself. `3308` refers to docker port; `13308` refers to the host port.
 
 ```
 docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest
 ```
 
-Set JVM relative parameters into `JVM_OPTS`.
+You can define JVM related parameters to environment variable `JVM_OPTS`.
 
-## Access Sharding-Proxy
+## Visit Sharding-Proxy
 
-Same as access MySQL.
+It is in the same way as connecting to MySQL.
 
 ```
 mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308
@@ -48,10 +49,10 @@ mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308
 
 ## FAQ
 
-Q1: I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused?
+Question 1: there is I/O exception (`java.io.IOException`) when process request to `{}->unix://localhost:80: Connection` is refused.
 
-A: Please make sure docker is running before you build or run.
+Answer: before building clone, please make sure docker daemon thread is running.
 
-Q2：Can't connect to database when starting the container？
+Question 2: there is error report of being unable to connect to the database.
 
-A：Please make sure /${your_work_dir}/conf/sharding-config.yaml's mysql database ip can be accessed by docker container.
+Answer: please make sure designated mysql  IP in `/${your_work_dir}/conf/sharding-config.yaml` configuration is accessible to Docker container.
