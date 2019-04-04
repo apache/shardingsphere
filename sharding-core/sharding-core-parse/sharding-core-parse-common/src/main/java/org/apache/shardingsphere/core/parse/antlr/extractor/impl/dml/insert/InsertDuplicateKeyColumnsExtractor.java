@@ -44,13 +44,17 @@ public final class InsertDuplicateKeyColumnsExtractor implements OptionalSQLSegm
         if (!onDuplicateKeyClauseNode.isPresent()) {
             return Optional.absent();
         }
+        return Optional.of(new InsertDuplicateKeyColumnsSegment(extractColumnSegments(onDuplicateKeyClauseNode.get())));
+    }
+    
+    private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext onDuplicateKeyClauseNode) {
         Collection<ColumnSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateKeyClauseNode.get(), RuleName.COLUMN_NAME)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateKeyClauseNode, RuleName.COLUMN_NAME)) {
             Optional<ColumnSegment> columnSegment = columnExtractor.extract(each);
             if (columnSegment.isPresent()) {
                 result.add(columnSegment.get());
             }
         }
-        return Optional.of(new InsertDuplicateKeyColumnsSegment(result));
+        return result;
     }
 }

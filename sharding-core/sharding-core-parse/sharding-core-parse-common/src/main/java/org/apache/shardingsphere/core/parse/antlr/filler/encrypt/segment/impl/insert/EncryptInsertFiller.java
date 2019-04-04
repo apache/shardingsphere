@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl;
+package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.insert;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
@@ -42,29 +37,14 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
-        createValue(sqlSegment, insertStatement, sql);
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
-        insertStatement.getSQLTokens().add(
-                new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), DefaultKeyword.VALUES == sqlSegment.getValuesList().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET));
-    }
-    
-    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql) {
-        if (insertSegment.getValuesList().isEmpty()) {
-            return;
+        insertStatement.setParametersIndex(sqlSegment.getParameterIndex());
+        DefaultKeyword type;
+        if (insertStatement.getInsertValues().getInsertValues().isEmpty()) {
+            type = DefaultKeyword.SET;
+        } else {
+            type = DefaultKeyword.VALUES == insertStatement.getInsertValues().getInsertValues().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
         }
-        int parameterIndex = 0;
-        for (InsertValuesSegment each : insertSegment.getValuesList()) {
-            if (each.getValues().size() != insertStatement.getColumns().size()) {
-                throw new SQLParsingException("INSERT INTO column size mismatch value size.");
-            }
-            InsertValue insertValue = new InsertValue(each.getType(), each.getParametersCount());
-            insertStatement.getInsertValues().getInsertValues().add(insertValue);
-            parameterIndex += each.getParametersCount();
-            for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {
-                SQLExpression sqlExpression = commonExpressionSegment.convertToSQLExpression(sql).get();
-                insertValue.getColumnValues().add(sqlExpression);
-            }
-            insertStatement.setParametersIndex(parameterIndex);
-        }
+        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), type));
     }
 }
