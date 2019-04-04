@@ -6,5 +6,6 @@
     <mappers>
         <mapper resource="META-INF/mappers/OrderMapper.xml"/>
         <mapper resource="META-INF/mappers/OrderItemMapper.xml"/>
+        <mapper resource="META-INF/mappers/CountryMapper.xml"/>
     </mappers>
 </configuration>
