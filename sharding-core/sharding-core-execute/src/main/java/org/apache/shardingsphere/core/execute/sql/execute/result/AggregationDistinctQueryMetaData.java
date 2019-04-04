@@ -42,9 +42,13 @@ public final class AggregationDistinctQueryMetaData {
     
     private final Collection<Integer> aggregationDistinctColumnIndexes = new LinkedList<>();
     
+    private final Collection<String> aggregationDistinctColumnLabels = new LinkedList<>();
+    
+    
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
         columnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap));
         aggregationDistinctColumnIndexes.addAll(getAggregationDistinctColumnIndexes());
+        aggregationDistinctColumnLabels.addAll(getAggregationDistinctColumnLabels());
     }
     
     private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
@@ -84,12 +88,7 @@ public final class AggregationDistinctQueryMetaData {
         });
     }
     
-    /**
-     * Get aggregation distinct column labels.
-     *
-     * @return aggregation distinct column labels
-     */
-    public Collection<String> getAggregationDistinctColumnLabels() {
+    private Collection<String> getAggregationDistinctColumnLabels() {
         
         return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
             
