@@ -164,7 +164,7 @@ public final class AggregationDistinctQueryMetaData {
      * @return is derived sum column index or not
      */
     public boolean isDerivedSumColumnIndex(final int columnIndex) {
-       return aggregationDistinctColumnIndexAndSumColumnIndexes.values().contains(columnIndex);
+        return aggregationDistinctColumnIndexAndSumColumnIndexes.values().contains(columnIndex);
     }
     
     /**
