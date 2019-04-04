@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.expression;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
@@ -41,7 +40,6 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
