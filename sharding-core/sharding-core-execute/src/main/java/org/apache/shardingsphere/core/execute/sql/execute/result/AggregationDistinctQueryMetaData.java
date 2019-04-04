@@ -49,7 +49,6 @@ public final class AggregationDistinctQueryMetaData {
     
     private final Map<Integer, AggregationType> columnIndexAndAggregationTypes = new HashMap<>();
     
-    
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
         columnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap));
         aggregationDistinctColumnIndexes.addAll(getAggregationDistinctColumnIndexes());
@@ -57,7 +56,8 @@ public final class AggregationDistinctQueryMetaData {
         columnIndexAndAggregationTypes.putAll(getColumnIndexAndAggregationTypes());
     }
     
-    private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
+    private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, 
+                                                                                final Multimap<String, Integer> columnLabelAndIndexMap) {
         Collection<AggregationDistinctColumnMetaData> result = new LinkedList<>();
         for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
             result.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
