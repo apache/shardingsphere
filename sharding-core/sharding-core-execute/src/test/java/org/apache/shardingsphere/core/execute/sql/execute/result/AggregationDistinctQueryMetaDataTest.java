@@ -70,17 +70,13 @@ public class AggregationDistinctQueryMetaDataTest {
     }
     
     @Test
-    public void assertGetDerivedCountColumnIndexes() {
-        Collection<Integer> actual = distinctQueryMetaData.getDerivedCountColumnIndexes();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(3));
+    public void assertIsDerivedCountColumnIndex() {
+        assertTrue(distinctQueryMetaData.isDerivedCountColumnIndex(3));
     }
     
     @Test
-    public void assertGetDerivedSumColumnIndexes() {
-        Collection<Integer> actual = distinctQueryMetaData.getDerivedSumColumnIndexes();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(4));
+    public void assertIsDerivedSumColumnIndex() {
+        assertTrue(distinctQueryMetaData.isDerivedSumColumnIndex(4));
     }
     
     @Test
