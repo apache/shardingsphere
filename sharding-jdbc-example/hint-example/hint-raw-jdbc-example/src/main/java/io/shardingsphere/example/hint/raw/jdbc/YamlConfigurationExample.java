@@ -22,6 +22,7 @@ import io.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
 import io.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
 import io.shardingsphere.example.common.service.CommonService;
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -35,12 +36,13 @@ import java.sql.Statement;
  * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  */
 public class YamlConfigurationExample {
-    
-//    private static final HintType TYPE = HintType.DATABASE_ONLY;
+
     private static final HintType TYPE = HintType.DATABASE_TABLES;
+//    private static final HintType TYPE = HintType.DATABASE_ONLY;
+//    private static final HintType TYPE = HintType.MASTER_ONLY;
     
     public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile());
+        DataSource dataSource = getDataSource();
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         try (HintManager hintManager = HintManager.getInstance()) {
@@ -49,17 +51,21 @@ public class YamlConfigurationExample {
         commonService.cleanEnvironment();
     }
     
-    private static File getFile() {
+    private static DataSource getDataSource() throws IOException, SQLException {
         switch (TYPE) {
-            case DATABASE_ONLY:
-                return new File(Thread.currentThread().getClass().getResource("/META-INF/hint-databases-only.yaml").getFile());
             case DATABASE_TABLES:
-                return new File(Thread.currentThread().getClass().getResource("/META-INF/hint-databases-tables.yaml").getFile());
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-tables.yaml"));
+            case DATABASE_ONLY:
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-only.yaml"));
             case MASTER_ONLY:
-                return new File(Thread.currentThread().getClass().getResource("/META-INF/hint-databases-only.yaml").getFile());
+                return YamlMasterSlaveDataSourceFactory.createDataSource(getFile("/META-INF/hint-master-only.yaml"));
             default:
                 throw new UnsupportedOperationException("unsupported type");
         }
+    }
+    
+    private static File getFile(final String configFile) {
+        return new File(Thread.currentThread().getClass().getResource(configFile).getFile());
     }
     
     private static CommonService getCommonService(final DataSource dataSource) {
@@ -79,12 +85,15 @@ public class YamlConfigurationExample {
     
     private static void setHintValue(final HintManager hintManager) {
         switch (TYPE) {
-            case DATABASE_ONLY:
-                hintManager.setDatabaseShardingValue(1L);
-                return;
             case DATABASE_TABLES:
                 hintManager.addDatabaseShardingValue("t_order", 1L);
                 hintManager.addTableShardingValue("t_order", 1L);
+                return;
+            case DATABASE_ONLY:
+                hintManager.setDatabaseShardingValue(1L);
+                return;
+            case MASTER_ONLY:
+                hintManager.setMasterRouteOnly();
                 return;
             default:
                 throw new UnsupportedOperationException("unsupported type");
