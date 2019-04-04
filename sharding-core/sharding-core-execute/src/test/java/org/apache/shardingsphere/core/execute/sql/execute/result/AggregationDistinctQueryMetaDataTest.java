@@ -32,6 +32,7 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class AggregationDistinctQueryMetaDataTest {
 
@@ -53,19 +54,13 @@ public class AggregationDistinctQueryMetaDataTest {
     }
     
     @Test
-    public void assertGetAggregationDistinctColumnIndexes() {
-        Collection<Integer> actual = distinctQueryMetaData.getAggregationDistinctColumnIndexes();
-        Collection<Integer> expected = Arrays.asList(1, 2);
-        assertThat(actual.size(), is(2));
-        assertThat(actual.iterator().next(), is(expected.iterator().next()));
+    public void assertIsAggregationDistinctColumnIndex() {
+        assertTrue(distinctQueryMetaData.isAggregationDistinctColumnIndex(1));
     }
     
     @Test
-    public void assertGetAggregationDistinctColumnLabels() {
-        Collection<String> actual = distinctQueryMetaData.getAggregationDistinctColumnLabels();
-        Collection<String> expected = Arrays.asList("c", "a");
-        assertThat(actual.size(), is(2));
-        assertThat(actual.iterator().next(), is(expected.iterator().next()));
+    public void assertIsAggregationDistinctColumnLabel() {
+        assertTrue(distinctQueryMetaData.isAggregationDistinctColumnLabel("c"));
     }
     
     @Test
