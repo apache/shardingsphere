@@ -42,16 +42,19 @@ import java.util.Map.Entry;
  */
 public final class AggregationDistinctQueryMetaData {
     
-    private final Collection<AggregationDistinctColumnMetaData> columnMetaDataList = new LinkedList<>();
+    private final Collection<AggregationDistinctColumnMetaData> aggregationDistinctColumnMetaDataList = new LinkedList<>();
     
     private final Map<Integer, String> aggregationDistinctColumnIndexAndLabels = new HashMap<>();
     
-    private final Map<Integer, AggregationType> columnIndexAndAggregationTypes = new HashMap<>();
+    private final Map<Integer, AggregationType> aggregationDistinctColumnIndexAndAggregationTypes = new HashMap<>();
+    
+    private final Map<Integer, Integer> aggregationDistinctColumnIndexAndCountColumnIndexes = new HashMap<>();
     
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        columnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap));
+        aggregationDistinctColumnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap));
         aggregationDistinctColumnIndexAndLabels.putAll(getAggregationDistinctColumnIndexAndLabels());
-        columnIndexAndAggregationTypes.putAll(getColumnIndexAndAggregationTypes());
+        aggregationDistinctColumnIndexAndAggregationTypes.putAll(getAggregationDistinctColumnIndexAndAggregationTypes());
+        aggregationDistinctColumnIndexAndCountColumnIndexes.putAll(getAggregationDistinctColumnIndexAndCountColumnIndexes());
     }
     
     private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, 
@@ -83,16 +86,24 @@ public final class AggregationDistinctQueryMetaData {
     
     private Map<Integer, String> getAggregationDistinctColumnIndexAndLabels() {
         Map<Integer, String> result = new HashMap<>();
-        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
             result.put(each.columnIndex, each.columnLabel);
         }
         return result;
     }
     
-    private Map<Integer, AggregationType> getColumnIndexAndAggregationTypes() {
+    private Map<Integer, AggregationType> getAggregationDistinctColumnIndexAndAggregationTypes() {
         Map<Integer, AggregationType> result = new LinkedHashMap<>();
-        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
             result.put(each.columnIndex, each.aggregationType);
+        }
+        return result;
+    }
+    
+    private Map<Integer, Integer> getAggregationDistinctColumnIndexAndCountColumnIndexes() {
+        Map<Integer, Integer> result = new HashMap<>();
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
+            result.put(each.columnIndex, each.derivedCountIndex);
         }
         return result;
     }
@@ -124,7 +135,7 @@ public final class AggregationDistinctQueryMetaData {
      * @return aggregation type
      */
     public AggregationType getAggregationType(final int distinctColumnIndex) {
-        return columnIndexAndAggregationTypes.get(distinctColumnIndex);
+        return aggregationDistinctColumnIndexAndAggregationTypes.get(distinctColumnIndex);
     }
     
     /**
@@ -134,7 +145,7 @@ public final class AggregationDistinctQueryMetaData {
      */
     public Collection<Integer> getDerivedCountColumnIndexes() {
         Collection<Integer> result = new LinkedList<>();
-        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
             if (-1 != each.derivedCountIndex) {
                 result.add(each.derivedCountIndex);
             }
@@ -149,7 +160,7 @@ public final class AggregationDistinctQueryMetaData {
      */
     public Collection<Integer> getDerivedSumColumnIndexes() {
         Collection<Integer> result = new LinkedList<>();
-        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
             if (-1 != each.derivedSumIndex) {
                 result.add(each.derivedSumIndex);
             }
@@ -189,7 +200,7 @@ public final class AggregationDistinctQueryMetaData {
      * @return aggregation distinct column index
      */
     public int getAggregationDistinctColumnIndex(final int derivedSumIndex) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+        return Collections2.filter(aggregationDistinctColumnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
             
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
