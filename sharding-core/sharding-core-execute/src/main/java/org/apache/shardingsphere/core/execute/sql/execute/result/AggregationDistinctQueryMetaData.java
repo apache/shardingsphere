@@ -106,6 +106,16 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     /**
+     * Is aggregation distinct column label.
+     *
+     * @param columnLabel column label
+     * @return is aggregation distinct column label or not
+     */
+    public boolean isAggregationDistinctColumnLabel(final String columnLabel) {
+        return aggregationDistinctColumnIndexAndLabels.values().contains(columnLabel);
+    }
+    
+    /**
      * Get aggregation type.
      * 
      * @param distinctColumnIndex distinct column index
