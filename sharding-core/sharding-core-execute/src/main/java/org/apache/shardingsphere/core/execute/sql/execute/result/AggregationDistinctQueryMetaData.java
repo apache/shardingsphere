@@ -22,6 +22,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 
@@ -32,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Aggregation distinct query metadata.
@@ -162,13 +164,22 @@ public final class AggregationDistinctQueryMetaData {
      * @return aggregation distinct column index
      */
     public int getAggregationDistinctColumnIndex(final String aggregationDistinctColumnLabel) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return aggregationDistinctColumnLabel.equals(input.columnLabel);
+        for (Entry<Integer, String> entry : aggregationDistinctColumnIndexAndLabels.entrySet()) {
+            if (entry.getValue().equals(aggregationDistinctColumnLabel)) {
+                return entry.getKey();
             }
-        }).iterator().next().columnIndex;
+        }
+        throw new ShardingException("Can not get aggregation distinct column index.");
+    }
+    
+    /**
+     * Get aggregation distinct column label.
+     *
+     * @param aggregationDistinctColumnIndex aggregation distinct column index
+     * @return aggregation distinct column label
+     */
+    public String getAggregationDistinctColumnLabel(final int aggregationDistinctColumnIndex) {
+        return aggregationDistinctColumnIndexAndLabels.get(aggregationDistinctColumnIndex);
     }
     
     /**
@@ -185,23 +196,6 @@ public final class AggregationDistinctQueryMetaData {
                 return derivedSumIndex == input.derivedSumIndex;
             }
         }).iterator().next().columnIndex;
-    }
-    
-    /**
-     * Get aggregation distinct column label.
-     *
-     * @param aggregationDistinctColumnIndex aggregation distinct column index
-     * @return aggregation distinct column label
-     */
-    public String getAggregationDistinctColumnLabel(final int aggregationDistinctColumnIndex) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return aggregationDistinctColumnIndex == input.columnIndex;
-            }
-        }).iterator().next().columnLabel;
-        
     }
     
     @RequiredArgsConstructor 
