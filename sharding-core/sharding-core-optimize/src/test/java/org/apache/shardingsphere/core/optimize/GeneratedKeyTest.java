@@ -79,7 +79,7 @@ public final class GeneratedKeyTest {
         when(insertStatement.getTables()).thenReturn(tables);
         when(tables.getSingleTableName()).thenReturn("tbl");
         InsertValues insertValues = new InsertValues();
-        insertValues.getInsertValues().add(mock(InsertValue.class));
+        insertValues.getValues().add(mock(InsertValue.class));
         when(insertStatement.getInsertValues()).thenReturn(insertValues);
     }
     

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.parser.context.insertvalue;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
@@ -34,7 +33,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public final class InsertValue {
     

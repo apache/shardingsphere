@@ -51,7 +51,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
-        List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
+        List<InsertValue> insertValues = insertStatement.getInsertValues().getValues();
         InsertColumnValues insertColumnValues = createInsertColumnValues();
         int parametersCount = 0;
         for (int i = 0; i < insertValues.size(); i++) {

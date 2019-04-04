@@ -46,11 +46,6 @@ public final class InsertValuesFiller implements SQLSegmentShardingFiller<Insert
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
-    }
-    
-    private void createValue(final InsertValuesSegment sqlSegment,
-                             final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (DefaultKeyword.VALUES == sqlSegment.getType()) {
             removeGenerateKeyColumn(insertStatement, shardingRule, sqlSegment.getValues().size());
         }
@@ -59,7 +54,7 @@ public final class InsertValuesFiller implements SQLSegmentShardingFiller<Insert
             throw new SQLParsingException("INSERT INTO column size mismatch value size.");
         }
         InsertValue insertValue = new InsertValue(sqlSegment.getType(), sqlSegment.getParametersCount());
-        insertStatement.getInsertValues().getInsertValues().add(insertValue);
+        insertStatement.getInsertValues().getValues().add(insertValue);
         AndCondition andCondition = new AndCondition();
         Iterator<Column> iterator = insertStatement.getColumns().iterator();
         for (CommonExpressionSegment commonExpressionSegment : sqlSegment.getValues()) {
@@ -93,9 +88,9 @@ public final class InsertValuesFiller implements SQLSegmentShardingFiller<Insert
         return insertStatement.getColumns().size();
     }
     
-    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final ShardingRule shardingRule, final int valueCount) {
+    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final ShardingRule shardingRule, final int valuesCount) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && valueCount < insertStatement.getColumns().size()) {
+        if (generateKeyColumnName.isPresent() && valuesCount < insertStatement.getColumns().size()) {
             insertStatement.getColumns().remove(new Column(generateKeyColumnName.get(), insertStatement.getTables().getSingleTableName()));
         }
     }

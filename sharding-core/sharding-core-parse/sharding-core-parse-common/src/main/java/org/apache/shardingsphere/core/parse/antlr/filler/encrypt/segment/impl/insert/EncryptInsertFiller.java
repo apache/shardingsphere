@@ -40,10 +40,10 @@ public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegmen
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
         insertStatement.setParametersIndex(sqlSegment.getParameterIndex());
         DefaultKeyword type;
-        if (insertStatement.getInsertValues().getInsertValues().isEmpty()) {
+        if (insertStatement.getInsertValues().getValues().isEmpty()) {
             type = DefaultKeyword.SET;
         } else {
-            type = DefaultKeyword.VALUES == insertStatement.getInsertValues().getInsertValues().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
+            type = DefaultKeyword.VALUES == insertStatement.getInsertValues().getValues().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
         }
         insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), type));
     }

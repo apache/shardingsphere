@@ -58,7 +58,7 @@ public final class GeneratedKey {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         return generateKeyColumnName.isPresent()
-                ? Optional.of(createGeneratedKey(shardingRule, generateKeyColumnName.get(), tableName, insertStatement.getInsertValues().getInsertValues().size())) : Optional.<GeneratedKey>absent();
+                ? Optional.of(createGeneratedKey(shardingRule, generateKeyColumnName.get(), tableName, insertStatement.getInsertValues().getValues().size())) : Optional.<GeneratedKey>absent();
     }
     
     private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final String generateKeyColumnName, final String generateKeyTableName, final int insertValueSize) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.insert;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegment;
@@ -36,16 +37,17 @@ public final class EncryptInsertValuesFiller implements SQLSegmentEncryptFiller<
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
-        InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        createValue(sqlSegment, insertStatement, sql);
+        ((InsertStatement) sqlStatement).getInsertValues().getValues().add(getInsertValue(sqlSegment, sql));
     }
     
-    private void createValue(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement, final String sql) {
-        InsertValue insertValue = new InsertValue(sqlSegment.getType(), sqlSegment.getParametersCount());
-        for (CommonExpressionSegment commonExpressionSegment : sqlSegment.getValues()) {
-            SQLExpression sqlExpression = commonExpressionSegment.convertToSQLExpression(sql).get();
-            insertValue.getColumnValues().add(sqlExpression);
+    private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {
+        InsertValue result = new InsertValue(sqlSegment.getType(), sqlSegment.getParametersCount());
+        for (CommonExpressionSegment each : sqlSegment.getValues()) {
+            Optional<SQLExpression> sqlExpression = each.convertToSQLExpression(sql);
+            if (sqlExpression.isPresent()) {
+                result.getColumnValues().add(sqlExpression.get());
+            }
         }
-        insertStatement.getInsertValues().getInsertValues().add(insertValue);
+        return result;
     }
 }

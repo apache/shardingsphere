@@ -96,7 +96,7 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
     
@@ -126,7 +126,7 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(1));
         insertValue.getColumnValues().add(new SQLNumberExpression(2));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
     
@@ -154,7 +154,7 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 0);
         insertValue.getColumnValues().add(new SQLNumberExpression(1));
         insertValue.getColumnValues().add(new SQLNumberExpression(2));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
     
@@ -184,7 +184,7 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
 }

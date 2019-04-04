@@ -70,7 +70,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         InsertColumnValues insertColumnValues = createInsertColumnValues();
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
-            InsertValue insertValue = insertStatement.getInsertValues().getInsertValues().get(i);
+            InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
             if (0 != insertValue.getParametersCount()) {
                 currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
