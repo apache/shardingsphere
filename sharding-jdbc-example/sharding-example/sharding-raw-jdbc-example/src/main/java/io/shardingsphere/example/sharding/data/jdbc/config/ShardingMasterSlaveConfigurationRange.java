@@ -47,6 +47,7 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.getBroadcastTables().add("t_country");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
                 new StandardShardingStrategyConfiguration("user_id", new PreciseModuloShardingDatabaseAlgorithm(), new RangeModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(
@@ -57,12 +58,14 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties()));
         return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "order_item_id", new Properties()));
+        return result;
     }
     
     private static List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
@@ -80,9 +83,5 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
         result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
         result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
         return result;
-    }
-    
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
     }
 }

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.sharding.data.jdbc;
 
+import io.shardingsphere.example.common.jdbc.repository.CountryRepositroyImpl;
 import io.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
 import io.shardingsphere.example.common.jdbc.repository.RangeOrderRepositoryImpl;
 import io.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
@@ -48,6 +49,6 @@ public class YamlRangeConfigurationExample {
     }
     
     private static CommonService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+        return new CommonServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource),new CountryRepositroyImpl(dataSource));
     }
 }
