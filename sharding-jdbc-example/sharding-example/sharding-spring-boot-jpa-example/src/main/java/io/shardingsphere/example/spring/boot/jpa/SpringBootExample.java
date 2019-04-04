@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.env.PropertySource;
 
 @ComponentScan("io.shardingsphere.example.common.jpa")
 @EntityScan(basePackages = "io.shardingsphere.example.common.jpa.entity")

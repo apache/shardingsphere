@@ -17,7 +17,11 @@
 
 package io.shardingsphere.example.common.entity;
 
-public class Country {
+import java.io.Serializable;
+
+public class Country implements Serializable {
+
+    private static final long serialVersionUID = 4522167390518926493L;
 
     private long id;
 
