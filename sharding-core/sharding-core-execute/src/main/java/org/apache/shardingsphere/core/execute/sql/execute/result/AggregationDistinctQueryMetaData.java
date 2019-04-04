@@ -40,14 +40,19 @@ public final class AggregationDistinctQueryMetaData {
     
     private final Collection<AggregationDistinctColumnMetaData> columnMetaDataList = new LinkedList<>();
     
+    private final Collection<Integer> aggregationDistinctColumnIndexes = new LinkedList<>();
+    
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        initColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap);
+        columnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap));
+        aggregationDistinctColumnIndexes.addAll(getAggregationDistinctColumnIndexes());
     }
     
-    private void initColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
+    private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
+        Collection<AggregationDistinctColumnMetaData> result = new LinkedList<>();
         for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
-            columnMetaDataList.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
+            result.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
         }
+        return result;
     }
     
     private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, 
@@ -68,12 +73,7 @@ public final class AggregationDistinctQueryMetaData {
         columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(1).getColumnLabel(), sumDerivedIndex);
     }
     
-    /**
-     * Get aggregation distinct column indexes.
-     *
-     * @return aggregation distinct column indexes
-     */
-    public Collection<Integer> getAggregationDistinctColumnIndexes() {
+    private Collection<Integer> getAggregationDistinctColumnIndexes() {
         
         return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, Integer>() {
             
