@@ -25,8 +25,11 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.expression.Expr
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,10 +50,15 @@ public final class InsertAssignmentValuesExtractor implements OptionalSQLSegment
         if (!assignmentValuesNode.isPresent()) {
             return Optional.absent();
         }
-        InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.VALUES, ExtractorUtils.getAllDescendantNodes(assignmentValuesNode.get(), RuleName.QUESTION).size());
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode.get(), RuleName.ASSIGNMENT_VALUE)) {
-            insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, each));
+        return Optional.of(new InsertValuesSegment(
+                DefaultKeyword.VALUES, ExtractorUtils.getAllDescendantNodes(assignmentValuesNode.get(), RuleName.QUESTION).size(), extractCommonExpressionSegments(assignmentValuesNode.get())));
+    }
+    
+    private List<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode) {
+        List<CommonExpressionSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
+            result.add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, each));
         }
-        return Optional.of(insertValuesSegment);
+        return result;
     }
 }
