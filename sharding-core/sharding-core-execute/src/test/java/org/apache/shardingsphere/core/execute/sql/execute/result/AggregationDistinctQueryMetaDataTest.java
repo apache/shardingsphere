@@ -21,17 +21,18 @@ import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class AggregationDistinctQueryMetaDataTest {
 
@@ -53,19 +54,13 @@ public class AggregationDistinctQueryMetaDataTest {
     }
     
     @Test
-    public void assertGetAggregationDistinctColumnIndexes() {
-        Collection<Integer> actual = distinctQueryMetaData.getAggregationDistinctColumnIndexes();
-        Collection<Integer> expected = Arrays.asList(1, 2);
-        assertThat(actual.size(), is(2));
-        assertThat(actual.iterator().next(), is(expected.iterator().next()));
+    public void assertIsAggregationDistinctColumnIndex() {
+        assertTrue(distinctQueryMetaData.isAggregationDistinctColumnIndex(1));
     }
     
     @Test
-    public void assertGetAggregationDistinctColumnLabels() {
-        Collection<String> actual = distinctQueryMetaData.getAggregationDistinctColumnLabels();
-        Collection<String> expected = Arrays.asList("c", "a");
-        assertThat(actual.size(), is(2));
-        assertThat(actual.iterator().next(), is(expected.iterator().next()));
+    public void assertIsAggregationDistinctColumnLabel() {
+        assertTrue(distinctQueryMetaData.isAggregationDistinctColumnLabel("c"));
     }
     
     @Test
@@ -75,17 +70,13 @@ public class AggregationDistinctQueryMetaDataTest {
     }
     
     @Test
-    public void assertGetDerivedCountColumnIndexes() {
-        Collection<Integer> actual = distinctQueryMetaData.getDerivedCountColumnIndexes();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(3));
+    public void assertIsDerivedCountColumnIndex() {
+        assertTrue(distinctQueryMetaData.isDerivedCountColumnIndex(3));
     }
     
     @Test
-    public void assertGetDerivedSumColumnIndexes() {
-        Collection<Integer> actual = distinctQueryMetaData.getDerivedSumColumnIndexes();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(4));
+    public void assertIsDerivedSumColumnIndex() {
+        assertTrue(distinctQueryMetaData.isDerivedSumColumnIndex(4));
     }
     
     @Test
@@ -94,9 +85,21 @@ public class AggregationDistinctQueryMetaDataTest {
         assertThat(actual, is(2));
     }
     
+    @Test(expected = ShardingException.class)
+    public void assertGetAggregationDistinctColumnIndexByColumnLabelWithException() {
+        int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex("f");
+        assertThat(actual, is(2));
+    }
+    
     @Test
     public void assertGetAggregationDistinctColumnIndexBySumIndex() {
         int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex(4);
+        assertThat(actual, is(2));
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertGetAggregationDistinctColumnIndexBySumIndexWithException() {
+        int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex(0);
         assertThat(actual, is(2));
     }
     
