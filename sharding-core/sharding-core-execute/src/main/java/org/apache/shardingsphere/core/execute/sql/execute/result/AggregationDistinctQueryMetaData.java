@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
@@ -80,26 +79,6 @@ public final class AggregationDistinctQueryMetaData {
         columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(1).getColumnLabel(), sumDerivedIndex);
     }
     
-    private Collection<Integer> getAggregationDistinctColumnIndexes() {
-        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, Integer>() {
-            
-            @Override
-            public Integer apply(final AggregationDistinctColumnMetaData input) {
-                return input.columnIndex;
-            }
-        });
-    }
-    
-    private Collection<String> getAggregationDistinctColumnLabels() {
-        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
-            
-            @Override
-            public String apply(final AggregationDistinctColumnMetaData input) {
-                return input.columnLabel;
-            }
-        });
-    }
-    
     private Map<Integer, String> getAggregationDistinctColumnIndexAndLabels() {
         Map<Integer, String> result = new HashMap<>();
         for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
@@ -123,7 +102,7 @@ public final class AggregationDistinctQueryMetaData {
      * @return is aggregation distinct column index or not
      */
     public boolean isAggregationDistinctColumnIndex(final int columnIndex) {
-        return aggregationDistinctColumnIndexes.contains(columnIndex);
+        return aggregationDistinctColumnIndexAndLabels.keySet().contains(columnIndex);
     }
     
     /**
