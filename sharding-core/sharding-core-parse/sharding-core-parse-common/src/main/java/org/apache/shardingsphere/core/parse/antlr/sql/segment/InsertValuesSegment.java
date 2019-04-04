@@ -37,10 +37,6 @@ public final class InsertValuesSegment implements SQLSegment {
     
     private final DefaultKeyword type;
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
     private final int parametersCount;
     
     private final List<CommonExpressionSegment> values = new LinkedList<>();

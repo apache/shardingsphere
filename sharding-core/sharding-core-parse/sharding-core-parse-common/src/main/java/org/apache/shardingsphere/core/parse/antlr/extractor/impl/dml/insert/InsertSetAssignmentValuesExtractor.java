@@ -50,8 +50,7 @@ public final class InsertSetAssignmentValuesExtractor implements OptionalSQLSegm
         if (!assignmentsNode.isPresent()) {
             return Optional.absent();
         }
-        InsertValuesSegment result = new InsertValuesSegment(DefaultKeyword.SET, assignmentsNode.get().getStart().getStartIndex(),
-                assignmentsNode.get().getStop().getStopIndex(), placeholderIndexes.size());
+        InsertValuesSegment result = new InsertValuesSegment(DefaultKeyword.SET, placeholderIndexes.size());
         Collection<ParserRuleContext> assignments = ExtractorUtils.getAllDescendantNodes(assignmentsNode.get(), RuleName.ASSIGNMENT);
         for (ParserRuleContext each : assignments) {
             result.getValues().add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) each.getChild(2)));
