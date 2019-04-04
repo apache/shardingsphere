@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegmen
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,8 +54,8 @@ public final class InsertAssignmentValuesExtractor implements OptionalSQLSegment
                 DefaultKeyword.VALUES, ExtractorUtils.getAllDescendantNodes(assignmentValuesNode.get(), RuleName.QUESTION).size(), extractCommonExpressionSegments(assignmentValuesNode.get())));
     }
     
-    private List<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode) {
-        List<CommonExpressionSegment> result = new LinkedList<>();
+    private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode) {
+        Collection<CommonExpressionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
             result.add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, each));
         }

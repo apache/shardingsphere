@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,8 +65,8 @@ public final class InsertSetAssignmentValuesExtractor implements OptionalSQLSegm
         return result;
     }
     
-    private List<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentsNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        List<CommonExpressionSegment> result = new LinkedList<>();
+    private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentsNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+        Collection<CommonExpressionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentsNode, RuleName.ASSIGNMENT)) {
             result.add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) each.getChild(2)));
         }

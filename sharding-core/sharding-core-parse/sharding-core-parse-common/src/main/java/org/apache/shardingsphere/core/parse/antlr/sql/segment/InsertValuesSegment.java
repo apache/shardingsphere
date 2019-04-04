@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Insert values segment.
@@ -38,5 +38,5 @@ public final class InsertValuesSegment implements SQLSegment {
     
     private final int parametersCount;
     
-    private final List<CommonExpressionSegment> values;
+    private final Collection<CommonExpressionSegment> values;
 }
