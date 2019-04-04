@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +49,8 @@ public final class RowNumberDecoratorMergedResultTest {
     
     private SelectStatement selectStatement;
     
+    private SQLRouteResult routeResult;
+    
     @Before
     public void setUp() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
@@ -62,23 +65,23 @@ public final class RowNumberDecoratorMergedResultTest {
             queryResults.add(new TestQueryResult(each));
         }
         selectStatement = new SelectStatement();
+        routeResult = new SQLRouteResult(selectStatement);
     }
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
         Limit limit = new Limit();
         limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
-        selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
+        routeResult.setLimit(limit);
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
-        Limit limit = new Limit();
-        selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
+        routeResult.setLimit(new Limit());
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
@@ -91,8 +94,8 @@ public final class RowNumberDecoratorMergedResultTest {
         Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, false));
-        selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
+        routeResult.setLimit(limit);
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -104,8 +107,8 @@ public final class RowNumberDecoratorMergedResultTest {
         Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, true));
-        selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
+        routeResult.setLimit(limit);
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
