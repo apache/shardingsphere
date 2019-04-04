@@ -15,5 +15,6 @@
         <module>orchestration-example</module>
         <module>sharding-example</module>
         <module>transaction-example</module>
+        <module>hint-example</module>
     </modules>
 </project>
