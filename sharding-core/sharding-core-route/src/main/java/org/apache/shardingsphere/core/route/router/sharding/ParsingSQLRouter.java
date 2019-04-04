@@ -32,6 +32,8 @@ import org.apache.shardingsphere.core.parse.SQLParsingEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
+import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
@@ -103,7 +105,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, optimizeResult).route();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit() && !routingResult.isSingleRouting()) {
-            processLimit(parameters, (SelectStatement) sqlStatement);
+            result.setLimit(getProcessedLimit(parameters, (SelectStatement) sqlStatement));
         }
         if (needMerge) {
             Preconditions.checkState(1 == routingResult.getTableUnits().getTableUnits().size(), "Must have one sharding with subquery.");
@@ -183,8 +185,21 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
     }
     
-    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement) {
+    private Limit getProcessedLimit(final List<Object> parameters, final SelectStatement selectStatement) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll, databaseType);
+        Limit result = cloneLimit(selectStatement.getLimit());
+        result.processParameters(parameters, isNeedFetchAll, databaseType);
+        return result;
+    }
+    
+    private Limit cloneLimit(final Limit limit) {
+        Limit result = new Limit();
+        if (null != limit.getOffset()) {
+            result.setOffset(new LimitValue(limit.getOffset().getValue(), limit.getOffset().getIndex(), limit.getOffset().isBoundOpened()));
+        }
+        if (null != limit.getRowCount()) {
+            result.setRowCount(new LimitValue(limit.getRowCount().getValue(), limit.getRowCount().getIndex(), limit.getRowCount().isBoundOpened()));
+        }
+        return result; 
     }
 }

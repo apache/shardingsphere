@@ -23,10 +23,11 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,19 +60,20 @@ public final class MergeEngineFactoryTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
-        SQLStatement selectStatement = new SelectStatement();
-        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, selectStatement, null, queryResults), instanceOf(DQLMergeEngine.class));
+        SQLRouteResult routeResult = new SQLRouteResult(new SelectStatement());
+        routeResult.setLimit(new Limit());
+        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
 
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
-        SQLStatement dalStatement = new DALStatement();
-        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, dalStatement, null, queryResults), instanceOf(DALMergeEngine.class));
+        SQLRouteResult routeResult = new SQLRouteResult(new DALStatement());
+        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWithOtherStatement() throws SQLException {
-        SQLStatement insertStatement = new InsertStatement();
-        MergeEngineFactory.newInstance(DatabaseType.MySQL, null, insertStatement, null, queryResults);
+        SQLRouteResult routeResult = new SQLRouteResult(new InsertStatement());
+        MergeEngineFactory.newInstance(DatabaseType.MySQL, null, routeResult, null, queryResults);
     }
 }

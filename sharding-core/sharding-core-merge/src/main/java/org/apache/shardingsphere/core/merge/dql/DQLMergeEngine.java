@@ -36,6 +36,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecora
 import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -53,6 +54,8 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final DatabaseType databaseType;
     
+    private final SQLRouteResult routeResult;
+    
     private final SelectStatement selectStatement;
     
     private final List<QueryResult> queryResults;
@@ -60,9 +63,10 @@ public final class DQLMergeEngine implements MergeEngine {
     @Getter
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final DatabaseType databaseType, final SelectStatement selectStatement, final List<QueryResult> queryResults) throws SQLException {
+    public DQLMergeEngine(final DatabaseType databaseType, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
-        this.selectStatement = selectStatement;
+        this.routeResult = routeResult;
+        this.selectStatement = (SelectStatement) routeResult.getSqlStatement();
         this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
@@ -131,18 +135,18 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        Limit limit = selectStatement.getLimit();
+        Limit limit = routeResult.getLimit();
         if (null == limit || 1 == queryResults.size()) {
             return mergedResult;
         }
         if (DatabaseType.MySQL == databaseType || DatabaseType.PostgreSQL == databaseType || DatabaseType.H2 == databaseType) {
-            return new LimitDecoratorMergedResult(mergedResult, selectStatement.getLimit());
+            return new LimitDecoratorMergedResult(mergedResult, routeResult.getLimit());
         }
         if (DatabaseType.Oracle == databaseType) {
-            return new RowNumberDecoratorMergedResult(mergedResult, selectStatement.getLimit());
+            return new RowNumberDecoratorMergedResult(mergedResult, routeResult.getLimit());
         }
         if (DatabaseType.SQLServer == databaseType) {
-            return new TopAndRowNumberDecoratorMergedResult(mergedResult, selectStatement.getLimit());
+            return new TopAndRowNumberDecoratorMergedResult(mergedResult, routeResult.getLimit());
         }
         return mergedResult;
     }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,6 +57,8 @@ public final class GroupByMemoryMergedResultTest {
     
     private SelectStatement selectStatement;
     
+    private SQLRouteResult routeResult;
+    
     @Before
     public void setUp() throws SQLException {
         resultSets = Lists.newArrayList(mockResultSet(), mockResultSet(), mockResultSet());
@@ -78,6 +81,8 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.getItems().add(aggregationSelectItem2);
         selectStatement.getGroupByItems().add(new OrderItem(3, OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new OrderItem(3, OrderDirection.DESC, OrderDirection.ASC));
+        routeResult = new SQLRouteResult(selectStatement);
+        routeResult.setLimit(selectStatement.getLimit());
     }
     
     private ResultSet mockResultSet() throws SQLException {
@@ -95,14 +100,14 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);
