@@ -42,9 +42,7 @@ public class YamlConfigurationExample {
         DataSource dataSource = getDataSource();
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
-        try (HintManager hintManager = HintManager.getInstance()) {
-            processWithHintValue(dataSource, hintManager);
-        }
+        processWithHintValue(dataSource);
         commonService.cleanEnvironment();
     }
     
@@ -69,10 +67,11 @@ public class YamlConfigurationExample {
         return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
     
-    private static void processWithHintValue(final DataSource dataSource, final HintManager hintManager) throws SQLException {
-        setHintValue(hintManager);
-        try (Connection connection = dataSource.getConnection();
+    private static void processWithHintValue(final DataSource dataSource) throws SQLException {
+        try (HintManager hintManager = HintManager.getInstance();
+             Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            setHintValue(hintManager);
             statement.execute("select * from t_order");
             statement.execute("SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id");
             statement.execute("select * from t_order_item");
