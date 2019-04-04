@@ -185,12 +185,12 @@ public final class AggregationDistinctQueryMetaData {
     /**
      * Get aggregation distinct column index.
      *
-     * @param aggregationDistinctColumnLabel aggregation distinct column label
+     * @param distinctColumnLabel aggregation distinct column label
      * @return aggregation distinct column index
      */
-    public int getAggregationDistinctColumnIndex(final String aggregationDistinctColumnLabel) {
+    public int getAggregationDistinctColumnIndex(final String distinctColumnLabel) {
         for (Entry<Integer, String> entry : aggregationDistinctColumnIndexAndLabels.entrySet()) {
-            if (entry.getValue().equals(aggregationDistinctColumnLabel)) {
+            if (entry.getValue().equals(distinctColumnLabel)) {
                 return entry.getKey();
             }
         }
@@ -200,11 +200,11 @@ public final class AggregationDistinctQueryMetaData {
     /**
      * Get aggregation distinct column label.
      *
-     * @param aggregationDistinctColumnIndex aggregation distinct column index
+     * @param distinctColumnIndex aggregation distinct column index
      * @return aggregation distinct column label
      */
-    public String getAggregationDistinctColumnLabel(final int aggregationDistinctColumnIndex) {
-        return aggregationDistinctColumnIndexAndLabels.get(aggregationDistinctColumnIndex);
+    public String getAggregationDistinctColumnLabel(final int distinctColumnIndex) {
+        return aggregationDistinctColumnIndexAndLabels.get(distinctColumnIndex);
     }
     
     @RequiredArgsConstructor 
