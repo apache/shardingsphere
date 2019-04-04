@@ -14,21 +14,14 @@ shardingRule:
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order
-      databaseStrategy:
-        hint:
-          algorithmClassName: io.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
-      keyGenerator:
-        type: SNOWFLAKE
-        column: order_id
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item
   bindingTables:
     - t_order,t_order_item
   
   defaultDatabaseStrategy:
-    inline:
-      shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+    hint:
+      algorithmClassName: io.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
   defaultTableStrategy:
     none:
 

@@ -36,8 +36,11 @@ import java.sql.Statement;
  */
 public class YamlConfigurationExample {
     
+//    private static final HintType TYPE = HintType.DATABASE_ONLY;
+    private static final HintType TYPE = HintType.DATABASE_TABLES;
+    
     public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases.yaml"));
+        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile());
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         try (HintManager hintManager = HintManager.getInstance()) {
@@ -46,8 +49,17 @@ public class YamlConfigurationExample {
         commonService.cleanEnvironment();
     }
     
-    private static File getFile(final String fileName) {
-        return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
+    private static File getFile() {
+        switch (TYPE) {
+            case DATABASE_ONLY:
+                return new File(Thread.currentThread().getClass().getResource("/META-INF/hint-databases-only.yaml").getFile());
+            case DATABASE_TABLES:
+                return new File(Thread.currentThread().getClass().getResource("/META-INF/hint-databases-tables.yaml").getFile());
+            case MASTER_ONLY:
+                return new File(Thread.currentThread().getClass().getResource("/META-INF/hint-databases-only.yaml").getFile());
+            default:
+                throw new UnsupportedOperationException("unsupported type");
+        }
     }
     
     private static CommonService getCommonService(final DataSource dataSource) {
@@ -55,12 +67,27 @@ public class YamlConfigurationExample {
     }
     
     private static void processWithHintValue(final DataSource dataSource, final HintManager hintManager) throws SQLException {
-        hintManager.addDatabaseShardingValue("t_order", 1L);
-        hintManager.addTableShardingValue("t_order", 1L);
+        setHintValue(hintManager);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("select * from t_order");
+            statement.execute("SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id");
             statement.execute("select * from t_order_item");
+            statement.execute("INSERT INTO t_order (user_id, status) VALUES (1, 'init')");
+        }
+    }
+    
+    private static void setHintValue(final HintManager hintManager) {
+        switch (TYPE) {
+            case DATABASE_ONLY:
+                hintManager.setDatabaseShardingValue(1L);
+                return;
+            case DATABASE_TABLES:
+                hintManager.addDatabaseShardingValue("t_order", 1L);
+                hintManager.addTableShardingValue("t_order", 1L);
+                return;
+            default:
+                throw new UnsupportedOperationException("unsupported type");
         }
     }
 }
