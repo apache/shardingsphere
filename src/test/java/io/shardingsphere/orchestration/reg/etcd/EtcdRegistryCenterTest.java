@@ -163,32 +163,4 @@ public class EtcdRegistryCenterTest {
         });
         verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
     }
-    
-    @Test
-    @SneakyThrows
-    public void localTest() {
-//        EtcdRegistryCenter etcdRegistryCenter = new EtcdRegistryCenter();
-//        RegistryCenterConfiguration configuration = new RegistryCenterConfiguration();
-//        configuration.setServerLists("http://localhost:2379");
-//        etcdRegistryCenter.init(configuration);
-//        etcdRegistryCenter.get("/foo");
-//        List<String> subKeys = etcdRegistryCenter.getChildrenKeys("/foo");
-//        System.out.println(subKeys);
-    
-//        CountDownLatch latch = new CountDownLatch(10000);
-//        ExecutorService executorService = Executors.newFixedThreadPool(100);
-//        AtomicLong atomicLong = new AtomicLong();
-//        for (int i = 0; i < 10000; i++) {
-//            executorService.submit(() -> {
-//                etcdRegistryCenter.persist("/foo", "foo" + atomicLong.incrementAndGet());
-//                latch.countDown();
-//            });
-//        }
-//        latch.await();
-//        etcdRegistryCenter.persist("/foo", "foo" + atomicLong.incrementAndGet());
-//        etcdRegistryCenter.persistEphemeral("/foo9", "333");
-//        etcdRegistryCenter.watch("/foo", dataChangedEvent ->
-//            System.out.println(String.format("type:%s, key:%s, value:%s", dataChangedEvent.getChangedType(), dataChangedEvent.getKey(), dataChangedEvent.getValue())));
-//        latch.await();
-    }
 }
