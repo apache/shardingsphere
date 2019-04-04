@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +50,8 @@ public final class OrderByStreamMergedResultTest {
     
     private SelectStatement selectStatement;
     
+    private SQLRouteResult routeResult;
+    
     @Before
     public void setUp() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
@@ -58,18 +61,20 @@ public final class OrderByStreamMergedResultTest {
                 new TestQueryResult(resultSet), new TestQueryResult(mock(ResultSet.class)), new TestQueryResult(mock(ResultSet.class)));
         selectStatement = new SelectStatement();
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderDirection.ASC, OrderDirection.ASC));
+        routeResult = new SQLRouteResult(selectStatement);
+        routeResult.setLimit(selectStatement.getLimit());
     }
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
@@ -86,7 +91,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, routeResult, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(1).next()).thenReturn(true, true, true, false);

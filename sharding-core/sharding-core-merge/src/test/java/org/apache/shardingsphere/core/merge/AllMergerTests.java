@@ -68,6 +68,6 @@ import org.junit.runners.Suite.SuiteClasses;
         ShowOtherMergedResultTest.class,
         ShowTablesMergedResultTest.class,
         MergeEngineFactoryTest.class
-    })
+})
 public final class AllMergerTests {
 }

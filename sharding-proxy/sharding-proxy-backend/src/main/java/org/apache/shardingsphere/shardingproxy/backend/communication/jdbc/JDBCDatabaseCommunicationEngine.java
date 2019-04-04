@@ -94,7 +94,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (logicSchema instanceof ShardingSchema) {
             logicSchema.refreshTableMetaData(routeResult.getSqlStatement());
         }
-        return merge(sqlStatement);
+        return merge(routeResult);
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLType sqlType) {
@@ -102,15 +102,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
-    private BackendResponse merge(final SQLStatement sqlStatement) throws SQLException {
+    private BackendResponse merge(final SQLRouteResult routeResult) throws SQLException {
         if (response instanceof UpdateResponse) {
-            if (!isAllBroadcastTables(sqlStatement)) {
+            if (!isAllBroadcastTables(routeResult.getSqlStatement())) {
                 ((UpdateResponse) response).mergeUpdateCount();
             }
             return response;
         }
         mergedResult = MergeEngineFactory.newInstance(
-            databaseType, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
+            databaseType, getShardingRule(), routeResult, logicSchema.getMetaData().getTable(), ((QueryResponse) response).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
         }

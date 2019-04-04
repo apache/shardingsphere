@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 
@@ -43,6 +44,10 @@ public final class SQLRouteResult {
     private final SQLStatement sqlStatement;
     
     private final GeneratedKey generatedKey;
+    
+    // For multiple thread read cached sqlStatement, clone limit on SQLRouteResult, because limit will be modified after cache
+    // TODO need more good design here
+    private Limit limit;
     
     private RoutingResult routingResult;
     
