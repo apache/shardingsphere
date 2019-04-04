@@ -28,8 +28,11 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.Aggregatio
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Aggregation distinct query metadata.
@@ -44,11 +47,14 @@ public final class AggregationDistinctQueryMetaData {
     
     private final Collection<String> aggregationDistinctColumnLabels = new LinkedList<>();
     
+    private final Map<Integer, AggregationType> columnIndexAndAggregationTypes = new HashMap<>();
+    
     
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
         columnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap));
         aggregationDistinctColumnIndexes.addAll(getAggregationDistinctColumnIndexes());
         aggregationDistinctColumnLabels.addAll(getAggregationDistinctColumnLabels());
+        columnIndexAndAggregationTypes.putAll(getColumnIndexAndAggregationTypes());
     }
     
     private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
@@ -78,7 +84,6 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     private Collection<Integer> getAggregationDistinctColumnIndexes() {
-        
         return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, Integer>() {
             
             @Override
@@ -89,7 +94,6 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     private Collection<String> getAggregationDistinctColumnLabels() {
-        
         return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
             
             @Override
@@ -97,6 +101,14 @@ public final class AggregationDistinctQueryMetaData {
                 return input.columnLabel;
             }
         });
+    }
+    
+    private Map<Integer, AggregationType> getColumnIndexAndAggregationTypes() {
+        Map<Integer, AggregationType> result = new LinkedHashMap<>();
+        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
+            result.put(each.columnIndex, each.aggregationType);
+        }
+        return result;
     }
     
     /**
