@@ -79,16 +79,16 @@ public class EncryptOrConditionFiller implements SQLSegmentEncryptFiller<OrCondi
     private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql,
             final EncryptRule encryptRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         OrCondition result = new OrCondition();
-        Set<Integer> filledConditionStopIndexs = new HashSet<Integer>();
+        Set<Integer> filledConditionStopIndexes = new HashSet<>();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
                     continue;
                 }
-                if(filledConditionStopIndexs.contains(condition.getStopIndex())) {
+                if(filledConditionStopIndexes.contains(condition.getStopIndex())) {
                     continue;
                 }else {
-                    filledConditionStopIndexs.add(condition.getStopIndex());
+                    filledConditionStopIndexes.add(condition.getStopIndex());
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, sqlStatement, condition));
                 fillEncryptCondition(column, condition, encryptRule, sqlStatement, sql);

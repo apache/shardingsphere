@@ -127,7 +127,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
                 break;
             }
         }
-        Set<Integer> filledConditionStopIndexs = new HashSet<Integer>();
+        Set<Integer> filledConditionStopIndexes = new HashSet<>();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
@@ -136,10 +136,10 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
                 if (condition.getExpression() instanceof ColumnSegment) {
                     continue;
                 }
-                if(filledConditionStopIndexs.contains(condition.getStopIndex())) {
+                if(filledConditionStopIndexes.contains(condition.getStopIndex())) {
                     continue;
                 }else {
-                    filledConditionStopIndexs.add(condition.getStopIndex());
+                    filledConditionStopIndexes.add(condition.getStopIndex());
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
                 fillEncryptCondition(column, condition, shardingRule, sqlStatement, sql);
