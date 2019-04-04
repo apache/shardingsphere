@@ -32,9 +32,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
 public class YamlConfigurationExample {
 
     private static final HintType TYPE = HintType.DATABASE_TABLES;
