@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl;
 
-import com.google.common.base.Optional;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -39,11 +46,7 @@ import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Optional;
 
 /**
  * Or condition filler.
@@ -124,6 +127,7 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
                 break;
             }
         }
+        Set<Integer> filledConditionStopIndexs = new HashSet<Integer>();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
@@ -131,6 +135,11 @@ public final class OrConditionFiller implements SQLSegmentShardingFiller<OrCondi
                 }
                 if (condition.getExpression() instanceof ColumnSegment) {
                     continue;
+                }
+                if(filledConditionStopIndexs.contains(condition.getStopIndex())) {
+                    continue;
+                }else {
+                    filledConditionStopIndexs.add(condition.getStopIndex());
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
                 fillEncryptCondition(column, condition, shardingRule, sqlStatement, sql);

@@ -36,7 +36,9 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Encrypt or condition filler.
@@ -77,10 +79,16 @@ public class EncryptOrConditionFiller implements SQLSegmentEncryptFiller<OrCondi
     private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql,
             final EncryptRule encryptRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         OrCondition result = new OrCondition();
+        Set<Integer> filledConditionStopIndexs = new HashSet<Integer>();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
                     continue;
+                }
+                if(filledConditionStopIndexs.contains(condition.getStopIndex())) {
+                    continue;
+                }else {
+                    filledConditionStopIndexs.add(condition.getStopIndex());
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, sqlStatement, condition));
                 fillEncryptCondition(column, condition, encryptRule, sqlStatement, sql);

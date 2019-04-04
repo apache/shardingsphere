@@ -91,7 +91,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
                 execDatabaseType = DatabaseType.MySQL;
             }
             new SQLStatementAssert(new AntlrParsingEngine(execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(), 
-                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
+                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
         }
     }
 }

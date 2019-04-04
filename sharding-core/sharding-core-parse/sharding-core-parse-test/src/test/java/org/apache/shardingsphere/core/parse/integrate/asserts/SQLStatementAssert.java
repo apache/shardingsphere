@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
@@ -35,9 +39,6 @@ import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * SQL statement assert.
@@ -70,17 +71,19 @@ public final class SQLStatementAssert {
     
     private final AlterTableAssert alterTableAssert;
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance());
+    private final DatabaseType databaseType;
+    
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final DatabaseType databaseType) {
+        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance(), databaseType);
     }
     
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader, final DatabaseType databaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
-        tokenAssert = new TokenAssert(sqlCaseType, assertMessage);
+        tokenAssert = new TokenAssert(sqlCaseType, assertMessage, databaseType);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);
         itemAssert = new ItemAssert(assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
@@ -88,6 +91,7 @@ public final class SQLStatementAssert {
         limitAssert = new LimitAssert(sqlCaseType, assertMessage);
         metaAssert = new TableMetaDataAssert(assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
+        this.databaseType = databaseType;
     }
     
     /**
@@ -96,7 +100,9 @@ public final class SQLStatementAssert {
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
         conditionAssert.assertOrCondition(actual.getRouteConditions().getOrCondition(), expected.getOrCondition());
-        //conditionAssert.assertOrCondition(actual.getEncryptConditions().getOrCondition(), expected.getEncryptCondition());
+        if(DatabaseType.MySQL == databaseType) {
+            conditionAssert.assertOrCondition(actual.getEncryptConditions().getOrCondition(), expected.getEncryptCondition());
+        }
         tokenAssert.assertTokens(actual.getSQLTokens(), expected.getTokens());
         indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
