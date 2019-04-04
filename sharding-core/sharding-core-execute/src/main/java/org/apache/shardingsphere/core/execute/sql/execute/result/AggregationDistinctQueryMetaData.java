@@ -38,10 +38,13 @@ import java.util.List;
  */
 public final class AggregationDistinctQueryMetaData {
     
-    private final Collection<AggregationDistinctColumnMetaData> columnMetaDataList;
+    private final Collection<AggregationDistinctColumnMetaData> columnMetaDataList = new LinkedList<>();
     
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        columnMetaDataList = new LinkedList<>();
+        initColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap);
+    }
+    
+    private void initColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
         for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
             columnMetaDataList.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
         }
