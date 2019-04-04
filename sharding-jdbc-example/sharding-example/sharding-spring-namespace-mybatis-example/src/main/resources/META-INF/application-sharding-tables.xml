@@ -16,7 +16,7 @@
     
     <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?useSSL=false"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
@@ -36,9 +36,12 @@
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
             </sharding:binding-table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="t_country" />
+            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
         <sharding:props>
-            <prop key="sql.show">true</prop>
+            <prop key="sql.show">false</prop>
         </sharding:props>
     </sharding:data-source>
     
