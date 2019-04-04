@@ -139,18 +139,13 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     /**
-     * Get derived count column indexes.
-     *
-     * @return derived count column indexes
+     * Is derived count column index.
+     * 
+     * @param columnIndex column index
+     * @return is derived count column index or not
      */
-    public Collection<Integer> getDerivedCountColumnIndexes() {
-        Collection<Integer> result = new LinkedList<>();
-        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
-            if (-1 != each.derivedCountIndex) {
-                result.add(each.derivedCountIndex);
-            }
-        }
-        return result;
+    public boolean isDerivedCountColumnIndex(final int columnIndex) {
+        return aggregationDistinctColumnIndexAndCountColumnIndexes.values().contains(columnIndex);
     }
     
     /**
