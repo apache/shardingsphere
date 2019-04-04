@@ -112,19 +112,23 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     /**
+     * Is aggregation distinct column index.
+     * 
+     * @param columnIndex column index
+     * @return is aggregation distinct column index or not
+     */
+    public boolean isAggregationDistinctColumnIndex(final int columnIndex) {
+        return aggregationDistinctColumnIndexes.contains(columnIndex);
+    }
+    
+    /**
      * Get aggregation type.
      * 
      * @param distinctColumnIndex distinct column index
      * @return aggregation type
      */
     public AggregationType getAggregationType(final int distinctColumnIndex) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return distinctColumnIndex == input.columnIndex;
-            }
-        }).iterator().next().aggregationType;
+        return columnIndexAndAggregationTypes.get(distinctColumnIndex);
     }
     
     /**
