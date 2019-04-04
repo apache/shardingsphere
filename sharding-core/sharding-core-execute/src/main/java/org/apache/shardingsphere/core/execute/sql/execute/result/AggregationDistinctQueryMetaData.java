@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
@@ -160,18 +158,28 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     /**
-     * Get derived sum column indexes.
+     * Is derived sum column index.
      *
-     * @return derived sum column indexes
+     * @param columnIndex column index
+     * @return is derived sum column index or not
      */
-    public Collection<Integer> getDerivedSumColumnIndexes() {
-        Collection<Integer> result = new LinkedList<>();
-        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
-            if (-1 != each.derivedSumIndex) {
-                result.add(each.derivedSumIndex);
+    public boolean isDerivedSumColumnIndex(final int columnIndex) {
+       return aggregationDistinctColumnIndexAndSumColumnIndexes.values().contains(columnIndex);
+    }
+    
+    /**
+     * Get aggregation distinct column index.
+     *
+     * @param derivedSumIndex derived sum index
+     * @return aggregation distinct column index
+     */
+    public int getAggregationDistinctColumnIndex(final int derivedSumIndex) {
+        for (Entry<Integer, Integer> entry : aggregationDistinctColumnIndexAndSumColumnIndexes.entrySet()) {
+            if (entry.getValue().equals(derivedSumIndex)) {
+                return entry.getKey();
             }
         }
-        return result;
+        throw new ShardingException("Can not get aggregation distinct column index.");
     }
     
     /**
@@ -197,22 +205,6 @@ public final class AggregationDistinctQueryMetaData {
      */
     public String getAggregationDistinctColumnLabel(final int aggregationDistinctColumnIndex) {
         return aggregationDistinctColumnIndexAndLabels.get(aggregationDistinctColumnIndex);
-    }
-    
-    /**
-     * Get aggregation distinct column index.
-     *
-     * @param derivedSumIndex derived sum index
-     * @return aggregation distinct column index
-     */
-    public int getAggregationDistinctColumnIndex(final int derivedSumIndex) {
-        return Collections2.filter(aggregationDistinctColumnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return derivedSumIndex == input.derivedSumIndex;
-            }
-        }).iterator().next().columnIndex;
     }
     
     @RequiredArgsConstructor 
