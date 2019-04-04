@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.Aggregatio
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
