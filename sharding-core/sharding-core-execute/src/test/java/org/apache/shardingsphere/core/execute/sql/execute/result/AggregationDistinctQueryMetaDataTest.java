@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 import org.junit.Before;
@@ -84,9 +85,21 @@ public class AggregationDistinctQueryMetaDataTest {
         assertThat(actual, is(2));
     }
     
+    @Test(expected = ShardingException.class)
+    public void assertGetAggregationDistinctColumnIndexByColumnLabelWithException() {
+        int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex("f");
+        assertThat(actual, is(2));
+    }
+    
     @Test
     public void assertGetAggregationDistinctColumnIndexBySumIndex() {
         int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex(4);
+        assertThat(actual, is(2));
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertGetAggregationDistinctColumnIndexBySumIndexWithException() {
+        int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex(0);
         assertThat(actual, is(2));
     }
     
