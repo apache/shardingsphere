@@ -366,8 +366,26 @@ The vote will be open for at least 72 hours or until necessary number of votes a
 Please vote accordingly:
 
 [ ] +1 approve 
-[ ] +0 no opinion 
+
+[ ] +0 no opinion
+ 
 [ ] -1 disapprove with the reason
+
+Checklist for reference:
+
+[ ] Download links are valid.
+
+[ ] Checksums and PGP signatures are valid.
+
+[ ] DISCLAIMER is included.
+
+[ ] Source code artifacts have correct names matching the current release.
+
+[ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
+
+[ ] All files have license headers if necessary.
+
+[ ] No compiled archives bundled in source archive.
 ```
 
 2. Apache社区投票邮件模板：
@@ -440,9 +458,28 @@ The vote will be open for at least 72 hours or until necessary number of
 votes are reached.
 
 Please vote accordingly:
+
 [ ] +1 approve
+
 [ ] +0 no opinion
+
 [ ] -1 disapprove with the reason
+
+Checklist for reference:
+
+[ ] Download links are valid.
+
+[ ] Checksums and PGP signatures are valid.
+
+[ ] DISCLAIMER is included.
+
+[ ] Source code artifacts have correct names matching the current release.
+
+[ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
+
+[ ] All files have license headers if necessary.
+
+[ ] No compiled archives bundled in source archive.
 ```
 
 3. 宣布投票结果模板：
