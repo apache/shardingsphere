@@ -72,8 +72,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
-            List<SQLExpression> currentColumnValues = createCurrentColumnValues(insertValue);
-            List<Object> currentParameters = createCurrentParameters(parametersCount, insertValue);
+            SQLExpression[] currentColumnValues = createCurrentColumnValues(insertValue);
+            Object[] currentParameters = createCurrentParameters(parametersCount, insertValue);
             parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
             insertColumnValues.addInsertColumnValue(currentColumnValues, currentParameters);
@@ -99,18 +99,18 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
     
-    private List<SQLExpression> createCurrentColumnValues(final InsertValue insertValue) {
-        List<SQLExpression> result = new ArrayList<>(insertValue.getColumnValues().size() + getIncrement());
-        result.addAll(insertValue.getColumnValues());
+    private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {
+        SQLExpression[] result = new SQLExpression[insertValue.getColumnValues().size() + getIncrement()];
+        insertValue.getColumnValues().toArray(result);
         return result;
     }
     
-    private List<Object> createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
+    private Object[] createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
         if (0 == insertValue.getParametersCount()) {
-            return new ArrayList<>(0);
+            return new Object[0];
         }
-        List<Object> result = new ArrayList<>(insertValue.getParametersCount() + getIncrement());
-        result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
+        Object[] result = new Object[insertValue.getParametersCount() + getIncrement()];
+        parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()).toArray(result);
         return result;
     }
     
@@ -183,7 +183,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private void fillWithColumnValue(final InsertColumnValue insertColumnValue, final Comparable<?> columnValue) {
         if (!parameters.isEmpty()) {
             insertColumnValue.addColumnValue(new SQLPlaceholderExpression(parameters.size() - 1));
-            insertColumnValue.getParameters().add(columnValue);
+            insertColumnValue.addColumnParameter(columnValue);
         } else if (columnValue.getClass() == String.class) {
             insertColumnValue.addColumnValue(new SQLTextExpression(columnValue.toString()));
         } else {
