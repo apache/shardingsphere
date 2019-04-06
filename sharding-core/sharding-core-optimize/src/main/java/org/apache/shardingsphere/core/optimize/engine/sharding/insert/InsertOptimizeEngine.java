@@ -71,11 +71,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
-            List<Object> currentParameters = createCurrentParameters(insertValue);
-            if (0 != insertValue.getParametersCount()) {
-                currentParameters.addAll(parameters.subList(parametersCount, parametersCount + insertValue.getParametersCount()));
-                parametersCount = parametersCount + insertValue.getParametersCount();
-            }
+            List<Object> currentParameters = createCurrentParameters(parametersCount, insertValue);
+            parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
             insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
@@ -100,18 +97,19 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
     
-    private List<Object> createCurrentParameters(final InsertValue insertValue) {
-        int capacity = 0;
+    private List<Object> createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
         if (0 == insertValue.getParametersCount()) {
             return new ArrayList<>(capacity);
         }
+        int capacity = 0;
         if (isNeededToAppendGeneratedKey()) {
             capacity += 1;
         }
         if (isNeededToAppendQueryAssistedColumn()) {
             capacity += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
         }
-        return new ArrayList<>(capacity);
+        List<Object> result = new ArrayList<>(capacity);
+        result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
     }
     
     private boolean isNeededToAppendGeneratedKey() {
