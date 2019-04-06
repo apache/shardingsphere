@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.util;
+package org.apache.shardingsphere.core.parse.antlr.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 
 /**
@@ -29,6 +28,10 @@ import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogicalOperator {
+    
+    private static final String AND = "AND";
+    
+    private static final String OR = "OR";
     
     /**
      * Judge is logical operator or not.
@@ -41,16 +44,16 @@ public final class LogicalOperator {
     }
     
     private static boolean isAndOperator(final String token) {
-        return DefaultKeyword.AND.name().equalsIgnoreCase(token) || Symbol.DOUBLE_AMP.getLiterals().equalsIgnoreCase(token);
+        return AND.equalsIgnoreCase(token) || Symbol.DOUBLE_AMP.getLiterals().equalsIgnoreCase(token);
     }
     
     /**
-     * Is OR operator or not.
+     * Judge is or operator or not.
      *
      * @param token token
      * @return OR operator or not
      */
     public static boolean isOrOperator(final String token) {
-        return DefaultKeyword.OR.name().equalsIgnoreCase(token) || Symbol.DOUBLE_BAR.getLiterals().equalsIgnoreCase(token);
+        return OR.equalsIgnoreCase(token) || Symbol.DOUBLE_BAR.getLiterals().equalsIgnoreCase(token);
     }
 }

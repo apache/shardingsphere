@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.util;
+package org.apache.shardingsphere.core.parse.antlr.constant;
 
 import lombok.RequiredArgsConstructor;
 
