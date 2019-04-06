@@ -57,7 +57,7 @@ public final class InsertColumnValues {
      * @param columnValues column values
      * @param columnParameters column parameters
      */
-    public void addInsertColumnValue(final List<SQLExpression> columnValues, final List<Object> columnParameters) {
+    public void addInsertColumnValue(final SQLExpression[] columnValues, final Object[] columnParameters) {
         this.columnValues.add(new InsertColumnValue(columnValues, columnParameters));
     }
     
@@ -70,9 +70,9 @@ public final class InsertColumnValues {
         
         private final List<DataNode> dataNodes = new LinkedList<>();
         
-        public InsertColumnValue(final List<SQLExpression> values, final List<Object> parameters) {
-            this.values = (SQLExpression[]) values.toArray();
-            this.parameters = parameters.toArray();
+        public InsertColumnValue(final SQLExpression[] values, final Object[] parameters) {
+            this.values = values;
+            this.parameters = parameters;
         }
     
         /**
