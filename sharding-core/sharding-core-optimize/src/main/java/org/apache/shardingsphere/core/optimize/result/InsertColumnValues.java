@@ -65,15 +65,15 @@ public final class InsertColumnValues {
     @Getter
     public final class InsertColumnValue {
         
-        private final List<SQLExpression> values = new LinkedList<>();
+        private final List<SQLExpression> values;
         
-        private final List<Object> parameters = new LinkedList<>();
+        private final List<Object> parameters;
         
         private final List<DataNode> dataNodes = new LinkedList<>();
         
         public InsertColumnValue(final List<SQLExpression> values, final List<Object> parameters) {
-            this.values.addAll(values);
-            this.parameters.addAll(parameters);
+            this.values = values;
+            this.parameters = parameters;
         }
         
         /**
