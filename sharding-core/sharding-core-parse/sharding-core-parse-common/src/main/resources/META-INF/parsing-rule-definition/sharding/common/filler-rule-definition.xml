@@ -19,6 +19,7 @@
 <filler-rule-definition>
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.TableFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.impl.dml.insert.InsertValuesFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.impl.dml.SetAssignmentsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertDuplicateKeyColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.impl.dml.insert.InsertDuplicateKeyColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.FromWhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.dql.SubqueryConditionFiller" />

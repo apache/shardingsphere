@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Insert values filler.
+ * Insert values filler for encrypt.
  *
  * @author zhangliang
  */

@@ -15,46 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Insert columns extractor.
+ * Assignment extractor.
  *
  * @author zhangliang
  */
-public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor {
+@RequiredArgsConstructor
+public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
+    
+    private final Map<ParserRuleContext, Integer> placeholderIndexes;
     
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
-    @Override
-    public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> insertColumnsClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMNS_CLAUSE);
-        return insertColumnsClause.isPresent()
-                ? Optional.of(new InsertColumnsSegment(insertColumnsClause.get().getStart().getStartIndex(), DefaultKeyword.VALUES, extractColumns(insertColumnsClause.get())))
-                : Optional.<InsertColumnsSegment>absent();
-    }
+    private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
-    private Collection<ColumnSegment> extractColumns(final ParserRuleContext ancestorNode) {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each);
-            if (columnSegment.isPresent()) {
-                result.add(columnSegment.get());
-            }
+    @Override
+    public Optional<AssignmentSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> assignmentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ASSIGNMENT);
+        if (!assignmentNode.isPresent()) {
+            return Optional.absent();
         }
-        return result;
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0));
+        Preconditions.checkState(columnSegment.isPresent());
+        CommonExpressionSegment expressionSegment = expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) assignmentNode.get().getChild(2));
+        return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment));
     }
 }

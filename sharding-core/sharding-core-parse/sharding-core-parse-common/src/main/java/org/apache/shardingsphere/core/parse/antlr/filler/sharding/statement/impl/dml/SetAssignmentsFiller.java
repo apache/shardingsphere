@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.impl.dml.insert;
+package org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.impl.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
@@ -33,40 +35,51 @@ import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKe
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Iterator;
 
 /**
- * Insert values filler.
+ * Set assignments filler.
  *
  * @author zhangliang
  */
-public final class InsertValuesFiller implements SQLSegmentShardingFiller<InsertValuesSegment> {
+public final class SetAssignmentsFiller implements SQLSegmentShardingFiller<SetAssignmentsSegment> {
     
     @Override
-    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        if (DefaultKeyword.VALUES == sqlSegment.getType()) {
-            removeGenerateKeyColumn(insertStatement, shardingRule, sqlSegment.getValues().size());
+        String tableName = insertStatement.getTables().getSingleTableName();
+        for (ColumnSegment each : sqlSegment.getColumns()) {
+            fillColumn(each, insertStatement, tableName);
         }
         int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement, shardingRule, shardingTableMetaData);
         if (sqlSegment.getValues().size() != columnCount) {
             throw new SQLParsingException("INSERT INTO column size mismatch value size.");
         }
-        InsertValue insertValue = new InsertValue(sqlSegment.getType(), sqlSegment.getParametersCount());
+        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, sqlSegment.getParametersCount());
         AndCondition andCondition = new AndCondition();
         Iterator<Column> columns = insertStatement.getColumns().iterator();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            fill(insertStatement, sql, shardingRule, insertValue, andCondition, columns.next(), each);
+            fillValue(insertStatement, sql, shardingRule, insertValue, andCondition, columns.next(), each);
         }
         insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
-        insertStatement.setParametersIndex(insertStatement.getParametersIndex() + sqlSegment.getParametersCount());
+        insertStatement.setParametersIndex(sqlSegment.getParametersCount());
+        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getSetClauseStartIndex(), DefaultKeyword.SET));
     }
     
-    private void fill(final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
-                      final InsertValue insertValue, final AndCondition andCondition, final Column column, final CommonExpressionSegment expressionSegment) {
+    private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {
+        insertStatement.getColumns().add(new Column(sqlSegment.getName(), tableName));
+        if (sqlSegment.getOwner().isPresent() && tableName.equals(sqlSegment.getOwner().get())) {
+            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), 0));
+        }
+    }
+    
+    private void fillValue(final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
+                           final InsertValue insertValue, final AndCondition andCondition, final Column column, final CommonExpressionSegment expressionSegment) {
         boolean isShardingColumn = shardingRule.isShardingColumn(column.getName(), column.getTableName());
         Optional<SQLExpression> sqlExpression = expressionSegment.convertToSQLExpression(sql);
         Preconditions.checkState(sqlExpression.isPresent());
@@ -93,13 +106,6 @@ public final class InsertValuesFiller implements SQLSegmentShardingFiller<Insert
             return insertStatement.getColumns().size() - assistedQueryColumnCount.get();
         }
         return insertStatement.getColumns().size();
-    }
-    
-    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final ShardingRule shardingRule, final int valuesCount) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && valuesCount < insertStatement.getColumns().size()) {
-            insertStatement.getColumns().remove(new Column(generateKeyColumnName.get(), insertStatement.getTables().getSingleTableName()));
-        }
     }
     
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final CommonExpressionSegment sqlExpression, final String sql) {

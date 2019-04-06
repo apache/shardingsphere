@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,22 +33,32 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Insert set assignment values extractor.
+ * Set assignments extractor.
  *
  * @author zhangliang
  */
-public final class InsertSetAssignmentValuesExtractor implements OptionalSQLSegmentExtractor {
+public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtractor {
     
-    private ExpressionExtractor expressionExtractor = new ExpressionExtractor();
+    private AssignmentExtractor assignmentExtractor;
     
     @Override
-    public Optional<InsertValuesSegment> extract(final ParserRuleContext ancestorNode) {
-        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ancestorNode);
-        Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
-        if (!setClauseNode.isPresent()) {
+    public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> setAssignmentsClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
+        if (!setAssignmentsClauseNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new InsertValuesSegment(DefaultKeyword.SET, placeholderIndexes.size(), extractCommonExpressionSegments(setClauseNode.get(), placeholderIndexes)));
+        Collection<ColumnSegment> columnSegments = new LinkedList<>();
+        Collection<CommonExpressionSegment> valueSegments = new LinkedList<>();
+        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ancestorNode);
+        assignmentExtractor = new AssignmentExtractor(placeholderIndexes);
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT)) {
+            Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(each);
+            if (assignmentSegment.isPresent()) {
+                columnSegments.add(assignmentSegment.get().getColumn());
+                valueSegments.add(assignmentSegment.get().getValue());
+            }
+        }
+        return Optional.of(new SetAssignmentsSegment(columnSegments, valueSegments, placeholderIndexes.size(), setAssignmentsClauseNode.get().getStart().getStartIndex()));
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
@@ -57,14 +67,6 @@ public final class InsertSetAssignmentValuesExtractor implements OptionalSQLSegm
         int index = 0;
         for (ParserRuleContext each : placeholderNodes) {
             result.put(each, index++);
-        }
-        return result;
-    }
-    
-    private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentsNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        Collection<CommonExpressionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentsNode, RuleName.ASSIGNMENT)) {
-            result.add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) each.getChild(2)));
         }
         return result;
     }
