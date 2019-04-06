@@ -98,14 +98,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private List<Object> createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
-        List<Object> result = new ArrayList<>(getCapacity());
-        if (!result.isEmpty()) {
+        List<Object> result = new ArrayList<>(insertValue.getParametersCount() + getIncrement());
+        if (0 != result.size()) {
             result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
         }
         return result;
     }
     
-    private int getCapacity() {
+    private int getIncrement() {
         int result = 0;
         if (isNeededToAppendGeneratedKey()) {
             result += 1;
