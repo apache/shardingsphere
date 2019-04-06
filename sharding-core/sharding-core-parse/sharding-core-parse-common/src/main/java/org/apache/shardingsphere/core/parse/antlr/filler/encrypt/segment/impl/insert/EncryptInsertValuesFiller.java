@@ -37,7 +37,9 @@ public final class EncryptInsertValuesFiller implements SQLSegmentEncryptFiller<
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
-        ((InsertStatement) sqlStatement).getInsertValues().getValues().add(getInsertValue(sqlSegment, sql));
+        InsertStatement insertStatement = (InsertStatement) sqlStatement;
+        insertStatement.getInsertValues().getValues().add(getInsertValue(sqlSegment, sql));
+        insertStatement.setParametersIndex(insertStatement.getParametersIndex() + sqlSegment.getParametersCount());
     }
     
     private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {

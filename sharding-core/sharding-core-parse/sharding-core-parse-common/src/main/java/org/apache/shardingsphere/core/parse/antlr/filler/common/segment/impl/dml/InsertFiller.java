@@ -35,6 +35,5 @@ public final class InsertFiller implements SQLSegmentCommonFiller<InsertSegment>
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
-        insertStatement.setParametersIndex(sqlSegment.getParameterIndex());
     }
 }
