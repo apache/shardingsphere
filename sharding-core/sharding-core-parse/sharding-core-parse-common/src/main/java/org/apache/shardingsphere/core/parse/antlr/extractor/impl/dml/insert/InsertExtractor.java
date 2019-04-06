@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertSegment;
 
 /**
  * Insert extractor.
@@ -35,8 +35,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<InsertSegment> extract(final ParserRuleContext ancestorNode) {
         InsertSegment result = new InsertSegment();
-        result.setColumnClauseStartIndex(ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME).get().getStop().getStopIndex() + 1);
-        result.setInsertValuesListLastIndex(ancestorNode.getStop().getStopIndex());
         result.setParameterIndex(ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION).size());
         return Optional.of(result);
     }

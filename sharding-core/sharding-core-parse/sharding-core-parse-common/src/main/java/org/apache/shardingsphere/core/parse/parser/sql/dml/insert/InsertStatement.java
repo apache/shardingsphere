@@ -54,8 +54,6 @@ public final class InsertStatement extends DMLStatement {
     
     private final InsertValues insertValues = new InsertValues();
     
-    private int insertValuesListLastIndex;
-    
     private boolean containGenerateKey;
     
     /**

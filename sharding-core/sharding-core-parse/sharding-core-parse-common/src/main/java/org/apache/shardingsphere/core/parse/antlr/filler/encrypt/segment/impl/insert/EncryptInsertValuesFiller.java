@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.i
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
@@ -37,7 +37,9 @@ public final class EncryptInsertValuesFiller implements SQLSegmentEncryptFiller<
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
-        ((InsertStatement) sqlStatement).getInsertValues().getValues().add(getInsertValue(sqlSegment, sql));
+        InsertStatement insertStatement = (InsertStatement) sqlStatement;
+        insertStatement.getInsertValues().getValues().add(getInsertValue(sqlSegment, sql));
+        insertStatement.setParametersIndex(insertStatement.getParametersIndex() + sqlSegment.getParametersCount());
     }
     
     private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {

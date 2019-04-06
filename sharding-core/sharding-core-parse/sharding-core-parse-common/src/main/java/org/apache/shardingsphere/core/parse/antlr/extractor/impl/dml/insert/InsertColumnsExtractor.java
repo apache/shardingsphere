@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.InsertColumnsSegment;
+import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -42,11 +43,11 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
     public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> insertColumnsClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMNS_CLAUSE);
         if (insertColumnsClause.isPresent()) {
-            return Optional.of(new InsertColumnsSegment(extractColumnSegments(insertColumnsClause.get())));
+            return Optional.of(new InsertColumnsSegment(insertColumnsClause.get().getStart().getStartIndex(), DefaultKeyword.VALUES, extractColumnSegments(insertColumnsClause.get())));
         }
         Optional<ParserRuleContext> insertSetClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
         if (insertSetClause.isPresent()) {
-            return Optional.of(new InsertColumnsSegment(extractColumnSegments(insertSetClause.get())));
+            return Optional.of(new InsertColumnsSegment(insertSetClause.get().getStart().getStartIndex(), DefaultKeyword.SET, extractColumnSegments(insertSetClause.get())));
         }
         return Optional.absent();
     }

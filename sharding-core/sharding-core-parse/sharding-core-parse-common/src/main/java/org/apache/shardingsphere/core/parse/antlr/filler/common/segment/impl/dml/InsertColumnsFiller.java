@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.InsertColum
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
 /**
@@ -43,6 +44,7 @@ public final class InsertColumnsFiller implements SQLSegmentCommonFiller<InsertC
             } else {
                 fillFromSegment(insertStatement, sqlSegment);
             }
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), sqlSegment.getType()));
         }
     }
     

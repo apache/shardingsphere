@@ -19,11 +19,9 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dm
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertSegment;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 
 /**
  * Insert filler.
@@ -37,14 +35,5 @@ public final class InsertFiller implements SQLSegmentCommonFiller<InsertSegment>
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
-        insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
-        insertStatement.setParametersIndex(sqlSegment.getParameterIndex());
-        DefaultKeyword type;
-        if (insertStatement.getInsertValues().getValues().isEmpty()) {
-            type = DefaultKeyword.SET;
-        } else {
-            type = DefaultKeyword.VALUES == insertStatement.getInsertValues().getValues().get(0).getType() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
-        }
-        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), type));
     }
 }

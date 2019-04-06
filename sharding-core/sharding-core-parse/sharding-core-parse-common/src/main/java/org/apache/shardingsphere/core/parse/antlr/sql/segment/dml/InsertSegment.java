@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 /**
  * Insert segment.
@@ -29,10 +30,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class InsertSegment implements SQLSegment {
-    
-    private int columnClauseStartIndex;
-    
-    private int insertValuesListLastIndex;
     
     private int parameterIndex;
 }
