@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.index;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.CollectionSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.SubqueryConditionSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Index names extractor.
+ * Subquery condition extractor.
  *
  * @author duhongjun
  */
-public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor {
-    
-    private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
+public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<IndexSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            Optional<IndexSegment> indexSegment = indexNameExtractor.extract(each);
-            if (indexSegment.isPresent()) {
-                result.add(indexSegment.get());
+    public Optional<SubqueryConditionSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
+        SubqueryConditionSegment result = new SubqueryConditionSegment();
+        FromWhereExtractor fromWhereExtractor = new FromWhereExtractor();
+        for (ParserRuleContext each : suQueryNodes) {
+            Optional<FromWhereSegment> condition = fromWhereExtractor.extract(each, ancestorNode);
+            if (condition.isPresent()) {
+                result.getOrConditions().add(condition.get().getConditions());
             }
         }
-        return result;
+        return Optional.of(result);
     }
 }

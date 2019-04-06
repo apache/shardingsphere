@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.extractor;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.constraint.DropPrimaryKeySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.StarSelectItemSegment;
+import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 
 /**
- * Drop primary key extractor for MySQL.
+ * Star select item segment extractor.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
+public final class StarSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
-        return ExtractorUtils.findFirstChildNode(
-                ancestorNode, RuleName.DROP_PRIMARY_KEY_SPECIFICATION).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
+    public Optional<StarSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+        String text = expressionNode.getText();
+        if (!text.endsWith(Symbol.STAR.getLiterals())) {
+            return Optional.absent();
+        }
+        String owner = text.contains(Symbol.DOT.getLiterals()) ? text.substring(0, text.indexOf(Symbol.DOT.getLiterals())) : null;
+        return Optional.of(new StarSelectItemSegment(owner, expressionNode.getStart().getStartIndex()));
     }
 }

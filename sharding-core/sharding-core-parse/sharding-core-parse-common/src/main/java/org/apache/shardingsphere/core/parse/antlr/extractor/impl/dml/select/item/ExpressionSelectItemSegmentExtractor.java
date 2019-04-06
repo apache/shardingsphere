@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.table;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNameExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.table.RenameTableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.ExpressionSelectItemSegment;
 
 /**
- * Rename table extractor.
+ * Expression select item segment extractor.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
+public final class ExpressionSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE_SPECIFICATION);
-        if (!renameTableNode.isPresent()) {
-            return Optional.absent();
+    public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+        // TODO parse table inside expression
+        ExpressionSelectItemSegment result = new ExpressionSelectItemSegment(expressionNode.getText(), expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        if (aliasNode.isPresent()) {
+            result.setAlias(aliasNode.get().getText());
         }
-        Optional<TableSegment> tableSegment = new TableNameExtractor().extract(renameTableNode.get());
-        if (tableSegment.isPresent()) {
-            return Optional.of(new RenameTableSegment(tableSegment.get().getName()));
-        }
-        return Optional.absent();
+        return Optional.of(result);
     }
 }

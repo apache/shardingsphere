@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.rule.registry.extractor;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.parse.antlr.extractor.SQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.extractor.ExtractorRuleEntity;
 

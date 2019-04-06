@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-
-import java.util.Collection;
+package org.apache.shardingsphere.core.parse.antlr.extractor.api;
 
 /**
- * Collection SQL segment extractor.
+ * SQL segment extractor.
  * 
- * @author zhangliang
+ * @author duhongjun
  */
-public interface CollectionSQLSegmentExtractor extends SQLSegmentExtractor {
-    
-    /**
-     * Extract SQL segments from SQL AST.
-     *  
-     * @param ancestorNode ancestor node of AST
-     * @return SQL segments
-     */
-    Collection<? extends SQLSegment> extract(ParserRuleContext ancestorNode);
+public interface SQLSegmentExtractor {
 }

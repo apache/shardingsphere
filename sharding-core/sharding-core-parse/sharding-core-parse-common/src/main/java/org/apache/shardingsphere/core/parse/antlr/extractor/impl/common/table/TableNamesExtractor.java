@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Column definitions extractor.
+ * Table names extractor.
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionsExtractor implements CollectionSQLSegmentExtractor {
+public final class TableNamesExtractor implements CollectionSQLSegmentExtractor {
     
-    private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
+    private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
     @Override
-    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
-            if (columnDefinitionSegment.isPresent()) {
-                result.add(columnDefinitionSegment.get());
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
+            Optional<TableSegment> tableSegment = tableNameExtractor.extract(each);
+            if (tableSegment.isPresent()) {
+                result.add(tableSegment.get());
             }
         }
         return result;

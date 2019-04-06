@@ -17,6 +17,6 @@
   -->
 
 <extractor-rule-definition>
-    <extractor-rule id="deleteFromWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.DeleteFromWhereExtractor" />
-    <extractor-rule id="updateWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.UpdateSetWhereExtractor" />
+    <extractor-rule id="deleteFromWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.delete.DeleteFromWhereExtractor" />
+    <extractor-rule id="updateWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.update.UpdateSetWhereExtractor" />
 </extractor-rule-definition>

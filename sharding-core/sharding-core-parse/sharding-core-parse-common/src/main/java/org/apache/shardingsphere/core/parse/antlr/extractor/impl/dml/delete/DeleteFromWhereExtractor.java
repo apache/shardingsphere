@@ -15,41 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dql;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.delete;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNamesExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingUnsupportedException;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * From where extractor.
+ * Delete from extractor.
  *
  * @author duhongjun
  */
-public final class FromWhereExtractor extends AbstractFromWhereExtractor {
+public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
+    
+    protected FromWhereSegment createSegment() {
+        return new DeleteFromWhereSegment();
+    }
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
-        if (!selectClauseNode.isPresent()) {
+        for (TableSegment each : new TableNamesExtractor().extract(ancestorNode)) {
+            fillTableResult(fromWhereSegment, each);
+        }
+        if (fromWhereSegment.getTableAliases().isEmpty()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> fromNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.FROM_CLAUSE);
-        if (!fromNode.isPresent()) {
-            return Optional.absent();
+        if (1 < fromWhereSegment.getTableAliases().size()) {
+            throw new SQLParsingUnsupportedException("Cannot support Multiple-Table.");
         }
-        Collection<ParserRuleContext> tableReferenceNodes = ExtractorUtils.getAllDescendantNodes(fromNode.get(), RuleName.TABLE_REFERENCE);
-        if (tableReferenceNodes.isEmpty()) {
-            return Optional.absent();
-        }
-        for (ParserRuleContext each : tableReferenceNodes) {
-            extractTableReference(fromWhereSegment, each, placeholderIndexes);
-        }
-        return ExtractorUtils.findFirstChildNodeNoneRecursive(fromNode.get().getParent(), RuleName.WHERE_CLAUSE);
+        return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }

@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.table;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNameExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.table.RenameTableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.parser.token.IndexToken;
 
 /**
- * Rename table extractor.
- *
+ * Index name extractor.
+ * 
  * @author duhongjun
  */
-public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
+public final class IndexNameExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE_SPECIFICATION);
-        if (!renameTableNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<TableSegment> tableSegment = new TableNameExtractor().extract(renameTableNode.get());
-        if (tableSegment.isPresent()) {
-            return Optional.of(new RenameTableSegment(tableSegment.get().getName()));
-        }
-        return Optional.absent();
+    public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> indexNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
+        return indexNameNode.isPresent() ? Optional.of(new IndexSegment(getIndexToken(indexNameNode.get()))) : Optional.<IndexSegment>absent();
+    }
+    
+    private IndexToken getIndexToken(final ParserRuleContext indexNameNode) {
+        return new IndexToken(indexNameNode.getStop().getStartIndex(), indexNameNode.getStop().getStopIndex());
     }
 }

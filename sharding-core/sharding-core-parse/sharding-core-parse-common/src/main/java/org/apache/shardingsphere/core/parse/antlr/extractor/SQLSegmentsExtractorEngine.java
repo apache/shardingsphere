@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.parser.SQLAST;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 

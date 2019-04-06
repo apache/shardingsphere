@@ -15,36 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.order.OrderBySegment;
 
 /**
- * Column definitions extractor.
+ * Order by extractor.
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionsExtractor implements CollectionSQLSegmentExtractor {
+public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
     
-    private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
+    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
     
     @Override
-    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
-            if (columnDefinitionSegment.isPresent()) {
-                result.add(columnDefinitionSegment.get());
-            }
+    public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
+        if (!orderByNode.isPresent()) {
+            return Optional.absent();
         }
-        return result;
+        OrderBySegment result = new OrderBySegment();
+        result.getOrderByItems().addAll(orderByItemExtractor.extract(orderByNode.get()));
+        return Optional.of(result);
     }
 }

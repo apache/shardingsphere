@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.table;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNameExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.table.RenameTableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.ColumnSelectItemSegment;
 
 /**
- * Rename table extractor.
+ * Column select item segment extractor.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
+public final class ColumnSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE_SPECIFICATION);
-        if (!renameTableNode.isPresent()) {
+    public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+        if (!RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
             return Optional.absent();
         }
-        Optional<TableSegment> tableSegment = new TableNameExtractor().extract(renameTableNode.get());
-        if (tableSegment.isPresent()) {
-            return Optional.of(new RenameTableSegment(tableSegment.get().getName()));
+        ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
+        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnNode.getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        if (aliasNode.isPresent()) {
+            result.setAlias(aliasNode.get().getText());
         }
-        return Optional.absent();
+        return Optional.of(result);
     }
 }

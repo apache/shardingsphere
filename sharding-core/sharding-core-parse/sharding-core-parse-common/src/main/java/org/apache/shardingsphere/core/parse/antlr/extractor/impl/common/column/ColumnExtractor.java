@@ -15,34 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.table;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNameExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.table.RenameTableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
 
 /**
- * Rename table extractor.
+ * Column extractor.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
+public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE_SPECIFICATION);
-        if (!renameTableNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<TableSegment> tableSegment = new TableNameExtractor().extract(renameTableNode.get());
-        if (tableSegment.isPresent()) {
-            return Optional.of(new RenameTableSegment(tableSegment.get().getName()));
+    public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
+        if (columnNode.isPresent()) {
+            return Optional.of(getColumnSegment(columnNode.get()));
         }
         return Optional.absent();
+    }
+    
+    private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
+        if (1 == columnNode.getChildCount()) {
+            return new ColumnSegment(columnNode.getChild(0).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        }
+        Preconditions.checkState(3 == columnNode.getChildCount());
+        return new ColumnSegment(columnNode.getChild(2).getText(), columnNode.getChild(0).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
     }
 }
