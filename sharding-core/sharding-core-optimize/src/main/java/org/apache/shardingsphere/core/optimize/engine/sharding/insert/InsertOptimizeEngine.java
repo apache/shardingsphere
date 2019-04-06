@@ -71,9 +71,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
-            List<Object> currentParameters = createCurrentParameters();
+            List<Object> currentParameters = createCurrentParameters(insertValue);
             if (0 != insertValue.getParametersCount()) {
-                currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
+                currentParameters.addAll(parameters.subList(parametersCount, parametersCount + insertValue.getParametersCount()));
                 parametersCount = parametersCount + insertValue.getParametersCount();
             }
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
@@ -100,10 +100,18 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
     
-    private List<Object> getCurrentParameters(final int beginCount, final int increment) {
-        List<Object> result = new ArrayList<>(increment + 1);
-        result.addAll(parameters.subList(beginCount, beginCount + increment));
-        return result;
+    private List<Object> createCurrentParameters(final InsertValue insertValue) {
+        int capacity = 0;
+        if (0 == insertValue.getParametersCount()) {
+            return new ArrayList<>(capacity);
+        }
+        if (isNeededToAppendGeneratedKey()) {
+            capacity += 1;
+        }
+        if (isNeededToAppendQueryAssistedColumn()) {
+            capacity += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
+        }
+        return new ArrayList<>(capacity);
     }
     
     private boolean isNeededToAppendGeneratedKey() {
