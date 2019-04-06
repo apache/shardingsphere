@@ -164,7 +164,7 @@ public final class EncryptSQLRewriteEngine {
         }
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
                 insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
-        appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
+        appendRest(sqlBuilder, count, originalSQL.length());
     }
     
     private void encryptInsertColumnValue(final Set<String> columnNames, final InsertColumnValue insertColumnValue) {

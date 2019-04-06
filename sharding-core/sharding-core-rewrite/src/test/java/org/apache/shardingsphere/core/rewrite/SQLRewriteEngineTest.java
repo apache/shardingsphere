@@ -182,7 +182,6 @@ public final class SQLRewriteEngineTest {
         parameters.add(1);
         insertStatement.getTables().add(new Table("table_x", Optional.<String>absent()));
         insertStatement.setParametersIndex(2);
-        insertStatement.setInsertValuesListLastIndex(44);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.NONE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(19, DefaultKeyword.VALUES));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
@@ -210,7 +209,6 @@ public final class SQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", Optional.<String>absent()));
         insertStatement.setParametersIndex(1);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.setInsertValuesListLastIndex(31);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLPlaceholderExpression(0));
@@ -232,7 +230,6 @@ public final class SQLRewriteEngineTest {
         insertStatement.getColumns().add(new Column("id", "table_x"));
         insertStatement.getTables().add(new Table("table_x", Optional.<String>absent()));
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.setInsertValuesListLastIndex(32);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLNumberExpression(10));
@@ -257,7 +254,6 @@ public final class SQLRewriteEngineTest {
         parameters.add("x");
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.setInsertValuesListLastIndex(35);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLNumberExpression(10));
@@ -282,7 +278,6 @@ public final class SQLRewriteEngineTest {
         parameters.add("x");
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.setInsertValuesListLastIndex(34);
         insertStatement.addSQLToken(new InsertValuesToken(21, DefaultKeyword.VALUES));
         InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         List<SQLExpression> sqlExpressions = new LinkedList<>();

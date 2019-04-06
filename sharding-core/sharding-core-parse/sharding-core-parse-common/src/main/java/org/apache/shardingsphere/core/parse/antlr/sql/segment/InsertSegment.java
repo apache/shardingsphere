@@ -32,7 +32,5 @@ public final class InsertSegment implements SQLSegment {
     
     private int columnClauseStartIndex;
     
-    private int insertValuesListLastIndex;
-    
     private int parameterIndex;
 }
