@@ -20,7 +20,6 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.ddl.CommonTableFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.EncryptFromWhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.insert.EncryptInsertValuesFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dml.InsertFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.EncryptUpdateSetWhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.EncryptDeleteFromWhereFiller" />
 </filler-rule-definition>
