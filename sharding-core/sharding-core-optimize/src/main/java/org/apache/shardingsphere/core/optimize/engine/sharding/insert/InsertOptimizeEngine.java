@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
@@ -71,6 +72,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
+            List<SQLExpression> currentColumnValues = createCurrentColumnValues();
             List<Object> currentParameters = createCurrentParameters(parametersCount, insertValue);
             parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
@@ -97,11 +99,18 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
     
+    private List<SQLExpression> createCurrentColumnValues(final InsertValue insertValue) {
+        List<SQLExpression> result = new ArrayList<>(insertValue.getColumnValues().size() + getIncrement());
+        result.addAll(insertValue.getColumnValues());
+        return result;
+    }
+    
     private List<Object> createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
-        List<Object> result = new ArrayList<>(insertValue.getParametersCount() + getIncrement());
-        if (0 != result.size()) {
-            result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
+        if (0 == insertValue.getParametersCount()) {
+            return new ArrayList<>(0);
         }
+        List<Object> result = new ArrayList<>(insertValue.getParametersCount() + getIncrement());
+        result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
         return result;
     }
     
