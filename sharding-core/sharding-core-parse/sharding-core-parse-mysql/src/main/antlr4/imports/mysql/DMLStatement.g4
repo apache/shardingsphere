@@ -40,11 +40,7 @@ insertValuesClause
     ;
 
 insertOnDuplicateKeyClause
-    : ON DUPLICATE KEY UPDATE assignments
-    ;
-
-assignments
-    : assignment (COMMA_ assignment)*
+    : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
 assignment
@@ -60,7 +56,7 @@ assignmentValue
     ;
 
 setAssignmentsClause
-    : SET assignments
+    : SET assignment (COMMA_ assignment)*
     ;
 
 update
