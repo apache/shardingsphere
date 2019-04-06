@@ -72,11 +72,11 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
-            List<SQLExpression> currentColumnValues = createCurrentColumnValues();
+            List<SQLExpression> currentColumnValues = createCurrentColumnValues(insertValue);
             List<Object> currentParameters = createCurrentParameters(parametersCount, insertValue);
             parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
-            insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
+            insertColumnValues.addInsertColumnValue(currentColumnValues, currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
                 fillWithGeneratedKeyName(insertColumnValues);
