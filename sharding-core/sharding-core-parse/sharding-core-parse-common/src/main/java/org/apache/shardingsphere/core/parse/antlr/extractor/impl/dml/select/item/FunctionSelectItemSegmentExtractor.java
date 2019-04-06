@@ -25,10 +25,10 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.AggregationSelectItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
 /**
  * Function select item segment extractor.

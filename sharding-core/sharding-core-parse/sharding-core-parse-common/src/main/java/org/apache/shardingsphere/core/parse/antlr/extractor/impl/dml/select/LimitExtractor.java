@@ -22,10 +22,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.LiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.PlaceholderLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 import org.apache.shardingsphere.core.util.NumberUtil;
 

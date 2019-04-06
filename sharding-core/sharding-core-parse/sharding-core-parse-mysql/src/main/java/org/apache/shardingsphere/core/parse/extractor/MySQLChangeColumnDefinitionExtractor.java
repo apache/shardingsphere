@@ -23,9 +23,9 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.ColumnDefinitionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
 
 /**
  * Change column definition extractor for MySQL.

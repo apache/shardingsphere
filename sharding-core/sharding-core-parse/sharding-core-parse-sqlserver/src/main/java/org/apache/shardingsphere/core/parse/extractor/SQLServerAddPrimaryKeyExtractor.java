@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 
 import java.util.Collection;
 

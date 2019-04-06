@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

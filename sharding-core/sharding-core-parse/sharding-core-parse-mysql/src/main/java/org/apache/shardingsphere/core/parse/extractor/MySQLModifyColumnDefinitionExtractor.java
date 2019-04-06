@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.extractor;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.ModifyColumnDefinitionExtractor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
 
 /**
  * Modify column definition extractor for MySQL.

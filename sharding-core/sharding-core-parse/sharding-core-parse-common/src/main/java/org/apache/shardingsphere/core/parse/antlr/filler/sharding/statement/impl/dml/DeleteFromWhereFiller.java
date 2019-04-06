@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.imp
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.FromWhereFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.ite
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.StarSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 
 /**

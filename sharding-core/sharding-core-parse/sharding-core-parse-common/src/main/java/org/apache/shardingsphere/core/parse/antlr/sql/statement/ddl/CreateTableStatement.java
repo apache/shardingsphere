@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
 
 import java.util.LinkedList;
 import java.util.List;

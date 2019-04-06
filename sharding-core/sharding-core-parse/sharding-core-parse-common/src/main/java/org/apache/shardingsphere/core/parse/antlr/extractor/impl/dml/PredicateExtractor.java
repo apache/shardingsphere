@@ -28,15 +28,15 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.AndConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.ConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.PredicateSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.BetweenValueExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CompareValueExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.InValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.InValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.LinkedList;

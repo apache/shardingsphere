@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dq
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.LiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.limit.PlaceholderLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
 import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;

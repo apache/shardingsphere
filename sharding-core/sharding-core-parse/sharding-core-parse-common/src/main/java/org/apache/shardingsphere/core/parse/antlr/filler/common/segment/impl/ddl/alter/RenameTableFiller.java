@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dd
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.table.RenameTableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;

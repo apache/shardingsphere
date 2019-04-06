@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.ExpressionE
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.Collection;

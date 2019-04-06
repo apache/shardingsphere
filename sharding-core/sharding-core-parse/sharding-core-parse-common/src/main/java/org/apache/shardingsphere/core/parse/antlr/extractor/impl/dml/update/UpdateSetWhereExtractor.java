@@ -24,9 +24,9 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.ExpressionE
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 
 import java.util.Map;
 

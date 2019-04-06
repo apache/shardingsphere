@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.OrConditionFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.SubqueryConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.statement.impl;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ShowParamSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dal.ShowParamSegment;
 import org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement.ShowStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 

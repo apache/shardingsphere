@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.statement.imp
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.InsertDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.Literals;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;

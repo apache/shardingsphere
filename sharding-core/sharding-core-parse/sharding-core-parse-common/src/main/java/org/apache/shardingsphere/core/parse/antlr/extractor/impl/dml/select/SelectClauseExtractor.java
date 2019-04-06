@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.SelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SelectClauseSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.select.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
 /**
  * Select clause extractor.

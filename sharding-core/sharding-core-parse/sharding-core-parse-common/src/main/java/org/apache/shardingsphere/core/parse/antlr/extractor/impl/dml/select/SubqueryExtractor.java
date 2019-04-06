@@ -22,11 +22,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SelectClauseSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.SubquerySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.order.OrderBySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 
 /**
  * Subquery extractor.

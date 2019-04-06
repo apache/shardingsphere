@@ -23,10 +23,10 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.order.item.ColumnNameOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ColumnNameOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.Collection;

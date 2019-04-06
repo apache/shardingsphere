@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

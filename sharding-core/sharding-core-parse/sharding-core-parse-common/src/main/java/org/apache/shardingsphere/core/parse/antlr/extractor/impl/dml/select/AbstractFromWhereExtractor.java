@@ -26,10 +26,10 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.Ta
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableJoinSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.TableJoinSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 
 import java.util.Collection;
 import java.util.HashMap;

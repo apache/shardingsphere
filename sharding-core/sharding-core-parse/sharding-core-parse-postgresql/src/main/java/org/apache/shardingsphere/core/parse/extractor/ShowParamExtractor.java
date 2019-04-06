@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ShowParamSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dal.ShowParamSegment;
 
 /**
  * PostgreSQL show param extractor.

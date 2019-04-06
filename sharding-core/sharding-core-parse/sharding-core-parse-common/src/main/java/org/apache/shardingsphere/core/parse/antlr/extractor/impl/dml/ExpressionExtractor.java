@@ -26,11 +26,11 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.C
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.FunctionExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.PropertyExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.FunctionExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PropertyExpressionSegment;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.Map;
