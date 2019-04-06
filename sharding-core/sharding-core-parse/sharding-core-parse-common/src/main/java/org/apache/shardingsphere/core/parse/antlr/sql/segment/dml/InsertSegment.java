@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 /**
  * Insert segment.

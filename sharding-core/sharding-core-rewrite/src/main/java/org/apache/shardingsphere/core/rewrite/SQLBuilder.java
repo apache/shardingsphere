@@ -181,7 +181,7 @@ public final class SQLBuilder {
     private void appendInsertValuesPlaceholder(final TableUnit tableUnit, 
                                                final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         if (DefaultKeyword.SET == insertValuesPlaceholder.getType()) {
-            stringBuilder.append(" SET ");
+            stringBuilder.append("SET ");
         } else {
             stringBuilder.append(" (").append(Joiner.on(", ").join(insertValuesPlaceholder.getColumnNames())).append(") VALUES ");
         }

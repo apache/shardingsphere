@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dm
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
