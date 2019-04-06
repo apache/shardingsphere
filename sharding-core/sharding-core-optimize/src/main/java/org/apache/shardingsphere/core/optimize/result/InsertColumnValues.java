@@ -83,12 +83,12 @@ public final class InsertColumnValues {
          * @param columnValue column value
          */
         public void setColumnValue(final String columnName, final Object columnValue) {
-            SQLExpression sqlExpression = values.get(getColumnIndex(columnName));
+            SQLExpression sqlExpression = values[getColumnIndex(columnName)];
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parameters[getParameterIndex(sqlExpression)] = columnValue;
             } else {
                 SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
-                values.set(getColumnIndex(columnName), columnExpression);
+                values[getColumnIndex(columnName)] = columnExpression;
             }
         }
     
@@ -97,14 +97,14 @@ public final class InsertColumnValues {
         }
     
         private int getParameterIndex(final SQLExpression sqlExpression) {
-            List<SQLExpression> sqlPlaceholderExpressions = new ArrayList<>(Collections2.filter(values, new Predicate<SQLExpression>() {
-                
-                @Override
-                public boolean apply(final SQLExpression input) {
-                    return input instanceof SQLPlaceholderExpression;
+            int result = 0;
+            for (int i = 0; i < values.length; i++) {
+                if (sqlExpression == values[i]) {
+                    return result;
+                } else if (values[i] instanceof SQLPlaceholderExpression) {
+                    result++;
                 }
-            }));
-            return sqlPlaceholderExpressions.indexOf(sqlExpression);
+            }
         }
         
         /**
@@ -114,9 +114,9 @@ public final class InsertColumnValues {
          * @return column value
          */
         public Object getColumnValue(final String columnName) {
-            SQLExpression sqlExpression = values.get(getColumnIndex(columnName));
+            SQLExpression sqlExpression = values[getColumnIndex(columnName)];
             if (sqlExpression instanceof SQLPlaceholderExpression) {
-                return parameters.get(getParameterIndex(sqlExpression));
+                return parameters[getParameterIndex(sqlExpression)];
             } else if (sqlExpression instanceof SQLTextExpression) {
                 return ((SQLTextExpression) sqlExpression).getText();
             } else {
@@ -151,7 +151,7 @@ public final class InsertColumnValues {
         }
         
         private String getColumnSQLExpressionValue(final int columnValueIndex) {
-            SQLExpression sqlExpression = values.get(columnValueIndex);
+            SQLExpression sqlExpression = values[columnValueIndex];
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 return "?";
             } else if (sqlExpression instanceof SQLTextExpression) {
