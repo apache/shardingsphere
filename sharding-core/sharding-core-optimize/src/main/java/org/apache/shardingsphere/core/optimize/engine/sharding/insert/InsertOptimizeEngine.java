@@ -98,18 +98,22 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private List<Object> createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
-        if (0 == insertValue.getParametersCount()) {
-            return new ArrayList<>(capacity);
+        List<Object> result = new ArrayList<>(getCapacity());
+        if (!result.isEmpty()) {
+            result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
         }
-        int capacity = 0;
+        return result;
+    }
+    
+    private int getCapacity() {
+        int result = 0;
         if (isNeededToAppendGeneratedKey()) {
-            capacity += 1;
+            result += 1;
         }
         if (isNeededToAppendQueryAssistedColumn()) {
-            capacity += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
+            result += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
         }
-        List<Object> result = new ArrayList<>(capacity);
-        result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
+        return result;
     }
     
     private boolean isNeededToAppendGeneratedKey() {
