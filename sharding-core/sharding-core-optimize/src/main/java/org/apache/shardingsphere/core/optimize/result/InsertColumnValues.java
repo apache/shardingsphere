@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.result;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import lombok.Getter;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
@@ -75,6 +74,21 @@ public final class InsertColumnValues {
             this.values = (SQLExpression[]) values.toArray();
             this.parameters = parameters.toArray();
         }
+    
+        /**
+         * Add column value.
+         * 
+         * @param sqlExpression sql expression
+         */
+        public void addColumnValue(final SQLExpression sqlExpression) {
+            int count = 0;
+            for (SQLExpression each : values) {
+                if (null == each) {
+                    count++;
+                }
+            }
+            values[count] = sqlExpression;
+        }
         
         /**
          * Set column value.
@@ -98,13 +112,14 @@ public final class InsertColumnValues {
     
         private int getParameterIndex(final SQLExpression sqlExpression) {
             int result = 0;
-            for (int i = 0; i < values.length; i++) {
-                if (sqlExpression == values[i]) {
+            for (SQLExpression each : values) {
+                if (sqlExpression == each) {
                     return result;
-                } else if (values[i] instanceof SQLPlaceholderExpression) {
+                } else if (each instanceof SQLPlaceholderExpression) {
                     result++;
                 }
             }
+            throw new ShardingException("Can not get parameter index.");
         }
         
         /**
