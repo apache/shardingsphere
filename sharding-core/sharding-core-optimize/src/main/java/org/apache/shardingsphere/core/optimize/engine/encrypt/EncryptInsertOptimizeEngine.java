@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
@@ -56,12 +57,10 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < insertValues.size(); i++) {
             InsertValue insertValue = insertValues.get(i);
-            List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
-            if (0 != insertValue.getParametersCount()) {
-                currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
-                parametersCount = parametersCount + insertValue.getParametersCount();
-            }
-            insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
+            List<SQLExpression> currentColumnValues = createCurrentColumnValues(insertValue);
+            List<Object> currentParameters = createCurrentParameters(parametersCount, insertValue);
+            parametersCount = parametersCount + insertValue.getParametersCount();
+            insertColumnValues.addInsertColumnValue(currentColumnValues, currentParameters);
             if (isNeededToAppendQueryAssistedColumn()) {
                 fillWithQueryAssistedColumn(insertColumnValues, i);
             }
@@ -71,6 +70,29 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private InsertColumnValues createInsertColumnValues() {
         return new InsertColumnValues(insertStatement.getInsertValuesToken().getType(), insertStatement.getInsertColumnNames());
+    }
+    
+    private List<SQLExpression> createCurrentColumnValues(final InsertValue insertValue) {
+        List<SQLExpression> result = new ArrayList<>(insertValue.getColumnValues().size() + getIncrement());
+        result.addAll(insertValue.getColumnValues());
+        return result;
+    }
+    
+    private List<Object> createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
+        if (0 == insertValue.getParametersCount()) {
+            return new ArrayList<>(0);
+        }
+        List<Object> result = new ArrayList<>(insertValue.getParametersCount() + getIncrement());
+        result.addAll(parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()));
+        return result;
+    }
+    
+    private int getIncrement() {
+        int result = 0;
+        if (isNeededToAppendQueryAssistedColumn()) {
+            result += encryptRule.getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
+        }
+        return result;
     }
     
     private List<Object> getCurrentParameters(final int beginCount, final int increment) {
