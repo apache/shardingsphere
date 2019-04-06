@@ -65,15 +65,15 @@ public final class InsertColumnValues {
     @Getter
     public final class InsertColumnValue {
         
-        private final List<SQLExpression> values;
+        private final SQLExpression[] values;
         
-        private final List<Object> parameters;
+        private final Object[] parameters;
         
         private final List<DataNode> dataNodes = new LinkedList<>();
         
         public InsertColumnValue(final List<SQLExpression> values, final List<Object> parameters) {
-            this.values = values;
-            this.parameters = parameters;
+            this.values = (SQLExpression[]) values.toArray();
+            this.parameters = parameters.toArray();
         }
         
         /**
@@ -85,7 +85,7 @@ public final class InsertColumnValues {
         public void setColumnValue(final String columnName, final Object columnValue) {
             SQLExpression sqlExpression = values.get(getColumnIndex(columnName));
             if (sqlExpression instanceof SQLPlaceholderExpression) {
-                parameters.set(getParameterIndex(sqlExpression), columnValue);
+                parameters[getParameterIndex(sqlExpression)] = columnValue;
             } else {
                 SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
                 values.set(getColumnIndex(columnName), columnExpression);
