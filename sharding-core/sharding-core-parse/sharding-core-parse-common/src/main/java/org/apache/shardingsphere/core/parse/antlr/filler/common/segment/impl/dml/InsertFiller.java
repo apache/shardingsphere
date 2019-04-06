@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl.insert;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.InsertSegment;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Encrypt insert filler.
+ * Insert filler.
  *
  * @author duhongjun
+ * @author panjuan
  */
-public class EncryptInsertFiller implements SQLSegmentEncryptFiller<InsertSegment> {
+public final class InsertFiller implements SQLSegmentCommonFiller<InsertSegment> {
     
     @Override
-    public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         insertStatement.getUpdateTableAlias().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
