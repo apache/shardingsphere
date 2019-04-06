@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
  * Use statement.

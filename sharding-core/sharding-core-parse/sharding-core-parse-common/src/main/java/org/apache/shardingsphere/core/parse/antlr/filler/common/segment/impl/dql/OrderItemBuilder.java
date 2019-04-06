@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.Col
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 

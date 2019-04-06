@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement;
 
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Conditions;

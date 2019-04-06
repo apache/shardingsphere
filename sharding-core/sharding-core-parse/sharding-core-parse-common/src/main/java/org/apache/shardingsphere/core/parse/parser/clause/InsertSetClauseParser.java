@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.parser.clause;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpressio
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.parser.token.SQLToken;

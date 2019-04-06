@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dql.select;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.DistinctSe
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.DQLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.parser.token.SQLToken;

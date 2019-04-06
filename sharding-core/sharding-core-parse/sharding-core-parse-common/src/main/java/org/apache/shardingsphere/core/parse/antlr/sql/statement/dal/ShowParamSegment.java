@@ -15,33 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dql;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dal;
 
-import lombok.ToString;
-import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.parser.sql.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 /**
- * DQL statement.
+ * Show param segment.
  *
- * @author zhangliang
+ * @author loxp
  */
-@ToString(callSuper = true)
-public class DQLStatement extends AbstractSQLStatement {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class ShowParamSegment implements SQLSegment {
     
-    public DQLStatement() {
-        super(SQLType.DQL);
-    }
-    
-    /**
-     * Is DQL statement.
-     *
-     * @param tokenType token type
-     * @return is DQL or not
-     */
-    public static boolean isDQL(final TokenType tokenType) {
-        return DefaultKeyword.SELECT == tokenType;
-    }
+    private final String name;
 }

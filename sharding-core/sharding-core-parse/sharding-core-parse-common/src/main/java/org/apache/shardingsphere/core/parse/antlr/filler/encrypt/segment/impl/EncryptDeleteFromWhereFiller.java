@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.segment.impl;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Map.Entry;

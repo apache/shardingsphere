@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimizer;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

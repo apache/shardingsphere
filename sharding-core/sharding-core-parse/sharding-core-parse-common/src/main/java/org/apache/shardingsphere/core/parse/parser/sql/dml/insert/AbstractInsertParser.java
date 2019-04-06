@@ -20,12 +20,13 @@ package org.apache.shardingsphere.core.parse.parser.sql.dml.insert;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.parser.clause.facade.AbstractInsertClauseParserFacade;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLParser;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

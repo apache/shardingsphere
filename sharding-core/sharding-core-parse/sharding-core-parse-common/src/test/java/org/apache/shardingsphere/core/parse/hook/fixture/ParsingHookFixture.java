@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.hook.fixture;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

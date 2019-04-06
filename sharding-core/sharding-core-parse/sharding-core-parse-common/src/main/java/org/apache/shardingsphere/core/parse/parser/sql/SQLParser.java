@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.parser.sql;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+
 /**
  * SQL parser.
  *

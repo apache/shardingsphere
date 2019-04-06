@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimize
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.statement.SQLStatementRuleEntity;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.extractor.ExtractorRuleDefinition;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr;
 
-import java.util.Collection;
-
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.extractor.SQLSegmentsExtractorEngine;
@@ -30,11 +28,13 @@ import org.apache.shardingsphere.core.parse.antlr.rule.registry.EncryptParsingRu
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ShardingParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.GeneralSQLStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLParser;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
+
+import java.util.Collection;
 
 /**
  * SQL parsing engine.

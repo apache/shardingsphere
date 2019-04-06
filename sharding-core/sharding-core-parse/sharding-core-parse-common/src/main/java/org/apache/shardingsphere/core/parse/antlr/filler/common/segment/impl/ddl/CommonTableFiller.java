@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.segment.impl.dd
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 
 /**
  * Common table filler.

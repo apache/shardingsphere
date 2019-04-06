@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
  * Show statement.

@@ -27,14 +27,14 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnS
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;

@@ -21,8 +21,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.SetAutoCommitSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 
 /**
  * Set auto commit filler.

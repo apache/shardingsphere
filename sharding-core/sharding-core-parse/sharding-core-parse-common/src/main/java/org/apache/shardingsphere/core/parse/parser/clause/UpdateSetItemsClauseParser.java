@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.parse.parser.clause;
 
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.parser.clause.expression.BasicExpressionParser;
 import org.apache.shardingsphere.core.parse.parser.dialect.ExpressionParserFactory;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 

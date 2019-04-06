@@ -22,8 +22,8 @@ import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShar
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.segment.impl.OrConditionFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

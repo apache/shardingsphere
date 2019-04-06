@@ -22,10 +22,10 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**

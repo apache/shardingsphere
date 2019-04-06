@@ -27,10 +27,10 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSel
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.DistinctSelectItem;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;

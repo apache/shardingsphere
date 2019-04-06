@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dml;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;

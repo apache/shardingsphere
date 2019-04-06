@@ -22,6 +22,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -32,8 +34,6 @@ import org.apache.shardingsphere.core.parse.parser.clause.expression.BasicExpres
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.parser.dialect.ExpressionParserFactory;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingUnsupportedException;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;

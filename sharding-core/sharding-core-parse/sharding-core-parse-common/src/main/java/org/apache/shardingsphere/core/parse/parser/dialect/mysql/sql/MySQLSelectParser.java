@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.parse.parser.dialect.mysql.sql;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.clause.MySQLLimitClauseParser;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.clause.MySQLSelectOptionClauseParser;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.clause.facade.MySQLSelectClauseParserFacade;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.AbstractSelectParser;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.select.AbstractSelectParser;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

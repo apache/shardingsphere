@@ -15,15 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dal.set;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
-import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
+import org.apache.shardingsphere.core.parse.parser.sql.AbstractSQLStatement;
 
 /**
- * Set statement.
- * 
- * @author chenqingyang
- * @author maxiaoguang
+ * DQL statement.
+ *
+ * @author zhangliang
  */
-public final class SetStatement extends DALStatement {
+@ToString(callSuper = true)
+public class DQLStatement extends AbstractSQLStatement {
+    
+    public DQLStatement() {
+        super(SQLType.DQL);
+    }
+    
+    /**
+     * Is DQL statement.
+     *
+     * @param tokenType token type
+     * @return is DQL or not
+     */
+    public static boolean isDQL(final TokenType tokenType) {
+        return DefaultKeyword.SELECT == tokenType;
+    }
 }

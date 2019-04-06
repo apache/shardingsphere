@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dql.select;
+package org.apache.shardingsphere.core.parse.parser.sql.dml.select;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.Assist;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;

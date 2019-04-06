@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dql.select;
+package org.apache.shardingsphere.core.parse.parser.sql.dml.select;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

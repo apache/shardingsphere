@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.parse.parser.dialect.sqlserver.sql;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.parser.dialect.sqlserver.clause.SQLServerOffsetClauseParser;
 import org.apache.shardingsphere.core.parse.parser.dialect.sqlserver.clause.SQLServerTopClauseParser;
 import org.apache.shardingsphere.core.parse.parser.dialect.sqlserver.clause.facade.SQLServerSelectClauseParserFacade;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.AbstractSelectParser;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.parser.sql.dml.select.AbstractSelectParser;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

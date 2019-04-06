@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dal;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dal;
 
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;

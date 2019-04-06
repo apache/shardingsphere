@@ -23,10 +23,10 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSeg
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
 

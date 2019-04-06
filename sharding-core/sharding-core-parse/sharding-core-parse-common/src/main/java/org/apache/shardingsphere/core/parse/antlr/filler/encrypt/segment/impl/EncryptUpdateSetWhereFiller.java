@@ -22,10 +22,10 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegme
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

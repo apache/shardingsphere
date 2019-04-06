@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.parser.dialect.postgresql.clause;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.postgresql.PostgreSQLKeyword;
 import org.apache.shardingsphere.core.parse.parser.clause.TableReferencesClauseParser;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

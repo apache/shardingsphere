@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql.dml.insert;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -28,7 +28,6 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValues;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;

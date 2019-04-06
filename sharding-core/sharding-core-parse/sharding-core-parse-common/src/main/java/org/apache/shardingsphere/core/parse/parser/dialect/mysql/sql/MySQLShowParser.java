@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.parser.dialect.mysql.sql;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowI
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowOtherStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTablesStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dal.show.AbstractShowParser;
 import org.apache.shardingsphere.core.parse.parser.token.RemoveToken;
 import org.apache.shardingsphere.core.parse.parser.token.SchemaToken;

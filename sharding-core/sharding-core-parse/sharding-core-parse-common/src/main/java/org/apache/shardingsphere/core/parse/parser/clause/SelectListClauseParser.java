@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.DistinctSe
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.parser.dialect.ExpressionParserFactory;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;

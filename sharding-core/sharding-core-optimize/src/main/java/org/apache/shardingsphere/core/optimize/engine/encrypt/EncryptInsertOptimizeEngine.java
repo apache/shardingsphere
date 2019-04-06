@@ -23,12 +23,12 @@ import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.clause.expression;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.Literals;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpressio
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.util.NumberUtil;

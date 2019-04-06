@@ -25,10 +25,10 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResu
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
-import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.DQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
