@@ -31,7 +31,5 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 @Setter
 public final class InsertSegment implements SQLSegment {
     
-    private int columnClauseStartIndex;
-    
     private int parameterIndex;
 }

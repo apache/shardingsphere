@@ -35,14 +35,6 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<InsertSegment> extract(final ParserRuleContext ancestorNode) {
         InsertSegment result = new InsertSegment();
-        Optional<ParserRuleContext> insertColumnsClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMNS_CLAUSE);
-        if (insertColumnsClauseNode.isPresent()) {
-            result.setColumnClauseStartIndex(insertColumnsClauseNode.get().getStart().getStartIndex());
-        }
-        Optional<ParserRuleContext> setAssignmentsClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
-        if (setAssignmentsClauseNode.isPresent()) {
-            result.setColumnClauseStartIndex(setAssignmentsClauseNode.get().getStart().getStartIndex());
-        }
         result.setParameterIndex(ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION).size());
         return Optional.of(result);
     }
