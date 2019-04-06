@@ -81,13 +81,17 @@ public final class InsertColumnValues {
          * @param sqlExpression sql expression
          */
         public void addColumnValue(final SQLExpression sqlExpression) {
+            values[getCurrentIndex(values)] = sqlExpression;
+        }
+        
+        private int getCurrentIndex(final Object[] array) {
             int count = 0;
-            for (SQLExpression each : values) {
-                if (null == each) {
+            for (Object each : array) {
+                if (null != each) {
                     count++;
                 }
             }
-            values[count] = sqlExpression;
+            return count;
         }
         
         /**
