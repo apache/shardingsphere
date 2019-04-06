@@ -83,6 +83,15 @@ public final class InsertColumnValues {
         public void addColumnValue(final SQLExpression sqlExpression) {
             values[getCurrentIndex(values)] = sqlExpression;
         }
+    
+        /**
+         * Add column parameter.
+         *
+         * @param parameter parameter 
+         */
+        public void addColumnParameter(final Object parameter) {
+            parameters[getCurrentIndex(parameters)] = parameter;
+        }
         
         private int getCurrentIndex(final Object[] array) {
             int count = 0;
