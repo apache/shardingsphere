@@ -28,7 +28,7 @@
     <extractor-rule id="dropColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.DropColumnDefinitionExtractor" />
     
     <extractor-rule id="insertColumns" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertColumnsExtractor" />
-    <extractor-rule id="insertAssignmentValuesGroup" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertAssignmentValuesGroupExtractor" />
+    <extractor-rule id="insertValues" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertValuesExtractor" />
     <extractor-rule id="insertSetAssignmentValues" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertSetAssignmentValuesExtractor" />
     <extractor-rule id="insertDuplicateKeyColumns" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertDuplicateKeyColumnsExtractor" />
     <extractor-rule id="selectClause" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SelectClauseExtractor" />
