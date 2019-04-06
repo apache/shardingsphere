@@ -40,5 +40,10 @@ public final class InsertValue {
     
     private final int parametersCount;
     
-    private final List<SQLExpression> columnValues = new LinkedList<>();
+    private final List<SQLExpression> columnValues;
+    
+    // TODO to be removed, for old parse engine only
+    public InsertValue(final DefaultKeyword type, final int parametersCount) {
+        this(type, parametersCount, new LinkedList<SQLExpression>());
+    }
 }

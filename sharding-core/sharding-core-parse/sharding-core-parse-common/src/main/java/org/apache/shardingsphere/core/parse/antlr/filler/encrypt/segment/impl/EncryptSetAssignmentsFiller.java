@@ -30,9 +30,13 @@ import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Set assignments filler for encrypt.
@@ -61,13 +65,17 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentEncryptFille
     }
     
     private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final String sql) {
-        InsertValue result = new InsertValue(DefaultKeyword.SET, sqlSegment.getParametersCount());
+        int parametersCount = 0;
+        List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
             Optional<SQLExpression> sqlExpression = each.convertToSQLExpression(sql);
             if (sqlExpression.isPresent()) {
-                result.getColumnValues().add(sqlExpression.get());
+                columnValues.add(sqlExpression.get());
+                if (sqlExpression.get() instanceof SQLPlaceholderExpression) {
+                    parametersCount++;
+                }
             }
         }
-        return result;
+        return new InsertValue(DefaultKeyword.SET, parametersCount, columnValues);
     }
 }

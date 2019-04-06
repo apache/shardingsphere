@@ -37,7 +37,5 @@ public final class InsertValuesSegment implements SQLSegment {
     
     private final DefaultKeyword type;
     
-    private final int parametersCount;
-    
     private final Collection<CommonExpressionSegment> values;
 }

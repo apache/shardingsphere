@@ -50,8 +50,7 @@ public final class InsertAssignmentValuesExtractor implements OptionalSQLSegment
         if (!assignmentValuesNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new InsertValuesSegment(
-                DefaultKeyword.VALUES, ExtractorUtils.getAllDescendantNodes(assignmentValuesNode.get(), RuleName.QUESTION).size(), extractCommonExpressionSegments(assignmentValuesNode.get())));
+        return Optional.of(new InsertValuesSegment(DefaultKeyword.VALUES, extractCommonExpressionSegments(assignmentValuesNode.get())));
     }
     
     private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode) {
