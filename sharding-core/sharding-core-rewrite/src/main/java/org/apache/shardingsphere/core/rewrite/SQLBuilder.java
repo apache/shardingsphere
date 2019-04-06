@@ -193,11 +193,6 @@ public final class SQLBuilder {
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
     }
     
-    private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append(insertColumnValue).append(", ");
-        insertParameters.addAll(insertColumnValue.getParameters());
-    }
-    
     private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {
         if (insertColumnValue.getDataNodes().isEmpty() || null == tableUnit) {
             return true;
@@ -208,5 +203,10 @@ public final class SQLBuilder {
             }
         }
         return false;
+    }
+    
+    private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        stringBuilder.append(insertColumnValue).append(", ");
+        insertParameters.addAll(insertColumnValue.getParameters());
     }
 }
