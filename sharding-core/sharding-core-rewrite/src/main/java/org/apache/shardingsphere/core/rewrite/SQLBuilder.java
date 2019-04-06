@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -193,6 +194,11 @@ public final class SQLBuilder {
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
     }
     
+    private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        stringBuilder.append(insertColumnValue).append(", ");
+        insertParameters.addAll(Arrays.asList(insertColumnValue.getParameters()));
+    }
+    
     private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {
         if (insertColumnValue.getDataNodes().isEmpty() || null == tableUnit) {
             return true;
@@ -203,10 +209,5 @@ public final class SQLBuilder {
             }
         }
         return false;
-    }
-    
-    private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append(insertColumnValue).append(", ");
-        insertParameters.addAll(insertColumnValue.getParameters());
     }
 }

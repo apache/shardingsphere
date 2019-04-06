@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
@@ -71,13 +72,11 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
-            List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
-            if (0 != insertValue.getParametersCount()) {
-                currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
-                parametersCount = parametersCount + insertValue.getParametersCount();
-            }
+            SQLExpression[] currentColumnValues = createCurrentColumnValues(insertValue);
+            Object[] currentParameters = createCurrentParameters(parametersCount, insertValue);
+            parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
-            insertColumnValues.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
+            insertColumnValues.addInsertColumnValue(currentColumnValues, currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
                 fillWithGeneratedKeyName(insertColumnValues);
@@ -100,16 +99,36 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
     
+    private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {
+        SQLExpression[] result = new SQLExpression[insertValue.getColumnValues().size() + getIncrement()];
+        insertValue.getColumnValues().toArray(result);
+        return result;
+    }
+    
+    private Object[] createCurrentParameters(final int beginIndex, final InsertValue insertValue) {
+        if (0 == insertValue.getParametersCount()) {
+            return new Object[0];
+        }
+        Object[] result = new Object[insertValue.getParametersCount() + getIncrement()];
+        parameters.subList(beginIndex, beginIndex + insertValue.getParametersCount()).toArray(result);
+        return result;
+    }
+    
+    private int getIncrement() {
+        int result = 0;
+        if (isNeededToAppendGeneratedKey()) {
+            result += 1;
+        }
+        if (isNeededToAppendQueryAssistedColumn()) {
+            result += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
+        }
+        return result;
+    }
+    
     private boolean isNeededToAppendGeneratedKey() {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
         return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(new Column(generateKeyColumn.get(), tableName));
-    }
-    
-    private List<Object> getCurrentParameters(final int beginCount, final int increment) {
-        List<Object> result = new ArrayList<>(increment + 1);
-        result.addAll(parameters.subList(beginCount, beginCount + increment));
-        return result;
     }
     
     private ShardingCondition createShardingCondition(final AndCondition andCondition) {
@@ -163,12 +182,12 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void fillWithColumnValue(final InsertColumnValue insertColumnValue, final Comparable<?> columnValue) {
         if (!parameters.isEmpty()) {
-            insertColumnValue.getValues().add(new SQLPlaceholderExpression(parameters.size() - 1));
-            insertColumnValue.getParameters().add(columnValue);
+            insertColumnValue.addColumnValue(new SQLPlaceholderExpression(parameters.size() - 1));
+            insertColumnValue.addColumnParameter(columnValue);
         } else if (columnValue.getClass() == String.class) {
-            insertColumnValue.getValues().add(new SQLTextExpression(columnValue.toString()));
+            insertColumnValue.addColumnValue(new SQLTextExpression(columnValue.toString()));
         } else {
-            insertColumnValue.getValues().add(new SQLNumberExpression((Number) columnValue));
+            insertColumnValue.addColumnValue(new SQLNumberExpression((Number) columnValue));
         }
     }
 }

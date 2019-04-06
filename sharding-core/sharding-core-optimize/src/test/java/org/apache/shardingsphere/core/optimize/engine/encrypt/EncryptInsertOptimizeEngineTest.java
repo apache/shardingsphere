@@ -79,9 +79,9 @@ public final class EncryptInsertOptimizeEngineTest {
         OptimizeResult actual = optimizeEngine.optimize();
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(2));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), is((Object) 1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[0], is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[1], is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("(?, ?)"));
     
     }
@@ -107,7 +107,7 @@ public final class EncryptInsertOptimizeEngineTest {
         OptimizeResult actual = optimizeEngine.optimize();
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(4));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(0));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col1"), is((Object) 1));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col2"), is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("query1"), is((Object) 1));
@@ -137,7 +137,7 @@ public final class EncryptInsertOptimizeEngineTest {
         OptimizeResult actual = optimizeEngine.optimize();
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(0));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col1"), is((Object) 1));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col2"), is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("col1 = 1, col2 = 2"));
@@ -165,11 +165,11 @@ public final class EncryptInsertOptimizeEngineTest {
         OptimizeResult actual = optimizeEngine.optimize();
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(4));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(4));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), is((Object) 1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), is((Object) 2));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2), is((Object) 1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(3), is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(4));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[0], is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[1], is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[2], is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[3], is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("col1 = ?, col2 = ?, query1 = ?, query2 = ?"));
         
     }
