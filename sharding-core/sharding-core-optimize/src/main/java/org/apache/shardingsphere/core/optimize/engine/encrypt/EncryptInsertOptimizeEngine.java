@@ -95,12 +95,6 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private List<Object> getCurrentParameters(final int beginCount, final int increment) {
-        List<Object> result = new ArrayList<>(increment + 1);
-        result.addAll(parameters.subList(beginCount, beginCount + increment));
-        return result;
-    }
-    
     private boolean isNeededToAppendQueryAssistedColumn() {
         return encryptRule.getEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
     }
