@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parse.antlr.constant.LogicalOperator;
@@ -48,7 +47,6 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     private ExpressionExtractor expressionExtractor = new ExpressionExtractor();
