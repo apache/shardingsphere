@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Insert values group extractor.
+ * Insert values extractor.
  *
  * @author zhangliang
  */

@@ -73,9 +73,10 @@ public final class SetAssignmentsFiller implements SQLSegmentShardingFiller<SetA
                 parametersCount++;
             }
         }
-        insertStatement.getInsertValues().getValues().add(new InsertValue(parametersCount, columnValues));
+        InsertValue insertValue = new InsertValue(parametersCount, columnValues);
+        insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
-        insertStatement.setParametersIndex(sqlSegment.getParametersCount());
+        insertStatement.setParametersIndex(insertValue.getParametersCount());
         insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getSetClauseStartIndex(), DefaultKeyword.SET));
     }
     

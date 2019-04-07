@@ -38,7 +38,5 @@ public final class SetAssignmentsSegment implements SQLSegment {
     
     private final Collection<CommonExpressionSegment> values;
     
-    private final int parametersCount;
-    
     private final int setClauseStartIndex;
 }
