@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Column definition filler.
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionFiller implements SQLSegmentCommonFiller<ColumnDefinitionSegment> {
+public final class ColumnDefinitionFiller implements SQLSegmentFiller<ColumnDefinitionSegment, BaseRule> {
     
     @Override
-    public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(sqlSegment);
     }
 }

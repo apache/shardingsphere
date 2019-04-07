@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelect
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Select item filler.
@@ -45,10 +46,10 @@ import org.apache.shardingsphere.core.parse.parser.token.TableToken;
  * @author zhangliang
  * @author panjuan
  */
-public final class SelectItemFiller implements SQLSegmentCommonFiller {
+public final class SelectItemFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return;
         }
@@ -70,7 +71,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
             return;
         }
         if (sqlSegment instanceof SubquerySegment) {
-            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, sql, shardingTableMetaData);
+            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, sql, rule, shardingTableMetaData);
         }
     }
     
@@ -105,8 +106,8 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
             fillAggregationDistinctSelectItemSegment((AggregationDistinctSelectItemSegment) selectItemSegment, selectStatement, sql);
         } else {
-            selectStatement.getItems().add(
-                    new AggregationSelectItem(selectItemSegment.getType(), sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias()));
+            selectStatement.getItems().add(new AggregationSelectItem(selectItemSegment.getType(), 
+                    sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias()));
         }
     }
     
@@ -120,7 +121,7 @@ public final class SelectItemFiller implements SQLSegmentCommonFiller {
         selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));
     }
     
-    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
-        new SubqueryFiller().fill(subquerySegment, sqlStatement, sql, shardingTableMetaData);
+    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+        new SubqueryFiller().fill(subquerySegment, sqlStatement, sql, rule, shardingTableMetaData);
     }
 }

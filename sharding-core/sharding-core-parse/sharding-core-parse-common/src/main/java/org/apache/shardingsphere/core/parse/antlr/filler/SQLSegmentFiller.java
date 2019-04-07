@@ -17,10 +17,30 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler;
 
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
+
 /**
  * SQL segment Filler.
  *
+ * @author zhangliang
  * @author duhongjun
+ * 
+ * @param <T> type of SQL segment
+ * @param <R> type of base rule
  */
-public interface SQLSegmentFiller {
+public interface SQLSegmentFiller<T extends SQLSegment, R extends BaseRule> {
+    
+    /**
+     * Fill for sharding SQL segment to SQL statement.
+     *
+     * @param sqlSegment SQL segment
+     * @param sqlStatement SQL statement
+     * @param sql SQL
+     * @param rule rule
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void fill(T sqlSegment, SQLStatement sqlStatement, String sql, R rule, ShardingTableMetaData shardingTableMetaData);
 }

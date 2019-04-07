@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
@@ -49,7 +49,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class SetAssignmentsFiller implements SQLSegmentShardingFiller<SetAssignmentsSegment> {
+public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment, ShardingRule> {
     
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

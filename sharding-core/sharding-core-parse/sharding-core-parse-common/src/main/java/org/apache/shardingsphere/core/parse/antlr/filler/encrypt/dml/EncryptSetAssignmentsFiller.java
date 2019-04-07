@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class EncryptSetAssignmentsFiller implements SQLSegmentEncryptFiller<SetAssignmentsSegment> {
+public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment, EncryptRule> {
     
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {

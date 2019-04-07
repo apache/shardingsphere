@@ -18,22 +18,22 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Add column definition filler.
  *
  * @author duhongjun
  */
-public final class AddColumnDefinitionFiller implements SQLSegmentShardingFiller<AddColumnDefinitionSegment> {
+public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment, BaseRule> {
     
     @Override
     public void fill(final AddColumnDefinitionSegment sqlSegment, 
-                     final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+                     final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
             alterTableStatement.getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());

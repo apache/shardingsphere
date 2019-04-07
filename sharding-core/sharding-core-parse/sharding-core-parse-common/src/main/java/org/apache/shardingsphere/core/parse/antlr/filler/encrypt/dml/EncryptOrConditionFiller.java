@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
@@ -43,7 +43,7 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public class EncryptOrConditionFiller implements SQLSegmentEncryptFiller<OrConditionSegment> {
+public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSegment, EncryptRule> {
 
     @Override
     public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule,

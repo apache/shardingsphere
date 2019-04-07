@@ -18,21 +18,22 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.tcl;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.SetAutoCommitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Set auto commit filler.
  *
  * @author zhangliang
  */
-public final class SetAutoCommitFiller implements SQLSegmentCommonFiller {
+public final class SetAutoCommitFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SetAutoCommitSegment setAutoCommitSegment = (SetAutoCommitSegment) sqlSegment;
         ((SetAutoCommitStatement) sqlStatement).setAutoCommit(setAutoCommitSegment.isAutoCommit());
     }

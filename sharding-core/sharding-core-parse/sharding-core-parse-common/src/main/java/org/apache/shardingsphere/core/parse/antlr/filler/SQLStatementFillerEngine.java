@@ -21,16 +21,11 @@ import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 
@@ -76,13 +71,7 @@ public final class SQLStatementFillerEngine {
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parsingRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
-                if (filler.get() instanceof SQLSegmentCommonFiller) {
-                    ((SQLSegmentCommonFiller<SQLSegment>) filler.get()).fill(each, result, sql, shardingTableMetaData);
-                } else if (filler.get() instanceof SQLSegmentShardingFiller) {
-                    ((SQLSegmentShardingFiller<SQLSegment>) filler.get()).fill(each, result, sql, (ShardingRule) this.rule, shardingTableMetaData);
-                } else if (filler.get() instanceof SQLSegmentEncryptFiller) {
-                    ((SQLSegmentEncryptFiller<SQLSegment>) filler.get()).fill(each, result, sql, (EncryptRule) this.rule, shardingTableMetaData);
-                }
+                (filler.get()).fill(each, result, sql, this.rule, shardingTableMetaData);
             }
         }
         return result;

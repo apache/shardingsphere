@@ -18,21 +18,22 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Order by filler.
  *
  * @author duhongjun
  */
-public final class OrderByFiller implements SQLSegmentCommonFiller<OrderBySegment> {
+public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment, BaseRule> {
     
     @Override
-    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
             selectStatement.getOrderByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.select;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.OrConditionFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class SubqueryConditionFiller implements SQLSegmentShardingFiller<SubqueryConditionSegment> {
+public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryConditionSegment, ShardingRule> {
     
     @Override
     public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql,

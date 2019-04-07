@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public class FromWhereFiller implements SQLSegmentShardingFiller<FromWhereSegment> {
+public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment, ShardingRule> {
     
     @Override
     public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

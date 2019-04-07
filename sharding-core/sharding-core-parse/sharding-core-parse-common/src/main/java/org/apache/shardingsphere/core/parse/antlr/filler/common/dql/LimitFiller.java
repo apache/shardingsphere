@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
@@ -29,16 +29,17 @@ import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Limit filler.
  *
  * @author duhongjun
  */
-public final class LimitFiller implements SQLSegmentCommonFiller<LimitSegment> {
+public final class LimitFiller implements SQLSegmentFiller<LimitSegment, BaseRule> {
     
     @Override
-    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setLimit(new Limit());
         if (sqlSegment.getOffset().isPresent()) {

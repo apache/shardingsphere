@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
@@ -50,7 +50,7 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class OrConditionFiller implements SQLSegmentShardingFiller<OrConditionSegment> {
+public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegment, ShardingRule> {
     
     @Override
     public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

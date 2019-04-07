@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Group by filler.
@@ -30,10 +31,10 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
  * @author duhongjun
  * @author panjuan
  */
-public final class GroupByFiller implements SQLSegmentCommonFiller<GroupBySegment> {
+public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment, BaseRule> {
     
     @Override
-    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setGroupByLastIndex(sqlSegment.getGroupByStopIndex());
         for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {

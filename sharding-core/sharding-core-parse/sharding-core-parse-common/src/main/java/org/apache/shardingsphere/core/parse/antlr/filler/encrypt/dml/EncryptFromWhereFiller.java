@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  *
  * @author duhongjun
  */
-public class EncryptFromWhereFiller implements SQLSegmentEncryptFiller<FromWhereSegment> {
+public class EncryptFromWhereFiller implements SQLSegmentFiller<FromWhereSegment, EncryptRule> {
 
     @Override
     public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule,

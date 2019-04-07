@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public final class InsertDuplicateKeyColumnsFiller implements SQLSegmentShardingFiller<InsertDuplicateKeyColumnsSegment> {
+public final class InsertDuplicateKeyColumnsFiller implements SQLSegmentFiller<InsertDuplicateKeyColumnsSegment, ShardingRule> {
     
     @Override
     public void fill(final InsertDuplicateKeyColumnsSegment sqlSegment, 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -44,7 +44,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class InsertValuesFiller implements SQLSegmentShardingFiller<InsertValuesSegment> {
+public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment, ShardingRule> {
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

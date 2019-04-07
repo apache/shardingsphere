@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -28,16 +28,17 @@ import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Insert columns filler.
  *
  * @author zhangliang
  */
-public final class InsertColumnsFiller implements SQLSegmentCommonFiller<InsertColumnsSegment> {
+public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment, BaseRule> {
     
     @Override
-    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {

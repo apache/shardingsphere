@@ -18,26 +18,27 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Subquery filler.
  *
  * @author duhongjun
  */
-public final class SubqueryFiller implements SQLSegmentCommonFiller<SubquerySegment> {
+public final class SubqueryFiller implements SQLSegmentFiller<SubquerySegment, BaseRule> {
     
     @Override
-    public void fill(final SubquerySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SubquerySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         SelectStatement subqueryStatement = new SelectStatement();
         subqueryStatement.setParentStatement(selectStatement);
         selectStatement.getSubqueryStatements().add(subqueryStatement);
         if (sqlSegment.getSelectClauseSegment().isPresent()) {
-            new SelectClauseFiller().fill(sqlSegment.getSelectClauseSegment().get(), subqueryStatement, sql, shardingTableMetaData);
+            new SelectClauseFiller().fill(sqlSegment.getSelectClauseSegment().get(), subqueryStatement, sql, rule, shardingTableMetaData);
         }
         if (sqlSegment.getFromWhereSegment().isPresent()) {
            // new FromWhereFiller().fill(sqlSegment.getFromWhereSegment().get(), subqueryStatement, sql,  shardingTableMetaData);
@@ -46,10 +47,10 @@ public final class SubqueryFiller implements SQLSegmentCommonFiller<SubquerySegm
             return;
         }
         if (sqlSegment.getGroupBySegment().isPresent()) {
-            new GroupByFiller().fill(sqlSegment.getGroupBySegment().get(), subqueryStatement, sql, shardingTableMetaData);
+            new GroupByFiller().fill(sqlSegment.getGroupBySegment().get(), subqueryStatement, sql, rule, shardingTableMetaData);
         }
         if (sqlSegment.getOrderBySegment().isPresent()) {
-            new OrderByFiller().fill(sqlSegment.getOrderBySegment().get(), subqueryStatement, sql, shardingTableMetaData);
+            new OrderByFiller().fill(sqlSegment.getOrderBySegment().get(), subqueryStatement, sql, rule, shardingTableMetaData);
         }
     }
 }

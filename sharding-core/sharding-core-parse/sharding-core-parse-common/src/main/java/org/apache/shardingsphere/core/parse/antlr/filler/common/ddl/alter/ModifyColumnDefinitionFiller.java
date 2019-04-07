@@ -19,23 +19,23 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Modify column definition filler.
  *
  * @author duhongjun
  */
-public final class ModifyColumnDefinitionFiller implements SQLSegmentShardingFiller<ModifyColumnDefinitionSegment> {
+public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment, BaseRule> {
     
     @Override
-    public void fill(final ModifyColumnDefinitionSegment sqlSegment, 
-                     final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ModifyColumnDefinitionSegment sqlSegment,
+                     final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         Optional<String> oldColumnName = sqlSegment.getOldColumnName();
         if (oldColumnName.isPresent()) {
