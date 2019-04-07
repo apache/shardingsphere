@@ -95,7 +95,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
                 insertStatement.getRouteConditions().add(new Condition(column, right));
             }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, insertStatement.getParametersIndex());
+        InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex());
         insertStatement.getInsertValues().getValues().add(insertValue);
     }
     

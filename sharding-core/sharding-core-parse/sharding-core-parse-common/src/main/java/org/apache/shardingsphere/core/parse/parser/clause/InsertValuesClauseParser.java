@@ -115,7 +115,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
                 count++;
             }
             lexerEngine.accept(Symbol.RIGHT_PAREN);
-            InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, insertStatement.getParametersIndex() - startParametersIndex);
+            InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex() - startParametersIndex);
             insertValue.getColumnValues().addAll(sqlExpressions);
             insertStatement.getInsertValues().getValues().add(insertValue);
             insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);

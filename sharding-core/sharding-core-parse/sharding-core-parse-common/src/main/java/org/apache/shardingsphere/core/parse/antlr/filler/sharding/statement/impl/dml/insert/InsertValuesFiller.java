@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSe
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;
@@ -67,7 +66,7 @@ public final class InsertValuesFiller implements SQLSegmentShardingFiller<Insert
             }
         }
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
-        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, parametersCount, columnValues);
+        InsertValue insertValue = new InsertValue(parametersCount, columnValues);
         insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
     }

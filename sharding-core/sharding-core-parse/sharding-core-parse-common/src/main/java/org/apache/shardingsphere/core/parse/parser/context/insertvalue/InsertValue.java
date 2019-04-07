@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.parser.context.insertvalue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 
 import java.util.LinkedList;
@@ -36,14 +35,12 @@ import java.util.List;
 @ToString
 public final class InsertValue {
     
-    private final DefaultKeyword type;
-    
     private final int parametersCount;
     
     private final List<SQLExpression> columnValues;
     
     // TODO to be removed, for old parse engine only
-    public InsertValue(final DefaultKeyword type, final int parametersCount) {
-        this(type, parametersCount, new LinkedList<SQLExpression>());
+    public InsertValue(final int parametersCount) {
+        this(parametersCount, new LinkedList<SQLExpression>());
     }
 }

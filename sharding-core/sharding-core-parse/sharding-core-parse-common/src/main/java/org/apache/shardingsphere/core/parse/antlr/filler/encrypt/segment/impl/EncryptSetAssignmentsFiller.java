@@ -76,6 +76,6 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentEncryptFille
                 }
             }
         }
-        return new InsertValue(DefaultKeyword.SET, parametersCount, columnValues);
+        return new InsertValue(parametersCount, columnValues);
     }
 }
