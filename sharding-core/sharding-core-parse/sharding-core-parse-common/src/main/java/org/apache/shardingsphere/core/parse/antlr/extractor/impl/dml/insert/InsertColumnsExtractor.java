@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,7 +42,7 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
     public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> insertColumnsClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMNS_CLAUSE);
         return insertColumnsClause.isPresent()
-                ? Optional.of(new InsertColumnsSegment(insertColumnsClause.get().getStart().getStartIndex(), DefaultKeyword.VALUES, extractColumns(insertColumnsClause.get())))
+                ? Optional.of(new InsertColumnsSegment(insertColumnsClause.get().getStart().getStartIndex(), extractColumns(insertColumnsClause.get())))
                 : Optional.<InsertColumnsSegment>absent();
     }
     

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.Collection;
 
@@ -34,8 +33,6 @@ import java.util.Collection;
 public final class InsertColumnsSegment implements SQLSegment {
     
     private final int columnClauseStartIndex;
-    
-    private final DefaultKeyword type;
     
     private final Collection<ColumnSegment> columns;
 }
