@@ -23,5 +23,3 @@ services:
       - '--listen-peer-urls=http://0.0.0.0:2380'
       - '--initial-cluster'
       - 'default=http://0.0.0.0:2380'
-    
-
