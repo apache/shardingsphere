@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class IndexFiller implements SQLSegmentFiller<IndexSegment, BaseRule> {
     
     @Override
-    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         IndexToken indexToken = sqlSegment.getToken();
         if (!sqlStatement.getTables().isEmpty() && null == indexToken.getTableName()) {
             indexToken.setTableName(sqlStatement.getTables().getSingleTableName());

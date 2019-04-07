@@ -34,8 +34,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment, BaseRule> {
     
     @Override
-    public void fill(final ModifyColumnDefinitionSegment sqlSegment,
-                     final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ModifyColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         Optional<String> oldColumnName = sqlSegment.getOldColumnName();
         if (oldColumnName.isPresent()) {

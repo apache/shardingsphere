@@ -46,12 +46,12 @@ import java.util.Map;
 public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSegment, EncryptRule> {
 
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule,
+    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule,
                      final ShardingTableMetaData shardingTableMetaData) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, sql, encryptRule, columnNameToTable, columnNameCount);
+        filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, encryptRule);
     }
 
     private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
@@ -73,9 +73,8 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
             }
         }
     }
-
-    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql,
-            final EncryptRule encryptRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+    
+    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final EncryptRule encryptRule) {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             for (ConditionSegment condition : each.getConditions()) {
@@ -83,13 +82,13 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
                     continue;
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, sqlStatement, condition));
-                fillEncryptCondition(column, condition, encryptRule, sqlStatement, sql);
+                fillEncryptCondition(column, condition, encryptRule, sqlStatement);
             }
         }
         return result;
     }
     
-    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final EncryptRule encryptRule, final SQLStatement sqlStatement, final String sql) {
+    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final EncryptRule encryptRule, final SQLStatement sqlStatement) {
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
@@ -100,7 +99,7 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sql));
+        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getStopIndex(), column, true));
     }
     

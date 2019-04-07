@@ -34,12 +34,11 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryConditionSegment, ShardingRule> {
     
     @Override
-    public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql,
-                     final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         OrConditionFiller orConditionFiller = new OrConditionFiller();
         for (OrConditionSegment each : sqlSegment.getOrConditions()) {
-            selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, sql, shardingRule, shardingTableMetaData));
+            selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
         }
     }
 }

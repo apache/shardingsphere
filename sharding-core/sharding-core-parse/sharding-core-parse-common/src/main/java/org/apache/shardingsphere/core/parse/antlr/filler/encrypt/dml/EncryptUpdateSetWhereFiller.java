@@ -41,20 +41,20 @@ import java.util.Map.Entry;
 public class EncryptUpdateSetWhereFiller extends EncryptDeleteFromWhereFiller {
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
-        super.fill(sqlSegment, sqlStatement, sql, encryptRule, shardingTableMetaData);
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+        super.fill(sqlSegment, sqlStatement, encryptRule, shardingTableMetaData);
         UpdateSetWhereSegment updateSetWhereSegment = (UpdateSetWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         String updateTable = dmlStatement.getUpdateTableAlias().values().iterator().next();
         for (Entry<ColumnSegment, ExpressionSegment> each : updateSetWhereSegment.getUpdateColumns().entrySet()) {
-            fillEncryptCondition(each, updateTable, sql, encryptRule, dmlStatement);
+            fillEncryptCondition(each, updateTable, encryptRule, dmlStatement);
         }
         dmlStatement.setDeleteStatement(false);
     }
     
-    private void fillEncryptCondition(final Entry<ColumnSegment, ExpressionSegment> entry, final String updateTable, final String sql, final EncryptRule encryptRule, final DMLStatement dmlStatement) {
+    private void fillEncryptCondition(final Entry<ColumnSegment, ExpressionSegment> entry, final String updateTable, final EncryptRule encryptRule, final DMLStatement dmlStatement) {
         Column column = new Column(entry.getKey().getName(), updateTable);
-        Optional<SQLExpression> expression = entry.getValue().convertToSQLExpression(sql);
+        Optional<SQLExpression> expression = entry.getValue().convertToSQLExpression(dmlStatement.getLogicSQL());
         Preconditions.checkState(expression.isPresent());
         dmlStatement.getUpdateColumnValues().put(column, expression.get());
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {

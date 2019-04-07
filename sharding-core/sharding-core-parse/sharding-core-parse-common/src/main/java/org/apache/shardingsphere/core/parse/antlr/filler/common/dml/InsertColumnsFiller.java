@@ -38,7 +38,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment, BaseRule> {
     
     @Override
-    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {

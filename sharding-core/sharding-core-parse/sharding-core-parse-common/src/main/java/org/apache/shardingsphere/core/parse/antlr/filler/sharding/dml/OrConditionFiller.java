@@ -53,8 +53,9 @@ import java.util.Map;
 public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegment, ShardingRule> {
     
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(buildCondition(sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData).getAndConditions());
+    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(
+                buildCondition(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData).getAndConditions());
     }
     
     /**
@@ -62,17 +63,15 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement
-     * @param sql SQL
      * @param shardingRule databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      * @return or condition
      */
-    public OrCondition buildCondition(
-            final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public OrCondition buildCondition(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        return filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, sql, shardingRule);
+        return filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, shardingRule);
     }
     
     private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
@@ -95,8 +94,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         }
     }
     
-    private OrCondition filterCondition(
-            final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql, final ShardingRule shardingRule) {
+    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final ShardingRule shardingRule) {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
@@ -118,7 +116,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
                 }
             }
             if (needSharding) {
-                fillResult(shardingTableMetaData, sqlStatement, shardingRule, result, shardingCondition, sql);
+                fillResult(shardingTableMetaData, sqlStatement, shardingRule, result, shardingCondition);
             } else {
                 result.getAndConditions().clear();
                 break;
@@ -133,7 +131,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
                     continue;
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
-                fillEncryptCondition(column, condition, shardingRule, sqlStatement, sql);
+                fillEncryptCondition(column, condition, shardingRule, sqlStatement);
             }
         }
         return result;
@@ -149,8 +147,8 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         }
     }
     
-    private void fillResult(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final ShardingRule shardingRule, final OrCondition orCondition,
-                            final List<ConditionSegment> shardingCondition, final String sql) {
+    private void fillResult(final ShardingTableMetaData shardingTableMetaData, 
+                            final SQLStatement sqlStatement, final ShardingRule shardingRule, final OrCondition orCondition, final List<ConditionSegment> shardingCondition) {
         if (shardingCondition.isEmpty()) {
             return;
         }
@@ -159,11 +157,11 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         for (ConditionSegment eachCondition : shardingCondition) {
             Optional<String> tableName = getTableName(sqlStatement, eachCondition);
             Column column = new Column(eachCondition.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(shardingTableMetaData, shardingRule, sqlStatement, eachCondition));
-            andConditionResult.getConditions().add(eachCondition.getExpression().buildCondition(column, sql));
+            andConditionResult.getConditions().add(eachCondition.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         }
     }
     
-    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final ShardingRule shardingRule, final SQLStatement sqlStatement, final String sql) {
+    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final ShardingRule shardingRule, final SQLStatement sqlStatement) {
         if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
@@ -174,7 +172,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sql));
+        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getStopIndex(), column, true));
     }
     

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment, BaseRule> {
     
     @Override
-    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
             selectStatement.getOrderByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());

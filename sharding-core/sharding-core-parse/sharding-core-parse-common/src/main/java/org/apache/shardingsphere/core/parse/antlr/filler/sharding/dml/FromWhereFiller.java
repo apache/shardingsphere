@@ -31,8 +31,8 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment, ShardingRule> {
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        new OrConditionFiller().fill(sqlSegment.getConditions(), sqlStatement, sql, shardingRule, shardingTableMetaData);
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        new OrConditionFiller().fill(sqlSegment.getConditions(), sqlStatement, shardingRule, shardingTableMetaData);
         int count = 0;
         while (count < sqlSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();

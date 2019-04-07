@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class SetAutoCommitFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SetAutoCommitSegment setAutoCommitSegment = (SetAutoCommitSegment) sqlSegment;
         ((SetAutoCommitStatement) sqlStatement).setAutoCommit(setAutoCommitSegment.isAutoCommit());
     }

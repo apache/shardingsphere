@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class ShowParamFiller implements SQLSegmentFiller<ShowParamSegment, BaseRule> {
     
     @Override
-    public void fill(final ShowParamSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ShowParamSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         ((ShowStatement) sqlStatement).setName(sqlSegment.getName());
     }
 }

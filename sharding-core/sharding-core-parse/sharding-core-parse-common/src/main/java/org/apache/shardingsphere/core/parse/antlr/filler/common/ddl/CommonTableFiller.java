@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public class CommonTableFiller implements SQLSegmentFiller<TableSegment, BaseRule> {
     
     @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias()));
     }
 }

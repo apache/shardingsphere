@@ -47,30 +47,30 @@ public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSe
     private SelectItemFiller selectItemFiller = new SelectItemFiller();
     
     @Override
-    public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setFirstSelectItemStartIndex(sqlSegment.getFirstSelectItemStartIndex());
         selectStatement.setSelectListStopIndex(sqlSegment.getSelectItemsStopIndex());
         if (sqlSegment.isHasDistinct()) {
-            fillDistinct(sqlSegment, selectStatement, sql, rule, shardingTableMetaData);
+            fillDistinct(sqlSegment, selectStatement, rule, shardingTableMetaData);
             return;
         }
         int offset = 0;
         for (SelectItemSegment each : sqlSegment.getSelectItems()) {
             offset = setDistinctFunctionAlias(each, offset);
-            selectItemFiller.fill(each, sqlStatement, sql, rule, shardingTableMetaData);
+            selectItemFiller.fill(each, sqlStatement, rule, shardingTableMetaData);
         }
     }
     
     private void fillDistinct(final SelectClauseSegment selectClauseSegment, 
-                              final SelectStatement selectStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+                              final SelectStatement selectStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         Iterator<SelectItemSegment> selectItemSegmentIterator = selectClauseSegment.getSelectItems().iterator();
         SelectItemSegment firstSelectItemSegment = selectItemSegmentIterator.next();
         Set<String> distinctColumnNames = new LinkedHashSet<>();
         DistinctSelectItem distinctSelectItem = null;
         int offset = 0;
         if (firstSelectItemSegment instanceof StarSelectItemSegment) {
-            selectItemFiller.fill(firstSelectItemSegment, selectStatement, sql, rule, shardingTableMetaData);
+            selectItemFiller.fill(firstSelectItemSegment, selectStatement, rule, shardingTableMetaData);
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
         } else if (firstSelectItemSegment instanceof ColumnSelectItemSegment) {
             ColumnSelectItemSegment columnSelectItemSegment = (ColumnSelectItemSegment) firstSelectItemSegment;
@@ -78,14 +78,14 @@ public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSe
             selectStatement.getItems().add(distinctSelectItem);
             distinctColumnNames.add(columnSelectItemSegment.getName());
         } else if (firstSelectItemSegment instanceof ExpressionSelectItemSegment) {
-            distinctSelectItem = createDistinctExpressionItem(selectStatement, sql, distinctColumnNames, (ExpressionSelectItemSegment) firstSelectItemSegment);
+            distinctSelectItem = createDistinctExpressionItem(selectStatement, distinctColumnNames, (ExpressionSelectItemSegment) firstSelectItemSegment);
         } else {
             offset = setDistinctFunctionAlias(firstSelectItemSegment, offset);
-            selectItemFiller.fill(firstSelectItemSegment, selectStatement, sql, rule, shardingTableMetaData);
+            selectItemFiller.fill(firstSelectItemSegment, selectStatement, rule, shardingTableMetaData);
         }
         while (selectItemSegmentIterator.hasNext()) {
             SelectItemSegment nextSelectItemSegment = selectItemSegmentIterator.next();
-            selectItemFiller.fill(nextSelectItemSegment, selectStatement, sql, rule, shardingTableMetaData);
+            selectItemFiller.fill(nextSelectItemSegment, selectStatement, rule, shardingTableMetaData);
             if (nextSelectItemSegment instanceof ColumnSelectItemSegment) {
                 offset = setDistinctFunctionAlias(nextSelectItemSegment, offset);
                 distinctColumnNames.add(((ColumnSelectItemSegment) nextSelectItemSegment).getName());
@@ -108,10 +108,10 @@ public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSe
         return offset;
     }
     
-    private DistinctSelectItem createDistinctExpressionItem(final SelectStatement selectStatement, final String sql, final Set<String> distinctColumnNames,
+    private DistinctSelectItem createDistinctExpressionItem(final SelectStatement selectStatement, final Set<String> distinctColumnNames,
                                                             final ExpressionSelectItemSegment expressionSelectItemSegment) {
         DistinctSelectItem distinctSelectItem = new DistinctSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias());
-        String commonExpression = sql.substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
+        String commonExpression = selectStatement.getLogicSQL().substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
         int leftParenPosition = commonExpression.indexOf("(");
         if (0 <= leftParenPosition) {
             int rightParenPosition = commonExpression.lastIndexOf(")");

@@ -49,7 +49,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class SelectItemFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return;
         }
@@ -67,11 +67,11 @@ public final class SelectItemFiller implements SQLSegmentFiller {
             return;
         }
         if (sqlSegment instanceof AggregationSelectItemSegment) {
-            fillAggregationSelectItemSegment((AggregationSelectItemSegment) sqlSegment, selectStatement, sql);
+            fillAggregationSelectItemSegment((AggregationSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof SubquerySegment) {
-            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, sql, rule, shardingTableMetaData);
+            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, rule, shardingTableMetaData);
         }
     }
     
@@ -102,18 +102,18 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getExpression(), selectItemSegment.getAlias()));
     }
     
-    private void fillAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SelectStatement selectStatement, final String sql) {
+    private void fillAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
-            fillAggregationDistinctSelectItemSegment((AggregationDistinctSelectItemSegment) selectItemSegment, selectStatement, sql);
+            fillAggregationDistinctSelectItemSegment((AggregationDistinctSelectItemSegment) selectItemSegment, selectStatement);
         } else {
-            selectStatement.getItems().add(new AggregationSelectItem(selectItemSegment.getType(), 
-                    sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias()));
+            selectStatement.getItems().add(new AggregationSelectItem(selectItemSegment.getType(),
+                    selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias()));
         }
     }
     
-    private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement, final String sql) {
-        selectStatement.getItems().add(new AggregationDistinctSelectItem(selectItemSegment.getType(), 
-                sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
+    private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
+        selectStatement.getItems().add(new AggregationDistinctSelectItem(selectItemSegment.getType(), selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), 
+                selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
         Optional<String> derivedAlias = Optional.absent();
         if (DerivedAlias.isDerivedAlias(selectItemSegment.getAlias().get())) {
             derivedAlias = Optional.of(selectItemSegment.getAlias().get());
@@ -121,7 +121,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));
     }
     
-    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        new SubqueryFiller().fill(subquerySegment, sqlStatement, sql, rule, shardingTableMetaData);
+    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+        new SubqueryFiller().fill(subquerySegment, sqlStatement, rule, shardingTableMetaData);
     }
 }

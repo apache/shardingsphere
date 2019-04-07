@@ -40,9 +40,9 @@ import java.util.List;
 public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment, EncryptRule> {
     
     @Override
-    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        InsertValue insertValue = getInsertValue(sqlSegment, sql);
+        InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
         insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
     }

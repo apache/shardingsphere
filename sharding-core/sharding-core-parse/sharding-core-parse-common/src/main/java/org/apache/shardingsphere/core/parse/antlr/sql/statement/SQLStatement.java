@@ -91,4 +91,11 @@ public interface SQLStatement {
      * @return logic SQL
      */
     String getLogicSQL();
+    
+    /**
+     * Set logic SQL.
+     * 
+     * @param logicTable logic SQL
+     */
+    void setLogicSQL(String logicTable);
 }

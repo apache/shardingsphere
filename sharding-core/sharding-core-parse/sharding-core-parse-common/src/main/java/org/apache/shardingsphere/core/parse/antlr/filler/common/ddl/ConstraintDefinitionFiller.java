@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class ConstraintDefinitionFiller implements SQLSegmentFiller<ConstraintDefinitionSegment, BaseRule> {
     
     @Override
-    public void fill(final ConstraintDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ConstraintDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof CreateTableStatement) {
             fill(sqlSegment, (CreateTableStatement) sqlStatement);
         } else if (sqlStatement instanceof AlterTableStatement) {

@@ -68,10 +68,11 @@ public final class SQLStatementFillerEngine {
     @SneakyThrows
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
+        result.setLogicSQL(sql);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parsingRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
-                (filler.get()).fill(each, result, sql, this.rule, shardingTableMetaData);
+                (filler.get()).fill(each, result, this.rule, shardingTableMetaData);
             }
         }
         return result;

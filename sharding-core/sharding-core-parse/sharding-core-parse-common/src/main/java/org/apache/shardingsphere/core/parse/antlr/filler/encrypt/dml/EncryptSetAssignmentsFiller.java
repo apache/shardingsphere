@@ -46,13 +46,13 @@ import java.util.List;
 public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment, EncryptRule> {
     
     @Override
-    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
             fillColumn(each, insertStatement, tableName);
         }
-        InsertValue insertValue = getInsertValue(sqlSegment, sql);
+        InsertValue insertValue = getInsertValue(sqlSegment, sqlStatement.getLogicSQL());
         insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
         insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), DefaultKeyword.SET));

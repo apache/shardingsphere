@@ -32,8 +32,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment, BaseRule> {
     
     @Override
-    public void fill(final AddColumnDefinitionSegment sqlSegment, 
-                     final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final AddColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
             alterTableStatement.getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());

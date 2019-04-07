@@ -47,7 +47,7 @@ import java.util.List;
 public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment, ShardingRule> {
     
     @Override
-    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         removeGenerateKeyColumn(insertStatement, shardingRule, sqlSegment.getValues().size());
         int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement, shardingRule, shardingTableMetaData);
@@ -59,7 +59,7 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            SQLExpression columnValue = getColumnValue(insertStatement, sql, shardingRule, andCondition, columns.next(), each);
+            SQLExpression columnValue = getColumnValue(insertStatement, shardingRule, andCondition, columns.next(), each);
             columnValues.add(columnValue);
             if (columnValue instanceof SQLPlaceholderExpression) {
                 parametersCount++;
@@ -91,11 +91,11 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement,
-                                         final String sql, final ShardingRule shardingRule, final AndCondition andCondition, final Column column, final CommonExpressionSegment expressionSegment) {
-        Optional<SQLExpression> result = expressionSegment.convertToSQLExpression(sql);
+                                         final ShardingRule shardingRule, final AndCondition andCondition, final Column column, final CommonExpressionSegment expressionSegment) {
+        Optional<SQLExpression> result = expressionSegment.convertToSQLExpression(insertStatement.getLogicSQL());
         Preconditions.checkState(result.isPresent());
         fillShardingCondition(shardingRule, andCondition, column, expressionSegment, result.get());
-        fillGeneratedKeyCondition(insertStatement, sql, shardingRule, column, expressionSegment);
+        fillGeneratedKeyCondition(insertStatement, insertStatement.getLogicSQL(), shardingRule, column, expressionSegment);
         return result.get();
     }
     

@@ -29,16 +29,15 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  * @author duhongjun
  */
 public class EncryptFromWhereFiller implements SQLSegmentFiller<FromWhereSegment, EncryptRule> {
-
+    
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final EncryptRule encryptRule,
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule,
                      final ShardingTableMetaData shardingTableMetaData) {
-        new EncryptOrConditionFiller().fill(sqlSegment.getConditions(), sqlStatement, sql, encryptRule, shardingTableMetaData);
+        new EncryptOrConditionFiller().fill(sqlSegment.getConditions(), sqlStatement, encryptRule, shardingTableMetaData);
         int count = 0;
         while (count < sqlSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();
             count++;
         }
     }
-
 }

@@ -35,7 +35,7 @@ public final class InsertDuplicateKeyColumnsFiller implements SQLSegmentFiller<I
     
     @Override
     public void fill(final InsertDuplicateKeyColumnsSegment sqlSegment, 
-                     final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+                     final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = sqlStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getName(), tableName)) {

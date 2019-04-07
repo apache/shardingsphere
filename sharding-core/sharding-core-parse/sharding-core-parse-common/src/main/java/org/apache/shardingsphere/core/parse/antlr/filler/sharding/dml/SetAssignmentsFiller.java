@@ -52,7 +52,7 @@ import java.util.List;
 public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment, ShardingRule> {
     
     @Override
-    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
@@ -67,7 +67,7 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            SQLExpression columnValue = getColumnValue(insertStatement, sql, shardingRule, andCondition, columns.next(), each);
+            SQLExpression columnValue = getColumnValue(insertStatement, shardingRule, andCondition, columns.next(), each);
             columnValues.add(columnValue);
             if (columnValue instanceof SQLPlaceholderExpression) {
                 parametersCount++;
@@ -99,12 +99,12 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
         return insertStatement.getColumns().size();
     }
     
-    private SQLExpression getColumnValue(final InsertStatement insertStatement,
-                                         final String sql, final ShardingRule shardingRule, final AndCondition andCondition, final Column column, final CommonExpressionSegment expressionSegment) {
-        Optional<SQLExpression> result = expressionSegment.convertToSQLExpression(sql);
+    private SQLExpression getColumnValue(final InsertStatement insertStatement, 
+                                         final ShardingRule shardingRule, final AndCondition andCondition, final Column column, final CommonExpressionSegment expressionSegment) {
+        Optional<SQLExpression> result = expressionSegment.convertToSQLExpression(insertStatement.getLogicSQL());
         Preconditions.checkState(result.isPresent());
         fillShardingCondition(shardingRule, andCondition, column, expressionSegment, result.get());
-        fillGeneratedKeyCondition(insertStatement, sql, shardingRule, column, expressionSegment);
+        fillGeneratedKeyCondition(insertStatement, shardingRule, column, expressionSegment);
         return result.get();
     }
     
@@ -118,11 +118,10 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
         }
     }
     
-    private void fillGeneratedKeyCondition(final InsertStatement insertStatement,
-                                           final String sql, final ShardingRule shardingRule, final Column column, final CommonExpressionSegment expressionSegment) {
+    private void fillGeneratedKeyCondition(final InsertStatement insertStatement, final ShardingRule shardingRule, final Column column, final CommonExpressionSegment expressionSegment) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(column.getName())) {
-            insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(column, expressionSegment, sql));
+            insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(column, expressionSegment, insertStatement.getLogicSQL()));
         }
     }
     

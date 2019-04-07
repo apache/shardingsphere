@@ -39,7 +39,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class LimitFiller implements SQLSegmentFiller<LimitSegment, BaseRule> {
     
     @Override
-    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setLimit(new Limit());
         if (sqlSegment.getOffset().isPresent()) {

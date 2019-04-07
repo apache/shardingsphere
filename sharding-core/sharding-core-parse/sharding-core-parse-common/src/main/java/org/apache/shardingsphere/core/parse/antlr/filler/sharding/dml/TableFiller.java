@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class TableFiller implements SQLSegmentFiller<TableSegment, ShardingRule> {
     
     @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         boolean fill = false;
         String tableName = sqlSegment.getName();
         if (shardingRule.contains(tableName) || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()

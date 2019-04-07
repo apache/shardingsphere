@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment, BaseRule> {
     
     @Override
-    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setGroupByLastIndex(sqlSegment.getGroupByStopIndex());
         for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {

@@ -38,9 +38,8 @@ public interface SQLSegmentFiller<T extends SQLSegment, R extends BaseRule> {
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement
-     * @param sql SQL
      * @param rule rule
      * @param shardingTableMetaData sharding table meta data
      */
-    void fill(T sqlSegment, SQLStatement sqlStatement, String sql, R rule, ShardingTableMetaData shardingTableMetaData);
+    void fill(T sqlSegment, SQLStatement sqlStatement, R rule, ShardingTableMetaData shardingTableMetaData);
 }

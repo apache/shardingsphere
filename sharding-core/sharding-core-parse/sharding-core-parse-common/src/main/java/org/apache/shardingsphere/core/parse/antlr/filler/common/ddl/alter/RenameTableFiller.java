@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class RenameTableFiller implements SQLSegmentFiller<RenameTableSegment, BaseRule> {
     
     @Override
-    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         ((AlterTableStatement) sqlStatement).setNewTableName(sqlSegment.getNewTableName());
     }
 }
