@@ -1,0 +1,41 @@
+version: '3'
+services:
+  mysql:
+    ## mysql version, you could get more tags at here : https://hub.docker.com/_/mysql?tab=tags
+    image: "mysql:5.7"
+    ## default port is 3306, you could change to 33060 or any other port doesn't conflict MySQL on your OS
+    ports:
+     - "33060:3306"
+    container_name: sharding-sphere-mysql
+    ## launch mysql without password
+    ## you could access the mysql in container by following command :
+    ## docker exec -it sharding-sphere-mysql mysql -uroot
+    environment:
+     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ## if you insist to use password in mysql, remove MYSQL_ALLOW_EMPTY_PASSWORD=yes and uncomment following args
+    #  - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ../../../src/resources/manual_schema.sql:/docker-entrypoint-initdb.d/manual_schema.sql
+
+  proxy:
+    ## get more versions of proxy here : https://hub.docker.com/r/shardingsphere/sharding-proxy/tags
+    image: "shardingsphere/sharding-proxy:3.1.0"
+    container_name: sharding-sphere-proxy
+    depends_on:
+     - mysql
+    ## wait-for-it.sh will make proxy entrypoint wait until mysql container 3306 port open
+    entrypoint: >
+     /bin/sh -c "/opt/wait-for-it.sh sharding-sphere-mysql:3306 --timeout=20 --strict --
+     && /opt/sharding-proxy/bin/start.sh 3308 
+     && tail -f /opt/sharding-proxy/logs/stdout.log"
+    ports: 
+     - "13308:3308"
+    links:
+     - "mysql:mysql"
+    volumes:
+     - ./conf/:/opt/sharding-proxy/conf
+     - ../../tools/wait-for-it.sh:/opt/wait-for-it.sh
+    environment:
+     - JVM_OPTS="-Djava.awt.headless=true"
+    
+

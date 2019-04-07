@@ -12,7 +12,7 @@
     </appender>
     
     <root>
-        <level value="INFO" />
+        <level value="info" />
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

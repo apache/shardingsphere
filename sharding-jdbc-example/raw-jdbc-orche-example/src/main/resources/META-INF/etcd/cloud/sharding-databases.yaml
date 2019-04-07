@@ -1,5 +1,0 @@
-orchestration:
-  name: demo_yaml_ds_sharding
-  overwrite: false
-  registry:
-    serverLists: http://localhost:2379
