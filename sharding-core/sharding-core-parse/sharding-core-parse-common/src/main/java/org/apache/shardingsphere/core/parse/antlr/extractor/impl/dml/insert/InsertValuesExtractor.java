@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +50,7 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
         Collection<InsertValuesSegment> result = new LinkedList<>();
         Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ancestorNode);
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(insertValuesClauseNode.get(), RuleName.ASSIGNMENT_VALUES)) {
-            result.add(new InsertValuesSegment(DefaultKeyword.VALUES, extractCommonExpressionSegments(each, placeholderIndexes)));
+            result.add(new InsertValuesSegment(extractCommonExpressionSegments(each, placeholderIndexes)));
         }
         return result;
     }
