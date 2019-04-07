@@ -35,7 +35,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class EncryptRule implements SQLStatementFillerRule {
+public final class EncryptRule implements BaseRule {
     
     private final Collection<EncryptTableRule> tableRules;
     

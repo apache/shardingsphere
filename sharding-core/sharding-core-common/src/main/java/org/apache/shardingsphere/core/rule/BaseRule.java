@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rule;
 
 /**
- * SQL statement filler rule.
+ * Base rule.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public interface SQLStatementFillerRule {
+public interface BaseRule {
 }

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parse.antlr.rule.registry.ParsingRuleRegis
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -49,16 +49,16 @@ public final class SQLStatementFillerEngine {
     
     private final String sql;
     
-    private final SQLStatementFillerRule sqlStatementFillerRule;
+    private final BaseRule rule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    public SQLStatementFillerEngine(final ParsingRuleRegistry parsingRuleRegistry, final DatabaseType databaseType, final String sql, final SQLStatementFillerRule sqlStatementFillerRule,
-                                    final ShardingTableMetaData shardingTableMetaData) {
+    public SQLStatementFillerEngine(final ParsingRuleRegistry parsingRuleRegistry, 
+                                    final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         this.parsingRuleRegistry = parsingRuleRegistry;
         this.databaseType = databaseType;
         this.sql = sql;
-        this.sqlStatementFillerRule = sqlStatementFillerRule;
+        this.rule = rule;
         this.shardingTableMetaData = shardingTableMetaData;
     }
     
@@ -79,9 +79,9 @@ public final class SQLStatementFillerEngine {
                 if (filler.get() instanceof SQLSegmentCommonFiller) {
                     ((SQLSegmentCommonFiller<SQLSegment>) filler.get()).fill(each, result, sql, shardingTableMetaData);
                 } else if (filler.get() instanceof SQLSegmentShardingFiller) {
-                    ((SQLSegmentShardingFiller<SQLSegment>) filler.get()).fill(each, result, sql, (ShardingRule) sqlStatementFillerRule, shardingTableMetaData);
+                    ((SQLSegmentShardingFiller<SQLSegment>) filler.get()).fill(each, result, sql, (ShardingRule) this.rule, shardingTableMetaData);
                 } else if (filler.get() instanceof SQLSegmentEncryptFiller) {
-                    ((SQLSegmentEncryptFiller<SQLSegment>) filler.get()).fill(each, result, sql, (EncryptRule) sqlStatementFillerRule, shardingTableMetaData);
+                    ((SQLSegmentEncryptFiller<SQLSegment>) filler.get()).fill(each, result, sql, (EncryptRule) this.rule, shardingTableMetaData);
                 }
             }
         }
