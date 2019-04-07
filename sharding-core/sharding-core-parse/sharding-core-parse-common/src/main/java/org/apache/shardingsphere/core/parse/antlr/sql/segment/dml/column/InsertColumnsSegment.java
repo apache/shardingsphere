@@ -32,7 +32,7 @@ import java.util.Collection;
 @Getter
 public final class InsertColumnsSegment implements SQLSegment {
     
-    private final int columnClauseStartIndex;
+    private final int startIndex;
     
     private final Collection<ColumnSegment> columns;
 }

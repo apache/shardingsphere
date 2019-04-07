@@ -45,7 +45,7 @@ public final class InsertColumnsFiller implements SQLSegmentCommonFiller<InsertC
             } else {
                 fillFromSegment(sqlSegment, insertStatement);
             }
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getColumnClauseStartIndex(), DefaultKeyword.VALUES));
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), DefaultKeyword.VALUES));
         }
     }
     
