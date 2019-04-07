@@ -40,9 +40,9 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
     
     @Override
     public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> insertColumnsClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_COLUMNS_CLAUSE);
-        return insertColumnsClause.isPresent()
-                ? Optional.of(new InsertColumnsSegment(insertColumnsClause.get().getStart().getStartIndex(), extractColumns(insertColumnsClause.get())))
+        Optional<ParserRuleContext> insertValuesClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_VALUES_CLAUSE);
+        return insertValuesClause.isPresent()
+                ? Optional.of(new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(), extractColumns(insertValuesClause.get())))
                 : Optional.<InsertColumnsSegment>absent();
     }
     

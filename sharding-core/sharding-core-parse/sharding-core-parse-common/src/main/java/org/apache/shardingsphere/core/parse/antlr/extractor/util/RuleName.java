@@ -73,8 +73,6 @@ public enum RuleName {
     
     MODIFY_COL_PROPERTIES("ModifyColProperties"),
     
-    INSERT_COLUMNS_CLAUSE("InsertColumnsClause"),
-    
     INSERT_VALUES_CLAUSE("InsertValuesClause"),
     
     INSERT_ON_DUPLICATE_KEY_CLAUSE("InsertOnDuplicateKeyClause"),
