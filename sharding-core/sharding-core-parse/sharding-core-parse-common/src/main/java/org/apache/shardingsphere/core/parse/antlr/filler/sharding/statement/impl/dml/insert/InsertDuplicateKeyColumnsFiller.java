@@ -37,7 +37,7 @@ public final class InsertDuplicateKeyColumnsFiller implements SQLSegmentSharding
     public void fill(final InsertDuplicateKeyColumnsSegment sqlSegment, 
                      final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = sqlStatement.getTables().getSingleTableName();
-        for (ColumnSegment each : sqlSegment.getColumnSegments()) {
+        for (ColumnSegment each : sqlSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getName(), tableName)) {
                 throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support on sharding column, token is '%s', literals is '%s'.", Literals.IDENTIFIER, each);
             }

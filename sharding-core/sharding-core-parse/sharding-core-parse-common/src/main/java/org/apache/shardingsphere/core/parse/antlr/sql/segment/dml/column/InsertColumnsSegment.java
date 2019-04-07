@@ -37,5 +37,5 @@ public final class InsertColumnsSegment implements SQLSegment {
     
     private final DefaultKeyword type;
     
-    private final Collection<ColumnSegment> columnSegments;
+    private final Collection<ColumnSegment> columns;
 }

@@ -32,5 +32,5 @@ import java.util.Collection;
 @Getter
 public final class InsertDuplicateKeyColumnsSegment implements SQLSegment {
     
-    private final Collection<ColumnSegment> columnSegments;
+    private final Collection<ColumnSegment> columns;
 }
