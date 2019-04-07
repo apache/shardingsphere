@@ -77,7 +77,7 @@ public final class SetAssignmentsFiller implements SQLSegmentShardingFiller<SetA
         insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
-        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getSetClauseStartIndex(), DefaultKeyword.SET));
+        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), DefaultKeyword.SET));
     }
     
     private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {

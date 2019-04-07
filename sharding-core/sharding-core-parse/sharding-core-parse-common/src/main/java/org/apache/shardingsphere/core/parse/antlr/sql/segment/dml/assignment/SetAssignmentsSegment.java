@@ -34,9 +34,9 @@ import java.util.Collection;
 @Getter
 public final class SetAssignmentsSegment implements SQLSegment {
     
+    private final int startIndex;
+    
     private final Collection<ColumnSegment> columns;
     
     private final Collection<CommonExpressionSegment> values;
-    
-    private final int setClauseStartIndex;
 }

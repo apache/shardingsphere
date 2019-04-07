@@ -57,7 +57,7 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
                 valueSegments.add(assignmentSegment.get().getValue());
             }
         }
-        return Optional.of(new SetAssignmentsSegment(columnSegments, valueSegments, setAssignmentsClauseNode.get().getStart().getStartIndex()));
+        return Optional.of(new SetAssignmentsSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), columnSegments, valueSegments));
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
