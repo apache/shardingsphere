@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.shardingsphere.example.common.mybatis.repository.MybatisCountryRepository">
-    <resultMap id="baseResultMap" type="io.shardingsphere.example.common.entity.Country">
+<mapper namespace="org.apache.shardingsphere.example.common.mybatis.repository.MybatisCountryRepository">
+    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.common.entity.Country">
         <result column="id" property="id" jdbcType="INTEGER"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
