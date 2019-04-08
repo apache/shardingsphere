@@ -29,17 +29,17 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public abstract class StrategyConfiguration {
+public abstract class TypeBasedSPIConfiguration {
     
     private final String type;
     
     private final Properties properties;
     
-    public StrategyConfiguration(final String type) {
+    public TypeBasedSPIConfiguration(final String type) {
         this(type, null);
     }
     
-    public StrategyConfiguration(final String type, final Properties properties) {
+    public TypeBasedSPIConfiguration(final String type, final Properties properties) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
         this.type = type;
         this.properties = null == properties ? new Properties() : properties;
