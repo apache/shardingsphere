@@ -27,12 +27,13 @@ import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Table filler.
+ * Table filler for sharding.
  *
  * @author duhongjun
+ * @author zhangliang
  */
 @Setter
-public final class TableFiller implements SQLSegmentFiller<TableSegment>, ShardingRuleAwareFiller {
+public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>, ShardingRuleAwareFiller {
     
     private ShardingRule shardingRule;
     

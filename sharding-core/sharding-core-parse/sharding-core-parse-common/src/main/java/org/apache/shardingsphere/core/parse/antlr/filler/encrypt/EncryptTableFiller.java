@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl;
+package org.apache.shardingsphere.core.parse.antlr.filler.encrypt;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
@@ -23,14 +23,16 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 
 /**
- * Common table filler.
+ * Table filler for encrypt.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-public class CommonTableFiller implements SQLSegmentFiller<TableSegment> {
+public final class EncryptTableFiller implements SQLSegmentFiller<TableSegment> {
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
+        // TODO filter encrypt rule
         sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
     }
 }
