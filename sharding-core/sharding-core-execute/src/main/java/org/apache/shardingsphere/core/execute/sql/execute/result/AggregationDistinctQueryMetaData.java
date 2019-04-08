@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Aggregation distinct query metadata.
@@ -38,13 +40,31 @@ import java.util.List;
  */
 public final class AggregationDistinctQueryMetaData {
     
-    private final Collection<AggregationDistinctColumnMetaData> columnMetaDataList;
+    private final Collection<AggregationDistinctColumnMetaData> aggregationDistinctColumnMetaDataList = new LinkedList<>();
+    
+    private final Map<Integer, String> aggregationDistinctColumnIndexAndLabels = new HashMap<>();
+    
+    private final Map<Integer, AggregationType> aggregationDistinctColumnIndexAndAggregationTypes = new HashMap<>();
+    
+    private final Map<Integer, Integer> aggregationDistinctColumnIndexAndCountColumnIndexes = new HashMap<>();
+    
+    private final Map<Integer, Integer> aggregationDistinctColumnIndexAndSumColumnIndexes = new HashMap<>();
     
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        columnMetaDataList = new LinkedList<>();
+        aggregationDistinctColumnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, columnLabelAndIndexMap));
+        aggregationDistinctColumnIndexAndLabels.putAll(getAggregationDistinctColumnIndexAndLabels());
+        aggregationDistinctColumnIndexAndAggregationTypes.putAll(getAggregationDistinctColumnIndexAndAggregationTypes());
+        aggregationDistinctColumnIndexAndCountColumnIndexes.putAll(getAggregationDistinctColumnIndexAndCountColumnIndexes());
+        aggregationDistinctColumnIndexAndSumColumnIndexes.putAll(getAggregationDistinctColumnIndexAndSumColumnIndexes());
+    }
+    
+    private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, 
+                                                                                final Multimap<String, Integer> columnLabelAndIndexMap) {
+        Collection<AggregationDistinctColumnMetaData> result = new LinkedList<>();
         for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
-            columnMetaDataList.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
+            result.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
         }
+        return result;
     }
     
     private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, 
@@ -65,36 +85,56 @@ public final class AggregationDistinctQueryMetaData {
         columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(1).getColumnLabel(), sumDerivedIndex);
     }
     
-    /**
-     * Get aggregation distinct column indexes.
-     *
-     * @return aggregation distinct column indexes
-     */
-    public Collection<Integer> getAggregationDistinctColumnIndexes() {
-        
-        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, Integer>() {
-            
-            @Override
-            public Integer apply(final AggregationDistinctColumnMetaData input) {
-                return input.columnIndex;
-            }
-        });
+    private Map<Integer, String> getAggregationDistinctColumnIndexAndLabels() {
+        Map<Integer, String> result = new HashMap<>();
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
+            result.put(each.columnIndex, each.columnLabel);
+        }
+        return result;
+    }
+    
+    private Map<Integer, AggregationType> getAggregationDistinctColumnIndexAndAggregationTypes() {
+        Map<Integer, AggregationType> result = new LinkedHashMap<>();
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
+            result.put(each.columnIndex, each.aggregationType);
+        }
+        return result;
+    }
+    
+    private Map<Integer, Integer> getAggregationDistinctColumnIndexAndCountColumnIndexes() {
+        Map<Integer, Integer> result = new HashMap<>();
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
+            result.put(each.columnIndex, each.derivedCountIndex);
+        }
+        return result;
+    }
+    
+    private Map<Integer, Integer> getAggregationDistinctColumnIndexAndSumColumnIndexes() {
+        Map<Integer, Integer> result = new HashMap<>();
+        for (AggregationDistinctColumnMetaData each : aggregationDistinctColumnMetaDataList) {
+            result.put(each.columnIndex, each.derivedSumIndex);
+        }
+        return result;
     }
     
     /**
-     * Get aggregation distinct column labels.
-     *
-     * @return aggregation distinct column labels
+     * Is aggregation distinct column index.
+     * 
+     * @param columnIndex column index
+     * @return is aggregation distinct column index or not
      */
-    public Collection<String> getAggregationDistinctColumnLabels() {
-        
-        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
-            
-            @Override
-            public String apply(final AggregationDistinctColumnMetaData input) {
-                return input.columnLabel;
-            }
-        });
+    public boolean isAggregationDistinctColumnIndex(final int columnIndex) {
+        return aggregationDistinctColumnIndexAndLabels.keySet().contains(columnIndex);
+    }
+    
+    /**
+     * Is aggregation distinct column label.
+     *
+     * @param columnLabel column label
+     * @return is aggregation distinct column label or not
+     */
+    public boolean isAggregationDistinctColumnLabel(final String columnLabel) {
+        return aggregationDistinctColumnIndexAndLabels.values().contains(columnLabel);
     }
     
     /**
@@ -104,59 +144,27 @@ public final class AggregationDistinctQueryMetaData {
      * @return aggregation type
      */
     public AggregationType getAggregationType(final int distinctColumnIndex) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return distinctColumnIndex == input.columnIndex;
-            }
-        }).iterator().next().aggregationType;
+        return aggregationDistinctColumnIndexAndAggregationTypes.get(distinctColumnIndex);
     }
     
     /**
-     * Get derived count column indexes.
-     *
-     * @return derived count column indexes
+     * Is derived count column index.
+     * 
+     * @param columnIndex column index
+     * @return is derived count column index or not
      */
-    public Collection<Integer> getDerivedCountColumnIndexes() {
-        Collection<Integer> result = new LinkedList<>();
-        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
-            if (-1 != each.derivedCountIndex) {
-                result.add(each.derivedCountIndex);
-            }
-        }
-        return result;
+    public boolean isDerivedCountColumnIndex(final int columnIndex) {
+        return aggregationDistinctColumnIndexAndCountColumnIndexes.values().contains(columnIndex);
     }
     
     /**
-     * Get derived sum column indexes.
+     * Is derived sum column index.
      *
-     * @return derived sum column indexes
+     * @param columnIndex column index
+     * @return is derived sum column index or not
      */
-    public Collection<Integer> getDerivedSumColumnIndexes() {
-        Collection<Integer> result = new LinkedList<>();
-        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
-            if (-1 != each.derivedSumIndex) {
-                result.add(each.derivedSumIndex);
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get aggregation distinct column index.
-     *
-     * @param aggregationDistinctColumnLabel aggregation distinct column label
-     * @return aggregation distinct column index
-     */
-    public int getAggregationDistinctColumnIndex(final String aggregationDistinctColumnLabel) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return aggregationDistinctColumnLabel.equals(input.columnLabel);
-            }
-        }).iterator().next().columnIndex;
+    public boolean isDerivedSumColumnIndex(final int columnIndex) {
+        return aggregationDistinctColumnIndexAndSumColumnIndexes.values().contains(columnIndex);
     }
     
     /**
@@ -166,30 +174,37 @@ public final class AggregationDistinctQueryMetaData {
      * @return aggregation distinct column index
      */
     public int getAggregationDistinctColumnIndex(final int derivedSumIndex) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return derivedSumIndex == input.derivedSumIndex;
+        for (Entry<Integer, Integer> entry : aggregationDistinctColumnIndexAndSumColumnIndexes.entrySet()) {
+            if (entry.getValue().equals(derivedSumIndex)) {
+                return entry.getKey();
             }
-        }).iterator().next().columnIndex;
+        }
+        throw new ShardingException("Can not get aggregation distinct column index.");
+    }
+    
+    /**
+     * Get aggregation distinct column index.
+     *
+     * @param distinctColumnLabel aggregation distinct column label
+     * @return aggregation distinct column index
+     */
+    public int getAggregationDistinctColumnIndex(final String distinctColumnLabel) {
+        for (Entry<Integer, String> entry : aggregationDistinctColumnIndexAndLabels.entrySet()) {
+            if (entry.getValue().equals(distinctColumnLabel)) {
+                return entry.getKey();
+            }
+        }
+        throw new ShardingException("Can not get aggregation distinct column index.");
     }
     
     /**
      * Get aggregation distinct column label.
      *
-     * @param aggregationDistinctColumnIndex aggregation distinct column index
+     * @param distinctColumnIndex aggregation distinct column index
      * @return aggregation distinct column label
      */
-    public String getAggregationDistinctColumnLabel(final int aggregationDistinctColumnIndex) {
-        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
-            
-            @Override
-            public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return aggregationDistinctColumnIndex == input.columnIndex;
-            }
-        }).iterator().next().columnLabel;
-        
+    public String getAggregationDistinctColumnLabel(final int distinctColumnIndex) {
+        return aggregationDistinctColumnIndexAndLabels.get(distinctColumnIndex);
     }
     
     @RequiredArgsConstructor 

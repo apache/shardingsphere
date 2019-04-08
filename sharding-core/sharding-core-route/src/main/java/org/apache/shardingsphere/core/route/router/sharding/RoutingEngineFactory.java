@@ -22,14 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTableStatusStatement;
-import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTablesStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement.ResetParamStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement.SetParamStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.InstanceBroadcastRoutingEngine;
@@ -93,11 +91,10 @@ public final class RoutingEngineFactory {
     }
     
     private static RoutingEngine getDALRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
-        if (sqlStatement instanceof UseStatement) {
+        if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof UseStatement) {
             return new IgnoreRoutingEngine();
         }
-        if (sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())
-                || sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement) {
+        if (sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         return new UnicastRoutingEngine(shardingRule, tableNames);

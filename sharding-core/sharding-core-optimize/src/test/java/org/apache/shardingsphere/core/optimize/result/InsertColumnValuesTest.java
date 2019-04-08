@@ -25,10 +25,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpr
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -40,15 +36,13 @@ public class InsertColumnValuesTest {
     
     @Test
     public void assertAddInsertColumnValueWithSet() {
-        List<SQLExpression> expressions = new LinkedList<>();
-        expressions.add(new SQLNumberExpression(1));
-        expressions.add(new SQLPlaceholderExpression(1));
-        expressions.add(new SQLTextExpression("test"));
-        insertColumnValuesWithSet.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
+        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLPlaceholderExpression(1), new SQLTextExpression("test")};
+        Object[] parameters = {"parameter"};
+        insertColumnValuesWithSet.addInsertColumnValue(expressions, parameters);
         assertThat(insertColumnValuesWithSet.getColumnNames().size(), is(3));
         assertThat(insertColumnValuesWithSet.getType(), is(DefaultKeyword.SET));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getValues(), is(expressions));
-        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getParameters().get(0), is((Object) "parameter"));
+        assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getParameters()[0], is((Object) "parameter"));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getDataNodes().size(), is(0));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("value"), is((Object) "parameter"));
         assertThat(insertColumnValuesWithSet.getColumnValues().get(0).getColumnValue("status"), is((Object) "test"));
@@ -61,11 +55,9 @@ public class InsertColumnValuesTest {
     
     @Test
     public void assertAddInsertColumnValueWithValues() {
-        List<SQLExpression> expressions = new LinkedList<>();
-        expressions.add(new SQLNumberExpression(1));
-        expressions.add(new SQLPlaceholderExpression(1));
-        expressions.add(new SQLTextExpression("test"));
-        insertColumnValuesWithValues.addInsertColumnValue(expressions, Collections.singletonList((Object) "parameter"));
+        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLPlaceholderExpression(1), new SQLTextExpression("test")};
+        Object[] parameters = {"parameter"};
+        insertColumnValuesWithValues.addInsertColumnValue(expressions, parameters);
         assertThat(insertColumnValuesWithValues.getColumnValues().get(0).toString(), is("(1, ?, 'test')"));
     }
 }

@@ -20,12 +20,12 @@ package org.apache.shardingsphere.core.parse.extractor;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.position.ColumnAfterPositionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.position.ColumnFirstPositionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnFirstPositionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
 
 /**
  * Column position extractor for MySQL.

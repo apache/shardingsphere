@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.parse.parser.clause;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 
 /**
  * Insert into clause parser.

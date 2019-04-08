@@ -81,13 +81,13 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Object getValue(final int columnIndex) {
-        if (metaData.getAggregationDistinctColumnIndexes().contains(columnIndex)) {
+        if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
             return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
         }
-        if (metaData.getDerivedCountColumnIndexes().contains(columnIndex)) {
+        if (metaData.isDerivedCountColumnIndex(columnIndex)) {
             return 1;
         }
-        if (metaData.getDerivedSumColumnIndexes().contains(columnIndex)) {
+        if (metaData.isDerivedSumColumnIndex(columnIndex)) {
             return super.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex), Object.class);
         }
         return super.getValue(columnIndex, Object.class);
@@ -139,7 +139,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        if (metaData.getAggregationDistinctColumnIndexes().contains(columnIndex)) {
+        if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
             return metaData.getAggregationDistinctColumnLabel(columnIndex);
         }
         for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
@@ -156,6 +156,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private boolean isContainColumnLabel(final String columnLabel) {
-        return null != metaData && metaData.getAggregationDistinctColumnLabels().contains(columnLabel);
+        return null != metaData && metaData.isAggregationDistinctColumnLabel(columnLabel);
     }
 }

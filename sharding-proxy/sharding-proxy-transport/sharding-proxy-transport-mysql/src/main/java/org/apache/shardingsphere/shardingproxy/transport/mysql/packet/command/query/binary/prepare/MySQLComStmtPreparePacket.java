@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * @author zhangliang
  */
 @Getter
+@ToString
 public final class MySQLComStmtPreparePacket extends MySQLCommandPacket {
     
     private final String sql;

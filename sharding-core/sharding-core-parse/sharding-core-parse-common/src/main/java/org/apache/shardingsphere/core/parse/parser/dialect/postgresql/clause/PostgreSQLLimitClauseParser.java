@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.dialect.postgresql.clause;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.postgresql.PostgreSQLKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.core.parse.parser.clause.SQLClauseParser;
 import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
 import org.apache.shardingsphere.core.util.NumberUtil;

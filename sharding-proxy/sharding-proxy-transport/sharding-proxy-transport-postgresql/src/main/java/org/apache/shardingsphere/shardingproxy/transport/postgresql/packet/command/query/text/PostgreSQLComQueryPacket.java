@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
  * @author zhangyonglun
  */
 @Getter
+@ToString
 public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket {
     
     private final String sql;

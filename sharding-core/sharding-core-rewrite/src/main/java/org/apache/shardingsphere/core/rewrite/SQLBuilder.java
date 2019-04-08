@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -181,7 +182,7 @@ public final class SQLBuilder {
     private void appendInsertValuesPlaceholder(final TableUnit tableUnit, 
                                                final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         if (DefaultKeyword.SET == insertValuesPlaceholder.getType()) {
-            stringBuilder.append(" SET ");
+            stringBuilder.append("SET ");
         } else {
             stringBuilder.append(" (").append(Joiner.on(", ").join(insertValuesPlaceholder.getColumnNames())).append(") VALUES ");
         }
@@ -195,7 +196,7 @@ public final class SQLBuilder {
     
     private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         stringBuilder.append(insertColumnValue).append(", ");
-        insertParameters.addAll(insertColumnValue.getParameters());
+        insertParameters.addAll(Arrays.asList(insertColumnValue.getParameters()));
     }
     
     private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {

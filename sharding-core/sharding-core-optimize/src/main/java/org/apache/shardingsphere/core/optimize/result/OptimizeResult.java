@@ -52,6 +52,6 @@ public final class OptimizeResult {
      * @return insert column values optional
      */
     public Optional<InsertColumnValues> getInsertColumnValues() {
-        return null == insertColumnValues ? Optional.<InsertColumnValues>absent() : Optional.of(insertColumnValues);
+        return Optional.fromNullable(insertColumnValues);
     }
 }

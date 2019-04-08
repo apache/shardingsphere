@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptorBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-import java.util.LinkedList;
 import java.util.Properties;
 
 /**
@@ -39,24 +38,22 @@ public final class EncryptorBeanDefinitionParser extends AbstractBeanDefinitionP
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.ENCRYPTOR_TYPE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.ENCRYPTOR_COLUMNS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_COLUMNS_ATTRIBUTE));
         parseAssistedQueryColumns(element, factory);
         parseProperties(element, factory);
         return factory.getBeanDefinition();
     }
     
     private void parseAssistedQueryColumns(final Element element, final BeanDefinitionBuilder factory) {
-        String assistedQueryColumns = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.ENCRYPTOR_ASSISTED_QUERY_COLUMNS_ATTRIBUTE);
+        String assistedQueryColumns = element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_ASSISTED_QUERY_COLUMNS_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(assistedQueryColumns)) {
             factory.addConstructorArgValue(assistedQueryColumns);
-        } else {
-            factory.addConstructorArgValue(new LinkedList<>());
         }
     }
     
     private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.ENCRYPTOR_PROPERTY_REF_ATTRIBUTE);
+        String properties = element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_PROPERTY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(properties)) {
             factory.addConstructorArgReference(properties);
         } else {

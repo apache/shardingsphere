@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class PostgreSQLCommandExecutorFactory {
     
     /**
@@ -52,6 +54,7 @@ public final class PostgreSQLCommandExecutorFactory {
      * @return command executor
      */
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) {
+        log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case QUERY:
                 return new PostgreSQLComQueryExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);

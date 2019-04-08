@@ -30,6 +30,10 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;
@@ -39,10 +43,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.IndexToken;
@@ -66,6 +66,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholde
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingTable;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -102,6 +103,8 @@ public final class SQLRewriteEngine {
     
     private final DatabaseType databaseType;
     
+    private final SQLRouteResult sqlRouteResult;
+    
     private final SQLStatement sqlStatement;
     
     private final List<SQLToken> sqlTokens;
@@ -120,16 +123,17 @@ public final class SQLRewriteEngine {
      * @param shardingRule databases and tables sharding rule
      * @param originalSQL original SQL
      * @param databaseType database type
-     * @param sqlStatement SQL statement
+     * @param sqlRouteResult SQL route result
      * @param parameters parameters
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, 
-                            final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
+    public SQLRewriteEngine(final ShardingRule shardingRule,
+                            final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
-        this.sqlStatement = sqlStatement;
-        sqlTokens = sqlStatement.getSQLTokens();
+        this.sqlRouteResult = sqlRouteResult;
+        sqlStatement = sqlRouteResult.getSqlStatement();
+        sqlTokens = sqlRouteResult.getSqlStatement().getSQLTokens();
         this.parameters = parameters;
         appendedIndexAndParameters = new LinkedHashMap<>();
         this.optimizeResult = optimizeResult;
@@ -253,7 +257,7 @@ public final class SQLRewriteEngine {
         }
         sqlBuilder.appendPlaceholder(
                 new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
-        appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
+        appendRest(sqlBuilder, count, originalSQL.length());
     }
     
     private void encryptInsertColumnValue(final Set<String> columnNames, final InsertColumnValue insertColumnValue) {
@@ -275,7 +279,7 @@ public final class SQLRewriteEngine {
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        Limit limit = selectStatement.getLimit();
+        Limit limit = sqlRouteResult.getLimit();
         if (!isRewrite) {
             sqlBuilder.appendLiterals(String.valueOf(rowCountToken.getRowCount()));
         } else if ((!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems()) {

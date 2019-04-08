@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.core.parse;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.SetStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.DescribeStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowColumnsStatement;
@@ -28,11 +33,6 @@ import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowT
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTablesStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dal.set.SetStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.DQLStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

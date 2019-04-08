@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.clause;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.Assist;
 import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLIdentifierExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPropertyExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.parser.dialect.sqlserver.clause;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.sqlserver.SQLServerKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.core.parse.parser.clause.OrderByClauseParser;
 import org.apache.shardingsphere.core.parse.parser.clause.SelectListClauseParser;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.CommonSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

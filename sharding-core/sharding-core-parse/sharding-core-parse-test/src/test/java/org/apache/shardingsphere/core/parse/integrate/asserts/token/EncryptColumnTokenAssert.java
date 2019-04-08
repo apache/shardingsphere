@@ -31,14 +31,17 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedEncrypt
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
 import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class EncryptColumnTokenAssert {
     
+    private final SQLCaseType sqlCaseType;
+    
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertIndexToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
+    void assertEncryptColumnsToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         List<EncryptColumnToken> encryptColumnTokens = getEncryptColumnTokens(actual);
         assertThat(assertMessage.getFullAssertMessage("Encrypt column tokens size error: "), encryptColumnTokens.size(), is(expected.getEncryptColumnTokens().size()));
         int count = 0;
@@ -49,8 +52,13 @@ public final class EncryptColumnTokenAssert {
     }
     
     private void assertEncryptColumnToken(final EncryptColumnToken actual, final ExpectedEncryptColumnToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Encrypt column start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getFullAssertMessage("Encrypt column stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        if(SQLCaseType.Placeholder == sqlCaseType){
+            assertThat(assertMessage.getFullAssertMessage("Encrypt column start index for placeholder assertion error: "), actual.getStartIndex(), is(expected.getStartIndexForPlaceholder()));
+            assertThat(assertMessage.getFullAssertMessage("Encrypt column stop index for placeholder assertion error: "), actual.getStopIndex(), is(expected.getStopIndexForPlaceholder()));
+        }else {
+            assertThat(assertMessage.getFullAssertMessage("Encrypt column start index for literal assertion error: "), actual.getStartIndex(), is(expected.getStartIndexForLiteral()));
+            assertThat(assertMessage.getFullAssertMessage("Encrypt column stop index for literal assertion error: "), actual.getStopIndex(), is(expected.getStopIndexForLiteral()));
+        }
         assertNotNull(assertMessage.getFullAssertMessage("Encrypt column does not exist assertion error: "), expected.getColumn());
         assertTrue(assertMessage.getFullAssertMessage("Missing encrypt column assertion error: "), actual.getColumn() != null);
         assertThat(assertMessage.getFullAssertMessage("Encrypt column name assertion error: "), actual.getColumn().getName(), is(expected.getColumn().getName()));

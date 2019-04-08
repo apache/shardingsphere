@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.DQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.IndexToken;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;

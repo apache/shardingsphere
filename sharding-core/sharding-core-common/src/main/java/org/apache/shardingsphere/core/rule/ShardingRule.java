@@ -56,7 +56,7 @@ import java.util.TreeSet;
  * @author panjuan
  */
 @Getter
-public class ShardingRule implements SQLStatementFillerRule {
+public class ShardingRule implements BaseRule {
     
     private final ShardingRuleConfiguration shardingRuleConfig;
     

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;

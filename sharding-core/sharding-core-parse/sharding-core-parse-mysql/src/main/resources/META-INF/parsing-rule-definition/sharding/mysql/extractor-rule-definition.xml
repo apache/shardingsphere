@@ -21,8 +21,7 @@
     <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.MySQLModifyColumnDefinitionExtractor" />
     <extractor-rule id="changeColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.MySQLChangeColumnDefinitionExtractor" />
     <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.MySQLDropPrimaryKeyExtractor" />
-    <extractor-rule id="insert" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertExtractor" />
-    <extractor-rule id="updateWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.UpdateSetWhereExtractor" />
-    <extractor-rule id="deleteFromWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.DeleteFromWhereExtractor" />
-    <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.SetAutoCommitExtractor" />
+    <extractor-rule id="updateWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.update.UpdateSetWhereExtractor" />
+    <extractor-rule id="deleteFromWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.delete.DeleteFromWhereExtractor" />
+    <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.tcl.SetAutoCommitExtractor" />
 </extractor-rule-definition>

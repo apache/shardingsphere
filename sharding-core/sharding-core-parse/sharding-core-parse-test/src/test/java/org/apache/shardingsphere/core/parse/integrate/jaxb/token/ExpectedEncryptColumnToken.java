@@ -29,11 +29,18 @@ import lombok.Setter;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedEncryptColumnToken {
     
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
+    @XmlAttribute(name = "start-index-for-placeholder")
+    private int startIndexForPlaceholder;
     
-    @XmlAttribute(name = "stop-index")
-    private int stopIndex;
+    @XmlAttribute(name = "stop-index-for-placeholder")
+    private int stopIndexForPlaceholder;
+    
+    
+    @XmlAttribute(name = "start-index-for-literal")
+    private int startIndexForLiteral;
+    
+    @XmlAttribute(name = "stop-index-for-literal")
+    private int stopIndexForLiteral;
     
     private ExpectedColumn column;
     

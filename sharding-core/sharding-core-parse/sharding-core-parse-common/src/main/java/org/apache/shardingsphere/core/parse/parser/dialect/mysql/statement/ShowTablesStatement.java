@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement;
 
-import org.apache.shardingsphere.core.parse.parser.sql.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
  * Show tables statement.

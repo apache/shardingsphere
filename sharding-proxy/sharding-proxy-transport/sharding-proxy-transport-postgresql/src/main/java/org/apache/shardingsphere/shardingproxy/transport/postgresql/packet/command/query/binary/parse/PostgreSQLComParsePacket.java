@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.parse;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -34,6 +35,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @Getter
+@ToString
 public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     private final String statementId;

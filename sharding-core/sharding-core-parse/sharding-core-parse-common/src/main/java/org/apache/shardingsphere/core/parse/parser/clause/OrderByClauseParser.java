@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.parser.clause;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.oracle.OracleKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpressio
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.LinkedList;

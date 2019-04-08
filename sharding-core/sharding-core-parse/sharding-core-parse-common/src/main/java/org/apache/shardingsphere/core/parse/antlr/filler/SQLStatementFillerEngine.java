@@ -21,16 +21,11 @@ import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.common.SQLSegmentCommonFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.SQLSegmentEncryptFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.SQLSegmentShardingFiller;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.SQLStatementFillerRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
 
@@ -49,16 +44,16 @@ public final class SQLStatementFillerEngine {
     
     private final String sql;
     
-    private final SQLStatementFillerRule sqlStatementFillerRule;
+    private final BaseRule rule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    public SQLStatementFillerEngine(final ParsingRuleRegistry parsingRuleRegistry, final DatabaseType databaseType, final String sql, final SQLStatementFillerRule sqlStatementFillerRule,
-                                    final ShardingTableMetaData shardingTableMetaData) {
+    public SQLStatementFillerEngine(final ParsingRuleRegistry parsingRuleRegistry, 
+                                    final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         this.parsingRuleRegistry = parsingRuleRegistry;
         this.databaseType = databaseType;
         this.sql = sql;
-        this.sqlStatementFillerRule = sqlStatementFillerRule;
+        this.rule = rule;
         this.shardingTableMetaData = shardingTableMetaData;
     }
     
@@ -73,16 +68,11 @@ public final class SQLStatementFillerEngine {
     @SneakyThrows
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
+        result.setLogicSQL(sql);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parsingRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
-                if (filler.get() instanceof SQLSegmentCommonFiller) {
-                    ((SQLSegmentCommonFiller<SQLSegment>) filler.get()).fill(each, result, sql, shardingTableMetaData);
-                } else if (filler.get() instanceof SQLSegmentShardingFiller) {
-                    ((SQLSegmentShardingFiller<SQLSegment>) filler.get()).fill(each, result, sql, (ShardingRule) sqlStatementFillerRule, shardingTableMetaData);
-                } else if (filler.get() instanceof SQLSegmentEncryptFiller) {
-                    ((SQLSegmentEncryptFiller<SQLSegment>) filler.get()).fill(each, result, sql, (EncryptRule) sqlStatementFillerRule, shardingTableMetaData);
-                }
+                (filler.get()).fill(each, result, this.rule, shardingTableMetaData);
             }
         }
         return result;

@@ -28,9 +28,9 @@ import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
  * @author panjuan
  */
 @Getter
+@Setter
 public final class InsertValuesToken extends SQLToken {
     
-    @Setter
     private DefaultKeyword type;
     
     public InsertValuesToken(final int startIndex, final DefaultKeyword type) {

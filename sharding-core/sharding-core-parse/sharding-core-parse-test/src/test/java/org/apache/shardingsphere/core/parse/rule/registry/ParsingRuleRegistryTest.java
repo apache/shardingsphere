@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.rule.registry;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ShardingParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
