@@ -22,13 +22,13 @@ import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.BaseAlgorithm;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Base algorithm factory.
+ * Type based SPI service loader.
  * 
  * @author panjuan
  * @author zhangliang
@@ -36,39 +36,39 @@ import java.util.Properties;
  * @param <T> type of algorithm class
  */
 @RequiredArgsConstructor
-public abstract class BaseAlgorithmFactory<T extends BaseAlgorithm> {
+public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     
     private final Class<T> classType;
     
     /**
-     * Create algorithm instance.
+     * Create new instance for type based SPI.
      * 
-     * @param type algorithm type
-     * @param props algorithm properties
-     * @return algorithm instance
+     * @param type SPI type
+     * @param props SPI properties
+     * @return SPI instance
      */
-    public final T newAlgorithm(final String type, final Properties props) {
-        Collection<T> algorithms = loadAlgorithms(type);
-        if (algorithms.isEmpty()) {
-            throw new ShardingConfigurationException("Invalid `%s` algorithm type `%s`.", classType.getName(), type);
+    public final T newService(final String type, final Properties props) {
+        Collection<T> typeBasedServices = loadTypeBasedServices(type);
+        if (typeBasedServices.isEmpty()) {
+            throw new ShardingConfigurationException("Invalid `%s` SPI type `%s`.", classType.getName(), type);
         }
-        T result = algorithms.iterator().next();
+        T result = typeBasedServices.iterator().next();
         result.setProperties(props);
         return result;
     }
     
     /**
-     * Create algorithm instance by default algorithm type.
+     * Create new service by default SPI type.
      *
-     * @return algorithm instance
+     * @return type based SPI instance
      */
-    public final T newAlgorithm() {
-        T result = loadFirstAlgorithm();
+    public final T newService() {
+        T result = loadFirstTypeBasedService();
         result.setProperties(new Properties());
         return result;
     }
     
-    private Collection<T> loadAlgorithms(final String type) {
+    private Collection<T> loadTypeBasedServices(final String type) {
         return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(classType), new Predicate<T>() {
             
             @Override
@@ -78,11 +78,11 @@ public abstract class BaseAlgorithmFactory<T extends BaseAlgorithm> {
         });
     }
     
-    private T loadFirstAlgorithm() {
-        Collection<T> algorithms = NewInstanceServiceLoader.newServiceInstances(classType);
-        if (algorithms.isEmpty()) {
-            throw new ShardingConfigurationException("Invalid `%s` algorithm, no implementation class load from SPI.", classType.getName());
+    private T loadFirstTypeBasedService() {
+        Collection<T> instances = NewInstanceServiceLoader.newServiceInstances(classType);
+        if (instances.isEmpty()) {
+            throw new ShardingConfigurationException("Invalid `%s` SPI, no implementation class load from SPI.", classType.getName());
         }
-        return algorithms.iterator().next();
+        return instances.iterator().next();
     }
 }

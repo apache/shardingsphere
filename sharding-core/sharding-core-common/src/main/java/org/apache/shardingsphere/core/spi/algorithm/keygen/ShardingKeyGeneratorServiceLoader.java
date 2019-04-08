@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.keygen;
+package org.apache.shardingsphere.core.spi.algorithm.keygen;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 /**
- * Key generator.
- *
+ * Key generator service loader.
+ * 
  * @author zhangliang
  * @author panjuan
  */
-public interface ShardingKeyGenerator extends TypeBasedSPI {
+public final class ShardingKeyGeneratorServiceLoader extends TypeBasedSPIServiceLoader<ShardingKeyGenerator> {
     
-    /**
-     * Generate key.
-     * 
-     * @return generated key
-     */
-    Comparable<?> generateKey();
+    static {
+        NewInstanceServiceLoader.register(ShardingKeyGenerator.class);
+    }
+    
+    public ShardingKeyGeneratorServiceLoader() {
+        super(ShardingKeyGenerator.class);
+    }
 }

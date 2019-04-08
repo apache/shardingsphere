@@ -15,36 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm.keygen;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 
-/**
- * Key generator factory.
- * 
- * @author zhangliang
- * @author panjuan
- */
-public final class ShardingKeyGeneratorFactory extends BaseAlgorithmFactory<ShardingKeyGenerator> {
-    
-    private static final ShardingKeyGeneratorFactory INSTANCE = new ShardingKeyGeneratorFactory();
+public final class BaseAlgorithmFixtureServiceLoader extends TypeBasedSPIServiceLoader<BaseAlgorithmFixture> {
     
     static {
-        NewInstanceServiceLoader.register(ShardingKeyGenerator.class);
+        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
     }
     
-    private ShardingKeyGeneratorFactory() {
-        super(ShardingKeyGenerator.class);
-    }
-    
-    /**
-     * Get instance of key generator factory.
-     * 
-     * @return instance of key generator factory
-     */
-    public static ShardingKeyGeneratorFactory getInstance() {
-        return INSTANCE;
+    public BaseAlgorithmFixtureServiceLoader() {
+        super(BaseAlgorithmFixture.class);
     }
 }

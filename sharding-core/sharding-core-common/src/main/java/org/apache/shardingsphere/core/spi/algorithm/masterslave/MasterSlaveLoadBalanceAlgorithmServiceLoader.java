@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm.fixture;
+package org.apache.shardingsphere.core.spi.algorithm.masterslave;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
-public final class BaseAlgorithmFactoryFixture extends BaseAlgorithmFactory<BaseAlgorithmFixture> {
-    
-    private static final BaseAlgorithmFactoryFixture INSTANCE = new BaseAlgorithmFactoryFixture();
+/**
+ * Master-slave database load-balance algorithm service loader.
+ * 
+ * @author zhangliang
+ */
+public final class MasterSlaveLoadBalanceAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
     
     static {
-        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
+        NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
-    public BaseAlgorithmFactoryFixture() {
-        super(BaseAlgorithmFixture.class);
-    }
-    
-    /**
-     * Get instance of factory fixture.
-     *
-     * @return instance of factory fixture
-     */
-    public static BaseAlgorithmFactoryFixture getInstance() {
-        return INSTANCE;
+    public MasterSlaveLoadBalanceAlgorithmServiceLoader() {
+        super(MasterSlaveLoadBalanceAlgorithm.class);
     }
 }
+

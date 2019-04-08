@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.keygen;
 
-import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorFactory;
+import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -25,20 +25,22 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingKeyGeneratorFactoryTest {
+public final class ShardingKeyGeneratorServiceLoaderTest {
+    
+    private ShardingKeyGeneratorServiceLoader serviceLoader = new ShardingKeyGeneratorServiceLoader();
     
     @Test
     public void assertNewSnowflakeKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(serviceLoader.newService("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
     
     @Test
     public void assertNewUUIDKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
+        assertThat(serviceLoader.newService("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
     }
     
     @Test
     public void assertNewDefaultKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm(), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(serviceLoader.newService(), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
 }

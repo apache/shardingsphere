@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import org.apache.shardingsphere.spi.BaseAlgorithm;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
-public interface BaseAlgorithmFixture extends BaseAlgorithm {
+public interface BaseAlgorithmFixture extends TypeBasedSPI {
 }

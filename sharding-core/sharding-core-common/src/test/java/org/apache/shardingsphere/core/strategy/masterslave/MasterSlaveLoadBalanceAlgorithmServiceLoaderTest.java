@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.masterslave;
 
-import org.apache.shardingsphere.core.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.core.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -25,20 +25,22 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlaveLoadBalanceAlgorithmFactoryTest {
+public final class MasterSlaveLoadBalanceAlgorithmServiceLoaderTest {
+    
+    private MasterSlaveLoadBalanceAlgorithmServiceLoader serviceLoader = new MasterSlaveLoadBalanceAlgorithmServiceLoader();
     
     @Test
     public void assertNewRoundRobinMasterSlaveLoadBalanceAlgorithm() {
-        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties()), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(serviceLoader.newService("ROUND_ROBIN", new Properties()), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
     public void assertNewRandomMasterSlaveLoadBalanceAlgorithm() {
-        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("RANDOM", new Properties()), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(serviceLoader.newService("RANDOM", new Properties()), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
     public void assertNewDefaultMasterSlaveLoadBalanceAlgorithm() {
-        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(serviceLoader.newService(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
 }
