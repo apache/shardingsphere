@@ -44,6 +44,8 @@ sharding-sphere-example
   │   ├── repository-jpa
   │   └── repository-mybatis
   ├── sharding-jdbc-example
+  │   ├── hint-example
+  │   │   └── hint-raw-jdbc-example
   │   ├── orchestration-example
   │   │   ├── orchestration-raw-jdbc-example
   │   │   ├── orchestration-spring-boot-example
@@ -90,7 +92,7 @@ you can get more detail from **[orchestration-example](./sharding-jdbc-example/o
 you can get more detail from **[transaction-example](./sharding-jdbc-example/transaction-example)**
 
 ### how to use hint routing
-we will add hint example recently.
+you can get more detail from **[hint-example](./sharding-jdbc-example/hint-example)**
 
 ### how to config none-sharding tables
 we will add none-sharding example recently.
