@@ -44,6 +44,8 @@ import java.util.Collection;
  */
 public final class AntlrParsingEngine implements SQLParser {
     
+    private final ParsingRuleRegistry parsingRuleRegistry;
+    
     private final SQLParserEngine parserEngine;
     
     private final SQLSegmentsExtractorEngine extractorEngine;
@@ -52,14 +54,8 @@ public final class AntlrParsingEngine implements SQLParser {
     
     private final SQLStatementOptimizerEngine optimizerEngine;
     
-    private final ParsingRuleRegistry parsingRuleRegistry;
-    
     public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        if (rule instanceof EncryptRule) {
-            parsingRuleRegistry = EncryptParsingRuleRegistry.getInstance();
-        } else {
-            parsingRuleRegistry = ShardingParsingRuleRegistry.getInstance();
-        }
+        parsingRuleRegistry = rule instanceof EncryptRule ? EncryptParsingRuleRegistry.getInstance() : ShardingParsingRuleRegistry.getInstance();
         parserEngine = new SQLParserEngine(parsingRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parsingRuleRegistry, databaseType, sql, rule, shardingTableMetaData);

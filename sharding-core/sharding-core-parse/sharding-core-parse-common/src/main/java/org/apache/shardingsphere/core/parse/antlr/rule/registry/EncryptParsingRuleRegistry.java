@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Sharding parsing rule registry.
@@ -52,7 +52,8 @@ public class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
     }
     
     @Override
-    protected void fillRuleFilePaths(final DatabaseType databaseType, final List<String> fillerFilePaths, final List<String> extractorFilePaths, final List<String> sqlStateRuleFilePaths) {
+    protected void fillRuleFilePaths(final DatabaseType databaseType, 
+                                     final Collection<String> fillerFilePaths, final Collection<String> extractorFilePaths, final Collection<String> sqlStateRuleFilePaths) {
         fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
         extractorFilePaths.add(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
         sqlStateRuleFilePaths.add(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
@@ -60,10 +61,7 @@ public class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
     
     @Override
     protected boolean needParser(final DatabaseType databaseType) {
-        if (DatabaseType.MySQL == databaseType) {
-            return true;
-        }
-        return false;
+        return DatabaseType.MySQL == databaseType;
     }
 }
 
