@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 /**
- * Key generator factory.
+ * Key generator service loader.
  * 
  * @author zhangliang
  * @author panjuan

@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        MasterSlaveLoadBalanceAlgorithmFactoryTest.class,
+        MasterSlaveLoadBalanceAlgorithmServiceLoaderTest.class,
         RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class,
         RandomMasterSlaveLoadBalanceAlgorithmTest.class
     })

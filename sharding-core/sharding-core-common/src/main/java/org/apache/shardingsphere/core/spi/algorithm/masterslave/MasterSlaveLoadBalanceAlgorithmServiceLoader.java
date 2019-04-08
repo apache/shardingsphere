@@ -22,28 +22,18 @@ import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 /**
- * Master-slave database load-balance algorithm factory.
+ * Master-slave database load-balance algorithm service loader.
  * 
  * @author zhangliang
  */
-public final class MasterSlaveLoadBalanceAlgorithmFactory extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
-    
-    private static final MasterSlaveLoadBalanceAlgorithmFactory INSTANCE = new MasterSlaveLoadBalanceAlgorithmFactory();
+public final class MasterSlaveLoadBalanceAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
     
     static {
         NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
-    private MasterSlaveLoadBalanceAlgorithmFactory() {
+    public MasterSlaveLoadBalanceAlgorithmServiceLoader() {
         super(MasterSlaveLoadBalanceAlgorithm.class);
     }
-    
-    /**
-     * Get instance of master-slave database load-balance algorithm factory.
-     *
-     * @return instance of master-slave database load-balance algorithm factory
-     */
-    public static MasterSlaveLoadBalanceAlgorithmFactory getInstance() {
-        return INSTANCE;
-    }
 }
+
