@@ -49,6 +49,7 @@ assignment
 
 assignmentValues
     : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
+    | LP_ RP_
     ;
 
 assignmentValue
