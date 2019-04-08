@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
@@ -90,7 +89,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithValuesWithPlaceHolderWithEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
+        result.getTables().add(new Table("t_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertValuesToken(34, DefaultKeyword.VALUES));
         result.getColumns().add(new Column("col1", "t_encrypt"));
@@ -121,7 +120,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_query_encrypt", Optional.<String>absent()));
+        result.getTables().add(new Table("t_query_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_query_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertValuesToken(40, DefaultKeyword.VALUES));
         result.getColumns().add(new Column("col1", "t_query_encrypt"));
@@ -150,7 +149,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithSetWithoutPlaceHolderWithEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
+        result.getTables().add(new Table("t_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertValuesToken(34, DefaultKeyword.SET));
         result.getColumns().add(new Column("col1", "t_encrypt"));
@@ -181,7 +180,7 @@ public final class EncryptInsertOptimizeEngineTest {
     
     private InsertStatement createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt() {
         InsertStatement result = new InsertStatement();
-        result.getTables().add(new Table("t_query_encrypt", Optional.<String>absent()));
+        result.getTables().add(new Table("t_query_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_query_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertValuesToken(40, DefaultKeyword.SET));
         result.getColumns().add(new Column("col1", "t_query_encrypt"));

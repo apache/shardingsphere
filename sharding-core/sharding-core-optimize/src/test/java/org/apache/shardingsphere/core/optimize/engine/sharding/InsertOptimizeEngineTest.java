@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.engine.sharding;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.engine.sharding.insert.InsertOptimizeEngine;
@@ -115,7 +114,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeWithValuesWithPlaceHolder() {
         insertStatementWithValuesWithPlaceHolder = new InsertStatement();
-        insertStatementWithValuesWithPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatementWithValuesWithPlaceHolder.getTables().add(new Table("t_order", null));
         insertStatementWithValuesWithPlaceHolder.setParametersIndex(4);
         insertStatementWithValuesWithPlaceHolder.addSQLToken(new TableToken(12, "t_order", QuoteCharacter.NONE, 0));
         insertStatementWithValuesWithPlaceHolder.addSQLToken(new InsertValuesToken(39, DefaultKeyword.VALUES));
@@ -136,7 +135,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeWithValuesWithPlaceHolderWithEncrypt() {
         insertStatementWithValuesWithPlaceHolderWithEncrypt = new InsertStatement();
-        insertStatementWithValuesWithPlaceHolderWithEncrypt.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
+        insertStatementWithValuesWithPlaceHolderWithEncrypt.getTables().add(new Table("t_encrypt", null));
         insertStatementWithValuesWithPlaceHolderWithEncrypt.setParametersIndex(4);
         insertStatementWithValuesWithPlaceHolderWithEncrypt.addSQLToken(new TableToken(12, "t_encrypt", QuoteCharacter.NONE, 0));
         insertStatementWithValuesWithPlaceHolderWithEncrypt.addSQLToken(new InsertValuesToken(39, DefaultKeyword.VALUES));
@@ -157,7 +156,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeInsertWithValuesWithoutPlaceHolder() {
         insertStatementWithValuesWithoutPlaceHolder = new InsertStatement();
-        insertStatementWithValuesWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatementWithValuesWithoutPlaceHolder.getTables().add(new Table("t_order", null));
         insertStatementWithValuesWithoutPlaceHolder.setParametersIndex(0);
         insertStatementWithValuesWithoutPlaceHolder.addSQLToken(new TableToken(12, "t_order", QuoteCharacter.NONE, 0));
         insertStatementWithValuesWithoutPlaceHolder.addSQLToken(new InsertValuesToken(42, DefaultKeyword.VALUES));
@@ -171,7 +170,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeInsertWithValuesWithoutPlaceHolderWithQueryEncrypt() {
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt = new InsertStatement();
-        insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", Optional.<String>absent()));
+        insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, "t_encrypt_query", QuoteCharacter.NONE, 0));
         insertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt.addSQLToken(new InsertValuesToken(42, DefaultKeyword.VALUES));
@@ -185,7 +184,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeInsertWithoutValuesWithPlaceHolder() {
         insertStatementWithoutValuesWithPlaceHolder = new InsertStatement();
-        insertStatementWithoutValuesWithPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatementWithoutValuesWithPlaceHolder.getTables().add(new Table("t_order", null));
         insertStatementWithoutValuesWithPlaceHolder.setParametersIndex(0);
         insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new TableToken(12, "t_order", QuoteCharacter.NONE, 0));
         insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
@@ -198,7 +197,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeInsertWithoutValuesWithPlaceHolderWithQueryEncrypt() {
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt = new InsertStatement();
-        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", Optional.<String>absent()));
+        insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, "t_encrypt_query", QuoteCharacter.NONE, 0));
         insertStatementWithoutValuesWithPlaceHolderWithQueryEncrypt.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
@@ -211,7 +210,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeInsertWithoutValuesWithoutPlaceHolder() {
         insertStatementWithoutValuesWithoutPlaceHolder = new InsertStatement();
-        insertStatementWithoutValuesWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatementWithoutValuesWithoutPlaceHolder.getTables().add(new Table("t_order", null));
         insertStatementWithoutValuesWithoutPlaceHolder.setParametersIndex(0);
         insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new TableToken(12, "t_order", QuoteCharacter.NONE, 0));
         insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));
@@ -224,7 +223,7 @@ public final class InsertOptimizeEngineTest {
     
     private void initializeInsertWithoutValuesWithoutPlaceHolderWithEncrypt() {
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt = new InsertStatement();
-        insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getTables().add(new Table("t_encrypt", Optional.<String>absent()));
+        insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.getTables().add(new Table("t_encrypt", null));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.setParametersIndex(0);
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.addSQLToken(new TableToken(12, "t_encrypt", QuoteCharacter.NONE, 0));
         insertStatementWithoutValuesWithoutPlaceHolderWithEncrypt.addSQLToken(new InsertValuesToken(24, DefaultKeyword.SET));

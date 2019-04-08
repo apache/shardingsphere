@@ -31,6 +31,6 @@ public class CommonTableFiller implements SQLSegmentFiller<TableSegment> {
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias()));
+        sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
     }
 }

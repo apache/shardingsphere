@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.parser.clause;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -112,7 +111,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             sqlStatement.addSQLToken(new TableToken(beginPosition, tableName, QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
-            sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
+            sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName).orNull()));
         } else {
             aliasExpressionParser.parseTableAlias();
         }
@@ -201,6 +200,6 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             lexerEngine.nextToken();
         }
         sqlStatement.addSQLToken(new TableToken(beginPosition, literals, QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
-        sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
+        sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), null));
     }
 }

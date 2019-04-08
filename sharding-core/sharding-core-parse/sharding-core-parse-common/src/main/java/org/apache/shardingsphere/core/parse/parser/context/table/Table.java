@@ -29,12 +29,21 @@ import lombok.ToString;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
 @EqualsAndHashCode
 @ToString
 public final class Table {
     
+    @Getter
     private final String name;
     
-    private final Optional<String> alias;
+    private final String alias;
+    
+    /**
+     * Get alias.
+     * 
+     * @return alias
+     */
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
 }
