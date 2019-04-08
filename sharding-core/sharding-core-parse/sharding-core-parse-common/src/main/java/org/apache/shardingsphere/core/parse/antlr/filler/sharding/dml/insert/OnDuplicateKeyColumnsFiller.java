@@ -20,21 +20,21 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.lexer.token.Literals;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert duplicate key columns filler.
+ * On duplicate key columns filler.
  *
  * @author zhangliang
  */
-public final class InsertDuplicateKeyColumnsFiller implements SQLSegmentFiller<InsertDuplicateKeyColumnsSegment, ShardingRule> {
+public final class OnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment, ShardingRule> {
     
     @Override
-    public void fill(final InsertDuplicateKeyColumnsSegment sqlSegment, 
+    public void fill(final OnDuplicateKeyColumnsSegment sqlSegment, 
                      final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = sqlStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {

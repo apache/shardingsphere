@@ -24,27 +24,27 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.C
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Insert duplicate key columns extractor.
+ * On duplicate key columns extractor.
  *
  * @author zhangliang
  */
-public final class InsertDuplicateKeyColumnsExtractor implements OptionalSQLSegmentExtractor {
+public final class OnDuplicateKeyColumnsExtractor implements OptionalSQLSegmentExtractor {
     
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<InsertDuplicateKeyColumnsSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> onDuplicateKeyClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_ON_DUPLICATE_KEY_CLAUSE);
+    public Optional<OnDuplicateKeyColumnsSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> onDuplicateKeyClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ON_DUPLICATE_KEY_CLAUSE);
         if (!onDuplicateKeyClauseNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new InsertDuplicateKeyColumnsSegment(extractColumnSegments(onDuplicateKeyClauseNode.get())));
+        return Optional.of(new OnDuplicateKeyColumnsSegment(extractColumnSegments(onDuplicateKeyClauseNode.get())));
     }
     
     private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext onDuplicateKeyClauseNode) {
