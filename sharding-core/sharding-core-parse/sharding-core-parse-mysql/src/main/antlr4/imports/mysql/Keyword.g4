@@ -903,6 +903,10 @@ REPLACE
     : R E P L A C E
     ;
 
+REPLICATION
+    : R E P L I C A T I O N
+    ;
+
 REPLICATION_SLAVE_ADMIN
     : R E P L I C A T I O N UL_ S L A V E UL_ A D M I N
     ;
