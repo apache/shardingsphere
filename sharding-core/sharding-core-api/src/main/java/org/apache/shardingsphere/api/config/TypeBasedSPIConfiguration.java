@@ -24,7 +24,7 @@ import lombok.Getter;
 import java.util.Properties;
 
 /**
- * Strategy configuration.
+ * Type based SPI configuration.
  * 
  * @author zhangliang
  */
