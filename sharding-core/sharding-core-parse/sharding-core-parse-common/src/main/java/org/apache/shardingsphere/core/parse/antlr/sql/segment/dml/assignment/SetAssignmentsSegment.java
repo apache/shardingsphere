@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 
 import java.util.Collection;
 
@@ -36,7 +34,5 @@ public final class SetAssignmentsSegment implements SQLSegment {
     
     private final int startIndex;
     
-    private final Collection<ColumnSegment> columns;
-    
-    private final Collection<CommonExpressionSegment> values;
+    private final Collection<AssignmentSegment> assignments;
 }

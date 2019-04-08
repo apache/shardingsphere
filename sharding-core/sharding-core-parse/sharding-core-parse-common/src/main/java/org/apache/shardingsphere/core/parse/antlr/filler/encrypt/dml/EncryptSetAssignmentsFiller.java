@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -49,8 +49,8 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
-        for (ColumnSegment each : sqlSegment.getColumns()) {
-            fillColumn(each, insertStatement, tableName);
+        for (AssignmentSegment each : sqlSegment.getAssignments()) {
+            fillColumn(each.getColumn(), insertStatement, tableName);
         }
         InsertValue insertValue = getInsertValue(sqlSegment, sqlStatement.getLogicSQL());
         insertStatement.getInsertValues().getValues().add(insertValue);
@@ -68,8 +68,8 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
     private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final String sql) {
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
-        for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            Optional<SQLExpression> sqlExpression = each.convertToSQLExpression(sql);
+        for (AssignmentSegment each : sqlSegment.getAssignments()) {
+            Optional<SQLExpression> sqlExpression = each.getValue().convertToSQLExpression(sql);
             if (sqlExpression.isPresent()) {
                 columnValues.add(sqlExpression.get());
                 if (sqlExpression.get() instanceof SQLPlaceholderExpression) {

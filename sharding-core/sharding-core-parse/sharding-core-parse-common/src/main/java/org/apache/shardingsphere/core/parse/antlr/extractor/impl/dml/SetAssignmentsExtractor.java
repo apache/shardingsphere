@@ -24,8 +24,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,17 +45,15 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
         if (!setAssignmentsClauseNode.isPresent()) {
             return Optional.absent();
         }
-        Collection<ColumnSegment> columnSegments = new LinkedList<>();
-        Collection<CommonExpressionSegment> valueSegments = new LinkedList<>();
+        Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
         assignmentExtractor = new AssignmentExtractor(getPlaceholderIndexes(ancestorNode));
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT)) {
             Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(each);
             if (assignmentSegment.isPresent()) {
-                columnSegments.add(assignmentSegment.get().getColumn());
-                valueSegments.add(assignmentSegment.get().getValue());
+                assignmentSegments.add(assignmentSegment.get());
             }
         }
-        return Optional.of(new SetAssignmentsSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), columnSegments, valueSegments));
+        return Optional.of(new SetAssignmentsSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), assignmentSegments));
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {

@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
@@ -55,19 +56,19 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
-        for (ColumnSegment each : sqlSegment.getColumns()) {
-            fillColumn(each, insertStatement, tableName);
+        for (AssignmentSegment each : sqlSegment.getAssignments()) {
+            fillColumn(each.getColumn(), insertStatement, tableName);
         }
         int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement, shardingRule, shardingTableMetaData);
-        if (sqlSegment.getValues().size() != columnCount) {
+        if (sqlSegment.getAssignments().size() != columnCount) {
             throw new SQLParsingException("INSERT INTO column size mismatch value size.");
         }
         AndCondition andCondition = new AndCondition();
         Iterator<Column> columns = insertStatement.getColumns().iterator();
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
-        for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            SQLExpression columnValue = getColumnValue(insertStatement, shardingRule, andCondition, columns.next(), each);
+        for (AssignmentSegment each : sqlSegment.getAssignments()) {
+            SQLExpression columnValue = getColumnValue(insertStatement, shardingRule, andCondition, columns.next(), each.getValue());
             columnValues.add(columnValue);
             if (columnValue instanceof SQLPlaceholderExpression) {
                 parametersCount++;
