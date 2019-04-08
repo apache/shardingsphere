@@ -24,7 +24,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  */
-public interface BaseAlgorithm {
+public interface TypeBasedSPI {
     
     /**
      * Get algorithm type.

@@ -22,7 +22,7 @@ import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.BaseAlgorithm;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -36,7 +36,7 @@ import java.util.Properties;
  * @param <T> type of algorithm class
  */
 @RequiredArgsConstructor
-public abstract class BaseAlgorithmFactory<T extends BaseAlgorithm> {
+public abstract class BaseAlgorithmFactory<T extends TypeBasedSPI> {
     
     private final Class<T> classType;
     
