@@ -25,8 +25,8 @@ shardingRule:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      preciseAlgorithmClassName: io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm
-      rangeAlgorithmClassName: io.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm
+      preciseAlgorithmClassName: org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm
+      rangeAlgorithmClassName: org.apache.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm
   defaultTableStrategy:
     none:
 
