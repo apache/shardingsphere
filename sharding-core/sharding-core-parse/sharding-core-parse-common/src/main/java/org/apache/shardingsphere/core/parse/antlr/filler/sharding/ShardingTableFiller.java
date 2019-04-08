@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
+package org.apache.shardingsphere.core.parse.antlr.filler.sharding;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
