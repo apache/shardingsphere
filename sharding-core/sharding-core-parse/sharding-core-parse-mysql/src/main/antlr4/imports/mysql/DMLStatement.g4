@@ -20,7 +20,7 @@ grammar DMLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 insert
-    : INSERT insertSpecification_ INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause) insertOnDuplicateKeyClause?
+    : INSERT insertSpecification_ INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
     ;
 
 insertSpecification_
@@ -39,7 +39,7 @@ insertSelectClause
     : columnNames? select
     ;
 
-insertOnDuplicateKeyClause
+onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 

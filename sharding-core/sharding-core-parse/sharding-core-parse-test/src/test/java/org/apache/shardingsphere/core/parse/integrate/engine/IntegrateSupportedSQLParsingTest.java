@@ -63,6 +63,6 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
             return;
         }
         new SQLStatementAssert(new SQLParsingEngine(
-                databaseType, sql, getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(false), sqlCaseId, sqlCaseType).assertSQLStatement();
+                databaseType, sql, getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(false), sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }

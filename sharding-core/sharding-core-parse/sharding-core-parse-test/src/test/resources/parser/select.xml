@@ -318,6 +318,9 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
+            <encrypt-column-token start-index-for-placeholder="208" stop-index-for-placeholder="219" start-index-for-literal="209" stop-index-for-literal="225" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -334,6 +337,13 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="4" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -344,6 +354,9 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
+            <encrypt-column-token start-index-for-placeholder="199" stop-index-for-placeholder="210" start-index-for-literal="200" stop-index-for-literal="216" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -360,6 +373,13 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="4" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -747,7 +767,17 @@
         </tables>
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="28" stop-index-for-placeholder="38" start-index-for-literal="28" stop-index-for-literal="38" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="\'" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_escape_with_double_quota" >
@@ -756,7 +786,17 @@
         </tables>
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="28" stop-index-for-placeholder="38" start-index-for-literal="28" stop-index-for-literal="38" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="\&quot;" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_with_block_comment" >
@@ -765,7 +805,17 @@
         </tables>
         <tokens>
             <table-token start-index="83" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="97" stop-index-for-placeholder="106" start-index-for-literal="97" stop-index-for-literal="106" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_with_single_comment" >
@@ -774,7 +824,17 @@
         </tables>
         <tokens>
             <table-token start-index="77" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="91" stop-index-for-placeholder="100" start-index-for-literal="91" stop-index-for-literal="100" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_alias_as_single_quote_string">

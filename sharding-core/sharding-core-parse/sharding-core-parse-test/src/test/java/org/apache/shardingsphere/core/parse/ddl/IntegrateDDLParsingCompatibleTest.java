@@ -85,6 +85,6 @@ public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegra
         }
         new SQLStatementAssert(new AntlrParsingEngine(
                 execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(), 
-                AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
+                AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
     }
 }

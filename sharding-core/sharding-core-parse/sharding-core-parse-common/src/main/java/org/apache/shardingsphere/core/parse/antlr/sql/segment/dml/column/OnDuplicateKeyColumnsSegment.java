@@ -24,13 +24,13 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import java.util.Collection;
 
 /**
- * Insert duplicate key columns segment.
+ * On duplicate key columns segment.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertDuplicateKeyColumnsSegment implements SQLSegment {
+public final class OnDuplicateKeyColumnsSegment implements SQLSegment {
     
     private final Collection<ColumnSegment> columns;
 }

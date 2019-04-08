@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
-import com.google.common.base.Optional;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -39,11 +46,7 @@ import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Optional;
 
 /**
  * Or condition filler.
@@ -122,6 +125,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
                 break;
             }
         }
+        Set<Integer> filledConditionStopIndexes = new HashSet<>();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
@@ -129,6 +133,11 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
                 }
                 if (condition.getExpression() instanceof ColumnSegment) {
                     continue;
+                }
+                if(filledConditionStopIndexes.contains(condition.getStopIndex())) {
+                    continue;
+                }else {
+                    filledConditionStopIndexes.add(condition.getStopIndex());
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
                 fillEncryptCondition(column, condition, shardingRule, sqlStatement);

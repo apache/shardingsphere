@@ -75,7 +75,7 @@ public enum RuleName {
     
     INSERT_VALUES_CLAUSE("InsertValuesClause"),
     
-    INSERT_ON_DUPLICATE_KEY_CLAUSE("InsertOnDuplicateKeyClause"),
+    ON_DUPLICATE_KEY_CLAUSE("OnDuplicateKeyClause"),
     
     SET_ASSIGNMENTS_CLAUSE("SetAssignmentsClause"),
     
