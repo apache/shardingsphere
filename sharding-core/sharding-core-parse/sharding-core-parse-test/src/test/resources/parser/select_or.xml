@@ -65,7 +65,17 @@
         </tables>
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="44" stop-index-for-placeholder="53" start-index-for-literal="44" stop-index-for-literal="58" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
@@ -74,6 +84,9 @@
         </tables>
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="45" stop-index-for-placeholder="54" start-index-for-literal="45" stop-index-for-literal="59" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -90,6 +103,13 @@
                 </condition>
             </and-condition>
         </or-condition>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
@@ -98,6 +118,9 @@
         </tables>
         <tokens>
             <table-token start-index="14" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="30" stop-index-for-placeholder="39" start-index-for-literal="30" stop-index-for-literal="44" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -133,6 +156,13 @@
                 </condition>
             </and-condition>
         </or-condition>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
@@ -172,6 +202,9 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="31" table-name="t_order_item" length="12" />
+            <encrypt-column-token start-index-for-placeholder="210" stop-index-for-placeholder="221" start-index-for-literal="210" stop-index-for-literal="226" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <or-condition>
             <and-condition>
@@ -191,5 +224,12 @@
                 </condition>
             </and-condition>
         </or-condition>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="3" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
 </parser-result-sets>

@@ -43,11 +43,21 @@
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
                 </items>
             </items-token>
+            <encrypt-column-token start-index-for-placeholder="76" stop-index-for-placeholder="92" start-index-for-literal="76" stop-index-for-literal="92" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
             <order-by-column index="1" order-direction="ASC" />
         </order-by-columns>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_ordered_column">
@@ -75,12 +85,22 @@
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
                 </items>
             </items-token>
+            <encrypt-column-token start-index-for-placeholder="76" stop-index-for-placeholder="92" start-index-for-literal="76" stop-index-for-literal="92" is-in-where="true">
+               <column table-name="t_order" name="status"/>
+            </encrypt-column-token>
         </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="creation_date" order-direction="DESC" />
             <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
+        <encrypt-condition>
+            <and-condition>
+                <condition column-name="status" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="init" type="varchar" />
+                </condition>
+            </and-condition>
+        </encrypt-condition>
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
