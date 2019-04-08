@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.spi.algorithm.encrypt;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 /**
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
  * 
  * @author panjuan
  */
-public final class ShardingEncryptorFactory extends BaseAlgorithmFactory<ShardingEncryptor> {
+public final class ShardingEncryptorFactory extends TypeBasedSPIServiceLoader<ShardingEncryptor> {
     
     private static final ShardingEncryptorFactory INSTANCE = new ShardingEncryptorFactory();
     

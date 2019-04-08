@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.spi.algorithm.keygen;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
  * @author zhangliang
  * @author panjuan
  */
-public final class ShardingKeyGeneratorFactory extends BaseAlgorithmFactory<ShardingKeyGenerator> {
+public final class ShardingKeyGeneratorFactory extends TypeBasedSPIServiceLoader<ShardingKeyGenerator> {
     
     private static final ShardingKeyGeneratorFactory INSTANCE = new ShardingKeyGeneratorFactory();
     

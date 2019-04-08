@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.spi.algorithm.masterslave;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 /**
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm
  * 
  * @author zhangliang
  */
-public final class MasterSlaveLoadBalanceAlgorithmFactory extends BaseAlgorithmFactory<MasterSlaveLoadBalanceAlgorithm> {
+public final class MasterSlaveLoadBalanceAlgorithmFactory extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
     
     private static final MasterSlaveLoadBalanceAlgorithmFactory INSTANCE = new MasterSlaveLoadBalanceAlgorithmFactory();
     

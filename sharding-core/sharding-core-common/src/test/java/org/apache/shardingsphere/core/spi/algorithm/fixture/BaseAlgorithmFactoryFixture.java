@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 
-public final class BaseAlgorithmFactoryFixture extends BaseAlgorithmFactory<BaseAlgorithmFixture> {
+public final class BaseAlgorithmFactoryFixture extends TypeBasedSPIServiceLoader<BaseAlgorithmFixture> {
     
     private static final BaseAlgorithmFactoryFixture INSTANCE = new BaseAlgorithmFactoryFixture();
     

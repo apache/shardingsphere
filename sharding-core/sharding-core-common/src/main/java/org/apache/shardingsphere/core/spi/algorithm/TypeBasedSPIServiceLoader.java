@@ -36,7 +36,7 @@ import java.util.Properties;
  * @param <T> type of algorithm class
  */
 @RequiredArgsConstructor
-public abstract class BaseAlgorithmFactory<T extends TypeBasedSPI> {
+public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     
     private final Class<T> classType;
     
