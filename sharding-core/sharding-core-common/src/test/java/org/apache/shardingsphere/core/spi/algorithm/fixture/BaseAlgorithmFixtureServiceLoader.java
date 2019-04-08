@@ -20,24 +20,13 @@ package org.apache.shardingsphere.core.spi.algorithm.fixture;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 
-public final class BaseAlgorithmFactoryFixture extends TypeBasedSPIServiceLoader<BaseAlgorithmFixture> {
-    
-    private static final BaseAlgorithmFactoryFixture INSTANCE = new BaseAlgorithmFactoryFixture();
+public final class BaseAlgorithmFixtureServiceLoader extends TypeBasedSPIServiceLoader<BaseAlgorithmFixture> {
     
     static {
         NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
     }
     
-    public BaseAlgorithmFactoryFixture() {
+    public BaseAlgorithmFixtureServiceLoader() {
         super(BaseAlgorithmFixture.class);
-    }
-    
-    /**
-     * Get instance of factory fixture.
-     *
-     * @return instance of factory fixture
-     */
-    public static BaseAlgorithmFactoryFixture getInstance() {
-        return INSTANCE;
     }
 }
