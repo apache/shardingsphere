@@ -19,13 +19,17 @@ package org.apache.shardingsphere.example.common.jpa.repository;
 
 import org.apache.shardingsphere.example.common.entity.User;
 import org.apache.shardingsphere.example.common.repository.UserRepository;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 
-public final class UserRepsitoryImpl implements UserRepository {
+@Repository
+@Transactional
+public class UserRepositoryImpl implements UserRepository {
     
     @PersistenceContext
     private EntityManager entityManager;

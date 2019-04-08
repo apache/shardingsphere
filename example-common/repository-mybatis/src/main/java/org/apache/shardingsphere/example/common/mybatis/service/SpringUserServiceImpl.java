@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.common.jpa.service;
+package org.apache.shardingsphere.example.common.mybatis.service;
 
-import org.apache.shardingsphere.example.common.jpa.entity.UserEntity;
+import org.apache.shardingsphere.example.common.entity.User;
 import org.apache.shardingsphere.example.common.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,17 +27,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserCommonServiceImpl implements UseService {
+public class SpringUserServiceImpl implements UserService {
     
     @Resource
     private UserRepository userRepository;
     
     @Override
     public void initEnvironment() {
+        userRepository.createTableIfNotExists();
+        userRepository.truncateTable();
     }
     
     @Override
     public void cleanEnvironment() {
+        userRepository.dropTable();
     }
     
     @Override
@@ -51,20 +54,11 @@ public class UserCommonServiceImpl implements UseService {
         System.out.println("-------------- Process Success Finish --------------");
     }
     
-    @Override
-    @Transactional
-    public void processFailure() {
-        System.out.println("-------------- Process Failure Begin ---------------");
-        insertData();
-        System.out.println("-------------- Process Failure Finish --------------");
-        throw new RuntimeException("Exception occur for transaction test.");
-    }
-    
     private List<Long> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            UserEntity user = new UserEntity();
+            User user = new User();
             user.setUserId(i);
             user.setUserName("test_" + i);
             user.setPwd("pwd" + i);
@@ -72,6 +66,14 @@ public class UserCommonServiceImpl implements UseService {
             result.add((long) user.getUserId());
         }
         return result;
+    }
+    
+    @Override
+    public void processFailure() {
+        System.out.println("-------------- Process Failure Begin ---------------");
+        insertData();
+        System.out.println("-------------- Process Failure Finish --------------");
+        throw new RuntimeException("Exception occur for transaction test.");
     }
     
     private void deleteData(final List<Long> userIds) {
