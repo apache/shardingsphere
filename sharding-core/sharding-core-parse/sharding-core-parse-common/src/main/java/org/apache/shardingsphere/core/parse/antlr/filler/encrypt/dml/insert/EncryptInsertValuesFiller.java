@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.insert;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
@@ -39,7 +38,7 @@ import java.util.List;
 public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
     
     @Override
-    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
         insertStatement.getInsertValues().getValues().add(insertValue);

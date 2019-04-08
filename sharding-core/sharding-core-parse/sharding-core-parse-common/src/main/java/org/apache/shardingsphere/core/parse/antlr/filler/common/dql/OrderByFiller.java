@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
@@ -32,7 +31,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment> {
     
     @Override
-    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
             selectStatement.getOrderByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());

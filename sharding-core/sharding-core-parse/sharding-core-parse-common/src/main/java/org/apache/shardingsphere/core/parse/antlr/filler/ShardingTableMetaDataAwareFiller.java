@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 
 /**
- * SQL segment filler.
+ * Sharding table meta data aware.
  *
  * @author zhangliang
- * @author duhongjun
- * 
- * @param <T> type of SQL segment
  */
-public interface SQLSegmentFiller<T extends SQLSegment> {
+public interface ShardingTableMetaDataAwareFiller {
     
     /**
-     * Fill for sharding SQL segment to SQL statement.
+     * Set sharding table meta data.
      *
-     * @param sqlSegment SQL segment
-     * @param sqlStatement SQL statement
+     * @param metaData sharding table meta data
      */
-    void fill(T sqlSegment, SQLStatement sqlStatement);
+    void setShardingTableMetaData(ShardingTableMetaData metaData);
 }

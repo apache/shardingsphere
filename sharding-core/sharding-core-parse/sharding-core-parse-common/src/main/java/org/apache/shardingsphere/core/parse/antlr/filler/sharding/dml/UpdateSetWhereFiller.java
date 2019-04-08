@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
@@ -37,11 +37,12 @@ import java.util.Map.Entry;
  *
  * @author duhongjun
  */
+@Setter
 public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        super.fill(sqlSegment, sqlStatement, shardingTableMetaData);
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement) {
+        super.fill(sqlSegment, sqlStatement);
         UpdateSetWhereSegment updateSetWhereSegment = (UpdateSetWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         String updateTable = dmlStatement.getUpdateTableAlias().values().iterator().next();
@@ -55,8 +56,7 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
         dmlStatement.setDeleteStatement(false);
     }
     
-    private void fillEncryptCondition(final ColumnSegment columnSegment, final ExpressionSegment expressionSegment, 
-                                      final String updateTable, final DMLStatement dmlStatement) {
+    private void fillEncryptCondition(final ColumnSegment columnSegment, final ExpressionSegment expressionSegment, final String updateTable, final DMLStatement dmlStatement) {
         Column column = new Column(columnSegment.getName(), updateTable);
         Optional<SQLExpression> expression = expressionSegment.convertToSQLExpression(dmlStatement.getLogicSQL());
         Preconditions.checkState(expression.isPresent());

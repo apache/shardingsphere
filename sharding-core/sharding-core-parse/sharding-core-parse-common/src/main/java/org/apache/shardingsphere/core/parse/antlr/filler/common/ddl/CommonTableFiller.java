@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 public class CommonTableFiller implements SQLSegmentFiller<TableSegment> {
     
     @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
         sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias()));
     }
 }

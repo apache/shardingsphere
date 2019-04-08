@@ -58,8 +58,10 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
     
     private final ShardingRule shardingRule;
     
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement) {
         sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(buildCondition(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData).getAndConditions());
     }
     

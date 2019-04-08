@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -30,10 +32,13 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableSt
  *
  * @author duhongjun
  */
-public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment> {
+@Setter
+public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment>, ShardingTableMetaDataAwareFiller {
+    
+    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final ModifyColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ModifyColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         Optional<String> oldColumnName = sqlSegment.getOldColumnName();
         if (oldColumnName.isPresent()) {

@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -33,13 +34,15 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  */
 @Getter
 @Setter
-public class EncryptFromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, EncryptRuleAwareFiller {
+public class EncryptFromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private EncryptRule encryptRule;
     
+    private ShardingTableMetaData shardingTableMetaData;
+    
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        new EncryptOrConditionFiller(encryptRule).fill(sqlSegment.getConditions(), sqlStatement, shardingTableMetaData);
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement) {
+        new EncryptOrConditionFiller(encryptRule, shardingTableMetaData).fill(sqlSegment.getConditions(), sqlStatement);
         int count = 0;
         while (count < sqlSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();

@@ -87,6 +87,9 @@ public final class SQLStatementFillerEngine {
         if (filler instanceof EncryptRuleAwareFiller) {
             ((EncryptRuleAwareFiller) filler).setEncryptRule((EncryptRule) this.rule);
         }
-        filler.fill(sqlSegment, sqlStatement, shardingTableMetaData);
+        if (filler instanceof ShardingTableMetaDataAwareFiller) {
+            ((ShardingTableMetaDataAwareFiller) filler).setShardingTableMetaData(shardingTableMetaData);
+        }
+        filler.fill(sqlSegment, sqlStatement);
     }
 }

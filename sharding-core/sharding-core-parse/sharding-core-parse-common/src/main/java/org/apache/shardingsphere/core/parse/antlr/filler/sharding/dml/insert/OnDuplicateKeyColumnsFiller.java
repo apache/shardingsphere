@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
@@ -39,7 +38,7 @@ public final class OnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDup
     private ShardingRule shardingRule;
     
     @Override
-    public void fill(final OnDuplicateKeyColumnsSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final OnDuplicateKeyColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
         String tableName = sqlStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
             if (shardingRule.isShardingColumn(each.getName(), tableName)) {

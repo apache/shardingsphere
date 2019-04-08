@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
@@ -38,7 +37,7 @@ import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
 public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     
     @Override
-    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setLimit(new Limit());
         if (sqlSegment.getOffset().isPresent()) {

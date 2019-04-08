@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
@@ -38,7 +37,7 @@ public final class TableFiller implements SQLSegmentFiller<TableSegment>, Shardi
     private ShardingRule shardingRule;
     
     @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
         boolean fill = false;
         String tableName = sqlSegment.getName();
         if (shardingRule.contains(tableName) || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
