@@ -38,19 +38,15 @@ public final class TableFiller implements SQLSegmentFiller<TableSegment>, Shardi
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        boolean fill = false;
-        String tableName = sqlSegment.getName();
-        if (shardingRule.contains(tableName) || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
-                || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            fill = true;
-        } else {
-            if (!(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
-                fill = true;
-            }
-        }
-        if (fill) {
+        // FIXME judge sqlStatement.getTables().isEmpty() is for rename table, should not extract all table, should extract with correct clauses 
+        if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
             sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias()));
             sqlStatement.getSQLTokens().add(sqlSegment.getToken());
         }
+    }
+    
+    private boolean isTableInShardingRule(final String tableName) {
+        return shardingRule.contains(tableName) || shardingRule.findBindingTableRule(tableName).isPresent() || shardingRule.isBroadcastTable(tableName)
+                || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName());
     }
 }
