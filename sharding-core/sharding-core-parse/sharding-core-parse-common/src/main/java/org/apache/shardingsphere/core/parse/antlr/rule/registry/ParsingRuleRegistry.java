@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.rule.registry;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoader;

@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler;
+package org.apache.shardingsphere.core.parse.antlr.filler.api;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 
 /**
- * Sharding table meta data aware.
+ * SQL segment filler.
  *
  * @author zhangliang
+ * @author duhongjun
+ * 
+ * @param <T> type of SQL segment
  */
-public interface ShardingTableMetaDataAwareFiller {
+public interface SQLSegmentFiller<T extends SQLSegment> {
     
     /**
-     * Set sharding table meta data.
+     * Fill for sharding SQL segment to SQL statement.
      *
-     * @param metaData sharding table meta data
+     * @param sqlSegment SQL segment
+     * @param sqlStatement SQL statement
      */
-    void setShardingTableMetaData(ShardingTableMetaData metaData);
+    void fill(T sqlSegment, SQLStatement sqlStatement);
 }

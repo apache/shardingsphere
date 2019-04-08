@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;

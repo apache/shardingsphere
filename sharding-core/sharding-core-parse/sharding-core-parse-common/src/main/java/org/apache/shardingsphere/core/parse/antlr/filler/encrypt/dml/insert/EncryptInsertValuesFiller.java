@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.insert;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;

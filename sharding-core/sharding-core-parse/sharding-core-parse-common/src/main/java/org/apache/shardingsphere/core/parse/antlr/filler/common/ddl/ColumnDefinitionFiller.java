@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl;
 
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;

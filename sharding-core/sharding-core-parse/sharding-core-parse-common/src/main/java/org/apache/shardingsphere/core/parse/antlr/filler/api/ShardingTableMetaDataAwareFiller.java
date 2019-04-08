@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler;
+package org.apache.shardingsphere.core.parse.antlr.filler.api;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 
 /**
- * Sharding rule aware.
+ * Sharding table meta data aware.
  *
  * @author zhangliang
  */
-public interface ShardingRuleAwareFiller {
+public interface ShardingTableMetaDataAwareFiller {
     
     /**
-     * Set sharding rule.
-     * 
-     * @param shardingRule sharding rule
+     * Set sharding table meta data.
+     *
+     * @param metaData sharding table meta data
      */
-    void setShardingRule(ShardingRule shardingRule);
+    void setShardingTableMetaData(ShardingTableMetaData metaData);
 }

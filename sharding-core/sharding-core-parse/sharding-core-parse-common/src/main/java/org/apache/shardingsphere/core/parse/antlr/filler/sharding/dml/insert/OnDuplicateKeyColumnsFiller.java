@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAwareFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;

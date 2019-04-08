@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;

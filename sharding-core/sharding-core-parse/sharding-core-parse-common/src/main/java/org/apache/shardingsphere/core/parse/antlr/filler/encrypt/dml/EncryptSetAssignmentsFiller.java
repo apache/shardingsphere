@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.tcl;
 
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.SetAutoCommitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;

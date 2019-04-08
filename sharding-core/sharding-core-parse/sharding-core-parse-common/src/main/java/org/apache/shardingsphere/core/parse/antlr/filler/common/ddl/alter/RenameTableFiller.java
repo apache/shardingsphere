@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
 
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;

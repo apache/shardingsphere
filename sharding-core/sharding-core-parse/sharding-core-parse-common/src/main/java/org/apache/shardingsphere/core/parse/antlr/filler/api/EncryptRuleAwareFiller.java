@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler;
+package org.apache.shardingsphere.core.parse.antlr.filler.api;
 
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

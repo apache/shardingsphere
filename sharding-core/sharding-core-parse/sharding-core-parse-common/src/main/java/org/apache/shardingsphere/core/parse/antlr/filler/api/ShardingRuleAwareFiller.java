@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler;
+package org.apache.shardingsphere.core.parse.antlr.filler.api;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * SQL segment filler.
+ * Sharding rule aware.
  *
  * @author zhangliang
- * @author duhongjun
- * 
- * @param <T> type of SQL segment
  */
-public interface SQLSegmentFiller<T extends SQLSegment> {
+public interface ShardingRuleAwareFiller {
     
     /**
-     * Fill for sharding SQL segment to SQL statement.
-     *
-     * @param sqlSegment SQL segment
-     * @param sqlStatement SQL statement
+     * Set sharding rule.
+     * 
+     * @param shardingRule sharding rule
      */
-    void fill(T sqlSegment, SQLStatement sqlStatement);
+    void setShardingRule(ShardingRule shardingRule);
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;

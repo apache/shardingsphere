@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
