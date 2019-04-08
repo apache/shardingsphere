@@ -70,7 +70,7 @@ public final class CommonServiceImpl implements CommonService {
         System.out.println("-------------- Process Success Begin ---------------");
         InsertResult insertResult = insertData();
         printData();
-        deleteData(insertResult.getOrderIds(),insertResult.getCountryIds());
+        deleteData(insertResult.getOrderIds(), insertResult.getCountryIds());
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
@@ -83,11 +83,11 @@ public final class CommonServiceImpl implements CommonService {
         throw new RuntimeException("Exception occur for transaction test.");
     }
 
-    private InsertResult insertData(){
+    private InsertResult insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> orderIds = insertOrderData();
         List<Long> countryIds = insertCountryData();
-        return new InsertResult(orderIds,countryIds);
+        return new InsertResult(orderIds, countryIds);
     }
 
     private List<Long> insertOrderData() {
@@ -107,13 +107,13 @@ public final class CommonServiceImpl implements CommonService {
         return result;
     }
 
-    private List<Long> insertCountryData(){
+    private List<Long> insertCountryData() {
         List<Long> result = new ArrayList<>();
         Locale[] locales = Locale.getAvailableLocales();
         int i = 0;
-        for(Locale l:locales){
+        for (Locale l:locales) {
             final String country = l.getCountry();
-            if(country == null || "".equals(country)){
+            if (country == null || "".equals(country)) {
                 continue;
             }
             Country currCountry = new Country();
@@ -122,20 +122,20 @@ public final class CommonServiceImpl implements CommonService {
             currCountry.setCode(l.getCountry());
             countryRepository.insert(currCountry);
             result.add(currCountry.getId());
-            if(++i == 10){
+            if (++i == 10) {
                 break;
             }
         }
         return result;
     }
 
-    private void deleteData(final List<Long> orderIds,final List<Long> countryIds) {
+    private void deleteData(final List<Long> orderIds, final List<Long> countryIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
         }
-        for (Long each: countryIds){
+        for (Long each: countryIds) {
             countryRepository.delete(each);
         }
     }
@@ -156,13 +156,13 @@ public final class CommonServiceImpl implements CommonService {
         }
     }
 
-    private static class InsertResult{
+    private static class InsertResult {
 
         private List<Long> orderIds;
 
         private List<Long> countryIds;
 
-        public InsertResult(List<Long> orderIds, List<Long> countryIds) {
+        InsertResult(final List<Long> orderIds, final List<Long> countryIds) {
             this.orderIds = orderIds;
             this.countryIds = countryIds;
         }

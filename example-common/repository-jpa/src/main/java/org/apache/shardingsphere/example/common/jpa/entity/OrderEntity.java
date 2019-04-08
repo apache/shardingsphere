@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.common.jpa.entity;
 
-
 import org.apache.shardingsphere.example.common.entity.Order;
 
 import javax.persistence.Column;

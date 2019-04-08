@@ -35,7 +35,7 @@ public class Country implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -51,7 +51,7 @@ public class Country implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -59,7 +59,7 @@ public class Country implements Serializable {
         return language;
     }
 
-    public void setLanguage(String language) {
+    public void setLanguage(final String language) {
         this.language = language;
     }
 

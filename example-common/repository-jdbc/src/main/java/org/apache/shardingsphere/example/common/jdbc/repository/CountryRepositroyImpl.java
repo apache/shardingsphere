@@ -68,7 +68,7 @@ public class CountryRepositroyImpl implements CountryRepository {
     }
 
     @Override
-    public Long insert(Country country) {
+    public Long insert(final Country country) {
         String sql = "INSERT INTO t_country (name, code, language) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -77,7 +77,7 @@ public class CountryRepositroyImpl implements CountryRepository {
             preparedStatement.setString(3, country.getLanguage());
             preparedStatement.executeUpdate();
             ResultSet rs = connection.createStatement().executeQuery("SELECT @@IDENTITY");
-            while(rs.next()){
+            while (rs.next()) {
                 country.setId(rs.getLong("@@IDENTITY"));
             }
         } catch (final SQLException ignored) {
@@ -86,7 +86,7 @@ public class CountryRepositroyImpl implements CountryRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         String sql = "DELETE FROM t_country WHERE id =?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -102,7 +102,7 @@ public class CountryRepositroyImpl implements CountryRepository {
         return getCountries(sql);
     }
 
-    private List<Country> getCountries(String sql) {
+    private List<Country> getCountries(final String sql) {
         List<Country> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
