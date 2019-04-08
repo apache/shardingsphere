@@ -66,8 +66,8 @@ public class UserCommonServiceImpl implements UseService {
         for (int i = 1; i <= 10; i++) {
             UserEntity user = new UserEntity();
             user.setUserId(i);
-            user.setUserName("test_" + i);
-            user.setPwd("pwd" + i);
+            user.setUserName("test_jpa_" + i);
+            user.setPwd("pwd_jpa_" + i);
             userRepository.insert(user);
             result.add((long) user.getUserId());
         }

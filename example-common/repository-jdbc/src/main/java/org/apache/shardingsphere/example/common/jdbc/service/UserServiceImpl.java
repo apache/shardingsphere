@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.common.mybatis.service;
+package org.apache.shardingsphere.example.common.jdbc.service;
 
 import org.apache.shardingsphere.example.common.entity.User;
 import org.apache.shardingsphere.example.common.repository.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.apache.shardingsphere.example.common.service.CommonService;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class SpringUserServiceImpl implements UserService {
+public final class UserServiceImpl implements CommonService {
     
-    @Resource
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     
     @Override
     public void initEnvironment() {
@@ -44,7 +44,6 @@ public class SpringUserServiceImpl implements UserService {
     }
     
     @Override
-    @Transactional
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> userIds = insertData();
@@ -54,26 +53,26 @@ public class SpringUserServiceImpl implements UserService {
         System.out.println("-------------- Process Success Finish --------------");
     }
     
-    private List<Long> insertData() {
-        System.out.println("---------------------------- Insert Data ----------------------------");
-        List<Long> result = new ArrayList<>(10);
-        for (int i = 1; i <= 10; i++) {
-            User user = new User();
-            user.setUserId(i);
-            user.setUserName("test_mybatis_" + i);
-            user.setPwd("pwd_mybatis_" + i);
-            userRepository.insert(user);
-            result.add((long) user.getUserId());
-        }
-        return result;
-    }
-    
     @Override
     public void processFailure() {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
+    }
+    
+    private List<Long> insertData() {
+        System.out.println("---------------------------- Insert Data ----------------------------");
+        List<Long> result = new ArrayList<>(10);
+        for (int i = 1; i <= 10; i++) {
+            User user = new User();
+            user.setUserId(i);
+            user.setUserName("test_" + i);
+            user.setPwd("pwd" + i);
+            userRepository.insert(user);
+            result.add((long) user.getUserId());
+        }
+        return result;
     }
     
     private void deleteData(final List<Long> userIds) {
