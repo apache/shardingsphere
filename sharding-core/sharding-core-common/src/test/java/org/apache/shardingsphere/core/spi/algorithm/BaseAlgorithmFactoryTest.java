@@ -36,20 +36,20 @@ public final class BaseAlgorithmFactoryTest {
     public void assertNewAlgorithmByType() {
         Properties properties = new Properties();
         properties.setProperty("key", "value");
-        BaseAlgorithmFixture actual = BaseAlgorithmFactoryFixture.getInstance().newAlgorithm("FIXTURE", properties);
+        BaseAlgorithmFixture actual = BaseAlgorithmFactoryFixture.getInstance().newService("FIXTURE", properties);
         assertThat(actual, instanceOf(BaseAlgorithmFixtureImpl.class));
         assertThat(actual.getProperties().getProperty("key"), is("value"));
     }
     
     @Test
     public void assertNewAlgorithmByDefault() {
-        BaseAlgorithmFixture actual = BaseAlgorithmFactoryFixture.getInstance().newAlgorithm();
+        BaseAlgorithmFixture actual = BaseAlgorithmFactoryFixture.getInstance().newService();
         assertThat(actual, instanceOf(BaseAlgorithmFixtureImpl.class));
         assertTrue(actual.getProperties().isEmpty());
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertNewAlgorithmFailure() {
-        BaseAlgorithmFactoryFixture.getInstance().newAlgorithm("INVALID", new Properties());
+        BaseAlgorithmFactoryFixture.getInstance().newService("INVALID", new Properties());
     }
 }

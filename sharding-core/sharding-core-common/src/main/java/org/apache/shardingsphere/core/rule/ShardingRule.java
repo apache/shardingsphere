@@ -128,7 +128,7 @@ public class ShardingRule implements BaseRule {
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         ShardingKeyGeneratorFactory factory = ShardingKeyGeneratorFactory.getInstance();
         return containsKeyGeneratorConfiguration(keyGeneratorConfiguration)
-                ? factory.newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProperties()) : factory.newAlgorithm();
+                ? factory.newService(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProperties()) : factory.newService();
     }
     
     private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {

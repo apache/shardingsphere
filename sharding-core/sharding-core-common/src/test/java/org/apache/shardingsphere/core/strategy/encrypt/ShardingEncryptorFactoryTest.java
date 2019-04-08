@@ -32,16 +32,16 @@ public final class ShardingEncryptorFactoryTest {
     
     @Test
     public void assertNewMD5Encryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("MD5", new Properties()), instanceOf(MD5ShardingEncryptor.class));
+        assertThat(ShardingEncryptorFactory.getInstance().newService("MD5", new Properties()), instanceOf(MD5ShardingEncryptor.class));
     }
     
     @Test
     public void assertNewAESEncryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("AES", new Properties()), instanceOf(AESShardingEncryptor.class));
+        assertThat(ShardingEncryptorFactory.getInstance().newService("AES", new Properties()), instanceOf(AESShardingEncryptor.class));
     }
     
     @Test
     public void assertNewDefaultEncryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm(), instanceOf(TestShardingEncryptor.class));
+        assertThat(ShardingEncryptorFactory.getInstance().newService(), instanceOf(TestShardingEncryptor.class));
     }
 }

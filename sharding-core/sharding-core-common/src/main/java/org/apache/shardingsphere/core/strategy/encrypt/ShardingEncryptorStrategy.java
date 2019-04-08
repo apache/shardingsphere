@@ -48,7 +48,7 @@ public final class ShardingEncryptorStrategy {
         this.assistedQueryColumns = Strings.isNullOrEmpty(config.getAssistedQueryColumns())
                 ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(config.getAssistedQueryColumns());
         checkEncryptorConfiguration(columns, assistedQueryColumns);
-        shardingEncryptor = ShardingEncryptorFactory.getInstance().newAlgorithm(config.getType(), config.getProperties());
+        shardingEncryptor = ShardingEncryptorFactory.getInstance().newService(config.getType(), config.getProperties());
         shardingEncryptor.init();
     }
     

@@ -29,16 +29,16 @@ public final class ShardingKeyGeneratorFactoryTest {
     
     @Test
     public void assertNewSnowflakeKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(ShardingKeyGeneratorFactory.getInstance().newService("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
     
     @Test
     public void assertNewUUIDKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
+        assertThat(ShardingKeyGeneratorFactory.getInstance().newService("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
     }
     
     @Test
     public void assertNewDefaultKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm(), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(ShardingKeyGeneratorFactory.getInstance().newService(), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
 }

@@ -48,7 +48,7 @@ public class MasterSlaveRule {
         this.name = name;
         this.masterDataSourceName = masterDataSourceName;
         this.slaveDataSourceNames = slaveDataSourceNames;
-        this.loadBalanceAlgorithm = null == loadBalanceAlgorithm ? MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm() : loadBalanceAlgorithm;
+        this.loadBalanceAlgorithm = null == loadBalanceAlgorithm ? MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newService() : loadBalanceAlgorithm;
         masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, 
                 new LoadBalanceStrategyConfiguration(this.loadBalanceAlgorithm.getType(), this.loadBalanceAlgorithm.getProperties()));
     }
@@ -63,7 +63,7 @@ public class MasterSlaveRule {
     
     private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         MasterSlaveLoadBalanceAlgorithmFactory factory = MasterSlaveLoadBalanceAlgorithmFactory.getInstance();
-        return null == loadBalanceStrategyConfiguration ? factory.newAlgorithm() : factory.newAlgorithm(loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
+        return null == loadBalanceStrategyConfiguration ? factory.newService() : factory.newService(loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
     }
     
     /**

@@ -141,7 +141,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
 //        if (!Strings.isNullOrEmpty(loadBalanceAlgorithmRef)) {
 //            factory.addConstructorArgReference(loadBalanceAlgorithmRef);
 //        } else {
-//            factory.addConstructorArgValue(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm());
+//            factory.addConstructorArgValue(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newService());
 //        }
     }
     

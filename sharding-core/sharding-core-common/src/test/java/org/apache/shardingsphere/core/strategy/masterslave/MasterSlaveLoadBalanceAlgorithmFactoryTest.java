@@ -29,16 +29,16 @@ public final class MasterSlaveLoadBalanceAlgorithmFactoryTest {
     
     @Test
     public void assertNewRoundRobinMasterSlaveLoadBalanceAlgorithm() {
-        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties()), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newService("ROUND_ROBIN", new Properties()), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
     public void assertNewRandomMasterSlaveLoadBalanceAlgorithm() {
-        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("RANDOM", new Properties()), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newService("RANDOM", new Properties()), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
     public void assertNewDefaultMasterSlaveLoadBalanceAlgorithm() {
-        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newService(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
 }
