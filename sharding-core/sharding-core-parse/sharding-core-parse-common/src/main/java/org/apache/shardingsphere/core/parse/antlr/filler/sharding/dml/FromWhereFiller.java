@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  */
 @Getter
 @Setter
-public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, ShardingRuleAware {
+public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, ShardingRuleAwareFiller {
     
     private ShardingRule shardingRule;
     

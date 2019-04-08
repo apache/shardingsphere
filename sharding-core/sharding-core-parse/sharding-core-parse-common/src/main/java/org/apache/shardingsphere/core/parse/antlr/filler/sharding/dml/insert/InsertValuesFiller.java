@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -47,7 +47,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Setter
-public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAware {
+public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller {
     
     private ShardingRule shardingRule;
     

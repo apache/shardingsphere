@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.EncryptRuleAware;
+import org.apache.shardingsphere.core.parse.antlr.filler.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  */
 @Getter
 @Setter
-public class EncryptFromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, EncryptRuleAware {
+public class EncryptFromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, EncryptRuleAwareFiller {
     
     private EncryptRule encryptRule;
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.select;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.OrConditionFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author duhongjun
  */
 @Setter
-public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryConditionSegment>, ShardingRuleAware {
+public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryConditionSegment>, ShardingRuleAwareFiller {
     
     private ShardingRule shardingRule;
     
