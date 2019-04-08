@@ -19,17 +19,39 @@ package org.apache.shardingsphere.example.common.repository;
 
 import java.util.List;
 
-public interface CommonRepository<T> {
+public interface CommonRepository<T, P> {
     
+    /**
+     * Create table if not exist.
+     */
     void createTableIfNotExists();
     
+    /**
+     * Drop table.
+     */
     void dropTable();
     
+    /**
+     * Truncate table.
+     */
     void truncateTable();
     
-    Long insert(T entity);
+    /**
+     * insert one entity.
+     * @param entity entity
+     * @return primary key
+     */
+    P insert(T entity);
     
-    void delete(Long id);
+    /**
+     * Do delete.
+     * @param key key
+     */
+    void delete(P key);
     
+    /**
+     * select all.
+     * @return list of entity
+     */
     List<T> selectAll();
 }
