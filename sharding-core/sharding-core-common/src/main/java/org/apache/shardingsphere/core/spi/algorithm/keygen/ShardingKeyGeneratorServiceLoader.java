@@ -27,24 +27,13 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
  * @author zhangliang
  * @author panjuan
  */
-public final class ShardingKeyGeneratorFactory extends TypeBasedSPIServiceLoader<ShardingKeyGenerator> {
-    
-    private static final ShardingKeyGeneratorFactory INSTANCE = new ShardingKeyGeneratorFactory();
+public final class ShardingKeyGeneratorServiceLoader extends TypeBasedSPIServiceLoader<ShardingKeyGenerator> {
     
     static {
         NewInstanceServiceLoader.register(ShardingKeyGenerator.class);
     }
     
-    private ShardingKeyGeneratorFactory() {
+    public ShardingKeyGeneratorServiceLoader() {
         super(ShardingKeyGenerator.class);
-    }
-    
-    /**
-     * Get instance of key generator factory.
-     * 
-     * @return instance of key generator factory
-     */
-    public static ShardingKeyGeneratorFactory getInstance() {
-        return INSTANCE;
     }
 }
