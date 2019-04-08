@@ -65,7 +65,7 @@ public final class QueryResultMetaData {
     private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
         Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex).toLowerCase(), columnIndex);
+            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
     }
@@ -113,7 +113,7 @@ public final class QueryResultMetaData {
      * @return column name
      */
     public Integer getColumnIndex(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel.toLowerCase())).get(0);
+        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
     }
     
     /**
