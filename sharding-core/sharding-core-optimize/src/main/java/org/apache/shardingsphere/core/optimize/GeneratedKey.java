@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.optimize;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKeyCondition;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.LinkedList;
@@ -58,7 +58,7 @@ public final class GeneratedKey {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         return generateKeyColumnName.isPresent()
-                ? Optional.of(createGeneratedKey(shardingRule, generateKeyColumnName.get(), tableName, insertStatement.getInsertValues().getInsertValues().size())) : Optional.<GeneratedKey>absent();
+                ? Optional.of(createGeneratedKey(shardingRule, generateKeyColumnName.get(), tableName, insertStatement.getInsertValues().getValues().size())) : Optional.<GeneratedKey>absent();
     }
     
     private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final String generateKeyColumnName, final String generateKeyTableName, final int insertValueSize) {

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

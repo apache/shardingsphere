@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLStatementRule;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 
 /**
  * SQL statement optimizer engine.

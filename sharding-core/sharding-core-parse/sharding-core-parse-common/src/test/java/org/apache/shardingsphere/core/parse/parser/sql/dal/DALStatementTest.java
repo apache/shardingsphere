@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.parser.sql.dal;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.junit.Test;

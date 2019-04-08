@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.parser.clause;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Arrays;
@@ -85,7 +85,6 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
      * @param insertStatement insert statement
      */
     private void parseValues(final InsertStatement insertStatement) {
-        int endPosition;
         int startParametersIndex;
         insertStatement.getInsertValuesToken().setType(DefaultKeyword.VALUES);
         do {
@@ -115,14 +114,12 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
                 }
                 count++;
             }
-            endPosition = lexerEngine.getCurrentToken().getEndPosition();
             lexerEngine.accept(Symbol.RIGHT_PAREN);
-            InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, insertStatement.getParametersIndex() - startParametersIndex);
+            InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex() - startParametersIndex);
             insertValue.getColumnValues().addAll(sqlExpressions);
-            insertStatement.getInsertValues().getInsertValues().add(insertValue);
+            insertStatement.getInsertValues().getValues().add(insertValue);
             insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        insertStatement.setInsertValuesListLastIndex(endPosition - 1);
     }
     
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {

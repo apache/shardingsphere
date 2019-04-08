@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ColumnExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.column.InsertDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertDuplicateKeyColumnsSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -44,13 +44,17 @@ public final class InsertDuplicateKeyColumnsExtractor implements OptionalSQLSegm
         if (!onDuplicateKeyClauseNode.isPresent()) {
             return Optional.absent();
         }
+        return Optional.of(new InsertDuplicateKeyColumnsSegment(extractColumnSegments(onDuplicateKeyClauseNode.get())));
+    }
+    
+    private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext onDuplicateKeyClauseNode) {
         Collection<ColumnSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateKeyClauseNode.get(), RuleName.COLUMN_NAME)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateKeyClauseNode, RuleName.COLUMN_NAME)) {
             Optional<ColumnSegment> columnSegment = columnExtractor.extract(each);
             if (columnSegment.isPresent()) {
                 result.add(columnSegment.get());
             }
         }
-        return Optional.of(new InsertDuplicateKeyColumnsSegment(result));
+        return result;
     }
 }

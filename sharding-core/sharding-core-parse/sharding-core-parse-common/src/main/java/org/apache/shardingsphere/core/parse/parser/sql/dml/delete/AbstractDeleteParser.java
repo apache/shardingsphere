@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.core.parse.parser.sql.dml.delete;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.parser.clause.facade.AbstractDeleteClauseParserFacade;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLParser;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collections;

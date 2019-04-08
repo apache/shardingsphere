@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.FromWhereSegment;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

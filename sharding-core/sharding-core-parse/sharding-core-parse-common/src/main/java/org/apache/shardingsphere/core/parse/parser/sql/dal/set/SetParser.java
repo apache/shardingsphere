@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.parser.sql.dal.set;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLParser;
 
 /**

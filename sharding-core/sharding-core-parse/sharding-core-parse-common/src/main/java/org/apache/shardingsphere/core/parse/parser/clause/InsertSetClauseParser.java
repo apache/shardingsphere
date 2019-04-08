@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.parser.clause;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpressio
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
@@ -95,10 +95,8 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
                 insertStatement.getRouteConditions().add(new Condition(column, right));
             }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        int endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, insertStatement.getParametersIndex());
-        insertStatement.getInsertValues().getInsertValues().add(insertValue);
-        insertStatement.setInsertValuesListLastIndex(endPosition - 1);
+        InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex());
+        insertStatement.getInsertValues().getValues().add(insertValue);
     }
     
     private void removeUnnecessaryToken(final InsertStatement insertStatement) {

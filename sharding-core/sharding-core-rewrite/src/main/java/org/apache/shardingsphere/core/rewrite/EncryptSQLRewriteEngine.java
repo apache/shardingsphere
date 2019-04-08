@@ -27,15 +27,15 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.ItemsToken;
@@ -164,7 +164,7 @@ public final class EncryptSQLRewriteEngine {
         }
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
                 insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
-        appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
+        appendRest(sqlBuilder, count, originalSQL.length());
     }
     
     private void encryptInsertColumnValue(final Set<String> columnNames, final InsertColumnValue insertColumnValue) {

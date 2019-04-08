@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parse.parser.token.SQLToken;

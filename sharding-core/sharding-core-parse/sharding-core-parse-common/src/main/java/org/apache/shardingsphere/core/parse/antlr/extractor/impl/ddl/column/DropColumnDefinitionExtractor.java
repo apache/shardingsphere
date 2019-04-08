@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.core.parse.antlr.extractor.CollectionSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.definition.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;

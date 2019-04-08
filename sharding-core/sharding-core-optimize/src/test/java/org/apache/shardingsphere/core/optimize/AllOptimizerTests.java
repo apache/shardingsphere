@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize;
 
+import org.apache.shardingsphere.core.optimize.engine.encrypt.EncryptInsertOptimizeEngineTest;
 import org.apache.shardingsphere.core.optimize.engine.sharding.InsertOptimizeEngineTest;
 import org.apache.shardingsphere.core.optimize.engine.sharding.QueryOptimizeEngineTest;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValuesTest;
@@ -28,6 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         InsertOptimizeEngineTest.class, 
         QueryOptimizeEngineTest.class,
+        EncryptInsertOptimizeEngineTest.class,
         InsertColumnValuesTest.class,
         GeneratedKeyTest.class
 })

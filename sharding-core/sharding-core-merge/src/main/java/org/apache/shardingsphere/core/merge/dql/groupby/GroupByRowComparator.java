@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.orderby.CompareUtil;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 
 import java.util.Comparator;
 import java.util.List;

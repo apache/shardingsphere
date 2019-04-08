@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.result;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import lombok.Getter;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
@@ -58,22 +57,50 @@ public final class InsertColumnValues {
      * @param columnValues column values
      * @param columnParameters column parameters
      */
-    public void addInsertColumnValue(final List<SQLExpression> columnValues, final List<Object> columnParameters) {
+    public void addInsertColumnValue(final SQLExpression[] columnValues, final Object[] columnParameters) {
         this.columnValues.add(new InsertColumnValue(columnValues, columnParameters));
     }
     
     @Getter
     public final class InsertColumnValue {
         
-        private final List<SQLExpression> values = new LinkedList<>();
+        private final SQLExpression[] values;
         
-        private final List<Object> parameters = new LinkedList<>();
+        private final Object[] parameters;
         
         private final List<DataNode> dataNodes = new LinkedList<>();
         
-        public InsertColumnValue(final List<SQLExpression> values, final List<Object> parameters) {
-            this.values.addAll(values);
-            this.parameters.addAll(parameters);
+        public InsertColumnValue(final SQLExpression[] values, final Object[] parameters) {
+            this.values = values;
+            this.parameters = parameters;
+        }
+    
+        /**
+         * Add column value.
+         * 
+         * @param sqlExpression sql expression
+         */
+        public void addColumnValue(final SQLExpression sqlExpression) {
+            values[getCurrentIndex(values)] = sqlExpression;
+        }
+    
+        /**
+         * Add column parameter.
+         *
+         * @param parameter parameter 
+         */
+        public void addColumnParameter(final Object parameter) {
+            parameters[getCurrentIndex(parameters)] = parameter;
+        }
+        
+        private int getCurrentIndex(final Object[] array) {
+            int count = 0;
+            for (Object each : array) {
+                if (null != each) {
+                    count++;
+                }
+            }
+            return count;
         }
         
         /**
@@ -83,12 +110,12 @@ public final class InsertColumnValues {
          * @param columnValue column value
          */
         public void setColumnValue(final String columnName, final Object columnValue) {
-            SQLExpression sqlExpression = values.get(getColumnIndex(columnName));
+            SQLExpression sqlExpression = values[getColumnIndex(columnName)];
             if (sqlExpression instanceof SQLPlaceholderExpression) {
-                parameters.set(getParameterIndex(sqlExpression), columnValue);
+                parameters[getParameterIndex(sqlExpression)] = columnValue;
             } else {
                 SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
-                values.set(getColumnIndex(columnName), columnExpression);
+                values[getColumnIndex(columnName)] = columnExpression;
             }
         }
     
@@ -97,14 +124,15 @@ public final class InsertColumnValues {
         }
     
         private int getParameterIndex(final SQLExpression sqlExpression) {
-            List<SQLExpression> sqlPlaceholderExpressions = new ArrayList<>(Collections2.filter(values, new Predicate<SQLExpression>() {
-                
-                @Override
-                public boolean apply(final SQLExpression input) {
-                    return input instanceof SQLPlaceholderExpression;
+            int result = 0;
+            for (SQLExpression each : values) {
+                if (sqlExpression == each) {
+                    return result;
+                } else if (each instanceof SQLPlaceholderExpression) {
+                    result++;
                 }
-            }));
-            return sqlPlaceholderExpressions.indexOf(sqlExpression);
+            }
+            throw new ShardingException("Can not get parameter index.");
         }
         
         /**
@@ -114,9 +142,9 @@ public final class InsertColumnValues {
          * @return column value
          */
         public Object getColumnValue(final String columnName) {
-            SQLExpression sqlExpression = values.get(getColumnIndex(columnName));
+            SQLExpression sqlExpression = values[getColumnIndex(columnName)];
             if (sqlExpression instanceof SQLPlaceholderExpression) {
-                return parameters.get(getParameterIndex(sqlExpression));
+                return parameters[getParameterIndex(sqlExpression)];
             } else if (sqlExpression instanceof SQLTextExpression) {
                 return ((SQLTextExpression) sqlExpression).getText();
             } else {
@@ -151,7 +179,7 @@ public final class InsertColumnValues {
         }
         
         private String getColumnSQLExpressionValue(final int columnValueIndex) {
-            SQLExpression sqlExpression = values.get(columnValueIndex);
+            SQLExpression sqlExpression = values[columnValueIndex];
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 return "?";
             } else if (sqlExpression instanceof SQLTextExpression) {

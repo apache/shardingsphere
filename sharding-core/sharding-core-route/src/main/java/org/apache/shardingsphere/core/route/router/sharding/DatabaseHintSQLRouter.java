@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.hint.DatabaseHintRoutingEngine;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.parser.dialect.oracle.clause;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.oracle.OracleKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -24,7 +25,6 @@ import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.parser.clause.SQLClauseParser;
 import org.apache.shardingsphere.core.parse.parser.clause.expression.BasicExpressionParser;
 import org.apache.shardingsphere.core.parse.parser.dialect.ExpressionParserFactory;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 
 /**
  * Select for clause parser for Oracle.

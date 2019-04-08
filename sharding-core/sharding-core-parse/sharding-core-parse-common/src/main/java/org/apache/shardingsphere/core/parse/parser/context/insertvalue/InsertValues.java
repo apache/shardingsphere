@@ -32,5 +32,5 @@ import java.util.List;
 @ToString
 public final class InsertValues {
     
-    private final List<InsertValue> insertValues = new LinkedList<>();
+    private final List<InsertValue> values = new LinkedList<>();
 }

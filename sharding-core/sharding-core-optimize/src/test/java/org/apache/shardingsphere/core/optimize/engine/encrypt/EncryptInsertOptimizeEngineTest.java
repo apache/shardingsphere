@@ -23,13 +23,13 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfigurat
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parse.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -43,6 +43,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class EncryptInsertOptimizeEngineTest {
     
@@ -77,11 +78,12 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement insertStatement = createInsertStatementWithValuesWithPlaceHolderWithEncrypt();
         EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithValues);
         OptimizeResult actual = optimizeEngine.optimize();
+        assertTrue(actual.getInsertColumnValues().isPresent());
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(2));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), is((Object) 1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[0], is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[1], is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("(?, ?)"));
     
     }
@@ -93,10 +95,10 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(34, DefaultKeyword.VALUES));
         result.getColumns().add(new Column("col1", "t_encrypt"));
         result.getColumns().add(new Column("col2", "t_encrypt"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 2);
+        InsertValue insertValue = new InsertValue(2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
     
@@ -105,9 +107,10 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement insertStatement = createInsertStatementWithValuesWithoutPlaceHolderWithQueryEncrypt();
         EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithoutValues);
         OptimizeResult actual = optimizeEngine.optimize();
+        assertTrue(actual.getInsertColumnValues().isPresent());
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(4));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(0));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col1"), is((Object) 1));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col2"), is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("query1"), is((Object) 1));
@@ -123,10 +126,10 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(40, DefaultKeyword.VALUES));
         result.getColumns().add(new Column("col1", "t_query_encrypt"));
         result.getColumns().add(new Column("col2", "t_query_encrypt"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.VALUES, 0);
+        InsertValue insertValue = new InsertValue(0);
         insertValue.getColumnValues().add(new SQLNumberExpression(1));
         insertValue.getColumnValues().add(new SQLNumberExpression(2));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
     
@@ -135,9 +138,10 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement insertStatement = createInsertStatementWithSetWithoutPlaceHolderWithEncrypt();
         EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithoutValues);
         OptimizeResult actual = optimizeEngine.optimize();
+        assertTrue(actual.getInsertColumnValues().isPresent());
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(0));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(0));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col1"), is((Object) 1));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getColumnValue("col2"), is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("col1 = 1, col2 = 2"));
@@ -151,10 +155,10 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(34, DefaultKeyword.SET));
         result.getColumns().add(new Column("col1", "t_encrypt"));
         result.getColumns().add(new Column("col2", "t_encrypt"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 0);
+        InsertValue insertValue = new InsertValue(0);
         insertValue.getColumnValues().add(new SQLNumberExpression(1));
         insertValue.getColumnValues().add(new SQLNumberExpression(2));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
     
@@ -163,13 +167,14 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement insertStatement = createInsertStatementWithSetWithPlaceHolderWithQueryEncrypt();
         EncryptInsertOptimizeEngine optimizeEngine = new EncryptInsertOptimizeEngine(encryptRule, insertStatement, parametersWithValues);
         OptimizeResult actual = optimizeEngine.optimize();
+        assertTrue(actual.getInsertColumnValues().isPresent());
         assertThat(actual.getInsertColumnValues().get().getColumnNames().size(), is(4));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().size(), is(1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().size(), is(4));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(0), is((Object) 1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(1), is((Object) 2));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(2), is((Object) 1));
-        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().get(3), is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters().length, is(4));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[0], is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[1], is((Object) 2));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[2], is((Object) 1));
+        assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).getParameters()[3], is((Object) 2));
         assertThat(actual.getInsertColumnValues().get().getColumnValues().get(0).toString(), is("col1 = ?, col2 = ?, query1 = ?, query2 = ?"));
         
     }
@@ -181,10 +186,10 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(40, DefaultKeyword.SET));
         result.getColumns().add(new Column("col1", "t_query_encrypt"));
         result.getColumns().add(new Column("col2", "t_query_encrypt"));
-        InsertValue insertValue = new InsertValue(DefaultKeyword.SET, 2);
+        InsertValue insertValue = new InsertValue(2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
-        result.getInsertValues().getInsertValues().add(insertValue);
+        result.getInsertValues().getValues().add(insertValue);
         return result;
     }
 }

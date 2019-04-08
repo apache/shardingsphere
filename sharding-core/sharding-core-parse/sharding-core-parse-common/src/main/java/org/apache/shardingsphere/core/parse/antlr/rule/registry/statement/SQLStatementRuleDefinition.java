@@ -22,12 +22,12 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.parse.antlr.extractor.SQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.antlr.rule.jaxb.entity.statement.SQLStatementRuleEntity;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.extractor.ExtractorRuleDefinition;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

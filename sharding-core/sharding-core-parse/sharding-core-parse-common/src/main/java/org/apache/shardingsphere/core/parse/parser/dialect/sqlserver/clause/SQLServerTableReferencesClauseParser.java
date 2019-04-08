@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.parser.dialect.sqlserver.clause;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.sqlserver.SQLServerKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.parser.clause.TableReferencesClauseParser;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

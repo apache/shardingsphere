@@ -21,8 +21,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.groupby.GroupByAssert;
@@ -35,8 +37,6 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.table.AlterTableAs
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.token.TokenAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 
