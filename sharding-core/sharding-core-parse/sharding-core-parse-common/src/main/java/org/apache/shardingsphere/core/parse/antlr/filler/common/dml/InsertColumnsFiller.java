@@ -46,25 +46,22 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {
-                fill(insertStatement);
+                fillFromMetaData(insertStatement);
             } else {
-                fill(sqlSegment, insertStatement);
+                fillFromSQL(sqlSegment, insertStatement);
             }
             insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), DefaultKeyword.VALUES));
         }
     }
     
-    private void fill(final InsertStatement insertStatement) {
+    private void fillFromMetaData(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        if (shardingTableMetaData.containsTable(tableName)) {
-            for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-                Column column = new Column(each, tableName);
-                insertStatement.getColumns().add(column);
-            }
+        for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
+            insertStatement.getColumns().add(new Column(each, tableName));
         }
     }
     
-    private void fill(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
+    private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
             insertStatement.getColumns().add(new Column(each.getName(), tableName));
