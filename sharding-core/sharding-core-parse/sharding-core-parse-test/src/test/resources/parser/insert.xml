@@ -606,4 +606,16 @@
         </condition-contexts>
     </parser-result>
     -->
+    <parser-result sql-case-id="insert_with_one_auto_increment_column">
+        <tables>
+            <table name="t_auto_increment_table" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_auto_increment_table" length="22" />
+            <insert-values-token begin-position="35" type="VALUES" />
+        </tokens>
+        <or-condition>
+            <and-condition/>
+        </or-condition>
+    </parser-result>
 </parser-result-sets>
