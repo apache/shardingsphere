@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorFactory;
+import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Collections;
@@ -48,7 +48,7 @@ public final class ShardingEncryptorStrategy {
         this.assistedQueryColumns = Strings.isNullOrEmpty(config.getAssistedQueryColumns())
                 ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(config.getAssistedQueryColumns());
         checkEncryptorConfiguration(columns, assistedQueryColumns);
-        shardingEncryptor = ShardingEncryptorFactory.getInstance().newService(config.getType(), config.getProperties());
+        shardingEncryptor = new ShardingEncryptorServiceLoader().newService(config.getType(), config.getProperties());
         shardingEncryptor.init();
     }
     

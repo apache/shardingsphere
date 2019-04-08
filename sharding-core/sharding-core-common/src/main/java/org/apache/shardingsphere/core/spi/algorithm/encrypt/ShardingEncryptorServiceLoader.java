@@ -22,28 +22,18 @@ import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 /**
- * Sharding encryptor factory.
+ * Sharding encryptor service loader.
  * 
  * @author panjuan
  */
-public final class ShardingEncryptorFactory extends TypeBasedSPIServiceLoader<ShardingEncryptor> {
-    
-    private static final ShardingEncryptorFactory INSTANCE = new ShardingEncryptorFactory();
+public final class ShardingEncryptorServiceLoader extends TypeBasedSPIServiceLoader<ShardingEncryptor> {
     
     static {
         NewInstanceServiceLoader.register(ShardingEncryptor.class);
     }
     
-    private ShardingEncryptorFactory() {
+    public ShardingEncryptorServiceLoader() {
         super(ShardingEncryptor.class);
     }
-    
-    /**
-     * Get instance of encryptor factory.
-     *
-     * @return instance of encryptor factory
-     */
-    public static ShardingEncryptorFactory getInstance() {
-        return INSTANCE;
-    }
 }
+

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.encrypt;
 
-import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorFactory;
+import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.core.strategy.encrypt.fixture.TestShardingEncryptor;
 import org.apache.shardingsphere.core.strategy.encrypt.impl.AESShardingEncryptor;
 import org.apache.shardingsphere.core.strategy.encrypt.impl.MD5ShardingEncryptor;
@@ -28,20 +28,22 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingEncryptorFactoryTest {
+public final class ShardingEncryptorServiceLoaderTest {
+    
+    private ShardingEncryptorServiceLoader serviceLoader = new ShardingEncryptorServiceLoader();
     
     @Test
     public void assertNewMD5Encryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newService("MD5", new Properties()), instanceOf(MD5ShardingEncryptor.class));
+        assertThat(serviceLoader.newService("MD5", new Properties()), instanceOf(MD5ShardingEncryptor.class));
     }
     
     @Test
     public void assertNewAESEncryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newService("AES", new Properties()), instanceOf(AESShardingEncryptor.class));
+        assertThat(serviceLoader.newService("AES", new Properties()), instanceOf(AESShardingEncryptor.class));
     }
     
     @Test
     public void assertNewDefaultEncryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newService(), instanceOf(TestShardingEncryptor.class));
+        assertThat(serviceLoader.newService(), instanceOf(TestShardingEncryptor.class));
     }
 }
