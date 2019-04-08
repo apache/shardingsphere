@@ -20,7 +20,6 @@ package org.apache.shardingsphere.example.common.mybatis.service;
 import org.apache.shardingsphere.example.common.entity.User;
 import org.apache.shardingsphere.example.common.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ public class SpringUserServiceImpl implements UserService {
     }
     
     @Override
-    @Transactional
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> userIds = insertData();
