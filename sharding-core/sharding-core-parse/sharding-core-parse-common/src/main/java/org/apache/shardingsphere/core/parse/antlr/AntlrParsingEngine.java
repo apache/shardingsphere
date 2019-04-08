@@ -65,12 +65,12 @@ public final class AntlrParsingEngine implements SQLParser {
     @Override
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
-        if (!ast.getRule().isPresent() && (parsingRuleRegistry instanceof EncryptParsingRuleRegistry)) {
+        if (!ast.getSQLStatementRule().isPresent() && (parsingRuleRegistry instanceof EncryptParsingRuleRegistry)) {
             return new GeneralSQLStatement();
         }
         Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getRule().get());
-        optimizerEngine.optimize(ast.getRule().get(), result);
+        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getSQLStatementRule().get());
+        optimizerEngine.optimize(ast.getSQLStatementRule().get(), result);
         return result;
     }
 }
