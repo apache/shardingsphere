@@ -19,5 +19,5 @@ package org.apache.shardingsphere.example.common.repository;
 
 import org.apache.shardingsphere.example.common.entity.Order;
 
-public interface OrderRepository extends CommonRepository<Order> {
+public interface OrderRepository extends CommonRepository<Order, Long> {
 }

@@ -19,5 +19,5 @@ package org.apache.shardingsphere.example.common.repository;
 
 import org.apache.shardingsphere.example.common.entity.User;
 
-public interface UserRepository extends CommonRepository<User> {
+public interface UserRepository extends CommonRepository<User, Long> {
 }
