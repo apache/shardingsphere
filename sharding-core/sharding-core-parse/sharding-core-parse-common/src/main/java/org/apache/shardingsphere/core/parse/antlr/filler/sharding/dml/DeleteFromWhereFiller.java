@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWher
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Map.Entry;
 
@@ -34,8 +33,8 @@ import java.util.Map.Entry;
 public class DeleteFromWhereFiller extends FromWhereFiller {
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        super.fill(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData);
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        super.fill(sqlSegment, sqlStatement, shardingTableMetaData);
         DeleteFromWhereSegment deleteFromWhereSegment = (DeleteFromWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         dmlStatement.setDeleteStatement(true);

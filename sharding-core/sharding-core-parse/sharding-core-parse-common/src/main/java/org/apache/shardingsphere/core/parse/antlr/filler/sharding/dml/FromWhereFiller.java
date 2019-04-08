@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -28,11 +31,15 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment, ShardingRule> {
+@Getter
+@Setter
+public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        new OrConditionFiller().fill(sqlSegment.getConditions(), sqlStatement, shardingRule, shardingTableMetaData);
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        new OrConditionFiller(shardingRule).fill(sqlSegment.getConditions(), sqlStatement, shardingTableMetaData);
         int count = 0;
         while (count < sqlSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();

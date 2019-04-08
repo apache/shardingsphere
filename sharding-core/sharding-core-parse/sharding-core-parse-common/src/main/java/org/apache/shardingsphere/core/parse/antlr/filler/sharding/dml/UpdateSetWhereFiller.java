@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Map.Entry;
 
@@ -41,8 +40,8 @@ import java.util.Map.Entry;
 public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        super.fill(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData);
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        super.fill(sqlSegment, sqlStatement, shardingTableMetaData);
         UpdateSetWhereSegment updateSetWhereSegment = (UpdateSetWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         String updateTable = dmlStatement.getUpdateTableAlias().values().iterator().next();
@@ -51,18 +50,18 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
             Optional<SQLExpression> expression = entry.getValue().convertToSQLExpression(sqlStatement.getLogicSQL());
             Preconditions.checkState(expression.isPresent());
             dmlStatement.getUpdateColumnValues().put(column, expression.get());
-            fillEncryptCondition(entry.getKey(), entry.getValue(), updateTable, shardingRule, dmlStatement);
+            fillEncryptCondition(entry.getKey(), entry.getValue(), updateTable, dmlStatement);
         }
         dmlStatement.setDeleteStatement(false);
     }
     
     private void fillEncryptCondition(final ColumnSegment columnSegment, final ExpressionSegment expressionSegment, 
-                                      final String updateTable, final ShardingRule shardingRule, final DMLStatement dmlStatement) {
+                                      final String updateTable, final DMLStatement dmlStatement) {
         Column column = new Column(columnSegment.getName(), updateTable);
         Optional<SQLExpression> expression = expressionSegment.convertToSQLExpression(dmlStatement.getLogicSQL());
         Preconditions.checkState(expression.isPresent());
         dmlStatement.getUpdateColumnValues().put(column, expression.get());
-        if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+        if (!getShardingRule().getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
         dmlStatement.getSQLTokens().add(new EncryptColumnToken(columnSegment.getStartIndex(), expressionSegment.getStopIndex(), column, false));

@@ -28,17 +28,16 @@ import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Insert columns filler.
  *
  * @author zhangliang
  */
-public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment, BaseRule> {
+public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment> {
     
     @Override
-    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {

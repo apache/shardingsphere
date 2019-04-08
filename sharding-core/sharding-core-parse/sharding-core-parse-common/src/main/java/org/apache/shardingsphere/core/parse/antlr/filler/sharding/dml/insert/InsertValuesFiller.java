@@ -19,8 +19,10 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -44,10 +46,13 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment, ShardingRule> {
+@Setter
+public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
-    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         removeGenerateKeyColumn(insertStatement, shardingRule, sqlSegment.getValues().size());
         int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement, shardingRule, shardingTableMetaData);

@@ -22,17 +22,16 @@ import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Common table filler.
  *
  * @author duhongjun
  */
-public class CommonTableFiller implements SQLSegmentFiller<TableSegment, BaseRule> {
+public class CommonTableFiller implements SQLSegmentFiller<TableSegment> {
     
     @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias()));
     }
 }

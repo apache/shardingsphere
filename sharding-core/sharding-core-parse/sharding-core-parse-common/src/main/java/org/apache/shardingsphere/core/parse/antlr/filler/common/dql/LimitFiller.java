@@ -29,17 +29,16 @@ import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Limit filler.
  *
  * @author duhongjun
  */
-public final class LimitFiller implements SQLSegmentFiller<LimitSegment, BaseRule> {
+public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     
     @Override
-    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setLimit(new Limit());
         if (sqlSegment.getOffset().isPresent()) {

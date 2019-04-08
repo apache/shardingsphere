@@ -26,6 +26,8 @@ import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLSta
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 
@@ -64,7 +66,6 @@ public final class SQLStatementFillerEngine {
      * @param rule SQL statement rule
      * @return SQL statement
      */
-    @SuppressWarnings("unchecked")
     @SneakyThrows
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
@@ -72,9 +73,20 @@ public final class SQLStatementFillerEngine {
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = parsingRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
             if (filler.isPresent()) {
-                (filler.get()).fill(each, result, this.rule, shardingTableMetaData);
+                doFill(each, result, filler.get());
             }
         }
         return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final SQLSegmentFiller filler) {
+        if (filler instanceof ShardingRuleAware) {
+            ((ShardingRuleAware) filler).setShardingRule((ShardingRule) this.rule);
+        }
+        if (filler instanceof EncryptRuleAware) {
+            ((EncryptRuleAware) filler).setEncryptRule((EncryptRule) this.rule);
+        }
+        filler.fill(sqlSegment, sqlStatement, shardingTableMetaData);
     }
 }

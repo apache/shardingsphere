@@ -33,7 +33,6 @@ import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,10 +42,10 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment, EncryptRule> {
+public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment> {
     
     @Override
-    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {

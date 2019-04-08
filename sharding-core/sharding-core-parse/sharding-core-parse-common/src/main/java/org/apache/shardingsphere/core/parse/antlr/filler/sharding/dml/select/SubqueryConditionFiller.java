@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.select;
 
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.OrConditionFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
@@ -31,12 +33,15 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryConditionSegment, ShardingRule> {
+@Setter
+public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryConditionSegment>, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
-    public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        OrConditionFiller orConditionFiller = new OrConditionFiller();
+        OrConditionFiller orConditionFiller = new OrConditionFiller(shardingRule);
         for (OrConditionSegment each : sqlSegment.getOrConditions()) {
             selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
         }

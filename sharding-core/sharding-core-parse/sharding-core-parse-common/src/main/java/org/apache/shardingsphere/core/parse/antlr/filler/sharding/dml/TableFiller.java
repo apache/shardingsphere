@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
@@ -30,10 +32,13 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class TableFiller implements SQLSegmentFiller<TableSegment, ShardingRule> {
+@Setter
+public final class TableFiller implements SQLSegmentFiller<TableSegment>, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         boolean fill = false;
         String tableName = sqlSegment.getName();
         if (shardingRule.contains(tableName) || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()

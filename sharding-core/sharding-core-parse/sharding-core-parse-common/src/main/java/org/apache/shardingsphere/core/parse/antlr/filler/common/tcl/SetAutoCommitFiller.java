@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.SetAutoCommitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Set auto commit filler.
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class SetAutoCommitFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         SetAutoCommitSegment setAutoCommitSegment = (SetAutoCommitSegment) sqlSegment;
         ((SetAutoCommitStatement) sqlStatement).setAutoCommit(setAutoCommitSegment.isAutoCommit());
     }

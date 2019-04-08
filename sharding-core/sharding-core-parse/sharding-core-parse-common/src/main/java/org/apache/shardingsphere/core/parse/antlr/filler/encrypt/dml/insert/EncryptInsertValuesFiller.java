@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,10 +36,10 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment, EncryptRule> {
+public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment> {
     
     @Override
-    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
         insertStatement.getInsertValues().getValues().add(insertValue);

@@ -24,17 +24,16 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnD
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Rename column definition filler.
  *
  * @author duhongjun
  */
-public final class RenameColumnDefinitionFiller implements SQLSegmentFiller<RenameColumnSegment, BaseRule> {
+public final class RenameColumnDefinitionFiller implements SQLSegmentFiller<RenameColumnSegment> {
     
     @Override
-    public void fill(final RenameColumnSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final RenameColumnSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         Optional<ColumnDefinitionSegment> oldColumnDefinition = alterTableStatement.findColumnDefinition(sqlSegment.getOldColumnName(), shardingTableMetaData);
         if (!oldColumnDefinition.isPresent()) {

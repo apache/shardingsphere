@@ -22,17 +22,16 @@ import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.parser.token.IndexToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Index filler.
  *
  * @author duhongjun
  */
-public final class IndexFiller implements SQLSegmentFiller<IndexSegment, BaseRule> {
+public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
     
     @Override
-    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         IndexToken indexToken = sqlSegment.getToken();
         if (!sqlStatement.getTables().isEmpty() && null == indexToken.getTableName()) {
             indexToken.setTableName(sqlStatement.getTables().getSingleTableName());

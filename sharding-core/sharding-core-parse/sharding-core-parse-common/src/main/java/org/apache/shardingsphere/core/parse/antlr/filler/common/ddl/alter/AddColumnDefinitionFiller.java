@@ -22,17 +22,16 @@ import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Add column definition filler.
  *
  * @author duhongjun
  */
-public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment, BaseRule> {
+public final class AddColumnDefinitionFiller implements SQLSegmentFiller<AddColumnDefinitionSegment> {
     
     @Override
-    public void fill(final AddColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final AddColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
             alterTableStatement.getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());

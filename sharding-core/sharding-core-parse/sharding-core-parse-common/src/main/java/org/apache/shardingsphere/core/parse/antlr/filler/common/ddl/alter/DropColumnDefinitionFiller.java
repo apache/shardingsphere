@@ -22,17 +22,16 @@ import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Drop column definition filler.
  *
  * @author duhongjun
  */
-public final class DropColumnDefinitionFiller implements SQLSegmentFiller<DropColumnDefinitionSegment, BaseRule> {
+public final class DropColumnDefinitionFiller implements SQLSegmentFiller<DropColumnDefinitionSegment> {
     
     @Override
-    public void fill(final DropColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final DropColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         ((AlterTableStatement) sqlStatement).getDroppedColumnNames().add(sqlSegment.getColumnName());
     }
 }

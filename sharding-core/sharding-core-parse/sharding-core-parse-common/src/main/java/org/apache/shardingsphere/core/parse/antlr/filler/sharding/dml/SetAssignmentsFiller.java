@@ -19,9 +19,11 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.ShardingRuleAware;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
@@ -50,10 +52,13 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment, ShardingRule> {
+@Setter
+public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
-    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         String tableName = insertStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {

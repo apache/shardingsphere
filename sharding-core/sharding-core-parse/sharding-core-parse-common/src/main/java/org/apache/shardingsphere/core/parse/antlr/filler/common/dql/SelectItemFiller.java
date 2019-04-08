@@ -38,7 +38,6 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelect
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Select item filler.
@@ -49,7 +48,7 @@ import org.apache.shardingsphere.core.rule.BaseRule;
 public final class SelectItemFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return;
         }
@@ -71,7 +70,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
             return;
         }
         if (sqlSegment instanceof SubquerySegment) {
-            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, rule, shardingTableMetaData);
+            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, shardingTableMetaData);
         }
     }
     
@@ -121,7 +120,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));
     }
     
-    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        new SubqueryFiller().fill(subquerySegment, sqlStatement, rule, shardingTableMetaData);
+    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        new SubqueryFiller().fill(subquerySegment, sqlStatement, shardingTableMetaData);
     }
 }

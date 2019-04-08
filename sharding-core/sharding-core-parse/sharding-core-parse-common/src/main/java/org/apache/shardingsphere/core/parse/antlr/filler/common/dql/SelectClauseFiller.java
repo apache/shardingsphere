@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.DistinctSelectItem;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -42,35 +41,35 @@ import java.util.Set;
  *
  * @author duhongjun
  */
-public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSegment, BaseRule> {
+public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSegment> {
     
     private SelectItemFiller selectItemFiller = new SelectItemFiller();
     
     @Override
-    public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setFirstSelectItemStartIndex(sqlSegment.getFirstSelectItemStartIndex());
         selectStatement.setSelectListStopIndex(sqlSegment.getSelectItemsStopIndex());
         if (sqlSegment.isHasDistinct()) {
-            fillDistinct(sqlSegment, selectStatement, rule, shardingTableMetaData);
+            fillDistinct(sqlSegment, selectStatement, shardingTableMetaData);
             return;
         }
         int offset = 0;
         for (SelectItemSegment each : sqlSegment.getSelectItems()) {
             offset = setDistinctFunctionAlias(each, offset);
-            selectItemFiller.fill(each, sqlStatement, rule, shardingTableMetaData);
+            selectItemFiller.fill(each, sqlStatement, shardingTableMetaData);
         }
     }
     
     private void fillDistinct(final SelectClauseSegment selectClauseSegment, 
-                              final SelectStatement selectStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+                              final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         Iterator<SelectItemSegment> selectItemSegmentIterator = selectClauseSegment.getSelectItems().iterator();
         SelectItemSegment firstSelectItemSegment = selectItemSegmentIterator.next();
         Set<String> distinctColumnNames = new LinkedHashSet<>();
         DistinctSelectItem distinctSelectItem = null;
         int offset = 0;
         if (firstSelectItemSegment instanceof StarSelectItemSegment) {
-            selectItemFiller.fill(firstSelectItemSegment, selectStatement, rule, shardingTableMetaData);
+            selectItemFiller.fill(firstSelectItemSegment, selectStatement, shardingTableMetaData);
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
         } else if (firstSelectItemSegment instanceof ColumnSelectItemSegment) {
             ColumnSelectItemSegment columnSelectItemSegment = (ColumnSelectItemSegment) firstSelectItemSegment;
@@ -81,11 +80,11 @@ public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSe
             distinctSelectItem = createDistinctExpressionItem(selectStatement, distinctColumnNames, (ExpressionSelectItemSegment) firstSelectItemSegment);
         } else {
             offset = setDistinctFunctionAlias(firstSelectItemSegment, offset);
-            selectItemFiller.fill(firstSelectItemSegment, selectStatement, rule, shardingTableMetaData);
+            selectItemFiller.fill(firstSelectItemSegment, selectStatement, shardingTableMetaData);
         }
         while (selectItemSegmentIterator.hasNext()) {
             SelectItemSegment nextSelectItemSegment = selectItemSegmentIterator.next();
-            selectItemFiller.fill(nextSelectItemSegment, selectStatement, rule, shardingTableMetaData);
+            selectItemFiller.fill(nextSelectItemSegment, selectStatement, shardingTableMetaData);
             if (nextSelectItemSegment instanceof ColumnSelectItemSegment) {
                 offset = setDistinctFunctionAlias(nextSelectItemSegment, offset);
                 distinctColumnNames.add(((ColumnSelectItemSegment) nextSelectItemSegment).getName());

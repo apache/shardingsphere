@@ -24,17 +24,16 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnD
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Modify column definition filler.
  *
  * @author duhongjun
  */
-public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment, BaseRule> {
+public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment> {
     
     @Override
-    public void fill(final ModifyColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ModifyColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         Optional<String> oldColumnName = sqlSegment.getOldColumnName();
         if (oldColumnName.isPresent()) {

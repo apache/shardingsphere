@@ -17,26 +17,19 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * SQL segment Filler.
+ * Encrypt rule aware.
  *
  * @author zhangliang
- * @author duhongjun
- * 
- * @param <T> type of SQL segment
  */
-public interface SQLSegmentFiller<T extends SQLSegment> {
+public interface EncryptRuleAware {
     
     /**
-     * Fill for sharding SQL segment to SQL statement.
+     * Set encrypt rule.
      *
-     * @param sqlSegment SQL segment
-     * @param sqlStatement SQL statement
-     * @param shardingTableMetaData sharding table meta data
+     * @param encryptRule encrypt rule
      */
-    void fill(T sqlSegment, SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
+    void setEncryptRule(EncryptRule encryptRule);
 }

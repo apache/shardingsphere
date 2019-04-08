@@ -25,17 +25,16 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.Con
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Constraint definition filler.
  *
  * @author duhongjun
  */
-public final class ConstraintDefinitionFiller implements SQLSegmentFiller<ConstraintDefinitionSegment, BaseRule> {
+public final class ConstraintDefinitionFiller implements SQLSegmentFiller<ConstraintDefinitionSegment> {
     
     @Override
-    public void fill(final ConstraintDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ConstraintDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof CreateTableStatement) {
             fill(sqlSegment, (CreateTableStatement) sqlStatement);
         } else if (sqlStatement instanceof AlterTableStatement) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
@@ -45,11 +46,13 @@ import java.util.Set;
  *
  * @author duhongjun
  */
-public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSegment, EncryptRule> {
-
+@RequiredArgsConstructor
+public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSegment> {
+    
+    private final EncryptRule encryptRule;
+    
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule,
-                     final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
@@ -84,9 +87,9 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
                 if (null == condition.getColumn()) {
                     continue;
                 }
-                if(filledConditionStopIndexes.contains(condition.getStopIndex())) {
+                if (filledConditionStopIndexes.contains(condition.getStopIndex())) {
                     continue;
-                }else {
+                } else {
                     filledConditionStopIndexes.add(condition.getStopIndex());
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, sqlStatement, condition));
