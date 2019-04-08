@@ -21,7 +21,7 @@ shardingRule:
   
   defaultDatabaseStrategy:
     hint:
-      algorithmClassName: io.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
+      algorithmClassName: org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
   defaultTableStrategy:
     none:
 
