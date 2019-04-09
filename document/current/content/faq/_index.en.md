@@ -5,95 +5,91 @@ weight = 5
 chapter = true
 +++
 
-#### 1. How to debug SQL if it is not executed correctly in ShardingSphere？
+#### 1. How to debug when SQL can not be executed rightly in ShardingSphere?
 
-The answer is:
+Answer:
 
-Sharding-Proxy and version after Sharding-JDBC 1.5.0 supports to configure `sql.show` which can print the parsing of SQL, rewriting of SQL, and final routing information to the info log.
-The configuration of `sql.show` is OFF by default. To configure it ON.
+`sql.show` configuration is provided in Sharding-Proxy and post-1.5.0 version of Sharding-JDBC, enabling the context parsing, rewritten SQL and the routed data source printed to info log. `sql.show` configuration is off in default, and users can turn it on in configurations.
 
-#### 2. Why do compilation errors arise when reading sources?
+#### 2. Why do some compiling errors appear?
 
-The answer is:
+Answer:
 
-ShardingSphere uses lombok to implement minimal code. For details, please refer to [lombok](https://projectlombok.org/download.html).
+ShardingSphere uses lombok to enable minimal coding. For more details about using and installment, please refer to the official website of [lombok](https://projectlombok.org/download.html).
 
-sharding-orchestration-reg module needs to perform ` mvn install` command to generate gRPC-related Java file according to the protobuf file.
+Sharding-orchestration-reg module needs to execute `mvn install` command first, and generate gRPC java files according to protobuf files.
 
-#### 3. Why can not find xsd when using Spring namespace?
+#### 3. Why is xsd unable to be found when Spring Namespace is used?
 
-The answer is:
+Answer:
 
-Deploying an XSD file to a public web address is not the requirement of the Spring namespace usage specification, but some users have such requirements, so we deploy the XSD file to the ShardingSphere website.
-In fact, META-INF\spring.schemas in the jar package of sharding-jdbc-spring-namespace configures the position of xsd file：META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd.
+The use norm of Spring Namespace does not require to deploy xsd files to the official website. But considering some users' needs, we will deploy them to ShardingSphere's official website.
 
-#### 4. How to solve the Error of Cloud not resolve placeholder ... in string value ...?
+Actually, META-INF\spring.schemas in the jar package of sharding-jdbc-spring-namespace has been configured with the position of xsd files: META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd, so you only need to make sure that the file is in the jar package.
 
-The answer is:
+#### 4. How to solve `Cloud not resolve placeholder … in string value …` error?
 
-Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is conflict with spring placeholder of properties, so use `$->{...}` on spring environment is better.
+Answer:
 
-#### 5. Why does the inline expression return a floating point number as a result?
+`${...}` or `$->{...}` can be used in inline expression identifiers, but the former one clashes with place holders in Spring property files, so `$->{...}` is recommended to be used in Spring as inline expression identifiers.
 
-The answer is:
+#### 5. Why does float number appear in the return result of inline expression?
 
-In Java, the division result of two integers is an integer, but in the inline expression, the division result is a floating point number by using of an integer by using Groovy syntax.
-To return an integer, you need to change A/B to A.intdiv(B).
+Answer:
 
-#### 6. Do you need to configure tables without Sharding into sharding rules, if you only have partial databases or tables for Sharding?
+The division result of Java integers is also integer, but in Groovy syntax of inline expression, the division result of integers is float number. To obtain integer division result, A/B needs to be modified as A.intdiv(B).
 
-The answer is:
+#### 6. If sharding database is partial, should tables without sharding database & table be configured in sharding rules?
 
-Yes. Because ShardingSphere combines multiple data sources into a single logical data source. Therefore, ShardingSphere can not route those tables not configured in configuration rules.
+Answer:
 
-But ShardingSphere provides two other ways to simplify the configuration.
+Yes. ShardingSphere merges multiple data sources to a united logic data source. Therefore, for the part without sharding database or table, ShardingSphere can not decide which data source to route to without sharding rules. However, ShardingSphere has provided two options to simplify configurations.
 
-Method 1: To configure default-data-source, thus if ShardingSphere does not find correct Sharding data source for tables, it will route the tables to the default data source.
+Option 1: configure default-data-source. All the tables in default data sources need not to be configured in sharding rules. ShardingSphere will route the table to the default data source when it cannot find sharding  data source.
 
-Method 2: We can configure the datasources with Sharding and without Sharding in ShardingSphere, and to use different data sources in the application to handle the case of Sharding or not.
+Option 2: isolate data sources without sharding database & table from ShardingSphere; use multiple data sources to process sharding situations or non-sharding situations.
 
-#### 7. Does ShardingSphere support native self-incrementing primary keys in addition to supporting distributed self-incrementing primary keys?
+#### 7. In addition to internal distributed primary key, does ShardingSphere support other native auto-increment keys?
 
-The answer is:
+Answer:
 
-Yes. However, there are restrictions on the use of native self-increment primary keys, which means that you cannot use native self-increment primary keys as Sharding columns at the same time.
+Yes. But there is restriction to the use of native auto-increment keys, which means they cannot be used as sharding keys at the same time.
 
-Because ShardingSphere does not know the table structure, and native self-increment primary key is not included in the original SQL, so that ShardingSphere cannot parse the key into Sharding column, resulting in SQL being routed to multiple tables.
-When the INSERT SQL is routed to one table, the native self-increment primary key has a value; When the INSERT SQL is routed to more than one table, it will be 0.
+Since ShardingSphere does not have the database table structure and native auto-increment key is not included in original SQL, it cannot parse that field to the sharding field. If the auto-increment key is not sharding key, it can be returned normally and is needless to be cared. But if the auto-increment key is also used as sharding key, ShardingSphere cannot parse its sharding value, which will make SQL routed to multiple tables and influence the rightness of the application.
 
-#### 8. Why does an exception thrown as `ClassCastException: Integer can not cast to Long` when using generic Long Type with `SingleKeyTableShardingAlgorithm`?
+The premise for returning native auto-increment key is that INSERT SQL is eventually routed to one table. Therefore, auto-increment key will return zero when INSERT SQL returns multiple tables.
 
-The answer is:
+#### 8. When generic Long type `SingleKeyTableShardingAlgorithm` is used, why does`ClassCastException: Integer can not cast to Long` exception appear?
 
-To ensure that the type of Sharding column in the database are consistent with the type of columns in the Sharding algorithm. For example, the column type in the database is int(11) and the Sharding column is Integer. If the Sharding column is Long, the column type in the database is bigint.
+Answer:
 
-#### 9. Why is an exception thrown when the aggregate column without an alias is used in SQLSever and PostgreSQL?
+You must make sure the field in database table consistent with that in sharding algorithms. For example, the field type in database is int(11) and the sharding type corresponds to genetic type is Integer, if you want to configure Long type, please make sure the field type in the database is bigint.
 
-The answer is:
+#### 9. In SQLSever and PostgreSQL, why does the aggregation column without alias throw exception?
 
-SQLServer and PostgreSQL will rename the aggregate column without an alias. For example, the following SQL:
+Answer:
+
+SQLServer and PostgreSQL will rename aggregation columns acquired without alias, such as the following SQL:
 
 ```sql
 SELECT SUM(num), SUM(num2) FROM tablexxx;
 ```
 
-SQLServer gets the column of empty string and (2), and PostgreSQL gets the columns of empty sum and sum(2), which will cause ShardingSphere to fail to find the corresponding column when the result is merged.
+Columns acquired by SQLServer are empty string and (2); columns acquired by PostgreSQL are empty sum and sum(2). It will cause error because ShardingSphere is unable to find the corresponding column.
 
-The correct SQL is：
+The right SQL should be written as:
 
 ```sql
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
-#### 10. Why does the Oracle throw an exception `Order by value must implements Comparable` when you use the Order By statement including Timestamp column?
+#### 10. Why does Oracle database throw “Order by value must implements Comparable” exception when using Timestamp Order By?
 
-The answer is:
+Answer:
 
-Two solutions:
-1. Configure JVM parameters "-oracle.jdbc.J2EE13Compliant=true"
-2. Set System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true") in the project initial step;
+There are two solutions for the above problem: 1. Configure JVM parameter “-oracle.jdbc.J2EE13Compliant=true” 2. Set System.getProperties().setProperty(“oracle.jdbc.J2EE13Compliant”, “true”) codes in the initialization of the project.
 
-The reason is:
+Reasons:
 
 com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues():
 
@@ -109,9 +105,7 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues():
     }
 ```
 
-Because of using resultSet.getObject(int index)，TimeStamp oracle will decide to return java.sql.TimeStamp or oralce.sql.TIMESTAMP according to oracle.jdbc.J2EE13Compliant.
-
-More detail, please refer to the ojdb sourcecode of coracle.jdbc.driver.TimestampAccessor#getObject(int var1)：
+After using resultSet.getObject(int index), for TimeStamp oracle, the system will decide whether to return java.sql.TimeStamp or define oralce.sql.TIMESTAMP according to the property of  oracle.jdbc.J2EE13Compliant. See oracle.jdbc.driver.TimestampAccessor#getObject(int var1) method in ojdbc codes for more detail:
 
 ```java
     Object getObject(int var1) throws SQLException {
@@ -142,13 +136,13 @@ More detail, please refer to the ojdb sourcecode of coracle.jdbc.driver.Timestam
     }
 ```
 
-#### 11. Why is the result not correct when using `Proxool`.
+#### 11. Why is the database sharding result not correct when using `Proxool`?
 
-The answer is:
+Answer:
 
-When using Proxool to configuration multiple data sources, should set alias for every data sources. Because of get connection on Proxool will judge alias whether exist in the pool. If alias absent, Proxool will get connection from same data source.
+When using `Proxool` to configure multiple data sources, each one of them should be configured with alias. It is because `Proxool` would check whether existing alias is included in the connection pool or not when acquiring connections, so without alias, each connection will be acquired from the same data source.
 
-Key source code of ProxoolDataSource.getConnection():
+The followings are core codes from ProxoolDataSource getConnection method in `Proxool`:
 
 ```java
     if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) {
@@ -156,14 +150,16 @@ Key source code of ProxoolDataSource.getConnection():
     }
 ```
 
-Read more details on alias, refer to [Proxool](http://proxool.sourceforge.net/configure.html)。
+For more alias usages, please refer to [Proxool](http://proxool.sourceforge.net/configure.html) official website.
 
-#### 12. Why does ShardingSphere provide the primary key generated by the default distributed auto-increment primary strategy is not continuous, and its mantissa mostly is even?
+PS: sourceforge can only be visited without the firewall.
 
-The answer is:
+#### 12. Why are the default distributed auto-augment key strategy provided by ShardingSphere not continuous and most of them end with even numbers?
 
-ShardingSphere uses the snowflake algorithm as the default distributed self-increasing primary key strategy to decentralized compute the unique self-increment primary key. Therefore, self-increment primary key can be increasing but not sequential.
+Answer:
 
-The last four bits of the primary key computed by the snowflake algorithm represent the incremental values in one millisecond. Therefore, if the concurrency of applications is not high in one millisecond, the chance of the last four being zero are high.
+ShardingSphere uses snowflake algorithms as the default distributed auto-augment key strategy to make sure unrepeated and decentralized auto-augment sequence is generated under the distributed situations. Therefore, auto-augment keys can be incremental but not continuous.
 
-The problem of mantissa mostly even is solved at version 3.1.0, FIY: https://github.com/sharding-sphere/sharding-sphere/issues/1617
+But the last four numbers of snowflake algorithm are incremental value within one millisecond. Thus, if concurrency degree in one millisecond is not high,  the last four numbers are likely to be zero, which explains why the rate of even end number is higher.
+
+In 3.1.0 version, the problem of ending with even numbers has been totally solved, please refer to: https://github.com/sharding-sphere/sharding-sphere/issues/1617
