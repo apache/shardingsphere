@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
+import lombok.Setter;
 
-import java.util.List;
-import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * Insert values placeholder for rewrite.
- *
- * @author maxiaoguang
- * @author panjuan
- */
-@RequiredArgsConstructor
 @Getter
-public final class InsertValuesPlaceholder implements ShardingPlaceholder {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedInsertSetToken {
     
-    private final String logicTableName;
-    
-    private final Set<String> columnNames;
-    
-    private final List<InsertColumnValue> columnValues;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
 }

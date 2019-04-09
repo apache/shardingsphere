@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.statement;
 
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,17 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     @Override
     public final void addSQLToken(final SQLToken sqlToken) {
         sqlTokens.add(sqlToken);
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public final <T extends SQLToken> Optional<T> findSQLToken(final Class<T> sqlTokenType) {
+        for (SQLToken each : sqlTokens) {
+            if (each.getClass().equals(sqlTokenType)) {
+                return Optional.of((T) each);
+            }
+        }
+        return Optional.absent();
     }
     
     @Override

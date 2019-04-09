@@ -25,9 +25,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.Set
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
@@ -53,7 +52,7 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         InsertValue insertValue = getInsertValue(sqlSegment, sqlStatement.getLogicSQL());
         insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
-        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), DefaultKeyword.SET));
+        insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex()));
     }
     
     private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {

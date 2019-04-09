@@ -17,28 +17,14 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
-
 /**
  * Insert values token.
  *
  * @author maxiaoguang
  * @author panjuan
  */
-@Getter
-@Setter
 public final class InsertValuesToken extends SQLToken {
     
-    private DefaultKeyword type;
-    
-    public InsertValuesToken(final int startIndex, final DefaultKeyword type) {
-        super(startIndex);
-        this.type = type;
-    }
-    
-    // TODO :In order to be compatible with old ParsingEngine.
     public InsertValuesToken(final int startIndex) {
         super(startIndex);
     }

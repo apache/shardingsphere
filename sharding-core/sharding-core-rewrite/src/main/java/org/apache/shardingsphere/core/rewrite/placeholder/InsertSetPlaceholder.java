@@ -25,14 +25,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Insert values placeholder for rewrite.
+ * Insert set placeholder for rewrite.
  *
- * @author maxiaoguang
- * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertValuesPlaceholder implements ShardingPlaceholder {
+public final class InsertSetPlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
     

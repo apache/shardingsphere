@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.core.parse.old.parser.clause;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertColumnToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.parser.clause.expression.BasicExpressionParser;
@@ -74,7 +76,10 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
             return;
         }
         removeUnnecessaryToken(insertStatement);
-        insertStatement.getInsertValuesToken().setType(DefaultKeyword.SET);
+        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
+        Preconditions.checkState(insertValuesToken.isPresent());
+        insertStatement.getSQLTokens().remove(insertValuesToken.get());
+        insertStatement.addSQLToken(new InsertSetToken(insertValuesToken.get().getStartIndex()));
         do {
             SQLExpression left = basicExpressionParser.parse(insertStatement);
             Column column = null;

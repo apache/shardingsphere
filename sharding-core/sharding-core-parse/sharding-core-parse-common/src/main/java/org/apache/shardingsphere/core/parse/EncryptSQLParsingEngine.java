@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParserFactory;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Encrypt sql parsing engine.
+ * Encrypt SQL parsing engine.
  *
  * @author panjuan
  */

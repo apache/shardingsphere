@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.core.parse.old.parser.clause;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
@@ -86,7 +88,10 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
      */
     private void parseValues(final InsertStatement insertStatement) {
         int startParametersIndex;
-        insertStatement.getInsertValuesToken().setType(DefaultKeyword.VALUES);
+        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
+        Preconditions.checkState(insertValuesToken.isPresent());
+        insertStatement.getSQLTokens().remove(insertValuesToken.get());
+        insertStatement.addSQLToken(new InsertValuesToken(insertValuesToken.get().getStartIndex()));
         do {
             startParametersIndex = insertStatement.getParametersIndex();
             lexerEngine.accept(Symbol.LEFT_PAREN);

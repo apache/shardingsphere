@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 
 /**
  * Insert columns filler.
@@ -49,7 +48,7 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
             }
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), DefaultKeyword.VALUES));
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex()));
         }
     }
     

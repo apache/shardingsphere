@@ -19,14 +19,10 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValues;
@@ -62,21 +58,6 @@ public final class InsertStatement extends DMLStatement {
      */
     public void addColumn(final String columnName) {
         columns.add(new Column(columnName, getTables().getSingleTableName()));
-    }
-    
-    /**
-     * Get insert values token.
-     * 
-     * @return insert values token
-     */
-    public InsertValuesToken getInsertValuesToken() {
-        return (InsertValuesToken) Collections2.filter(getSQLTokens(), new Predicate<SQLToken>() {
-            
-            @Override
-            public boolean apply(final SQLToken input) {
-                return input instanceof InsertValuesToken;
-            }
-        }).iterator().next();
     }
     
     /**

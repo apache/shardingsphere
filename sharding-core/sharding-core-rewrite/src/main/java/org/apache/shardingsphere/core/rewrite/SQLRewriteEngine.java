@@ -37,6 +37,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
@@ -62,6 +63,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPla
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptUpdateItemColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
@@ -199,6 +201,8 @@ public final class SQLRewriteEngine {
                 appendItemsToken(sqlBuilder, (ItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertColumnValues().get());
+            } else if (each instanceof InsertSetToken) {
+                appendInsertSetToken(sqlBuilder, (InsertSetToken) each, count, optimizeResult.getInsertColumnValues().get());
             } else if (each instanceof RowCountToken) {
                 appendLimitRowCount(sqlBuilder, (RowCountToken) each, count, isRewrite);
             } else if (each instanceof OffsetToken) {
@@ -255,8 +259,15 @@ public final class SQLRewriteEngine {
         for (InsertColumnValue each : insertColumnValues.getColumnValues()) {
             encryptInsertColumnValue(insertColumnValues.getColumnNames(), each);
         }
-        sqlBuilder.appendPlaceholder(
-                new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertValuesToken.getType(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
+        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
+        appendRest(sqlBuilder, count, originalSQL.length());
+    }
+    
+    private void appendInsertSetToken(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertColumnValues insertColumnValues) {
+        for (InsertColumnValue each : insertColumnValues.getColumnValues()) {
+            encryptInsertColumnValue(insertColumnValues.getColumnNames(), each);
+        }
+        sqlBuilder.appendPlaceholder(new InsertSetPlaceholder(sqlStatement.getTables().getSingleTableName(), insertColumnValues.getColumnNames(), insertColumnValues.getColumnValues()));
         appendRest(sqlBuilder, count, originalSQL.length());
     }
     

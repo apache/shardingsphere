@@ -27,6 +27,8 @@ import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
@@ -92,7 +94,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private InsertColumnValues createInsertColumnValues() {
-        return new InsertColumnValues(insertStatement.getInsertValuesToken().getType(), insertStatement.getInsertColumnNames());
+        DefaultKeyword type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
+        return new InsertColumnValues(type, insertStatement.getInsertColumnNames());
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {

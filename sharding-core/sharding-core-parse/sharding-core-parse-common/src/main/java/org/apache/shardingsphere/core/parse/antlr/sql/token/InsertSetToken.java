@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
-
-import java.util.List;
-import java.util.Set;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 /**
- * Insert values placeholder for rewrite.
+ * Insert set token.
  *
- * @author maxiaoguang
- * @author panjuan
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class InsertValuesPlaceholder implements ShardingPlaceholder {
+public final class InsertSetToken extends SQLToken {
     
-    private final String logicTableName;
-    
-    private final Set<String> columnNames;
-    
-    private final List<InsertColumnValue> columnValues;
+    public InsertSetToken(final int startIndex) {
+        super(startIndex);
+    }
 }
