@@ -201,9 +201,9 @@ literal
     | LBE_ identifier_ STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | identifier_ STRING_ collateClause?
+    | identifier_ STRING_ collateClause_?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | identifier_? BIT_NUM_ collateClause?
+    | characterSet_? BIT_NUM_ collateClause_?
     ;
 
 question
@@ -219,10 +219,6 @@ string
     ;
 
 subquery
-    : matchNone
-    ;
-
-collateClause
     : matchNone
     ;
 
