@@ -20,10 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -48,20 +46,14 @@ import java.util.List;
  * @author zhangliang
  */
 @Setter
-public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller {
     
     private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         removeGenerateKeyColumn(insertStatement, shardingRule, sqlSegment.getValues().size());
-        int columnCount = getColumnCountExcludeAssistedQueryColumns(insertStatement, shardingRule, shardingTableMetaData);
-        if (sqlSegment.getValues().size() != columnCount) {
-            throw new SQLParsingException("INSERT INTO column size mismatch value size.");
-        }
         AndCondition andCondition = new AndCondition();
         Iterator<Column> columns = insertStatement.getColumns().iterator();
         int parametersCount = 0;
@@ -77,18 +69,6 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         InsertValue insertValue = new InsertValue(parametersCount, columnValues);
         insertStatement.getInsertValues().getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-    }
-    
-    private int getColumnCountExcludeAssistedQueryColumns(final InsertStatement insertStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        if (shardingTableMetaData.containsTable(tableName) && shardingTableMetaData.get(tableName).getColumns().size() == insertStatement.getColumns().size()) {
-            return insertStatement.getColumns().size();
-        }
-        Optional<Integer> assistedQueryColumnCount = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
-        if (assistedQueryColumnCount.isPresent()) {
-            return insertStatement.getColumns().size() - assistedQueryColumnCount.get();
-        }
-        return insertStatement.getColumns().size();
     }
     
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final ShardingRule shardingRule, final int valuesCount) {
