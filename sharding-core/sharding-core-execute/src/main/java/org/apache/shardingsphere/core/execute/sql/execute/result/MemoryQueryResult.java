@@ -68,7 +68,7 @@ public final class MemoryQueryResult implements QueryResult {
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                rowData.add(resultSet.getObject(columnIndex));
+                rowData.add(QueryResultUtil.getValueByColumnType(resultSet, columnIndex));
             }
             result.add(new QueryRow(rowData));
         }
