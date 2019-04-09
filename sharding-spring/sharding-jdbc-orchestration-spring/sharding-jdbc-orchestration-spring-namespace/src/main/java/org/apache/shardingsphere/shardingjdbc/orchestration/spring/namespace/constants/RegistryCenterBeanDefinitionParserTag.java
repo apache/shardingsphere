@@ -28,6 +28,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenterBeanDefinitionParserTag {
     
+    public static final String TYPE_TAG = "type";
+    
     public static final String ROOT_TAG = "registry-center";
     
     public static final String SERVER_LISTS_TAG = "server-lists";
@@ -43,4 +45,6 @@ public final class RegistryCenterBeanDefinitionParserTag {
     public static final String RETRY_INTERVAL_MILLISECONDS_TAG = "retry-interval-milliseconds";
     
     public static final String TIME_TO_LIVE_SECONDS_TAG = "time-to-live-seconds";
+    
+    public static final String PROPERTY_REF_TAG = "props-ref";
 }

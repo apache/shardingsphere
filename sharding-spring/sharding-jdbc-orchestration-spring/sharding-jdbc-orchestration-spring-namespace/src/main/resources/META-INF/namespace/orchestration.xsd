@@ -42,6 +42,7 @@
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="type" type="xsd:string" use="required" />
                     <xsd:attribute name="server-lists" type="xsd:string" use="required" />
                     <xsd:attribute name="namespace" type="xsd:string" />
                     <xsd:attribute name="digest" type="xsd:string" />
@@ -49,6 +50,7 @@
                     <xsd:attribute name="max-retries" type="xsd:string" />
                     <xsd:attribute name="retry-interval-milliseconds" type="xsd:string" />
                     <xsd:attribute name="time-to-live-seconds" type="xsd:string" />
+                    <xsd:attribute name="props-ref" type="xsd:string" />
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
