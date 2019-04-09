@@ -68,7 +68,7 @@ public class CountryRepositroyImpl implements CountryRepository {
     }
 
     @Override
-    public Long insert(final Country country) {
+    public String insert(final Country country) {
         String sql = "INSERT INTO t_country (name, code, language) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -82,15 +82,15 @@ public class CountryRepositroyImpl implements CountryRepository {
             }
         } catch (final SQLException ignored) {
         }
-        return country.getId();
+        return country.getCode();
     }
 
     @Override
-    public void delete(final Long id) {
-        String sql = "DELETE FROM t_country WHERE id =?";
+    public void delete(final String code) {
+        String sql = "DELETE FROM t_country WHERE code =?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setString(1, code);
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }

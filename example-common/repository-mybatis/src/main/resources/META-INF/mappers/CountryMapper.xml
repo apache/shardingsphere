@@ -20,15 +20,12 @@
         DROP TABLE IF EXISTS t_country;
     </update>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
-            SELECT @@IDENTITY
-        </selectKey>
+    <insert id="insertStandard" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_country (name, code, language) VALUES (#{name,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR},#{language,jdbcType=VARCHAR})
     </insert>
 
     <delete id="delete">
-        DELETE FROM t_country WHERE id = #{id,jdbcType=INTEGER};
+        DELETE FROM t_country WHERE code = #{code,jdbcType=VARCHAR};
     </delete>
 
     <select id="selectAll" resultMap="baseResultMap">

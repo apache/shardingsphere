@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc;
 
-import org.apache.shardingsphere.example.common.jdbc.repository.CountryRepositroyImpl;
 import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.common.jdbc.repository.RangeOrderRepositoryImpl;
 import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
@@ -48,6 +47,6 @@ public class JavaRangeConfigurationExample {
     }
     
     private static CommonService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource),new CountryRepositroyImpl(dataSource));
+        return new CommonServiceImpl(new RangeOrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
     }
 }

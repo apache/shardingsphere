@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.spring.boot.mybatis;
 
+import org.apache.shardingsphere.example.common.mybatis.service.SpringCountryService;
 import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
 import org.apache.shardingsphere.example.common.service.CommonService;
 import org.mybatis.spring.annotation.MapperScan;
@@ -37,6 +38,10 @@ public class SpringBootMybatisMain {
             commonService.initEnvironment();
             commonService.processSuccess();
             commonService.cleanEnvironment();
+            SpringCountryService countryService = applicationContext.getBean(SpringCountryService.class);
+            countryService.initEnvironment();
+            countryService.processSuccess();
+            countryService.cleanEnvironment();
         }
     }
 }

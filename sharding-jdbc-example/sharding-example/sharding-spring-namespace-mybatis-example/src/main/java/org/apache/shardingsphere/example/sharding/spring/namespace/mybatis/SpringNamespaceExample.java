@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis;
 
+import org.apache.shardingsphere.example.common.mybatis.service.SpringCountryService;
 import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -35,6 +36,10 @@ public class SpringNamespaceExample {
             commonService.initEnvironment();
             commonService.processSuccess();
             commonService.cleanEnvironment();
+            SpringCountryService countryService = applicationContext.getBean(SpringCountryService.class);
+            countryService.initEnvironment();
+            countryService.processSuccess();
+            countryService.cleanEnvironment();
         }
     }
 }

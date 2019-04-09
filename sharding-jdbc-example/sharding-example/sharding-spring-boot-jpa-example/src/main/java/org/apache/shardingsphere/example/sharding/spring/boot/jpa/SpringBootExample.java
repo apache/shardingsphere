@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.example.sharding.spring.boot.jpa;
 
 import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.common.jpa.service.JPACountryService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -35,6 +36,8 @@ public class SpringBootExample {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
             JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
             commonService.processSuccess();
+            JPACountryService countryService = applicationContext.getBean(JPACountryService.class);
+            countryService.processSuccess();
         }
     }
 }

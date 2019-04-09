@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.common.repository;
+package org.apache.shardingsphere.example.common.mybatis.service;
 
-import org.apache.shardingsphere.example.common.entity.Country;
+import org.apache.shardingsphere.example.common.service.CommonService;
 
-public interface CountryRepository extends CommonRepository<Country,String> {
+public interface SpringCountryService extends CommonService {
 }

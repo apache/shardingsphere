@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.example.common.mybatis.service;
 
-import org.apache.shardingsphere.example.common.entity.Country;
 import org.apache.shardingsphere.example.common.entity.Order;
 import org.apache.shardingsphere.example.common.entity.OrderItem;
-import org.apache.shardingsphere.example.common.repository.CountryRepository;
+import org.apache.shardingsphere.example.common.mybatis.repository.MybatisCountryRepository;
 import org.apache.shardingsphere.example.common.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.common.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class SpringPojoServiceImpl implements SpringPojoService {
@@ -40,33 +38,27 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     @Resource
     private OrderItemRepository orderItemRepository;
 
-    @Resource
-    private CountryRepository countryRepository;
-    
     @Override
     public void initEnvironment() {
         orderRepository.createTableIfNotExists();
         orderItemRepository.createTableIfNotExists();
-        countryRepository.createTableIfNotExists();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
-        countryRepository.truncateTable();
     }
 
     @Override
     public void cleanEnvironment() {
         orderRepository.dropTable();
         orderItemRepository.dropTable();
-        countryRepository.dropTable();
     }
     
     @Override
     @Transactional
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
-        InsertResult insertResult = insertData();
+        List<Long> orderIds = insertData();
         printData();
-        deleteData(insertResult.getOrderIds(), insertResult.getCountryIds());
+        deleteData(orderIds);
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
@@ -80,14 +72,8 @@ public class SpringPojoServiceImpl implements SpringPojoService {
         throw new RuntimeException("Exception occur for transaction test.");
     }
 
-    private InsertResult insertData() {
+    private List<Long> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
-        List<Long> orderIds = insertOrderData();
-        List<Long> countryIds = insertCountryData();
-        return new InsertResult(orderIds, countryIds);
-    }
-    
-    private List<Long> insertOrderData() {
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
@@ -104,36 +90,11 @@ public class SpringPojoServiceImpl implements SpringPojoService {
         return result;
     }
 
-    private List<Long> insertCountryData() {
-        List<Long> result = new ArrayList<>();
-        Locale[] locales = Locale.getAvailableLocales();
-        int i = 0;
-        for (Locale l:locales) {
-            final String country = l.getCountry();
-            if (country == null || "".equals(country)) {
-                continue;
-            }
-            Country currCountry = new Country();
-            currCountry.setName(l.getDisplayCountry(l));
-            currCountry.setLanguage(l.getLanguage());
-            currCountry.setCode(l.getCountry());
-            countryRepository.insert(currCountry);
-            result.add(currCountry.getId());
-            if (++i == 10) {
-                break;
-            }
-        }
-        return result;
-    }
-    
-    private void deleteData(final List<Long> orderIds, final List<Long> countryIds) {
+    private void deleteData(final List<Long> orderIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
             orderRepository.delete(each);
             orderItemRepository.delete(each);
-        }
-        for (Long each: countryIds) {
-            countryRepository.delete(each);
         }
     }
     
@@ -146,30 +107,6 @@ public class SpringPojoServiceImpl implements SpringPojoService {
         System.out.println("---------------------------- Print OrderItem Data -------------------");
         for (Object each : orderItemRepository.selectAll()) {
             System.out.println(each);
-        }
-        System.out.println("---------------------------- Print Country Data -------------------");
-        for (Object each : countryRepository.selectAll()) {
-            System.out.println(each);
-        }
-    }
-
-    private static class InsertResult {
-
-        private List<Long> orderIds;
-
-        private List<Long> countryIds;
-
-        InsertResult(final List<Long> orderIds, final List<Long> countryIds) {
-            this.orderIds = orderIds;
-            this.countryIds = countryIds;
-        }
-
-        public List<Long> getOrderIds() {
-            return orderIds;
-        }
-
-        public List<Long> getCountryIds() {
-            return countryIds;
         }
     }
 }

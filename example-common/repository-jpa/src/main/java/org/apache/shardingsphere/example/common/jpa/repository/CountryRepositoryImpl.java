@@ -32,8 +32,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Transactional
 public class CountryRepositoryImpl implements CountryRepository {
 
-    private static final AtomicLong ID_INCREASE = new AtomicLong();
-
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -53,17 +51,15 @@ public class CountryRepositoryImpl implements CountryRepository {
     }
 
     @Override
-    public Long insert(final Country country) {
-        long id = ID_INCREASE.incrementAndGet();
-        country.setId(id);
+    public String insert(final Country country) {
         entityManager.persist(country);
-        return id;
+        return country.getCode();
     }
 
     @Override
-    public void delete(final Long id) {
-        Query query = entityManager.createQuery("DELETE FROM CountryEntity o WHERE o.id = ?1");
-        query.setParameter(1, id);
+    public void delete(final String code) {
+        Query query = entityManager.createQuery("DELETE FROM CountryEntity o WHERE o.code = ?1");
+        query.setParameter(1, code);
         query.executeUpdate();
     }
 

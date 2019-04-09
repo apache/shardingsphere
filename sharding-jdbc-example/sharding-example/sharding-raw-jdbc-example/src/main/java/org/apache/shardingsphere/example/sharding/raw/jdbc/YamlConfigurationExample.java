@@ -21,6 +21,7 @@ import org.apache.shardingsphere.example.common.jdbc.repository.CountryRepositro
 import org.apache.shardingsphere.example.common.jdbc.repository.OrderItemRepositoryImpl;
 import org.apache.shardingsphere.example.common.jdbc.repository.OrderRepositoryImpl;
 import org.apache.shardingsphere.example.common.jdbc.service.CommonServiceImpl;
+import org.apache.shardingsphere.example.common.jdbc.service.CountryServiceImpl;
 import org.apache.shardingsphere.example.common.service.CommonService;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -46,9 +47,17 @@ public class YamlConfigurationExample {
         commonService.initEnvironment();
         commonService.processSuccess();
         commonService.cleanEnvironment();
+        CommonService countryService = getCountryService(dataSource);
+        countryService.initEnvironment();
+        countryService.processSuccess();
+        countryService.cleanEnvironment();
     }
     
     private static CommonService getCommonService(final DataSource dataSource) {
-        return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource),new CountryRepositroyImpl(dataSource));
+        return new CommonServiceImpl(new OrderRepositoryImpl(dataSource), new OrderItemRepositoryImpl(dataSource));
+    }
+
+    private static CommonService getCountryService(final DataSource dataSource) {
+        return new CountryServiceImpl(new CountryRepositroyImpl(dataSource));
     }
 }
