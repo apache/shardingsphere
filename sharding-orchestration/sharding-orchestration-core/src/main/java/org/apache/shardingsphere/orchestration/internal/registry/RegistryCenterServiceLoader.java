@@ -19,18 +19,27 @@ package org.apache.shardingsphere.orchestration.internal.registry;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-
-import java.util.ServiceLoader;
 
 /**
  * Registry center loader from SPI.
  *
  * @author zhangliang
+ * @author zhaojun
  */
 @Slf4j
-public final class RegistryCenterLoader {
+public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader<RegistryCenter> {
+    
+    static {
+        NewInstanceServiceLoader.register(RegistryCenter.class);
+    }
+    
+    RegistryCenterServiceLoader() {
+        super(RegistryCenter.class);
+    }
     
     /**
      * Load registry center from SPI.
@@ -38,18 +47,9 @@ public final class RegistryCenterLoader {
      * @param regCenterConfig registry center configuration
      * @return registry center
      */
-    public static RegistryCenter load(final RegistryCenterConfiguration regCenterConfig) {
+    public RegistryCenter load(final RegistryCenterConfiguration regCenterConfig) {
         Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
-        RegistryCenter result = null;
-        int count = 0;
-        for (RegistryCenter each : ServiceLoader.load(RegistryCenter.class)) {
-            result = each;
-            count++;
-        }
-        Preconditions.checkNotNull(result, "Cannot load implementation class for registry center.");
-        if (1 != count) {
-            log.warn("Find more than one registry center implementation class, use `{}` now.", result.getClass().getName());
-        }
+        RegistryCenter result = newService(regCenterConfig.getType(), regCenterConfig.getProperties());
         result.init(regCenterConfig);
         return result;
     }

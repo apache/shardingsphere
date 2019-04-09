@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
 
+import java.util.Properties;
+
 /**
  * Registry center configuration.
  *
@@ -68,5 +70,9 @@ public final class RegistryCenterConfiguration extends TypeBasedSPIConfiguration
     
     public RegistryCenterConfiguration(final String type) {
         super(type);
+    }
+    
+    public RegistryCenterConfiguration(final String type, final Properties properties) {
+        super(type, properties);
     }
 }
