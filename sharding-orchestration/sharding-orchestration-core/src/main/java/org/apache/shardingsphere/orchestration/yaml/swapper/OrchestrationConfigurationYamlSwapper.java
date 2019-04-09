@@ -29,11 +29,13 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConf
  */
 public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationConfiguration, OrchestrationConfiguration> {
     
+    private RegistryCenterConfigurationYamlSwapper registryCenterConfigurationYamlSwapper = new RegistryCenterConfigurationYamlSwapper();
+    
     @Override
     public YamlOrchestrationConfiguration swap(final OrchestrationConfiguration data) {
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
         result.setName(data.getName());
-        result.setRegistry(data.getRegCenterConfig());
+        result.setRegistry(registryCenterConfigurationYamlSwapper.swap(data.getRegCenterConfig()));
         result.setOverwrite(data.isOverwrite());
         return result;
     }
@@ -41,6 +43,6 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     @Override
     public OrchestrationConfiguration swap(final YamlOrchestrationConfiguration yamlConfiguration) {
         Preconditions.checkNotNull(yamlConfiguration.getRegistry(), "Registry center must be required.");
-        return new OrchestrationConfiguration(yamlConfiguration.getName(), yamlConfiguration.getRegistry(), yamlConfiguration.isOverwrite());
+        return new OrchestrationConfiguration(yamlConfiguration.getName(), registryCenterConfigurationYamlSwapper.swap(yamlConfiguration.getRegistry()), yamlConfiguration.isOverwrite());
     }
 }
