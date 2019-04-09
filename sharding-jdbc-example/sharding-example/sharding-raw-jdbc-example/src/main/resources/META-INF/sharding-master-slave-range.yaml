@@ -54,15 +54,11 @@ shardingRule:
         column: order_item_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_country
-
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
       preciseAlgorithmClassName: org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm
       rangeAlgorithmClassName: org.apache.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm
-
   masterSlaveRules:
     ds_0:
       masterDataSourceName: ds_master_0

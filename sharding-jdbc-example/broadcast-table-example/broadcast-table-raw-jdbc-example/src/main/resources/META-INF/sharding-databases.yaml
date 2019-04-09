@@ -11,25 +11,8 @@ dataSources:
     password:
 
 shardingRule:
-  tables:
-    t_order: 
-      actualDataNodes: ds_${0..1}.t_order
-      keyGenerator:
-        type: SNOWFLAKE
-        column: order_id
-    t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item
-      keyGenerator:
-        type: SNOWFLAKE
-        column: order_item_id
-  bindingTables:
-    - t_order,t_order_item
-  defaultDatabaseStrategy:
-    inline:
-      shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
-  defaultTableStrategy:
-    none:
+  broadcastTables:
+    - t_country
 
 props:
   sql.show: false

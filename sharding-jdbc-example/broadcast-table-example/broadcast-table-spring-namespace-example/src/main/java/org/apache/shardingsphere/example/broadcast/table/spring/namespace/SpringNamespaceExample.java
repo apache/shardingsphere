@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.mybatis;
+package org.apache.shardingsphere.example.broadcast.table.spring.namespace;
 
-import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
+import org.apache.shardingsphere.example.common.mybatis.service.SpringCountryService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SpringNamespaceExample {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-tables.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-databases-tables.xml";
 //    private static final String CONFIG_FILE = "META-INF/application-master-slave.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-master-slave.xml";
-    
+
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            SpringPojoService commonService = applicationContext.getBean(SpringPojoService.class);
-            commonService.initEnvironment();
-            commonService.processSuccess();
-            commonService.cleanEnvironment();
+            SpringCountryService countryService = applicationContext.getBean(SpringCountryService.class);
+            countryService.initEnvironment();
+            countryService.processSuccess();
+            countryService.cleanEnvironment();
         }
     }
 }

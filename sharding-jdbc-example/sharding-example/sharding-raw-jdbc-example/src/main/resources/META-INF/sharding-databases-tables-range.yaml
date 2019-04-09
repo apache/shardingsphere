@@ -34,9 +34,6 @@ shardingRule:
         column: order_item_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_country
-  
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id

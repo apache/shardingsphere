@@ -52,9 +52,6 @@
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
-            <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule table="t_country" />
-            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 </beans>

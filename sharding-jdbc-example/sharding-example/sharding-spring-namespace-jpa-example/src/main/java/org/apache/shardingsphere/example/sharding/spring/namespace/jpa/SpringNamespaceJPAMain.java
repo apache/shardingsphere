@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.sharding.spring.namespace.jpa;
 
 import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
-import org.apache.shardingsphere.example.common.jpa.service.JPACountryService;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -34,8 +33,6 @@ public class SpringNamespaceJPAMain {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
             JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
             commonService.processSuccess();
-            JPACountryService countryService = applicationContext.getBean(JPACountryService.class);
-            countryService.processSuccess();
         }
     }
 }

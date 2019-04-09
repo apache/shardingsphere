@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.boot.jpa;
+package org.apache.shardingsphere.example.broadcast.table.spring.boot;
 
-import org.apache.shardingsphere.example.common.jpa.service.JPACommonService;
+import org.apache.shardingsphere.example.common.jpa.service.JPACountryService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -29,11 +29,11 @@ import org.springframework.context.annotation.ComponentScan;
 @EntityScan(basePackages = "org.apache.shardingsphere.example.common.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootExample {
-    
+
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
-            JPACommonService commonService = applicationContext.getBean(JPACommonService.class);
-            commonService.processSuccess();
+            JPACountryService countryService = applicationContext.getBean(JPACountryService.class);
+            countryService.processSuccess();
         }
     }
 }

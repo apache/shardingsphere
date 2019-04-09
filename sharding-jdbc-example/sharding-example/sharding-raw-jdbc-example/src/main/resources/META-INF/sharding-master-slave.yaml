@@ -52,14 +52,10 @@ shardingRule:
         column: order_item_id
   bindingTables:
     - t_order,t_order_item
-  broadcastTables:
-    - t_country
-
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds_${user_id % 2}
-
   masterSlaveRules:
     ds_0:
       masterDataSourceName: ds_master_0
