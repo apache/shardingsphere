@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
@@ -179,16 +179,16 @@ public final class SQLRewriteEngineTest {
         insertStatement.setParametersIndex(2);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.NONE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(19));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "age", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1), new SQLPlaceholderExpression(2)};
-        insertColumnValues.addInsertColumnValue(sqlExpressions, parameters);
-        insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        insertOptimizeResult.addUnit(sqlExpressions, parameters);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO table_x (name, age) VALUES (?, ?)", 
-                DatabaseType.MySQL, routeResult, Arrays.asList(parameters), new OptimizeResult(insertColumnValues));
+                DatabaseType.MySQL, routeResult, Arrays.asList(parameters), new OptimizeResult(insertOptimizeResult));
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1 (name, age, id) VALUES (?, ?, ?)"));
     }
     
@@ -200,16 +200,16 @@ public final class SQLRewriteEngineTest {
         insertStatement.setParametersIndex(1);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)};
-        insertColumnValues.addInsertColumnValue(sqlExpressions, parameters);
-        insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        insertOptimizeResult.addUnit(sqlExpressions, parameters);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "INSERT INTO `table_x` VALUES (?)", DatabaseType.MySQL, routeResult, Arrays.asList(parameters), new OptimizeResult(insertColumnValues));
+                "INSERT INTO `table_x` VALUES (?)", DatabaseType.MySQL, routeResult, Arrays.asList(parameters), new OptimizeResult(insertOptimizeResult));
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (?, ?)"));
     }
     
@@ -220,15 +220,15 @@ public final class SQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
-        insertColumnValues.addInsertColumnValue(sqlExpressions, new Object[0]);
-        insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO `table_x` VALUES (10)", 
-                DatabaseType.MySQL, routeResult, Collections.emptyList(), new OptimizeResult(insertColumnValues));
+                DatabaseType.MySQL, routeResult, Collections.emptyList(), new OptimizeResult(insertOptimizeResult));
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (10, 1)"));
     }
     
@@ -242,15 +242,15 @@ public final class SQLRewriteEngineTest {
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
-        insertColumnValues.addInsertColumnValue(sqlExpressions, new Object[0]);
-        insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, routeResult, parameters, new OptimizeResult(insertColumnValues));
+                "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, routeResult, parameters, new OptimizeResult(insertOptimizeResult));
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (10, 1)"));
     }
     
@@ -261,16 +261,16 @@ public final class SQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertColumnValues insertColumnValues = new InsertColumnValues(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)};
         Object[] parameters = {"x", 1};
-        insertColumnValues.addInsertColumnValue(sqlExpressions, parameters);
-        insertColumnValues.getColumnValues().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        insertOptimizeResult.addUnit(sqlExpressions, parameters);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
-                "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, routeResult, Arrays.asList(parameters), new OptimizeResult(insertColumnValues));
+                "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, routeResult, Arrays.asList(parameters), new OptimizeResult(insertOptimizeResult));
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (?, ?)"));
     }
     
