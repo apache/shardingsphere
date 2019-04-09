@@ -74,7 +74,6 @@ expr
     | NOT expr
     | NOT_ expr
     | booleanPrimary
-    | exprRecursive
     ;
 
 booleanPrimary
@@ -208,10 +207,6 @@ subquery
     ;
 
 collateClause
-    : matchNone
-    ;
-
-exprRecursive
     : matchNone
     ;
 
