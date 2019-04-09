@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
@@ -9,7 +26,6 @@
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="sharding-rule" />
-                <xsd:element ref="config-map" minOccurs="0" />
                 <xsd:element ref="props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
@@ -18,8 +34,10 @@
     <xsd:element name="sharding-rule">
         <xsd:complexType>
             <xsd:sequence>
+                <xsd:element ref="master-slave-rules" minOccurs="0" />
                 <xsd:element ref="table-rules" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
+                <xsd:element ref="broadcast-table-rules" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="default-data-source-name" type="xsd:string" />
@@ -41,8 +59,8 @@
             <xsd:attribute name="actual-data-nodes" type="xsd:string" />
             <xsd:attribute name="database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="table-strategy-ref" type="xsd:string" />
-            <xsd:attribute name="generate-key-column-name" type="xsd:string" />
             <xsd:attribute name="key-generator-ref" type="xsd:string" />
+            <xsd:attribute name="encryptor-ref" type="xsd:string" />
             <xsd:attribute name="logic-index" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
@@ -56,6 +74,18 @@
     <xsd:element name="binding-table-rule">
         <xsd:complexType>
             <xsd:attribute name="logic-tables" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="broadcast-table-rules">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="broadcast-table-rule" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="broadcast-table-rule">
+        <xsd:complexType>
+            <xsd:attribute name="table" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="standard-strategy">
@@ -91,11 +121,37 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="config-map">
+    
+    <xsd:element name="master-slave-rules">
         <xsd:complexType>
-            <xsd:complexContent>
-                <xsd:extension base="beans:mapType" />
-            </xsd:complexContent>
+            <xsd:sequence>
+                <xsd:element ref="master-slave-rule" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="master-slave-rule">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
+            <xsd:attribute name="slave-data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="strategy-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="key-generator">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="column" type="xsd:string" />
+            <xsd:attribute name="type" type="xsd:string" />
+            <xsd:attribute name="props-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="encryptor">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="columns" type="xsd:string" use="required" />
+            <xsd:attribute name="assisted-query-columns" type="xsd:string" />
+            <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="props">
