@@ -131,7 +131,7 @@ simpleExpr
     | EXISTS? subquery
     // | (identifier_ expr)
     //| match_expr
-    | caseExpress
+    | caseExpr
     | intervalExpr
     | privateExprOfDb
     ;
@@ -152,12 +152,36 @@ distinct
     : DISTINCT
     ;
 
-intervalExpr
-    : matchNone
+caseExpr
+    : caseCond | caseComp
     ;
 
-caseExpress
-    : matchNone
+caseComp
+    : CASE simpleExpr caseWhenComp+ elseResult? END
+    ;
+
+caseWhenComp
+    : WHEN simpleExpr THEN caseResult
+    ;
+
+caseCond
+    : CASE whenResult+ elseResult? END
+    ;
+
+whenResult
+    : WHEN expr THEN caseResult
+    ;
+
+elseResult
+    : ELSE caseResult
+    ;
+
+caseResult
+    : expr
+    ;
+
+intervalExpr
+    : INTERVAL expr ignoredIdentifier_
     ;
 
 privateExprOfDb
