@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSeg
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.HashMap;

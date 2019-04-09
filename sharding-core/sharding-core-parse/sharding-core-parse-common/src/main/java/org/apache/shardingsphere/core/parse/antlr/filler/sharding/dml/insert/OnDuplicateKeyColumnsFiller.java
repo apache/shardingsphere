@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFi
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.lexer.token.Literals;
-import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Literals;
+import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLParserFactory;
+import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParserFactory;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
@@ -51,7 +51,7 @@ public final class EncryptSQLParsingEngine {
      * Parse SQL.
      *
      * @param useCache use cache or not
-     * @param sql sql
+     * @param sql SQL
      * @return parsed SQL statement
      */
     public SQLStatement parse(final boolean useCache, final String sql) {

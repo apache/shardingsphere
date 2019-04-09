@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.parse.antlr.rule.registry.ShardingParsingR
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.GeneralSQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLParser;
+import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

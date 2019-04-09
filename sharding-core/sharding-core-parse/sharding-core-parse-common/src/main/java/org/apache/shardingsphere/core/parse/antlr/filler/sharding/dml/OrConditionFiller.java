@@ -32,12 +32,12 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parse.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
-import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;

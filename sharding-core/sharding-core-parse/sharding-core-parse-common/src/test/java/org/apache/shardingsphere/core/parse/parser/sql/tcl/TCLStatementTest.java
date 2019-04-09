@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.parse.parser.sql.tcl;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parse.lexer.LexerEngineFactory;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
+import org.apache.shardingsphere.core.parse.old.lexer.LexerEngineFactory;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

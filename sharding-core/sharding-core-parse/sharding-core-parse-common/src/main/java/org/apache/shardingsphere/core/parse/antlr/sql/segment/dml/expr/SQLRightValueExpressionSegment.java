@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 
 /**
  * SQL right value expression segment.

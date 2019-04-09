@@ -23,9 +23,9 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parse.lexer.LexerEngineFactory;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLParserFactory;
+import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
+import org.apache.shardingsphere.core.parse.old.lexer.LexerEngineFactory;
+import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParserFactory;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

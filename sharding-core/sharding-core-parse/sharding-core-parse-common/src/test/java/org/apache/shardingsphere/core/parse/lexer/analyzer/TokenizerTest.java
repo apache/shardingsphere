@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.core.parse.lexer.analyzer;
 
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.lexer.token.Literals;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parse.lexer.token.Token;
-import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
+import org.apache.shardingsphere.core.parse.old.lexer.analyzer.CharType;
+import org.apache.shardingsphere.core.parse.old.lexer.analyzer.Dictionary;
+import org.apache.shardingsphere.core.parse.old.lexer.analyzer.Tokenizer;
+import org.apache.shardingsphere.core.parse.old.lexer.analyzer.UnterminatedCharException;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Literals;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Token;
+import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

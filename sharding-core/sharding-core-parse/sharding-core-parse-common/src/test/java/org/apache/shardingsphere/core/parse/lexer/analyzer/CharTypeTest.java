@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.lexer.analyzer;
 
+import org.apache.shardingsphere.core.parse.old.lexer.analyzer.CharType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

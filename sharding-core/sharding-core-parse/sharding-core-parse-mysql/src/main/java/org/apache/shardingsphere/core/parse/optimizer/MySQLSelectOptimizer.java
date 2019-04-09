@@ -26,15 +26,15 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
-import org.apache.shardingsphere.core.parse.parser.constant.DerivedColumn;
-import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
-import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.DistinctSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedColumn;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.DistinctSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.SelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.StarSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 
 import java.util.List;
 

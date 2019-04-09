@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.parser.context;
 
 import org.apache.shardingsphere.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

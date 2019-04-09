@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingUnsupportedException;
+import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
 
 import java.util.Map;
 

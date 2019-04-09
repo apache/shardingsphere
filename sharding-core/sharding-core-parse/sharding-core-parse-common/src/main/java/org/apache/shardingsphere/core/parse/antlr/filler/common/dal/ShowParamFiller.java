@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dal;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.ShowParamSegment;
-import org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement.ShowStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.ShowStatement;
 
 /**
  * Show param filler.

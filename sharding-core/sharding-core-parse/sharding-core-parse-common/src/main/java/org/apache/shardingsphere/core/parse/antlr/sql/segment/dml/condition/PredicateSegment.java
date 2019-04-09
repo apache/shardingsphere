@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
 
 /**
  * Predicate segment.

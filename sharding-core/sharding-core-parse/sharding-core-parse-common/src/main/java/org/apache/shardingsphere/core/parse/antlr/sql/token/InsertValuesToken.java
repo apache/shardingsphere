@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 
 /**
  * Insert values token.
