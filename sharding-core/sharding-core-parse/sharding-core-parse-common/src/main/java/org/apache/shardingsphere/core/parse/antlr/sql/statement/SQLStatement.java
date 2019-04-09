@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.statement;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Conditions;
-import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 
 import java.util.List;
 
@@ -65,6 +66,15 @@ public interface SQLStatement {
      * @param sqlToken SQL token
      */
     void addSQLToken(SQLToken sqlToken);
+    
+    /**
+     * Find SQL token.
+     *
+     * @param sqlTokenType SQL token type
+     * @param <T> type of SQL token
+     * @return SQL token
+     */
+    <T extends SQLToken> Optional<T> findSQLToken(Class<T> sqlTokenType);
     
     /**
      * Get SQL tokens.

@@ -17,53 +17,52 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 
 /**
  * Insert columns filler.
  *
  * @author zhangliang
  */
-public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment, BaseRule> {
+@Setter
+public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, ShardingTableMetaDataAwareFiller {
+    
+    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {
-                fill(insertStatement, shardingTableMetaData);
+                fillFromMetaData(insertStatement);
             } else {
-                fill(sqlSegment, insertStatement);
+                fillFromSQL(sqlSegment, insertStatement);
             }
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), DefaultKeyword.VALUES));
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex()));
         }
     }
     
-    private void fill(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void fillFromMetaData(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        if (shardingTableMetaData.containsTable(tableName)) {
-            for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-                Column column = new Column(each, tableName);
-                insertStatement.getColumns().add(column);
-            }
+        for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
+            insertStatement.addColumn(each);
         }
     }
     
-    private void fill(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
+    private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
-            insertStatement.getColumns().add(new Column(each.getName(), tableName));
+            insertStatement.addColumn(each.getName());
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
                 insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), 0));
             }

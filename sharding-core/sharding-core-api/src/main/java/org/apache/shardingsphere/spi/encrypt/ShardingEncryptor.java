@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.spi.encrypt;
 
-import org.apache.shardingsphere.spi.BaseAlgorithm;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
  * Sharding encryptor.
  *
  * @author panjuan
  */
-public interface ShardingEncryptor extends BaseAlgorithm {
+public interface ShardingEncryptor extends TypeBasedSPI {
     
     /**
      * Initialize.

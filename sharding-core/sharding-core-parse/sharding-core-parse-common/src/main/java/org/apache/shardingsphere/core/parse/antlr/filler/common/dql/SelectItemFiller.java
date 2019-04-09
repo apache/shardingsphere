@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
@@ -30,15 +31,14 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Expressio
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.parser.constant.DerivedAlias;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.CommonSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.token.AggregationDistinctToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedAlias;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.CommonSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.StarSelectItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 
 /**
  * Select item filler.
@@ -46,20 +46,23 @@ import org.apache.shardingsphere.core.rule.BaseRule;
  * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class SelectItemFiller implements SQLSegmentFiller {
     
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return;
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         if (sqlSegment instanceof StarSelectItemSegment) {
-            fillStarSelectItemSegment(shardingTableMetaData, (StarSelectItemSegment) sqlSegment, selectStatement);
+            fillStarSelectItemSegment((StarSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof ColumnSelectItemSegment) {
-            fillColumnSelectItemSegment(shardingTableMetaData, (ColumnSelectItemSegment) sqlSegment, selectStatement);
+            fillColumnSelectItemSegment((ColumnSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof ExpressionSelectItemSegment) {
@@ -71,11 +74,11 @@ public final class SelectItemFiller implements SQLSegmentFiller {
             return;
         }
         if (sqlSegment instanceof SubquerySegment) {
-            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, rule, shardingTableMetaData);
+            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement);
         }
     }
     
-    private void fillStarSelectItemSegment(final ShardingTableMetaData shardingTableMetaData, final StarSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
+    private void fillStarSelectItemSegment(final StarSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.setContainStar(true);
         Optional<String> owner = selectItemSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
@@ -87,7 +90,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         }
     }
     
-    private void fillColumnSelectItemSegment(final ShardingTableMetaData shardingTableMetaData, final ColumnSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
+    private void fillColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         Optional<String> owner = selectItemSegment.getOwner();
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
@@ -121,7 +124,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));
     }
     
-    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        new SubqueryFiller().fill(subquerySegment, sqlStatement, rule, shardingTableMetaData);
+    private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement) {
+        new SubqueryFiller().fill(subquerySegment, sqlStatement);
     }
 }

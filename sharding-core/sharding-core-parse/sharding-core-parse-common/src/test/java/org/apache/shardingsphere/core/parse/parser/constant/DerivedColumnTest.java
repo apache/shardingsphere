@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.parser.constant;
 
+import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedColumn;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

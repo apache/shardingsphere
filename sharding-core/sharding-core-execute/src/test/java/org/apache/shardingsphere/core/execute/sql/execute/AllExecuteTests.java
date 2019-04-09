@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.AggregationDist
 import org.apache.shardingsphere.core.execute.sql.execute.result.AggregationDistinctQueryResultTest;
 import org.apache.shardingsphere.core.execute.sql.execute.result.DistinctQueryResultTest;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaDataTest;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultUtilTest;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRowTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -32,7 +33,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AggregationDistinctQueryMetaDataTest.class,
         AggregationDistinctQueryResultTest.class,
         DistinctQueryResultTest.class,
-        QueryResultMetaDataTest.class
+        QueryResultMetaDataTest.class,
+        QueryResultUtilTest.class
 })
 public final class AllExecuteTests {
 }

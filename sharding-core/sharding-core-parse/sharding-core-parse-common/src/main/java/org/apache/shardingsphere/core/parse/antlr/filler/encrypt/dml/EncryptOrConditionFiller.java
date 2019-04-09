@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
-import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
-import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -45,19 +46,22 @@ import java.util.Set;
  *
  * @author duhongjun
  */
-public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSegment, EncryptRule> {
-
+@RequiredArgsConstructor
+public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSegment> {
+    
+    private final EncryptRule encryptRule;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final EncryptRule encryptRule,
-                     final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
-        fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, encryptRule);
+        fillColumnTableMap(sqlStatement, columnNameToTable, columnNameCount);
+        filterCondition(sqlStatement, sqlSegment);
     }
-
-    private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
-            final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+    
+    private void fillColumnTableMap(final SQLStatement sqlStatement, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         if (null == shardingTableMetaData) {
             return;
         }
@@ -76,7 +80,7 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
         }
     }
     
-    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final EncryptRule encryptRule) {
+    private OrCondition filterCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition) {
         OrCondition result = new OrCondition();
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
@@ -84,19 +88,19 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
                 if (null == condition.getColumn()) {
                     continue;
                 }
-                if(filledConditionStopIndexes.contains(condition.getStopIndex())) {
+                if (filledConditionStopIndexes.contains(condition.getStopIndex())) {
                     continue;
-                }else {
+                } else {
                     filledConditionStopIndexes.add(condition.getStopIndex());
                 }
-                Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, sqlStatement, condition));
-                fillEncryptCondition(column, condition, encryptRule, sqlStatement);
+                Column column = new Column(condition.getColumn().getName(), getTableName(sqlStatement, condition));
+                fillEncryptCondition(column, condition, sqlStatement);
             }
         }
         return result;
     }
     
-    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final EncryptRule encryptRule, final SQLStatement sqlStatement) {
+    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final SQLStatement sqlStatement) {
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
@@ -112,31 +116,31 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private String getTableName(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final ConditionSegment conditionSegment) {
+    private String getTableName(final SQLStatement sqlStatement, final ConditionSegment conditionSegment) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            return getTableName(shardingTableMetaData, sqlStatement.getTables(), conditionSegment);
+            return getTableName(sqlStatement.getTables(), conditionSegment);
         }
         SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
         while (null != currentSelectStatement.getParentStatement()) {
             currentSelectStatement = currentSelectStatement.getParentStatement();
-            String tableName = getTableName(shardingTableMetaData, currentSelectStatement.getTables(), conditionSegment);
+            String tableName = getTableName(currentSelectStatement.getTables(), conditionSegment);
             if (!"".equals(tableName)) {
                 return tableName;
             }
         }
-        return getTableName(shardingTableMetaData, currentSelectStatement.getTables(), conditionSegment);
+        return getTableName(currentSelectStatement.getTables(), conditionSegment);
     }
     
-    private String getTableName(final ShardingTableMetaData shardingTableMetaData, final Tables tables, final ConditionSegment conditionSegment) {
+    private String getTableName(final Tables tables, final ConditionSegment conditionSegment) {
         if (conditionSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(conditionSegment.getColumn().getOwner().get());
             return table.isPresent() ? table.get().getName() : "";
         } else {
-            return getTableNameFromMetaData(shardingTableMetaData, tables, conditionSegment.getColumn().getName());
+            return getTableNameFromMetaData(tables, conditionSegment.getColumn().getName());
         }
     }
     
-    private String getTableNameFromMetaData(final ShardingTableMetaData shardingTableMetaData, final Tables tables, final String columnName) {
+    private String getTableNameFromMetaData(final Tables tables, final String columnName) {
         for (String each : tables.getTableNames()) {
             TableMetaData tableMetaData = shardingTableMetaData.get(each);
             if (null != tableMetaData) {

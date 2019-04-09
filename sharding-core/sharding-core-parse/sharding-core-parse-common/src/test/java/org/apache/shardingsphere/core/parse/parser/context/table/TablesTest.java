@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.parse.parser.context.table;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -40,61 +42,61 @@ public final class TablesTest {
     @Test
     public void assertIsNotEmpty() {
         Tables tables = new Tables();
-        tables.add(new Table("table", Optional.of("tbl")));
+        tables.add(new Table("table", "tbl"));
         assertFalse(tables.isEmpty());
     }
     
     @Test
     public void assertIsSameTable() {
         Tables tables = new Tables();
-        tables.add(new Table("table", Optional.of("tbl_1")));
-        tables.add(new Table("table", Optional.of("tbl_2")));
+        tables.add(new Table("table", "tbl_1"));
+        tables.add(new Table("table", "tbl_2"));
         assertTrue(tables.isSameTable());
     }
     
     @Test
     public void assertIsNotSameTable() {
         Tables tables = new Tables();
-        tables.add(new Table("table_1", Optional.of("tbl_1")));
-        tables.add(new Table("table_2", Optional.of("tbl_2")));
+        tables.add(new Table("table_1", "tbl_1"));
+        tables.add(new Table("table_2", "tbl_2"));
         assertFalse(tables.isSameTable());
     }
     
     @Test
     public void assertIsSingleTable() {
         Tables tables = new Tables();
-        tables.add(new Table("table", Optional.of("tbl")));
+        tables.add(new Table("table", "tbl"));
         assertTrue(tables.isSingleTable());
     }
     
     @Test
     public void assertIsNotSingleTable() {
         Tables tables = new Tables();
-        tables.add(new Table("table_1", Optional.of("tbl_1")));
-        tables.add(new Table("table_2", Optional.of("tbl_2")));
+        tables.add(new Table("table_1", "tbl_1"));
+        tables.add(new Table("table_2", "tbl_2"));
         assertFalse(tables.isSingleTable());
     }
     
     @Test
     public void assertGetSingleTableName() {
         Tables tables = new Tables();
-        tables.add(new Table("table", Optional.of("tbl")));
+        tables.add(new Table("table", "tbl"));
         assertThat(tables.getSingleTableName(), is("table"));
     }
     
     @Test
     public void assertGetTableNames() {
         Tables tables = new Tables();
-        tables.add(new Table("table_1", Optional.of("tbl_1")));
-        tables.add(new Table("table_2", Optional.of("tbl_2")));
+        tables.add(new Table("table_1", "tbl_1"));
+        tables.add(new Table("table_2", "tbl_2"));
         assertThat(tables.getTableNames(), CoreMatchers.<Collection<String>>is(Sets.newHashSet("table_1", "table_2")));
     }
     
     @Test
     public void assertFindTableWithName() {
         Tables tables = new Tables();
-        tables.add(new Table("table_1", Optional.of("tbl_1")));
-        tables.add(new Table("table_2", Optional.of("tbl_2")));
+        tables.add(new Table("table_1", "tbl_1"));
+        tables.add(new Table("table_2", "tbl_2"));
         Optional<Table> table = tables.find("table_1");
         assertTrue(table.isPresent());
         assertThat(table.get().getName(), is("table_1"));
@@ -104,8 +106,8 @@ public final class TablesTest {
     @Test
     public void assertFindTableWithAlias() {
         Tables tables = new Tables();
-        tables.add(new Table("table_1", Optional.of("tbl_1")));
-        tables.add(new Table("table_2", Optional.of("tbl_2")));
+        tables.add(new Table("table_1", "tbl_1"));
+        tables.add(new Table("table_2", "tbl_2"));
         Optional<Table> table = tables.find("tbl_1");
         assertTrue(table.isPresent());
         assertThat(table.get().getName(), is("table_1"));
@@ -115,8 +117,8 @@ public final class TablesTest {
     @Test
     public void assertNotFoundTable() {
         Tables tables = new Tables();
-        tables.add(new Table("table_1", Optional.of("tbl_1")));
-        tables.add(new Table("table_2", Optional.of("tbl_2")));
+        tables.add(new Table("table_1", "tbl_1"));
+        tables.add(new Table("table_2", "tbl_2"));
         Optional<Table> table = tables.find("table_3");
         assertFalse(table.isPresent());
     }

@@ -19,8 +19,9 @@ package org.apache.shardingsphere.core.parse.lexer;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.parse.lexer.token.Token;
-import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
+import org.apache.shardingsphere.core.parse.old.lexer.Lexer;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Token;
+import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

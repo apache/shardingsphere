@@ -17,7 +17,7 @@
   -->
 
 <filler-rule-definition>
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.TableFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.ShardingTableFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert.InsertValuesFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.SetAssignmentsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.OnDuplicateKeyColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.insert.OnDuplicateKeyColumnsFiller" />

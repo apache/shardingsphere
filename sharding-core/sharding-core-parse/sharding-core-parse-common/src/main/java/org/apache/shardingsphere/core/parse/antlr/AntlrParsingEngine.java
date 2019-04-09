@@ -28,9 +28,9 @@ import org.apache.shardingsphere.core.parse.antlr.rule.registry.EncryptParsingRu
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ShardingParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.GeneralSQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.GeneralSQLStatement;
-import org.apache.shardingsphere.core.parse.parser.sql.SQLParser;
+import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -44,6 +44,8 @@ import java.util.Collection;
  */
 public final class AntlrParsingEngine implements SQLParser {
     
+    private final ParsingRuleRegistry parsingRuleRegistry;
+    
     private final SQLParserEngine parserEngine;
     
     private final SQLSegmentsExtractorEngine extractorEngine;
@@ -52,14 +54,8 @@ public final class AntlrParsingEngine implements SQLParser {
     
     private final SQLStatementOptimizerEngine optimizerEngine;
     
-    private final ParsingRuleRegistry parsingRuleRegistry;
-    
     public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        if (rule instanceof EncryptRule) {
-            parsingRuleRegistry = EncryptParsingRuleRegistry.getInstance();
-        } else {
-            parsingRuleRegistry = ShardingParsingRuleRegistry.getInstance();
-        }
+        parsingRuleRegistry = rule instanceof EncryptRule ? EncryptParsingRuleRegistry.getInstance() : ShardingParsingRuleRegistry.getInstance();
         parserEngine = new SQLParserEngine(parsingRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parsingRuleRegistry, databaseType, sql, rule, shardingTableMetaData);
@@ -69,12 +65,12 @@ public final class AntlrParsingEngine implements SQLParser {
     @Override
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
-        if (!ast.getRule().isPresent() && (parsingRuleRegistry instanceof EncryptParsingRuleRegistry)) {
+        if (!ast.getSQLStatementRule().isPresent() && (parsingRuleRegistry instanceof EncryptParsingRuleRegistry)) {
             return new GeneralSQLStatement();
         }
         Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getRule().get());
-        optimizerEngine.optimize(ast.getRule().get(), result);
+        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getSQLStatementRule().get());
+        optimizerEngine.optimize(ast.getSQLStatementRule().get(), result);
         return result;
     }
 }

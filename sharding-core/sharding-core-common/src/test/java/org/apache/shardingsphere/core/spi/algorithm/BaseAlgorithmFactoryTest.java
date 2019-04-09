@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.spi.algorithm;
 
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFactoryFixture;
 import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixture;
 import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixtureImpl;
+import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixtureServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -32,24 +32,26 @@ import static org.junit.Assert.assertTrue;
 
 public final class BaseAlgorithmFactoryTest {
     
+    private BaseAlgorithmFixtureServiceLoader serviceLoader = new BaseAlgorithmFixtureServiceLoader();
+    
     @Test
     public void assertNewAlgorithmByType() {
         Properties properties = new Properties();
         properties.setProperty("key", "value");
-        BaseAlgorithmFixture actual = BaseAlgorithmFactoryFixture.getInstance().newAlgorithm("FIXTURE", properties);
+        BaseAlgorithmFixture actual = serviceLoader.newService("FIXTURE", properties);
         assertThat(actual, instanceOf(BaseAlgorithmFixtureImpl.class));
         assertThat(actual.getProperties().getProperty("key"), is("value"));
     }
     
     @Test
     public void assertNewAlgorithmByDefault() {
-        BaseAlgorithmFixture actual = BaseAlgorithmFactoryFixture.getInstance().newAlgorithm();
+        BaseAlgorithmFixture actual = serviceLoader.newService();
         assertThat(actual, instanceOf(BaseAlgorithmFixtureImpl.class));
         assertTrue(actual.getProperties().isEmpty());
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertNewAlgorithmFailure() {
-        BaseAlgorithmFactoryFixture.getInstance().newAlgorithm("INVALID", new Properties());
+        serviceLoader.newService("INVALID", new Properties());
     }
 }

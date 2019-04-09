@@ -21,8 +21,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
@@ -155,6 +155,8 @@ public final class SQLBuilder {
             }
             if (each instanceof InsertValuesPlaceholder) {
                 appendInsertValuesPlaceholder(null, (InsertValuesPlaceholder) each, insertParameters, result);
+            } else if (each instanceof InsertSetPlaceholder) {
+                appendInsertSetPlaceholder(null, (InsertSetPlaceholder) each, insertParameters, result);
             } else {
                 result.append(each);
             }
@@ -166,27 +168,32 @@ public final class SQLBuilder {
         stringBuilder.append(null == actualTableName ? tablePlaceholder : new TablePlaceholder(actualTableName, tablePlaceholder.getQuoteCharacter()));
     }
     
-    private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData,
-                                         final String actualTableName, final StringBuilder stringBuilder) {
+    private void appendSchemaPlaceholder(final ShardingRule shardingRule, 
+                                         final ShardingDataSourceMetaData shardingDataSourceMetaData, final String actualTableName, final StringBuilder stringBuilder) {
         stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceName(actualTableName)).getSchemaName());
     }
     
-    private void appendIndexPlaceholder(final IndexPlaceholder indexPlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(indexPlaceholder.getLogicIndexName());
+    private void appendIndexPlaceholder(final IndexPlaceholder placeholder, final String actualTableName, final StringBuilder stringBuilder) {
+        stringBuilder.append(placeholder.getLogicIndexName());
         if (!Strings.isNullOrEmpty(actualTableName)) {
             stringBuilder.append("_");
             stringBuilder.append(actualTableName);
         }
     }
     
-    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, 
-                                               final InsertValuesPlaceholder insertValuesPlaceholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        if (DefaultKeyword.SET == insertValuesPlaceholder.getType()) {
-            stringBuilder.append("SET ");
-        } else {
-            stringBuilder.append(" (").append(Joiner.on(", ").join(insertValuesPlaceholder.getColumnNames())).append(") VALUES ");
+    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final InsertValuesPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        stringBuilder.append(" (").append(Joiner.on(", ").join(placeholder.getColumnNames())).append(") VALUES ");
+        for (InsertColumnValue each : placeholder.getColumnValues()) {
+            if (isToAppendInsertColumnValue(tableUnit, each)) {
+                appendInsertColumnValue(each, insertParameters, stringBuilder);
+            }
         }
-        for (InsertColumnValue each : insertValuesPlaceholder.getColumnValues()) {
+        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+    }
+    
+    private void appendInsertSetPlaceholder(final TableUnit tableUnit, final InsertSetPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        stringBuilder.append("SET ");
+        for (InsertColumnValue each : placeholder.getColumnValues()) {
             if (isToAppendInsertColumnValue(tableUnit, each)) {
                 appendInsertColumnValue(each, insertParameters, stringBuilder);
             }

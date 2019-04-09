@@ -26,7 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         ShardingEncryptorStrategyTest.class, 
-        ShardingEncryptorFactoryTest.class, 
+        ShardingEncryptorServiceLoaderTest.class,
         AESShardingEncryptorTest.class, 
         MD5ShardingEncryptorTest.class
 })

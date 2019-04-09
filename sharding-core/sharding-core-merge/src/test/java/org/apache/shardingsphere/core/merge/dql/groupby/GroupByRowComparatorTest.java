@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
 import org.junit.Test;
 
 import java.sql.ResultSet;

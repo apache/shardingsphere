@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi.keygen;
 
-import org.apache.shardingsphere.spi.BaseAlgorithm;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
  * Key generator.
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.spi.BaseAlgorithm;
  * @author zhangliang
  * @author panjuan
  */
-public interface ShardingKeyGenerator extends BaseAlgorithm {
+public interface ShardingKeyGenerator extends TypeBasedSPI {
     
     /**
      * Generate key.

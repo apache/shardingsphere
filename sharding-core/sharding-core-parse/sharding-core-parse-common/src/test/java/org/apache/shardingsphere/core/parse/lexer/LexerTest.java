@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.core.parse.lexer;
 
-import org.apache.shardingsphere.core.parse.lexer.analyzer.Dictionary;
-import org.apache.shardingsphere.core.parse.lexer.token.Assist;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.lexer.token.Literals;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.old.lexer.Lexer;
+import org.apache.shardingsphere.core.parse.old.lexer.analyzer.Dictionary;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Assist;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Literals;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
+import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 public final class LexerTest {

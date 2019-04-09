@@ -19,11 +19,11 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedInsertValuesToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
-import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 
 import java.util.Collection;
 
@@ -52,7 +52,6 @@ final class InsertValuesTokenAssert {
     
     private void assertInsertValuesToken(final InsertValuesToken actual, final ExpectedInsertValuesToken expected) {
         assertThat(assertMessage.getFullAssertMessage("Insert values token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
-        assertThat(assertMessage.getFullAssertMessage("Insert values type assertion error: "), actual.getType().name(), is(expected.getType()));
     }
     
     private Optional<InsertValuesToken> getInsertValuesToken(final Collection<SQLToken> actual) {

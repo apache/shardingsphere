@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl;
 
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
-import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.parser.sql.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 
 import java.util.Arrays;
 import java.util.Collection;

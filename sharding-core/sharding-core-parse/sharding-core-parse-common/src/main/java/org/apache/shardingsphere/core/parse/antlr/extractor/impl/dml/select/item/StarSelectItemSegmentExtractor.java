@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 /**
  * Star select item segment extractor.

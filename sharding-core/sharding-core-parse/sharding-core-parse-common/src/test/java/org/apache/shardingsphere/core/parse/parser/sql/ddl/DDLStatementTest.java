@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.parser.sql.ddl;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
