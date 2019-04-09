@@ -200,38 +200,6 @@ subquery
     : LP_ unionSelect RP_
     ;
 
-caseExpress
-    : caseCond | caseComp
-    ;
-
-caseComp
-    : CASE simpleExpr caseWhenComp+ elseResult? END
-    ;
-
-caseWhenComp
-    : WHEN simpleExpr THEN caseResult
-    ;
-
-caseCond
-    : CASE whenResult+ elseResult? END
-    ;
-
-whenResult
-    : WHEN expr THEN caseResult
-    ;
-
-elseResult
-    : ELSE caseResult
-    ;
-
-caseResult
-    : expr
-    ;
-
-intervalExpr
-    : INTERVAL expr ignoredIdentifier_
-    ;
-
 withClause_
     : WITH RECURSIVE? cteClause_ (COMMA_ cteClause_)* unionSelect
     ;
