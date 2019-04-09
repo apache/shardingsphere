@@ -56,6 +56,15 @@ public final class InsertStatement extends DMLStatement {
     private boolean containGenerateKey;
     
     /**
+     * Add column.
+     * 
+     * @param columnName column name
+     */
+    public void addColumn(final String columnName) {
+        columns.add(new Column(columnName, getTables().getSingleTableName()));
+    }
+    
+    /**
      * Get insert values token.
      * 
      * @return insert values token

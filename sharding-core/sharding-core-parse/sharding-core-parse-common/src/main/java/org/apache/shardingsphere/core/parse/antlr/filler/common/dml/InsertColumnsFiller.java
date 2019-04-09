@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertC
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
@@ -57,14 +56,14 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
     private void fillFromMetaData(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-            insertStatement.getColumns().add(new Column(each, tableName));
+            insertStatement.addColumn(each);
         }
     }
     
     private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
-            insertStatement.getColumns().add(new Column(each.getName(), tableName));
+            insertStatement.addColumn(each.getName());
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
                 insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), 0));
             }
