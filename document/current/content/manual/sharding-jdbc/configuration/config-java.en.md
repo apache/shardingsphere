@@ -1,4 +1,4 @@
-+++
+﻿+++
 toc = true
 title = "Java Configuration"
 weight = 1
@@ -213,7 +213,7 @@ weight = 1
 #### TableRuleConfiguration
 
 | *Name*                             | *DataType*                    | *Description*                                                |
-| :--------------------------------- | :---------------------------- | :----------------------------------------------------------- |
+| ---------------------------------- | ----------------------------- | ------------------------------------------------------------ |
 | logicTable                         | String                        | Name of logic table                                          |
 | actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy, use default databases sharding strategy if absent |
