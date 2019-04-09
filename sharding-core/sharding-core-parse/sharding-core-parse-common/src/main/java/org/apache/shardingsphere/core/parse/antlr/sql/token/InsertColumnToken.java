@@ -15,33 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Select items token.
+ * Symbol token.
  *
- * @author zhangliang
  * @author panjuan
  */
 @Getter
 @ToString
-@EqualsAndHashCode(callSuper = true)
-public final class ItemsToken extends SQLToken {
+public final class InsertColumnToken extends SQLToken {
     
-    @Setter
-    private boolean isFirstOfItemsSpecial;
+    private final String columnName;
     
-    private final List<String> items = new LinkedList<>();
-    
-    public ItemsToken(final int startIndex) {
+    public InsertColumnToken(final int startIndex, final String columnName) {
         super(startIndex);
+        this.columnName = columnName;
     }
 }

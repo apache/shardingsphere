@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 /**
- * SQL Token.
+ * Order by token.
  *
  * @author zhangliang
- * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public abstract class SQLToken implements Comparable<SQLToken> {
+public final class OrderByToken extends SQLToken {
     
-    private final int startIndex;
-    
-    @Override
-    public final int compareTo(final SQLToken sqlToken) {
-        return startIndex - sqlToken.getStartIndex();
+    public OrderByToken(final int startIndex) {
+        super(startIndex);
     }
 }

@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 
 /**
- * Remove token.
+ * Encrypt column token.
  *
- * @author zhangliang
  * @author panjuan
  */
 @Getter
 @ToString
-public final class RemoveToken extends SQLToken {
+public final class EncryptColumnToken extends SQLToken {
     
     private final int stopIndex;
     
-    public RemoveToken(final int startIndex, final int stopIndex) {
+    private final Column column;
+    
+    private final boolean isInWhere;
+    
+    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
         super(startIndex);
         this.stopIndex = stopIndex;
+        this.column = column;
+        this.isInWhere = isInWhere;
     }
 }

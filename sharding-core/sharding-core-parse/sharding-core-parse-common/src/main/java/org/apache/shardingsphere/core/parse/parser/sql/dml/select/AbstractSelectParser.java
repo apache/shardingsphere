@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.Assist;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -38,8 +40,6 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.parser.sql.SQLParser;
-import org.apache.shardingsphere.core.parse.parser.token.ItemsToken;
-import org.apache.shardingsphere.core.parse.parser.token.OrderByToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.LinkedList;

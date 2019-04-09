@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.parser.sql.AbstractSQLStatement;
 
 /**
  * DQL statement.

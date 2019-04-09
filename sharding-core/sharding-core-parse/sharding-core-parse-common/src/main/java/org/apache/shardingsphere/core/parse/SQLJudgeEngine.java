@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngineFactory;
 import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
@@ -47,7 +48,6 @@ import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowT
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTablesStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.parser.token.SchemaToken;
 
 /**
  * SQL judge engine.

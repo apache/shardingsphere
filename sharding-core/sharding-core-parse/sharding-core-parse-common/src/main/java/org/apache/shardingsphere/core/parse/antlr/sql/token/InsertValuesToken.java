@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 /**
- * Aggregation distinct token.
+ * Insert values token.
  *
+ * @author maxiaoguang
  * @author panjuan
  */
 @Getter
-public final class AggregationDistinctToken extends SQLToken {
+@Setter
+public final class InsertValuesToken extends SQLToken {
     
-    private final int stopIndex;
+    private DefaultKeyword type;
     
-    private String columnName;
-    
-    private Optional<String> alias;
-    
-    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final Optional<String> alias) {
+    public InsertValuesToken(final int startIndex, final DefaultKeyword type) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.columnName = columnName;
-        this.alias = alias;
+        this.type = type;
+    }
+    
+    // TODO :In order to be compatible with old ParsingEngine.
+    public InsertValuesToken(final int startIndex) {
+        super(startIndex);
     }
 }

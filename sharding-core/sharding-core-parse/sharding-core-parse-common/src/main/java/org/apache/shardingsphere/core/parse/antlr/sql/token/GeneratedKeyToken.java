@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 /**
  * Generated key token.

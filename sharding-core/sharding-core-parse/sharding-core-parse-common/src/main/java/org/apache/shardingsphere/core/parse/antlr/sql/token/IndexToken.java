@@ -15,22 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Row count token for limit.
+ * Index token.
  *
- * @author zhangliang
+ * @author caohao
  */
 @Getter
-public final class RowCountToken extends SQLToken {
+@Setter
+@ToString
+public final class IndexToken extends SQLToken {
     
-    private final int rowCount;
+    private final int stopIndex;
     
-    public RowCountToken(final int startIndex, final int rowCount) {
+    private String tableName;
+    
+    public IndexToken(final int startIndex, final int stopIndex) {
         super(startIndex);
-        this.rowCount = rowCount;
+        this.stopIndex = stopIndex;
+    }
+    
+    public IndexToken(final int startIndex, final int stopIndex, final String tableName) {
+        this(startIndex, stopIndex);
+        this.tableName = tableName;
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    public String getTableName() {
+        return SQLUtil.getExactlyValue(tableName);
     }
 }

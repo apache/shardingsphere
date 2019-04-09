@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.parser.dialect.sqlserver.clause;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.sqlserver.SQLServerKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException
 import org.apache.shardingsphere.core.parse.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
 
 /**
  * Top clause parser for SQLServer.

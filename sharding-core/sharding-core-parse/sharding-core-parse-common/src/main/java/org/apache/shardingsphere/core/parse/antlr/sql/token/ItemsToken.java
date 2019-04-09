@@ -15,16 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Order by token.
+ * Select items token.
  *
  * @author zhangliang
+ * @author panjuan
  */
-public final class OrderByToken extends SQLToken {
+@Getter
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public final class ItemsToken extends SQLToken {
     
-    public OrderByToken(final int startIndex) {
+    @Setter
+    private boolean isFirstOfItemsSpecial;
+    
+    private final List<String> items = new LinkedList<>();
+    
+    public ItemsToken(final int startIndex) {
         super(startIndex);
     }
 }

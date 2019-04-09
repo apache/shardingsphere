@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.sql;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
-import org.apache.shardingsphere.core.constant.SQLType;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
- * General SQL statement.
+ * Remove token.
  *
- * @author duhongjun
+ * @author zhangliang
+ * @author panjuan
  */
-public final class GeneralSQLStatement extends AbstractSQLStatement {
+@Getter
+@ToString
+public final class RemoveToken extends SQLToken {
     
-    public GeneralSQLStatement(final SQLType type) {
-        super(type);
-    }
+    private final int stopIndex;
     
-    public GeneralSQLStatement() {
-        super(SQLType.GENERAL);
+    public RemoveToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
     }
 }

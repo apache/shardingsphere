@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.parse.parser.dialect.mysql.clause;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Literals;
@@ -27,8 +29,6 @@ import org.apache.shardingsphere.core.parse.parser.clause.SQLClauseParser;
 import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
-import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
 
 /**
  * Limit clause parser for MySQL.

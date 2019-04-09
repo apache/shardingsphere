@@ -31,14 +31,14 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Expressio
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.CommonSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.token.AggregationDistinctToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
 /**
  * Select item filler.

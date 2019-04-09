@@ -20,6 +20,9 @@ package org.apache.shardingsphere.core.parse.parser.dialect.mysql.sql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.RemoveToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
@@ -33,9 +36,6 @@ import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowO
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowTablesStatement;
 import org.apache.shardingsphere.core.parse.parser.sql.dal.show.AbstractShowParser;
-import org.apache.shardingsphere.core.parse.parser.token.RemoveToken;
-import org.apache.shardingsphere.core.parse.parser.token.SchemaToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

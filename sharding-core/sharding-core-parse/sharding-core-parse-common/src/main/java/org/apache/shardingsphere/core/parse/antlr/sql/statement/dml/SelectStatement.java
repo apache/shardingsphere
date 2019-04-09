@@ -22,6 +22,9 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.parser.context.orderby.OrderItem;
@@ -31,9 +34,6 @@ import org.apache.shardingsphere.core.parse.parser.context.selectitem.DistinctSe
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
-import org.apache.shardingsphere.core.parse.parser.token.RowCountToken;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;

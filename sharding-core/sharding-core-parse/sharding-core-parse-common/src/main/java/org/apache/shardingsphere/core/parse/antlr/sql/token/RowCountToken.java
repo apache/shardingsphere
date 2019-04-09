@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
-import lombok.ToString;
 
 /**
- * Symbol token.
+ * Row count token for limit.
  *
- * @author panjuan
+ * @author zhangliang
  */
 @Getter
-@ToString
-public final class InsertColumnToken extends SQLToken {
+public final class RowCountToken extends SQLToken {
     
-    private final String columnName;
+    private final int rowCount;
     
-    public InsertColumnToken(final int startIndex, final String columnName) {
+    public RowCountToken(final int startIndex, final int rowCount) {
         super(startIndex);
-        this.columnName = columnName;
+        this.rowCount = rowCount;
     }
 }

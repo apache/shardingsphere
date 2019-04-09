@@ -15,37 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.core.constant.SQLType;
 
 /**
- * Schema token.
+ * General SQL statement.
  *
- * @author zhangliang
+ * @author duhongjun
  */
-@ToString
-public final class SchemaToken extends SQLToken {
+public final class GeneralSQLStatement extends AbstractSQLStatement {
     
-    @Getter
-    private final int stopIndex;
-    
-    private final String tableName;
-    
-    public SchemaToken(final int startIndex, final int stopIndex, final String tableName) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.tableName = tableName;
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @return table name
-     */
-    public String getTableName() {
-        return SQLUtil.getExactlyValue(tableName);
+    public GeneralSQLStatement() {
+        super(SQLType.GENERAL);
     }
 }

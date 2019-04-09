@@ -25,11 +25,11 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.parser.context.insertvalue.InsertValues;
-import org.apache.shardingsphere.core.parse.parser.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.LinkedList;

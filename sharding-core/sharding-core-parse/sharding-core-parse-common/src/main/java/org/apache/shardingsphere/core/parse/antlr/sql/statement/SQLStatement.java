@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.statement;
 
 import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.parser.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 
 import java.util.List;
 

@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Index token.
+ * Schema token.
  *
- * @author caohao
+ * @author zhangliang
  */
-@Getter
-@Setter
 @ToString
-public final class IndexToken extends SQLToken {
+public final class SchemaToken extends SQLToken {
     
+    @Getter
     private final int stopIndex;
     
-    private String tableName;
+    private final String tableName;
     
-    public IndexToken(final int startIndex, final int stopIndex) {
+    public SchemaToken(final int startIndex, final int stopIndex, final String tableName) {
         super(startIndex);
         this.stopIndex = stopIndex;
-    }
-    
-    public IndexToken(final int startIndex, final int stopIndex, final String tableName) {
-        this(startIndex, stopIndex);
         this.tableName = tableName;
     }
     

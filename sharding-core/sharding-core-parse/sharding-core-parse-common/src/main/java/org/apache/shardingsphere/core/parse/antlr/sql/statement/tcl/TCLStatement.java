@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parse.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.parser.sql.AbstractSQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;

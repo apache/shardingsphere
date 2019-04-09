@@ -19,11 +19,11 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTableToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
 
 import java.util.ArrayList;
 import java.util.Collection;

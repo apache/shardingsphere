@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.parser.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
 
 /**
- * Encrypt column token.
+ * SQL Token.
  *
+ * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 @ToString
-public final class EncryptColumnToken extends SQLToken {
+public abstract class SQLToken implements Comparable<SQLToken> {
     
-    private final int stopIndex;
+    private final int startIndex;
     
-    private final Column column;
-    
-    private final boolean isInWhere;
-    
-    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.column = column;
-        this.isInWhere = isInWhere;
+    @Override
+    public final int compareTo(final SQLToken sqlToken) {
+        return startIndex - sqlToken.getStartIndex();
     }
 }
