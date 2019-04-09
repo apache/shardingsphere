@@ -71,8 +71,7 @@ expr
     | expr OR_ expr
     | expr XOR expr
     | LP_ expr RP_
-    | NOT expr
-    | NOT_ expr
+    | (NOT | NOT_) expr
     | booleanPrimary
     ;
 
@@ -112,6 +111,7 @@ bitExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
+    | bitExpr DIV bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
