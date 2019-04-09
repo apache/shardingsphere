@@ -91,7 +91,7 @@ comparisonOperator
     | LT_
     | NEQ_
     ;
-    
+
 predicate
     : bitExpr NOT? IN subquery
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
@@ -101,7 +101,7 @@ predicate
     | bitExpr NOT? REGEXP bitExpr
     | bitExpr
     ;
-    
+
 bitExpr
     : bitExpr VERTICAL_BAR_ bitExpr
     | bitExpr AMPERSAND_ bitExpr
@@ -123,19 +123,12 @@ simpleExpr
     : functionCall
     | literal
     | columnName
-    | simpleExpr collateClause
-    //| param_marker
+    | simpleExpr collateClause_
     | variable
     | simpleExpr AND_ simpleExpr
-    | PLUS_ simpleExpr
-    | MINUS_ simpleExpr
-    | TILDE_ simpleExpr
-    | NOT_ simpleExpr
-    | BINARY simpleExpr
-    | LP_ expr (COMMA_ expr)* RP_
-    | ROW LP_ expr (COMMA_ expr)* RP_
-    | subquery
-    | EXISTS subquery
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | ROW? LP_ expr (COMMA_ expr)* RP_
+    | EXISTS? subquery
     // | (identifier_ expr)
     //| match_expr
     | caseExpress
