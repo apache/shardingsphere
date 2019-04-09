@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * Drop primary key filler.
  *
  * @author duhongjun
  */
-public final class DropPrimaryKeyFiller implements SQLSegmentFiller<DropPrimaryKeySegment, BaseRule> {
+public final class DropPrimaryKeyFiller implements SQLSegmentFiller<DropPrimaryKeySegment> {
     
     @Override
-    public void fill(final DropPrimaryKeySegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final DropPrimaryKeySegment sqlSegment, final SQLStatement sqlStatement) {
         ((AlterTableStatement) sqlStatement).setDropPrimaryKey(true);
     }
 }

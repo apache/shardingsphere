@@ -20,11 +20,27 @@ grammar DCLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 grant
-    : GRANT (PROXY ON | privileges_ ON onObjectClause_ | ignoredIdentifiers_)
+    : GRANT (proxyClause_ | privilegeClause_ | roleClause_) TO
     ;
 
 revoke
-    : REVOKE (ALL PRIVILEGES? COMMA_ GRANT OPTION | PROXY ON | privileges_ ON onObjectClause_ | ignoredIdentifiers_)
+    : REVOKE (proxyClause_ | privilegeClause_ | allClause_ | roleClause_) FROM
+    ;  
+
+proxyClause_
+    : PROXY ON
+    ;
+
+privilegeClause_
+    : privileges_ ON onObjectClause_
+    ;
+
+roleClause_
+    : ignoredIdentifiers_
+    ;
+
+allClause_
+    : ALL PRIVILEGES? COMMA_ GRANT OPTION
     ;
 
 privileges_

@@ -46,6 +46,9 @@ public final class ExpectedTokens {
     @XmlElement(name = "insert-values-token")
     private ExpectedInsertValuesToken insertValuesToken;
     
+    @XmlElement(name = "insert-set-token")
+    private ExpectedInsertSetToken insertSetToken;
+    
     @XmlElement(name = "order-by-token")
     private ExpectedOrderByToken orderByToken;
     

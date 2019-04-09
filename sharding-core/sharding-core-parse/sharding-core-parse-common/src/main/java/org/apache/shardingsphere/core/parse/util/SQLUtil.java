@@ -21,8 +21,8 @@ import com.google.common.base.CharMatcher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.lexer.dialect.mysql.MySQLKeyword;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 
 /**
  * SQL utility class.

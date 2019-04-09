@@ -17,23 +17,22 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedEncryptColumnToken;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedEncryptColumnToken;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
-import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
-
-import lombok.RequiredArgsConstructor;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 @RequiredArgsConstructor
 public final class EncryptColumnTokenAssert {
     

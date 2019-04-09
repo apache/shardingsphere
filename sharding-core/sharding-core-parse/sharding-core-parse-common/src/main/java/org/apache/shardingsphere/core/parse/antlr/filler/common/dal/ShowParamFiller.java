@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dal;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.ShowParamSegment;
-import org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement.ShowStatement;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.ShowStatement;
 
 /**
  * Show param filler.
  *
  * @author loxp
  */
-public final class ShowParamFiller implements SQLSegmentFiller<ShowParamSegment, BaseRule> {
+public final class ShowParamFiller implements SQLSegmentFiller<ShowParamSegment> {
     
     @Override
-    public void fill(final ShowParamSegment sqlSegment, final SQLStatement sqlStatement, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final ShowParamSegment sqlSegment, final SQLStatement sqlStatement) {
         ((ShowStatement) sqlStatement).setName(sqlSegment.getName());
     }
 }

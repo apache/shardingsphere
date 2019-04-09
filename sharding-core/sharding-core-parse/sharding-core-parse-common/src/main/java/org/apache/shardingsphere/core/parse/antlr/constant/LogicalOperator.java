@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 /**
  * Logical operator.

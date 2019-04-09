@@ -31,7 +31,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorFactory;
+import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
@@ -126,9 +126,9 @@ public class ShardingRule implements BaseRule {
     }
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        ShardingKeyGeneratorFactory factory = ShardingKeyGeneratorFactory.getInstance();
+        ShardingKeyGeneratorServiceLoader serviceLoader = new ShardingKeyGeneratorServiceLoader();
         return containsKeyGeneratorConfiguration(keyGeneratorConfiguration)
-                ? factory.newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProperties()) : factory.newAlgorithm();
+                ? serviceLoader.newService(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProperties()) : serviceLoader.newService();
     }
     
     private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {

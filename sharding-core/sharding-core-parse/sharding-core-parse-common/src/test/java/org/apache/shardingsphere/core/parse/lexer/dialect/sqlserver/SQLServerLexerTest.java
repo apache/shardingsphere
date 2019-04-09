@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.core.parse.lexer.dialect.sqlserver;
 
 import org.apache.shardingsphere.core.parse.lexer.LexerAssert;
-import org.apache.shardingsphere.core.parse.lexer.token.Assist;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.lexer.token.Literals;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.lexer.dialect.sqlserver.SQLServerLexer;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Assist;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Literals;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.junit.Test;
 
 public final class SQLServerLexerTest {

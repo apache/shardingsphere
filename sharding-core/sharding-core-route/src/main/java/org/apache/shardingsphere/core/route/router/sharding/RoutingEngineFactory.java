@@ -24,10 +24,10 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement.ResetParamStatement;
-import org.apache.shardingsphere.core.parse.parser.dialect.postgresql.statement.SetParamStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.ResetParamStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.SetParamStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.InstanceBroadcastRoutingEngine;

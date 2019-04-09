@@ -20,7 +20,7 @@ package org.apache.shardingsphere.api.config.sharding;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.StrategyConfiguration;
+import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
 
 import java.util.Properties;
 
@@ -30,7 +30,7 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public final class KeyGeneratorConfiguration extends StrategyConfiguration {
+public final class KeyGeneratorConfiguration extends TypeBasedSPIConfiguration {
     
     private final String column;
     

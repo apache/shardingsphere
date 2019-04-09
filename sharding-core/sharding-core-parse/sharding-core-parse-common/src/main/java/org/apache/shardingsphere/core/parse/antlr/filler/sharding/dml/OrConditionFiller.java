@@ -17,6 +17,29 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
+import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,40 +48,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parse.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.parser.context.condition.OrCondition;
-import org.apache.shardingsphere.core.parse.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.parser.context.table.Tables;
-import org.apache.shardingsphere.core.parse.parser.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.parser.token.TableToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import com.google.common.base.Optional;
-
 /**
  * Or condition filler.
  *
  * @author duhongjun
  */
-public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegment, ShardingRule> {
+@RequiredArgsConstructor
+public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegment> {
+    
+    private final ShardingRule shardingRule;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(
-                buildCondition(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData).getAndConditions());
+    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement) {
+        sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(buildCondition(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData).getAndConditions());
     }
     
     /**
@@ -77,8 +81,8 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         return filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, shardingRule);
     }
     
-    private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
-                                    final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+    private void fillColumnTableMap(final SQLStatement sqlStatement, 
+                                    final ShardingTableMetaData shardingTableMetaData, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         if (null == shardingTableMetaData) {
             return;
         }
@@ -134,9 +138,9 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
                 if (condition.getExpression() instanceof ColumnSegment) {
                     continue;
                 }
-                if(filledConditionStopIndexes.contains(condition.getStopIndex())) {
+                if (filledConditionStopIndexes.contains(condition.getStopIndex())) {
                     continue;
-                }else {
+                } else {
                     filledConditionStopIndexes.add(condition.getStopIndex());
                 }
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));

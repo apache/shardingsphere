@@ -19,11 +19,11 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedOffsetToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
-import org.apache.shardingsphere.core.parse.parser.token.OffsetToken;
-import org.apache.shardingsphere.core.parse.parser.token.SQLToken;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.Collection;

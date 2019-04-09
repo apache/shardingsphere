@@ -31,7 +31,4 @@ public final class ExpectedInsertValuesToken {
     
     @XmlAttribute(name = "begin-position")
     private int beginPosition;
-    
-    @XmlAttribute(name = "type")
-    private String type;
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
-import org.apache.shardingsphere.core.parse.lexer.token.DefaultKeyword;
 
 import java.util.List;
 import java.util.Set;
@@ -36,8 +35,6 @@ import java.util.Set;
 public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
-    
-    private final DefaultKeyword type;
     
     private final Set<String> columnNames;
     
