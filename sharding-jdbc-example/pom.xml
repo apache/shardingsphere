@@ -17,5 +17,6 @@
         <module>transaction-example</module>
         <module>hint-example</module>
         <module>encrypt-example</module>
+        <module>broadcast-table-example</module>
     </modules>
 </project>
