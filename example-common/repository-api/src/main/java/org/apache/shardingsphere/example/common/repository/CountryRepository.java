@@ -19,5 +19,5 @@ package org.apache.shardingsphere.example.common.repository;
 
 import org.apache.shardingsphere.example.common.entity.Country;
 
-public interface CountryRepository extends CommonRepository<Country,String> {
+public interface CountryRepository extends CommonRepository<Country, String> {
 }

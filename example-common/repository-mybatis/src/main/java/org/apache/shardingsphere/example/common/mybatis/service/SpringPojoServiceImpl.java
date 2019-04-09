@@ -19,7 +19,6 @@ package org.apache.shardingsphere.example.common.mybatis.service;
 
 import org.apache.shardingsphere.example.common.entity.Order;
 import org.apache.shardingsphere.example.common.entity.OrderItem;
-import org.apache.shardingsphere.example.common.mybatis.repository.MybatisCountryRepository;
 import org.apache.shardingsphere.example.common.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.common.repository.OrderRepository;
 import org.springframework.stereotype.Service;

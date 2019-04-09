@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.common.jpa.service;
 
-import org.apache.shardingsphere.example.common.entity.Country;
 import org.apache.shardingsphere.example.common.jpa.entity.CountryEntity;
 import org.apache.shardingsphere.example.common.repository.CountryRepository;
 import org.springframework.stereotype.Service;

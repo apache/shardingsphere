@@ -45,6 +45,7 @@ public final class OrderEntity extends Order {
     }
     
     @Column(name = "status")
+    @Override
     public String getStatus() {
         return super.getStatus();
     }

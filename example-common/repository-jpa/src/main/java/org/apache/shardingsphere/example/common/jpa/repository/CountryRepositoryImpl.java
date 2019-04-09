@@ -26,7 +26,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 @Transactional

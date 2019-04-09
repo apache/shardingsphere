@@ -29,7 +29,7 @@ public class CountryServiceImpl implements CommonService {
 
     private final CountryRepository countryRepository;
 
-    public CountryServiceImpl(CountryRepository countryRepository) {
+    public CountryServiceImpl(final CountryRepository countryRepository) {
         this.countryRepository = countryRepository;
     }
 

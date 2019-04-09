@@ -28,7 +28,7 @@ public final class UserServiceImpl implements CommonService {
     
     private final UserRepository userRepository;
     
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
     

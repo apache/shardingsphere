@@ -83,7 +83,6 @@ public class JPACommonServiceImpl implements JPACommonService {
         return result;
     }
 
-
     private void deleteData(final List<Long> orderIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {

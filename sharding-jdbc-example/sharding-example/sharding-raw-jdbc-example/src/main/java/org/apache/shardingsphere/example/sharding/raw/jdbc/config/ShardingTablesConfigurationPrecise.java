@@ -54,7 +54,7 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds.t_order_item_${[0, 1]}");
         result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "order_item_id", new Properties()));
-        return  result;
+        return result;
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
