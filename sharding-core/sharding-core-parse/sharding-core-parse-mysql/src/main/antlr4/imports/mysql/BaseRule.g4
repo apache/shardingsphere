@@ -133,7 +133,6 @@ simpleExpr
     //| match_expr
     | caseExpr
     | intervalExpr
-    | privateExprOfDb
     ;
 
 functionCall
@@ -184,10 +183,6 @@ intervalExpr
     : INTERVAL expr ignoredIdentifier_
     ;
 
-privateExprOfDb
-    : matchNone
-    ;
-
 variable
     : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
     ;
@@ -219,7 +214,7 @@ string
     ;
 
 subquery
-    : matchNone
+    : 'Default does not match anything'
     ;
 
 orderByClause
@@ -349,8 +344,4 @@ ignoredIdentifier_
 
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
-    ;
-
-matchNone
-    : 'Default does not match anything'
     ;
