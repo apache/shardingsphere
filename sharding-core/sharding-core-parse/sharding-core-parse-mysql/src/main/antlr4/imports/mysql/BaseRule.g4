@@ -91,17 +91,17 @@ comparisonOperator
     | LT_
     | NEQ_
     ;
-
+    
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr (COMMA_ simpleExpr)* RP_
-    | bitExpr NOT? BETWEEN simpleExpr AND predicate
-    | bitExpr SOUNDS LIKE simpleExpr
-    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
-    | bitExpr NOT? (REGEXP | RLIKE) simpleExpr
+    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
+    | bitExpr NOT? BETWEEN bitExpr AND predicate
+    | bitExpr SOUNDS LIKE bitExpr
+    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
+    | bitExpr NOT? REGEXP bitExpr
     | bitExpr
     ;
-
+    
 bitExpr
     : bitExpr VERTICAL_BAR_ bitExpr
     | bitExpr AMPERSAND_ bitExpr
@@ -111,7 +111,6 @@ bitExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
-    | bitExpr DIV bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
