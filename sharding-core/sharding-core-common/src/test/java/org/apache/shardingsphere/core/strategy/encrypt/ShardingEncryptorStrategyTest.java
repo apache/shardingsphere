@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Test;
 
@@ -33,20 +32,20 @@ public final class ShardingEncryptorStrategyTest {
     
     @Test
     public void assertValidConstructor() {
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "pwd1, pwd2", new Properties());
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", new Properties());
         ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
-        assertThat(actual.getShardingEncryptor("test", "pwd2"), instanceOf(ShardingEncryptor.class));
+        assertThat(actual.getShardingEncryptor("test", "pwd2").get(), instanceOf(ShardingEncryptor.class));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertInvalidConstructor() {
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "pwd1, pwd2", "pwd1_index", new Properties());
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", "test.pwd1_index", new Properties());
         new ShardingEncryptorStrategy(encryptorRuleConfiguration);
     }
     
     @Test
     public void assertGetAssistedQueryColumn() {
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "pwd1, pwd2", "pwd1_index,pwd2_index", new Properties());
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", "test.pwd1_index,test.pwd2_index", new Properties());
         ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
         assertThat(actual.getAssistedQueryColumn("test", "pwd1"), is(Optional.of("pwd1_index")));
     }
