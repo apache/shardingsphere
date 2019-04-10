@@ -39,8 +39,8 @@ public final class ShardingEncryptorEngine {
     private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
     
     public ShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        for (Entry<String, EncryptorRuleConfiguration> each : encryptRuleConfiguration.getEncryptorRuleConfigs().entrySet()) {
-            shardingEncryptorStrategies.put(each.getKey(), new ShardingEncryptorStrategy(each.getValue()));
+        for (Entry<String, EncryptorRuleConfiguration> entry : encryptRuleConfiguration.getEncryptorRuleConfigs().entrySet()) {
+            shardingEncryptorStrategies.put(entry.getKey(), new ShardingEncryptorStrategy(entry.getValue()));
         }
     }
     
