@@ -34,7 +34,7 @@ public final class YamlEncryptorConfiguration implements YamlConfiguration {
     
     private String type;
     
-    private String columns;
+    private String qualifiedColumns;
     
     private String assistedQueryColumns;
     

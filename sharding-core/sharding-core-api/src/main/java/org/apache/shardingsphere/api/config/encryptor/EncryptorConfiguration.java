@@ -32,18 +32,18 @@ import java.util.Properties;
 @Getter
 public final class EncryptorConfiguration extends TypeBasedSPIConfiguration {
     
-    private final String columns;
+    private final String qualifiedColumns;
     
     private String assistedQueryColumns;
     
-    public EncryptorConfiguration(final String type, final String columns, final Properties properties) {
-        this(type, columns, "", properties);
+    public EncryptorConfiguration(final String type, final String qualifiedColumns, final Properties properties) {
+        this(type, qualifiedColumns, "", properties);
     }
     
-    public EncryptorConfiguration(final String type, final String columns, final String assistedQueryColumns, final Properties properties) {
+    public EncryptorConfiguration(final String type, final String qualifiedColumns, final String assistedQueryColumns, final Properties properties) {
         super(type, properties);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(columns), "Columns is required.");
-        this.columns = columns;
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(qualifiedColumns), "Columns is required.");
+        this.qualifiedColumns = qualifiedColumns;
         this.assistedQueryColumns = null == assistedQueryColumns ? "" : assistedQueryColumns;
     }
 }
