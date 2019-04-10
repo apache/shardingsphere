@@ -23,6 +23,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ColumnNode;
@@ -45,6 +46,7 @@ public final class ShardingEncryptorStrategy {
     
     private final List<ColumnNode> assistedQueryColumns;
     
+    @Getter(AccessLevel.PRIVATE)
     private final ShardingEncryptor shardingEncryptor;
     
     public ShardingEncryptorStrategy(final EncryptorRuleConfiguration config) {
