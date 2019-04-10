@@ -40,6 +40,9 @@ public final class EncryptorRuleConfigurationYamlSwapper implements YamlSwapper<
     
     @Override
     public EncryptorRuleConfiguration swap(final YamlEncryptorRuleConfiguration yamlConfiguration) {
+        if (null == yamlConfiguration.getAssistedQueryColumns()) {
+            return new EncryptorRuleConfiguration(yamlConfiguration.getType(), yamlConfiguration.getQualifiedColumns(), yamlConfiguration.getProps());
+        }
         return new EncryptorRuleConfiguration(yamlConfiguration.getType(), yamlConfiguration.getQualifiedColumns(), yamlConfiguration.getAssistedQueryColumns(), yamlConfiguration.getProps());
     }
 }
