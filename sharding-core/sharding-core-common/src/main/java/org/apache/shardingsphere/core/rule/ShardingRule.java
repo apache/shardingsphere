@@ -140,7 +140,7 @@ public class ShardingRule implements BaseRule {
     }
     
     private ShardingEncryptorEngine createShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfig) {
-        return null == encryptRuleConfig ? null : new ShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
+        return null == encryptRuleConfig ? new ShardingEncryptorEngine() : new ShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     /**
