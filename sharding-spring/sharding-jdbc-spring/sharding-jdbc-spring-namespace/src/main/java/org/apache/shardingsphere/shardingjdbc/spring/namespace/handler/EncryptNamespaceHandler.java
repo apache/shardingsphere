@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.handler;
 
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.EncryptDataSourceBeanDefinitionParser;
-import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.EncryptorBeanDefinitionParser;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.EncryptorRuleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -31,7 +31,7 @@ public final class EncryptNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_REF_TAG, new EncryptorBeanDefinitionParser());
+        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG, new EncryptorRuleBeanDefinitionParser());
         registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG, new EncryptDataSourceBeanDefinitionParser());
     }
 }
