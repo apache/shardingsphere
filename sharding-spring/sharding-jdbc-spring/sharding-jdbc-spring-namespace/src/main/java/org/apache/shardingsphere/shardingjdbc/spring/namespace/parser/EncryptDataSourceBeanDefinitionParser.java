@@ -19,20 +19,23 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptorRuleBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Encrypt data source parser for spring namespace.
@@ -59,39 +62,41 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     private BeanDefinition parseEncryptRuleConfiguration(final Element element) {
         Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
-        factory.addConstructorArgValue(parseTableRulesConfiguration(encryptRuleElement));
-        parseDefaultEncryptor(factory, encryptRuleElement);
+        factory.addConstructorArgValue(parseEncryptorRulesConfiguration(encryptRuleElement));
         return factory.getBeanDefinition();
     }
     
-    private List<BeanDefinition> parseTableRulesConfiguration(final Element element) {
-        Element tableRulesElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.TABLE_RULES_TAG);
-        List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, EncryptDataSourceBeanDefinitionParserTag.TABLE_RULE_TAG);
-        List<BeanDefinition> result = new ManagedList<>(tableRuleElements.size());
-        for (Element each : tableRuleElements) {
-            result.add(parseTableRuleConfiguration(each));
+    private Map<String, BeanDefinition> parseEncryptorRulesConfiguration(final Element element) {
+        List<Element> encryptorRuleElements = DomUtils.getChildElementsByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_RULE_CONFIG_TAG);
+        Map<String, BeanDefinition> result = new ManagedMap<>(encryptorRuleElements.size());
+        for (Element each : encryptorRuleElements) {
+            result.put(each.getAttribute(ID_ATTRIBUTE), parseEncryptorRuleConfiguration(each));
         }
         return result;
     }
     
-    private void parseDefaultEncryptor(final BeanDefinitionBuilder factory, final Element element) {
-        String defaultEncryptorConfig = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DEFAULT_ENCRYPTOR_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(defaultEncryptorConfig)) {
-            factory.addConstructorArgReference(defaultEncryptorConfig);
-        } else {
-            factory.addConstructorArgValue(null);
-        }
-    }
-    
-    private BeanDefinition parseTableRuleConfiguration(final Element tableElement) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptTableRuleConfiguration.class);
-        factory.addConstructorArgValue(tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_TABLE_ATTRIBUTE));
-        parseEncryptorConfiguration(tableElement, factory);
+    private AbstractBeanDefinition parseEncryptorRuleConfiguration(final Element element) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorRuleConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_QUALIFIED_COLUMNS_ATTRIBUTE));
+        parseAssistedQueryColumns(element, factory);
+        parseProperties(element, factory);
         return factory.getBeanDefinition();
     }
     
-    private void parseEncryptorConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String encryptor = tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_REF_ATTRIBUTE);
-        factory.addConstructorArgReference(encryptor);
+    private void parseAssistedQueryColumns(final Element element, final BeanDefinitionBuilder factory) {
+        String assistedQueryColumns = element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_ASSISTED_QUERY_COLUMNS_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(assistedQueryColumns)) {
+            factory.addConstructorArgValue(assistedQueryColumns);
+        }
+    }
+    
+    private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
+        String properties = element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_PROPERTY_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(properties)) {
+            factory.addConstructorArgReference(properties);
+        } else {
+            factory.addConstructorArgValue(new Properties());
+        }
     }
 }

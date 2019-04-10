@@ -84,8 +84,4 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     public static final String GENERATE_KEY_PROPERTY_REF_ATTRIBUTE = "props-ref";
     
     public static final String LOGIC_INDEX = "logic-index";
-    
-    public static final String ENCRYPTOR_REF_ATTRIBUTE = "encryptor-ref";
-    
-    public static final String ENCRYPTOR_REF_TAG = "encryptor";
 }

@@ -28,21 +28,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptDataSourceBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "data-source";
-    
     public static final String ENCRYPT_RULE_CONFIG_TAG = "encrypt-rule";
+    
+    public static final String ROOT_TAG = "data-source";
     
     public static final String DATA_SOURCE_NAME_TAG = "data-source-name";
     
-    public static final String TABLE_RULES_TAG = "table-rules";
-    
-    public static final String TABLE_RULE_TAG = "table-rule";
-    
-    public static final String ENCRYPT_TABLE_ATTRIBUTE = "encrypt-table";
-    
-    public static final String DEFAULT_ENCRYPTOR_REF_ATTRIBUTE = "default-encryptor-ref";
-    
-    public static final String ENCRYPTOR_REF_ATTRIBUTE = "encryptor-ref";
-    
-    public static final String ENCRYPTOR_REF_TAG = "encryptor";
+    public static final String ENCRYPTOR_RULE_CONFIG_TAG = "encryptor-rule";
 }

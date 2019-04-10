@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -26,27 +26,27 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptorConfigurationYamlSwapperTest {
+public final class EncryptorRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlEncryptorConfiguration actual = new EncryptorConfigurationYamlSwapper().swap(new EncryptorConfiguration("MD5", "pwd", "pwd_query", new Properties()));
+        YamlEncryptorRuleConfiguration actual = new EncryptorRuleConfigurationYamlSwapper().swap(new EncryptorRuleConfiguration("MD5", "tb.pwd", "tb.pwd_query", new Properties()));
         assertThat(actual.getType(), is("MD5"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
+        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
+        assertThat(actual.getAssistedQueryColumns(), is("tb.pwd_query"));
         assertThat(actual.getProps(), is(new Properties()));
     }
     
     @Test
     public void assertSwapToObject() {
-        YamlEncryptorConfiguration yamlConfiguration = new YamlEncryptorConfiguration();
+        YamlEncryptorRuleConfiguration yamlConfiguration = new YamlEncryptorRuleConfiguration();
         yamlConfiguration.setType("MD5");
-        yamlConfiguration.setColumns("pwd");
-        yamlConfiguration.setAssistedQueryColumns("pwd_query");
-        EncryptorConfiguration actual = new EncryptorConfigurationYamlSwapper().swap(yamlConfiguration);
+        yamlConfiguration.setQualifiedColumns("tb.pwd");
+        yamlConfiguration.setAssistedQueryColumns("tb.pwd_query");
+        EncryptorRuleConfiguration actual = new EncryptorRuleConfigurationYamlSwapper().swap(yamlConfiguration);
         assertThat(actual.getType(), is("MD5"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
+        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
+        assertThat(actual.getAssistedQueryColumns(), is("tb.pwd_query"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
 }

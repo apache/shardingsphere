@@ -26,11 +26,11 @@ import lombok.NoArgsConstructor;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptorBeanDefinitionParserTag {
+public final class EncryptorRuleBeanDefinitionParserTag {
     
     public static final String ENCRYPTOR_TYPE_ATTRIBUTE = "type";
     
-    public static final String ENCRYPTOR_COLUMNS_ATTRIBUTE = "columns";
+    public static final String ENCRYPTOR_QUALIFIED_COLUMNS_ATTRIBUTE = "qualified-columns";
     
     public static final String ENCRYPTOR_ASSISTED_QUERY_COLUMNS_ATTRIBUTE = "assisted-query-columns";
     

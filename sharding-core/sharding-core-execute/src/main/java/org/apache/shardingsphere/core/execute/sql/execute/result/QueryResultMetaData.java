@@ -22,11 +22,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -56,7 +57,7 @@ public final class QueryResultMetaData {
     
     @SneakyThrows
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) {
-        this(resultSetMetaData, null, new ShardingEncryptorEngine(Collections.<String, ShardingEncryptorStrategy>emptyMap()));
+        this(resultSetMetaData, null, new ShardingEncryptorEngine());
     }
     
     @SneakyThrows

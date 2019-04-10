@@ -21,16 +21,22 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
+import java.util.Properties;
+
 /**
- * Table Encrypt rule configuration for YAML.
+ * Yaml encryptor configuration.
  *
  * @author panjuan
  */
 @Getter
 @Setter
-public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
+public final class YamlEncryptorRuleConfiguration implements YamlConfiguration {
     
-    private String table;
+    private String type;
     
-    private YamlEncryptorConfiguration encryptor;
+    private String qualifiedColumns;
+    
+    private String assistedQueryColumns;
+    
+    private Properties props = new Properties();
 }

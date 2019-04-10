@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
@@ -42,10 +40,8 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -89,7 +85,7 @@ public class ShardingRule implements BaseRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        shardingEncryptorEngine = new ShardingEncryptorEngine(getShardingEncryptorStrategies());
+        shardingEncryptorEngine = createShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -143,12 +139,8 @@ public class ShardingRule implements BaseRule {
         return result;
     }
     
-    private Map<String, ShardingEncryptorStrategy> getShardingEncryptorStrategies() {
-        Map<String, ShardingEncryptorStrategy> result = new LinkedHashMap<>();
-        for (TableRule each : tableRules) {
-            result.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
-        }
-        return result;
+    private ShardingEncryptorEngine createShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfig) {
+        return null == encryptRuleConfig ? new ShardingEncryptorEngine() : new ShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     /**
@@ -230,10 +222,10 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
-     * Judge logic tables is all belong to binding tables.
+     * Judge logic tables is all belong to binding encryptors.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to binding tables or not
+     * @return logic tables is all belong to binding encryptors or not
      */
     public boolean isAllBindingTables(final Collection<String> logicTableNames) {
         if (logicTableNames.isEmpty()) {
@@ -274,10 +266,10 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
-     * Judge logic tables is all belong to broadcast tables.
+     * Judge logic tables is all belong to broadcast encryptors.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to broadcast tables or not
+     * @return logic tables is all belong to broadcast encryptors or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         if (logicTableNames.isEmpty()) {
@@ -398,25 +390,6 @@ public class ShardingRule implements BaseRule {
             if (each.isExisted(actualTableName)) {
                 result.add(each.getLogicTable());
             }
-        }
-        return result;
-    }
-    
-    /**
-     * Get all actual table names.
-     *
-     * @return all actual table names
-     */
-    public Map<String, Collection<String>> getAllActualTableNames() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (TableRule each : tableRules) {
-            result.put(each.getLogicTable(), Lists.transform(each.getActualDataNodes(), new Function<DataNode, String>() {
-                
-                @Override
-                public String apply(final DataNode input) {
-                    return input.getTableName();
-                }
-            }));
         }
         return result;
     }

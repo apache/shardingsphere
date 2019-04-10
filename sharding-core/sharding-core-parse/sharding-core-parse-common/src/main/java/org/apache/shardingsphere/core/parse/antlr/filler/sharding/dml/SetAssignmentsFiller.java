@@ -99,11 +99,8 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
         if (shardingTableMetaData.containsTable(tableName) && shardingTableMetaData.get(tableName).getColumns().size() == insertStatement.getColumnNames().size()) {
             return insertStatement.getColumnNames().size();
         }
-        Optional<Integer> assistedQueryColumnCount = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
-        if (assistedQueryColumnCount.isPresent()) {
-            return insertStatement.getColumnNames().size() - assistedQueryColumnCount.get();
-        }
-        return insertStatement.getColumnNames().size();
+        Integer assistedQueryColumnCount = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
+        return insertStatement.getColumnNames().size() - assistedQueryColumnCount;
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {

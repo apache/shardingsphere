@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.core.optimize.engine.encrypt;
 
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
@@ -57,17 +56,12 @@ public final class EncryptInsertOptimizeEngineTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("test", "col1, col2", new Properties());
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration();
-        encryptTableRuleConfig.setTable("t_encrypt");
-        encryptTableRuleConfig.setEncryptorConfig(encryptorConfig);
-        EncryptorConfiguration encryptorQueryConfig = new EncryptorConfiguration("assistedTest", "col1, col2", "query1, query2", new Properties());
-        EncryptTableRuleConfiguration encryptQueryTableRuleConfig = new EncryptTableRuleConfiguration();
-        encryptQueryTableRuleConfig.setTable("t_query_encrypt");
-        encryptQueryTableRuleConfig.setEncryptorConfig(encryptorQueryConfig);
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", "t_encrypt.col1, t_encrypt.col2", new Properties());
+        EncryptorRuleConfiguration encryptorQueryConfig = 
+                new EncryptorRuleConfiguration("assistedTest", "t_query_encrypt.col1, t_query_encrypt.col2", "t_query_encrypt.query1, t_query_encrypt.query2", new Properties());
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getTableRuleConfigs().add(encryptTableRuleConfig);
-        result.getTableRuleConfigs().add(encryptQueryTableRuleConfig);
+        result.getEncryptorRuleConfigs().put("test", encryptorConfig);
+        result.getEncryptorRuleConfigs().put("assistedTest", encryptorQueryConfig);
         return result;
     }
     

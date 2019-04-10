@@ -497,7 +497,7 @@ public final class SQLRewriteEngine {
     
     private String getEncryptAssistedColumnName(final EncryptColumnToken encryptColumnToken) {
         Column column = encryptColumnToken.getColumn();
-        Optional<String> result = shardingRule.getTableRule(column.getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(column.getName());
+        Optional<String> result = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName());
         Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
         return result.get();
     }

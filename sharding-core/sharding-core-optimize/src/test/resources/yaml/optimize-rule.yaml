@@ -53,9 +53,6 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_encrypt_${order_id % 2}
-      encryptor:
-        type: test
-        columns: order_id
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
@@ -69,12 +66,18 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_encrypt_query${order_id % 2}
-      encryptor:
-        type: assistedTest
-        columns: user_id
-        assistedQueryColumns: assisted_user_id
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
+  encryptRule:
+    encryptors:
+      t_encryptor:
+        type: test
+        qualifiedColumns: t_encrypt.order_id
+      t_query_encryptor:
+        type: assistedTest
+        qualifiedColumns: t_encrypt_query.user_id
+        assistedQueryColumns: t_encrypt_query.assisted_user_id
+        
         
         
