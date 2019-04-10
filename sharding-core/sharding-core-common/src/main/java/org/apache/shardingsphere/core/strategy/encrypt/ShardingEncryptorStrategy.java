@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.encrypt;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorSer
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,5 +136,20 @@ public final class ShardingEncryptorStrategy {
                 return input.getTableName().equals(logicTableName);
             }
         }).size());
+    }
+    
+    /**
+     * Get encrypt table names.
+     *
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        return Collections2.transform(columns, new Function<ColumnNode, String>() {
+            
+            @Override
+            public String apply(final ColumnNode input) {
+                return input.getTableName();
+            }
+        });
     }
 }
