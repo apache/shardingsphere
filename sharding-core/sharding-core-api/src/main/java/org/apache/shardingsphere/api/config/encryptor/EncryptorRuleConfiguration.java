@@ -42,7 +42,7 @@ public final class EncryptorRuleConfiguration extends TypeBasedSPIConfiguration 
     
     public EncryptorRuleConfiguration(final String type, final String qualifiedColumns, final String assistedQueryColumns, final Properties properties) {
         super(type, properties);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(qualifiedColumns), "Columns is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(qualifiedColumns), "qualifiedColumns is required.");
         this.qualifiedColumns = qualifiedColumns;
         this.assistedQueryColumns = null == assistedQueryColumns ? "" : assistedQueryColumns;
     }
