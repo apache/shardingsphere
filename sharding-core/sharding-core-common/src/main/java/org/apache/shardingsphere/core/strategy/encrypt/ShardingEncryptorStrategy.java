@@ -119,7 +119,7 @@ public final class ShardingEncryptorStrategy {
      * @param logicTableName logic table name
      * @return assisted query column count
      */
-    public Optional<Integer> getAssistedQueryColumnCount(final String logicTableName) {
+    public Integer getAssistedQueryColumnCount(final String logicTableName) {
         if (Collections2.filter(columns, new Predicate<ColumnNode>() {
             
             @Override
@@ -127,15 +127,15 @@ public final class ShardingEncryptorStrategy {
                 return input.getTableName().equals(logicTableName);
             }
         }).isEmpty()) {
-            return Optional.absent();
+            return 0;
         }
-        return Optional.of(Collections2.filter(assistedQueryColumns, new Predicate<ColumnNode>() {
+        return Collections2.filter(assistedQueryColumns, new Predicate<ColumnNode>() {
     
             @Override
             public boolean apply(final ColumnNode input) {
                 return input.getTableName().equals(logicTableName);
             }
-        }).size());
+        }).size();
     }
     
     /**
