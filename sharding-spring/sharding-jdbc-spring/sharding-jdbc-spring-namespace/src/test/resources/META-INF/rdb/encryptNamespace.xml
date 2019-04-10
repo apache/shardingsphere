@@ -32,14 +32,10 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:encryptor id="md5" type="MD5" columns="order_id" />
-    <encrypt:encryptor id="aes" type="AES" columns="user_id" props-ref="props" />
-    
     <encrypt:data-source id="encryptDataSource">
-        <encrypt:encrypt-rule data-source-name="dbtbl_0" default-encryptor-ref="md5">
-            <encrypt:table-rules >
-                <encrypt:table-rule encrypt-table="t_order" encryptor-ref="aes" />
-            </encrypt:table-rules>
+        <encrypt:encrypt-rule data-source-name="dbtbl_0">
+            <encrypt:encryptor id="md5" type="MD5" columns="order_id" />
+            <encrypt:encryptor id="aes" type="AES" columns="user_id" props-ref="props" />
         </encrypt:encrypt-rule>
     </encrypt:data-source>
 </beans>
