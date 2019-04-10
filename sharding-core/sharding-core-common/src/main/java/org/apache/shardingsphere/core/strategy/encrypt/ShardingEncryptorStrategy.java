@@ -94,4 +94,20 @@ public final class ShardingEncryptorStrategy {
             }
         }).isEmpty();
     }
+    
+    /**
+     * Get assisted query column.
+     *
+     * @param logicTableName logic table name
+     * @param columnName column name
+     * @return assisted query column
+     */
+    public Optional<String> getAssistedQueryColumn(final String logicTableName, final String columnName) {
+        for (ColumnNode each : assistedQueryColumns) {
+            if (each.equals(new ColumnNode(logicTableName, columnName))) {
+                return Optional.of(each.getColumnName());
+            }
+        }
+        return Optional.absent();
+    }
 }
