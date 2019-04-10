@@ -32,7 +32,7 @@ public final class EncryptorConfigurationYamlSwapper implements YamlSwapper<Yaml
     public YamlEncryptorConfiguration swap(final EncryptorConfiguration data) {
         YamlEncryptorConfiguration result = new YamlEncryptorConfiguration();
         result.setType(data.getType());
-        result.setColumns(data.getColumns());
+        result.setQualifiedColumns(data.getQualifiedColumns());
         result.setAssistedQueryColumns(data.getAssistedQueryColumns());
         result.setProps(data.getProperties());
         return result;
@@ -40,6 +40,6 @@ public final class EncryptorConfigurationYamlSwapper implements YamlSwapper<Yaml
     
     @Override
     public EncryptorConfiguration swap(final YamlEncryptorConfiguration yamlConfiguration) {
-        return new EncryptorConfiguration(yamlConfiguration.getType(), yamlConfiguration.getColumns(), yamlConfiguration.getAssistedQueryColumns(), yamlConfiguration.getProps());
+        return new EncryptorConfiguration(yamlConfiguration.getType(), yamlConfiguration.getQualifiedColumns(), yamlConfiguration.getAssistedQueryColumns(), yamlConfiguration.getProps());
     }
 }
