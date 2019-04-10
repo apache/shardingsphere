@@ -105,9 +105,10 @@ public final class ShardingEncryptorStrategy {
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn(final String logicTableName, final String columnName) {
-        for (ColumnNode each : assistedQueryColumns) {
-            if (each.equals(new ColumnNode(logicTableName, columnName))) {
-                return Optional.of(each.getColumnName());
+        for (ColumnNode each : columns) {
+            ColumnNode target = new ColumnNode(logicTableName, columnName);
+            if (each.equals(target)) {
+                return Optional.of(assistedQueryColumns.get(columns.indexOf(target)).getColumnName());
             }
         }
         return Optional.absent();
