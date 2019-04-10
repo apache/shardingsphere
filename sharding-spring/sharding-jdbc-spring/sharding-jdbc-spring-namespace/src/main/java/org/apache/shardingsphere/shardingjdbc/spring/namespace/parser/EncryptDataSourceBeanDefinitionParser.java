@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encryptor.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -27,12 +26,14 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Encrypt data source parser for spring namespace.
@@ -59,32 +60,21 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     private BeanDefinition parseEncryptRuleConfiguration(final Element element) {
         Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
-        factory.addConstructorArgValue(parseTableRulesConfiguration(encryptRuleElement));
-        parseDefaultEncryptor(factory, encryptRuleElement);
+        factory.addConstructorArgValue(parseEncryptorRulesConfiguration(encryptRuleElement));
         return factory.getBeanDefinition();
     }
     
-    private List<BeanDefinition> parseTableRulesConfiguration(final Element element) {
-        Element tableRulesElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.TABLE_RULES_TAG);
-        List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, EncryptDataSourceBeanDefinitionParserTag.TABLE_RULE_TAG);
-        List<BeanDefinition> result = new ManagedList<>(tableRuleElements.size());
-        for (Element each : tableRuleElements) {
-            result.add(parseTableRuleConfiguration(each));
+    private List<BeanDefinition> parseEncryptorRulesConfiguration(final Element element) {
+        List<Element> encryptorRulesElement = DomUtils.getChildElementsByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_RULE_CONFIG_TAG);
+        Map<String, BeanDefinition> result = new ManagedMap<>(encryptorRulesElement.size());
+        for (Element each : encryptorRulesElement) {
+            result.put(parseTableRuleConfiguration(each));
         }
         return result;
     }
     
-    private void parseDefaultEncryptor(final BeanDefinitionBuilder factory, final Element element) {
-        String defaultEncryptorConfig = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DEFAULT_ENCRYPTOR_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(defaultEncryptorConfig)) {
-            factory.addConstructorArgReference(defaultEncryptorConfig);
-        } else {
-            factory.addConstructorArgValue(null);
-        }
-    }
-    
     private BeanDefinition parseTableRuleConfiguration(final Element tableElement) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptTableRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorRulesConfiguration.class);
         factory.addConstructorArgValue(tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_TABLE_ATTRIBUTE));
         parseEncryptorConfiguration(tableElement, factory);
         return factory.getBeanDefinition();
