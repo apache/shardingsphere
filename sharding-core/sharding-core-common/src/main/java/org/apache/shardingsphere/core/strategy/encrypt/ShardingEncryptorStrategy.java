@@ -23,12 +23,11 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,14 +38,12 @@ import java.util.List;
  *
  * @author panjuan
  */
-@Getter
 public final class ShardingEncryptorStrategy {
     
     private final List<ColumnNode> columns;
     
     private final List<ColumnNode> assistedQueryColumns;
     
-    @Getter(AccessLevel.PRIVATE)
     private final ShardingEncryptor shardingEncryptor;
     
     public ShardingEncryptorStrategy(final EncryptorRuleConfiguration config) {
@@ -80,5 +77,21 @@ public final class ShardingEncryptorStrategy {
                 return input.equals(new ColumnNode(logicTableName, columnName));
             }
         }).isEmpty() ? Optional.<ShardingEncryptor>absent() : Optional.of(shardingEncryptor);
+    }
+    
+    /**
+     * Is has sharding query assisted encryptor or not.
+     *
+     * @param logicTableName logic table name
+     * @return has sharding query assisted encryptor or not
+     */
+    public boolean isHasShardingQueryAssistedEncryptor(final String logicTableName) {
+        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor && !Collections2.filter(assistedQueryColumns, new Predicate<ColumnNode>() {
+            
+            @Override
+            public boolean apply(final ColumnNode input) {
+                return input.getTableName().equals(logicTableName);
+            }
+        }).isEmpty();
     }
 }
