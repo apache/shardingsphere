@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlTableRuleConfiguration;
@@ -52,9 +50,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
     @Mock
     private KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper;
     
-    @Mock
-    private EncryptorRuleConfigurationYamlSwapper encryptorRuleConfigurationYamlSwapper;
-    
     private TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
     
     @Before
@@ -65,9 +60,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         setSwapper("keyGeneratorConfigurationYamlSwapper", keyGeneratorConfigurationYamlSwapper);
         when(keyGeneratorConfigurationYamlSwapper.swap(ArgumentMatchers.<KeyGeneratorConfiguration>any())).thenReturn(mock(YamlKeyGeneratorConfiguration.class));
         when(keyGeneratorConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlKeyGeneratorConfiguration>any())).thenReturn(mock(KeyGeneratorConfiguration.class));
-        setSwapper("encryptorRuleConfigurationYamlSwapper", encryptorRuleConfigurationYamlSwapper);
-        when(encryptorRuleConfigurationYamlSwapper.swap(ArgumentMatchers.<EncryptorRuleConfiguration>any())).thenReturn(mock(YamlEncryptorRuleConfiguration.class));
-        when(encryptorRuleConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlEncryptorRuleConfiguration>any())).thenReturn(mock(EncryptorRuleConfiguration.class));
     }
     
     private void setSwapper(final String swapperFieldName, final YamlSwapper swapperFieldValue) throws ReflectiveOperationException {
