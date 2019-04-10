@@ -23,8 +23,10 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -34,11 +36,11 @@ import java.util.Set;
  */
 public final class ShardingEncryptorEngine {
     
-    private final Collection<ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedList<>();
+    private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
     
     public ShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        for (EncryptorRuleConfiguration each : encryptRuleConfiguration.getEncryptorRuleConfigs()) {
-            shardingEncryptorStrategies.add(new ShardingEncryptorStrategy(each));
+        for (Entry<String, EncryptorRuleConfiguration> each : encryptRuleConfiguration.getEncryptorRuleConfigs().entrySet()) {
+            shardingEncryptorStrategies.put(each.getKey(), new ShardingEncryptorStrategy(each.getValue()));
         }
     }
     
@@ -50,7 +52,7 @@ public final class ShardingEncryptorEngine {
      * @return optional of sharding encryptor
      */
     public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
-        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
             Optional<ShardingEncryptor> result = each.getShardingEncryptor(logicTableName, columnName);
             if (result.isPresent()) {
                 return result;
@@ -66,7 +68,7 @@ public final class ShardingEncryptorEngine {
      * @return has sharding query assisted encryptor or not
      */
     public boolean isHasShardingQueryAssistedEncryptor(final String logicTableName) {
-        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
             if (each.isHasShardingQueryAssistedEncryptor(logicTableName)) {
                 return true;
             }
@@ -82,7 +84,7 @@ public final class ShardingEncryptorEngine {
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn(final String logicTableName, final String columnName) {
-        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
             Optional<String> result = each.getAssistedQueryColumn(logicTableName, columnName);
             if (result.isPresent()) {
                 return result;
@@ -98,7 +100,7 @@ public final class ShardingEncryptorEngine {
      * @return assisted query column count
      */
     public Optional<Integer> getAssistedQueryColumnCount(final String logicTableName) {
-        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
             Optional<Integer> result = each.getAssistedQueryColumnCount(logicTableName);
             if (result.isPresent()) {
                 return result;
@@ -114,7 +116,7 @@ public final class ShardingEncryptorEngine {
      */
     public Collection<String> getEncryptTableNames() {
         Set<String> result = new LinkedHashSet<>();
-        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
             result.addAll(each.getEncryptTableNames());
         }
         return result;
