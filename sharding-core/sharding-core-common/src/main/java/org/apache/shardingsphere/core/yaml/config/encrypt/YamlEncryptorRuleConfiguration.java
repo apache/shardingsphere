@@ -30,7 +30,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class YamlEncryptorConfiguration implements YamlConfiguration {
+public final class YamlEncryptorRuleConfiguration implements YamlConfiguration {
     
     private String type;
     
