@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptorBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -37,7 +37,7 @@ public final class EncryptorBeanDefinitionParser extends AbstractBeanDefinitionP
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptorBeanDefinitionParserTag.ENCRYPTOR_COLUMNS_ATTRIBUTE));
         parseAssistedQueryColumns(element, factory);
