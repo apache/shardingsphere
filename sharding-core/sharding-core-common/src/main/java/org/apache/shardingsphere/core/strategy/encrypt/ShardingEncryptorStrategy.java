@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -46,10 +48,9 @@ public final class ShardingEncryptorStrategy {
     private final ShardingEncryptor shardingEncryptor;
     
     public ShardingEncryptorStrategy(final EncryptorRuleConfiguration config) {
-        this.columns = Splitter.on(",").trimResults().splitToList(config.getQualifiedColumns());
-        this.assistedQueryColumns = Strings.isNullOrEmpty(config.getAssistedQueryColumns())
-                ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(config.getAssistedQueryColumns());
-        checkEncryptorConfiguration(columns, assistedQueryColumns);
+        this.columns = createColumnNodes(config.getQualifiedColumns());
+        this.assistedQueryColumns = Strings.isNullOrEmpty(config.getAssistedQueryColumns()) ? Collections.<ColumnNode>emptyList() : createColumnNodes(config.getAssistedQueryColumns());
+        Preconditions.checkArgument(assistedQueryColumns.isEmpty() || assistedQueryColumns.size() == columns.size(), "The size of `columns` and `assistedQueryColumns` is not same.");
         shardingEncryptor = new ShardingEncryptorServiceLoader().newService(config.getType(), config.getProperties());
         shardingEncryptor.init();
     }
@@ -60,12 +61,6 @@ public final class ShardingEncryptorStrategy {
             result.add(new ColumnNode(each));
         }
         return result;
-    }
-    
-    private void checkEncryptorConfiguration(final List<String> columns, final List<String> assistedQueryColumns) {
-        if (!assistedQueryColumns.isEmpty() && assistedQueryColumns.size() != columns.size()) {
-            throw new ShardingConfigurationException("The size of `columns` and `assistedQueryColumns` is not same.");
-        }
     }
     
     /**
