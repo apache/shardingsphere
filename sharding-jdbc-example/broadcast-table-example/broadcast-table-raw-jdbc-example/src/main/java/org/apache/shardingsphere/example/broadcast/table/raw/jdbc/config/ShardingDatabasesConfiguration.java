@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ShardingDatabasesConfigurationPrecise implements ExampleConfiguration {
+public class ShardingDatabasesConfiguration implements ExampleConfiguration {
 
     @Override
     public DataSource getDataSource() throws SQLException {

@@ -21,7 +21,7 @@
 
 package org.apache.shardingsphere.example.broadcast.table.raw.jdbc;
 
-import org.apache.shardingsphere.example.broadcast.table.raw.jdbc.config.ShardingDatabasesConfigurationPrecise;
+import org.apache.shardingsphere.example.broadcast.table.raw.jdbc.config.ShardingDatabasesConfiguration;
 import org.apache.shardingsphere.example.common.jdbc.repository.CountryRepositroyImpl;
 import org.apache.shardingsphere.example.common.jdbc.service.CountryServiceImpl;
 import org.apache.shardingsphere.example.common.service.CommonService;
@@ -32,7 +32,7 @@ import java.sql.SQLException;
 public class JavaConfigurationExample {
 
     public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = new ShardingDatabasesConfigurationPrecise().getDataSource();
+        DataSource dataSource = new ShardingDatabasesConfiguration().getDataSource();
         CommonService countryService = getCountryService(dataSource);
         countryService.initEnvironment();
         countryService.processSuccess();

@@ -27,9 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-/*
- * Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- */
 public class YamlConfigurationExample {
 
     public static void main(final String[] args) throws SQLException, IOException {
