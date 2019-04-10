@@ -23,7 +23,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parse.antlr.constant.LogicalOperator;
 import org.apache.shardingsphere.core.parse.antlr.constant.Paren;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnS
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
@@ -47,23 +45,18 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
+public final class PredicateExtractor {
     
-    private ExpressionExtractor expressionExtractor = new ExpressionExtractor();
-    
-    @Override
-    public Optional<PredicateSegment> extract(final ParserRuleContext ancestorNode) {
-        throw new RuntimeException();
-    }
+    private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
     /**
-     * Extract SQL segment from SQL AST.
+     * Extract.
      *
-     * @param placeholderIndexes question node map
+     * @param placeholderIndexes placeholder indexes
      * @param exprNode expression node of AST
      * @return or condition
      */
-    public Optional<OrConditionSegment> extractCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext exprNode) {
+    public Optional<OrConditionSegment> extract(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext exprNode) {
         return extractConditionInternal(placeholderIndexes, exprNode);
     }
     
@@ -79,15 +72,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             Optional<OrConditionSegment> leftOrCondition = extractConditionInternal(placeholderIndexes, (ParserRuleContext) exprNode.getChild(index - 1));
             Optional<OrConditionSegment> rightOrCondition = extractConditionInternal(placeholderIndexes, (ParserRuleContext) exprNode.getChild(index + 1));
             if (leftOrCondition.isPresent() && rightOrCondition.isPresent()) {
-                return Optional.of(mergeCondition(placeholderIndexes, leftOrCondition.get(), rightOrCondition.get(), exprNode.getChild(index).getText()));
+                return Optional.of(mergeCondition(leftOrCondition.get(), rightOrCondition.get(), exprNode.getChild(index).getText()));
             }
             return leftOrCondition.isPresent() ? leftOrCondition : rightOrCondition;
         }
         return extractConditionForParen(placeholderIndexes, exprNode);
     }
     
-    private OrConditionSegment mergeCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final OrConditionSegment leftOrCondition,
-                                              final OrConditionSegment rightOrCondition, final String operator) {
+    private OrConditionSegment mergeCondition(final OrConditionSegment leftOrCondition, final OrConditionSegment rightOrCondition, final String operator) {
         if (LogicalOperator.isOrOperator(operator)) {
             leftOrCondition.getAndConditions().addAll(rightOrCondition.getAndConditions());
             return leftOrCondition;

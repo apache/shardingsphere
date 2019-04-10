@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
@@ -40,17 +39,12 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
-    
-    @Override
-    public Optional<? extends ExpressionSegment> extract(final ParserRuleContext ancestorNode) {
-        throw new RuntimeException();
-    }
+public final class ExpressionExtractor {
     
     /**
      *  Extract expression.
      *
-     * @param placeholderIndexes  place holder index
+     * @param placeholderIndexes  placeholder index
      * @param expressionNode expression node
      * @return expression segment
      */
@@ -96,17 +90,20 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         if (questionNode.isPresent()) {
             Integer index = placeholderIndexes.get(questionNode.get());
             result.setPlaceholderIndex(index);
-        } else {
-            Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
-            Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER);
-            if (numberNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
-                result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
-            }
-            Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING);
-            if (stringNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
-                String text = stringNode.get().getText();
-                result.setLiterals(text.substring(1, text.length() - 1));
-            }
+            return result;
+        }
+        Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
+        if (bitExprNode.isPresent() && 1 != bitExprNode.get().getChildCount()) {
+            return result;
+        }
+        Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER);
+        if (numberNode.isPresent()) {
+            result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
+        }
+        Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING);
+        if (stringNode.isPresent()) {
+            String text = stringNode.get().getText();
+            result.setLiterals(text.substring(1, text.length() - 1));
         }
         return result;
     }

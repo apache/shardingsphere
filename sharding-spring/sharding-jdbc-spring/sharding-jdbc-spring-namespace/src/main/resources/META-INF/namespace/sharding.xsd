@@ -35,7 +35,7 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="master-slave-rules" minOccurs="0" />
-                <xsd:element ref="table-rules" />
+                <xsd:element ref="table-rules" minOccurs="0" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
                 <xsd:element ref="broadcast-table-rules" minOccurs="0" />
                 <xsd:element ref="encrypt-rule" minOccurs="0" />
