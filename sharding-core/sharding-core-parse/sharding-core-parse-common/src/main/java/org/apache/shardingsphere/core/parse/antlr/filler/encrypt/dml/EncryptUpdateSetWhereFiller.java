@@ -50,7 +50,7 @@ public class EncryptUpdateSetWhereFiller extends EncryptDeleteFromWhereFiller {
     
     private void fillEncryptCondition(final Entry<ColumnSegment, ExpressionSegment> entry, final String updateTable, final DMLStatement dmlStatement) {
         Column column = new Column(entry.getKey().getName(), updateTable);
-        SQLExpression expression = entry.getValue().convertToSQLExpression(dmlStatement.getLogicSQL());
+        SQLExpression expression = entry.getValue().getSQLExpression(dmlStatement.getLogicSQL());
         dmlStatement.getUpdateColumnValues().put(column, expression);
         if (!getEncryptRule().getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;

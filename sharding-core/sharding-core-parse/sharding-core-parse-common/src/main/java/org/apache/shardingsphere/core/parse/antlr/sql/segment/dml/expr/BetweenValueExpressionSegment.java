@@ -37,6 +37,6 @@ public final class BetweenValueExpressionSegment implements SQLRightValueExpress
     
     @Override
     public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, beginExpress.convertToSQLExpression(sql), endExpress.convertToSQLExpression(sql));
+        return new Condition(column, beginExpress.getSQLExpression(sql), endExpress.getSQLExpression(sql));
     }
 }

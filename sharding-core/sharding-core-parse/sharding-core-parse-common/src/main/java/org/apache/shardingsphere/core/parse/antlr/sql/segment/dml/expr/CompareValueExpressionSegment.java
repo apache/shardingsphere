@@ -37,6 +37,6 @@ public final class CompareValueExpressionSegment implements SQLRightValueExpress
 
     @Override
     public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, compareOperator, expression.convertToSQLExpression(sql));
+        return new Condition(column, compareOperator, expression.getSQLExpression(sql));
     }
 }

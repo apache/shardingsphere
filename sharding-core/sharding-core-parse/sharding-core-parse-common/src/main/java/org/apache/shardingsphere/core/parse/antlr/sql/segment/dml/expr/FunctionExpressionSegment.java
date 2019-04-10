@@ -43,7 +43,7 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     private final int distinctExpressionStartIndex;
     
     @Override
-    public SQLExpression convertToSQLExpression(final String sql) {
+    public SQLExpression getSQLExpression(final String sql) {
         throw new RuntimeException("Unsupported convert function expression");
     }
 }

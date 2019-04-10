@@ -48,7 +48,7 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            SQLExpression sqlExpression = each.convertToSQLExpression(sql);
+            SQLExpression sqlExpression = each.getSQLExpression(sql);
             columnValues.add(sqlExpression);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parametersCount++;

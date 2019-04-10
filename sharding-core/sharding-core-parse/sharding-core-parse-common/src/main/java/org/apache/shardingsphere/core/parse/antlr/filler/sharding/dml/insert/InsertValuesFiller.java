@@ -79,7 +79,7 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement,
                                          final ShardingRule shardingRule, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
-        SQLExpression result = expressionSegment.convertToSQLExpression(insertStatement.getLogicSQL());
+        SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
         fillShardingCondition(shardingRule, andCondition, insertStatement.getTables().getSingleTableName(), columnName, expressionSegment, result);
         fillGeneratedKeyCondition(insertStatement, insertStatement.getLogicSQL(), shardingRule, columnName, expressionSegment);
         return result;
@@ -88,7 +88,7 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     private void fillShardingCondition(final ShardingRule shardingRule, final AndCondition andCondition, 
                                        final String tableName, final String columnName, final CommonExpressionSegment expressionSegment, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            if (!(-1 < expressionSegment.getPlaceholderIndex() || null != expressionSegment.getValue() || expressionSegment.isText())) {
+            if (!(-1 < expressionSegment.getPlaceholderIndex() || null != expressionSegment.getLiterals())) {
                 throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
             }
             andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
@@ -107,8 +107,8 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         if (-1 != sqlExpression.getPlaceholderIndex()) {
             return new GeneratedKeyCondition(column, sqlExpression.getPlaceholderIndex(), null);
         }
-        if (null != sqlExpression.getValue()) {
-            return new GeneratedKeyCondition(column, -1, (Comparable<?>) sqlExpression.getValue());
+        if (null != sqlExpression.getLiterals()) {
+            return new GeneratedKeyCondition(column, -1, (Comparable<?>) sqlExpression.getLiterals());
         }
         return new GeneratedKeyCondition(column, -1, sql.substring(sqlExpression.getStartIndex(), sqlExpression.getStopIndex() + 1));
     }

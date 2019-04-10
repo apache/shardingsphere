@@ -64,7 +64,7 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            SQLExpression sqlExpression = each.getValue().convertToSQLExpression(sql);
+            SQLExpression sqlExpression = each.getValue().getSQLExpression(sql);
             columnValues.add(sqlExpression);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parametersCount++;

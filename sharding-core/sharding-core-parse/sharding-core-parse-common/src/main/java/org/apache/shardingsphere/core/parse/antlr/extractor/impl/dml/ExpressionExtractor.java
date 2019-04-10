@@ -100,11 +100,12 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
             Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER);
             if (numberNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
-                result.setValue(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
+                result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
             }
             Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING);
             if (stringNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
-                result.setText(true);
+                String text = stringNode.get().getText();
+                result.setLiterals(text.substring(1, text.length() - 1));
             }
         }
         return result;

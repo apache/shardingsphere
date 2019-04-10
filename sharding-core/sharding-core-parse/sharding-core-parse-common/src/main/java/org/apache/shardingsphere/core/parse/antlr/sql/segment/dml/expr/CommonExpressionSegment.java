@@ -42,20 +42,18 @@ public final class CommonExpressionSegment implements ExpressionSegment {
     
     private int placeholderIndex = -1;
     
-    private Number value;
-    
-    private boolean text;
+    private Object literals;
     
     @Override
-    public SQLExpression convertToSQLExpression(final String sql) {
+    public SQLExpression getSQLExpression(final String sql) {
         if (-1 != placeholderIndex) {
             return new SQLPlaceholderExpression(placeholderIndex);
         }
-        if (null != value) {
-            return new SQLNumberExpression(value);
+        if (literals instanceof Number) {
+            return new SQLNumberExpression((Number) literals);
         }
-        if (text) {
-            return new SQLTextExpression(sql.substring(startIndex + 1, stopIndex));
+        if (literals instanceof String) {
+            return new SQLTextExpression(literals.toString());
         }
         return new SQLTextExpression(sql.substring(startIndex, stopIndex + 1));
     } 
