@@ -22,8 +22,10 @@ import org.apache.shardingsphere.example.common.repository.CountryRepository;
 import org.apache.shardingsphere.example.common.service.CommonService;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class CountryServiceImpl implements CommonService {
 
@@ -79,19 +81,21 @@ public class CountryServiceImpl implements CommonService {
 
     private List<String> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
-        List<String> result = new ArrayList<>();
+        Set<String> result = new LinkedHashSet<>();
         for (Locale each : Locale.getAvailableLocales()) {
-            final String country = each.getCountry();
-            if (country == null || "".equals(country)) {
+            if (result.contains(each.getCountry()) || each.getCountry().isEmpty()) {
                 continue;
             }
+            if (result.size() >= 20) {
+                break;
+            }
+            result.add(each.getCountry());
             Country entity = new Country();
             entity.setName(each.getDisplayCountry(each));
             entity.setLanguage(each.getLanguage());
             entity.setCode(each.getCountry());
             countryRepository.insert(entity);
-            result.add(entity.getCode());
         }
-        return result;
+        return new ArrayList<>(result);
     }
 }

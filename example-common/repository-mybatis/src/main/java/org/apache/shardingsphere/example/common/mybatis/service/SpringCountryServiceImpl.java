@@ -25,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Service
 public class SpringCountryServiceImpl implements SpringCountryService {
@@ -82,20 +84,21 @@ public class SpringCountryServiceImpl implements SpringCountryService {
 
     private List<String> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
-        MybatisCountryRepository repository = (MybatisCountryRepository) countryRepository;
-        List<String> result = new ArrayList<>();
+        Set<String> result = new LinkedHashSet<>();
         for (Locale each : Locale.getAvailableLocales()) {
-            final String country = each.getCountry();
-            if (null == country || "".equals(country)) {
+            if (result.contains(each.getCountry()) || each.getCountry().isEmpty()) {
                 continue;
             }
+            if (result.size() >= 10) {
+                break;
+            }
+            result.add(each.getCountry());
             Country entity = new Country();
-            entity.setCode(each.getCountry());
             entity.setName(each.getDisplayCountry(each));
             entity.setLanguage(each.getLanguage());
-            repository.insert(entity);
-            result.add(entity.getCode());
+            entity.setCode(each.getCountry());
+            countryRepository.insert(entity);
         }
-        return result;
+        return new ArrayList<>(result);
     }
 }

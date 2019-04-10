@@ -41,6 +41,9 @@
                 <sharding:broadcast-table-rule table="t_country" />
             </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
+        <sharding:props>
+            <prop key="sql.show">true</prop>
+        </sharding:props>
     </sharding:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
