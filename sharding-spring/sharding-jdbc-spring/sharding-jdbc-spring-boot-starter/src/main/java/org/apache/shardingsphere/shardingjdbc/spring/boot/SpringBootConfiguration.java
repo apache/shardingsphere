@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.util.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.util.PropertyUtil;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
-import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
@@ -89,7 +89,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
         if (null != masterSlaveProperties.getMasterDataSourceName()) {
             return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveSwapper.swap(masterSlaveProperties), propMapProperties.getProps());
         }
-        if (!encryptProperties.getTables().isEmpty()) {
+        if (!encryptProperties.getEncryptors().isEmpty()) {
             return EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), encryptSwapper.swap(encryptProperties));
         }
         return ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingSwapper.swap(shardingProperties), propMapProperties.getProps());
