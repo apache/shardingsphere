@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -64,24 +62,12 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
         return factory.getBeanDefinition();
     }
     
-    private List<BeanDefinition> parseEncryptorRulesConfiguration(final Element element) {
+    private Map<String, RuntimeBeanReference> parseEncryptorRulesConfiguration(final Element element) {
         List<Element> encryptorRulesElement = DomUtils.getChildElementsByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_RULE_CONFIG_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(encryptorRulesElement.size());
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>(encryptorRulesElement.size());
         for (Element each : encryptorRulesElement) {
-            result.put(parseTableRuleConfiguration(each));
+            result.put(each.getAttribute(ID_ATTRIBUTE), new RuntimeBeanReference(each.getAttribute(ID_ATTRIBUTE)));
         }
         return result;
-    }
-    
-    private BeanDefinition parseTableRuleConfiguration(final Element tableElement) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorRulesConfiguration.class);
-        factory.addConstructorArgValue(tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_TABLE_ATTRIBUTE));
-        parseEncryptorConfiguration(tableElement, factory);
-        return factory.getBeanDefinition();
-    }
-    
-    private void parseEncryptorConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String encryptor = tableElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.ENCRYPTOR_REF_ATTRIBUTE);
-        factory.addConstructorArgReference(encryptor);
     }
 }
