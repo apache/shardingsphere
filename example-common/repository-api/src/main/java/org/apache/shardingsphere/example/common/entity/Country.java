@@ -24,10 +24,10 @@ public class Country implements Serializable {
     private static final long serialVersionUID = 4522167390518926493L;
 
     private long id;
+    
+    private String code;
 
     private String name;
-
-    private String code;
 
     private String language;
 
@@ -65,6 +65,6 @@ public class Country implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("id: %s, name: %s, code: %s, language: %s", id, name, code, language);
+        return String.format("id: %s, code: %s, name: %s, language: %s", id, code, name, language);
     }
 }

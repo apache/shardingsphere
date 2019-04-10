@@ -17,31 +17,30 @@
 
 package org.apache.shardingsphere.example.broadcast.table.raw.jdbc.config;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.example.common.DataSourceUtil;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class MasterSlaveConfiguration implements ExampleConfiguration {
+public class ShardingDatabasesConfiguration implements ExampleConfiguration {
 
     @Override
     public DataSource getDataSource() throws SQLException {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
-        return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new Properties());
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getBroadcastTables().add("t_country");
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
 
-    private Map<String, DataSource> createDataSourceMap() {
+    private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("demo_ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
-        result.put("demo_ds_slave_0", DataSourceUtil.createDataSource("demo_ds_slave_0"));
-        result.put("demo_ds_slave_1", DataSourceUtil.createDataSource("demo_ds_slave_1"));
+        result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+        result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
     }
 }

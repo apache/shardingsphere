@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="log.context.name" value="sharding-jdbc-api-quickstart" />
+    <property name="log.context.name" value="broadcast-table-raw-jdbc-example" />
     <property name="log.charset" value="UTF-8" />
     <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
     <contextName>${log.context.name}</contextName>

@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.example.common.mybatis.repository;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.shardingsphere.example.common.entity.Country;
 import org.apache.shardingsphere.example.common.repository.CountryRepository;
 
 @Mapper
 public interface MybatisCountryRepository extends CountryRepository {
-
-    Long insertStandard(Country country);
 }

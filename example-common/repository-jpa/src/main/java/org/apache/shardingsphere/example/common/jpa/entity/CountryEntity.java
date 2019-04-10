@@ -37,17 +37,17 @@ public class CountryEntity extends Country {
     public long getId() {
         return super.getId();
     }
+    
+    @Column(name = "code")
+    @Override
+    public String getCode() {
+        return super.getCode();
+    }
 
     @Column(name = "name")
     @Override
     public String getName() {
         return super.getName();
-    }
-
-    @Column(name = "code")
-    @Override
-    public String getCode() {
-        return super.getCode();
     }
 
     @Column(name = "language")

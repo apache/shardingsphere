@@ -21,22 +21,18 @@
 
 package org.apache.shardingsphere.example.broadcast.table.raw.jdbc;
 
-import org.apache.shardingsphere.example.broadcast.table.raw.jdbc.factory.DataSourceFactory;
-import org.apache.shardingsphere.example.common.jdbc.repository.CountryRepositroyImpl;
+import org.apache.shardingsphere.example.broadcast.table.raw.jdbc.config.ShardingDatabasesConfiguration;
+import org.apache.shardingsphere.example.common.jdbc.repository.CountryRepositoryImpl;
 import org.apache.shardingsphere.example.common.jdbc.service.CountryServiceImpl;
 import org.apache.shardingsphere.example.common.service.CommonService;
-import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class JavaConfigurationExample {
 
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
-//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
-
     public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
+        DataSource dataSource = new ShardingDatabasesConfiguration().getDataSource();
         CommonService countryService = getCountryService(dataSource);
         countryService.initEnvironment();
         countryService.processSuccess();
@@ -44,6 +40,6 @@ public class JavaConfigurationExample {
     }
 
     private static CommonService getCountryService(final DataSource dataSource) {
-        return new CountryServiceImpl(new CountryRepositroyImpl(dataSource));
+        return new CountryServiceImpl(new CountryRepositoryImpl(dataSource));
     }
 }

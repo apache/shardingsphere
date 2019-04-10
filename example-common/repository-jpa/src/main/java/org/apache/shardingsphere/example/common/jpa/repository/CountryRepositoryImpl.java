@@ -50,9 +50,9 @@ public class CountryRepositoryImpl implements CountryRepository {
     }
 
     @Override
-    public String insert(final Country country) {
+    public Long insert(final Country country) {
         entityManager.persist(country);
-        return country.getCode();
+        return 1L;
     }
 
     @Override
@@ -63,6 +63,7 @@ public class CountryRepositoryImpl implements CountryRepository {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Country> selectAll() {
         return (List<Country>) entityManager.createQuery("SELECT o FROM CountryEntity o").getResultList();
     }

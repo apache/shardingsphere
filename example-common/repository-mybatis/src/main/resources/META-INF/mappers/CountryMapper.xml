@@ -3,13 +3,13 @@
 <mapper namespace="org.apache.shardingsphere.example.common.mybatis.repository.MybatisCountryRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.common.entity.Country">
         <result column="id" property="id" jdbcType="INTEGER"/>
-        <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="language" property="language" jdbcType="VARCHAR"/>
     </resultMap>
 
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_country (id BIGINT NOT NULL AUTO_INCREMENT, name VARCHAR(50),code VARCHAR(50), language VARCHAR(50), PRIMARY KEY (id));
+        CREATE TABLE IF NOT EXISTS t_country (id BIGINT NOT NULL AUTO_INCREMENT, code VARCHAR(50), name VARCHAR(50), language VARCHAR(50), PRIMARY KEY (id));
     </update>
 
     <update id="truncateTable">
@@ -20,8 +20,8 @@
         DROP TABLE IF EXISTS t_country;
     </update>
 
-    <insert id="insertStandard" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_country (name, code, language) VALUES (#{name,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR},#{language,jdbcType=VARCHAR})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_country (code, name, language) VALUES (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR})
     </insert>
 
     <delete id="delete">

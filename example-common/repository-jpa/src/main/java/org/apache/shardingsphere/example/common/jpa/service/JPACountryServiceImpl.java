@@ -76,22 +76,17 @@ public class JPACountryServiceImpl implements JPACountryService {
     private List<String> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<String> result = new ArrayList<>();
-        Locale[] locales = Locale.getAvailableLocales();
-        int i = 0;
-        for (Locale l:locales) {
-            final String country = l.getCountry();
+        for (Locale each : Locale.getAvailableLocales()) {
+            final String country = each.getCountry();
             if (country == null || "".equals(country)) {
                 continue;
             }
-            CountryEntity currCountry = new CountryEntity();
-            currCountry.setName(l.getDisplayCountry(l));
-            currCountry.setLanguage(l.getLanguage());
-            currCountry.setCode(l.getCountry());
-            countryRepository.insert(currCountry);
-            result.add(currCountry.getCode());
-            if (++i == 10) {
-                break;
-            }
+            CountryEntity entity = new CountryEntity();
+            entity.setName(each.getDisplayCountry(each));
+            entity.setLanguage(each.getLanguage());
+            entity.setCode(each.getCountry());
+            countryRepository.insert(entity);
+            result.add(entity.getCode());
         }
         return result;
     }
