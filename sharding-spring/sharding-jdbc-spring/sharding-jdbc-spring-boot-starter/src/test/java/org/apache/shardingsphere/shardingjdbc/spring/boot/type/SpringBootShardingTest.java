@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
@@ -68,8 +67,8 @@ public class SpringBootShardingTest {
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
         ShardingEncryptorEngine shardingEncryptorEngine = shardingContext.getShardingRule().getShardingEncryptorEngine();
         assertThat(shardingEncryptorEngine.getEncryptTableNames().iterator().next(), is("t_order"));
-        assertThat(shardingEncryptorEngine.getAssistedQueryColumnCount("t_order"), is(Optional.<Integer>absent()));
-        assertThat(shardingEncryptorEngine.getShardingEncryptor("t_order", "pwd2"), instanceOf(TestShardingEncryptor.class));
+        assertThat(shardingEncryptorEngine.getAssistedQueryColumnCount("t_order"), is(0));
+        assertThat(shardingEncryptorEngine.getShardingEncryptor("t_order", "pwd2").get(), instanceOf(TestShardingEncryptor.class));
     }
     
     @Test
