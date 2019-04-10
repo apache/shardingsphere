@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class AESShardingEncryptorTest {
@@ -56,6 +57,11 @@ public final class AESShardingEncryptorTest {
     @Test
     public void assertDecode() {
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+    }
+    
+    @Test
+    public void assertDecodeWithNull() {
+        assertNull(encryptor.decrypt(null));
     }
     
     @Test(expected = IllegalArgumentException.class)
