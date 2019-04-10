@@ -20,18 +20,21 @@ package org.apache.shardingsphere.example.hint.raw.jdbc;
 import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<Long> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Long> shardingValue) {
+        Collection<String> result = new ArrayList<>();
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
-                return Collections.singletonList(each);
+            for (Long value : shardingValue.getValues()) {
+                if (each.endsWith(String.valueOf(value % 2))) {
+                    result.add(each);
+                }
             }
         }
-        throw new UnsupportedOperationException();
+        return result;
     }
 }
