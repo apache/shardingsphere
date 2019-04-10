@@ -23,7 +23,9 @@ import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Sharding encryptor engine.
@@ -103,5 +105,18 @@ public final class ShardingEncryptorEngine {
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Get encrypt table names.
+     *
+     * @return encrypt table names
+     */
+    public Collection<String> getEncryptTableNames() {
+        Set<String> result = new LinkedHashSet<>();
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+            result.addAll(each.getEncryptTableNames());
+        }
+        return result;
     }
 }
