@@ -241,6 +241,10 @@ public final class StreamQueryResult implements QueryResult {
     @SneakyThrows
     private Object decrypt(final int columnIndex, final Object value) {
         Optional<ShardingEncryptor> shardingEncryptor = metaData.getShardingEncryptor(columnIndex);
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value.toString()) : value;
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
+    }
+    
+    private String getCiphertext(final Object value) {
+        return null == value ? null : value.toString();
     }
 }
