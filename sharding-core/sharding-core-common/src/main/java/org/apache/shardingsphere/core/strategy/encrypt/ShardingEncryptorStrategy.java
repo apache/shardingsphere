@@ -21,12 +21,14 @@ import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,19 +39,27 @@ import java.util.List;
 @Getter
 public final class ShardingEncryptorStrategy {
     
-    private final List<String> columns;
+    private final List<ColumnNode> columns;
     
-    private final List<String> assistedQueryColumns;
+    private final List<ColumnNode> assistedQueryColumns;
     
     private final ShardingEncryptor shardingEncryptor;
     
-    public ShardingEncryptorStrategy(final EncryptorConfiguration config) {
-        this.columns = Splitter.on(",").trimResults().splitToList(config.getColumns());
+    public ShardingEncryptorStrategy(final EncryptorRuleConfiguration config) {
+        this.columns = Splitter.on(",").trimResults().splitToList(config.getQualifiedColumns());
         this.assistedQueryColumns = Strings.isNullOrEmpty(config.getAssistedQueryColumns())
                 ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(config.getAssistedQueryColumns());
         checkEncryptorConfiguration(columns, assistedQueryColumns);
         shardingEncryptor = new ShardingEncryptorServiceLoader().newService(config.getType(), config.getProperties());
         shardingEncryptor.init();
+    }
+    
+    private List<ColumnNode> createColumnNodes(final String columnNodeStr) {
+        List<ColumnNode> result = new LinkedList<>();
+        for (String each : Splitter.on(",").trimResults().splitToList(columnNodeStr)) {
+            result.add(new ColumnNode(each));
+        }
+        return result;
     }
     
     private void checkEncryptorConfiguration(final List<String> columns, final List<String> assistedQueryColumns) {
