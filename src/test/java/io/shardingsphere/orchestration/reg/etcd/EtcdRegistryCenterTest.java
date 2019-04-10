@@ -121,7 +121,7 @@ public class EtcdRegistryCenterTest {
     private void setConfiguration() {
         Field field = etcdRegistryCenter.getClass().getDeclaredField("config");
         field.setAccessible(true);
-        field.set(etcdRegistryCenter, new RegistryCenterConfiguration());
+        field.set(etcdRegistryCenter, new RegistryCenterConfiguration("etcd"));
     }
     
     @Test
