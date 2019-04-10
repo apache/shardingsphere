@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
 /**
@@ -26,11 +26,11 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  *
  * @author zhangliang
  */
-public final class EncryptorConfigurationYamlSwapper implements YamlSwapper<YamlEncryptorConfiguration, EncryptorConfiguration> {
+public final class EncryptorRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptorRuleConfiguration, EncryptorRuleConfiguration> {
     
     @Override
-    public YamlEncryptorConfiguration swap(final EncryptorConfiguration data) {
-        YamlEncryptorConfiguration result = new YamlEncryptorConfiguration();
+    public YamlEncryptorRuleConfiguration swap(final EncryptorRuleConfiguration data) {
+        YamlEncryptorRuleConfiguration result = new YamlEncryptorRuleConfiguration();
         result.setType(data.getType());
         result.setQualifiedColumns(data.getQualifiedColumns());
         result.setAssistedQueryColumns(data.getAssistedQueryColumns());
@@ -39,7 +39,7 @@ public final class EncryptorConfigurationYamlSwapper implements YamlSwapper<Yaml
     }
     
     @Override
-    public EncryptorConfiguration swap(final YamlEncryptorConfiguration yamlConfiguration) {
-        return new EncryptorConfiguration(yamlConfiguration.getType(), yamlConfiguration.getQualifiedColumns(), yamlConfiguration.getAssistedQueryColumns(), yamlConfiguration.getProps());
+    public EncryptorRuleConfiguration swap(final YamlEncryptorRuleConfiguration yamlConfiguration) {
+        return new EncryptorRuleConfiguration(yamlConfiguration.getType(), yamlConfiguration.getQualifiedColumns(), yamlConfiguration.getAssistedQueryColumns(), yamlConfiguration.getProps());
     }
 }
