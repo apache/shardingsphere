@@ -22,8 +22,8 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
@@ -107,7 +107,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            reviseInsertColumnValues(each, dataNodes);
+            reviseInsertOptimizeResult(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -121,7 +121,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : optimizeResult.getShardingConditions().getShardingConditions()) {
             Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
-            reviseInsertColumnValues(each, dataNodes);
+            reviseInsertOptimizeResult(each, dataNodes);
             result.addAll(dataNodes);
         }
         return result;
@@ -205,19 +205,19 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private void reviseInsertColumnValues(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
+    private void reviseInsertOptimizeResult(final ShardingCondition shardingCondition, final Collection<DataNode> dataNodes) {
         if (sqlStatement instanceof InsertStatement) {
-            for (InsertColumnValue each : optimizeResult.getInsertColumnValues().get().getColumnValues()) {
-                if (isQualifiedInsertColumnValue(each, shardingCondition)) {
+            for (InsertOptimizeResultUnit each : optimizeResult.getInsertOptimizeResult().get().getUnits()) {
+                if (isQualifiedInsertOptimizeResult(each, shardingCondition)) {
                     each.getDataNodes().addAll(dataNodes);
                 }
             }
         }
     }
     
-    private boolean isQualifiedInsertColumnValue(final InsertColumnValue insertColumnValue, final ShardingCondition shardingCondition) {
+    private boolean isQualifiedInsertOptimizeResult(final InsertOptimizeResultUnit unit, final ShardingCondition shardingCondition) {
         for (RouteValue each : shardingCondition.getShardingValues()) {
-            Object columnValue = insertColumnValue.getColumnValue(each.getColumnName());
+            Object columnValue = unit.getColumnValue(each.getColumnName());
             if (!columnValue.equals(((ListRouteValue) each).getValues().iterator().next())) {
                 return false;
             }

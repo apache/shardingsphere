@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
@@ -183,9 +183,9 @@ public final class SQLBuilder {
     
     private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final InsertValuesPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         stringBuilder.append(" (").append(Joiner.on(", ").join(placeholder.getColumnNames())).append(") VALUES ");
-        for (InsertColumnValue each : placeholder.getColumnValues()) {
-            if (isToAppendInsertColumnValue(tableUnit, each)) {
-                appendInsertColumnValue(each, insertParameters, stringBuilder);
+        for (InsertOptimizeResultUnit each : placeholder.getUnits()) {
+            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
+                appendInsertOptimizeResult(each, insertParameters, stringBuilder);
             }
         }
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
@@ -193,24 +193,24 @@ public final class SQLBuilder {
     
     private void appendInsertSetPlaceholder(final TableUnit tableUnit, final InsertSetPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         stringBuilder.append("SET ");
-        for (InsertColumnValue each : placeholder.getColumnValues()) {
-            if (isToAppendInsertColumnValue(tableUnit, each)) {
-                appendInsertColumnValue(each, insertParameters, stringBuilder);
+        for (InsertOptimizeResultUnit each : placeholder.getUnits()) {
+            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
+                appendInsertOptimizeResult(each, insertParameters, stringBuilder);
             }
         }
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
     }
     
-    private void appendInsertColumnValue(final InsertColumnValue insertColumnValue, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append(insertColumnValue).append(", ");
-        insertParameters.addAll(Arrays.asList(insertColumnValue.getParameters()));
+    private void appendInsertOptimizeResult(final InsertOptimizeResultUnit unit, final List<Object> insertParameters, final StringBuilder stringBuilder) {
+        stringBuilder.append(unit).append(", ");
+        insertParameters.addAll(Arrays.asList(unit.getParameters()));
     }
     
-    private boolean isToAppendInsertColumnValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue) {
-        if (insertColumnValue.getDataNodes().isEmpty() || null == tableUnit) {
+    private boolean isToAppendInsertOptimizeResult(final TableUnit tableUnit, final InsertOptimizeResultUnit unit) {
+        if (unit.getDataNodes().isEmpty() || null == tableUnit) {
             return true;
         }
-        for (DataNode each : insertColumnValue.getDataNodes()) {
+        for (DataNode each : unit.getDataNodes()) {
             if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
