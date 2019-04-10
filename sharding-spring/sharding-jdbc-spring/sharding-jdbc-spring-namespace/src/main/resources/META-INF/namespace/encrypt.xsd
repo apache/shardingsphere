@@ -41,7 +41,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
-            <xsd:attribute name="columns" type="xsd:string" use="required" />
+            <xsd:attribute name="qualified-columns" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-columns" type="xsd:string" />
             <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
