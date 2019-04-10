@@ -40,14 +40,16 @@ shardingRule:
       logicIndex: logic_index
     table_z:
       actualDataNodes: db${0..1}.table_z
-      encryptor:
-        type: TEST
-        columns: id
     table_k:
       actualDataNodes: db${0..1}.table_k
-      encryptor:
-        type: ASSISTEDTEST
-        columns: id, id1
-        assistedQueryColumns: query_id, query_id1
   bindingTables:
     - table_x, table_y
+  encryptRule:
+    encryptors:
+      z_encryptor:
+        type: TEST
+        qualifiedColumns: table_z.id
+      k_encryptor:
+        type: ASSISTEDTEST
+        qualifiedColumns: table_k.id, table_k.id1
+        assistedQueryColumns: table_k.query_id, table_k.query_id1
