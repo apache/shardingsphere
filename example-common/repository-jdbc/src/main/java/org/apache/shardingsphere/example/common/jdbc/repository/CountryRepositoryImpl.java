@@ -29,11 +29,11 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CountryRepositroyImpl implements CountryRepository {
+public class CountryRepositoryImpl implements CountryRepository {
 
     private final DataSource dataSource;
 
-    public CountryRepositroyImpl(final DataSource dataSource) {
+    public CountryRepositoryImpl(final DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
