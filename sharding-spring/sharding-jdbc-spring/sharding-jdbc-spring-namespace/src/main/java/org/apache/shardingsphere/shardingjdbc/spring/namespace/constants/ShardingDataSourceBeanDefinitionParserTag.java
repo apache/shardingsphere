@@ -87,5 +87,5 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String ENCRYPTOR_REF_ATTRIBUTE = "encryptor-ref";
     
-    public static final String ENCRYPTOR_REF_TAG = "encryptor";
+    public static final String ENCRYPT_RULE_CONFIG_TAG = "encrypt-rule";
 }
