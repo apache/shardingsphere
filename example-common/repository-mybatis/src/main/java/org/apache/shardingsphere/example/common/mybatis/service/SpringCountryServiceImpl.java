@@ -84,22 +84,17 @@ public class SpringCountryServiceImpl implements SpringCountryService {
         System.out.println("---------------------------- Insert Data ----------------------------");
         MybatisCountryRepository repository = (MybatisCountryRepository) countryRepository;
         List<String> result = new ArrayList<>();
-        Locale[] locales = Locale.getAvailableLocales();
-        int i = 0;
-        for (Locale l:locales) {
-            final String country = l.getCountry();
-            if (country == null || "".equals(country)) {
+        for (Locale each : Locale.getAvailableLocales()) {
+            final String country = each.getCountry();
+            if (null == country || "".equals(country)) {
                 continue;
             }
-            Country currCountry = new Country();
-            currCountry.setCode(l.getCountry());
-            currCountry.setName(l.getDisplayCountry(l));
-            currCountry.setLanguage(l.getLanguage());
-            repository.insert(currCountry);
-            result.add(currCountry.getCode());
-            if (++i == 10) {
-                break;
-            }
+            Country entity = new Country();
+            entity.setCode(each.getCountry());
+            entity.setName(each.getDisplayCountry(each));
+            entity.setLanguage(each.getLanguage());
+            repository.insert(entity);
+            result.add(entity.getCode());
         }
         return result;
     }
