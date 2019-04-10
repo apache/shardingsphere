@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.old.parser.expression;
 
 /**
- * SQL expression interface.
+ * SQL expression.
  * 
  * @author zhangliang 
  */

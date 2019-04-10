@@ -41,7 +41,7 @@ public final class InValueExpressionSegment implements SQLRightValueExpressionSe
     public Condition buildCondition(final Column column, final String sql) {
         List<SQLExpression> result = new LinkedList<>();
         for (ExpressionSegment each : sqlExpressions) {
-            result.add(each.convertToSQLExpression(sql).get());
+            result.add(each.getSQLExpression(sql));
         }
         return new Condition(column, result);
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
@@ -50,13 +48,13 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
             fillColumn(each.getColumn(), insertStatement, tableName);
         }
         InsertValue insertValue = getInsertValue(sqlSegment, sqlStatement.getLogicSQL());
-        insertStatement.getInsertValues().getValues().add(insertValue);
+        insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
         insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex()));
     }
     
     private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {
-        insertStatement.getColumns().add(new Column(sqlSegment.getName(), tableName));
+        insertStatement.getColumnNames().add(sqlSegment.getName());
         if (sqlSegment.getOwner().isPresent() && tableName.equals(sqlSegment.getOwner().get())) {
             insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), 0));
         }
@@ -66,12 +64,10 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            Optional<SQLExpression> sqlExpression = each.getValue().convertToSQLExpression(sql);
-            if (sqlExpression.isPresent()) {
-                columnValues.add(sqlExpression.get());
-                if (sqlExpression.get() instanceof SQLPlaceholderExpression) {
-                    parametersCount++;
-                }
+            SQLExpression sqlExpression = each.getValue().getSQLExpression(sql);
+            columnValues.add(sqlExpression);
+            if (sqlExpression instanceof SQLPlaceholderExpression) {
+                parametersCount++;
             }
         }
         return new InsertValue(parametersCount, columnValues);

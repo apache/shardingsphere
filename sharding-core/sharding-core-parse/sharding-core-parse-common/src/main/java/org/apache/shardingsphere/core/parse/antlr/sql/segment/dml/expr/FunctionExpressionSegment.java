@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 
 /**
  * Function expression segment.
@@ -31,11 +31,11 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 @Getter
 public final class FunctionExpressionSegment implements ExpressionSegment {
     
-    private final String functionName;
-    
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final String functionName;
     
     private final int innerExpressionStartIndex;
     
@@ -44,7 +44,7 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     private final int distinctExpressionStartIndex;
     
     @Override
-    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
-        return Optional.absent();
+    public SQLExpression getSQLExpression(final String sql) {
+        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
     }
 }

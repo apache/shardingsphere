@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment;
@@ -48,9 +46,8 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
         String updateTable = dmlStatement.getUpdateTableAlias().values().iterator().next();
         for (Entry<ColumnSegment, ExpressionSegment> entry : updateSetWhereSegment.getUpdateColumns().entrySet()) {
             Column column = new Column(entry.getKey().getName(), updateTable);
-            Optional<SQLExpression> expression = entry.getValue().convertToSQLExpression(sqlStatement.getLogicSQL());
-            Preconditions.checkState(expression.isPresent());
-            dmlStatement.getUpdateColumnValues().put(column, expression.get());
+            SQLExpression expression = entry.getValue().getSQLExpression(sqlStatement.getLogicSQL());
+            dmlStatement.getUpdateColumnValues().put(column, expression);
             fillEncryptCondition(entry.getKey(), entry.getValue(), updateTable, dmlStatement);
         }
         dmlStatement.setDeleteStatement(false);
@@ -58,9 +55,8 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
     
     private void fillEncryptCondition(final ColumnSegment columnSegment, final ExpressionSegment expressionSegment, final String updateTable, final DMLStatement dmlStatement) {
         Column column = new Column(columnSegment.getName(), updateTable);
-        Optional<SQLExpression> expression = expressionSegment.convertToSQLExpression(dmlStatement.getLogicSQL());
-        Preconditions.checkState(expression.isPresent());
-        dmlStatement.getUpdateColumnValues().put(column, expression.get());
+        SQLExpression expression = expressionSegment.getSQLExpression(dmlStatement.getLogicSQL());
+        dmlStatement.getUpdateColumnValues().put(column, expression);
         if (!getShardingRule().getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }

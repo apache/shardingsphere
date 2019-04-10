@@ -21,6 +21,8 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIdentifierExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPropertyExpression;
 
 /**
  * Property expression segment.
@@ -31,13 +33,13 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 @Getter
 public final class PropertyExpressionSegment implements ExpressionSegment {
     
-    private final String name;
-    
-    private final String owner;
-    
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final String name;
+    
+    private final String owner;
     
     /**
      * Get owner.
@@ -49,7 +51,7 @@ public final class PropertyExpressionSegment implements ExpressionSegment {
     }
 
     @Override
-    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
-        throw new RuntimeException("Unsupported convert property expression");
+    public SQLExpression getSQLExpression(final String sql) {
+        return new SQLPropertyExpression(null == owner ? null : new SQLIdentifierExpression(owner), name);
     }
 }

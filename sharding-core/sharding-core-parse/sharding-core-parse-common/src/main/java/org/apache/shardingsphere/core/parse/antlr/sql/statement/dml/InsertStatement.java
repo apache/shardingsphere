@@ -17,17 +17,12 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValues;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,49 +34,12 @@ import java.util.List;
  * @author panjuan
  */
 @Getter
-@Setter
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
-    private final List<Column> columns = new LinkedList<>();
+    private final Collection<String> columnNames = new LinkedList<>();
     
-    private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
+    private final List<InsertValue> values = new LinkedList<>();
     
-    private final InsertValues insertValues = new InsertValues();
-    
-    private boolean containGenerateKey;
-    
-    /**
-     * Add column.
-     * 
-     * @param columnName column name
-     */
-    public void addColumn(final String columnName) {
-        columns.add(new Column(columnName, getTables().getSingleTableName()));
-    }
-    
-    /**
-     * Get insert column names.
-     * 
-     * @return insert column names
-     */
-    public List<String> getInsertColumnNames() {
-        return Lists.transform(columns, new Function<Column, String>() {
-            @Override
-            public String apply(final Column input) {
-                return input.getName();
-            }
-        });
-    }
-    
-    /**
-     * Is contain generate key column.
-     * 
-     * @param shardingRule sharding rule.
-     * @return contain generated key column or not.
-     */
-    public boolean isContainGenerateKeyColumn(final ShardingRule shardingRule) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(getTables().getSingleTableName());
-        return generateKeyColumnName.isPresent() && columns.contains(new Column(generateKeyColumnName.get(), getTables().getSingleTableName()));
-    }
+    private final Collection<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
 }

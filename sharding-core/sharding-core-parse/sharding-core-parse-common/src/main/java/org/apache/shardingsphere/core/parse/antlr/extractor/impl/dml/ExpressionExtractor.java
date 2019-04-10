@@ -72,7 +72,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     // TODO extract column name and value from function
     private ExpressionSegment extractFunctionExpressionSegment(final ParserRuleContext functionNode) {
-        return new FunctionExpressionSegment(functionNode.getChild(0).getText(), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), 
+        return new FunctionExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), functionNode.getChild(0).getText(), 
                 ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
     }
     
@@ -80,7 +80,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
         Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode);
         Preconditions.checkState(columnSegment.isPresent());
-        return new PropertyExpressionSegment(columnSegment.get().getName(), columnSegment.get().getOwner().orNull(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        return new PropertyExpressionSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), columnSegment.get().getName(), columnSegment.get().getOwner().orNull());
     }
     
     /**
@@ -100,11 +100,12 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
             Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER);
             if (numberNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
-                result.setValue(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
+                result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
             }
             Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING);
             if (stringNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
-                result.setText(true);
+                String text = stringNode.get().getText();
+                result.setLiterals(text.substring(1, text.length() - 1));
             }
         }
         return result;

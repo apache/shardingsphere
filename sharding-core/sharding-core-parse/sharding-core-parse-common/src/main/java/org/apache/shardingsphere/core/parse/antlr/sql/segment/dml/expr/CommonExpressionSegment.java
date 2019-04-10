@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -43,21 +42,19 @@ public final class CommonExpressionSegment implements ExpressionSegment {
     
     private int placeholderIndex = -1;
     
-    private Number value;
-    
-    private boolean text;
+    private Object literals;
     
     @Override
-    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
+    public SQLExpression getSQLExpression(final String sql) {
         if (-1 != placeholderIndex) {
-            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(placeholderIndex));
+            return new SQLPlaceholderExpression(placeholderIndex);
         }
-        if (null != value) {
-            return Optional.<SQLExpression>of(new SQLNumberExpression(value));
+        if (literals instanceof Number) {
+            return new SQLNumberExpression((Number) literals);
         }
-        if (text) {
-            return Optional.<SQLExpression>of(new SQLTextExpression(sql.substring(startIndex + 1, stopIndex)));
+        if (literals instanceof String) {
+            return new SQLTextExpression(literals.toString());
         }
-        return Optional.<SQLExpression>of(new SQLTextExpression(sql.substring(startIndex, stopIndex + 1)));
+        return new SQLTextExpression(sql.substring(startIndex, stopIndex + 1));
     } 
 }
