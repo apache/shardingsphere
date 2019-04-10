@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -29,9 +27,9 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map.Entry;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Query result meta data.
@@ -40,7 +38,7 @@ import java.util.Map.Entry;
  */
 public final class QueryResultMetaData {
     
-    private final Multimap<String, Integer> columnLabelAndIndexes;
+    private final Map<String, Integer> columnLabelAndIndexes;
     
     private final ResultSetMetaData resultSetMetaData;
     
@@ -62,9 +60,9 @@ public final class QueryResultMetaData {
     }
     
     @SneakyThrows
-    private Multimap<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
-        Multimap<String, Integer> result = HashMultimap.create();
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+    private Map<String, Integer> getColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) {
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
@@ -75,8 +73,9 @@ public final class QueryResultMetaData {
      * 
      * @return column count
      */
+    @SneakyThrows
     public int getColumnCount() {
-        return columnLabelAndIndexes.size();
+        return resultSetMetaData.getColumnCount();
     }
     
     /**
@@ -87,12 +86,7 @@ public final class QueryResultMetaData {
      */
     @SneakyThrows
     public String getColumnLabel(final int columnIndex) {
-        for (Entry<String, Integer> entry : columnLabelAndIndexes.entries()) {
-            if (columnIndex == entry.getValue()) {
-                return entry.getKey();
-            }
-        }
-        throw new SQLException("Column index out of range", "9999");
+        return resultSetMetaData.getColumnLabel(columnIndex);
     }
     
     /**
@@ -113,7 +107,7 @@ public final class QueryResultMetaData {
      * @return column name
      */
     public Integer getColumnIndex(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexes.get(columnLabel)).get(0);
+        return columnLabelAndIndexes.get(columnLabel);
     }
     
     /**
