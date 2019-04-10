@@ -9,7 +9,7 @@
     </resultMap>
 
     <update id="createTableIfNotExists">
-        CREATE TABLE IF NOT EXISTS t_country (id BIGINT NOT NULL AUTO_INCREMENT, name VARCHAR(50),code VARCHAR(50), language VARCHAR(50), PRIMARY KEY (id));
+        CREATE TABLE IF NOT EXISTS t_country (id BIGINT NOT NULL AUTO_INCREMENT, code VARCHAR(50), name VARCHAR(50), language VARCHAR(50), PRIMARY KEY (id));
     </update>
 
     <update id="truncateTable">
@@ -21,7 +21,7 @@
     </update>
 
     <insert id="insertStandard" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_country (name, code, language) VALUES (#{name,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR},#{language,jdbcType=VARCHAR})
+        INSERT INTO t_country (code, name, language) VALUES (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR})
     </insert>
 
     <delete id="delete">

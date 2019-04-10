@@ -63,6 +63,7 @@ public class CountryRepositoryImpl implements CountryRepository {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Country> selectAll() {
         return (List<Country>) entityManager.createQuery("SELECT o FROM CountryEntity o").getResultList();
     }

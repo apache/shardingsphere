@@ -92,9 +92,9 @@ public class SpringCountryServiceImpl implements SpringCountryService {
                 continue;
             }
             Country currCountry = new Country();
+            currCountry.setCode(l.getCountry());
             currCountry.setName(l.getDisplayCountry(l));
             currCountry.setLanguage(l.getLanguage());
-            currCountry.setCode(l.getCountry());
             repository.insertStandard(currCountry);
             result.add(currCountry.getCode());
             if (++i == 10) {
