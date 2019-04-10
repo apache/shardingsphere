@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -104,6 +105,6 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
 
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        throw new RuntimeException("Unsupported convert subquery expression");
+        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
     }
 }

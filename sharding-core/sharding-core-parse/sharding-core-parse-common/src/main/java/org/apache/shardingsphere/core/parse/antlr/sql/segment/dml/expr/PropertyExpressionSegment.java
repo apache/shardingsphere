@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 
 /**
  * Property expression segment.
@@ -50,6 +51,6 @@ public final class PropertyExpressionSegment implements ExpressionSegment {
 
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        throw new RuntimeException("Unsupported convert property expression");
+        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
     }
 }

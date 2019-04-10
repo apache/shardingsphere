@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 
 /**
  * Function expression segment.
@@ -44,6 +45,6 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        throw new RuntimeException("Unsupported convert function expression");
+        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
     }
 }
