@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptorBeanDefinitionParserTag {
+public final class EncryptorRuleBeanDefinitionParserTag {
     
     public static final String ENCRYPTOR_TYPE_ATTRIBUTE = "type";
     
