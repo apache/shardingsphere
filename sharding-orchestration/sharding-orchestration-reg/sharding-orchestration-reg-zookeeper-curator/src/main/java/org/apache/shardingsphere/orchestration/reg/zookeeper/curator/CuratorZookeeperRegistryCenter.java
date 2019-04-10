@@ -288,6 +288,6 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     
     @Override
     public String getType() {
-        return "Zookeeper";
+        return "zookeeper";
     }
 }
