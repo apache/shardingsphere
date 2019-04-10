@@ -31,11 +31,11 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpre
 @Getter
 public final class FunctionExpressionSegment implements ExpressionSegment {
     
-    private final String functionName;
-    
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final String functionName;
     
     private final int innerExpressionStartIndex;
     

@@ -41,6 +41,10 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Setter
 public final class SubquerySegment implements SelectItemSegment, ExpressionSegment, AliasAvailable {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final boolean subqueryInFrom;
     
     private SelectClauseSegment selectClauseSegment;
@@ -52,10 +56,6 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     private OrderBySegment orderBySegment;
     
     private String alias;
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
     
     /**
      * Get select clause segment.
