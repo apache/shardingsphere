@@ -123,7 +123,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             result += 1;
         }
         if (isNeededToAppendQueryAssistedColumn()) {
-            result += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
+            result += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         }
         return result;
     }
