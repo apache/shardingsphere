@@ -101,7 +101,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
             }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex());
-        insertStatement.getInsertValues().getValues().add(insertValue);
+        insertStatement.getValues().add(insertValue);
     }
     
     private void removeUnnecessaryToken(final InsertStatement insertStatement) {

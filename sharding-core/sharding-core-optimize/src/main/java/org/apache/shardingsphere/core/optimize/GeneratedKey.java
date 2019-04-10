@@ -51,14 +51,19 @@ public final class GeneratedKey {
      * @return generate key
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final List<Object> parameters, final InsertStatement insertStatement) {
-        return insertStatement.isContainGenerateKeyColumn(shardingRule) ? findGeneratedKey(parameters, insertStatement) : createGeneratedKey(shardingRule, insertStatement);
+        return isContainsGenerateKeyColumn(shardingRule, insertStatement) ? findGeneratedKey(parameters, insertStatement) : createGeneratedKey(shardingRule, insertStatement);
+    }
+    
+    private static boolean isContainsGenerateKeyColumn(final ShardingRule shardingRule, final InsertStatement insertStatement) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        return generateKeyColumnName.isPresent() && insertStatement.getColumnNames().contains(generateKeyColumnName.get());
     }
     
     private static Optional<GeneratedKey> createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
         return generateKeyColumnName.isPresent()
-                ? Optional.of(createGeneratedKey(shardingRule, generateKeyColumnName.get(), tableName, insertStatement.getInsertValues().getValues().size())) : Optional.<GeneratedKey>absent();
+                ? Optional.of(createGeneratedKey(shardingRule, generateKeyColumnName.get(), tableName, insertStatement.getValues().size())) : Optional.<GeneratedKey>absent();
     }
     
     private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final String generateKeyColumnName, final String generateKeyTableName, final int insertValueSize) {

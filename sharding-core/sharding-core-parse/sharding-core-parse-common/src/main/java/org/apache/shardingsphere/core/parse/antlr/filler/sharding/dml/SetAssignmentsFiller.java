@@ -82,7 +82,7 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
             }
         }
         InsertValue insertValue = new InsertValue(parametersCount, columnValues);
-        insertStatement.getInsertValues().getValues().add(insertValue);
+        insertStatement.getValues().add(insertValue);
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
         insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex()));
@@ -134,7 +134,7 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     }
     
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final CommonExpressionSegment sqlExpression, final String sql) {
-        if (-1 < sqlExpression.getPlaceholderIndex()) {
+        if (-1 != sqlExpression.getPlaceholderIndex()) {
             return new GeneratedKeyCondition(column, sqlExpression.getPlaceholderIndex(), null);
         }
         if (null != sqlExpression.getValue()) {

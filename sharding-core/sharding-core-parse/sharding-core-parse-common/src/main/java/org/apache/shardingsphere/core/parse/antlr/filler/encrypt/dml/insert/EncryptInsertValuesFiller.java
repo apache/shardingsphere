@@ -41,7 +41,7 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
-        insertStatement.getInsertValues().getValues().add(insertValue);
+        insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
     }
     

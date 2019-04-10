@@ -54,7 +54,7 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     
     private final int startIndex;
     
-    private final int stopIndex; 
+    private final int stopIndex;
     
     /**
      * Get select clause segment.

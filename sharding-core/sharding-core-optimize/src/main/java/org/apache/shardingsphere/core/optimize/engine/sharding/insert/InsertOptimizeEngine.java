@@ -73,7 +73,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         InsertOptimizeResult insertOptimizeResult = createInsertOptimizeResult();
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
-            InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
+            InsertValue insertValue = insertStatement.getValues().get(i);
             SQLExpression[] currentColumnValues = createCurrentColumnValues(insertValue);
             Object[] currentParameters = createCurrentParameters(parametersCount, insertValue);
             parametersCount = parametersCount + insertValue.getParametersCount();

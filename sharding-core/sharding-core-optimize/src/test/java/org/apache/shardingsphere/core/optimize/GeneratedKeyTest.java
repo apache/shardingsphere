@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValues;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -55,31 +54,23 @@ public final class GeneratedKeyTest {
     public void setUp() {
         Tables tables = mock(Tables.class);
         when(insertStatement.getTables()).thenReturn(tables);
+        when(tables.getSingleTableName()).thenReturn("tbl");
+        when(insertStatement.getColumnNames()).thenReturn(Collections.singletonList("id"));
+        when(insertStatement.getValues()).thenReturn(Collections.singletonList(mock(InsertValue.class)));
     }
     
     @Test
     public void assertGetGenerateKeyWhenCreateWithoutGenerateKeyColumnConfiguration() {
-        mockGetGenerateKeyWhenCreate();
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.<String>absent());
         assertFalse(GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement).isPresent());
     }
     
     @Test
     public void assertGetGenerateKeyWhenCreateWithGenerateKeyColumnConfiguration() {
-        mockGetGenerateKeyWhenCreate();
-        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
+        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id1"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedKeys().size(), is(1));
-    }
-    
-    private void mockGetGenerateKeyWhenCreate() {
-        Tables tables = mock(Tables.class);
-        when(insertStatement.getTables()).thenReturn(tables);
-        when(tables.getSingleTableName()).thenReturn("tbl");
-        InsertValues insertValues = new InsertValues();
-        insertValues.getValues().add(mock(InsertValue.class));
-        when(insertStatement.getInsertValues()).thenReturn(insertValues);
     }
     
     @Test
@@ -96,7 +87,7 @@ public final class GeneratedKeyTest {
         when(generatedKeyCondition.getValue()).thenReturn((Comparable) 100);
         when(generatedKeyCondition.getColumn()).thenReturn(new Column("id", "tbl"));
         when(insertStatement.getGeneratedKeyConditions()).thenReturn(Arrays.asList(generatedKeyCondition, mock(GeneratedKeyCondition.class)));
-        when(insertStatement.isContainGenerateKeyColumn(shardingRule)).thenReturn(true);
+        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedKeys().size(), is(2));
