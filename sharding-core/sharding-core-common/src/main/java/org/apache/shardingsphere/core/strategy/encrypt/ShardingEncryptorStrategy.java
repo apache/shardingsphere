@@ -22,9 +22,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -64,11 +64,19 @@ public final class ShardingEncryptorStrategy {
     }
     
     /**
-     * Get assisted query column.
-     * @param column column
-     * @return assisted query column
+     * Get sharding encryptor.
+     *
+     * @param logicTableName logic table name
+     * @param columnName column name
+     * @return optional of sharding encryptor
      */
-    public Optional<String> getAssistedQueryColumn(final String column) {
-        return columns.contains(column) ? Optional.of(assistedQueryColumns.get(columns.indexOf(column))) : Optional.<String>absent();
+    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
+        return Collections2.filter(columns, new Predicate<ColumnNode>() {
+            
+            @Override
+            public boolean apply(final ColumnNode input) {
+                return input.equals(new ColumnNode(logicTableName, columnName));
+            }
+        }).isEmpty() ? Optional.<ShardingEncryptor>absent() : Optional.of(shardingEncryptor);
     }
 }
