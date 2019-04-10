@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Generat
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValues;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,7 +41,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
-    private final List<String> columnNames = new LinkedList<>();
+    private final Collection<String> columnNames = new LinkedList<>();
     
     private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
     
