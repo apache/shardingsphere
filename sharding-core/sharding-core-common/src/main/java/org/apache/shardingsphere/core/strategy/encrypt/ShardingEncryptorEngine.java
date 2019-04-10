@@ -101,14 +101,14 @@ public final class ShardingEncryptorEngine {
      * @param logicTableName logic table name
      * @return assisted query column count
      */
-    public Optional<Integer> getAssistedQueryColumnCount(final String logicTableName) {
+    public Integer getAssistedQueryColumnCount(final String logicTableName) {
         for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
-            Optional<Integer> result = each.getAssistedQueryColumnCount(logicTableName);
-            if (result.isPresent()) {
+            int result = each.getAssistedQueryColumnCount(logicTableName);
+            if (result > 0) {
                 return result;
             }
         }
-        return Optional.absent();
+        return 0;
     }
     
     /**
