@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
@@ -41,10 +39,8 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -389,25 +385,6 @@ public class ShardingRule implements BaseRule {
             if (each.isExisted(actualTableName)) {
                 result.add(each.getLogicTable());
             }
-        }
-        return result;
-    }
-    
-    /**
-     * Get all actual table names.
-     *
-     * @return all actual table names
-     */
-    public Map<String, Collection<String>> getAllActualTableNames() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (TableRule each : tableRules) {
-            result.put(each.getLogicTable(), Lists.transform(each.getActualDataNodes(), new Function<DataNode, String>() {
-                
-                @Override
-                public String apply(final DataNode input) {
-                    return input.getTableName();
-                }
-            }));
         }
         return result;
     }
