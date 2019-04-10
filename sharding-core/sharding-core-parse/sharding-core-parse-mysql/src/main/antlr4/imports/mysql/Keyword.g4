@@ -111,6 +111,10 @@ MOD
     : M O D
     ;
 
+DIV
+    : D I V
+    ;
+
 NOT
     : N O T
     ;

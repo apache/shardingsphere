@@ -71,10 +71,8 @@ expr
     | expr OR_ expr
     | expr XOR expr
     | LP_ expr RP_
-    | NOT expr
-    | NOT_ expr
+    | (NOT | NOT_) expr
     | booleanPrimary
-    | exprRecursive
     ;
 
 booleanPrimary
@@ -96,11 +94,11 @@ comparisonOperator
 
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr (COMMA_ simpleExpr)* RP_
-    | bitExpr NOT? BETWEEN simpleExpr AND predicate
-    | bitExpr SOUNDS LIKE simpleExpr
-    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
-    | bitExpr NOT? (REGEXP | RLIKE) simpleExpr
+    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
+    | bitExpr NOT? BETWEEN bitExpr AND predicate
+    | bitExpr SOUNDS LIKE bitExpr
+    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
+    | bitExpr NOT? REGEXP bitExpr
     | bitExpr
     ;
 
@@ -113,6 +111,7 @@ bitExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
+    | bitExpr DIV bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
@@ -125,24 +124,16 @@ simpleExpr
     : functionCall
     | literal
     | columnName
-    | simpleExpr collateClause
-    //| param_marker
+    | simpleExpr collateClause_
     | variable
     | simpleExpr AND_ simpleExpr
-    | PLUS_ simpleExpr
-    | MINUS_ simpleExpr
-    | TILDE_ simpleExpr
-    | NOT_ simpleExpr
-    | BINARY simpleExpr
-    | LP_ expr (COMMA_ expr)* RP_
-    | ROW LP_ expr (COMMA_ expr)* RP_
-    | subquery
-    | EXISTS subquery
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | ROW? LP_ expr (COMMA_ expr)* RP_
+    | EXISTS? subquery
     // | (identifier_ expr)
     //| match_expr
-    | caseExpress
+    | caseExpr
     | intervalExpr
-    | privateExprOfDb
     ;
 
 functionCall
@@ -161,16 +152,36 @@ distinct
     : DISTINCT
     ;
 
+caseExpr
+    : caseCond | caseComp
+    ;
+
+caseComp
+    : CASE simpleExpr caseWhenComp+ elseResult? END
+    ;
+
+caseWhenComp
+    : WHEN simpleExpr THEN caseResult
+    ;
+
+caseCond
+    : CASE whenResult+ elseResult? END
+    ;
+
+whenResult
+    : WHEN expr THEN caseResult
+    ;
+
+elseResult
+    : ELSE caseResult
+    ;
+
+caseResult
+    : expr
+    ;
+
 intervalExpr
-    : matchNone
-    ;
-
-caseExpress
-    : matchNone
-    ;
-
-privateExprOfDb
-    : matchNone
+    : INTERVAL expr ignoredIdentifier_
     ;
 
 variable
@@ -186,9 +197,9 @@ literal
     | LBE_ identifier_ STRING_ RBE_
     | HEX_DIGIT_
     | string
-    | identifier_ STRING_ collateClause?
+    | identifier_ STRING_ collateClause_?
     | (DATE | TIME | TIMESTAMP) STRING_
-    | identifier_? BIT_NUM_ collateClause?
+    | characterSet_? BIT_NUM_ collateClause_?
     ;
 
 question
@@ -204,15 +215,7 @@ string
     ;
 
 subquery
-    : matchNone
-    ;
-
-collateClause
-    : matchNone
-    ;
-
-exprRecursive
-    : matchNone
+    : 'Default does not match anything'
     ;
 
 orderByClause
@@ -342,8 +345,4 @@ ignoredIdentifier_
 
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
-    ;
-
-matchNone
-    : 'Default does not match anything'
     ;

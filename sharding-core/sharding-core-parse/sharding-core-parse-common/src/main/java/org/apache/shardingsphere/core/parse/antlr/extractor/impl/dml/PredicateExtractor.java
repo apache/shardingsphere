@@ -203,7 +203,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         List<ExpressionSegment> sqlExpressions = new LinkedList<>();
         for (int i = 3; i < predicateNode.getChildCount(); i++) {
-            if (RuleName.SIMPLE_EXPR.getName().equals(predicateNode.getChild(i).getClass().getSimpleName())) {
+            if (RuleName.EXPR.getName().equals(predicateNode.getChild(i).getClass().getSimpleName())) {
                 Optional<? extends ExpressionSegment> expression = expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) predicateNode.getChild(i));
                 if (!expression.isPresent()) {
                     sqlExpressions.clear();

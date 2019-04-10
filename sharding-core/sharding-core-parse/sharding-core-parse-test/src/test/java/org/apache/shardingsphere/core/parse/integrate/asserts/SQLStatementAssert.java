@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
@@ -39,6 +36,9 @@ import org.apache.shardingsphere.core.parse.integrate.asserts.token.TokenAssert;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * SQL statement assert.
@@ -100,7 +100,7 @@ public final class SQLStatementAssert {
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
         conditionAssert.assertOrCondition(actual.getRouteConditions().getOrCondition(), expected.getOrCondition());
-        if(DatabaseType.MySQL == databaseType) {
+        if (DatabaseType.MySQL == databaseType) {
             conditionAssert.assertOrCondition(actual.getEncryptConditions().getOrCondition(), expected.getEncryptCondition());
         }
         tokenAssert.assertTokens(actual.getSQLTokens(), expected.getTokens());
