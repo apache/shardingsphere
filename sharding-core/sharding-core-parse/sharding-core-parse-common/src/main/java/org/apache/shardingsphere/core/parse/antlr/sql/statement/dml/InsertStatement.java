@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValues;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Insert statement.
@@ -37,17 +35,14 @@ import java.util.List;
  * @author panjuan
  */
 @Getter
-@Setter
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
     private final Collection<String> columnNames = new LinkedList<>();
     
-    private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
-    
     private final InsertValues insertValues = new InsertValues();
     
-    private boolean containGenerateKey;
+    private final Collection<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
     
     /**
      * Is contain generate key column.
