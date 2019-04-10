@@ -28,7 +28,7 @@ public final class EncryptorConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptorConfiguration(null, "pwd", new Properties());
+        new EncryptorConfiguration(null, "tb.pwd", new Properties());
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -38,9 +38,9 @@ public final class EncryptorConfigurationTest {
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "pwd", null, null);
+        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "tb.pwd", null, null);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumns(), is("pwd"));
+        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
         assertThat(actual.getAssistedQueryColumns(), is(""));
         assertThat(actual.getProperties(), is(new Properties()));
     }
@@ -49,9 +49,9 @@ public final class EncryptorConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "pwd", props);
+        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "tb.pwd", props);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumns(), is("pwd"));
+        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
         assertThat(actual.getAssistedQueryColumns(), is(""));
         assertThat(actual.getProperties(), is(props));
     }
@@ -60,10 +60,10 @@ public final class EncryptorConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "pwd", "pwd_query", props);
+        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "tb.pwd", "tb.pwd_query", props);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
+        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
+        assertThat(actual.getAssistedQueryColumns(), is("tb.pwd_query"));
         assertThat(actual.getProperties(), is(props));
     }
 }
