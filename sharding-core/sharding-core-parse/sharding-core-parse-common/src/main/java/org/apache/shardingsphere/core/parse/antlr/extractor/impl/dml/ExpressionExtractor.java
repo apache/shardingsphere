@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
@@ -40,12 +39,7 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
-    
-    @Override
-    public Optional<? extends ExpressionSegment> extract(final ParserRuleContext ancestorNode) {
-        throw new RuntimeException();
-    }
+public final class ExpressionExtractor {
     
     /**
      *  Extract expression.

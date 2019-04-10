@@ -152,6 +152,6 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     
     private Optional<OrConditionSegment> buildCondition(final ParserRuleContext node, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode(node, RuleName.EXPR);
-        return exprNode.isPresent() ? predicateSegmentExtractor.extractCondition(placeholderIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
+        return exprNode.isPresent() ? predicateSegmentExtractor.extract(placeholderIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
     }
 }

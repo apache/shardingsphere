@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -37,16 +36,20 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final Map<ParserRuleContext, Integer> placeholderIndexes;
+public final class AssignmentExtractor {
     
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
-    @Override
-    public Optional<AssignmentSegment> extract(final ParserRuleContext ancestorNode) {
+    /**
+     * Extract.
+     * 
+     * @param placeholderIndexes placeholder indexes
+     * @param ancestorNode ancestor node
+     * @return assignment segment
+     */
+    public Optional<AssignmentSegment> extract(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> assignmentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ASSIGNMENT);
         if (!assignmentNode.isPresent()) {
             return Optional.absent();

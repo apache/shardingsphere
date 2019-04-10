@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtractor {
     
-    private AssignmentExtractor assignmentExtractor;
+    private final AssignmentExtractor assignmentExtractor = new AssignmentExtractor();
     
     @Override
     public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode) {
@@ -46,9 +46,9 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
             return Optional.absent();
         }
         Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
-        assignmentExtractor = new AssignmentExtractor(getPlaceholderIndexes(ancestorNode));
+        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ancestorNode);
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT)) {
-            Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(each);
+            Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(placeholderIndexes, each);
             if (assignmentSegment.isPresent()) {
                 assignmentSegments.add(assignmentSegment.get());
             }
