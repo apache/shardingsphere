@@ -67,8 +67,8 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
         for (MasterSlaveRuleConfiguration each : data.getMasterSlaveRuleConfigs()) {
             result.getMasterSlaveRules().put(each.getName(), masterSlaveRuleConfigurationYamlSwapper.swap(each));
         }
-        if (null != data.getEncryptRuleConfiguration()) {
-            result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap(data.getEncryptRuleConfiguration()));
+        if (null != data.getEncryptRuleConfig()) {
+            result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap(data.getEncryptRuleConfig()));
         }
         return result;
     }
@@ -101,7 +101,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
         }
         result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
         if (null != yamlConfiguration.getEncryptRule()) {
-            result.setEncryptRuleConfiguration(encryptRuleConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptRule()));
+            result.setEncryptRuleConfig(encryptRuleConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptRule()));
         }
         return result;
     }
