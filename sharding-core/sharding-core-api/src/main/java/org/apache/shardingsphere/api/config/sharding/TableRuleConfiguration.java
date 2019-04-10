@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 
 /**
@@ -43,8 +42,6 @@ public final class TableRuleConfiguration {
     private ShardingStrategyConfiguration tableShardingStrategyConfig;
     
     private KeyGeneratorConfiguration keyGeneratorConfig;
-    
-    private EncryptorConfiguration encryptorConfig;
     
     private String logicIndex;
     
