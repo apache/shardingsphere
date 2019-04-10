@@ -96,6 +96,12 @@
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
+      "name": "sharding.jdbc.config.orchestration.registry.type",
+      "description": "Registry center type.",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration",
       "name": "sharding.jdbc.config.orchestration.registry.server-lists",
       "description": "Registry center server list.",
       "type": "java.lang.String"
