@@ -30,10 +30,10 @@ public final class EncryptorConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlEncryptorConfiguration actual = new EncryptorConfigurationYamlSwapper().swap(new EncryptorConfiguration("MD5", "pwd", "pwd_query", new Properties()));
+        YamlEncryptorConfiguration actual = new EncryptorConfigurationYamlSwapper().swap(new EncryptorConfiguration("MD5", "tb.pwd", "tb.pwd_query", new Properties()));
         assertThat(actual.getType(), is("MD5"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
+        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
+        assertThat(actual.getAssistedQueryColumns(), is("tb.pwd_query"));
         assertThat(actual.getProps(), is(new Properties()));
     }
     
@@ -41,12 +41,12 @@ public final class EncryptorConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         YamlEncryptorConfiguration yamlConfiguration = new YamlEncryptorConfiguration();
         yamlConfiguration.setType("MD5");
-        yamlConfiguration.setColumns("pwd");
-        yamlConfiguration.setAssistedQueryColumns("pwd_query");
+        yamlConfiguration.setQualifiedColumns("tb.pwd");
+        yamlConfiguration.setAssistedQueryColumns("tb.pwd_query");
         EncryptorConfiguration actual = new EncryptorConfigurationYamlSwapper().swap(yamlConfiguration);
         assertThat(actual.getType(), is("MD5"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
+        assertThat(actual.getQualifiedColumns(), is("tb.pwd"));
+        assertThat(actual.getAssistedQueryColumns(), is("tb.pwd_query"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
 }
