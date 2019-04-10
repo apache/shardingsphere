@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,23 +36,12 @@ import java.util.Map.Entry;
  */
 public final class ShardingEncryptorEngine {
     
-    private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
     
-    public ShardingEncryptorEngine(final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies) {
-        for (Entry<String, ShardingEncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
-            if (null != entry.getValue()) {
-                this.shardingEncryptorStrategies.put(entry.getKey(), entry.getValue());
-            }
-        }
-    }
+    private final Collection<ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedList<>();
     
-    public ShardingEncryptorEngine(final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies, final ShardingEncryptorStrategy defaultEncryptorStrategy) {
-        for (Entry<String, ShardingEncryptorStrategy> entry : shardingEncryptorStrategies.entrySet()) {
-            if (null != entry.getValue()) {
-                this.shardingEncryptorStrategies.put(entry.getKey(), entry.getValue());
-            } else {
-                this.shardingEncryptorStrategies.put(entry.getKey(), defaultEncryptorStrategy);
-            }
+    public ShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfiguration) {
+        for (EncryptorRuleConfiguration each : encryptRuleConfiguration.getEncryptorRuleConfigs()) {
+            shardingEncryptorStrategies.add(new ShardingEncryptorStrategy(each));
         }
     }
     
