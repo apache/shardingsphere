@@ -1,7 +1,7 @@
 dataSources:
   ds: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
 
@@ -24,6 +24,9 @@ shardingRule:
           shardingColumn: order_id
           preciseAlgorithmClassName: org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm
           rangeAlgorithmClassName: org.apache.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_item_id
   bindingTables:
     - t_order,t_order_item
 

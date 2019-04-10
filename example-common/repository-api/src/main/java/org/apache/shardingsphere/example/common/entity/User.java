@@ -59,7 +59,7 @@ public class User implements Serializable {
         return assistedQueryPwd;
     }
     
-    public void setAssistedQueryPwd(String assistedQueryPwd) {
+    public void setAssistedQueryPwd(final String assistedQueryPwd) {
         this.assistedQueryPwd = assistedQueryPwd;
     }
 }

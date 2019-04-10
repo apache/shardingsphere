@@ -36,7 +36,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
     
     @Resource
     private OrderItemRepository orderItemRepository;
-    
+
     @Override
     public void initEnvironment() {
         orderRepository.createTableIfNotExists();
@@ -70,7 +70,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
-    
+
     private List<Long> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
@@ -88,7 +88,7 @@ public class SpringPojoServiceImpl implements SpringPojoService {
         }
         return result;
     }
-    
+
     private void deleteData(final List<Long> orderIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {

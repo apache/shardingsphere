@@ -27,16 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class CommonServiceImpl implements CommonService {
-    
+
     private OrderRepository orderRepository;
-    
+
     private OrderItemRepository orderItemRepository;
-    
+
     public CommonServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }
-    
+
     @Override
     public void initEnvironment() {
         orderRepository.createTableIfNotExists();
@@ -44,13 +44,13 @@ public final class CommonServiceImpl implements CommonService {
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
     }
-    
+
     @Override
     public void cleanEnvironment() {
         orderRepository.dropTable();
         orderItemRepository.dropTable();
     }
-    
+
     @Override
     public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
@@ -60,7 +60,7 @@ public final class CommonServiceImpl implements CommonService {
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-    
+
     @Override
     public void processFailure() {
         System.out.println("-------------- Process Failure Begin ---------------");
@@ -68,7 +68,7 @@ public final class CommonServiceImpl implements CommonService {
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
-    
+
     private List<Long> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
@@ -86,7 +86,7 @@ public final class CommonServiceImpl implements CommonService {
         }
         return result;
     }
-    
+
     private void deleteData(final List<Long> orderIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {
@@ -94,7 +94,7 @@ public final class CommonServiceImpl implements CommonService {
             orderItemRepository.delete(each);
         }
     }
-    
+
     @Override
     public void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");

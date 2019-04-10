@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.common.jpa.entity;
 
-
 import org.apache.shardingsphere.example.common.entity.Order;
 
 import javax.persistence.Column;
@@ -46,6 +45,7 @@ public final class OrderEntity extends Order {
     }
     
     @Column(name = "status")
+    @Override
     public String getStatus() {
         return super.getStatus();
     }

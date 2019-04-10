@@ -36,7 +36,7 @@ public class JPACommonServiceImpl implements JPACommonService {
     
     @Resource
     private OrderItemRepository orderItemRepository;
-    
+
     @Override
     public void initEnvironment() {
     }
@@ -64,7 +64,7 @@ public class JPACommonServiceImpl implements JPACommonService {
         System.out.println("-------------- Process Failure Finish --------------");
         throw new RuntimeException("Exception occur for transaction test.");
     }
-    
+
     private List<Long> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
@@ -82,7 +82,7 @@ public class JPACommonServiceImpl implements JPACommonService {
         }
         return result;
     }
-    
+
     private void deleteData(final List<Long> orderIds) {
         System.out.println("---------------------------- Delete Data ----------------------------");
         for (Long each : orderIds) {

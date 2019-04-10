@@ -16,42 +16,42 @@
     
     <bean id="demo_ds_master_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0?useSSL=false"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
     <bean id="demo_ds_master_0_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0?useSSL=false"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
     
     <bean id="demo_ds_master_0_slave_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1?useSSL=false"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_0_slave_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
 
     <bean id="demo_ds_master_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1?useSSL=false"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
 
     <bean id="demo_ds_master_1_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0?useSSL=false"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_0?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
 
     <bean id="demo_ds_master_1_slave_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1?useSSL=false"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_master_1_slave_1?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
@@ -77,7 +77,7 @@
             </sharding:table-rules>
         </sharding:sharding-rule>
         <sharding:props>
-            <prop key="sql.show">true</prop>
+            <prop key="sql.show">false</prop>
         </sharding:props>
     </sharding:data-source>
     
