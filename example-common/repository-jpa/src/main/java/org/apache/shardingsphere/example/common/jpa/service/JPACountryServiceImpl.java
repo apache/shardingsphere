@@ -23,8 +23,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Service
 public class JPACountryServiceImpl implements JPACountryService {
@@ -75,19 +77,21 @@ public class JPACountryServiceImpl implements JPACountryService {
 
     private List<String> insertData() {
         System.out.println("---------------------------- Insert Data ----------------------------");
-        List<String> result = new ArrayList<>();
+        Set<String> result = new LinkedHashSet<>();
         for (Locale each : Locale.getAvailableLocales()) {
-            final String country = each.getCountry();
-            if (country == null || "".equals(country)) {
+            if (result.contains(each.getCountry()) || each.getCountry().isEmpty()) {
                 continue;
             }
+            if (result.size() >= 10) {
+                break;
+            }
+            result.add(each.getCountry());
             CountryEntity entity = new CountryEntity();
             entity.setName(each.getDisplayCountry(each));
             entity.setLanguage(each.getLanguage());
             entity.setCode(each.getCountry());
             countryRepository.insert(entity);
-            result.add(entity.getCode());
         }
-        return result;
+        return new ArrayList<>(result);
     }
 }
