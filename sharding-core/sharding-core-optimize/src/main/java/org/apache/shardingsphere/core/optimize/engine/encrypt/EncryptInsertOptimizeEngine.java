@@ -92,7 +92,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     private int getIncrement() {
         int result = 0;
         if (isNeededToAppendQueryAssistedColumn()) {
-            result += encryptRule.getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
+            result += encryptRule.getEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         }
         return result;
     }
