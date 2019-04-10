@@ -33,7 +33,6 @@ import java.sql.SQLException;
 public class YamlConfigurationExample {
 
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
-//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);

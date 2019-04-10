@@ -24,7 +24,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class SpringNamespaceExample {
     
     private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-master-slave.xml";
 
     public static void main(final String[] args) {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {

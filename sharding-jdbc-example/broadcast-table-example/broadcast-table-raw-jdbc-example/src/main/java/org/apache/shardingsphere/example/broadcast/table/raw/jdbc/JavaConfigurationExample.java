@@ -33,7 +33,6 @@ import java.sql.SQLException;
 public class JavaConfigurationExample {
 
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
-//    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = DataSourceFactory.newInstance(shardingType);

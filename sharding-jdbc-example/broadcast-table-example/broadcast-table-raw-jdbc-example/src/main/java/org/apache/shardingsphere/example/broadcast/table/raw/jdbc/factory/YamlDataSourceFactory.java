@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.broadcast.table.raw.jdbc.factory;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -32,8 +31,6 @@ public class YamlDataSourceFactory {
         switch (shardingType) {
             case SHARDING_DATABASES:
                 return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases.yaml"));
-            case MASTER_SLAVE:
-                return YamlMasterSlaveDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

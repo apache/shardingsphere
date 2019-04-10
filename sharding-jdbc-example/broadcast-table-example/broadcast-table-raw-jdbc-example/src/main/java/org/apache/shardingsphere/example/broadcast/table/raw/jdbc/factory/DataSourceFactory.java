@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.broadcast.table.raw.jdbc.factory;
 
-import org.apache.shardingsphere.example.broadcast.table.raw.jdbc.config.MasterSlaveConfiguration;
 import org.apache.shardingsphere.example.broadcast.table.raw.jdbc.config.ShardingDatabasesConfigurationPrecise;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -30,8 +29,6 @@ public class DataSourceFactory {
         switch (shardingType) {
             case SHARDING_DATABASES:
                 return new ShardingDatabasesConfigurationPrecise().getDataSource();
-            case MASTER_SLAVE:
-                return new MasterSlaveConfiguration().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
