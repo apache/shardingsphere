@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Optional;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -34,6 +35,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
+@NoArgsConstructor
 public final class ShardingEncryptorEngine {
     
     private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
