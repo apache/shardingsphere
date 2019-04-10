@@ -124,8 +124,8 @@ public final class InsertOptimizeEngineTest {
         AndCondition andCondition2 = new AndCondition();
         andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(2)));
         insertValuesStatementWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
-        insertValuesStatementWithPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
-        insertValuesStatementWithPlaceHolder.getColumns().add(new Column("status", "t_order"));
+        insertValuesStatementWithPlaceHolder.getColumnNames().add("user_id");
+        insertValuesStatementWithPlaceHolder.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
@@ -145,8 +145,8 @@ public final class InsertOptimizeEngineTest {
         AndCondition andCondition2 = new AndCondition();
         andCondition2.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), new SQLPlaceholderExpression(2)));
         insertValuesStatementWithPlaceHolderWithEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
-        insertValuesStatementWithPlaceHolderWithEncrypt.getColumns().add(new Column("user_id", "t_encrypt"));
-        insertValuesStatementWithPlaceHolderWithEncrypt.getColumns().add(new Column("status", "t_encrypt"));
+        insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("user_id");
+        insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
@@ -188,8 +188,8 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithPlaceHolder.setParametersIndex(0);
         insertSetStatementWithPlaceHolder.addSQLToken(new TableToken(12, "t_order", QuoteCharacter.NONE, 0));
         insertSetStatementWithPlaceHolder.addSQLToken(new InsertSetToken(24));
-        insertSetStatementWithPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
-        insertSetStatementWithPlaceHolder.getColumns().add(new Column("status", "t_order"));
+        insertSetStatementWithPlaceHolder.getColumnNames().add("user_id");
+        insertSetStatementWithPlaceHolder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
         insertSetStatementWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
@@ -201,8 +201,8 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertSetStatementWithPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, "t_encrypt_query", QuoteCharacter.NONE, 0));
         insertSetStatementWithPlaceHolderWithQueryEncrypt.addSQLToken(new InsertSetToken(24));
-        insertSetStatementWithPlaceHolderWithQueryEncrypt.getColumns().add(new Column("user_id", "t_encrypt_query"));
-        insertSetStatementWithPlaceHolderWithQueryEncrypt.getColumns().add(new Column("status", "t_encrypt_query"));
+        insertSetStatementWithPlaceHolderWithQueryEncrypt.getColumnNames().add("user_id");
+        insertSetStatementWithPlaceHolderWithQueryEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), new SQLNumberExpression(12)));
         insertSetStatementWithPlaceHolderWithQueryEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
@@ -214,8 +214,8 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceHolder.setParametersIndex(0);
         insertSetStatementWithoutPlaceHolder.addSQLToken(new TableToken(12, "t_order", QuoteCharacter.NONE, 0));
         insertSetStatementWithoutPlaceHolder.addSQLToken(new InsertSetToken(24));
-        insertSetStatementWithoutPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
-        insertSetStatementWithoutPlaceHolder.getColumns().add(new Column("status", "t_order"));
+        insertSetStatementWithoutPlaceHolder.getColumnNames().add("user_id");
+        insertSetStatementWithoutPlaceHolder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
         insertSetStatementWithoutPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
@@ -227,8 +227,8 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceHolderWithEncrypt.setParametersIndex(0);
         insertSetStatementWithoutPlaceHolderWithEncrypt.addSQLToken(new TableToken(12, "t_encrypt", QuoteCharacter.NONE, 0));
         insertSetStatementWithoutPlaceHolderWithEncrypt.addSQLToken(new InsertSetToken(24));
-        insertSetStatementWithoutPlaceHolderWithEncrypt.getColumns().add(new Column("user_id", "t_encrypt"));
-        insertSetStatementWithoutPlaceHolderWithEncrypt.getColumns().add(new Column("status", "t_encrypt"));
+        insertSetStatementWithoutPlaceHolderWithEncrypt.getColumnNames().add("user_id");
+        insertSetStatementWithoutPlaceHolderWithEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), new SQLNumberExpression(12)));
         insertSetStatementWithoutPlaceHolderWithEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
@@ -314,8 +314,8 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertValuesWithoutPlaceHolderWithGeneratedKeyWithQueryEncrypt() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumns().add(new Column("user_id", "t_encrypt_query"));
-        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumns().add(new Column("status", "t_encrypt_query"));
+        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumnNames().add("user_id");
+        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));
@@ -334,8 +334,8 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertValuesWithoutPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertValuesStatementWithoutPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
-        insertValuesStatementWithoutPlaceHolder.getColumns().add(new Column("status", "t_order"));
+        insertValuesStatementWithoutPlaceHolder.getColumnNames().add("user_id");
+        insertValuesStatementWithoutPlaceHolder.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(0);
         insertValue.getColumnValues().add(new SQLNumberExpression(12));
         insertValue.getColumnValues().add(new SQLTextExpression("a"));

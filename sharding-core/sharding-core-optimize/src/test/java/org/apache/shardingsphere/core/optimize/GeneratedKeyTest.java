@@ -32,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -98,8 +97,6 @@ public final class GeneratedKeyTest {
         when(generatedKeyCondition.getColumn()).thenReturn(new Column("id", "tbl"));
         when(insertStatement.getGeneratedKeyConditions()).thenReturn(Arrays.asList(generatedKeyCondition, mock(GeneratedKeyCondition.class)));
         when(insertStatement.isContainGenerateKeyColumn(shardingRule)).thenReturn(true);
-        Field field = InsertStatement.class.getDeclaredField("columns");
-        field.setAccessible(true);
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, Collections.<Object>singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedKeys().size(), is(2));

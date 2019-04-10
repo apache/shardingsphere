@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValues;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -43,36 +40,13 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class InsertStatement extends DMLStatement {
     
-    private final List<Column> columns = new LinkedList<>();
+    private final List<String> columnNames = new LinkedList<>();
     
     private List<GeneratedKeyCondition> generatedKeyConditions = new LinkedList<>();
     
     private final InsertValues insertValues = new InsertValues();
     
     private boolean containGenerateKey;
-    
-    /**
-     * Add column.
-     * 
-     * @param columnName column name
-     */
-    public void addColumn(final String columnName) {
-        columns.add(new Column(columnName, getTables().getSingleTableName()));
-    }
-    
-    /**
-     * Get insert column names.
-     * 
-     * @return insert column names
-     */
-    public List<String> getInsertColumnNames() {
-        return Lists.transform(columns, new Function<Column, String>() {
-            @Override
-            public String apply(final Column input) {
-                return input.getName();
-            }
-        });
-    }
     
     /**
      * Is contain generate key column.
@@ -82,6 +56,6 @@ public final class InsertStatement extends DMLStatement {
      */
     public boolean isContainGenerateKeyColumn(final ShardingRule shardingRule) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(getTables().getSingleTableName());
-        return generateKeyColumnName.isPresent() && columns.contains(new Column(generateKeyColumnName.get(), getTables().getSingleTableName()));
+        return generateKeyColumnName.isPresent() && columnNames.contains(generateKeyColumnName.get());
     }
 }

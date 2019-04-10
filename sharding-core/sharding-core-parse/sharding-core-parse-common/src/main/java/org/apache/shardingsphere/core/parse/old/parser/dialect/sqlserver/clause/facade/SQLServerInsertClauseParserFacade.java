@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class SQLServerInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public SQLServerInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new SQLServerInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
+        super(new SQLServerInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(lexerEngine), 
                 new SQLServerInsertValuesClauseParser(shardingRule, lexerEngine), new SQLServerInsertSetClauseParser(shardingRule, lexerEngine), 
                 new SQLServerInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }

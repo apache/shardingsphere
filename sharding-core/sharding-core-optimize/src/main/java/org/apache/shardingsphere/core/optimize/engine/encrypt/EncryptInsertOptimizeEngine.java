@@ -71,7 +71,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private InsertOptimizeResult createInsertOptimizeResult() {
         DefaultKeyword type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
-        return new InsertOptimizeResult(type, insertStatement.getInsertColumnNames());
+        return new InsertOptimizeResult(type, insertStatement.getColumnNames());
     }
     
     private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {

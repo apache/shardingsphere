@@ -95,7 +95,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private InsertOptimizeResult createInsertOptimizeResult() {
         DefaultKeyword type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
-        return new InsertOptimizeResult(type, insertStatement.getInsertColumnNames());
+        return new InsertOptimizeResult(type, insertStatement.getColumnNames());
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {
@@ -131,7 +131,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private boolean isNeededToAppendGeneratedKey() {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
-        return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(new Column(generateKeyColumn.get(), tableName));
+        return generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get());
     }
     
     private ShardingCondition createShardingCondition(final AndCondition andCondition) {

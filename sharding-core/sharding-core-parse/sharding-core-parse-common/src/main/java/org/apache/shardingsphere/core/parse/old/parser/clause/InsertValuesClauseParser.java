@@ -105,17 +105,18 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
             removeGenerateKeyColumn(insertStatement, count);
             count = 0;
             AndCondition andCondition = new AndCondition();
-            for (Column each : insertStatement.getColumns()) {
+            String tableName = insertStatement.getTables().getSingleTableName();
+            for (String each : insertStatement.getColumnNames()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
-                if (shardingRule.isShardingColumn(each.getName(), each.getTableName())) {
+                if (shardingRule.isShardingColumn(each, tableName)) {
                     if (!(sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression || sqlExpression instanceof SQLPlaceholderExpression)) {
-                        throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each.getName());
+                        throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each);
                     }
-                    andCondition.getConditions().add(new Condition(each, sqlExpression));
+                    andCondition.getConditions().add(new Condition(new Column(each, tableName), sqlExpression));
                 }
                 Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-                if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equals(each.getName())) {
-                    insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, sqlExpression));
+                if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equals(each)) {
+                    insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, tableName, sqlExpression));
                 }
                 count++;
             }
@@ -129,12 +130,13 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && valueCount < insertStatement.getColumns().size()) {
-            insertStatement.getColumns().remove(new Column(generateKeyColumnName.get(), insertStatement.getTables().getSingleTableName()));
+        if (generateKeyColumnName.isPresent() && valueCount < insertStatement.getColumnNames().size()) {
+            insertStatement.getColumnNames().remove(generateKeyColumnName.get());
         }
     }
     
-    private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
+    private GeneratedKeyCondition createGeneratedKeyCondition(final String columnName, final String tableName, final SQLExpression sqlExpression) {
+        Column column = new Column(columnName, tableName);
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             return new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
         }

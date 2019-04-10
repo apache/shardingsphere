@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
@@ -92,8 +91,8 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getTables().add(new Table("t_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertValuesToken(34));
-        result.getColumns().add(new Column("col1", "t_encrypt"));
-        result.getColumns().add(new Column("col2", "t_encrypt"));
+        result.getColumnNames().add("col1");
+        result.getColumnNames().add("col2");
         InsertValue insertValue = new InsertValue(2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
@@ -123,8 +122,8 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getTables().add(new Table("t_query_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_query_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertValuesToken(40));
-        result.getColumns().add(new Column("col1", "t_query_encrypt"));
-        result.getColumns().add(new Column("col2", "t_query_encrypt"));
+        result.getColumnNames().add("col1");
+        result.getColumnNames().add("col2");
         InsertValue insertValue = new InsertValue(0);
         insertValue.getColumnValues().add(new SQLNumberExpression(1));
         insertValue.getColumnValues().add(new SQLNumberExpression(2));
@@ -152,8 +151,8 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getTables().add(new Table("t_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertSetToken(34));
-        result.getColumns().add(new Column("col1", "t_encrypt"));
-        result.getColumns().add(new Column("col2", "t_encrypt"));
+        result.getColumnNames().add("col1");
+        result.getColumnNames().add("col2");
         InsertValue insertValue = new InsertValue(0);
         insertValue.getColumnValues().add(new SQLNumberExpression(1));
         insertValue.getColumnValues().add(new SQLNumberExpression(2));
@@ -183,8 +182,8 @@ public final class EncryptInsertOptimizeEngineTest {
         result.getTables().add(new Table("t_query_encrypt", null));
         result.addSQLToken(new TableToken(12, "t_query_encrypt", QuoteCharacter.NONE, 0));
         result.addSQLToken(new InsertSetToken(40));
-        result.getColumns().add(new Column("col1", "t_query_encrypt"));
-        result.getColumns().add(new Column("col2", "t_query_encrypt"));
+        result.getColumnNames().add("col1");
+        result.getColumnNames().add("col2");
         InsertValue insertValue = new InsertValue(2);
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
         insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
