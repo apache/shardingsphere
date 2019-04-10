@@ -85,7 +85,5 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String LOGIC_INDEX = "logic-index";
     
-    public static final String ENCRYPTOR_REF_ATTRIBUTE = "encryptor-ref";
-    
     public static final String ENCRYPT_RULE_CONFIG_TAG = "encrypt-rule";
 }
