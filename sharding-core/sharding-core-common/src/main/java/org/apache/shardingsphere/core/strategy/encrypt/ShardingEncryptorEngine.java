@@ -21,13 +21,9 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Sharding encryptor engine.
@@ -35,7 +31,6 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 public final class ShardingEncryptorEngine {
-    
     
     private final Collection<ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedList<>();
     
@@ -101,9 +96,12 @@ public final class ShardingEncryptorEngine {
      * @return assisted query column count
      */
     public Optional<Integer> getAssistedQueryColumnCount(final String logicTableName) {
-        if (!shardingEncryptorStrategies.containsKey(logicTableName)) {
-            return Optional.absent();
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+            Optional<Integer> result = each.getAssistedQueryColumnCount(logicTableName);
+            if (result.isPresent()) {
+                return result;
+            }
         }
-        return Optional.of(shardingEncryptorStrategies.get(logicTableName).getAssistedQueryColumns().size());
+        return Optional.absent();
     }
 }
