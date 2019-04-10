@@ -53,8 +53,11 @@ public final class ShardingEncryptorEngine {
      * @return optional of sharding encryptor
      */
     public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
-        if (shardingEncryptorStrategies.keySet().contains(logicTableName) && shardingEncryptorStrategies.get(logicTableName).getColumns().contains(columnName)) {
-            return Optional.of(shardingEncryptorStrategies.get(logicTableName).getShardingEncryptor());
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+            Optional<ShardingEncryptor> result = each.getShardingEncryptor(logicTableName, columnName);
+            if (result.isPresent()) {
+                return result;
+            }
         }
         return Optional.absent();
     }
@@ -66,7 +69,12 @@ public final class ShardingEncryptorEngine {
      * @return has sharding query assisted encryptor or not
      */
     public boolean isHasShardingQueryAssistedEncryptor(final String logicTableName) {
-        return shardingEncryptorStrategies.keySet().contains(logicTableName) && shardingEncryptorStrategies.get(logicTableName).getShardingEncryptor() instanceof ShardingQueryAssistedEncryptor;
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies) {
+            if (each.isHasShardingQueryAssistedEncryptor(logicTableName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
