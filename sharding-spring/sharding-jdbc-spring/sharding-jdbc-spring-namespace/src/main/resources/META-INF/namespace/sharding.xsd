@@ -35,6 +35,7 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="master-slave-rules" minOccurs="0" />
+                <xsd:element ref="encrypt-rule" minOccurs="0" />
                 <xsd:element ref="table-rules" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
                 <xsd:element ref="broadcast-table-rules" minOccurs="0" />
@@ -60,7 +61,6 @@
             <xsd:attribute name="database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="table-strategy-ref" type="xsd:string" />
             <xsd:attribute name="key-generator-ref" type="xsd:string" />
-            <xsd:attribute name="encryptor-ref" type="xsd:string" />
             <xsd:attribute name="logic-index" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
@@ -145,7 +145,14 @@
             <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="encryptor">
+    <xsd:element name="encrypt-rule">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="encryptor-rule" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="encryptor-rule">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
