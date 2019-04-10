@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -84,7 +85,7 @@ public class ShardingRule implements BaseRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        shardingEncryptorEngine = new ShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
+        shardingEncryptorEngine = createShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -136,6 +137,10 @@ public class ShardingRule implements BaseRule {
             result.add(new MasterSlaveRule(each));
         }
         return result;
+    }
+    
+    private ShardingEncryptorEngine createShardingEncryptorEngine(final EncryptRuleConfiguration encryptRuleConfig) {
+        return null == encryptRuleConfig ? null : new ShardingEncryptorEngine(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     /**
