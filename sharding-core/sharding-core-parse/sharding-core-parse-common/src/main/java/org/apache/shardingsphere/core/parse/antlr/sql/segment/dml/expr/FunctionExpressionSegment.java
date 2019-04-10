@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
@@ -44,7 +43,7 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     private final int distinctExpressionStartIndex;
     
     @Override
-    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
-        return Optional.absent();
+    public SQLExpression convertToSQLExpression(final String sql) {
+        throw new RuntimeException("Unsupported convert function expression");
     }
 }

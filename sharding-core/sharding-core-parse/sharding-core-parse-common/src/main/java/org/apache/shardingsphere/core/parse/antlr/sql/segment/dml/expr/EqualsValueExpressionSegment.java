@@ -35,6 +35,6 @@ public final class EqualsValueExpressionSegment implements SQLRightValueExpressi
     
     @Override
     public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, expression.convertToSQLExpression(sql).get());
+        return new Condition(column, expression.convertToSQLExpression(sql));
     }
 }

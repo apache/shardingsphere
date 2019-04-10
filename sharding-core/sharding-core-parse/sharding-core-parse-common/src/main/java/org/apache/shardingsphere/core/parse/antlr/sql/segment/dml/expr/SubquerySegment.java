@@ -103,7 +103,7 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     }
 
     @Override
-    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
-        return Optional.absent();
+    public SQLExpression convertToSQLExpression(final String sql) {
+        throw new RuntimeException("Unsupported convert subquery expression");
     }
 }

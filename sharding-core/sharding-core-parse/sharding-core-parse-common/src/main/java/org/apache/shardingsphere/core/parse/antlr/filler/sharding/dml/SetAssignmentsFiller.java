@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
@@ -108,12 +107,11 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
-        Optional<SQLExpression> result = expressionSegment.convertToSQLExpression(insertStatement.getLogicSQL());
-        Preconditions.checkState(result.isPresent());
+        SQLExpression result = expressionSegment.convertToSQLExpression(insertStatement.getLogicSQL());
         String tableName = insertStatement.getTables().getSingleTableName();
-        fillShardingCondition(andCondition, columnName, tableName, expressionSegment, result.get());
+        fillShardingCondition(andCondition, columnName, tableName, expressionSegment, result);
         fillGeneratedKeyCondition(insertStatement, columnName, tableName, expressionSegment);
-        return result.get();
+        return result;
     }
     
     private void fillShardingCondition(final AndCondition andCondition, 

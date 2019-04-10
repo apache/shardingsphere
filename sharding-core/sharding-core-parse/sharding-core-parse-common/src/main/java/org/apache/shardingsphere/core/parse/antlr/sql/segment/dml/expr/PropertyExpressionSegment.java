@@ -49,7 +49,7 @@ public final class PropertyExpressionSegment implements ExpressionSegment {
     }
 
     @Override
-    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
+    public SQLExpression convertToSQLExpression(final String sql) {
         throw new RuntimeException("Unsupported convert property expression");
     }
 }

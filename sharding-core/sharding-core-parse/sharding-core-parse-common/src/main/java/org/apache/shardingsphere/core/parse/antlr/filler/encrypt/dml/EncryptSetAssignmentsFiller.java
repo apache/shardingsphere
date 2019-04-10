@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
@@ -65,12 +64,10 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            Optional<SQLExpression> sqlExpression = each.getValue().convertToSQLExpression(sql);
-            if (sqlExpression.isPresent()) {
-                columnValues.add(sqlExpression.get());
-                if (sqlExpression.get() instanceof SQLPlaceholderExpression) {
-                    parametersCount++;
-                }
+            SQLExpression sqlExpression = each.getValue().convertToSQLExpression(sql);
+            columnValues.add(sqlExpression);
+            if (sqlExpression instanceof SQLPlaceholderExpression) {
+                parametersCount++;
             }
         }
         return new InsertValue(parametersCount, columnValues);

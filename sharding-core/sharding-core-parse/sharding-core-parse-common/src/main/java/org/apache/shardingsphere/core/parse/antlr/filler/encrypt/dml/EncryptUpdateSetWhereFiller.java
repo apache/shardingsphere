@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
@@ -52,9 +50,8 @@ public class EncryptUpdateSetWhereFiller extends EncryptDeleteFromWhereFiller {
     
     private void fillEncryptCondition(final Entry<ColumnSegment, ExpressionSegment> entry, final String updateTable, final DMLStatement dmlStatement) {
         Column column = new Column(entry.getKey().getName(), updateTable);
-        Optional<SQLExpression> expression = entry.getValue().convertToSQLExpression(dmlStatement.getLogicSQL());
-        Preconditions.checkState(expression.isPresent());
-        dmlStatement.getUpdateColumnValues().put(column, expression.get());
+        SQLExpression expression = entry.getValue().convertToSQLExpression(dmlStatement.getLogicSQL());
+        dmlStatement.getUpdateColumnValues().put(column, expression);
         if (!getEncryptRule().getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
