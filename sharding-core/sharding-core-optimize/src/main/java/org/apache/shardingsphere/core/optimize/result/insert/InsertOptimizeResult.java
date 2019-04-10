@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Insert optimize result.
@@ -37,7 +36,7 @@ public final class InsertOptimizeResult {
     
     private final DefaultKeyword type;
     
-    private final Set<String> columnNames = new LinkedHashSet<>();
+    private final Collection<String> columnNames = new LinkedHashSet<>();
     
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     

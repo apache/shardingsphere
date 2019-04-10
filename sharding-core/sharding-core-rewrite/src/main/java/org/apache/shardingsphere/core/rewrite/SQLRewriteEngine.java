@@ -86,7 +86,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * SQL rewrite engine.
@@ -271,7 +270,7 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, originalSQL.length());
     }
     
-    private void encryptInsertOptimizeResultUnit(final Set<String> columnNames, final InsertOptimizeResultUnit unit) {
+    private void encryptInsertOptimizeResultUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
         for (String each : columnNames) {
             Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(sqlStatement.getTables().getSingleTableName(), each);
             if (shardingEncryptor.isPresent()) {
