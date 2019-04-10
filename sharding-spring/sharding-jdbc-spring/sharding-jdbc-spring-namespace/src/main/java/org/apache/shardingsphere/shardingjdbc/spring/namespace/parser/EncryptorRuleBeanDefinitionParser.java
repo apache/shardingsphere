@@ -39,7 +39,7 @@ public final class EncryptorRuleBeanDefinitionParser extends AbstractBeanDefinit
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_TYPE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_COLUMNS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptorRuleBeanDefinitionParserTag.ENCRYPTOR_QUALIFIED_COLUMNS_ATTRIBUTE));
         parseAssistedQueryColumns(element, factory);
         parseProperties(element, factory);
         return factory.getBeanDefinition();
