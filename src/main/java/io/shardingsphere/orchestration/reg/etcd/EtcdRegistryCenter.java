@@ -28,6 +28,8 @@ import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.watch.WatchEvent;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +50,10 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     private Client client;
     
     private RegistryCenterConfiguration config;
+    
+    @Getter
+    @Setter
+    private Properties properties;
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
@@ -133,5 +140,10 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     @Override
     public void close() {
         client.close();
+    }
+    
+    @Override
+    public String getType() {
+        return "etcd";
     }
 }
