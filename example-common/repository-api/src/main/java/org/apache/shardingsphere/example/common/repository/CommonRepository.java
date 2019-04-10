@@ -39,9 +39,9 @@ public interface CommonRepository<T, P> {
     /**
      * insert one entity.
      * @param entity entity
-     * @return primary key
+     * @return count or primary key
      */
-    P insert(T entity);
+    Long insert(T entity);
     
     /**
      * Do delete.

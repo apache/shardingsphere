@@ -68,21 +68,18 @@ public final class CountryRepositoryImpl implements CountryRepository {
     }
 
     @Override
-    public String insert(final Country country) {
+    public Long insert(final Country country) {
         String sql = "INSERT INTO t_country (code, name, language) VALUES (?, ?, ?)";
+        int result = 0;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, country.getCode());
             preparedStatement.setString(2, country.getName());
             preparedStatement.setString(3, country.getLanguage());
-            preparedStatement.executeUpdate();
-            ResultSet rs = connection.createStatement().executeQuery("SELECT @@IDENTITY");
-            while (rs.next()) {
-                country.setId(rs.getLong("@@IDENTITY"));
-            }
+            result = preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
-        return country.getCode();
+        return (long) result;
     }
 
     @Override

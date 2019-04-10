@@ -3,8 +3,8 @@
 <mapper namespace="org.apache.shardingsphere.example.common.mybatis.repository.MybatisCountryRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.common.entity.Country">
         <result column="id" property="id" jdbcType="INTEGER"/>
-        <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="language" property="language" jdbcType="VARCHAR"/>
     </resultMap>
 
@@ -20,7 +20,7 @@
         DROP TABLE IF EXISTS t_country;
     </update>
 
-    <insert id="insertStandard" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_country (code, name, language) VALUES (#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR})
     </insert>
 

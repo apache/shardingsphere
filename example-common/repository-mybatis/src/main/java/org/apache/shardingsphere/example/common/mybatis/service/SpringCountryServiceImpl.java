@@ -95,7 +95,7 @@ public class SpringCountryServiceImpl implements SpringCountryService {
             currCountry.setCode(l.getCountry());
             currCountry.setName(l.getDisplayCountry(l));
             currCountry.setLanguage(l.getLanguage());
-            repository.insertStandard(currCountry);
+            repository.insert(currCountry);
             result.add(currCountry.getCode());
             if (++i == 10) {
                 break;
