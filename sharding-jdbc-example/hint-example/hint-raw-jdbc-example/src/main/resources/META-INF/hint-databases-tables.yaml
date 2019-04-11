@@ -16,10 +16,10 @@ shardingRule:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       databaseStrategy:
         hint:
-          algorithmClassName: io.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
+          algorithmClassName: org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
       tableStrategy:
         hint:
-          algorithmClassName: io.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
+          algorithmClassName: org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
