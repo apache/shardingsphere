@@ -79,7 +79,7 @@
   ],
   "properties": [
     {
-      "name": "sharding.jdbc.enabled",
+      "name": "spring.shardingsphere.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether enable shardingjdbc or not.",
       "defaultValue": true
