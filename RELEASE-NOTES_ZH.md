@@ -7,6 +7,7 @@
 1. 调整数据库治理模块的注册中心存储结构。
 1. 调整Sharding-JDBC的配置相关API。
 1. 将包名和maven的groupId从`io.shardingsphere`改为`org.apache.shardingsphere`。
+1. 调整spring-boot-starter的命名空间。
 
 ### 新功能
 
