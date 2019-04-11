@@ -108,18 +108,18 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
         SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
         String tableName = insertStatement.getTables().getSingleTableName();
-        fillShardingCondition(andCondition, columnName, tableName, expressionSegment, result);
+        fillShardingCondition(andCondition, columnName, tableName, result);
         fillGeneratedKeyCondition(insertStatement, columnName, tableName, result);
         return result;
     }
     
-    private void fillShardingCondition(final AndCondition andCondition, 
-                                       final String columnName, final String tableName, final CommonExpressionSegment expressionSegment, final SQLExpression sqlExpression) {
+    private void fillShardingCondition(final AndCondition andCondition, final String columnName, final String tableName, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            if (!(-1 < expressionSegment.getPlaceholderIndex() || null != expressionSegment.getLiterals())) {
+            if (sqlExpression instanceof SQLPlaceholderExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression) {
+                andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
+            } else {
                 throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
             }
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
         }
     }
     

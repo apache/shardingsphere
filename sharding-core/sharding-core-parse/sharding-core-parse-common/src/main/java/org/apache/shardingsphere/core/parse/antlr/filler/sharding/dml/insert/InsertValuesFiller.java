@@ -54,13 +54,13 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        removeGenerateKeyColumn(insertStatement, shardingRule, sqlSegment.getValues().size());
+        removeGenerateKeyColumn(insertStatement, sqlSegment.getValues().size());
         AndCondition andCondition = new AndCondition();
         Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
         int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            SQLExpression columnValue = getColumnValue(insertStatement, shardingRule, andCondition, columnNames.next(), each);
+            SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnNames.next(), each);
             columnValues.add(columnValue);
             if (columnValue instanceof SQLPlaceholderExpression) {
                 parametersCount++;
@@ -72,29 +72,28 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
     }
     
-    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final ShardingRule shardingRule, final int valuesCount) {
+    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valuesCount) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumnName.isPresent() && valuesCount < insertStatement.getColumnNames().size()) {
             insertStatement.getColumnNames().remove(generateKeyColumnName.get());
         }
     }
     
-    private SQLExpression getColumnValue(final InsertStatement insertStatement,
-                                         final ShardingRule shardingRule, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
+    private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
         SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
         String tableName = insertStatement.getTables().getSingleTableName();
-        fillShardingCondition(shardingRule, andCondition, tableName, columnName, expressionSegment, result);
+        fillShardingCondition(andCondition, tableName, columnName, result);
         fillGeneratedKeyCondition(insertStatement, columnName, tableName, result);
         return result;
     }
     
-    private void fillShardingCondition(final ShardingRule shardingRule, final AndCondition andCondition, 
-                                       final String tableName, final String columnName, final CommonExpressionSegment expressionSegment, final SQLExpression sqlExpression) {
+    private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            if (!(-1 < expressionSegment.getPlaceholderIndex() || null != expressionSegment.getLiterals())) {
+            if (sqlExpression instanceof SQLPlaceholderExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression) {
+                andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
+            } else {
                 throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
             }
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
         }
     }
     
