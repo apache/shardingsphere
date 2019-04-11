@@ -7,6 +7,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. Adjust persist structure for orchestration's registry center.
 1. Adjust Sharding-JDBC configuration API.
 1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
+1. Adjust namespace of spring-boot-starter.
 
 ### New Features
 

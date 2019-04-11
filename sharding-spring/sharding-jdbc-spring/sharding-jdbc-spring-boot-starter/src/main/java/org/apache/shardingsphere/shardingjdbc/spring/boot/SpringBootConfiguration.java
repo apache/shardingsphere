@@ -58,7 +58,7 @@ import java.util.Map;
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, 
         SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class})
-@ConditionalOnProperty(prefix = "sharding.jdbc", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
@@ -97,7 +97,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     @Override
     public final void setEnvironment(final Environment environment) {
-        String prefix = "sharding.jdbc.datasource.";
+        String prefix = "spring.shardingsphere.datasource.";
         for (String each : getDataSourceNames(environment, prefix)) {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));

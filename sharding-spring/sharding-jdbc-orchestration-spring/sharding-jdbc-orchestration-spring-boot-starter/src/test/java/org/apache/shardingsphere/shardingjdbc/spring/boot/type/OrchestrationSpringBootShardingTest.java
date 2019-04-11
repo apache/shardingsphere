@@ -40,7 +40,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -92,26 +91,27 @@ public class OrchestrationSpringBootShardingTest {
         ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, shardingDataSource);
         ShardingRule shardingRule = shardingContext.getShardingRule();
         assertThat(shardingRule.getTableRules().size(), is(2));
-        TableRule tableRule1 = (new LinkedList<>(shardingRule.getTableRules())).get(0);
-        assertThat(tableRule1.getLogicTable(), is("t_order_item"));
-        assertThat(tableRule1.getActualDataNodes().size(), is(4));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_0")));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
-        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
-        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(tableRule1.getGenerateKeyColumn(), is("order_item_id"));
-        TableRule tableRule2 = (new LinkedList<>(shardingRule.getTableRules())).get(1);
-        assertThat(tableRule2.getLogicTable(), is("t_order"));
-        assertThat(tableRule2.getActualDataNodes().size(), is(4));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_0")));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_1")));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_0")));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_1")));
-        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
-        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(tableRule2.getGenerateKeyColumn(), is("order_id"));
+        TableRule orderRule = shardingRule.getTableRule("t_order");
+        assertThat(orderRule.getLogicTable(), is("t_order"));
+        assertThat(orderRule.getActualDataNodes().size(), is(4));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_0")));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_1")));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_0")));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_1")));
+        assertThat(orderRule.getGenerateKeyColumn(), is("order_id"));
+        TableRule itemRule = shardingRule.getTableRule("t_order_item");
+        assertThat(itemRule.getLogicTable(), is("t_order_item"));
+        assertThat(itemRule.getActualDataNodes().size(), is(4));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_0")));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
+        assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
+        assertThat(itemRule.getGenerateKeyColumn(), is("order_item_id"));
+        assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
+        
     }
     
     @Test
@@ -120,26 +120,27 @@ public class OrchestrationSpringBootShardingTest {
         ShardingContext shardingContext = getFieldValue("shardingContext", ShardingDataSource.class, shardingDataSource);
         ShardingRule shardingRule = shardingContext.getShardingRule();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
-        TableRule tableRule1 = (new LinkedList<>(shardingRule.getTableRules())).get(0);
-        assertThat(tableRule1.getLogicTable(), is("t_order_item"));
-        assertThat(tableRule1.getActualDataNodes().size(), is(4));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_0")));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
-        assertTrue(tableRule1.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
-        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
-        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(tableRule1.getGenerateKeyColumn(), is("order_item_id"));
-        TableRule tableRule2 = (new LinkedList<>(shardingRule.getTableRules())).get(1);
-        assertThat(tableRule2.getLogicTable(), is("t_order"));
-        assertThat(tableRule2.getActualDataNodes().size(), is(4));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_0")));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_0", "t_order_1")));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_0")));
-        assertTrue(tableRule2.getActualDataNodes().contains(new DataNode("ds_1", "t_order_1")));
-        assertThat(tableRule1.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
-        assertThat(tableRule1.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(tableRule2.getGenerateKeyColumn(), is("order_id"));
+        TableRule orderRule = shardingRule.getTableRule("t_order");
+        assertThat(orderRule.getLogicTable(), is("t_order"));
+        assertThat(orderRule.getActualDataNodes().size(), is(4));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_0")));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_1")));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_0")));
+        assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_1")));
+        TableRule itemRule = shardingRule.getTableRule("t_order_item");
+        assertThat(itemRule.getLogicTable(), is("t_order_item"));
+        assertThat(itemRule.getActualDataNodes().size(), is(4));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_0")));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_item_1")));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_0")));
+        assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
+        assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
+        assertThat(itemRule.getGenerateKeyColumn(), is("order_item_id"));
+        assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
+        assertThat(orderRule.getGenerateKeyColumn(), is("order_id"));
+        
     }
     
     @Test
