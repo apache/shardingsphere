@@ -28,14 +28,14 @@ public class RegistryCenterConfigurationUtil {
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
     public static RegistryCenterConfiguration getZooKeeperConfiguration() {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration();
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration("zookeeper");
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
         return result;
     }
     
     public static RegistryCenterConfiguration getEtcdConfiguration() {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration();
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration("etcd");
         result.setServerLists(ETCD_CONNECTION_STRING);
         return result;
     }
