@@ -319,6 +319,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.props..<proper
 
 sharding.jdbc.config.sharding.orchestration.name= #Data orchestration instance name
 sharding.jdbc.config.sharding.orchestration.overwrite= #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
+sharding.jdbc.config.sharding.orchestration.registry.type= #Registry center type. Example:zookeeper
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #The list of servers that connect to registry center, including IP and port number; use commas to separate
 sharding.jdbc.config.sharding.orchestration.registry.namespace= #Registry center namespace
 sharding.jdbc.config.sharding.orchestration.registry.digest= #The token that connects to the registry center; default means there is no need for authentication
@@ -326,4 +327,5 @@ sharding.jdbc.config.sharding.orchestration.registry.operation-timeout-milliseco
 sharding.jdbc.config.sharding.orchestration.registry.max-retries= #Maximum retry time after failing; default value: 3 times
 sharding.jdbc.config.sharding.orchestration.registry.retry-interval-milliseconds= #Interval time to retry; default value: 500 milliseconds
 sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #Living time of temporary nodes; default value: 60 seconds
+sharding.jdbc.config.sharding.orchestration.registry.props= #Customize registry center props.
 ```
