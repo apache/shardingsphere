@@ -563,11 +563,11 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | *Name*                             | *Type*    | *Description*                                                                   |
 | ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
 | id                                 | Attribute | Spring Bean Id of registry center                                               |
-| server-lists                       | Attribute | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181 |
-| namespace (?)                      | Attribute | Namespace of registry                                                          |
-| digest (?)                         | Attribute | Digest for registry. Default is not need digest                                |
-| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 500 seconds           |
+| server-lists                       | Attribute | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181  |
+| namespace (?)                      | Attribute | Namespace of registry                                                           |
+| digest (?)                         | Attribute | Digest for registry. Default is not need digest                                 |
+| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 500 seconds            |
 | max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                |
-| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 500 milliseconds |
+| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 500 milliseconds  |
 | time-to-live-seconds (?)           | Attribute | Time to live in seconds of ephemeral keys, default value is 60 seconds          |
 | props-ref (?)                      | Attribute | Other customize properties of registry center                                   |
