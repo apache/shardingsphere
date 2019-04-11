@@ -1,12 +1,12 @@
 +++
 toc = true
-title = "Yaml"
+title = "Yaml Configuration"
 weight = 2
 +++
 
 ## Configuration Instance
 
-### Sharding
+### Data Sharding
 
 ```yaml
 dataSources:
@@ -88,7 +88,7 @@ props:
   sql.show: true
 ```
 
-### Sharding + Read-Write Split
+### Data Sharding + Read-Write Split
 
 ```yaml
 dataSources:
@@ -172,7 +172,7 @@ props:
   sql.show: true
 ```
 
-### Sharding + Data Masking
+### Data Sharding + Data Masking
 
 ```yaml
 dataSources:
@@ -234,7 +234,7 @@ props:
 ### Orchestration
 
 ```yaml
-#Ignore sharding and master-slave configuration
+#Omit data sharding and read-write split configurations
 
 orchestration:
   name: orchestration_ds
@@ -244,7 +244,7 @@ orchestration:
     serverLists: localhost:2181
 ```
 
-## Configuration reference
+## Configuration Item Explanation
 
 ### Sharding
 
@@ -312,25 +312,25 @@ props: #Properties
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
 ```
 
-### Read-write splitting
+### Read-Write Split
 
 ```yaml
-dataSources: #Ignore data sources configuration, same as sharding
+dataSources: #Omit data source configurations; keep it consistent with data sharding
 
 masterSlaveRule:
-  name: #Name of master slave data source
-  masterDataSourceName: #Name of master data source
-  slaveDataSourceNames: #Names of Slave data sources
+  name: #Read-write split data source name
+  masterDataSourceName: #Master data source name
+  slaveDataSourceNames: #Slave data source name
     - <data_source_name1>
     - <data_source_name2>
     - <data_source_name_x>
-  loadBalanceAlgorithmClassName: #Load balance algorithm class name. This class need to implements MasterSlaveLoadBalanceAlgorithm, and require a no argument constructor
-  loadBalanceAlgorithmType: #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `loadBalanceAlgorithmClassName` is present
+  loadBalanceAlgorithmClassName: #Slave database load balance algorithm class name; the class should implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
+  loadBalanceAlgorithmType: #Slave database load balance algorithm type; optional value, ROUND_ROBIN and RANDOM, can be omitted if `loadBalanceAlgorithmClassName` exists
   
-props: #Properties
-  sql.show: #To show SQLS or not, default value: false
-  executor.size: #The number of working threads, default value: CPU count
-  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
+props: #Property configuration
+  sql.show: #Show SQL or not; default value: false
+  executor.size: #Executing thread number; default value: CPU core number
+  check.table.metadata.enabled: # Whether to check table metadata consistency when it initializes; default value: false
 ```
 
 ### Data Masking
@@ -350,21 +350,21 @@ shardingRule: #Ignore sharding rule configuration
 ### Orchestration
 
 ```yaml
-dataSources: #Ignore data sources configuration
-shardingRule: #Ignore sharding rule configuration
-masterSlaveRule: #Ignore master slave rule configuration
+dataSources: #Omit data source configurations
+shardingRule: #Omit sharding rule configurations
+masterSlaveRule: #Omit read-write split rule configurations
 
 orchestration:
-  name: #Name of orchestration instance
-  overwrite: #Use local configuration to overwrite registry center or not
-  registry: #Registry configuration
-    serverLists: #Registry servers list, multiple split as comma. Example: host1:2181,host2:2181
-    namespace: #Namespace of registry
-    digest: #Digest for registry. Default is not need digest.
-    operationTimeoutMilliseconds: #Operation timeout time in milliseconds, default value is 500 milliseconds
-    maxRetries: #Max number of times to retry, default value is 3
-    retryIntervalMilliseconds: #Time interval in milliseconds on each retry, default value is 500 milliseconds
-    timeToLiveSeconds: #Time to live in seconds of ephemeral keys, default value is 60 seconds
+  name: #Data orchestration instance name
+  overwrite: #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
+  registry: #Registry center configuration
+    serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181
+    namespace: #Registry center namespace
+    digest: #The token that connects to the registry center; default means there is no need for authentication
+    operationTimeoutMilliseconds: #Default value: 500 milliseconds
+    maxRetries: #Maximum retry time after failing; default value: 3 times
+    retryIntervalMilliseconds: #Interval time to retry; default value: 500 milliseconds
+    timeToLiveSeconds: #Living time of temporary nodes; default value: 60 seconds
 ```
 
 ## Yaml Syntax Explanation
