@@ -19,6 +19,8 @@ package org.apache.shardingsphere.orchestration.reg.zookeeper.curator;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -45,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,6 +60,10 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     private final Map<String, TreeCache> caches = new HashMap<>();
     
     private CuratorFramework client;
+    
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
@@ -277,5 +284,10 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "zookeeper";
     }
 }

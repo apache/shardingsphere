@@ -21,19 +21,32 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
+import java.util.Properties;
+
 /**
- * Orchestration configuration for YAML.
+ * Yaml registry center configuration.
  *
- * @author caohao
- * @author panjuan
+ * @author zhaojun
  */
 @Getter
 @Setter
-public class YamlOrchestrationConfiguration implements YamlConfiguration {
+public class YamlRegistryCenterConfiguration implements YamlConfiguration {
     
-    private String name;
+    private String type;
     
-    private YamlRegistryCenterConfiguration registry;
+    private String serverLists;
     
-    private boolean overwrite;
+    private String namespace;
+    
+    private String digest;
+    
+    private int operationTimeoutMilliseconds = 500;
+    
+    private int maxRetries = 3;
+    
+    private int retryIntervalMilliseconds = 500;
+    
+    private int timeToLiveSeconds = 60;
+    
+    private Properties props = new Properties();
 }

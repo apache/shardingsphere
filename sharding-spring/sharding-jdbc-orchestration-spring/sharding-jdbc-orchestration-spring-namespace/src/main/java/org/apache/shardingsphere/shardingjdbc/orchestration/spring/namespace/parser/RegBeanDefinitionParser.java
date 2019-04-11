@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.RegistryCenterBeanDefinitionParserTag;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.RegistryCenterBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -36,6 +36,8 @@ public final class RegBeanDefinitionParser extends AbstractBeanDefinitionParser 
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(RegistryCenterBeanDefinitionParserTag.TYPE_TAG));
+        addPropertiesArgReferenceIfNotEmpty(element, factory);
         addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, factory);
         addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, factory);
         addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.DIGEST_TAG, "digest", element, factory);
@@ -50,6 +52,13 @@ public final class RegBeanDefinitionParser extends AbstractBeanDefinitionParser 
         String attributeValue = element.getAttribute(attributeName);
         if (!Strings.isNullOrEmpty(attributeValue)) {
             factory.addPropertyValue(propertyName, attributeValue);
+        }
+    }
+    
+    private void addPropertiesArgReferenceIfNotEmpty(final Element element, final BeanDefinitionBuilder factory) {
+        String properties = element.getAttribute(RegistryCenterBeanDefinitionParserTag.PROPERTY_REF_TAG);
+        if (!Strings.isNullOrEmpty(properties)) {
+            factory.addConstructorArgReference(properties);
         }
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.orchestration.reg.api;
 
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 import java.util.List;
 
@@ -25,8 +26,9 @@ import java.util.List;
  * Registry center.
  * 
  * @author zhangliang
+ * @author zhaojun
  */
-public interface RegistryCenter extends AutoCloseable {
+public interface RegistryCenter extends TypeBasedSPI {
     
     /**
      * Initialize registry center.
@@ -102,4 +104,9 @@ public interface RegistryCenter extends AutoCloseable {
      * @param dataChangedEventListener data changed event listener
      */
     void watch(String key, DataChangedEventListener dataChangedEventListener);
+    
+    /**
+     * Close.
+      */
+    void close();
 }

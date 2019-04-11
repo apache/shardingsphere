@@ -65,7 +65,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
+        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration("TestRegistryCenter");
         registryCenterConfiguration.setNamespace("test_ms");
         registryCenterConfiguration.setServerLists("localhost:3181");
         return new OrchestrationConfiguration("test", registryCenterConfiguration, true);

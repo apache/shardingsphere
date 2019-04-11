@@ -61,7 +61,8 @@ public final class ShardingOrchestrationFacadeTest {
     
     @Before
     public void setUp() {
-        shardingOrchestrationFacade = new ShardingOrchestrationFacade(new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true), Arrays.asList("sharding_db", "masterslave_db"));
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test", new RegistryCenterConfiguration("SecondTestRegistryCenter"), true);
+        shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(shardingOrchestrationFacade, "regCenter", regCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "configService", configService);
         FieldUtil.setField(shardingOrchestrationFacade, "stateService", stateService);
@@ -90,13 +91,13 @@ public final class ShardingOrchestrationFacadeTest {
     }
     
     @Test
-    public void assertCloseSuccess() throws Exception {
+    public void assertCloseSuccess() {
         shardingOrchestrationFacade.close();
         verify(regCenter).close();
     }
     
     @Test
-    public void assertCloseFailure() throws Exception {
+    public void assertCloseFailure() {
         doThrow(new RuntimeException()).when(regCenter).close();
         shardingOrchestrationFacade.close();
         verify(regCenter).close();

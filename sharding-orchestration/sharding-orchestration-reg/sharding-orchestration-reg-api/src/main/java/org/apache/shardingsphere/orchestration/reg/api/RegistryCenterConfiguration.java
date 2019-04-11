@@ -19,15 +19,19 @@ package org.apache.shardingsphere.orchestration.reg.api;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
+
+import java.util.Properties;
 
 /**
  * Registry center configuration.
  *
  * @author zhangliang
+ * @author zhaojun
  */
 @Getter
 @Setter
-public final class RegistryCenterConfiguration {
+public final class RegistryCenterConfiguration extends TypeBasedSPIConfiguration {
     
     /**
      * Server list of registry center.
@@ -63,4 +67,12 @@ public final class RegistryCenterConfiguration {
      * Time to live in seconds of ephemeral keys.
      */
     private int timeToLiveSeconds = 60;
+    
+    public RegistryCenterConfiguration(final String type) {
+        super(type);
+    }
+    
+    public RegistryCenterConfiguration(final String type, final Properties properties) {
+        super(type, properties);
+    }
 }

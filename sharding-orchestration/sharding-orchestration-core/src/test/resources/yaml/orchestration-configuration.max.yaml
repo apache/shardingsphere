@@ -18,6 +18,7 @@
 name: max_config
 overwrite: true
 registry:
+  type: FirstTestRegistryCenter
   serverLists: localhost:3181
   namespace: orchestration-yaml-test
   digest: user:password
