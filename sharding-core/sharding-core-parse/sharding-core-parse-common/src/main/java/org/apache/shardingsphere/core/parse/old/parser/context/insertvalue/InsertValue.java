@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -38,9 +37,4 @@ public final class InsertValue {
     private final int parametersCount;
     
     private final List<SQLExpression> columnValues;
-    
-    // TODO to be removed, for old parse engine only
-    public InsertValue(final int parametersCount) {
-        this(parametersCount, new LinkedList<SQLExpression>());
-    }
 }

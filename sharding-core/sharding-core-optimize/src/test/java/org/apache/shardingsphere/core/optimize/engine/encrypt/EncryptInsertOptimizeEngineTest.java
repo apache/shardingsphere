@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -87,10 +88,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(34));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        InsertValue insertValue = new InsertValue(2);
-        insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
-        insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
-        result.getValues().add(insertValue);
+        result.getValues().add(new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
         return result;
     }
     
@@ -118,10 +116,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(40));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        InsertValue insertValue = new InsertValue(0);
-        insertValue.getColumnValues().add(new SQLNumberExpression(1));
-        insertValue.getColumnValues().add(new SQLNumberExpression(2));
-        result.getValues().add(insertValue);
+        result.getValues().add(new InsertValue(0, Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
         return result;
     }
     
@@ -147,10 +142,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertSetToken(34));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        InsertValue insertValue = new InsertValue(0);
-        insertValue.getColumnValues().add(new SQLNumberExpression(1));
-        insertValue.getColumnValues().add(new SQLNumberExpression(2));
-        result.getValues().add(insertValue);
+        result.getValues().add(new InsertValue(0, Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
         return result;
     }
     
@@ -178,10 +170,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertSetToken(40));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        InsertValue insertValue = new InsertValue(2);
-        insertValue.getColumnValues().add(new SQLPlaceholderExpression(0));
-        insertValue.getColumnValues().add(new SQLPlaceholderExpression(1));
-        result.getValues().add(insertValue);
+        result.getValues().add(new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
         return result;
     }
 }
