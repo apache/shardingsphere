@@ -58,7 +58,7 @@ import java.util.Map;
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, 
         SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class})
-@ConditionalOnProperty(prefix = "sharding.jdbc", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
