@@ -170,7 +170,7 @@ weight = 1
     }
 ```
 
-### 数据治理
+### 治理
 
 ```java
     DataSource getDataSource() throws SQLException {
@@ -333,37 +333,37 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | check.table.metadata.enabled (?)   | boolean   | 是否在启动时检查分表元数据一致性，默认值: false         |
 
 
-### 数据治理
+### 治理
 
 #### OrchestrationShardingDataSourceFactory
 
-数据分片 + 数据治理的数据源工厂。
+数据分片 + 治理的数据源工厂。
 
 | *名称*               | *数据类型*                  | *说明*                      |
 | ------------------- |  ------------------------- | --------------------------- |
 | dataSourceMap       | Map\<String, DataSource\>  | 同ShardingDataSourceFactory |
 | shardingRuleConfig  | ShardingRuleConfiguration  | 同ShardingDataSourceFactory |
 | props (?)           | Properties                 | 同ShardingDataSourceFactory |
-| orchestrationConfig | OrchestrationConfiguration | 数据治理规则配置              |
+| orchestrationConfig | OrchestrationConfiguration | 治理规则配置              |
 
 #### OrchestrationMasterSlaveDataSourceFactory
 
-读写分离 + 数据治理的数据源工厂。
+读写分离 + 治理的数据源工厂。
 
 | *名称*                 | *数据类型*                    | *说明*                         |
 | --------------------- | ---------------------------- | ------------------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
 | props (?)             | Properties                   | 同ShardingDataSourceFactory    |
-| orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
+| orchestrationConfig   | OrchestrationConfiguration   | 治理规则配置                 |
 
 #### OrchestrationConfiguration
 
-数据治理规则配置对象。
+治理规则配置对象。
 
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |
-| name            | String                      | 数据治理实例名称                                             |
+| name            | String                      | 治理实例名称                                             |
 | overwrite       | boolean                     | 本地配置是否覆盖注册中心配置，如果可覆盖，每次启动都以本地配置为准 |
 | regCenterConfig | RegistryCenterConfiguration | 注册中心配置                                                |
 

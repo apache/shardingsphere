@@ -169,7 +169,7 @@ weight = 1
         }
 ```
 
-### Data Orchestration
+### Orchestration
 
 ```java
     DataSource getDataSource() throws SQLException {
@@ -323,7 +323,7 @@ Property configuration items, can be of the following properties.
 | max.connections.size.per.query (?) | int         | The maximum connection number allocated by each query of each physical database, default value: 1 |
 | check.table.metadata.enabled (?)   | boolean     | Check meta-data consistency or not in initialization, default value: false |
 
-### Data Orchestration
+### Orchestration
 
 #### OrchestrationShardingDataSourceFactory
 
@@ -332,7 +332,7 @@ Property configuration items, can be of the following properties.
 | dataSourceMap       | Map\<String, DataSource\>  | Same as `ShardingDataSourceFactory`    |
 | shardingRuleConfig  | ShardingRuleConfiguration  | Same as `ShardingDataSourceFactory`    |
 | props (?)           | Properties                 | Same as `ShardingDataSourceFactory`    |
-| orchestrationConfig | OrchestrationConfiguration | Data orchestration rule configurations |
+| orchestrationConfig | OrchestrationConfiguration | Orchestration rule configurations |
 
 #### OrchestrationMasterSlaveDataSourceFactory
 
@@ -342,13 +342,13 @@ Property configuration items, can be of the following properties.
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Same as `MasterSlaveDataSourceFactory` |
 | configMap (?)         | Map<String, Object>          | Same as `MasterSlaveDataSourceFactory` |
 | props (?)             | Properties                   | Same as `ShardingDataSourceFactory`    |
-| orchestrationConfig   | OrchestrationConfiguration   | Data orchestration rule configurations |
+| orchestrationConfig   | OrchestrationConfiguration   | Orchestration rule configurations |
 
 #### OrchestrationConfiguration
 
 | *Name*          | *Data Type*                 | *Explanation*                                                |
 | --------------- | --------------------------- | ------------------------------------------------------------ |
-| name            | String                      | Data orchestration example name                              |
+| name            | String                      | Orchestration example name                              |
 | overwrite       | boolean                     | Local configurations overwrite registry center configurations or not; if they overwrite, each start takes reference of local configurations |
 | regCenterConfig | RegistryCenterConfiguration | Registry center configurations                               |
 

@@ -167,7 +167,7 @@ sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.type=AES
 sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.props.aes.key.value=123456
 ```
 
-### Data Orchestration
+### Orchestration
 
 ```properties
 sharding.jdbc.datasource.names=ds,ds0,ds1
@@ -306,12 +306,12 @@ sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.assistedQu
 sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #Properties, e.g. `aes.key.value` for AES encryptor
 ```
 
-### Data Orchestration
+### Orchestration
 
 ```properties
 #Omit data source, data sharding and read-write split configurations
 
-sharding.jdbc.config.sharding.orchestration.name= #Data orchestration instance name
+sharding.jdbc.config.sharding.orchestration.name= #Orchestration instance name
 sharding.jdbc.config.sharding.orchestration.overwrite= #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
 sharding.jdbc.config.sharding.orchestration.registry.type= #Registry center type. Example:zookeeper
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #The list of servers that connect to registry center, including IP and port number; use commas to separate

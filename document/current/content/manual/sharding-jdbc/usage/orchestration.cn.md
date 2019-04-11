@@ -1,10 +1,10 @@
 +++
 toc = true
-title = "数据治理"
+title = "编排治理"
 weight = 4
 +++
 
-使用数据治理功能需要指定一个注册中心。配置将全部存入注册中心，可以在每次启动时使用本地配置覆盖注册中心配置，也可以只通过注册中心读取配置。
+使用治理功能需要指定一个注册中心。配置将全部存入注册中心，可以在每次启动时使用本地配置覆盖注册中心配置，也可以只通过注册中心读取配置。
 
 ## 不使用Spring
 
@@ -41,7 +41,7 @@ weight = 4
     regConfig.setServerLists("localhost:2181");
     regConfig.setNamespace("sharding-sphere-orchestration");
 
-    // 配置数据治理
+    // 配置治理
     OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
 
     // 获取数据源对象

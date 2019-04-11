@@ -349,7 +349,7 @@ shardingRule: #Omit sharding rule configurations
 masterSlaveRule: #Omit read-write split rule configurations
 
 orchestration:
-  name: #Data orchestration instance name
+  name: #Orchestration instance name
   overwrite: #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
   registry: #Registry center configuration
     serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181

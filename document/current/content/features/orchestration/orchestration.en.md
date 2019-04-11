@@ -8,7 +8,7 @@ weight = 2
 ## Motivation
 
 Registry center provides the ability to disable the access of application to database and the access to slave database. 
-Data orchestration still has many functions to be developed.
+Orchestration still has many functions to be developed.
 
 ## Data Structure in Registry Center
 

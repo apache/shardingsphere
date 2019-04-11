@@ -351,7 +351,7 @@ weight = 4
 </beans>
 ```
 
-### 数据治理
+### 治理
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -523,7 +523,7 @@ weight = 4
 | max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
 | check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
 
-### 数据分片 + 数据治理
+### 数据分片 + 治理
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
@@ -536,7 +536,7 @@ weight = 4
 | registry-center-ref | 属性   | 注册中心id                                                                |
 | overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。  缺省为不覆盖 |
 
-### 读写分离 + 数据治理
+### 读写分离 + 治理
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
@@ -549,7 +549,7 @@ weight = 4
 | registry-center-ref | 属性   | 注册中心id                                                              |
 | overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
-### 数据治理注册中心
+### 治理注册中心
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 

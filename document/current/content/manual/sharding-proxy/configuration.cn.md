@@ -228,7 +228,7 @@ shardingRule:
 
 Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
 
-### 数据治理
+### 治理
 
 ```yaml
 #省略数据分片和读写分离配置
@@ -291,7 +291,7 @@ masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
 
 ## 全局配置项说明
 
-### 数据治理
+### 治理
 
 与Sharding-JDBC配置一致。
 

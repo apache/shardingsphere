@@ -167,7 +167,7 @@ sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.type=AES
 sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.props.aes.key.value=123456
 ```
 
-### 数据治理
+### 治理
 
 ```properties
 sharding.jdbc.datasource.names=ds,ds0,ds1
@@ -304,12 +304,12 @@ sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.qualifiedC
 sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.assistedQueryColumns= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
 sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 比如AES算法的KEY属性：aes.key.value
 ```
-### 数据治理
+### 治理
 
 ```properties
 #省略数据源、数据分片和读写分离配置
 
-sharding.jdbc.config.sharding.orchestration.name= #数据治理实例名称
+sharding.jdbc.config.sharding.orchestration.name= #治理实例名称
 sharding.jdbc.config.sharding.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
 sharding.jdbc.config.sharding.orchestration.registry.type= #配置中心类型。如：zookeeper
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
