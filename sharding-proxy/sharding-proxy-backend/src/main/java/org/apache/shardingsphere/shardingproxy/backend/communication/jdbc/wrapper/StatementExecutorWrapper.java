@@ -52,7 +52,21 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
-        return logicSchema instanceof MasterSlaveSchema ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+        SQLRouteResult result;
+        if (logicSchema instanceof ShardingSchema) {
+            result = doShardingRoute(sql, databaseType);
+        } else if (logicSchema instanceof MasterSlaveSchema) {
+            result = doMasterSlaveRoute(sql);
+        } else {
+            result = doTransparentRoute(sql);
+        }
+        return result;
+    }
+    
+    private SQLRouteResult doTransparentRoute(final String sql) {
+        SQLRouteResult result = new SQLRouteResult(new SQLJudgeEngine(sql).judge());
+        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
+        return result;
     }
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {

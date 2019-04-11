@@ -42,6 +42,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.TransparentSchema;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -122,7 +123,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private ShardingRule getShardingRule() {
-        return logicSchema instanceof MasterSlaveSchema ? ((MasterSlaveSchema) logicSchema).getDefaultShardingRule() : ((ShardingSchema) logicSchema).getShardingRule();
+        ShardingRule result;
+        if (logicSchema instanceof ShardingSchema) {
+            result = ((ShardingSchema) logicSchema).getShardingRule();
+        } else if (logicSchema instanceof MasterSlaveSchema) {
+            result = ((MasterSlaveSchema) logicSchema).getDefaultShardingRule();
+        } else {
+            result = ((TransparentSchema) logicSchema).getDefaultShardingRule();
+        }
+        return result;
     }
     
     private QueryResponse getQueryHeaderResponseWithoutDerivedColumns(final List<QueryHeader> queryHeaders) {

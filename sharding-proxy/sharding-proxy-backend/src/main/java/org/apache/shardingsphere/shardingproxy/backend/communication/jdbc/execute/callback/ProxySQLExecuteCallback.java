@@ -34,6 +34,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.TransparentSchema;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -98,7 +99,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
-        if (logicSchema instanceof MasterSlaveSchema) {
+        if (logicSchema instanceof MasterSlaveSchema || logicSchema instanceof TransparentSchema) {
             return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
         }
         ShardingRule shardingRule = ((ShardingSchema) logicSchema).getShardingRule();
