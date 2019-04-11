@@ -22,7 +22,6 @@ chapter = true
 * [义乌购](http://www.yiwugou.com/)
 * [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
-* [京东云](https://www.jdcloud.com/cn/)
 * 京东大数据与智能供应链
 * [每日优鲜便利购](https://www.imrfresh.com/)
 * [大易有塑](https://www.dayi35.com/)
@@ -45,6 +44,11 @@ chapter = true
 * [策赢平台](https://www.cypfintech.com/)
 * [拍拍贷](https://www.ppdai.com/)
 * [火币资讯](https://www.huobiinfo.com/)
+
+## 云平台
+
+* [京东云](https://www.jdcloud.com/cn/)
+* [京东金融云](https://www.jdfcloud.com/)
 
 ## 信息资讯
 

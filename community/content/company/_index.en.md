@@ -22,7 +22,6 @@ The list here will be shown in the registered order.
 * [Yiwugou](http://www.yiwugou.com/)
 * [JD.ru](https://www.jd.ru/)
 * [Joybuy](https://www.joybuy.com/)
-* [JDCloud](https://www.jdcloud.com/cn/)
 * JD’s Big Data and Intelligent Supply Chain Department
 * [Imrfresh](https://www.imrfresh.com/)
 * [Dayi35](https://www.dayi35.com/)
@@ -45,6 +44,11 @@ The list here will be shown in the registered order.
 * [Cypfintech](https://www.cypfintech.com/)
 * [Ppdai](https://www.ppdai.com/)
 * [HuoBi Info](https://www.huobiinfo.com/)
+
+## Cloud Company
+
+* [JDCloud](https://www.jdcloud.com/cn/)
+* [JDFCloud](https://www.jdfcloud.com/)
 
 ## Information
 
