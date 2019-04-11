@@ -76,7 +76,7 @@
     {
       "name": "spring.shardingsphere.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether enable shardingjdbc or not.",
+      "description": "Whether enable shardingsphere or not.",
       "defaultValue": true
     },
     {
