@@ -25,7 +25,7 @@ weight = 6
        // 配置数据源
        BasicDataSource dataSource = new BasicDataSource();
        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-       dataSource.setUrl("jdbc:mysql://localhost:3306/encrypt");
+       dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/encrypt");
        dataSource.setUsername("root");
        dataSource.setPassword("");
        

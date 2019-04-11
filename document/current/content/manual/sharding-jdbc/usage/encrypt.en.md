@@ -25,7 +25,7 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
        // Configure actual data source
        BasicDataSource dataSource = new BasicDataSource();
        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-       dataSource.setUrl("jdbc:mysql://localhost:3306/encrypt");
+       dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/encrypt");
        dataSource.setUsername("root");
        dataSource.setPassword("");
        
