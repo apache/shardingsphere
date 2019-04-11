@@ -118,10 +118,10 @@ orchestration:
 ### Rule Configuration Based on Spring Boot
 
 ```properties
-sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
-sharding.jdbc.config.orchestration.overwrite=false
-sharding.jdbc.config.orchestration.registry.server-lists=localhost:2181
-sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestration
+spring.shardingsphere.orchestration.name=orchestration-sharding-data-source
+spring.shardingsphere.orchestration.overwrite=false
+spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
+spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestration
 ```
 
 ### Rule Configuration Based on Spring Name Space

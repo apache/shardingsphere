@@ -133,31 +133,31 @@ try (
 ### 基于Spring boot的规则配置
 
 ```properties
-sharding.jdbc.datasource.names=master,slave0,slave1
+spring.shardingsphere.datasource.names=master,slave0,slave1
 
-sharding.jdbc.datasource.master.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.master.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.master.url=jdbc:mysql://localhost:3306/master
-sharding.jdbc.datasource.master.username=root
-sharding.jdbc.datasource.master.password=
+spring.shardingsphere.datasource.master.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.master.url=jdbc:mysql://localhost:3306/master
+spring.shardingsphere.datasource.master.username=root
+spring.shardingsphere.datasource.master.password=
 
-sharding.jdbc.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0
-sharding.jdbc.datasource.slave0.username=root
-sharding.jdbc.datasource.slave0.password=
+spring.shardingsphere.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0
+spring.shardingsphere.datasource.slave0.username=root
+spring.shardingsphere.datasource.slave0.password=
 
-sharding.jdbc.datasource.slave1.type=org.apache.commons.dbcp.BasicDataSource
-sharding.jdbc.datasource.slave1.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1
-sharding.jdbc.datasource.slave1.username=root
-sharding.jdbc.datasource.slave1.password=
+spring.shardingsphere.datasource.slave1.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.slave1.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1
+spring.shardingsphere.datasource.slave1.username=root
+spring.shardingsphere.datasource.slave1.password=
 
-sharding.jdbc.config.masterslave.name=ms
-sharding.jdbc.config.masterslave.master-data-source-name=master
-sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
+spring.shardingsphere.masterslave.name=ms
+spring.shardingsphere.masterslave.master-data-source-name=master
+spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 
-sharding.jdbc.config.props.sql.show=true
+spring.shardingsphere.props.sql.show=true
 ```
 
 ### 基于Spring命名空间的规则配置
