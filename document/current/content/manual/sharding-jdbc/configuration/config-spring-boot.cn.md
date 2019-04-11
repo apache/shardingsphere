@@ -280,16 +280,9 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #详见读写分离部分
-sharding.jdbc.config.config.map.key1= #详见读写分离部分
-sharding.jdbc.config.config.map.key2= #详见读写分离部分
-sharding.jdbc.config.config.map.keyx= #详见读写分离部分
 
 sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
 sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
-
-sharding.jdbc.config.config.map.key1= #用户自定义配置
-sharding.jdbc.config.config.map.key2= #用户自定义配置
-sharding.jdbc.config.config.map.keyx= #用户自定义配置
 ```
 
 ### 读写分离
@@ -303,10 +296,6 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #从库数据源名称列表
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`load-balance-algorithm-class-name`存在则忽略该配置
-
-sharding.jdbc.config.config.map.key1= #用户自定义配置
-sharding.jdbc.config.config.map.key2= #用户自定义配置
-sharding.jdbc.config.config.map.keyx= #用户自定义配置
 
 sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
 sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
@@ -327,6 +316,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.props..<proper
 
 sharding.jdbc.config.sharding.orchestration.name= #数据治理实例名称
 sharding.jdbc.config.sharding.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
+sharding.jdbc.config.sharding.orchestration.registry.type= #配置中心类型。如：zookeeper
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.registry.namespace= #注册中心的命名空间
 sharding.jdbc.config.sharding.orchestration.registry.digest= #连接注册中心的权限令牌。缺省为不需要权限验证
@@ -334,4 +324,5 @@ sharding.jdbc.config.sharding.orchestration.registry.operation-timeout-milliseco
 sharding.jdbc.config.sharding.orchestration.registry.max-retries= #连接失败后的最大重试次数，默认3次
 sharding.jdbc.config.sharding.orchestration.registry.retry-interval-milliseconds= #重试间隔毫秒数，默认500毫秒
 sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #临时节点存活秒数，默认60秒
+sharding.jdbc.config.sharding.orchestration.registry.props= #配置中心其它属性
 ```

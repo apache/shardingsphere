@@ -6,21 +6,21 @@ weight = 3
 
 ## 简介
 
-ShardingSphere使用ThreadLocal管理分片键值进行Hint强制路由。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。
+ShardingSphere使用ThreadLocal管理分片键值进行Hint强制路由。可以通过编程的方式向HintManager中添加分片值，该分片值仅在当前线程内生效。
 Hint方式主要使用场景：
 
-1.分片字段不存在SQL中、数据库表结构中，而存在于外部业务逻辑。因此，通过Hint实现外部指定分片结果进行数据操作。
+1.分片字段不存在SQL中、数据库表结构中，而存在于外部业务逻辑。
 
 2.强制在主库进行某些数据操作。
 
 ## 基于暗示(Hint)的数据分片
 
-### 配置
+### 配置Hint分片算法
 
-使用hint进行强制数据分片，需要使用HintManager搭配分片策略配置共同使用。若DatabaseShardingStrategy配置了Hint分片算法，则可使用HintManager进行分库路由结果的注入。同理，若TableShardingStrategy配置了Hint分片算法，则同样可
-使用HintManager进行分表路由结果的注入。所以使用Hint之前，需要配置Hint分片算法。
+Hint分片算法需要用户实现`org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm`接口。ShardingSphere在进行Routing时，如果发现LogicTable的`TableRule`采用了
+Hint的分片算法，将会从`HintManager`中获取分片值进行路由操作。
 
-参考代码如下：
+参考配置如下：
 
 ```yaml
 shardingRule:
@@ -29,10 +29,10 @@ shardingRule:
         actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
         databaseStrategy:
           hint:
-            algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm
+            algorithmClassName: yourHintShardingAlgorithm
         tableStrategy:
           hint:
-            algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm
+            algorithmClassName: yourHintShardingAlgorithm
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
@@ -45,7 +45,7 @@ shardingRule:
       sql.show: true
 ```
 
-### 实例化
+### 获取HintManager
 
 ```java
 HintManager hintManager = HintManager.getInstance();
@@ -97,7 +97,7 @@ __hintManager实现了AutoCloseable接口，可推荐使用try with resource自�
 
 ## 基于暗示(Hint)的强制主库路由
 
-### 实例化
+### 获取HintManager
 
 与基于暗示(Hint)的数据分片相同。
 
@@ -125,3 +125,6 @@ try (
     }
 }
 ```
+
+### example
+[hint-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/hint-example)

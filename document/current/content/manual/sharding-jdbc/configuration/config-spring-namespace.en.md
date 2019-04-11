@@ -367,7 +367,7 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave  
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
-    <reg:registry-center id="regCenter" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
+    <reg:registry-center id="regCenter" type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
     <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
     <master-slave:data-source id="masterSlaveDataSource" registry-center-ref="regCenter" />
 </beans>
@@ -563,13 +563,14 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 
 #### \<orchestration:registry-center />
 
-| *Name*                             | *Type*    | *Explanation*                                                |
-| ---------------------------------- | --------- | ------------------------------------------------------------ |
-| id                                 | Attribute | Spring Bean id in registry center                            |
-| server-lists                       | Attribute | The list of servers that connect to registry center, including IP and port number; use commas to separate addresses, such as: host1:2181,host2:2181 |
-| namespace (?)                      | Attribute | Registry center namespace                                    |
-| digest (?)                         | Attribute | The token that connects to the registry center; default means there is no need for authentication |
-| operation-timeout-milliseconds (?) | Attribute | The millisecond number for operation timeout; default value: 500 milliseconds |
-| max-retries (?)                    | Attribute | Maximum retry time after failing; default value: 3 times     |
-| retry-interval-milliseconds (?)    | Attribute | Interval time to retry; default value: 500 milliseconds      |
-| time-to-live-seconds (?)           | Attribute | Living time of temporary nodes; default value: 60 seconds    |
+| *Name*                             | *Type*    | *Description*                                                                   |
+| ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
+| id                                 | Attribute | Spring Bean Id of registry center                                               |
+| server-lists                       | Attribute | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181  |
+| namespace (?)                      | Attribute | Namespace of registry                                                           |
+| digest (?)                         | Attribute | Digest for registry. Default is not need digest                                 |
+| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 500 seconds            |
+| max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                |
+| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 500 milliseconds  |
+| time-to-live-seconds (?)           | Attribute | Living time of temporary nodes; default value: 60 seconds                       |
+| props-ref (?)                      | Attribute | Other customize properties of registry center                                   |

@@ -3,7 +3,6 @@ pre = "<b>4.2. </b>"
 title = "Sharding-Proxy"
 weight = 2
 chapter = true
-
 +++
 
 ## Introduction
