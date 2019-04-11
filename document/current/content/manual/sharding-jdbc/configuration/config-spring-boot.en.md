@@ -281,16 +281,9 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Refer to read-write split part for more details
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Refer to read-write split part for more details
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #Refer to read-write split part for more details
-sharding.jdbc.config.config.map.key1= #Refer to read-write split part for more details
-sharding.jdbc.config.config.map.key2= #Refer to read-write split part for more details
-sharding.jdbc.config.config.map.keyx= #Refer to read-write split part for more details
 
 sharding.jdbc.config.props.sql.show= #Show SQL or not; default value: false
 sharding.jdbc.config.props.executor.size= #Executing thread number; default value: CPU core number
-
-sharding.jdbc.config.config.map.key1= #Users' self-defined configurations
-sharding.jdbc.config.config.map.key2= #Users' self-defined configurations
-sharding.jdbc.config.config.map.keyx= #Users' self-defined configurations
 ```
 
 ### Read-Write Split
@@ -304,10 +297,6 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Data source name list of slave database
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Load balance algorithm class name; the class needs to implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
-
-sharding.jdbc.config.config.map.key1= #Users' self-defined configurations
-sharding.jdbc.config.config.map.key2= #Users' self-defined configurations
-sharding.jdbc.config.config.map.keyx= #Users' self-defined configurations
 
 sharding.jdbc.config.props.sql.show= #Show SQL or not; default value: false
 sharding.jdbc.config.props.executor.size= #Executing thread number; default value: CPU core number
