@@ -31,7 +31,7 @@ weight = 6
        
        // 配置脱敏规则
        Properties props = new Properties();
-       props..setProperty("aes.key.value", "123456");
+       props.setProperty("aes.key.value", "123456");
        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("aes", "t_order.order_id", new Properties());
        EncryptRuleConfiguration ruleConfiguration = new EncryptRuleConfiguration();
        ruleConfiguration.getEncryptorRuleConfigs().put("order_encryptor", encryptorConfig);
