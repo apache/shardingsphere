@@ -5,13 +5,13 @@ title = "Sharding-Proxy"
 weight = 2
 +++
 
-## 1. Configure sharding rule
+## 1. Sharding Rule Configuration
 
-Edit `%SHARDING_PROXY_HOME%\conf\config-xxx.yaml`. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/).
+Edit `%SHARDING_PROXY_HOME%\conf\config-xxx.yaml`. Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/) for more details.
 
-Edit `%SHARDING_PROXY_HOME%\conf\server.yaml`. More details please reference [Configuration Manual](/en/manual/sharding-proxy/configuration/). 
+Edit `%SHARDING_PROXY_HOME%\conf\server.yaml`. Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/) for more details.
 
-## 2. Start server
+## 2. Start Server
 
 * Use default configuration to start
 
@@ -19,7 +19,7 @@ Edit `%SHARDING_PROXY_HOME%\conf\server.yaml`. More details please reference [Co
 ${sharding-proxy}\bin\start.sh
 ```
 
-* Set port to start
+* Configure the port
 
 ```sh
 ${sharding-proxy}\bin\start.sh ${port}

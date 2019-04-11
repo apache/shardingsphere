@@ -15,15 +15,15 @@ weight = 1
 </dependency>
 ```
 
-Note: Please change the `${latest.release.version}` to the actual version.
+Notice: Please change `${latest.release.version}` to the actual version.
 
-## 2. Configure sharding rule configuration
+## 2. Sharding Rule Configuration
 
-Sharding-JDBC support 4 types for sharding rule configuration, they are `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose any one for best suitable situation. More details please reference [Configuration Manual](/en/manual/sharding-jdbc/configuration/).
+Sharding-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose the suitable method according to different situations. Please refer to [Configuration Manual](/en/manual/sharding-jdbc/configuration/) for more details.
 
 ## 3. Create DataSource
 
-Use ShardingDataSourceFactory to create ShardingDataSource, which is a standard JDBC DataSource. Then developers can use it for raw JDBC, JPA, MyBatis or Other JDBC based ORM frameworks.
+Use ShardingDataSourceFactory and rule configuration objects to create ShardingDataSource, which is realized from DataSource,  a standard JDBC interface. Then, users can use native JDBC or JPA, MyBatis and other ORM frameworks to develop.
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
