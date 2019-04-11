@@ -57,17 +57,13 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         removeGenerateKeyColumn(insertStatement, sqlSegment.getValues().size());
         AndCondition andCondition = new AndCondition();
         Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
-        int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
             SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnNames.next(), each);
             columnValues.add(columnValue);
-            if (columnValue instanceof SQLPlaceholderExpression) {
-                parametersCount++;
-            }
         }
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
-        InsertValue insertValue = new InsertValue(parametersCount, columnValues);
+        InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
     }

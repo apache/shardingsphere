@@ -128,7 +128,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
         insertValuesStatementWithPlaceHolder.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceHolder.getColumnNames().add("status");
-        InsertValue insertValue = new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)));
+        InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)));
         insertValuesStatementWithPlaceHolder.getValues().add(insertValue);
         insertValuesStatementWithPlaceHolder.getValues().add(insertValue);
     }
@@ -147,7 +147,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithPlaceHolderWithEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
         insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("status");
-        InsertValue insertValue = new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)));
+        InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)));
         insertValuesStatementWithPlaceHolderWithEncrypt.getValues().add(insertValue);
         insertValuesStatementWithPlaceHolderWithEncrypt.getValues().add(insertValue);
     }
@@ -314,7 +314,7 @@ public final class InsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumnNames().add("user_id");
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getColumnNames().add("status");
-        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getValues().add(new InsertValue(0, Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceHolderWithQueryEncrypt, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -330,7 +330,7 @@ public final class InsertOptimizeEngineTest {
         generatedKey.getGeneratedKeys().add(1);
         insertValuesStatementWithoutPlaceHolder.getColumnNames().add("user_id");
         insertValuesStatementWithoutPlaceHolder.getColumnNames().add("status");
-        insertValuesStatementWithoutPlaceHolder.getValues().add(new InsertValue(0, Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertValuesStatementWithoutPlaceHolder.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertValuesStatementWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -344,7 +344,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertSetStatementWithPlaceHolder.getValues().add(new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
+        insertSetStatementWithPlaceHolder.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceHolder, insertSetParameters, generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -360,7 +360,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithPlaceHolderWithGeneratedKeyWithQueryEncrypt() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        InsertValue insertValue = new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)));
+        InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)));
         insertSetStatementWithPlaceHolderWithQueryEncrypt.getValues().add(insertValue);
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithPlaceHolderWithQueryEncrypt, insertSetParameters, generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
@@ -379,7 +379,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithoutPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertSetStatementWithoutPlaceHolder.getValues().add(new InsertValue(0, Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertSetStatementWithoutPlaceHolder.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());
@@ -393,7 +393,7 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeInsertSetWithoutPlaceHolderWithGeneratedKeyWithEncrypt() {
         GeneratedKey generatedKey = new GeneratedKey("order_id");
         generatedKey.getGeneratedKeys().add(1);
-        insertSetStatementWithoutPlaceHolderWithEncrypt.getValues().add(new InsertValue(0, Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
+        insertSetStatementWithoutPlaceHolderWithEncrypt.getValues().add(new InsertValue(Arrays.asList(new SQLNumberExpression(12), new SQLTextExpression("a"))));
         OptimizeResult actual = new InsertOptimizeEngine(shardingRule, insertSetStatementWithoutPlaceHolderWithEncrypt, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().getShardingConditions().size(), is(1));
         assertTrue(actual.getInsertOptimizeResult().isPresent());

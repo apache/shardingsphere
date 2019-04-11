@@ -88,7 +88,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(34));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
+        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
         return result;
     }
     
@@ -116,7 +116,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(40));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(0, Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
+        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
         return result;
     }
     
@@ -142,7 +142,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertSetToken(34));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(0, Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
+        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
         return result;
     }
     
@@ -170,7 +170,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertSetToken(40));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(2, Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
+        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
         return result;
     }
 }

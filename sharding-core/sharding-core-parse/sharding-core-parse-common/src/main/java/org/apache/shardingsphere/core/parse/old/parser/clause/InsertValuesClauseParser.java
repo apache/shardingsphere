@@ -87,13 +87,11 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
      * @param insertStatement insert statement
      */
     private void parseValues(final InsertStatement insertStatement) {
-        int startParametersIndex;
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         Preconditions.checkState(insertValuesToken.isPresent());
         insertStatement.getSQLTokens().remove(insertValuesToken.get());
         insertStatement.addSQLToken(new InsertValuesToken(insertValuesToken.get().getStartIndex()));
         do {
-            startParametersIndex = insertStatement.getParametersIndex();
             lexerEngine.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
             int count = 0;
@@ -121,7 +119,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
                 count++;
             }
             lexerEngine.accept(Symbol.RIGHT_PAREN);
-            InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex() - startParametersIndex, sqlExpressions);
+            InsertValue insertValue = new InsertValue(sqlExpressions);
             insertStatement.getValues().add(insertValue);
             insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));

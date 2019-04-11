@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,15 +44,11 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
     }
     
     private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {
-        int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
             SQLExpression sqlExpression = each.getSQLExpression(sql);
             columnValues.add(sqlExpression);
-            if (sqlExpression instanceof SQLPlaceholderExpression) {
-                parametersCount++;
-            }
         }
-        return new InsertValue(parametersCount, columnValues);
+        return new InsertValue(columnValues);
     }
 }

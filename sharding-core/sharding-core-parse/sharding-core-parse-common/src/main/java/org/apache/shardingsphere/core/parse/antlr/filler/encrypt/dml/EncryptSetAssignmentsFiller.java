@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,15 +60,11 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
     }
     
     private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final String sql) {
-        int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             SQLExpression sqlExpression = each.getValue().getSQLExpression(sql);
             columnValues.add(sqlExpression);
-            if (sqlExpression instanceof SQLPlaceholderExpression) {
-                parametersCount++;
-            }
         }
-        return new InsertValue(parametersCount, columnValues);
+        return new InsertValue(columnValues);
     }
 }

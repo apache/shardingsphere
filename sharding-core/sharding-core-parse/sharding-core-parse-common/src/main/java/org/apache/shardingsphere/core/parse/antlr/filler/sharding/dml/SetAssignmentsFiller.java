@@ -73,16 +73,12 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
         }
         AndCondition andCondition = new AndCondition();
         Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
-        int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnNames.next(), each.getValue());
             columnValues.add(columnValue);
-            if (columnValue instanceof SQLPlaceholderExpression) {
-                parametersCount++;
-            }
         }
-        InsertValue insertValue = new InsertValue(parametersCount, columnValues);
+        InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
