@@ -45,6 +45,11 @@ chapter = true
 * [拍拍贷](https://www.ppdai.com/)
 * [火币资讯](https://www.huobiinfo.com/)
 
+## 云平台
+
+* [京东云](https://www.jdcloud.com/cn/)
+* [京东金融云](https://www.jdfcloud.com/)
+
 ## 信息资讯
 
 * [搜狐资讯](http://ss.sohu.com/)
@@ -99,6 +104,7 @@ chapter = true
 * [超级蓝领网络科技服务有限公司](http://www.chaojilanling.cn/)
 * [北京云庐科技有限公司](http://www.cloudansys.com/)
 * [海典软件](http://www.hydee.cn/)
+* [杭州康帕斯科技有限公司](http://www.compasshz.com/)
 
 ## 政府
 
@@ -132,3 +138,5 @@ chapter = true
 
 * [好未来](http://www.100tal.com/)
 * [开课啦](http://www.kaike.la/)
+* [点石经纬](https://www.okayzhihui.com/)
+

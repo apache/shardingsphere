@@ -31,31 +31,17 @@
     </xsd:element>
     <xsd:element name="encrypt-rule">
         <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="table-rules" />
-            </xsd:all>
-            <xsd:attribute name="data-source-name" type="xsd:string" use="required" />
-            <xsd:attribute name="default-encryptor-ref" type="xsd:string" />
-        </xsd:complexType>
-    </xsd:element>
-     <xsd:element name="table-rules">
-        <xsd:complexType>
             <xsd:sequence>
-                <xsd:element ref="table-rule" maxOccurs="unbounded" />
+                <xsd:element ref="encryptor-rule" maxOccurs="unbounded" />
             </xsd:sequence>
+            <xsd:attribute name="data-source-name" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="table-rule">
-        <xsd:complexType>
-            <xsd:attribute name="encrypt-table" type="xsd:string" use="required" />
-            <xsd:attribute name="encryptor-ref" type="xsd:string" />
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="encryptor">
+    <xsd:element name="encryptor-rule">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" use="required" />
-            <xsd:attribute name="columns" type="xsd:string" use="required" />
+            <xsd:attribute name="qualified-columns" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-columns" type="xsd:string" />
             <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
