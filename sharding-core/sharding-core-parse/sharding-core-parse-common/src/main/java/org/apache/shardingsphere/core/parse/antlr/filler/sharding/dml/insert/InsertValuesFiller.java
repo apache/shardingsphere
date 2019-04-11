@@ -32,7 +32,9 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Generat
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Iterator;
@@ -80,8 +82,9 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     private SQLExpression getColumnValue(final InsertStatement insertStatement,
                                          final ShardingRule shardingRule, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
         SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
-        fillShardingCondition(shardingRule, andCondition, insertStatement.getTables().getSingleTableName(), columnName, expressionSegment, result);
-        fillGeneratedKeyCondition(insertStatement, insertStatement.getLogicSQL(), shardingRule, columnName, expressionSegment);
+        String tableName = insertStatement.getTables().getSingleTableName();
+        fillShardingCondition(shardingRule, andCondition, tableName, columnName, expressionSegment, result);
+        fillGeneratedKeyCondition(insertStatement, columnName, tableName, result);
         return result;
     }
     
@@ -95,21 +98,26 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         }
     }
     
-    private void fillGeneratedKeyCondition(final InsertStatement insertStatement, 
-                                           final String sql, final ShardingRule shardingRule, final String columnName, final CommonExpressionSegment expressionSegment) {
+    private void fillGeneratedKeyCondition(final InsertStatement insertStatement, final String columnName, final String tableName, final SQLExpression sqlExpression) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(columnName)) {
-            insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(new Column(columnName, insertStatement.getTables().getSingleTableName()), expressionSegment, sql));
+            Optional<GeneratedKeyCondition> generatedKeyCondition = createGeneratedKeyCondition(new Column(columnName, tableName), sqlExpression);
+            if (generatedKeyCondition.isPresent()) {
+                insertStatement.getGeneratedKeyConditions().add(generatedKeyCondition.get());
+            }
         }
     }
     
-    private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final CommonExpressionSegment sqlExpression, final String sql) {
-        if (-1 != sqlExpression.getPlaceholderIndex()) {
-            return new GeneratedKeyCondition(column, sqlExpression.getPlaceholderIndex(), null);
+    private Optional<GeneratedKeyCondition> createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            return Optional.of(new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null));
         }
-        if (null != sqlExpression.getLiterals()) {
-            return new GeneratedKeyCondition(column, -1, (Comparable<?>) sqlExpression.getLiterals());
+        if (sqlExpression instanceof SQLNumberExpression) {
+            return Optional.of(new GeneratedKeyCondition(column, -1, (Comparable<?>) ((SQLNumberExpression) sqlExpression).getNumber()));
         }
-        return new GeneratedKeyCondition(column, -1, sql.substring(sqlExpression.getStartIndex(), sqlExpression.getStopIndex() + 1));
+        if (sqlExpression instanceof SQLTextExpression) {
+            return Optional.of(new GeneratedKeyCondition(column, -1, ((SQLTextExpression) sqlExpression).getText()));
+        }
+        return Optional.absent();
     }
 }
