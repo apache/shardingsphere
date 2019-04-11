@@ -204,21 +204,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}
-      encryptor:
-        type: MD5
-        columns: status
-    t_order_encrypt:
-      actualDataNodes: ds_${0..1}.t_order_encrypt_${0..1}
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_encrypt_${order_id % 2}      
-      encryptor:
-        type: QUERY
-        columns: encrypt_id
-        assistedQueryColumns: query_id
   bindingTables:
-    - t_order,t_order_item,t_order_encrypt  
+    - t_order,t_order_item 
   
   defaultDatabaseStrategy:
     inline:
@@ -226,6 +213,13 @@ shardingRule:
       algorithmExpression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
+  encryptRule:
+    encryptors:
+      order_encryptor:
+        type: AES
+        qualifiedColumns: t_order.order_id
+        props:
+          aes.key.value: 123456 
 
 props:
   sql.show: true
@@ -336,15 +330,15 @@ props: #Property configuration
 ### Data Masking
 ```yaml
 dataSources: #Ignore data sources configuration
-shardingRule: #Ignore sharding rule configuration
-  tables:
-    sharding_t1:
-      encryptor: #Encryptor configuration
+shardingRule:
+  encryptRule:
+    encryptors:
+      encryptor_name: #Encryptor name
         type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
-        columns: #Column name of encryptor
-        assistedQueryColumns: #assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-        props:
-          aes.key.value: #Properties, e.g. `aes.key.value` for AES encryptor
+        qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
+        assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+        props: #Properties, e.g. `aes.key.value` for AES encryptor
+          aes.key.value:
 ```
 
 ### Orchestration

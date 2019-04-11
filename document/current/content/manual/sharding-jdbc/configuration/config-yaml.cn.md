@@ -204,21 +204,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}
-      encryptor:
-        type: MD5
-        columns: status
-    t_order_encrypt:
-      actualDataNodes: ds_${0..1}.t_order_encrypt_${0..1}
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_encrypt_${order_id % 2}      
-      encryptor:
-        type: QUERY
-        columns: encrypt_id
-        assistedQueryColumns: query_id
   bindingTables:
-    - t_order,t_order_item,t_order_encrypt  
+    - t_order,t_order_item 
   
   defaultDatabaseStrategy:
     inline:
@@ -226,6 +213,13 @@ shardingRule:
       algorithmExpression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
+  encryptRule:
+    encryptors:
+      order_encryptor:
+        type: AES
+        qualifiedColumns: t_order.order_id
+        props:
+          aes.key.value: 123456 
 
 props:
   sql.show: true
@@ -380,14 +374,14 @@ props: #属性配置
 ```yaml
 dataSources: #省略数据源配置
 shardingRule: #省略分片规则配
-  tables: #配置表sharding的主要位置
-    sharding_t1:
-      encryptor: #加解密器配置
-        type: #加解密器类型
-        columns: #加解密列
-        assistedQueryColumns: #加解密辅助查询列
-        props:
-          aes.key.value: #例如AES加解密器的Key
+  encryptRule:
+    encryptors:
+      encryptor_name: #加密器名字
+        type: #加解密器类型，可自定义或选择内置类型：MD5/AES
+        qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
+        assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+        props: #属性配置, 比如AES算法的KEY属性：aes.key.value
+          aes.key.value:
 ```
 
 ### 数据治理
