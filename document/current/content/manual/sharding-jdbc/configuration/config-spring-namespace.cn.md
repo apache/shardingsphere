@@ -330,16 +330,19 @@ weight = 4
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
     <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
     
-    <sharding:encryptor id="md5" type="MD5" columns="status" />
-    <sharding:encryptor id="query" type="QUERY" columns="encrypt_id" assisted-query-columns="query_id" />
+    <bean:properties id="dataProtectorProps">
+        <prop key="appToken">business</prop>
+    </bean:properties>
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" encryptor-ref="md5" />
-                <sharding:table-rule logic-table="t_order_encrypt" actual-data-nodes="demo_ds_${0..1}.t_order_encrypt_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderEncryptTableStrategy" encryptor-ref="query" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
+            <sharding:encrypt-rule>
+                <sharding:encryptor-rule id="order_encryptor" type="AES" qualified-columns="t_order.order_id" props-ref="dataProtectorProps" />
+            </sharding:encrypt-rule>
         </sharding:sharding-rule>
         <sharding:props>
             <prop key="sql.show">true</prop>
@@ -390,6 +393,7 @@ weight = 4
 | default-database-strategy-ref (?) | 属性  | 默认数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分库                                    |
 | default-table-strategy-ref (?)    | 属性  | 默认表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分表                                       |
 | default-key-generator-ref (?)     | 属性  | 默认自增列值生成器引用，缺省使用`org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| encrypt-rule (?)                  | 标签  | 脱敏规则                                                                                                  |
 
 #### \<sharding:table-rules />
 
@@ -407,7 +411,6 @@ weight = 4
 | table-strategy-ref (?)       | 属性  | 表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示使用\<sharding:sharding-rule />配置的默认表分片策略                                                                                                     |
 | key-generator-ref (?)        | 属性  | 自增列值生成器引用，缺省表示使用默认自增列值生成器                                                                                                                                                                 |
 | logic-index (?)              | 属性  | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                    |
-| encryptor (?)                | 属性  | 加解密器引用                                                                                                                                                                                                  |
 
 #### \<sharding:binding-table-rules />
 
@@ -478,13 +481,13 @@ weight = 4
 | type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
 | props-ref         | 属性                          | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds | 
 
-#### \<sharding:encrypt />
-| *名称*             | *类型*                   | *说明*                                                                  |
-| ------------------- | ---------------------- | ---------------------------------------------------------------------- |
-| type                | 属性                    | 加解密器类型，可自定义或选择内置类型：MD5/AES                               |
-| column              | 属性                    | 加解密器字段                                                            |
-| assistedQueryColumns| 属性                    | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询  |
-| props-ref           | 属性                    | 属性配置, 比如AES算法的KEY属性：aes.key.value                             | 
+#### \<sharding:encrypt-rule />
+| *名称*                 | *类型*                   | *说明*                                                                |
+| --------------------- | ---------------------- | ---------------------------------------------------------------------- |
+| type                  | 属性                    | 加解密器类型，可自定义或选择内置类型：MD5/AES                               |
+| qualified-columns     | 属性                    | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔             |
+| assisted-query-columns| 属性                    | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询   |
+| props-ref             | 属性                    | 属性配置, 比如AES算法的KEY属性：aes.key.value                             | 
  
 
 #### \<sharding:props />
