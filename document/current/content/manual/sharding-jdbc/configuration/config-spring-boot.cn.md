@@ -162,14 +162,9 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t_order_item.key-generator.column=order_item_id
 sharding.jdbc.config.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.type=MD5
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.columns=status
-sharding.jdbc.config.sharding.tables.t_order_encrypt.actual-data-nodes=ds_$->{0..1}.t_order_encrypt_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.algorithm-expression=t_order_encrypt_$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.type=QUERY
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.columns=encrypt_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColumns=query_id
+sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.qualifiedColumns=t_order.order_id
+sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.type=AES
+sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.props.aes.key.value=123456
 ```
 
 ### 数据治理
@@ -304,10 +299,10 @@ sharding.jdbc.config.props.check.table.metadata.enabled= #是否在启动时检�
 
 ### 数据脱敏
 ```properties
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.columns= #加解密字段
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.assistedQueryColumns= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询  
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.props..<property-name>= #属性配置, 比如AES算法的KEY属性：aes.key.value 
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.qualifiedColumns= #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.assistedQueryColumns= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 比如AES算法的KEY属性：aes.key.value
 ```
 ### 数据治理
 
