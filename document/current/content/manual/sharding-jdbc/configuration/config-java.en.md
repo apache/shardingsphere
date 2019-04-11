@@ -130,7 +130,7 @@ weight = 1
             shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
             shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
             shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
-            shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item,");
+            shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
             shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
             shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
             shardingRuleConfig.setEncryptRuleConfig(getOrderEncryptRuleConfiguration());
