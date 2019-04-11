@@ -144,7 +144,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     @Override
     public final void setEnvironment(final Environment environment) {
-        String prefix = "sharding.jdbc.datasource.";
+        String prefix = "spring.shardingsphere.datasource.";
         for (String each : getDataSourceNames(environment, prefix)) {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));

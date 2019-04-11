@@ -18,7 +18,7 @@
 {
   "groups": [
     {
-      "name": "sharding.jdbc.datasource",
+      "name": "spring.shardingsphere.datasource",
       "type": "org.apache.shardingsphere.shardingjdbc.spring.boot.SpringBootConfiguration"
     },
     {
@@ -80,12 +80,12 @@
       "defaultValue": true
     },
     {
-      "name": "sharding.jdbc.datasource.names",
+      "name": "spring.shardingsphere.datasource.names",
       "type": "java.lang.String",
       "sourceType": "org.apache.shardingsphere.shardingjdbc.spring.boot.SpringBootConfiguration"
     },
     {
-      "name": "sharding.jdbc.datasource",
+      "name": "spring.shardingsphere.datasource",
       "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>",
       "sourceType": "org.apache.shardingsphere.shardingjdbc.spring.boot.util.DataSourceUtil"
     },
@@ -222,11 +222,11 @@
   ],
   "hints": [
     {
-      "name": "sharding.jdbc.datasource.keys",
+      "name": "spring.shardingsphere.datasource.keys",
       "values": []
     },
     {
-      "name": "sharding.jdbc.datasource.values",
+      "name": "spring.shardingsphere.datasource.values",
       "values": [
       ],
       "providers": [
