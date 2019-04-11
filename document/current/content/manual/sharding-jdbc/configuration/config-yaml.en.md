@@ -231,7 +231,7 @@ props:
   sql.show: true
 ```
 
-### Data Orchestration
+### Orchestration
 
 ```yaml
 #Omit data sharding and read-write split configurations

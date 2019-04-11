@@ -2,6 +2,7 @@
 toc = true
 title = "Spring Namespace Configuration"
 weight = 4
+
 +++
 
 ## Notice
@@ -349,7 +350,7 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
 ```
 
 
-### Data Orchestration
+### Orchestration
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -381,24 +382,24 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 
 #### \<sharding:data-source />
 
-| *Name*        | *Type*   | *Description*               |
-| ------------- | -------- | --------------------------- |
-| id            | Property | Spring Bean Id              |
-| sharding-rule | Tag      | Sharding rule configuration |
-| props (?)     | Tag      | Properties                  |
+| *Name*        | *Type*    | *Description*               |
+| ------------- | --------- | --------------------------- |
+| id            | Attribute | Spring Bean Id              |
+| sharding-rule | Tag       | Sharding rule configuration |
+| props (?)     | Tag       | Properties                  |
 
 #### \<sharding:sharding-rule />
 
-| *Name*                            | *Type*   | *Description*                                                |
-| --------------------------------- | -------- | ------------------------------------------------------------ |
-| data-source-names                 | Property | Data source Bean list with comma separating multiple Beans   |
-| table-rules                       | Tag      | Configuration objects of table sharding rules                |
-| binding-table-rules (?)           | Tag      | Binding table rule list                                      |
-| broadcast-table-rules (?)         | Tag      | Broadcast table rule list                                    |
-| default-data-source-name (?)      | Property | Tables without sharding rules will be located through default data source |
-| default-database-strategy-ref (?) | Property | Default database sharding strategy, which corresponds to id of \<sharding:xxx-strategy>; default means the database is not split |
-| default-table-strategy-ref (?)    | Property | Default table sharding strategy,which corresponds to id of \<sharding:xxx-strategy>;  default means the database is not split |
-| default-key-generator (?)         | Property | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| *Name*                            | *Type*    | *Description*                                                |
+| --------------------------------- | --------- | ------------------------------------------------------------ |
+| data-source-names                 | Attribute | Data source Bean list with comma separating multiple Beans   |
+| table-rules                       | Tag       | Configuration objects of table sharding rules                |
+| binding-table-rules (?)           | Tag       | Binding table rule list                                      |
+| broadcast-table-rules (?)         | Tag       | Broadcast table rule list                                    |
+| default-data-source-name (?)      | Attribute | Tables without sharding rules will be located through default data source |
+| default-database-strategy-ref (?) | Attribute | Default database sharding strategy, which corresponds to id of \<sharding:xxx-strategy>; default means the database is not split |
+| default-table-strategy-ref (?)    | Attribute | Default table sharding strategy,which corresponds to id of \<sharding:xxx-strategy>;  default means the database is not split |
+| default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
 
 #### \<sharding:table-rules />
 
@@ -408,15 +409,15 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 
 #### \<sharding:table-rule />
 
-| *Name*                    | *Type*   | *Description*                                                |
-| ------------------------- | -------- | ------------------------------------------------------------ |
-| logic-table               | Property | Name of logic table                                          |
-| actual-data-nodes (?)     | Property | Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
-| database-strategy-ref (?) | Property | Databases sharding strategy, use default databases sharding strategy if absent |
-| table-strategy-ref (?)    | Property | Tables sharding strategy, use default tables sharding strategy if absent |
-| key-generator (?)         | Property | Key generator, use default key generator if absent.          |
-| logic-index (?)           | Property | Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables |
-| encryptor (?)             | Property | Encrypt generator                                            |
+| *Name*                    | *Type*    | *Description*                                                |
+| ------------------------- | --------- | ------------------------------------------------------------ |
+| logic-table               | Attribute | Name of logic table                                          |
+| actual-data-nodes (?)     | Attribute | Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
+| database-strategy-ref (?) | Attribute | Databases sharding strategy, use default databases sharding strategy if absent |
+| table-strategy-ref (?)    | Attribute | Tables sharding strategy, use default tables sharding strategy if absent |
+| key-generator (?)         | Attribute | Key generator, use default key generator if absent.          |
+| logic-index (?)           | Attribute | Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables |
+| encryptor (?)             | Attribute | Encrypt generator                                            |
 
 #### \<sharding:binding-table-rules />
 
@@ -426,9 +427,9 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 
 #### \<sharding:binding-table-rule />
 
-| *Name*       | *Type*   | *Description*                                                |
-| ------------ | -------- | ------------------------------------------------------------ |
-| logic-tables | Property | Logic table name bound with rules; multiple tables are separated by commas |
+| *Name*       | *Type*    | *Description*                                                |
+| ------------ | --------- | ------------------------------------------------------------ |
+| logic-tables | Attribute | Logic table name bound with rules; multiple tables are separated by commas |
 
 #### \<sharding:broadcast-table-rules />
 
@@ -438,73 +439,73 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 
 #### \<sharding:broadcast-table-rule />
 
-| *Name*        | *Type*   | *Description* |
-| ------------- | -------- | ------------- |
-| tableProperty | Property | Name of table |
+| *Name*         | *Type*    | *Description* |
+| -------------- | --------- | ------------- |
+| tableAttribute | Attribute | Name of table |
 
 #### \<sharding:standard-strategy />
 
-| *Name*                  | *Type*   | *Description*                                                |
-| ----------------------- | -------- | ------------------------------------------------------------ |
-| id                      | Property | Spring Bean Id                                               |
-| sharding-column         | Property | Sharding column name                                         |
-| precise-algorithm-ref   | Property | Precise algorithm reference, applied in `=` and `IN`; the class needs to implement `PreciseShardingAlgorithm` interface |
-| range-algorithm-ref (?) | Property | Range algorithm reference, applied in `BETWEEN`; the class needs to implement `RangeShardingAlgorithm` interface |
+| *Name*                  | *Type*    | *Description*                                                |
+| ----------------------- | --------- | ------------------------------------------------------------ |
+| id                      | Attribute | Spring Bean Id                                               |
+| sharding-column         | Attribute | Sharding column name                                         |
+| precise-algorithm-ref   | Attribute | Precise algorithm reference, applied in `=` and `IN`; the class needs to implement `PreciseShardingAlgorithm` interface |
+| range-algorithm-ref (?) | Attribute | Range algorithm reference, applied in `BETWEEN`; the class needs to implement `RangeShardingAlgorithm` interface |
 
 #### \<sharding:complex-strategy />
 
-| *Name*           | *Type*   | *Description*                                                |
-| ---------------- | -------- | ------------------------------------------------------------ |
-| id               | Property | Spring Bean Id                                               |
-| sharding-columns | Property | Sharding column name; multiple columns are separated by commas |
-| algorithm-ref    | Property | Complex sharding algorithm reference; the class needs to implement `ComplexKeysShardingAlgorithm` interface |
+| *Name*           | *Type*    | *Description*                                                |
+| ---------------- | --------- | ------------------------------------------------------------ |
+| id               | Attribute | Spring Bean Id                                               |
+| sharding-columns | Attribute | Sharding column name; multiple columns are separated by commas |
+| algorithm-ref    | Attribute | Complex sharding algorithm reference; the class needs to implement `ComplexKeysShardingAlgorithm` interface |
 
 #### \<sharding:inline-strategy />
 
-| *Name*               | *Type*   | *Description*                                                |
-| -------------------- | -------- | ------------------------------------------------------------ |
-| id                   | Property | Spring Bean Id                                               |
-| sharding-column      | Property | Sharding column name                                         |
-| algorithm-expression | Property | Sharding algorithm inline expression, which needs to conform to groovy statements |
+| *Name*               | *Type*    | *Description*                                                |
+| -------------------- | --------- | ------------------------------------------------------------ |
+| id                   | Attribute | Spring Bean Id                                               |
+| sharding-column      | Attribute | Sharding column name                                         |
+| algorithm-expression | Attribute | Sharding algorithm inline expression, which needs to conform to groovy statements |
 
 #### \<sharding:hint-database-strategy />
 
-| *Name*        | *Type*   | *Description*                                                |
-| ------------- | -------- | ------------------------------------------------------------ |
-| id            | Property | Spring Bean Id                                               |
-| algorithm-ref | Property | Hint sharding algorithm; the class needs to implement `HintShardingAlgorithm` interface |
+| *Name*        | *Type*    | *Description*                                                |
+| ------------- | --------- | ------------------------------------------------------------ |
+| id            | Attribute | Spring Bean Id                                               |
+| algorithm-ref | Attribute | Hint sharding algorithm; the class needs to implement `HintShardingAlgorithm` interface |
 
 #### \<sharding:none-strategy />
 
-| *Name* | *Type*   | *Description*  |
-| ------ | -------- | -------------- |
-| id     | Property | Spring Bean Id |
+| *Name* | *Type*    | *Description*  |
+| ------ | --------- | -------------- |
+| id     | Attribute | Spring Bean Id |
 
 #### \<sharding:key-generator />
 
-| *Name*    | *Type*   | *Explanation*                                                |
-| --------- | -------- | ------------------------------------------------------------ |
-| column    | Property | Auto-increment column name                                   |
-| type      | Property | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE or UUID) can both be selected |
-| props-ref | Property | Property configuration, such as `worker.id` and `max.tolerate.time.difference.milliseconds` in SNOWFLAKE algorithm |
+| *Name*    | *Type*    | *Explanation*                                                |
+| --------- | --------- | ------------------------------------------------------------ |
+| column    | Attribute | Auto-increment column name                                   |
+| type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE or UUID) can both be selected |
+| props-ref | Attribute | Attribute configuration, such as `worker.id` and `max.tolerate.time.difference.milliseconds` in SNOWFLAKE algorithm |
 
 #### \<sharding:props />
 
-| *Name*               | *Type*   | *Description*                                                |
-| -------------------- | -------- | ------------------------------------------------------------ |
-| type                 | Property | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
-| column               | Property | Column name of encrypt                                       |
-| assistedQueryColumns | Property | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data |
-| props-ref            | Property | Properties, e.g. `aes.key.value` for AES encryptor           |
+| *Name*               | *Type*    | *Description*                                                |
+| -------------------- | --------- | ------------------------------------------------------------ |
+| type                 | Attribute | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
+| column               | Attribute | Column name of encrypt                                       |
+| assistedQueryColumns | Attribute | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data |
+| props-ref            | Attribute | Properties, e.g. `aes.key.value` for AES encryptor           |
 
 #### \<sharding:props />
 
-| *Name*                             | *Type*   | *Explanation*                                                |
-| ---------------------------------- | -------- | ------------------------------------------------------------ |
-| sql.show (?)                       | Property | Show SQL or not; default value: false                        |
-| executor.size (?)                  | Property | Executing thread number; default value: CPU core number      |
-| max.connections.size.per.query (?) | Property | The maximum connection number that each physical database allocates to each query; default value: 1 |
-| check.table.metadata.enabled (?)   | Property | Whether to check meta-data consistency of sharding table when it initializes; default value: false |
+| *Name*                             | *Type*    | *Explanation*                                                |
+| ---------------------------------- | --------- | ------------------------------------------------------------ |
+| sql.show (?)                       | Attribute | Show SQL or not; default value: false                        |
+| executor.size (?)                  | Attribute | Executing thread number; default value: CPU core number      |
+| max.connections.size.per.query (?) | Attribute | The maximum connection number that each physical database allocates to each query; default value: 1 |
+| check.table.metadata.enabled (?)   | Attribute | Whether to check meta-data consistency of sharding table when it initializes; default value: false |
 
 ### Read-Write Split
 
@@ -512,50 +513,50 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 
 #### \<master-slave:data-source />
 
-| *Name*                  | *Type*   | *Explanation*                                                |
-| ----------------------- | -------- | ------------------------------------------------------------ |
-| id                      | Property | Spring Bean id                                               |
-| master-data-source-name | Property | Bean id of data source in master database                    |
-| slave-data-source-names | Property | Bean id list of data source in slave database; multiple Beans are separated by commas |
-| strategy-ref (?)        | Property | Slave database load balance algorithm reference; the class needs to implement `MasterSlaveLoadBalanceAlgorithm` interface |
-| strategy-type (?)       | Property | Load balance algorithm type of slave database; optional value: ROUND_ROBIN and RANDOM; if there is `load-balance-algorithm-class-name`, the configuration can be omitted |
-| config-map (?)          | Tag      | Users' self-defined configurations                           |
-| props (?)               | Tag      | Property configurations                                      |
+| *Name*                  | *Type*    | *Explanation*                                                |
+| ----------------------- | --------- | ------------------------------------------------------------ |
+| id                      | Attribute | Spring Bean id                                               |
+| master-data-source-name | Attribute | Bean id of data source in master database                    |
+| slave-data-source-names | Attribute | Bean id list of data source in slave database; multiple Beans are separated by commas |
+| strategy-ref (?)        | Attribute | Slave database load balance algorithm reference; the class needs to implement `MasterSlaveLoadBalanceAlgorithm` interface |
+| strategy-type (?)       | Attribute | Load balance algorithm type of slave database; optional value: ROUND_ROBIN and RANDOM; if there is `load-balance-algorithm-class-name`, the configuration can be omitted |
+| config-map (?)          | Tag       | Users' self-defined configurations                           |
+| props (?)               | Tag       | Attribute configurations                                     |
 
 #### \<master-slave:props />
 
-| *Name*                             | *Type*   | *Explanation*                                                |
-| ---------------------------------- | -------- | ------------------------------------------------------------ |
-| sql.show (?)                       | Property | Show SQL or not; default value: false                        |
-| executor.size (?)                  | Property | Executing thread number; default value: CPU core number      |
-| max.connections.size.per.query (?) | Property | The maximum connection number that each physical database allocates to each query; default value: 1 |
-| check.table.metadata.enabled (?)   | Property | Whether to check meta-data consistency of sharding table when it initializes; default value: false |
+| *Name*                             | *Type*    | *Explanation*                                                |
+| ---------------------------------- | --------- | ------------------------------------------------------------ |
+| sql.show (?)                       | Attribute | Show SQL or not; default value: false                        |
+| executor.size (?)                  | Attribute | Executing thread number; default value: CPU core number      |
+| max.connections.size.per.query (?) | Attribute | The maximum connection number that each physical database allocates to each query; default value: 1 |
+| check.table.metadata.enabled (?)   | Attribute | Whether to check meta-data consistency of sharding table when it initializes; default value: false |
 
-### Data Sharding + Data Orchestration
+### Data Sharding + Orchestration
 
 Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
 #### \<orchestration:master-slave-data-source />
 
-| *Name*              | *Type*   | *Explanation*                                                |
-| ------------------- | -------- | ------------------------------------------------------------ |
-| id                  | Property | ID                                                           |
-| data-source-ref (?) | Property | Orchestrated database id                                     |
-| registry-center-ref | Property | Registry center id                                           |
-| overwrite           | Property | Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations; default means not to overwrite |
+| *Name*              | *Type*    | *Explanation*                                                |
+| ------------------- | --------- | ------------------------------------------------------------ |
+| id                  | Attribute | ID                                                           |
+| data-source-ref (?) | Attribute | Orchestrated database id                                     |
+| registry-center-ref | Attribute | Registry center id                                           |
+| overwrite           | Attribute | Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations; default means not to overwrite |
 
-### Read-Write Split + Data Orchestration
+### Read-Write Split + Orchestration
 
 Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
 #### \<orchestration:sharding-data-source />
 
-| *Name*                  | *Type*    | *Description*                                                |
-| ----------------------- | --------- | ------------------------------------------------------------ |
-| id                      | Property  | ID                                                          |
-| data-source-ref (?)     | Property  | The id of data source to be orchestrated                    |
-| registry-center-ref     | Property  | The id of registry center                                   |
-| overwrite               | Property  | Use local configuration to overwrite registry center or not |
+| *Name*              | *Type*    | *Description*                                               |
+| ------------------- | --------- | ----------------------------------------------------------- |
+| id                  | Attribute | ID                                                          |
+| data-source-ref (?) | Attribute | The id of data source to be orchestrated                    |
+| registry-center-ref | Attribute | The id of registry center                                   |
+| overwrite           | Attribute | Use local configuration to overwrite registry center or not |
 
 ### Orchestration registry center
 
@@ -563,13 +564,13 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 
 #### \<orchestration:registry-center />
 
-| *Name*                             | *Type*   | *Explanation*                                                |
-| ---------------------------------- | -------- | ------------------------------------------------------------ |
-| id                                 | Property | Spring Bean id in registry center                            |
-| server-lists                       | Property | The list of servers that connect to registry center, including IP and port number; use commas to separate addresses, such as: host1:2181,host2:2181 |
-| namespace (?)                      | Property | Registry center namespace                                    |
-| digest (?)                         | Property | The token that connects to the registry center; default means there is no need for authentication |
-| operation-timeout-milliseconds (?) | Property | The millisecond number for operation timeout; default value: 500 milliseconds |
-| max-retries (?)                    | Property | Maximum retry time after failing; default value: 3 times     |
-| retry-interval-milliseconds (?)    | Property | Interval time to retry; default value: 500 milliseconds      |
-| time-to-live-seconds (?)           | Property | Living time of temporary nodes; default value: 60 seconds    |
+| *Name*                             | *Type*    | *Explanation*                                                |
+| ---------------------------------- | --------- | ------------------------------------------------------------ |
+| id                                 | Attribute | Spring Bean id in registry center                            |
+| server-lists                       | Attribute | The list of servers that connect to registry center, including IP and port number; use commas to separate addresses, such as: host1:2181,host2:2181 |
+| namespace (?)                      | Attribute | Registry center namespace                                    |
+| digest (?)                         | Attribute | The token that connects to the registry center; default means there is no need for authentication |
+| operation-timeout-milliseconds (?) | Attribute | The millisecond number for operation timeout; default value: 500 milliseconds |
+| max-retries (?)                    | Attribute | Maximum retry time after failing; default value: 3 times     |
+| retry-interval-milliseconds (?)    | Attribute | Interval time to retry; default value: 500 milliseconds      |
+| time-to-live-seconds (?)           | Attribute | Living time of temporary nodes; default value: 60 seconds    |
