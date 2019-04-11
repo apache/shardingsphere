@@ -23,7 +23,7 @@
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
-      "name": "sharding.jdbc.config.orchestration.registry",
+      "name": "spring.shardingsphere.orchestration.registry",
       "type": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration"
     },
     {
@@ -96,59 +96,59 @@
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
-      "name": "sharding.jdbc.config.orchestration.registry.type",
+      "name": "spring.shardingsphere.orchestration.registry.type",
       "description": "Registry center type.",
       "type": "java.lang.String"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
-      "name": "sharding.jdbc.config.orchestration.registry.server-lists",
+      "name": "spring.shardingsphere.orchestration.registry.server-lists",
       "description": "Registry center server list.",
       "type": "java.lang.String"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
-      "name": "sharding.jdbc.config.orchestration.registry.namespace",
+      "name": "spring.shardingsphere.orchestration.registry.namespace",
       "description": "Namespace of registry center.",
       "type": "java.lang.String"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
-      "name": "sharding.jdbc.config.orchestration.registry.digest",
+      "name": "spring.shardingsphere.orchestration.registry.digest",
       "description": "Digest for registry center.\n \n <p>Default is not need digest<\/p>.",
       "type": "java.lang.String"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
       "defaultValue": 500,
-      "name": "sharding.jdbc.config.orchestration.registry.operation-timeout-milliseconds",
+      "name": "spring.shardingsphere.orchestration.registry.operation-timeout-milliseconds",
       "description": "Operation timeout time in milliseconds.",
       "type": "java.lang.Integer"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
       "defaultValue": 3,
-      "name": "sharding.jdbc.config.orchestration.registry.max-retries",
+      "name": "spring.shardingsphere.orchestration.registry.max-retries",
       "description": "Max number of times to retry.",
       "type": "java.lang.Integer"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
       "defaultValue": 500,
-      "name": "sharding.jdbc.config.orchestration.registry.retry-interval-milliseconds",
+      "name": "spring.shardingsphere.orchestration.registry.retry-interval-milliseconds",
       "description": "Time interval in milliseconds on each retry.",
       "type": "java.lang.Integer"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
       "defaultValue": 500,
-      "name": "sharding.jdbc.config.orchestration.registry.time-to-live-seconds",
+      "name": "spring.shardingsphere.orchestration.registry.time-to-live-seconds",
       "description": "Time to live in seconds of ephemeral keys.",
       "type": "java.lang.Integer"
     },
     {
       "sourceType": "org.apache.shardingsphere.orchestration.yaml.config.YamlRegistryCenterConfiguration",
-      "name": "sharding.jdbc.config.orchestration.registry.props",
+      "name": "spring.shardingsphere.orchestration.registry.props",
       "description": "Registry center other properties.",
       "type": "java.util.Properties"
     },
