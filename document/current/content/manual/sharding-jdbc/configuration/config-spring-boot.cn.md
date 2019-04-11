@@ -316,7 +316,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.props..<proper
 
 sharding.jdbc.config.sharding.orchestration.name= #数据治理实例名称
 sharding.jdbc.config.sharding.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-sharding.jdbc.config.sharding.orchestration.registry.type= #配置中心类型。如:zookeeper
+sharding.jdbc.config.sharding.orchestration.registry.type= #配置中心类型。如：zookeeper
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
 sharding.jdbc.config.sharding.orchestration.registry.namespace= #注册中心的命名空间
 sharding.jdbc.config.sharding.orchestration.registry.digest= #连接注册中心的权限令牌。缺省为不需要权限验证
