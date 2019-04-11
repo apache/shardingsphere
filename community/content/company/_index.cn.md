@@ -22,6 +22,7 @@ chapter = true
 * [义乌购](http://www.yiwugou.com/)
 * [京东商城俄文站](https://www.jd.ru/)
 * [京东商城海外站](https://www.joybuy.com/)
+* [京东云](https://www.jdcloud.com/cn/)
 * 京东大数据与智能供应链
 * [每日优鲜便利购](https://www.imrfresh.com/)
 * [大易有塑](https://www.dayi35.com/)
@@ -99,6 +100,7 @@ chapter = true
 * [超级蓝领网络科技服务有限公司](http://www.chaojilanling.cn/)
 * [北京云庐科技有限公司](http://www.cloudansys.com/)
 * [海典软件](http://www.hydee.cn/)
+* [杭州康帕斯科技有限公司](http://www.compasshz.com/)
 
 ## 政府
 
@@ -132,3 +134,5 @@ chapter = true
 
 * [好未来](http://www.100tal.com/)
 * [开课啦](http://www.kaike.la/)
+* [点石经纬](https://www.okayzhihui.com/)
+

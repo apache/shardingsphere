@@ -22,6 +22,7 @@ The list here will be shown in the registered order.
 * [Yiwugou](http://www.yiwugou.com/)
 * [JD.ru](https://www.jd.ru/)
 * [Joybuy](https://www.joybuy.com/)
+* [JDCloud](https://www.jdcloud.com/cn/)
 * JD’s Big Data and Intelligent Supply Chain Department
 * [Imrfresh](https://www.imrfresh.com/)
 * [Dayi35](https://www.dayi35.com/)
@@ -99,6 +100,7 @@ The list here will be shown in the registered order.
 * [Chaojilanling](http://www.chaojilanling.cn/)
 * [Cloudansys](http://www.cloudansys.com/)
 * [HYDEE](http://www.hydee.cn/)
+* [Compasshz](http://www.compasshz.com/)
 
 ## Government
 
@@ -132,3 +134,4 @@ The list here will be shown in the registered order.
 
 * [TAL](http://www.100tal.com/)
 * [KAIKE.LA](http://www.kaike.la/)
+* [Okayzhihui](https://www.okayzhihui.com/)
