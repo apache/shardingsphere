@@ -162,18 +162,12 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 sharding.jdbc.config.sharding.tables.t_order_item.key-generator.column=order_item_id
 sharding.jdbc.config.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.type=MD5
-sharding.jdbc.config.sharding.tables.t_order_item.encryptor.columns=status
-sharding.jdbc.config.sharding.tables.t_order_encrypt.actual-data-nodes=ds_$->{0..1}.t_order_encrypt_$->{0..1}
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.table-strategy.inline.algorithm-expression=t_order_encrypt_$->{order_id % 2}
-
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.type=QUERY
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.columns=encrypt_id
-sharding.jdbc.config.sharding.tables.t_order_encrypt.encryptor.assistedQueryColumns=query_id
+sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.qualifiedColumns=t_order.order_id
+sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.type=AES
+sharding.jdbc.config.sharding.encryptRule.encryptors.order_encryptor.props.aes.key.value=123456
 ```
 
-### Data Orchestration
+### Orchestration
 
 ```properties
 sharding.jdbc.datasource.names=ds,ds0,ds1
@@ -306,18 +300,18 @@ sharding.jdbc.config.props.check.table.metadata.enabled= #Whether to check meta-
 ### Data Masking
 
 ```properties
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.type= #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES 
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.columns= #Column name of key generator      
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.assistedQueryColumns= #assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-sharding.jdbc.config.sharding.tables.<logic-table-name>.encryptor.props..<property-name>= #Properties, e.g. `aes.key.value` for AES encryptor  
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.type= #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES 
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.qualifiedColumns= #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.assistedQueryColumns= #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+sharding.jdbc.config.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #Properties, e.g. `aes.key.value` for AES encryptor
 ```
 
-### Data Orchestration
+### Orchestration
 
 ```properties
 #Omit data source, data sharding and read-write split configurations
 
-sharding.jdbc.config.sharding.orchestration.name= #Data orchestration instance name
+sharding.jdbc.config.sharding.orchestration.name= #Orchestration instance name
 sharding.jdbc.config.sharding.orchestration.overwrite= #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
 sharding.jdbc.config.sharding.orchestration.registry.type= #Registry center type. Example:zookeeper
 sharding.jdbc.config.sharding.orchestration.registry.server-lists= #The list of servers that connect to registry center, including IP and port number; use commas to separate

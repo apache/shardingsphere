@@ -227,7 +227,7 @@ shardingRule:
 
 Sharding-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and common properties.
 
-### Data Orchestration
+### Orchestration
 
 ```yaml
 #Omit data sharding and read-write split configurations
@@ -290,7 +290,7 @@ masterSlaveRule: #Omit data source configurations; keep it consistent with Shard
 
 ## Overall Configuration Explanation
 
-### Data Orchestration
+### Orchestration
 
 It is the same with Sharding-JDBC configuration.
 

@@ -4,7 +4,7 @@ title = "Orchestration"
 weight = 4
 +++
 
-The use of data orchestration function requires to designate a registry center, in which all the configurations are saved. 
+The use of orchestration function requires to designate a registry center, in which all the configurations are saved. 
 Users can either use local configurations to cover registry center configurations or read configurations from registry center only.
 
 ## Not Use Spring

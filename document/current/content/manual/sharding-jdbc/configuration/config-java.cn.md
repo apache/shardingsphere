@@ -131,9 +131,10 @@ weight = 1
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item, t_order_encrypt");
+        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
+        shardingRuleConfig.setEncryptRuleConfig(getOrderEncryptRuleConfiguration());
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
     
@@ -149,10 +150,12 @@ weight = 1
         return result;
     }
     
-    private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_encrypt", "demo_ds_${0..1}.t_order_encrypt_${[0, 1]}");
-        result.setEncryptorConfig(new EncryptorConfiguration("query", "encrypt_id", "query_id", new Properties()));
-        return result;
+    private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "123456");
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
+        encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -165,10 +168,9 @@ weight = 1
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
         return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
     }
-
 ```
 
-### 数据治理
+### 治理
 
 ```java
     DataSource getDataSource() throws SQLException {
@@ -276,13 +278,13 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
 | props             | Properties                   | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds |  
 
-#### EncryptorConfiguration
+#### EncryptorRuleConfiguration
 
 | *名称*               |*数据类型*                    | *说明*                                                                          |
 | ------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                        |
-| column              | String                       | 加解密器字段                                                                     |
-| assistedQueryColumns| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询              |
+| qualifiedColumns    | String                       | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔                      |
+| assistedQueryColumns| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
 | props               | Properties                   | 属性配置, 比如AES算法的KEY属性：aes.key.value                                      |  
 
 #### PropertiesConstant
@@ -331,37 +333,37 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | check.table.metadata.enabled (?)   | boolean   | 是否在启动时检查分表元数据一致性，默认值: false         |
 
 
-### 数据治理
+### 治理
 
 #### OrchestrationShardingDataSourceFactory
 
-数据分片 + 数据治理的数据源工厂。
+数据分片 + 治理的数据源工厂。
 
 | *名称*               | *数据类型*                  | *说明*                      |
 | ------------------- |  ------------------------- | --------------------------- |
 | dataSourceMap       | Map\<String, DataSource\>  | 同ShardingDataSourceFactory |
 | shardingRuleConfig  | ShardingRuleConfiguration  | 同ShardingDataSourceFactory |
 | props (?)           | Properties                 | 同ShardingDataSourceFactory |
-| orchestrationConfig | OrchestrationConfiguration | 数据治理规则配置              |
+| orchestrationConfig | OrchestrationConfiguration | 治理规则配置              |
 
 #### OrchestrationMasterSlaveDataSourceFactory
 
-读写分离 + 数据治理的数据源工厂。
+读写分离 + 治理的数据源工厂。
 
 | *名称*                 | *数据类型*                    | *说明*                         |
 | --------------------- | ---------------------------- | ------------------------------ |
 | dataSourceMap         | Map\<String, DataSource\>    | 同MasterSlaveDataSourceFactory |
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | 同MasterSlaveDataSourceFactory |
 | props (?)             | Properties                   | 同ShardingDataSourceFactory    |
-| orchestrationConfig   | OrchestrationConfiguration   | 数据治理规则配置                 |
+| orchestrationConfig   | OrchestrationConfiguration   | 治理规则配置                 |
 
 #### OrchestrationConfiguration
 
-数据治理规则配置对象。
+治理规则配置对象。
 
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |
-| name            | String                      | 数据治理实例名称                                             |
+| name            | String                      | 治理实例名称                                             |
 | overwrite       | boolean                     | 本地配置是否覆盖注册中心配置，如果可覆盖，每次启动都以本地配置为准 |
 | regCenterConfig | RegistryCenterConfiguration | 注册中心配置                                                |
 

@@ -330,16 +330,19 @@ Inline expression identifier can can use `${...} ` or `$->{...}`, but the former
     <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
     <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
     
-    <sharding:encryptor id="md5" type="MD5" columns="status" />
-    <sharding:encryptor id="query" type="QUERY" columns="encrypt_id" assisted-query-columns="query_id" />
+    <bean:properties id="dataProtectorProps">
+        <prop key="appToken">business</prop>
+    </bean:properties>
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" encryptor-ref="md5" />
-                <sharding:table-rule logic-table="t_order_encrypt" actual-data-nodes="demo_ds_${0..1}.t_order_encrypt_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderEncryptTableStrategy" encryptor-ref="query" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
+            <sharding:encrypt-rule>
+                <sharding:encryptor-rule id="order_encryptor" type="AES" qualified-columns="t_order.order_id" props-ref="dataProtectorProps" />
+            </sharding:encrypt-rule>
         </sharding:sharding-rule>
         <sharding:props>
             <prop key="sql.show">true</prop>
@@ -399,6 +402,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | default-database-strategy-ref (?) | Attribute | Default database sharding strategy, which corresponds to id of \<sharding:xxx-strategy>; default means the database is not split |
 | default-table-strategy-ref (?)    | Attribute | Default table sharding strategy,which corresponds to id of \<sharding:xxx-strategy>;  default means the database is not split |
 | default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| encrypt-rule (?)                  | Tag       | Encrypt rule                                                 |
 
 #### \<sharding:table-rules />
 
@@ -416,7 +420,6 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | table-strategy-ref (?)    | Attribute | Tables sharding strategy, use default tables sharding strategy if absent |
 | key-generator (?)         | Attribute | Key generator, use default key generator if absent.          |
 | logic-index (?)           | Attribute | Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables |
-| encryptor (?)             | Attribute | Encrypt generator                                            |
 
 #### \<sharding:binding-table-rules />
 
@@ -488,14 +491,14 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE or UUID) can both be selected |
 | props-ref | Attribute | Attribute configuration, such as `worker.id` and `max.tolerate.time.difference.milliseconds` in SNOWFLAKE algorithm |
 
-#### \<sharding:props />
+#### \<sharding:encrypt-rule />
 
-| *Name*               | *Type*    | *Description*                                                |
-| -------------------- | --------- | ------------------------------------------------------------ |
-| type                 | Attribute | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
-| column               | Attribute | Column name of encrypt                                       |
-| assistedQueryColumns | Attribute | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data |
-| props-ref            | Attribute | Properties, e.g. `aes.key.value` for AES encryptor           |
+| *Name*                 | *Type*    | *Description*                                                |
+| ---------------------- | --------- | ------------------------------------------------------------ |
+| type                   | Attribute | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID                                                                  |
+| qualified-columns      | Attribute | Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas|
+| assisted-query-columns | Attribute | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data                                                  |
+| props-ref              | Attribute | Properties, e.g. `aes.key.value` for AES encryptor           |
 
 #### \<sharding:props />
 

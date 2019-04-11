@@ -126,48 +126,50 @@ weight = 1
 
 ```java
     public DataSource getDataSource() throws SQLException {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item, t_order_encrypt");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
-    }
-    
-    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
-        return result;
-    }
-    
-    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
-        return result;
-    }
-    
-    private static TableRuleConfiguration getOrderEncryptTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_encrypt", "demo_ds_${0..1}.t_order_encrypt_${[0, 1]}");
-        result.setEncryptorConfig(new EncryptorConfiguration("query", "encrypt_id", "query_id", new Properties()));
-        return result;
-    }
-    
-    private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
-        result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
-    }
-
+            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+            shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+            shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+            shardingRuleConfig.getTableRuleConfigs().add(getOrderEncryptTableRuleConfiguration());
+            shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+            shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
+            shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
+            shardingRuleConfig.setEncryptRuleConfig(getOrderEncryptRuleConfiguration());
+            return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
+        }
+        
+        private static TableRuleConfiguration getOrderTableRuleConfiguration() {
+            TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
+            result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+            return result;
+        }
+        
+        private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+            TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+            result.setEncryptorConfig(new EncryptorConfiguration("MD5", "status", new Properties()));
+            return result;
+        }
+        
+        private static EncryptRuleConfiguration getOrderEncryptRuleConfiguration() {
+            EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
+            Properties properties = new Properties();
+            properties.setProperty("aes.key.value", "123456");
+            EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("AES", "t_order.order_id", properties);
+            encryptRuleConfiguration.getEncryptorRuleConfigs().put("user_encryptor", encryptorRuleConfiguration);
+        }
+        
+        private static Map<String, DataSource> createDataSourceMap() {
+            Map<String, DataSource> result = new HashMap<>();
+            result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
+            result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+            return result;
+        }
+        
+        private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+            return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+        }
 ```
 
-### Data Orchestration
+### Orchestration
 
 ```java
     DataSource getDataSource() throws SQLException {
@@ -270,13 +272,13 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
 | props             | Properties                   | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`|
 
-#### EncryptorConfiguration
+#### EncryptorRuleConfiguration
 
 | *Name*              | *DataType*                   | *Description*                                                                                        |
 | -----------------   | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
 | type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                               |
-| column              | String                       | Column name of encryptor                                                                             |
-| assistedQueryColumns| String                       | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
+| qualifiedColumns    | String                       | Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas|
+| assistedQueryColumns| String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
 | props               | Properties                   | Properties, e.g. `aes.key.value` for AES encryptor                                                    |
 
 
@@ -321,7 +323,7 @@ Property configuration items, can be of the following properties.
 | max.connections.size.per.query (?) | int         | The maximum connection number allocated by each query of each physical database, default value: 1 |
 | check.table.metadata.enabled (?)   | boolean     | Check meta-data consistency or not in initialization, default value: false |
 
-### Data Orchestration
+### Orchestration
 
 #### OrchestrationShardingDataSourceFactory
 
@@ -330,7 +332,7 @@ Property configuration items, can be of the following properties.
 | dataSourceMap       | Map\<String, DataSource\>  | Same as `ShardingDataSourceFactory`    |
 | shardingRuleConfig  | ShardingRuleConfiguration  | Same as `ShardingDataSourceFactory`    |
 | props (?)           | Properties                 | Same as `ShardingDataSourceFactory`    |
-| orchestrationConfig | OrchestrationConfiguration | Data orchestration rule configurations |
+| orchestrationConfig | OrchestrationConfiguration | Orchestration rule configurations |
 
 #### OrchestrationMasterSlaveDataSourceFactory
 
@@ -340,13 +342,13 @@ Property configuration items, can be of the following properties.
 | masterSlaveRuleConfig | MasterSlaveRuleConfiguration | Same as `MasterSlaveDataSourceFactory` |
 | configMap (?)         | Map<String, Object>          | Same as `MasterSlaveDataSourceFactory` |
 | props (?)             | Properties                   | Same as `ShardingDataSourceFactory`    |
-| orchestrationConfig   | OrchestrationConfiguration   | Data orchestration rule configurations |
+| orchestrationConfig   | OrchestrationConfiguration   | Orchestration rule configurations |
 
 #### OrchestrationConfiguration
 
 | *Name*          | *Data Type*                 | *Explanation*                                                |
 | --------------- | --------------------------- | ------------------------------------------------------------ |
-| name            | String                      | Data orchestration example name                              |
+| name            | String                      | Orchestration example name                              |
 | overwrite       | boolean                     | Local configurations overwrite registry center configurations or not; if they overwrite, each start takes reference of local configurations |
 | regCenterConfig | RegistryCenterConfiguration | Registry center configurations                               |
 
