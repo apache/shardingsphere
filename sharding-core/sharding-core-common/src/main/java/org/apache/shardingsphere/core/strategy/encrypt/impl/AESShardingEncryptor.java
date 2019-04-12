@@ -81,6 +81,7 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     }
     
     private byte[] createSecretKey() {
-        return Arrays.copyOf(DigestUtils.sha1(properties.getProperty(AES_KEY)), 16);
+        Preconditions.checkArgument(null != properties.get(AES_KEY), String.format("%s can not be null.", AES_KEY));
+        return Arrays.copyOf(DigestUtils.sha1(properties.get(AES_KEY).toString()), 16);
     }
 }
