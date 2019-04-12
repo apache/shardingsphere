@@ -32,10 +32,8 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="encryptDataSource">
-        <encrypt:encrypt-rule data-source-name="dbtbl_0">
-            <encrypt:encryptor-rule id="md5" type="MD5" qualified-columns="t_order.order_id" />
-            <encrypt:encryptor-rule id="aes" type="AES" qualified-columns="t_order.user_id" props-ref="props" />
-        </encrypt:encrypt-rule>
+    <encrypt:data-source id="encryptDataSource" data-source-name="dbtbl_0" >
+        <encrypt:encryptor-rule id="order_encryptor" type="MD5" qualified-columns="t_order.order_id" />
+        <encrypt:encryptor-rule id="user_encryptor" type="AES" qualified-columns="t_order.user_id" props-ref="props" />
     </encrypt:data-source>
 </beans>

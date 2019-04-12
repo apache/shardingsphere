@@ -54,15 +54,13 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     }
     
     private RuntimeBeanReference parseDataSource(final Element element) {
-        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
-        String dataSource = encryptRuleElement.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAME_TAG);
+        String dataSource = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAME_TAG);
         return new RuntimeBeanReference(dataSource);
     }
     
     private BeanDefinition parseEncryptRuleConfiguration(final Element element) {
-        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
-        factory.addConstructorArgValue(parseEncryptorRulesConfiguration(encryptRuleElement));
+        factory.addConstructorArgValue(parseEncryptorRulesConfiguration(element));
         return factory.getBeanDefinition();
     }
     
