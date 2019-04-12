@@ -38,7 +38,7 @@
                 <xsd:element ref="table-rules" minOccurs="0" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
                 <xsd:element ref="broadcast-table-rules" minOccurs="0" />
-                <xsd:element ref="encrypt-rule" minOccurs="0" />
+                <xsd:element ref="encrypt-rules" minOccurs="0" />
             </xsd:sequence>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="default-data-source-name" type="xsd:string" />
@@ -145,7 +145,7 @@
             <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="encrypt-rule">
+    <xsd:element name="encrypt-rules">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="encryptor-rule" maxOccurs="unbounded" />
