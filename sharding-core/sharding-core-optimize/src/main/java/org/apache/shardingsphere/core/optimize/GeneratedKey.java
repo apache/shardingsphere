@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +54,7 @@ public final class GeneratedKey {
     
     /**
      * Get generate key.
-     * 
+     *
      * @param shardingRule sharding rule
      * @param parameters SQL parameters
      * @param insertStatement insert statement
@@ -81,32 +82,38 @@ public final class GeneratedKey {
     }
     
     private static Collection<GeneratedKeyCondition> createGeneratedKeyConditions(final ShardingRule shardingRule, final InsertStatement insertStatement) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        if (!generateKeyColumnName.isPresent()) {
+            return Collections.emptyList();
+        }
         Collection<GeneratedKeyCondition> result = new LinkedList<>();
         String tableName = insertStatement.getTables().getSingleTableName();
-        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getColumnValues().size();
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        Collection<String> columnNames = new ArrayList<>(insertStatement.getColumnNames());
-        if (generateKeyColumnName.isPresent() && valuesCount < insertStatement.getColumnNames().size()) {
-            columnNames.remove(generateKeyColumnName.get());
-        }
+        Collection<String> columnNames = getColumnNames(insertStatement, generateKeyColumnName.get());
         for (InsertValue each : insertStatement.getValues()) {
-            Iterator<String> columnNameIterator = columnNames.iterator();
-            for (SQLExpression expression : each.getColumnValues()) {
-                String columnName = columnNameIterator.next();
-                Optional<GeneratedKeyCondition> generatedKeyCondition = createGeneratedKeyCondition(shardingRule, insertStatement, columnName, tableName, expression);
-                if (generatedKeyCondition.isPresent()) {
-                    result.add(generatedKeyCondition.get());
-                }
+            Optional<GeneratedKeyCondition> generatedKeyCondition = getGeneratedKeyCondition(generateKeyColumnName.get(), tableName, columnNames.iterator(), each);
+            if (generatedKeyCondition.isPresent()) {
+                result.add(generatedKeyCondition.get());
             }
         }
         return result;
     }
     
-    private static Optional<GeneratedKeyCondition> createGeneratedKeyCondition(final ShardingRule shardingRule, 
-                                                                        final InsertStatement insertStatement, final String columnName, final String tableName, final SQLExpression sqlExpression) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(columnName)) {
-            return createGeneratedKeyCondition(new Column(columnName, tableName), sqlExpression);
+    private static Collection<String> getColumnNames(final InsertStatement insertStatement, final String generateKeyColumnName) {
+        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getColumnValues().size();
+        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
+        if (valuesCount != insertStatement.getColumnNames().size()) {
+            result.remove(generateKeyColumnName);
+        }
+        return result;
+    }
+    
+    private static Optional<GeneratedKeyCondition> getGeneratedKeyCondition(final String generateKeyColumnName,
+                                                                            final String tableName, final Iterator<String> columnNames, final InsertValue insertValue) {
+        for (SQLExpression expression : insertValue.getColumnValues()) {
+            String columnName = columnNames.next();
+            if (generateKeyColumnName.equalsIgnoreCase(columnName)) {
+                return createGeneratedKeyCondition(new Column(columnName, tableName), expression);
+            }
         }
         return Optional.absent();
     }
