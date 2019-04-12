@@ -232,18 +232,20 @@ cd ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 将源码包、二进制包和sharding-proxy可执行二进制包添加至SVN工作目录。
 
 ```shell
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 ```
 
 ### 生成文件签名
 
 ```shell
-shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip > apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-bin.zip > apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
-shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz > apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip >> apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.sha512
 ```
 
 ### 提交Apache SVN
@@ -258,8 +260,8 @@ svn --username=${APACHE LDAP 用户名} commit -m "release 4.0.0-RC1"
 
 ```shell
 shasum -c apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
-shasum -c apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
-shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.sha512
 ```
 
 ### 检查gpg签名
@@ -278,8 +280,8 @@ gpg --edit-key "${发布人的gpg用户名}"
 
 ```shell
 gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-src.zip.asc apache-shardingsphere-incubating-4.0.0-RC1-src.zip
-gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.asc apache-shardingsphere-incubating-4.0.0-RC1-bin.zip
-gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz
+gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz
+gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz
 ```
 
 ### 检查发布文件内容
@@ -299,7 +301,7 @@ gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.as
 
 #### 检查二进制包的文件内容
 
-解压缩`apache-shardingsphere-incubating-4.0.0-RC1-bin.zip`和`apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz`，进行如下检查:
+解压缩`apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz`和`apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz`，进行如下检查:
 
 - 文件夹包含单词`incubating`
 - 存在`DISCLAIMER`文件

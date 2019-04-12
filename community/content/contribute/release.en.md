@@ -235,18 +235,20 @@ cd ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN working directory.
 
 ```shell
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-basic-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp ~/incubator-shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
 ```
 
 ### Generate sign files
 
 ```shell
-shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip > apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-bin.zip > apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
-shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz > apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip >> apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.sha512
 ```
 
 ### Commit to Apache SVN
@@ -262,8 +264,8 @@ svn --username=${APACHE LDAP username} commit -m "release 4.0.0-RC1"
 
 ```shell
 shasum -c apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
-shasum -c apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.sha512
-shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.sha512
 ```
 
 ### Check gpg Signature
@@ -283,8 +285,8 @@ Then, check the gpg signature.
 
 ```shell
 gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-src.zip.asc apache-shardingsphere-incubating-4.0.0-RC1-src.zip
-gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-bin.zip.asc apache-shardingsphere-incubating-4.0.0-RC1-bin.zip
-gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz
+gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz
+gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz
 ```
 
 ### Check Released Files
@@ -304,7 +306,7 @@ Decompress `apache-shardingsphere-incubating-4.0.0-RC1-src.zip` and check the fo
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-incubating-4.0.0-RC1-bin.zip` and `apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy.tar.gz` to check the following items:
+Decompress `apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz` and `apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz` to check the following items:
 
 *   The release files have the word `incubating` in their name
 *   `DISCLAIMER` file exists
