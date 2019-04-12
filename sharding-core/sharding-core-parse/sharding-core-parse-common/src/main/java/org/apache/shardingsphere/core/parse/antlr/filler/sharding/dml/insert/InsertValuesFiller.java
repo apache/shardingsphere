@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
@@ -37,6 +36,8 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholder
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,12 +55,12 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     @Override
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
-        removeGenerateKeyColumn(insertStatement, sqlSegment.getValues().size());
         AndCondition andCondition = new AndCondition();
-        Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
+        Iterator<String> columnNames = getColumnNames(sqlSegment, insertStatement);
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnNames.next(), each);
+            String columnName = columnNames.next();
+            SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnName, each);
             columnValues.add(columnValue);
         }
         insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
@@ -68,18 +69,19 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
     }
     
-    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valuesCount) {
+    private Iterator<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && valuesCount < insertStatement.getColumnNames().size()) {
-            insertStatement.getColumnNames().remove(generateKeyColumnName.get());
+        if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
+            result.remove(generateKeyColumnName.get());
         }
+        return result.iterator();
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
         SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
         String tableName = insertStatement.getTables().getSingleTableName();
         fillShardingCondition(andCondition, tableName, columnName, result);
-        fillGeneratedKeyCondition(insertStatement, columnName, tableName, result);
         return result;
     }
     
@@ -91,28 +93,5 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
                 throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
             }
         }
-    }
-    
-    private void fillGeneratedKeyCondition(final InsertStatement insertStatement, final String columnName, final String tableName, final SQLExpression sqlExpression) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equalsIgnoreCase(columnName)) {
-            Optional<GeneratedKeyCondition> generatedKeyCondition = createGeneratedKeyCondition(new Column(columnName, tableName), sqlExpression);
-            if (generatedKeyCondition.isPresent()) {
-                insertStatement.getGeneratedKeyConditions().add(generatedKeyCondition.get());
-            }
-        }
-    }
-    
-    private Optional<GeneratedKeyCondition> createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
-            return Optional.of(new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null));
-        }
-        if (sqlExpression instanceof SQLNumberExpression) {
-            return Optional.of(new GeneratedKeyCondition(column, -1, (Comparable<?>) ((SQLNumberExpression) sqlExpression).getNumber()));
-        }
-        if (sqlExpression instanceof SQLTextExpression) {
-            return Optional.of(new GeneratedKeyCondition(column, -1, ((SQLTextExpression) sqlExpression).getText()));
-        }
-        return Optional.absent();
     }
 }

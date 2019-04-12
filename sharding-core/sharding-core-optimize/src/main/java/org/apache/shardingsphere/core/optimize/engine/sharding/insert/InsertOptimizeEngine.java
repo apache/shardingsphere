@@ -131,7 +131,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private boolean isNeededToAppendGeneratedKey() {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
-        return generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get());
+        int valueSize = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getColumnValues().size();
+        return insertStatement.getColumnNames().size() != valueSize || generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get());
     }
     
     private ShardingCondition createShardingCondition(final AndCondition andCondition) {
@@ -150,6 +151,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void fillWithGeneratedKeyName(final InsertOptimizeResult insertOptimizeResult) {
         String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName()).get();
+        insertOptimizeResult.getColumnNames().remove(generateKeyColumnName);
         insertOptimizeResult.getColumnNames().add(generateKeyColumnName);
     }
     
