@@ -158,7 +158,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     }
     
     private void parseEncryptRuleConfiguration(final BeanDefinitionBuilder factory, final Element element) {
-        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_CONFIG_TAG);
+        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.ENCRYPT_RULES_TAG);
         if (null != encryptRuleElement) {
             factory.addPropertyValue("encryptRuleConfig", parseEncryptRuleConfiguration(encryptRuleElement));
         }
