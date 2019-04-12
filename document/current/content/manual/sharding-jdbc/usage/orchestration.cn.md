@@ -118,10 +118,10 @@ orchestration:
 ### 基于Spring boot的规则配置
 
 ```properties
-sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
-sharding.jdbc.config.orchestration.overwrite=false
-sharding.jdbc.config.orchestration.registry.server-lists=localhost:2181
-sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestration
+spring.shardingsphere.orchestration.name=orchestration-sharding-data-source
+spring.shardingsphere.orchestration.overwrite=false
+spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
+spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestration
 ```
 
 ### 基于Spring命名空间的规则配置

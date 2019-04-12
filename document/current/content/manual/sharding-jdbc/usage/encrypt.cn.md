@@ -87,18 +87,18 @@ encryptRule:
 ### 基于Spring boot的规则配置
 
 ```properties
-sharding.jdbc.datasource.name=ds
+spring.shardingsphere.datasource.name=ds
 
-sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
-sharding.jdbc.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
-sharding.jdbc.datasource.ds.url=jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
-sharding.jdbc.datasource.ds.username=root
-sharding.jdbc.datasource.ds.password=
-sharding.jdbc.datasource.ds.max-total=100
+spring.shardingsphere.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
+spring.shardingsphere.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds.url=jdbc:mysql://127.0.0.1:3306/encrypt?serverTimezone=UTC&useSSL=false
+spring.shardingsphere.datasource.ds.username=root
+spring.shardingsphere.datasource.ds.password=
+spring.shardingsphere.datasource.ds.max-total=100
 
-sharding.jdbc.config.encrypt.encryptors.order_encrypt.type=aes
-sharding.jdbc.config.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
-sharding.jdbc.config.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.order_encrypt.type=aes
+spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
+spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
 ```
 
 ### 基于Spring命名空间的规则配置
