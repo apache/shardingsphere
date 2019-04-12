@@ -23,7 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Insert value.
@@ -35,7 +35,7 @@ import java.util.List;
 @ToString
 public final class InsertValue {
     
-    private final List<SQLExpression> columnValues;
+    private final Collection<SQLExpression> columnValues;
     
     /**
      * Get parameters count.
