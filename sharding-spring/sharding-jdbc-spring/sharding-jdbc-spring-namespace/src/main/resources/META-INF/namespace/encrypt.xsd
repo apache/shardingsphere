@@ -23,17 +23,10 @@
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
     <xsd:element name="data-source">
         <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="encrypt-rule" />
-            </xsd:all>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="encrypt-rule">
-        <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="encryptor-rule" maxOccurs="unbounded" />
             </xsd:sequence>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-name" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
