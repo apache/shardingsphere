@@ -123,7 +123,6 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
             insertStatement.getValues().add(insertValue);
             insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        System.out.println(1);
     }
     
     private void skipsDoubleColon() {

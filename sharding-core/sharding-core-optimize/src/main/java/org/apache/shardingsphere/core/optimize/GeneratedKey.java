@@ -21,8 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
@@ -72,27 +70,33 @@ public final class GeneratedKey {
     
     private static Optional<GeneratedKey> findGeneratedKey(final ShardingRule shardingRule, final List<Object> parameters, final InsertStatement insertStatement) {
         GeneratedKey result = null;
-        for (GeneratedKeyCondition each : createGeneratedKeyConditions(shardingRule, insertStatement)) {
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        for (SQLExpression each : findGenerateKeyExpressions(shardingRule, insertStatement)) {
             if (null == result) {
-                result = new GeneratedKey(each.getColumn().getName());
+                result = new GeneratedKey(generateKeyColumnName.get());
             }
-            result.getGeneratedKeys().add(-1 == each.getIndex() ? each.getValue() : (Comparable<?>) parameters.get(each.getIndex()));
+            if (each instanceof SQLPlaceholderExpression) {
+                result.getGeneratedKeys().add((Comparable<?>) parameters.get(((SQLPlaceholderExpression) each).getIndex()));
+            } else if (each instanceof SQLNumberExpression) {
+                result.getGeneratedKeys().add((Comparable<?>) ((SQLNumberExpression) each).getNumber());
+            } else if (each instanceof SQLTextExpression) {
+                result.getGeneratedKeys().add(((SQLTextExpression) each).getText());
+            }
         }
         return Optional.fromNullable(result);
     }
     
-    private static Collection<GeneratedKeyCondition> createGeneratedKeyConditions(final ShardingRule shardingRule, final InsertStatement insertStatement) {
+    private static Collection<SQLExpression> findGenerateKeyExpressions(final ShardingRule shardingRule, final InsertStatement insertStatement) {
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (!generateKeyColumnName.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<GeneratedKeyCondition> result = new LinkedList<>();
-        String tableName = insertStatement.getTables().getSingleTableName();
+        Collection<SQLExpression> result = new LinkedList<>();
         Collection<String> columnNames = getColumnNames(insertStatement, generateKeyColumnName.get());
         for (InsertValue each : insertStatement.getValues()) {
-            Optional<GeneratedKeyCondition> generatedKeyCondition = getGeneratedKeyCondition(generateKeyColumnName.get(), tableName, columnNames.iterator(), each);
-            if (generatedKeyCondition.isPresent()) {
-                result.add(generatedKeyCondition.get());
+            Optional<SQLExpression> generateKeyExpression = findGenerateKeyExpression(generateKeyColumnName.get(), columnNames.iterator(), each);
+            if (generateKeyExpression.isPresent()) {
+                result.add(generateKeyExpression.get());
             }
         }
         return result;
@@ -107,26 +111,12 @@ public final class GeneratedKey {
         return result;
     }
     
-    private static Optional<GeneratedKeyCondition> getGeneratedKeyCondition(final String generateKeyColumnName,
-                                                                            final String tableName, final Iterator<String> columnNames, final InsertValue insertValue) {
+    private static Optional<SQLExpression> findGenerateKeyExpression(final String generateKeyColumnName, final Iterator<String> columnNames, final InsertValue insertValue) {
         for (SQLExpression expression : insertValue.getColumnValues()) {
             String columnName = columnNames.next();
             if (generateKeyColumnName.equalsIgnoreCase(columnName)) {
-                return createGeneratedKeyCondition(new Column(columnName, tableName), expression);
+                return Optional.of(expression);
             }
-        }
-        return Optional.absent();
-    }
-    
-    private static Optional<GeneratedKeyCondition> createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
-            return Optional.of(new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null));
-        }
-        if (sqlExpression instanceof SQLNumberExpression) {
-            return Optional.of(new GeneratedKeyCondition(column, -1, (Comparable<?>) ((SQLNumberExpression) sqlExpression).getNumber()));
-        }
-        if (sqlExpression instanceof SQLTextExpression) {
-            return Optional.of(new GeneratedKeyCondition(column, -1, ((SQLTextExpression) sqlExpression).getText()));
         }
         return Optional.absent();
     }
