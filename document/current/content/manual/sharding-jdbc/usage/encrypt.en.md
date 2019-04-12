@@ -127,11 +127,9 @@ sharding.jdbc.config.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="encryptDataSource">
-        <encrypt:encrypt-rule data-source-name="db">
-            <encrypt:encryptor-rule id="user_encryptor" type="MD5" qualified-columns="t_order.user_id" />
-            <encrypt:encryptor-rule id="order_encryptor" type="AES" qualified-columns="t_order.order_id" props-ref="props" />
-        </encrypt:encrypt-rule>
+    <encrypt:data-source id="encryptDataSource" data-source-name="db" >
+         <encrypt:encryptor-rule id="user_encryptor" type="MD5" qualified-columns="t_order.user_id" />
+         <encrypt:encryptor-rule id="order_encryptor" type="AES" qualified-columns="t_order.order_id" props-ref="props" />
     </encrypt:data-source>
 </beans>
 ```
