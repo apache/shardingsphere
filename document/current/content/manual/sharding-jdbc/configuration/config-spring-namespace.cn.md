@@ -481,7 +481,13 @@ weight = 4
 | type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
 | props-ref         | 属性                          | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds | 
 
-#### \<sharding:encrypt-rule />
+#### \<sharding:encrypt-rules />
+
+| *名称*              | *类型* | *说明*          |
+| -------------------| ----- | --------------- |
+| encryptor-rule (+) | 标签  | 加解密器配置对象   |
+
+#### \<sharding:encryptor-rule />
 | *名称*                 | *类型*                   | *说明*                                                                |
 | --------------------- | ---------------------- | ---------------------------------------------------------------------- |
 | type                  | 属性                    | 加解密器类型，可自定义或选择内置类型：MD5/AES                               |

@@ -491,7 +491,13 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE or UUID) can both be selected |
 | props-ref | Attribute | Attribute configuration, such as `worker.id` and `max.tolerate.time.difference.milliseconds` in SNOWFLAKE algorithm |
 
-#### \<sharding:encrypt-rule />
+#### \<sharding:encrypt-rules />
+
+| *Name*             | *Type* | *Explanation*    |
+| -------------------| ------ | ---------------- |
+| encryptor-rule (+) | Tag    | Encryptor rule   |
+
+#### \<sharding:encryptor-rule />
 
 | *Name*                 | *Type*    | *Description*                                                |
 | ---------------------- | --------- | ------------------------------------------------------------ |
