@@ -44,7 +44,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
-    private PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
+    private final PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
     
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {

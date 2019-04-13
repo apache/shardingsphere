@@ -76,8 +76,8 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     }
     
     private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {
-        SQLExpression[] result = new SQLExpression[insertValue.getColumnValues().size() + getIncrement()];
-        insertValue.getColumnValues().toArray(result);
+        SQLExpression[] result = new SQLExpression[insertValue.getAssignments().size() + getIncrement()];
+        insertValue.getAssignments().toArray(result);
         return result;
     }
     

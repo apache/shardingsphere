@@ -67,7 +67,7 @@ public final class GeneratedKey {
     }
     
     private static boolean isContainsGenerateKeyColumn(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getColumnValues().size();
+        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
         return valuesCount == insertStatement.getColumnNames().size() && insertStatement.getColumnNames().contains(generateKeyColumnName);
     }
     
@@ -101,7 +101,7 @@ public final class GeneratedKey {
     }
     
     private static Collection<String> getColumnNames(final InsertStatement insertStatement, final String generateKeyColumnName) {
-        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getColumnValues().size();
+        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
         Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
         if (valuesCount != insertStatement.getColumnNames().size()) {
             result.remove(generateKeyColumnName);
@@ -110,7 +110,7 @@ public final class GeneratedKey {
     }
     
     private static Optional<SQLExpression> findGenerateKeyExpression(final String generateKeyColumnName, final Iterator<String> columnNames, final InsertValue insertValue) {
-        for (SQLExpression each : insertValue.getColumnValues()) {
+        for (SQLExpression each : insertValue.getAssignments()) {
             String columnName = columnNames.next();
             if (generateKeyColumnName.equalsIgnoreCase(columnName)) {
                 return Optional.of(each);

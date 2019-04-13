@@ -102,8 +102,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {
-        SQLExpression[] result = new SQLExpression[insertValue.getColumnValues().size() + getIncrement()];
-        insertValue.getColumnValues().toArray(result);
+        SQLExpression[] result = new SQLExpression[insertValue.getAssignments().size() + getIncrement()];
+        insertValue.getAssignments().toArray(result);
         return result;
     }
     
@@ -130,7 +130,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private boolean isNeededToAppendGeneratedKey() {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
-        int valueSize = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getColumnValues().size();
+        int valueSize = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
         return insertStatement.getColumnNames().size() != valueSize || generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get());
     }
     
