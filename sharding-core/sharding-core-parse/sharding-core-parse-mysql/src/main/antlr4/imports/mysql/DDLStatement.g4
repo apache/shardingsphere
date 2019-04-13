@@ -144,7 +144,7 @@ alterSpecification_
     | ORDER BY columnName (COMMA_ columnName)*
     | renameColumnSpecification
     | renameIndexSpecification
-    | renameTableSpecification
+    | renameTableSpecification_
     | (WITHOUT | WITH) VALIDATION
     | ADD PARTITION LP_ partitionDefinition_ RP_
     | DROP PARTITION ignoredIdentifiers_
@@ -239,9 +239,13 @@ renameIndexSpecification
     : RENAME (INDEX | KEY) indexName TO indexName
     ;
 
-// TODO hongjun: parse renameTableSpecification and refresh meta, but throw exception if is sharding table
-renameTableSpecification
-    : RENAME (TO | AS)? tableName
+// TODO hongjun: parse renameTableSpecification_ and refresh meta, but throw exception if is sharding table
+renameTableSpecification_
+    : RENAME (TO | AS)? newTableName
+    ;
+
+newTableName
+    : identifier_
     ;
 
 partitionDefinitions_

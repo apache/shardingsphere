@@ -39,8 +39,7 @@ public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        // FIXME judge sqlStatement.getTables().isEmpty() is for rename table, should not extract all table, should extract with correct clauses 
-        if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
+        if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement)) {
             sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
             sqlStatement.getSQLTokens().add(sqlSegment.getToken());
         }
