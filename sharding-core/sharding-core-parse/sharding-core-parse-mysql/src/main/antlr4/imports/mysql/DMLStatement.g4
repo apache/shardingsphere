@@ -43,8 +43,20 @@ onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
+update
+    : UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause?
+    ;
+
+updateSpecification_
+    : LOW_PRIORITY? IGNORE?
+    ;
+
 assignment
     : columnName EQ_ assignmentValue
+    ;
+
+setAssignmentsClause
+    : SET assignment (COMMA_ assignment)*
     ;
 
 assignmentValues
@@ -54,18 +66,6 @@ assignmentValues
 
 assignmentValue
     : expr | DEFAULT
-    ;
-
-setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
-    ;
-
-update
-    : updateClause setAssignmentsClause whereClause?
-    ;
-
-updateClause
-    : UPDATE LOW_PRIORITY? IGNORE? tableReferences
     ;
 
 delete
