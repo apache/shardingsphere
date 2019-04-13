@@ -130,7 +130,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             Column column = new Column(each.getColumn().getName(), tableName);
             SQLExpression expression = each.getValue().getSQLExpression(updateStatement.getLogicSQL());
-            updateStatement.getUpdateColumnValues().put(column, expression);
+            updateStatement.getAssignments().put(column, expression);
             fillEncryptCondition(each, tableName, updateStatement);
         }
     }
@@ -138,7 +138,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final DMLStatement updateStatement) {
         Column column = new Column(assignment.getColumn().getName(), tableName);
         SQLExpression expression = assignment.getValue().getSQLExpression(updateStatement.getLogicSQL());
-        updateStatement.getUpdateColumnValues().put(column, expression);
+        updateStatement.getAssignments().put(column, expression);
         if (shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             updateStatement.getSQLTokens().add(new EncryptColumnToken(assignment.getColumn().getStartIndex(), assignment.getValue().getStopIndex(), column, false));
         }

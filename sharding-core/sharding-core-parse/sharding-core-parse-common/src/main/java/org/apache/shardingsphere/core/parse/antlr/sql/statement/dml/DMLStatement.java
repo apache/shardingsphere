@@ -50,7 +50,7 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private final Map<String, String> updateTableAlias = new HashMap<>();
     
-    private final Map<Column, SQLExpression> updateColumnValues = new LinkedHashMap<>();
+    private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
     
     private int whereStartIndex;
     

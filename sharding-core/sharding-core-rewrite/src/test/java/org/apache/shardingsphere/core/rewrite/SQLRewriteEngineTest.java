@@ -727,7 +727,7 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_z");
         dmlStatement.addSQLToken(new TableToken(7, "table_z", QuoteCharacter.NONE, 0));
         dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        dmlStatement.getUpdateColumnValues().put(column, new SQLNumberExpression(1));
+        dmlStatement.getAssignments().put(column, new SQLNumberExpression(1));
         dmlStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
@@ -746,7 +746,7 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_k");
         dmlStatement.addSQLToken(new TableToken(7, "table_k", QuoteCharacter.NONE, 0));
         dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        dmlStatement.getUpdateColumnValues().put(column, new SQLPlaceholderExpression(0));
+        dmlStatement.getAssignments().put(column, new SQLPlaceholderExpression(0));
         dmlStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
