@@ -111,7 +111,7 @@ public enum RuleName {
     
     JOINED_TABLE("JoinedTable"),
     
-    JOIN_CONDITION("JoinCondition"),
+    JOIN_SPECIFICATION("JoinSpecification"),
     
     ALIAS("Alias"),
     

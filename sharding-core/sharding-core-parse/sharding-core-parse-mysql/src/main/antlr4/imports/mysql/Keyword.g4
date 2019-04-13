@@ -1194,3 +1194,7 @@ INSTANT
 ENFORCED
     : E N F O R C E D
     ;
+
+OJ
+    : O J
+    ;

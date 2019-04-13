@@ -118,7 +118,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
             Preconditions.checkState(tableSegment.isPresent());
             fillTableResult(fromWhereSegment, tableSegment.get());
         }
-        Optional<ParserRuleContext> joinConditionNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.JOIN_CONDITION);
+        Optional<ParserRuleContext> joinConditionNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.JOIN_SPECIFICATION);
         if (!joinConditionNode.isPresent()) {
             return;
         }

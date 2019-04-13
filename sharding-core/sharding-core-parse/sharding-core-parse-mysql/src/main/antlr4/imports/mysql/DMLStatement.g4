@@ -27,10 +27,6 @@ insertSpecification_
     : (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE?
     ;
 
-partitionNames_ 
-    : PARTITION identifier_ (COMMA_ identifier_)*
-    ;
-
 insertValuesClause
     : columnNames? (VALUES | VALUE) assignmentValues (COMMA_ assignmentValues)*
     ;
@@ -77,7 +73,7 @@ deleteSpecification_
     ;
 
 singleTableClause_
-    : FROM tableName AS? alias? partitionNames_?
+    : FROM tableName (AS? alias)? partitionNames_?
     ;
 
 multipleTablesClause_
@@ -113,7 +109,7 @@ selectExprs
     ; 
 
 selectExpr
-    : (columnName | expr) AS? alias? | qualifiedShorthand
+    : (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 alias
@@ -145,26 +141,28 @@ tableReference
     ;
 
 tableFactor
-    : tableName (PARTITION ignoredIdentifiers_)? (AS? alias)? indexHintList_? | subquery AS? alias | LP_ tableReferences RP_
+    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    ;
+
+partitionNames_ 
+    : PARTITION LP_ identifier_ (COMMA_ identifier_)* RP_
     ;
 
 indexHintList_
-    : indexHint_(COMMA_ indexHint_)*
+    : indexHint_ (COMMA_ indexHint_)*
     ;
 
 indexHint_
-    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* LP_ indexName (COMMA_ indexName)* RP_
+    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))? LP_ indexName (COMMA_ indexName)* RP_
     ;
 
 joinedTable
-    : (INNER | CROSS)? JOIN tableFactor joinCondition?
-    | STRAIGHT_JOIN tableFactor
-    | STRAIGHT_JOIN tableFactor joinCondition
-    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinCondition
+    : ((INNER | CROSS)? JOIN | STRAIGHT_JOIN) tableFactor joinSpecification?
+    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinSpecification
     | NATURAL (INNER | (LEFT | RIGHT) (OUTER))? JOIN tableFactor
     ;
 
-joinCondition
+joinSpecification
     : ON expr | USING columnNames
     ;
 
