@@ -28,7 +28,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.Set
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
@@ -52,7 +54,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Setter
-public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
     
@@ -60,7 +62,14 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
     
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
-        InsertStatement insertStatement = (InsertStatement) sqlStatement;
+        if (sqlStatement instanceof InsertStatement) {
+            fillInsert(sqlSegment, (InsertStatement) sqlStatement);
+        } else if (sqlStatement instanceof DMLStatement) {
+            fillUpdate(sqlSegment, (DMLStatement) sqlStatement);
+        }
+    }
+    
+    private void fillInsert(final SetAssignmentsSegment sqlSegment, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             fillColumn(each.getColumn(), insertStatement, tableName);
@@ -113,6 +122,25 @@ public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmen
             } else {
                 throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
             }
+        }
+    }
+    
+    private void fillUpdate(final SetAssignmentsSegment sqlSegment, final DMLStatement updateStatement) {
+        String tableName = updateStatement.getTables().getSingleTableName();
+        for (AssignmentSegment each : sqlSegment.getAssignments()) {
+            Column column = new Column(each.getColumn().getName(), tableName);
+            SQLExpression expression = each.getValue().getSQLExpression(updateStatement.getLogicSQL());
+            updateStatement.getUpdateColumnValues().put(column, expression);
+            fillEncryptCondition(each, tableName, updateStatement);
+        }
+    }
+    
+    private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final DMLStatement updateStatement) {
+        Column column = new Column(assignment.getColumn().getName(), tableName);
+        SQLExpression expression = assignment.getValue().getSQLExpression(updateStatement.getLogicSQL());
+        updateStatement.getUpdateColumnValues().put(column, expression);
+        if (shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+            updateStatement.getSQLTokens().add(new EncryptColumnToken(assignment.getColumn().getStartIndex(), assignment.getValue().getStopIndex(), column, false));
         }
     }
 }

@@ -51,10 +51,10 @@ public final class EncryptColumnTokenAssert {
     }
     
     private void assertEncryptColumnToken(final EncryptColumnToken actual, final ExpectedEncryptColumnToken expected) {
-        if(SQLCaseType.Placeholder == sqlCaseType){
+        if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(assertMessage.getFullAssertMessage("Encrypt column start index for placeholder assertion error: "), actual.getStartIndex(), is(expected.getStartIndexForPlaceholder()));
             assertThat(assertMessage.getFullAssertMessage("Encrypt column stop index for placeholder assertion error: "), actual.getStopIndex(), is(expected.getStopIndexForPlaceholder()));
-        }else {
+        } else {
             assertThat(assertMessage.getFullAssertMessage("Encrypt column start index for literal assertion error: "), actual.getStartIndex(), is(expected.getStartIndexForLiteral()));
             assertThat(assertMessage.getFullAssertMessage("Encrypt column stop index for literal assertion error: "), actual.getStopIndex(), is(expected.getStopIndexForLiteral()));
         }
