@@ -113,7 +113,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     }
     
     protected void fillTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext joinOrTableFactorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        if (!RuleName.JOIN_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
+        if (!RuleName.JOINED_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
             Optional<TableSegment> tableSegment = tableNameExtractor.extract(joinOrTableFactorNode);
             Preconditions.checkState(tableSegment.isPresent());
             fillTableResult(fromWhereSegment, tableSegment.get());

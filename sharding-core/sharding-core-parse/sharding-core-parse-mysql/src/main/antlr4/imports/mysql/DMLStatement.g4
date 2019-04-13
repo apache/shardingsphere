@@ -133,11 +133,15 @@ fromClause
     ;
 
 tableReferences
-    : tableReference (COMMA_ tableReference)*
+    : escapedTableReference_ (COMMA_ escapedTableReference_)*
+    ;
+
+escapedTableReference_
+    : tableReference  | LBE_ OJ tableReference RBE_
     ;
 
 tableReference
-    : (tableFactor joinTable)+ | tableFactor joinTable+ | tableFactor
+    : (tableFactor joinedTable)+ | tableFactor joinedTable+ | tableFactor
     ;
 
 tableFactor
@@ -152,7 +156,7 @@ indexHint_
     : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* LP_ indexName (COMMA_ indexName)* RP_
     ;
 
-joinTable
+joinedTable
     : (INNER | CROSS)? JOIN tableFactor joinCondition?
     | STRAIGHT_JOIN tableFactor
     | STRAIGHT_JOIN tableFactor joinCondition

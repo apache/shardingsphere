@@ -109,7 +109,7 @@ public enum RuleName {
     
     TABLE_FACTOR("TableFactor"),
     
-    JOIN_TABLE("JoinTable"),
+    JOINED_TABLE("JoinedTable"),
     
     JOIN_CONDITION("JoinCondition"),
     
