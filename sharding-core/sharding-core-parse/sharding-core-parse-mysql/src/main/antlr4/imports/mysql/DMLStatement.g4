@@ -69,27 +69,23 @@ assignmentValue
     ;
 
 delete
-    : deleteClause whereClause?
+    : DELETE deleteSpecification_ (singleTableClause_ | multipleTablesClause_) whereClause?
     ;
 
-deleteClause
-    : DELETE LOW_PRIORITY? QUICK? IGNORE? (fromMulti | fromSingle) 
+deleteSpecification_
+    : LOW_PRIORITY? QUICK? IGNORE?
     ;
 
-fromSingle
-    : FROM tableName (PARTITION ignoredIdentifiers_)?
+singleTableClause_
+    : FROM tableName AS? alias? partitionNames_?
     ;
 
-fromMulti
-    : fromMultiTables FROM tableReferences | FROM fromMultiTables USING tableReferences
+multipleTablesClause_
+    : multipleTableNames_ FROM tableReferences | FROM multipleTableNames_ USING tableReferences
     ;
 
-fromMultiTables
-    : fromMultiTable (COMMA_ fromMultiTable)*
-    ;
-
-fromMultiTable
-    : tableName DOT_ASTERISK_?
+multipleTableNames_
+    : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
 select 

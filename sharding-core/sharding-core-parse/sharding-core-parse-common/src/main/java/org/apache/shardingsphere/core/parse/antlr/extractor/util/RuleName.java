@@ -149,11 +149,7 @@ public enum RuleName {
     
     SHOW_PARAM("ShowParam"),
     
-    AUTO_COMMIT_VALUE("AutoCommitValue"),
-    
-    DELETE("Delete"),
-    
-    DELETE_CLAUSE("DeleteClause");
+    AUTO_COMMIT_VALUE("AutoCommitValue");
     
     private final String name;
     
