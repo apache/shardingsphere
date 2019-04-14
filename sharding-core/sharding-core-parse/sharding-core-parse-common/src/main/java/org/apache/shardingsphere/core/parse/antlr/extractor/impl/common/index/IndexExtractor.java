@@ -19,32 +19,26 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
 
 /**
- * Index names extractor.
- *
+ * Index extractor.
+ * 
  * @author duhongjun
  */
-public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor {
-    
-    private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
+public final class IndexExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<IndexSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            Optional<IndexSegment> indexSegment = indexNameExtractor.extract(each);
-            if (indexSegment.isPresent()) {
-                result.add(indexSegment.get());
-            }
-        }
-        return result;
+    public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> indexNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
+        return indexNameNode.isPresent() ? Optional.of(new IndexSegment(getIndexToken(indexNameNode.get()))) : Optional.<IndexSegment>absent();
+    }
+    
+    private IndexToken getIndexToken(final ParserRuleContext indexNameNode) {
+        return new IndexToken(indexNameNode.getStop().getStartIndex(), indexNameNode.getStop().getStopIndex());
     }
 }
