@@ -20,10 +20,11 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.common;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -31,24 +32,28 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * 
  * @author duhongjun
  * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
     
-    @Getter
-    private final TableToken token;
+    private final int startIndex;
+    
+    private final String name;
+    
+    private final QuoteCharacter quoteCharacter;
     
     private String owner;
     
+    private int ownerLength;
+    
     private String alias;
     
-    /**
-     * Get table name.
-     *
-     * @return table name
-     */
-    public String getName() {
-        return token.getTableName();
+    public TableSegment(final int startIndex, final String name) {
+        this.startIndex = startIndex;
+        this.name = SQLUtil.getExactlyValue(name);
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
     
     @Override
@@ -59,6 +64,7 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     @Override
     public final void setOwner(final String owner) {
         this.owner = SQLUtil.getExactlyValue(owner);
+        ownerLength = null == owner ? 0 : owner.length() + Symbol.DOT.getLiterals().length();
     }
     
     @Override

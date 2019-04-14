@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 import java.util.List;
@@ -46,27 +45,20 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
         String nodeText = tableNameNode.get().getText();
         String tableName;
         Optional<String> owner;
-        int ownerLength;
         if (nodeText.contains(Symbol.DOT.getLiterals())) {
             List<String> textValues = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
             tableName = textValues.get(textValues.size() - 1);
             owner = Optional.of(textValues.get(textValues.size() - 2));
-            ownerLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
         } else {
             tableName = nodeText;
             owner = Optional.absent();
-            ownerLength = 0;
         }
-        TableSegment result = new TableSegment(getTableToken(tableNameNode.get(), tableName, ownerLength));
+        TableSegment result = new TableSegment(tableNameNode.get().getStart().getStartIndex(), tableName);
         if (owner.isPresent()) {
             result.setOwner(owner.get());
         }
         setAlias(tableNameNode.get(), result);
         return Optional.of(result);
-    }
-    
-    private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int ownerLength) {
-        return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, ownerLength);
     }
     
     private void setAlias(final ParserRuleContext tableNameNode, final TableSegment tableSegment) {
