@@ -36,7 +36,7 @@ public class YamlConfigurationExample {
     }
     
     private static File getFile() {
-        return new File(Thread.currentThread().getClass().getResource("/META-INF/sharding-databases.yaml").getFile());
+        return new File(Thread.currentThread().getClass().getResource("/META-INF/encrypt-databases.yaml").getFile());
     }
 
     private static CommonService getUserService(final DataSource dataSource) {
