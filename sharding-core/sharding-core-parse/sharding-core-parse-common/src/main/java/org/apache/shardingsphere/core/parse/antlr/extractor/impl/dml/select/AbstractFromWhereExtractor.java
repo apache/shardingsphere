@@ -116,7 +116,6 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         if (!RuleName.JOINED_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
             Optional<TableSegment> tableSegment = tableExtractor.extract(joinOrTableFactorNode);
             Preconditions.checkState(tableSegment.isPresent());
-            fillTableResult(fromWhereSegment, tableSegment.get());
         }
         Optional<ParserRuleContext> joinConditionNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.JOIN_SPECIFICATION);
         if (!joinConditionNode.isPresent()) {
@@ -132,15 +131,6 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
             tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
             fromWhereSegment.getConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
         }
-        fillTableResult(fromWhereSegment, tableJoinResult);
-    }
-    
-    protected void fillTableResult(final FromWhereSegment fromWhereSegment, final TableSegment tableSegment) {
-        String alias = tableSegment.getName();
-        if (tableSegment.getAlias().isPresent()) {
-            alias = tableSegment.getAlias().get();
-        }
-        fromWhereSegment.getTableAliases().put(alias, tableSegment.getName());
     }
     
     private void extractAndFillWhere(final FromWhereSegment fromWhereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
