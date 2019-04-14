@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Column select item segment.
  * 
  * @author zhangliang
  */
+@Setter
 public final class ColumnSelectItemSegment extends ColumnSegment implements SelectItemSegment, AliasAvailable {
     
     private String alias;
@@ -38,10 +39,5 @@ public final class ColumnSelectItemSegment extends ColumnSegment implements Sele
     @Override
     public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

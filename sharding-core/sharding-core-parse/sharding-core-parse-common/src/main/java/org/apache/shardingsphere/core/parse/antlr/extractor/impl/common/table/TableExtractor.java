@@ -57,15 +57,19 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
             schemaName = Optional.absent();
             schemaNameLength = 0;
         }
-        return Optional.of(new TableSegment(getTableToken(tableNameNode.get(), tableName, schemaNameLength), schemaName.orNull(), getTableAlias(tableNameNode.get()).orNull()));
+        TableSegment result = new TableSegment(getTableToken(tableNameNode.get(), tableName, schemaNameLength), schemaName.orNull());
+        setAlias(tableNameNode.get(), result);
+        return Optional.of(result);
     }
     
     private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int schemaNameLength) {
         return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, schemaNameLength);
     }
     
-    private Optional<String> getTableAlias(final ParserRuleContext tableNameNode) {
+    private void setAlias(final ParserRuleContext tableNameNode, final TableSegment tableSegment) {
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.getParent(), RuleName.ALIAS);
-        return aliasNode.isPresent() ? Optional.of(aliasNode.get().getText()) : Optional.<String>absent();
+        if (aliasNode.isPresent()) {
+            tableSegment.setAlias(aliasNode.get().getText());
+        }
     }
 }
