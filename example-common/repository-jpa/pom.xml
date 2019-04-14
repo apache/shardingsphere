@@ -13,6 +13,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
+            <artifactId>config-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere.example</groupId>
             <artifactId>repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
