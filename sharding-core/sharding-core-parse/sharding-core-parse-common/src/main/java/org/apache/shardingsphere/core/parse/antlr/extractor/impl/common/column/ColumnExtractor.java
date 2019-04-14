@@ -41,10 +41,10 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
         if (1 == columnNode.getChildCount()) {
-            return new ColumnSegment(columnNode.getChild(0).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+            return new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getChild(0).getText());
         }
         Preconditions.checkState(3 == columnNode.getChildCount());
-        ColumnSegment result = new ColumnSegment(columnNode.getChild(2).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getChild(2).getText());
         result.setOwner(columnNode.getChild(0).getText());
         return result;
     }

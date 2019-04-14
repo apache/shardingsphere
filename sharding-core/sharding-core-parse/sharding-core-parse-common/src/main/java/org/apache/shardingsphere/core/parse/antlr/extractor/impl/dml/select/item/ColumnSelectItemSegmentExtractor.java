@@ -37,7 +37,7 @@ public final class ColumnSelectItemSegmentExtractor implements OptionalSQLSegmen
             return Optional.absent();
         }
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnNode.getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnNode.getStart().getStartIndex(), columnNode.getText());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());

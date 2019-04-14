@@ -35,18 +35,15 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Getter
 public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvailable {
     
-    private final String name;
-    
     private final int startIndex;
     
-    private final int stopIndex;
+    private final String name;
     
     private String owner;
     
-    public ColumnSegment(final String name, final int startIndex, final int stopIndex) {
-        this.name = SQLUtil.getExactlyValue(name);
+    public ColumnSegment(final int startIndex, final String name) {
         this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
+        this.name = SQLUtil.getExactlyValue(name);
     }
     
     /**
