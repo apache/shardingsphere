@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.delete;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNamesExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TablesExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -43,7 +43,7 @@ public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        for (TableSegment each : new TableNamesExtractor().extract(ancestorNode)) {
+        for (TableSegment each : new TablesExtractor().extract(ancestorNode)) {
             fillTableResult(fromWhereSegment, each);
         }
         if (fromWhereSegment.getTableAliases().isEmpty()) {

@@ -28,19 +28,19 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Table names extractor.
+ * Tables extractor.
  *
  * @author duhongjun
  */
-public final class TableNamesExtractor implements CollectionSQLSegmentExtractor {
+public final class TablesExtractor implements CollectionSQLSegmentExtractor {
     
-    private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
+    private final TableExtractor tableExtractor = new TableExtractor();
     
     @Override
     public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<TableSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            Optional<TableSegment> tableSegment = tableNameExtractor.extract(each);
+            Optional<TableSegment> tableSegment = tableExtractor.extract(each);
             if (tableSegment.isPresent()) {
                 result.add(tableSegment.get());
             }

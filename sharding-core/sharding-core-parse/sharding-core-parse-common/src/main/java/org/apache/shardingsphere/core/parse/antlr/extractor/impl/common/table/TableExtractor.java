@@ -31,12 +31,12 @@ import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import java.util.List;
 
 /**
- *  Table name extractor.
+ *  Table extractor.
  *
  * @author duhongjun
  * @author panjuan
  */
-public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
+public final class TableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<TableSegment> extract(final ParserRuleContext ancestorNode) {

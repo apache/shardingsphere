@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNameExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentExtractor {
     
-    private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
+    private final TableExtractor tableExtractor = new TableExtractor();
     
     private final PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
     
@@ -112,9 +112,9 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         }
     }
     
-    protected void fillTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext joinOrTableFactorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    private void fillTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext joinOrTableFactorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         if (!RuleName.JOINED_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
-            Optional<TableSegment> tableSegment = tableNameExtractor.extract(joinOrTableFactorNode);
+            Optional<TableSegment> tableSegment = tableExtractor.extract(joinOrTableFactorNode);
             Preconditions.checkState(tableSegment.isPresent());
             fillTableResult(fromWhereSegment, tableSegment.get());
         }
@@ -124,7 +124,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         }
         Optional<ParserRuleContext> tableFactorNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.TABLE_FACTOR);
         Preconditions.checkState(tableFactorNode.isPresent());
-        Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode.get());
+        Optional<TableSegment> tableSegment = tableExtractor.extract(tableFactorNode.get());
         Preconditions.checkState(tableSegment.isPresent());
         TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
         Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), placeholderIndexes);
