@@ -36,10 +36,7 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
-        if (columnNode.isPresent()) {
-            return Optional.of(getColumnSegment(columnNode.get()));
-        }
-        return Optional.absent();
+        return columnNode.isPresent() ? Optional.of(getColumnSegment(columnNode.get())) : Optional.<ColumnSegment>absent();
     }
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
