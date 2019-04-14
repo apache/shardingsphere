@@ -24,12 +24,10 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFact
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 
 public class YamlConfigurationExample {
 
-    public static void main(final String[] args) throws SQLException, IOException {
+    public static void main(final String[] args) {
         DataSource dataSource = YamlEncryptDataSourceFactory.createDataSource(getFile());
         CommonService userService = getUserService(dataSource);
         userService.initEnvironment();
