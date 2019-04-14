@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.table.raw.jdbc.fixture;
+package org.apache.shardingsphere.example.fixture;
 
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
