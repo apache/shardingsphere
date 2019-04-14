@@ -20,9 +20,15 @@ package org.apache.shardingsphere.example.common.jpa.entity;
 import org.apache.shardingsphere.example.common.entity.User;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "t_user")
 public final class UserEntity extends User {
     
+    @Id
     @Column(name = "user_id")
     @Override
     public int getUserId() {
