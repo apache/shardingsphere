@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Star select item segment.
@@ -31,12 +32,17 @@ import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 @Getter
 public final class StarSelectItemSegment implements SelectItemSegment, OwnerAvailable {
     
-    private final String owner;
-    
     private final int startIndex;
+    
+    private String owner;
     
     @Override
     public Optional<String> getOwner() {
         return Optional.fromNullable(owner);
+    }
+    
+    @Override
+    public void setOwner(final String owner) {
+        this.owner = SQLUtil.getExactlyValue(owner);
     }
 }

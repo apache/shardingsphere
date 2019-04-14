@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.common;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
@@ -38,7 +37,6 @@ public class TableSegment implements SQLSegment, AliasAvailable {
     
     private final String schemaName;
     
-    @Setter
     private String alias;
     
     public TableSegment(final TableToken token, final String schemaName) {
@@ -64,12 +62,13 @@ public class TableSegment implements SQLSegment, AliasAvailable {
         return Optional.fromNullable(schemaName);
     }
     
-    /**
-     * Get table alias.
-     * 
-     * @return table alias
-     */
-    public Optional<String> getAlias() {
+    @Override
+    public final Optional<String> getAlias() {
         return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public final void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

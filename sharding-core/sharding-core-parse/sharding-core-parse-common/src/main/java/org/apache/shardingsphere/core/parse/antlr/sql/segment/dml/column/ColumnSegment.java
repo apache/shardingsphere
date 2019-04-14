@@ -37,19 +37,14 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     
     private final String name;
     
-    private final String owner;
-    
     private final int startIndex;
     
     private final int stopIndex;
     
-    public ColumnSegment(final String name, final int startIndex, final int stopIndex) {
-        this(name, null, startIndex, stopIndex);
-    }
+    private String owner;
     
-    public ColumnSegment(final String name, final String owner, final int startIndex, final int stopIndex) {
+    public ColumnSegment(final String name, final int startIndex, final int stopIndex) {
         this.name = SQLUtil.getExactlyValue(name);
-        this.owner = SQLUtil.getExactlyValue(owner);
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
     }
@@ -67,9 +62,14 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     public final Optional<String> getOwner() {
         return Optional.fromNullable(owner);
     }
-
+    
     @Override
-    public Condition buildCondition(final Column column, final String sql) {
+    public final void setOwner(final String owner) {
+        this.owner = SQLUtil.getExactlyValue(owner);
+    }
+    
+    @Override
+    public final Condition buildCondition(final Column column, final String sql) {
         throw new RuntimeException("Unsupported right column segment to condition ");
     }
 }
