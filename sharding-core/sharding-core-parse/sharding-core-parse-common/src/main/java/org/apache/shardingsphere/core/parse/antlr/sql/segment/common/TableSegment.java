@@ -19,7 +19,9 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.common;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -30,19 +32,15 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author duhongjun
  * @author panjuan
  */
-@Getter
-public class TableSegment implements SQLSegment, AliasAvailable {
+@RequiredArgsConstructor
+public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
     
+    @Getter
     private final TableToken token;
     
-    private final String schemaName;
+    private String owner;
     
     private String alias;
-    
-    public TableSegment(final TableToken token, final String schemaName) {
-        this.token = token;
-        this.schemaName = SQLUtil.getExactlyValue(schemaName);
-    }
     
     /**
      * Get table name.
@@ -53,13 +51,14 @@ public class TableSegment implements SQLSegment, AliasAvailable {
         return token.getTableName();
     }
     
-    /**
-     * Get schema name.
-     *
-     * @return schema name
-     */
-    public Optional<String> getSchemaName() {
-        return Optional.fromNullable(schemaName);
+    @Override
+    public final Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
+    }
+    
+    @Override
+    public final void setOwner(final String owner) {
+        this.owner = SQLUtil.getExactlyValue(owner);
     }
     
     @Override

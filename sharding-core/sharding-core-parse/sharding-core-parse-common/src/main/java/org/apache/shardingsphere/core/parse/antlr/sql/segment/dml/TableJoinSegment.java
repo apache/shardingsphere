@@ -32,7 +32,8 @@ public final class TableJoinSegment extends TableSegment {
     private final OrConditionSegment joinConditions = new OrConditionSegment();
     
     public TableJoinSegment(final TableSegment parent) {
-        super(parent.getToken(), parent.getSchemaName().orNull());
+        super(parent.getToken());
+        setOwner(parent.getOwner().orNull());
         setAlias(parent.getAlias().orNull());
     }
 }

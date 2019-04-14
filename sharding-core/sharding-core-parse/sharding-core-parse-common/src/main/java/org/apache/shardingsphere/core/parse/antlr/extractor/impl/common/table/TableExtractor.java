@@ -45,25 +45,28 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
         }
         String nodeText = tableNameNode.get().getText();
         String tableName;
-        Optional<String> schemaName;
-        int schemaNameLength;
+        Optional<String> owner;
+        int ownerLength;
         if (nodeText.contains(Symbol.DOT.getLiterals())) {
-            List<String> nodeTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
-            tableName = nodeTextSegments.get(nodeTextSegments.size() - 1);
-            schemaName = Optional.of(nodeTextSegments.get(nodeTextSegments.size() - 2));
-            schemaNameLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
+            List<String> textValues = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
+            tableName = textValues.get(textValues.size() - 1);
+            owner = Optional.of(textValues.get(textValues.size() - 2));
+            ownerLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
         } else {
             tableName = nodeText;
-            schemaName = Optional.absent();
-            schemaNameLength = 0;
+            owner = Optional.absent();
+            ownerLength = 0;
         }
-        TableSegment result = new TableSegment(getTableToken(tableNameNode.get(), tableName, schemaNameLength), schemaName.orNull());
+        TableSegment result = new TableSegment(getTableToken(tableNameNode.get(), tableName, ownerLength));
+        if (owner.isPresent()) {
+            result.setOwner(owner.get());
+        }
         setAlias(tableNameNode.get(), result);
         return Optional.of(result);
     }
     
-    private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int schemaNameLength) {
-        return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, schemaNameLength);
+    private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int ownerLength) {
+        return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, ownerLength);
     }
     
     private void setAlias(final ParserRuleContext tableNameNode, final TableSegment tableSegment) {

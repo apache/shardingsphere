@@ -37,13 +37,13 @@ public final class TableToken extends SQLToken {
     @Getter
     private final QuoteCharacter quoteCharacter;
     
-    private final int schemaNameLength;
+    private final int ownerLength;
     
-    public TableToken(final int startIndex, final String tableName, final int schemaNameLength) {
+    public TableToken(final int startIndex, final String tableName, final int ownerLength) {
         super(startIndex);
         this.tableName = SQLUtil.getExactlyValue(tableName);
         this.quoteCharacter = QuoteCharacter.getQuoteCharacter(tableName);
-        this.schemaNameLength = schemaNameLength;
+        this.ownerLength = ownerLength;
     }
     
     /**
@@ -52,6 +52,6 @@ public final class TableToken extends SQLToken {
      * @return table token length
      */
     public int getLength() {
-        return schemaNameLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
+        return ownerLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
     }
 }
