@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.sql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RemoveToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
@@ -149,7 +150,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
         String literals = lexerEngine.getCurrentToken().getLiterals();
         if (shardingRule.findTableRule(literals).isPresent() || shardingRule.isBroadcastTable(literals)) {
-            dalStatement.addSQLToken(new TableToken(beginPosition, literals, 0));
+            dalStatement.addSQLToken(new TableToken(beginPosition, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
             dalStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), null));
         }
     }

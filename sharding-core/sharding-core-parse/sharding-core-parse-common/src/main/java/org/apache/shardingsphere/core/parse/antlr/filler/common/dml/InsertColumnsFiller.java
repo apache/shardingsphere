@@ -63,7 +63,7 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
         for (ColumnSegment each : sqlSegment.getColumns()) {
             insertStatement.getColumnNames().add(each.getName());
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), tableName, 0));
+                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), tableName, each.getOwnerQuoteCharacter(), 0));
             }
         }
     }

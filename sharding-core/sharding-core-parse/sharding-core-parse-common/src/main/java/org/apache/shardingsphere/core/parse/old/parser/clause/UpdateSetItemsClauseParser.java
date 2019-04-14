@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.old.parser.clause;
 
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
@@ -72,7 +73,7 @@ public final class UpdateSetItemsClauseParser implements SQLClauseParser {
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             if (updateStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                updateStatement.addSQLToken(new TableToken(beginPosition - literals.length(), literals, 0));
+                updateStatement.addSQLToken(new TableToken(beginPosition - literals.length(), literals, QuoteCharacter.getQuoteCharacter(literals), 0));
             }
             lexerEngine.nextToken();
         }

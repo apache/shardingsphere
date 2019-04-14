@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
@@ -84,7 +85,8 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), 0));
+                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
     }
@@ -94,7 +96,8 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), 0));
+                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));

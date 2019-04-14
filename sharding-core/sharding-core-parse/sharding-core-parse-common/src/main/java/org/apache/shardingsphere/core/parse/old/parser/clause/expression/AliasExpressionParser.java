@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.old.parser.clause.expression;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
@@ -67,7 +68,7 @@ public abstract class AliasExpressionParser {
         String literals = lexerEngine.getCurrentToken().getLiterals();
         String alias = SQLUtil.getExactlyValue(literals);
         if (setTableToken && alias.equals(tableName)) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, literals, 0));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
         }
         lexerEngine.nextToken();
         return Optional.of(SQLUtil.getExactlyValue(literals));

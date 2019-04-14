@@ -94,7 +94,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {
         insertStatement.getColumnNames().add(sqlSegment.getName());
         if (sqlSegment.getOwner().isPresent() && tableName.equals(sqlSegment.getOwner().get())) {
-            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, 0));
+            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, sqlSegment.getOwnerQuoteCharacter(), 0));
         }
     }
     

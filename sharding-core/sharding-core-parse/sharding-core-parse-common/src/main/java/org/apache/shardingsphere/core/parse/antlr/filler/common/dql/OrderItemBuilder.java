@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ColumnNameOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -55,9 +56,9 @@ public final class OrderItemBuilder {
         if (orderByItemSegment instanceof ColumnNameOrderByItemSegment) {
             OrderItem result = createOrderItem(selectStatement, (ColumnNameOrderByItemSegment) orderByItemSegment);
             if (result.getOwner().isPresent() && selectStatement.getTables().getTableNames().contains(result.getOwner().get())) {
-                // TODO check if order by `xxx`.xx, maybe has problem
                 String owner = result.getOwner().get();
-                selectStatement.addSQLToken(new TableToken(((ColumnNameOrderByItemSegment) orderByItemSegment).getStartIndex(), owner, 0));
+                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
+                selectStatement.addSQLToken(new TableToken(((ColumnNameOrderByItemSegment) orderByItemSegment).getStartIndex(), owner, QuoteCharacter.getQuoteCharacter(owner), 0));
             }
             return result;
         }
