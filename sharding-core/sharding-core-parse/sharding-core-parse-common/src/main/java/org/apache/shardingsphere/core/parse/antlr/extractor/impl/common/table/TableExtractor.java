@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -62,7 +61,7 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int schemaNameLength) {
-        return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), schemaNameLength);
+        return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, schemaNameLength);
     }
     
     private Optional<String> getTableAlias(final ParserRuleContext tableNameNode) {

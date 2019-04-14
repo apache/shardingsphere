@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
@@ -71,7 +70,7 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
     private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {
         insertStatement.getColumnNames().add(sqlSegment.getName());
         if (sqlSegment.getOwner().isPresent() && tableName.equals(sqlSegment.getOwner().get())) {
-            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), 0));
+            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, 0));
         }
     }
     

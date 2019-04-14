@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.old.parser.clause;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
@@ -174,7 +173,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         } else if (lexerEngine.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
             if (shardingRule.findTableRule(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()) {
-                selectStatement.addSQLToken(new TableToken(position, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
+                selectStatement.addSQLToken(new TableToken(position, literals, 0));
             }
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();

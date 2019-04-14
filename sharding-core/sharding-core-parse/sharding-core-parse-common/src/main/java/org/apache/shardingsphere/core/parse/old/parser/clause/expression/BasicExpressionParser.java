@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.old.parser.clause.expression;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
@@ -133,7 +132,7 @@ public final class BasicExpressionParser {
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
         if (sqlStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(propertyExpr.getOwner().getName()))) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition - owner.length(), owner, QuoteCharacter.getQuoteCharacter(owner), 0));
+            sqlStatement.addSQLToken(new TableToken(beginPosition - owner.length(), owner, 0));
         }
     }
 }
