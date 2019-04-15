@@ -34,11 +34,11 @@ public final class FromWhereExtractor extends AbstractFromWhereExtractor {
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_EXPRS);
-        if (!selectClauseNode.isPresent()) {
+        Optional<ParserRuleContext> selectItemsNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
+        if (!selectItemsNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> fromNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.FROM_CLAUSE);
+        Optional<ParserRuleContext> fromNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectItemsNode.get().getParent(), RuleName.FROM_CLAUSE);
         if (!fromNode.isPresent()) {
             return Optional.absent();
         }

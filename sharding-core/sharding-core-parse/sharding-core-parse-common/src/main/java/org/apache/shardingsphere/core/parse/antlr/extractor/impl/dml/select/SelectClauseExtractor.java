@@ -38,8 +38,8 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
-        ParserRuleContext selectExpressionsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_EXPRS);
-        SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex(), hasDistinct(ancestorNode));
+        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
+        SelectClauseSegment result = new SelectClauseSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), hasDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result);
@@ -56,7 +56,7 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
     }
     
     private void setSelectItemSegment(final ParserRuleContext selectClauseNode, final SelectClauseSegment selectClauseSegment) {
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(selectClauseNode, RuleName.SELECT_EXPR)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(selectClauseNode, RuleName.SELECT_ITEM)) {
             Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract(each);
             if (selectItemSegment.isPresent()) {
                 selectClauseSegment.getSelectItems().add(selectItemSegment.get());
