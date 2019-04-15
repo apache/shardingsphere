@@ -48,7 +48,7 @@ public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtra
         Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
         SubqueryConditionSegment result = new SubqueryConditionSegment();
         for (ParserRuleContext each : suQueryNodes) {
-            Optional<WhereSegment> condition = selectWhereExtractor.extract(each, ancestorNode);
+            Optional<WhereSegment> condition = selectWhereExtractor.extract(each);
             if (condition.isPresent()) {
                 result.getOrConditions().add(condition.get().getConditions());
             }

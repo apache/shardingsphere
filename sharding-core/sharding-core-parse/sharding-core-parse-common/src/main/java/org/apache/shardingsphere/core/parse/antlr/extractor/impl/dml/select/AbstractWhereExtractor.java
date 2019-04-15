@@ -45,17 +45,6 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
     
     @Override
     public final Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
-        return extract(ancestorNode, ancestorNode);
-    }
-    
-    /**
-     * Extract SQL segment from SQL AST.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @param rootNode root node of AST
-     * @return SQL segment
-     */
-    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
         WhereSegment result = new WhereSegment();
         result.setParameterCount(placeholderIndexes.size());
         Optional<ParserRuleContext> whereNode = extractWhere(ancestorNode);
