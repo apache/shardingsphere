@@ -37,10 +37,10 @@ import java.util.Map;
  */
 public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtractor {
     
-    private final PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
+    private final PredicateExtractor predicateExtractor = new PredicateExtractor();
     
     @Override
-    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
+    public final Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
         return extract(ancestorNode, ancestorNode);
     }
     
@@ -57,16 +57,7 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
         result.setParameterCount(placeholderIndexes.size());
         Optional<ParserRuleContext> whereNode = extractWhere(ancestorNode);
         if (whereNode.isPresent()) {
-            result.setWhereStartIndex(whereNode.get().getStart().getStartIndex());
-            result.setWhereStopIndex(whereNode.get().getStop().getStopIndex());
-            if (!placeholderIndexes.isEmpty()) {
-                Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(whereNode.get(), RuleName.QUESTION);
-                if (!questionNodes.isEmpty()) {
-                    int index = placeholderIndexes.get(questionNodes.iterator().next());
-                    result.setWhereParameterStartIndex(index);
-                    result.setWhereParameterEndIndex(index + questionNodes.size() - 1);
-                }
-            }
+            setPropertiesForRevert(result, placeholderIndexes, whereNode.get());
             extractAndFillWhere(result, placeholderIndexes, whereNode.get());
         }
         return Optional.of(result);
@@ -84,6 +75,21 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
     
     protected abstract Optional<ParserRuleContext> extractWhere(ParserRuleContext ancestorNode);
     
+    private void setPropertiesForRevert(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
+        whereSegment.setWhereStartIndex(whereNode.getStart().getStartIndex());
+        whereSegment.setWhereStopIndex(whereNode.getStop().getStopIndex());
+        if (placeholderIndexes.isEmpty()) {
+            return;
+        }
+        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(whereNode, RuleName.QUESTION);
+        if (questionNodes.isEmpty()) {
+            return;
+        }
+        int whereParameterStartIndex = placeholderIndexes.get(questionNodes.iterator().next());
+        whereSegment.setWhereParameterStartIndex(whereParameterStartIndex);
+        whereSegment.setWhereParameterEndIndex(whereParameterStartIndex + questionNodes.size() - 1);
+    }
+    
     private void extractAndFillWhere(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
         Optional<OrConditionSegment> conditions = buildCondition((ParserRuleContext) whereNode.getChild(1), placeholderIndexes);
         if (conditions.isPresent()) {
@@ -93,6 +99,6 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
     
     private Optional<OrConditionSegment> buildCondition(final ParserRuleContext node, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode(node, RuleName.EXPR);
-        return exprNode.isPresent() ? predicateSegmentExtractor.extract(placeholderIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
+        return exprNode.isPresent() ? predicateExtractor.extract(placeholderIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
     }
 }
