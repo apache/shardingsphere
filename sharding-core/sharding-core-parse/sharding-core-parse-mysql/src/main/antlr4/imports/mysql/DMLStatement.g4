@@ -85,7 +85,7 @@ multipleTableNames_
     ;
 
 select 
-    : withClause_? unionSelect
+    : withClause_? unionClause_
     ;
 
 withClause_
@@ -96,7 +96,7 @@ cteClause_
     : ignoredIdentifier_ columnNames? AS subquery
     ;
 
-unionSelect
+unionClause_
     : selectExpression (UNION (ALL | DISTINCT)? selectExpression)*
     ;
 
@@ -199,5 +199,5 @@ windowItem_
     ;
 
 subquery
-    : LP_ unionSelect RP_
+    : LP_ unionClause_ RP_
     ;
