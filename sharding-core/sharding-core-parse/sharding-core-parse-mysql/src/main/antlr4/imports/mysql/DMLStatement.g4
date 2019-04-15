@@ -85,7 +85,15 @@ multipleTableNames_
     ;
 
 select 
-    : unionSelect | withClause_
+    : withClause_? unionSelect
+    ;
+
+withClause_
+    : WITH RECURSIVE? cteClause_ (COMMA_ cteClause_)*
+    ;
+
+cteClause_
+    : ignoredIdentifier_ columnNames? AS subquery
     ;
 
 unionSelect
@@ -196,12 +204,4 @@ windowItem_
 
 subquery
     : LP_ unionSelect RP_
-    ;
-
-withClause_
-    : WITH RECURSIVE? cteClause_ (COMMA_ cteClause_)* unionSelect
-    ;
-
-cteClause_
-    : ignoredIdentifier_ columnNames? AS subquery
     ;
