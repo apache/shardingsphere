@@ -224,6 +224,71 @@ shardingRule:
         loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
+### 数据分片 + 数据脱敏
+
+dataSources:
+
+```yaml
+schemaName: sharding_db
+
+dataSources:
+  ds0: 
+    url: jdbc:mysql://localhost:3306/ds0
+    username: root
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
+  ds1:
+    url: jdbc:mysql://localhost:3306/ds1
+    username: root
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
+
+shardingRule:  
+  tables:
+    t_order: 
+      actualDataNodes: ds${0..1}.t_order${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order${order_id % 2}
+      keyGenerator:
+        columnn: order_id
+    t_order_item:
+      actualDataNodes: ds${0..1}.t_order_item${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item${order_id % 2}  
+  bindingTables:
+    - t_order,t_order_item
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds${user_id % 2}
+  defaultTableStrategy:
+    none:
+  defaultKeyGenerator:
+    type: SNOWFLAKE
+    
+  encryptRule:
+    encryptors:
+      order_encryptor:
+        type: AES
+        qualifiedColumns: t_order.order_id
+        props:
+          aes.key.value: 123456  
+```
+
 ## 全局配置示例
 
 Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
@@ -287,6 +352,20 @@ schemaName: #逻辑数据源名称
 dataSources: #省略数据源配置，与数据分片一致
 
 masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
+```
+
+### 数据脱敏
+```yaml
+dataSources: #省略数据源配置
+shardingRule: #省略分片规则配
+  encryptRule:
+    encryptors:
+      encryptor_name: #加密器名字
+        type: #加解密器类型，可自定义或选择内置类型：MD5/AES
+        qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
+        assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
+        props: #属性配置, 比如AES算法的KEY属性：aes.key.value
+          aes.key.value:
 ```
 
 ## 全局配置项说明

@@ -7,7 +7,7 @@ weight = 1
 
 ## Proxy Initialization
 
-1. Download the latest version of Sharding-Proxy at <https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz>
+1. Download the latest version of Sharding-Proxy.
 2. If users use docker, they can implement `docker pull shardingsphere/sharding-proxy` to get the clone. Please refer to [Docker Clone](/en/manual/sharding-proxy/docker/) for more details.
 3. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and read-write split rules. Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/) for the configuration method.
 4. Please run `bin/start.sh` for Linux operating system; run `bin/start.bat` for Windows operating system to start Sharding-Proxy. To configure start port and document location, please refer to [Quick Start](/en/quick-start/sharding-proxy-quick-start/).

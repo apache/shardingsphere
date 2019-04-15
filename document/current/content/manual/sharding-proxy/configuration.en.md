@@ -223,6 +223,71 @@ shardingRule:
         loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
+### Data Sharding + Data Masking
+
+dataSources:
+
+```yaml
+schemaName: sharding_db
+
+dataSources:
+  ds0: 
+    url: jdbc:mysql://localhost:3306/ds0
+    username: root
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
+  ds1:
+    url: jdbc:mysql://localhost:3306/ds1
+    username: root
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
+
+shardingRule:  
+  tables:
+    t_order: 
+      actualDataNodes: ds${0..1}.t_order${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order${order_id % 2}
+      keyGenerator:
+        columnn: order_id
+    t_order_item:
+      actualDataNodes: ds${0..1}.t_order_item${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item${order_id % 2}  
+  bindingTables:
+    - t_order,t_order_item
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds${user_id % 2}
+  defaultTableStrategy:
+    none:
+  defaultKeyGenerator:
+    type: SNOWFLAKE
+    
+  encryptRule:
+    encryptors:
+      order_encryptor:
+        type: AES
+        qualifiedColumns: t_order.order_id
+        props:
+          aes.key.value: 123456  
+```
+
 ## Overall Configuration Instance
 
 Sharding-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and common properties.
@@ -286,6 +351,20 @@ schemaName: #Logic data schema name
 dataSources: #Omit data source configurations; keep it consistent with data sharding
 
 masterSlaveRule: #Omit data source configurations; keep it consistent with Sharding-JDBC
+```
+
+### Data Masking
+```yaml
+dataSources: #Ignore data sources configuration
+shardingRule:
+  encryptRule:
+    encryptors:
+      encryptor_name: #Encryptor name
+        type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
+        qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
+        assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
+        props: #Properties, e.g. `aes.key.value` for AES encryptor
+          aes.key.value:
 ```
 
 ## Overall Configuration Explanation
