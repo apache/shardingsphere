@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderByS
  */
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     
-    private final WhereExtractor whereExtractor = new WhereExtractor();
+    private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
     
     private final GroupByExtractor groupByExtractor = new GroupByExtractor();
     
@@ -60,7 +60,7 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
         if (selectClauseSegment.isPresent()) {
             result.setSelectClauseSegment(selectClauseSegment.get());
         }
-        Optional<WhereSegment> whereSegment = whereExtractor.extract(subqueryNode);
+        Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode);
         if (whereSegment.isPresent()) {
             result.setWhereSegment(whereSegment.get());
         }

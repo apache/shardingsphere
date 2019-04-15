@@ -34,13 +34,14 @@ import java.util.Collection;
  */
 public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtractor {
     
+    private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
+    
     @Override
     public Optional<SubqueryConditionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
         SubqueryConditionSegment result = new SubqueryConditionSegment();
-        WhereExtractor whereExtractor = new WhereExtractor();
         for (ParserRuleContext each : suQueryNodes) {
-            Optional<WhereSegment> condition = whereExtractor.extract(each, ancestorNode);
+            Optional<WhereSegment> condition = selectWhereExtractor.extract(each, ancestorNode);
             if (condition.isPresent()) {
                 result.getOrConditions().add(condition.get().getConditions());
             }

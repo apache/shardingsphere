@@ -23,11 +23,11 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 
 /**
- * Where extractor.
+ * Where extractor for select.
  *
  * @author duhongjun
  */
-public final class WhereExtractor extends AbstractWhereExtractor {
+public final class SelectWhereExtractor extends AbstractWhereExtractor {
     
     @Override
     protected Optional<ParserRuleContext> extractWhere(final ParserRuleContext ancestorNode) {
