@@ -31,6 +31,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class SpringBootExample {
 
     public static void main(final String[] args) {
+        // TODO :Because of assistedQueryColumns, we need to consider the DDL of encrypt module. Now JPA examples can not run well.
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootExample.class, args)) {
             JPAUserService userService = applicationContext.getBean(JPAUserService.class);
             userService.processSuccess();
