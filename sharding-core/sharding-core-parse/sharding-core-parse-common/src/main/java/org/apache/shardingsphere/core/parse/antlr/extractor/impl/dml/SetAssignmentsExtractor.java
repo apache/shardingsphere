@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -35,10 +36,13 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtractor {
+@Setter
+public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
     
     private final AssignmentExtractor assignmentExtractor = new AssignmentExtractor();
     
+    private Map<ParserRuleContext, Integer> placeholderIndexes;
+            
     @Override
     public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> setAssignmentsClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
@@ -46,7 +50,6 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
             return Optional.absent();
         }
         Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
-        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ancestorNode);
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT)) {
             Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(placeholderIndexes, each);
             if (assignmentSegment.isPresent()) {
@@ -54,15 +57,5 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
             }
         }
         return Optional.of(new SetAssignmentsSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), assignmentSegments));
-    }
-    
-    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
-        int index = 0;
-        for (ParserRuleContext each : placeholderNodes) {
-            result.put(each, index++);
-        }
-        return result;
     }
 }

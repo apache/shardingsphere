@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -27,7 +29,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,9 +36,12 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtractor {
+@Setter
+public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
     
     private final PredicateExtractor predicateExtractor = new PredicateExtractor();
+    
+    private Map<ParserRuleContext, Integer> placeholderIndexes;
     
     @Override
     public final Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
@@ -53,7 +57,6 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
      */
     public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
         WhereSegment result = new WhereSegment();
-        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(rootNode);
         result.setParameterCount(placeholderIndexes.size());
         Optional<ParserRuleContext> whereNode = extractWhere(ancestorNode);
         if (whereNode.isPresent()) {
@@ -61,16 +64,6 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
             extractAndFillWhere(result, placeholderIndexes, whereNode.get());
         }
         return Optional.of(result);
-    }
-    
-    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
-        int index = 0;
-        for (ParserRuleContext each : placeholderNodes) {
-            result.put(each, index++);
-        }
-        return result;
     }
     
     protected abstract Optional<ParserRuleContext> extractWhere(ParserRuleContext ancestorNode);

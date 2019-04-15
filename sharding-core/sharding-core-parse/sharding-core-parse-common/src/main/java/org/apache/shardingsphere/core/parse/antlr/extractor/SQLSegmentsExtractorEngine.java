@@ -18,14 +18,21 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.SQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
+import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.parser.SQLAST;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * SQL segments extractor engine.
@@ -42,16 +49,29 @@ public final class SQLSegmentsExtractorEngine {
      */
     public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
+        Preconditions.checkState(ast.getSQLStatementRule().isPresent());
         for (SQLSegmentExtractor each : ast.getSQLStatementRule().get().getExtractors()) {
+            if (each instanceof PlaceholderIndexesAware) {
+                ((PlaceholderIndexesAware) each).setPlaceholderIndexes(getPlaceholderIndexes(ast.getParserRuleContext()));
+            }
             if (each instanceof OptionalSQLSegmentExtractor) {
                 Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext());
                 if (sqlSegment.isPresent()) {
                     result.add(sqlSegment.get());
                 }
-            }
-            if (each instanceof CollectionSQLSegmentExtractor) {
+            } else if (each instanceof CollectionSQLSegmentExtractor) {
                 result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext()));
             }
+        }
+        return result;
+    }
+    
+    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
+        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
+        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
+        int index = 0;
+        for (ParserRuleContext each : placeholderNodes) {
+            result.put(each, index++);
         }
         return result;
     }
