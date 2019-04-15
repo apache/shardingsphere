@@ -21,9 +21,6 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
-
-import java.util.Map;
 
 /**
  * Where extractor.
@@ -33,7 +30,7 @@ import java.util.Map;
 public final class WhereExtractor extends AbstractWhereExtractor {
     
     @Override
-    protected Optional<ParserRuleContext> extractWhere(final WhereSegment whereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    protected Optional<ParserRuleContext> extractWhere(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> selectItemsNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
         if (!selectItemsNode.isPresent()) {
             return Optional.absent();

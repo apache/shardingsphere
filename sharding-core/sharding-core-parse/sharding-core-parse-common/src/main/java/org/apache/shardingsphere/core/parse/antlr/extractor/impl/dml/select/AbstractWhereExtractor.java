@@ -53,8 +53,9 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
      */
     public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
         WhereSegment result = new WhereSegment();
-        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(result, rootNode);
-        Optional<ParserRuleContext> whereNode = extractWhere(result, ancestorNode, placeholderIndexes);
+        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(rootNode);
+        result.setParameterCount(placeholderIndexes.size());
+        Optional<ParserRuleContext> whereNode = extractWhere(ancestorNode);
         if (whereNode.isPresent()) {
             result.setWhereStartIndex(whereNode.get().getStart().getStartIndex());
             result.setWhereStopIndex(whereNode.get().getStop().getStopIndex());
@@ -71,18 +72,17 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
         return Optional.of(result);
     }
     
-    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final WhereSegment whereSegment, final ParserRuleContext rootNode) {
+    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
         Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
         Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
         int index = 0;
         for (ParserRuleContext each : placeholderNodes) {
             result.put(each, index++);
         }
-        whereSegment.setParameterCount(placeholderNodes.size());
         return result;
     }
     
-    protected abstract Optional<ParserRuleContext> extractWhere(WhereSegment whereSegment, ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);
+    protected abstract Optional<ParserRuleContext> extractWhere(ParserRuleContext ancestorNode);
     
     private void extractAndFillWhere(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
         Optional<OrConditionSegment> conditions = buildCondition((ParserRuleContext) whereNode.getChild(1), placeholderIndexes);

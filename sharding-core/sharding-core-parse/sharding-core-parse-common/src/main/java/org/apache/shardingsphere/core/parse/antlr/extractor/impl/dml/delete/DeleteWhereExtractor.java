@@ -22,9 +22,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
-
-import java.util.Map;
 
 /**
  * Where extractor for delete.
@@ -34,7 +31,7 @@ import java.util.Map;
 public final class DeleteWhereExtractor extends AbstractWhereExtractor {
     
     @Override
-    protected Optional<ParserRuleContext> extractWhere(final WhereSegment whereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    protected Optional<ParserRuleContext> extractWhere(final ParserRuleContext ancestorNode) {
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }
