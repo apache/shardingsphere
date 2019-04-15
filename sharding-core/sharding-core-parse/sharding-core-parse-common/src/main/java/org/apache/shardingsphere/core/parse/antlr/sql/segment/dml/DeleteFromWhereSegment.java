@@ -17,18 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 
-import lombok.Getter;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 /**
  * Delete from Segment.
  *
  * @author duhongjun
  */
 public class DeleteFromWhereSegment extends FromWhereSegment {
-    
-    @Getter
-    private final Set<String> updateTables = new LinkedHashSet<>();
 }
