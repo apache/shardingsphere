@@ -47,14 +47,6 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
     
-    private int whereStartIndex;
-    
-    private int whereStopIndex;
-    
-    private int whereParameterStartIndex;
-    
-    private int whereParameterEndIndex;
-    
     public DMLStatement() {
         super(SQLType.DML);
     }
