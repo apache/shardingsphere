@@ -15,12 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Delete from Segment.
+ * Delete statement.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public class DeleteFromWhereSegment extends FromWhereSegment {
+@ToString(callSuper = true)
+@Getter
+@Setter
+public final class DeleteStatement extends DMLStatement {
+    
+    private int whereStartIndex;
+    
+    private int whereStopIndex;
+    
+    private int whereParameterStartIndex;
+    
+    private int whereParameterEndIndex;
 }

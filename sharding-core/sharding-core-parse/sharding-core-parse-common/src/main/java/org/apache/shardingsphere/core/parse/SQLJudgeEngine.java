@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
@@ -118,7 +119,7 @@ public final class SQLJudgeEngine {
         if (DefaultKeyword.UPDATE == tokenType) {
             return new UpdateStatement();
         }
-        return new DMLStatement();
+        return new DeleteStatement();
     }
     
     private SQLStatement getDDLStatement() {

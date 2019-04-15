@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFi
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -47,6 +48,13 @@ public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, Shar
         while (count < sqlSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();
             count++;
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
+            deleteStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
+            deleteStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
+            deleteStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
+            deleteStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
         }
     }
 }

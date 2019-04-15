@@ -22,7 +22,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 
 import java.util.Map;
@@ -35,7 +34,7 @@ import java.util.Map;
 public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
     
     protected FromWhereSegment createSegment() {
-        return new DeleteFromWhereSegment();
+        return new FromWhereSegment();
     }
     
     @Override
