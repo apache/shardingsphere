@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.Set
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
@@ -63,8 +63,8 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             fillInsert(sqlSegment, (InsertStatement) sqlStatement);
-        } else if (sqlStatement instanceof DMLStatement) {
-            fillUpdate(sqlSegment, (DMLStatement) sqlStatement);
+        } else if (sqlStatement instanceof UpdateStatement) {
+            fillUpdate(sqlSegment, (UpdateStatement) sqlStatement);
         }
     }
     
@@ -124,7 +124,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         }
     }
     
-    private void fillUpdate(final SetAssignmentsSegment sqlSegment, final DMLStatement updateStatement) {
+    private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
         String tableName = updateStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             Column column = new Column(each.getColumn().getName(), tableName);
@@ -134,7 +134,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         }
     }
     
-    private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final DMLStatement updateStatement) {
+    private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
         Column column = new Column(assignment.getColumn().getName(), tableName);
         SQLExpression expression = assignment.getValue().getSQLExpression(updateStatement.getLogicSQL());
         updateStatement.getAssignments().put(column, expression);

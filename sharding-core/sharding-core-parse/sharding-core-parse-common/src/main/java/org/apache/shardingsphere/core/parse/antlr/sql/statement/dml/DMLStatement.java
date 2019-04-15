@@ -25,13 +25,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.AbstractSQLState
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * DML statement.
@@ -44,8 +40,6 @@ import java.util.Map;
 public class DMLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.INSERT, DefaultKeyword.UPDATE, DefaultKeyword.DELETE);
-    
-    private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
     
     public DMLStatement() {
         super(SQLType.DML);

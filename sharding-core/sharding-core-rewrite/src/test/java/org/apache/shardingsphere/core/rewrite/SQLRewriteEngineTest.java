@@ -26,9 +26,10 @@ import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResul
 import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
@@ -90,7 +91,9 @@ public final class SQLRewriteEngineTest {
     
     private DALStatement showTablesStatement;
     
-    private DMLStatement dmlStatement;
+    private UpdateStatement updateStatement;
+    
+    private DeleteStatement deleteStatement;
     
     private Map<String, String> tableTokens;
     
@@ -105,7 +108,8 @@ public final class SQLRewriteEngineTest {
         selectStatement = new SelectStatement();
         insertStatement = new InsertStatement();
         showTablesStatement = new DALStatement();
-        dmlStatement = new DMLStatement();
+        updateStatement = new UpdateStatement();
+        deleteStatement = new DeleteStatement();
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_1");
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(yamlShardingConfig), shardingRule, DatabaseType.H2);
@@ -595,8 +599,8 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithSchemaForUpdate() {
-        dmlStatement.addSQLToken(new TableToken(7, "table_x", QuoteCharacter.NONE, "`sharding_db`".length() + 1));
-        routeResult = new SQLRouteResult(dmlStatement);
+        updateStatement.addSQLToken(new TableToken(7, "table_x", QuoteCharacter.NONE, "`sharding_db`".length() + 1));
+        routeResult = new SQLRouteResult(updateStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_1 SET user_id=1 WHERE order_id=1"));
@@ -604,8 +608,8 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithSchemaForDelete() {
-        dmlStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
-        routeResult = new SQLRouteResult(dmlStatement);
+        deleteStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
+        routeResult = new SQLRouteResult(deleteStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("DELETE FROM `table_1` WHERE user_id=1"));
     }
@@ -725,13 +729,13 @@ public final class SQLRewriteEngineTest {
     @Test
     public void assertUpdateWithShardingEncryptor() {
         Column column = new Column("id", "table_z");
-        dmlStatement.addSQLToken(new TableToken(7, "table_z", QuoteCharacter.NONE, 0));
-        dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        dmlStatement.getAssignments().put(column, new SQLNumberExpression(1));
-        dmlStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
-        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
-        routeResult = new SQLRouteResult(dmlStatement);
+        updateStatement.addSQLToken(new TableToken(7, "table_z", QuoteCharacter.NONE, 0));
+        updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
+        updateStatement.getAssignments().put(column, new SQLNumberExpression(1));
+        updateStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
+        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
+        routeResult = new SQLRouteResult(updateStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
@@ -744,13 +748,13 @@ public final class SQLRewriteEngineTest {
         parameters.add(1);
         parameters.add(5);
         Column column = new Column("id", "table_k");
-        dmlStatement.addSQLToken(new TableToken(7, "table_k", QuoteCharacter.NONE, 0));
-        dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        dmlStatement.getAssignments().put(column, new SQLPlaceholderExpression(0));
-        dmlStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
-        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
-        routeResult = new SQLRouteResult(dmlStatement);
+        updateStatement.addSQLToken(new TableToken(7, "table_k", QuoteCharacter.NONE, 0));
+        updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
+        updateStatement.getAssignments().put(column, new SQLPlaceholderExpression(0));
+        updateStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
+        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
+        routeResult = new SQLRouteResult(updateStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, routeResult, parameters, null);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
