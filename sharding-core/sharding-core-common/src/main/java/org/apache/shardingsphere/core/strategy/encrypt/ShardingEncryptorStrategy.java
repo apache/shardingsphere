@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.strategy.encrypt;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -105,6 +105,9 @@ public final class ShardingEncryptorStrategy {
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn(final String logicTableName, final String columnName) {
+        if (assistedQueryColumns.isEmpty()) {
+            return Optional.absent();
+        }
         for (ColumnNode each : columns) {
             ColumnNode target = new ColumnNode(logicTableName, columnName);
             if (each.equals(target)) {
@@ -145,12 +148,10 @@ public final class ShardingEncryptorStrategy {
      * @return encrypt table names
      */
     public Collection<String> getEncryptTableNames() {
-        return Collections2.transform(columns, new Function<ColumnNode, String>() {
-            
-            @Override
-            public String apply(final ColumnNode input) {
-                return input.getTableName();
-            }
-        });
+        Collection<String> result = new LinkedHashSet<>();
+        for (ColumnNode each : columns) {
+            result.add(each.getTableName());
+        }
+        return result;
     }
 }
