@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.TableJoinSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 
 import java.util.Collection;
@@ -41,8 +36,6 @@ import java.util.Map;
  * @author duhongjun
  */
 public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final TableExtractor tableExtractor = new TableExtractor();
     
     private final PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
     
@@ -94,44 +87,6 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     }
     
     protected abstract Optional<ParserRuleContext> extractTable(FromWhereSegment fromWhereSegment, ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);
-    
-    protected void extractTableReference(final FromWhereSegment fromWhereSegment, final ParserRuleContext tableReferenceNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        for (int i = 0; i < tableReferenceNode.getChildCount(); i++) {
-            if (tableReferenceNode.getChild(i) instanceof TerminalNode) {
-                continue;
-            }
-            ParserRuleContext childNode = (ParserRuleContext) tableReferenceNode.getChild(i);
-            if (RuleName.TABLE_REFERENCES.getName().equals(childNode.getClass().getSimpleName())) {
-                Collection<ParserRuleContext> subTableReferenceNodes = ExtractorUtils.getAllDescendantNodes(childNode, RuleName.TABLE_REFERENCE);
-                for (ParserRuleContext each : subTableReferenceNodes) {
-                    extractTableReference(fromWhereSegment, each, placeholderIndexes);
-                }
-            } else {
-                fillTable(fromWhereSegment, childNode, placeholderIndexes);
-            }
-        }
-    }
-    
-    private void fillTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext joinOrTableFactorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        if (!RuleName.JOINED_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
-            Optional<TableSegment> tableSegment = tableExtractor.extract(joinOrTableFactorNode);
-            Preconditions.checkState(tableSegment.isPresent());
-        }
-        Optional<ParserRuleContext> joinConditionNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.JOIN_SPECIFICATION);
-        if (!joinConditionNode.isPresent()) {
-            return;
-        }
-        Optional<ParserRuleContext> tableFactorNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.TABLE_FACTOR);
-        Preconditions.checkState(tableFactorNode.isPresent());
-        Optional<TableSegment> tableSegment = tableExtractor.extract(tableFactorNode.get());
-        Preconditions.checkState(tableSegment.isPresent());
-        TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
-        Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), placeholderIndexes);
-        if (conditionResult.isPresent()) {
-            tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
-            fromWhereSegment.getConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
-        }
-    }
     
     private void extractAndFillWhere(final FromWhereSegment fromWhereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
         Optional<OrConditionSegment> conditions = buildCondition((ParserRuleContext) whereNode.getChild(1), placeholderIndexes);
