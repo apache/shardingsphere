@@ -38,14 +38,13 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
-        ParserRuleContext selectClauseNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
-        ParserRuleContext selectExpressionsNode = ExtractorUtils.getFirstChildNode(selectClauseNode, RuleName.SELECT_EXPRS);
-        SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex(), hasDistinct(selectClauseNode));
-        Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(selectClauseNode, RuleName.UNQUALIFIED_SHORTHAND);
+        ParserRuleContext selectExpressionsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_EXPRS);
+        SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex(), hasDistinct(ancestorNode));
+        Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result);
         }
-        setSelectItemSegment(selectClauseNode, result);
+        setSelectItemSegment(ancestorNode, result);
         return Optional.of(result);
     }
     

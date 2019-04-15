@@ -85,8 +85,6 @@ public enum RuleName {
     
     ASSIGNMENT("Assignment"),
     
-    SELECT_CLAUSE("SelectClause"),
-    
     SELECT_SPECIFICATION("SelectSpecification"),
     
     SELECT_EXPRS("SelectExprs"),

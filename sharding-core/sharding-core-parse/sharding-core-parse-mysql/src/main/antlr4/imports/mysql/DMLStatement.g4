@@ -101,11 +101,7 @@ unionSelect
     ;
 
 selectExpression
-    : selectClause fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause?
-    ;
-
-selectClause
-    : SELECT selectSpecification selectExprs
+    : SELECT selectSpecification selectExprs fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause?
     ;
 
 selectSpecification
@@ -114,7 +110,7 @@ selectSpecification
 
 selectExprs
     : (unqualifiedShorthand | selectExpr) (COMMA_ selectExpr)*
-    ; 
+    ;
 
 selectExpr
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
