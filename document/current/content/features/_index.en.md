@@ -5,4 +5,4 @@ weight = 3
 chapter = true
 +++
 
-This chapter describe concepts and features about ShardingSphere. More details please reference [User manual](/en/manual/).
+This chapter describes concepts and features about ShardingSphere. Please refer to [User manual](/en/manual/) for more details.
