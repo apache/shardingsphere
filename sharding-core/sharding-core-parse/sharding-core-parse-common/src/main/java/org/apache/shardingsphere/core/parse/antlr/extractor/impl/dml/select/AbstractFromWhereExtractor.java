@@ -52,7 +52,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
      * @return SQL segment
      */
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
-        FromWhereSegment result = createSegment();
+        FromWhereSegment result = new FromWhereSegment();
         Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, placeholderIndexes);
         if (whereNode.isPresent()) {
@@ -80,10 +80,6 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         }
         fromWhereSegment.setParameterCount(placeholderNodes.size());
         return result;
-    }
-    
-    protected FromWhereSegment createSegment() {
-        return new FromWhereSegment();
     }
     
     protected abstract Optional<ParserRuleContext> extractTable(FromWhereSegment fromWhereSegment, ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);

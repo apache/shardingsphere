@@ -27,13 +27,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * From where segment.
+ * Where segment.
  * 
  * @author duhongjun
  */
 @Getter
 @Setter
-public class FromWhereSegment implements SQLSegment {
+public final class FromWhereSegment implements SQLSegment {
     
     private final OrConditionSegment conditions = new OrConditionSegment();
     

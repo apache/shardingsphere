@@ -33,10 +33,6 @@ import java.util.Map;
  */
 public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
     
-    protected FromWhereSegment createSegment() {
-        return new FromWhereSegment();
-    }
-    
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
