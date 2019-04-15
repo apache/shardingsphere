@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 
 import java.util.Collection;
@@ -31,16 +31,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Abstract from where extractor.
+ * Abstract where extractor.
  *
  * @author duhongjun
  */
-public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentExtractor {
+public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtractor {
     
     private final PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
     
     @Override
-    public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
         return extract(ancestorNode, ancestorNode);
     }
     
@@ -51,10 +51,10 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
      * @param rootNode root node of AST
      * @return SQL segment
      */
-    public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
-        FromWhereSegment result = new FromWhereSegment();
+    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
+        WhereSegment result = new WhereSegment();
         Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(result, rootNode);
-        Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, placeholderIndexes);
+        Optional<ParserRuleContext> whereNode = extractWhere(result, ancestorNode, placeholderIndexes);
         if (whereNode.isPresent()) {
             result.setWhereStartIndex(whereNode.get().getStart().getStartIndex());
             result.setWhereStopIndex(whereNode.get().getStop().getStopIndex());
@@ -71,23 +71,23 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         return Optional.of(result);
     }
     
-    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final FromWhereSegment fromWhereSegment, final ParserRuleContext rootNode) {
+    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final WhereSegment whereSegment, final ParserRuleContext rootNode) {
         Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
         Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
         int index = 0;
         for (ParserRuleContext each : placeholderNodes) {
             result.put(each, index++);
         }
-        fromWhereSegment.setParameterCount(placeholderNodes.size());
+        whereSegment.setParameterCount(placeholderNodes.size());
         return result;
     }
     
-    protected abstract Optional<ParserRuleContext> extractTable(FromWhereSegment fromWhereSegment, ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);
+    protected abstract Optional<ParserRuleContext> extractWhere(WhereSegment whereSegment, ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);
     
-    private void extractAndFillWhere(final FromWhereSegment fromWhereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
+    private void extractAndFillWhere(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
         Optional<OrConditionSegment> conditions = buildCondition((ParserRuleContext) whereNode.getChild(1), placeholderIndexes);
         if (conditions.isPresent()) {
-            fromWhereSegment.getConditions().getAndConditions().addAll(conditions.get().getAndConditions());
+            whereSegment.getConditions().getAndConditions().addAll(conditions.get().getAndConditions());
         }
     }
     

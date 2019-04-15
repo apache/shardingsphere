@@ -19,22 +19,22 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.delete;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractFromWhereExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 
 import java.util.Map;
 
 /**
- * Delete from extractor.
+ * Where extractor for delete.
  *
  * @author duhongjun
  */
-public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
+public final class DeleteWhereExtractor extends AbstractWhereExtractor {
     
     @Override
-    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    protected Optional<ParserRuleContext> extractWhere(final WhereSegment whereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }

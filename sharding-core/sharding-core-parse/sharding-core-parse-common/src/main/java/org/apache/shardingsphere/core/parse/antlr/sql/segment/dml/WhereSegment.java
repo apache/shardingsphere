@@ -33,7 +33,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class FromWhereSegment implements SQLSegment {
+public final class WhereSegment implements SQLSegment {
     
     private final OrConditionSegment conditions = new OrConditionSegment();
     

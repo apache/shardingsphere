@@ -15,33 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.update;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 
 import java.util.Map;
 
 /**
- * From where extractor.
+ * Where extractor for update.
  *
  * @author duhongjun
  */
-public final class FromWhereExtractor extends AbstractFromWhereExtractor {
+public final class UpdateWhereExtractor extends AbstractWhereExtractor {
     
     @Override
-    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        Optional<ParserRuleContext> selectItemsNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
-        if (!selectItemsNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<ParserRuleContext> fromNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectItemsNode.get().getParent(), RuleName.FROM_CLAUSE);
-        if (!fromNode.isPresent()) {
-            return Optional.absent();
-        }
-        return ExtractorUtils.findFirstChildNodeNoneRecursive(fromNode.get().getParent(), RuleName.WHERE_CLAUSE);
+    protected Optional<ParserRuleContext> extractWhere(final WhereSegment whereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+        return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }

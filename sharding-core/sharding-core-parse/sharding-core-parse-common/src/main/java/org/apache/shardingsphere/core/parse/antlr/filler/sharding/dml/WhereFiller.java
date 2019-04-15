@@ -23,26 +23,26 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * From where filler.
+ * Where filler.
  *
  * @author duhongjun
  */
 @Getter
 @Setter
-public class FromWhereFiller implements SQLSegmentFiller<FromWhereSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public class WhereFiller implements SQLSegmentFiller<WhereSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
     
     private ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
         new OrConditionFiller(shardingRule, shardingTableMetaData).fill(sqlSegment.getConditions(), sqlStatement);
         int count = 0;
         while (count < sqlSegment.getParameterCount()) {
