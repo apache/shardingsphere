@@ -21,7 +21,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWher
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
 
 /**
  * Delete from where filler.
@@ -35,9 +34,6 @@ public class DeleteFromWhereFiller extends FromWhereFiller {
         super.fill(sqlSegment, sqlStatement);
         DeleteFromWhereSegment deleteFromWhereSegment = (DeleteFromWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
-        if (!dmlStatement.getTables().isSingleTable()) {
-            throw new SQLParsingUnsupportedException("Cannot support Multiple-Table.");
-        }
         dmlStatement.setDeleteStatement(true);
         dmlStatement.setWhereStartIndex(deleteFromWhereSegment.getWhereStartIndex());
         dmlStatement.setWhereStopIndex(deleteFromWhereSegment.getWhereStopIndex());
