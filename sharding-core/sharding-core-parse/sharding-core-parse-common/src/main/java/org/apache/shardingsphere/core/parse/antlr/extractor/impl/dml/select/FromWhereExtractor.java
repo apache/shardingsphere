@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -42,13 +41,6 @@ public final class FromWhereExtractor extends AbstractFromWhereExtractor {
         Optional<ParserRuleContext> fromNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.FROM_CLAUSE);
         if (!fromNode.isPresent()) {
             return Optional.absent();
-        }
-        Collection<ParserRuleContext> tableReferenceNodes = ExtractorUtils.getAllDescendantNodes(fromNode.get(), RuleName.TABLE_REFERENCE);
-        if (tableReferenceNodes.isEmpty()) {
-            return Optional.absent();
-        }
-        for (ParserRuleContext each : tableReferenceNodes) {
-            extractTableReference(fromWhereSegment, each, placeholderIndexes);
         }
         return ExtractorUtils.findFirstChildNodeNoneRecursive(fromNode.get().getParent(), RuleName.WHERE_CLAUSE);
     }
