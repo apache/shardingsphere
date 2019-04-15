@@ -44,7 +44,6 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
         if (!tableReferenceNode.isPresent()) {
             return Optional.absent();
         }
-        extractTableReference(fromWhereSegment, tableReferenceNode.get(), placeholderIndexes);
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }

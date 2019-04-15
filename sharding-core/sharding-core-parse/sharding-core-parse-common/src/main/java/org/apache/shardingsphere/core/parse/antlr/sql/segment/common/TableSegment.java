@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.common;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author panjuan
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
     
@@ -51,9 +49,13 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     private String alias;
     
     public TableSegment(final int startIndex, final String name) {
+        this(startIndex, name, QuoteCharacter.getQuoteCharacter(name));
+    }
+    
+    public TableSegment(final int startIndex, final String name, final QuoteCharacter quoteCharacter) {
         this.startIndex = startIndex;
         this.name = SQLUtil.getExactlyValue(name);
-        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
+        this.quoteCharacter = quoteCharacter;
     }
     
     @Override

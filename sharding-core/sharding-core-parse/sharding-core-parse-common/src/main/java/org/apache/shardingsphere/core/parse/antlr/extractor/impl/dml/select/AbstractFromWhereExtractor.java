@@ -55,7 +55,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
      * Extract SQL segment from SQL AST.
      *
      * @param ancestorNode ancestor node of AST
-     * @param rootNode     root node of AST
+     * @param rootNode root node of AST
      * @return SQL segment
      */
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {

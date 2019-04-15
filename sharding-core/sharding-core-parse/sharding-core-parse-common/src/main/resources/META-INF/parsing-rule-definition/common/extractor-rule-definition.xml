@@ -30,6 +30,7 @@
     <extractor-rule id="insertValues" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertValuesExtractor" />
     <extractor-rule id="setAssignments" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.SetAssignmentsExtractor" />
     <extractor-rule id="onDuplicateKeyColumns" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.OnDuplicateKeyColumnsExtractor" />
+    <extractor-rule id="tableReferences" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.TableReferencesExtractor" />
     <extractor-rule id="selectClause" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SelectClauseExtractor" />
     <extractor-rule id="fromWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.FromWhereExtractor" />
     <extractor-rule id="updateSetWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.update.UpdateSetWhereExtractor" />
