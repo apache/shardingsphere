@@ -34,7 +34,6 @@ public class DeleteFromWhereFiller extends FromWhereFiller {
         super.fill(sqlSegment, sqlStatement);
         DeleteFromWhereSegment deleteFromWhereSegment = (DeleteFromWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
-        dmlStatement.setDeleteStatement(true);
         dmlStatement.setWhereStartIndex(deleteFromWhereSegment.getWhereStartIndex());
         dmlStatement.setWhereStopIndex(deleteFromWhereSegment.getWhereStopIndex());
         dmlStatement.setWhereParameterStartIndex(deleteFromWhereSegment.getWhereParameterStartIndex());

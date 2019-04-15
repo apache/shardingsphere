@@ -45,8 +45,6 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.INSERT, DefaultKeyword.UPDATE, DefaultKeyword.DELETE);
     
-    private boolean deleteStatement;
-    
     private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
     
     private int whereStartIndex;

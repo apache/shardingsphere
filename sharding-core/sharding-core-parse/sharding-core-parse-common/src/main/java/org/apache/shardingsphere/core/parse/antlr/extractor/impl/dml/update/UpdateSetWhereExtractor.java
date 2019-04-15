@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.Abst
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment;
 
 import java.util.Map;
 
@@ -33,10 +32,6 @@ import java.util.Map;
  * @author duhongjun
  */
 public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
-    
-    protected FromWhereSegment createSegment() {
-        return new UpdateSetWhereSegment();
-    }
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {

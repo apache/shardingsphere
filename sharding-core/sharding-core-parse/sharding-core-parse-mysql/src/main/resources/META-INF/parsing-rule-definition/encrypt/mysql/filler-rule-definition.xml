@@ -21,6 +21,5 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.EncryptFromWhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.insert.EncryptInsertValuesFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.EncryptSetAssignmentsFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.UpdateSetWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.EncryptUpdateSetWhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.EncryptDeleteFromWhereFiller" />
 </filler-rule-definition>

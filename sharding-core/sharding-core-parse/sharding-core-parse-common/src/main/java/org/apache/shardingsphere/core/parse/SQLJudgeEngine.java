@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
@@ -113,6 +114,9 @@ public final class SQLJudgeEngine {
     private SQLStatement getDMLStatement(final TokenType tokenType) {
         if (DefaultKeyword.INSERT == tokenType) {
             return new InsertStatement();
+        }
+        if (DefaultKeyword.UPDATE == tokenType) {
+            return new UpdateStatement();
         }
         return new DMLStatement();
     }

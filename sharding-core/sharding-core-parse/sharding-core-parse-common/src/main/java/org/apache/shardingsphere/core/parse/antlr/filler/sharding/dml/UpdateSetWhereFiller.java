@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 
 /**
  * Update set where filler.
@@ -31,6 +30,5 @@ public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
     @Override
     public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement) {
         super.fill(sqlSegment, sqlStatement);
-        ((DMLStatement) sqlStatement).setDeleteStatement(false);
     }
 }

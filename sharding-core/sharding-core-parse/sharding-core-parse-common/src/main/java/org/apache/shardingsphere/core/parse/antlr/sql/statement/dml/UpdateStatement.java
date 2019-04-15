@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Update set segment.
+ * Update statement.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class UpdateSetWhereSegment extends DeleteFromWhereSegment {
+@ToString(callSuper = true)
+@Getter
+@Setter
+public final class UpdateStatement extends DMLStatement {
+    
+    private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
 }
