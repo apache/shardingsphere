@@ -215,8 +215,8 @@
         <assertion expected-data-file="select_with_item_alias_match_order_by_and_group_by_items.xml" />
     </dql-test-case>
     
-    <dql-test-case sql-case-id="select_group_by_with_key_word_alias">
-        <assertion expected-data-file="select_group_by_with_key_word_alias.xml" />
+    <dql-test-case sql-case-id="select_group_by_with_keyword_alias">
+        <assertion expected-data-file="select_group_by_with_keyword_alias.xml" />
     </dql-test-case>
 
     <dql-test-case sql-case-id="select_group_by_with_count_without_column_name">
