@@ -37,7 +37,7 @@ import java.util.Collection;
 @ToString(callSuper = true)
 @Getter
 @Setter
-public class DMLStatement extends AbstractSQLStatement {
+public abstract class DMLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.INSERT, DefaultKeyword.UPDATE, DefaultKeyword.DELETE);
     
