@@ -71,4 +71,11 @@ public final class ShardingEncryptorStrategyTest {
         assertThat(actual.getAssistedQueryColumnCount("test"), is(0));
         assertThat(actual.getAssistedQueryColumnCount("test1"), is(0));
     }
+    
+    @Test
+    public void assertGetEncryptTableNames() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", "test.pwd1_index,test.pwd2_index", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getEncryptTableNames().size(), is(1));
+    }
 }
