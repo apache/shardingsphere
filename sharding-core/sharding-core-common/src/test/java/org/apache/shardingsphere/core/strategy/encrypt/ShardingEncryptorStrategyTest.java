@@ -49,4 +49,26 @@ public final class ShardingEncryptorStrategyTest {
         ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
         assertThat(actual.getAssistedQueryColumn("test", "pwd1"), is(Optional.of("pwd1_index")));
     }
+    
+    @Test
+    public void assertGetAssistedQueryColumnWithoutResult() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getAssistedQueryColumn("test", "pwd1"), is(Optional.<String>absent()));
+    }
+    
+    @Test
+    public void assertGetAssistedQueryCount() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", "test.pwd1_index,test.pwd2_index", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getAssistedQueryColumnCount("test"), is(2));
+    }
+    
+    @Test
+    public void assertGetAssistedQueryColumnCountWithoutResult() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getAssistedQueryColumnCount("test"), is(0));
+        assertThat(actual.getAssistedQueryColumnCount("test1"), is(0));
+    }
 }
