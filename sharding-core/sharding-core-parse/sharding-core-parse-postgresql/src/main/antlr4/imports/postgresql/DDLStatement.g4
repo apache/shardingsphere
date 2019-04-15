@@ -36,7 +36,7 @@ createTable
     ;
 
 alterTable
-    : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification
+    : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification_
     ;
 
 truncateTable
@@ -193,8 +193,12 @@ alterTableNameExists
     : ALTER TABLE (IF EXISTS)? tableName
     ;
 
-renameTableSpecification
-    : RENAME TO tableName
+renameTableSpecification_
+    : RENAME TO newTableName
+    ;
+
+newTableName
+    : IDENTIFIER_
     ;
 
 usingIndexType

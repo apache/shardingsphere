@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SQLRightValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
@@ -35,23 +36,17 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Getter
 public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvailable {
     
-    private final String name;
-    
-    private final String owner;
-    
     private final int startIndex;
     
-    private final int stopIndex;
+    private final String name;
     
-    public ColumnSegment(final String name, final int startIndex, final int stopIndex) {
-        this(name, null, startIndex, stopIndex);
-    }
+    private String owner;
     
-    public ColumnSegment(final String name, final String owner, final int startIndex, final int stopIndex) {
-        this.name = SQLUtil.getExactlyValue(name);
-        this.owner = SQLUtil.getExactlyValue(owner);
+    private QuoteCharacter ownerQuoteCharacter = QuoteCharacter.NONE;
+    
+    public ColumnSegment(final int startIndex, final String name) {
         this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
+        this.name = SQLUtil.getExactlyValue(name);
     }
     
     /**
@@ -67,9 +62,15 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     public final Optional<String> getOwner() {
         return Optional.fromNullable(owner);
     }
-
+    
     @Override
-    public Condition buildCondition(final Column column, final String sql) {
+    public final void setOwner(final String owner) {
+        this.owner = SQLUtil.getExactlyValue(owner);
+        ownerQuoteCharacter = QuoteCharacter.getQuoteCharacter(owner);
+    }
+    
+    @Override
+    public final Condition buildCondition(final Column column, final String sql) {
         throw new RuntimeException("Unsupported right column segment to condition ");
     }
 }

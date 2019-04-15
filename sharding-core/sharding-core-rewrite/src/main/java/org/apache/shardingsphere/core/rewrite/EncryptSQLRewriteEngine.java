@@ -299,7 +299,7 @@ public final class EncryptSQLRewriteEngine {
     
     private List<Comparable<?>> getOriginalColumnValuesFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         List<Comparable<?>> result = new LinkedList<>();
-        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getAssignments().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             result.add(parameters.get(((SQLPlaceholderExpression) sqlExpression).getIndex()).toString());
         } else if (sqlExpression instanceof SQLTextExpression) {
@@ -311,7 +311,7 @@ public final class EncryptSQLRewriteEngine {
     }
     
     private Map<Integer, Integer> getPositionIndexesFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
-        SQLExpression result = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        SQLExpression result = ((DMLStatement) sqlStatement).getAssignments().get(encryptColumnToken.getColumn());
         if (result instanceof SQLPlaceholderExpression) {
             return Collections.singletonMap(0, ((SQLPlaceholderExpression) result).getIndex());
         }
@@ -329,7 +329,7 @@ public final class EncryptSQLRewriteEngine {
     }
     
     private boolean isUsingParameters(final EncryptColumnToken encryptColumnToken) {
-        return ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn()) instanceof SQLPlaceholderExpression;
+        return ((DMLStatement) sqlStatement).getAssignments().get(encryptColumnToken.getColumn()) instanceof SQLPlaceholderExpression;
     }
     
     private int getEncryptAssistedParameterIndex(final EncryptColumnToken encryptColumnToken) {

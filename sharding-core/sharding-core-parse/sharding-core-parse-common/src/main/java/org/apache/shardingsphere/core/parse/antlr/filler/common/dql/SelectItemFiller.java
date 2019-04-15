@@ -85,6 +85,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
+                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
                 selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
@@ -95,6 +96,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
+                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
                 selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }

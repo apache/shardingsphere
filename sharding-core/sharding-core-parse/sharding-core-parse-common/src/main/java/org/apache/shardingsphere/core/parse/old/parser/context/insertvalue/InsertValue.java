@@ -35,7 +35,7 @@ import java.util.Collection;
 @ToString
 public final class InsertValue {
     
-    private final Collection<SQLExpression> columnValues;
+    private final Collection<SQLExpression> assignments;
     
     /**
      * Get parameters count.
@@ -44,7 +44,7 @@ public final class InsertValue {
      */
     public int getParametersCount() {
         int result = 0;
-        for (SQLExpression each : columnValues) {
+        for (SQLExpression each : assignments) {
             if (each instanceof SQLPlaceholderExpression) {
                 result++;
             }

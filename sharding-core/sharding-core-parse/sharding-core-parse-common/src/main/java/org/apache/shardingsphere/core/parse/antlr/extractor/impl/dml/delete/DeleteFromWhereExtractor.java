@@ -19,14 +19,11 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.delete;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNamesExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.DeleteFromWhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
 
 import java.util.Map;
 
@@ -43,15 +40,6 @@ public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        for (TableSegment each : new TableNamesExtractor().extract(ancestorNode)) {
-            fillTableResult(fromWhereSegment, each);
-        }
-        if (fromWhereSegment.getTableAliases().isEmpty()) {
-            return Optional.absent();
-        }
-        if (1 < fromWhereSegment.getTableAliases().size()) {
-            throw new SQLParsingUnsupportedException("Cannot support Multiple-Table.");
-        }
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }

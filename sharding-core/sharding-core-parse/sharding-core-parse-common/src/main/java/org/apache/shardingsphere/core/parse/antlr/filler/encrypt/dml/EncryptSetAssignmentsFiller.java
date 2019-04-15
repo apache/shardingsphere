@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,16 +42,26 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment> {
+@Setter
+public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment>, EncryptRuleAwareFiller {
+    
+    private EncryptRule encryptRule;
     
     @Override
     public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
-        InsertStatement insertStatement = (InsertStatement) sqlStatement;
+        if (sqlStatement instanceof InsertStatement) {
+            fillInsert(sqlSegment, (InsertStatement) sqlStatement);
+        } else if (sqlStatement instanceof DMLStatement) {
+            fillUpdate(sqlSegment, (DMLStatement) sqlStatement);
+        }
+    }
+    
+    private void fillInsert(final SetAssignmentsSegment sqlSegment, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             fillColumn(each.getColumn(), insertStatement, tableName);
         }
-        InsertValue insertValue = getInsertValue(sqlSegment, sqlStatement.getLogicSQL());
+        InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
         insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex()));
@@ -55,7 +70,7 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
     private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {
         insertStatement.getColumnNames().add(sqlSegment.getName());
         if (sqlSegment.getOwner().isPresent() && tableName.equals(sqlSegment.getOwner().get())) {
-            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), 0));
+            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, sqlSegment.getOwnerQuoteCharacter(), 0));
         }
     }
     
@@ -66,5 +81,21 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
             columnValues.add(sqlExpression);
         }
         return new InsertValue(columnValues);
+    }
+    
+    private void fillUpdate(final SetAssignmentsSegment sqlSegment, final DMLStatement updateStatement) {
+        String tableName = updateStatement.getTables().getSingleTableName();
+        for (AssignmentSegment each : sqlSegment.getAssignments()) {
+            fillEncryptCondition(each, tableName, updateStatement);
+        }
+    }
+    
+    private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final DMLStatement updateStatement) {
+        Column column = new Column(assignment.getColumn().getName(), tableName);
+        SQLExpression expression = assignment.getValue().getSQLExpression(updateStatement.getLogicSQL());
+        updateStatement.getAssignments().put(column, expression);
+        if (encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+            updateStatement.getSQLTokens().add(new EncryptColumnToken(assignment.getColumn().getStartIndex(), assignment.getValue().getStopIndex(), column, false));
+        }
     }
 }

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,9 +47,7 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private boolean deleteStatement;
     
-    private final Map<String, String> updateTableAlias = new HashMap<>();
-    
-    private final Map<Column, SQLExpression> updateColumnValues = new LinkedHashMap<>();
+    private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
     
     private int whereStartIndex;
     

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
@@ -179,7 +179,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.setParametersIndex(2);
         insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.NONE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(19));
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "age", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1), new SQLPlaceholderExpression(2)};
         insertOptimizeResult.addUnit(sqlExpressions, parameters);
@@ -198,9 +198,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.setParametersIndex(1);
-        insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
+        insertStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, parameters);
@@ -218,9 +218,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getColumnNames().add("name");
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
-        insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
+        insertStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -240,9 +240,9 @@ public final class SQLRewriteEngineTest {
         List<Object> parameters = new ArrayList<>(2);
         parameters.add("x");
         parameters.add(1);
-        insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
+        insertStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -259,9 +259,9 @@ public final class SQLRewriteEngineTest {
         insertStatement.getColumnNames().add("name");
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
-        insertStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, 0));
+        insertStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)};
         Object[] parameters = {"x", 1};
         insertOptimizeResult.addUnit(sqlExpressions, parameters);
@@ -509,7 +509,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithBackQuoteForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, "table_x", QuoteCharacter.BACK_QUOTE, 0));
+        showTablesStatement.addSQLToken(new TableToken(18, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
         routeResult = new SQLRouteResult(showTablesStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `table_x`", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1`"));
@@ -517,7 +517,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithBackQuoteFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, "table_x", QuoteCharacter.BACK_QUOTE, 0));
+        showTablesStatement.addSQLToken(new TableToken(18, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
         routeResult = new SQLRouteResult(showTablesStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `table_x` FROM 'sharding_db'", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1` FROM 'sharding_db'"));
@@ -542,7 +542,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, "table_x", QuoteCharacter.BACK_QUOTE, "sharding_db".length() + 1));
+        showTablesStatement.addSQLToken(new TableToken(18, "`table_x`", QuoteCharacter.BACK_QUOTE, "sharding_db".length() + 1));
         routeResult = new SQLRouteResult(showTablesStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM sharding_db.`table_x`", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1`"));
@@ -550,7 +550,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, "table_x", QuoteCharacter.BACK_QUOTE, "sharding_db".length() + 1));
+        showTablesStatement.addSQLToken(new TableToken(18, "`table_x`", QuoteCharacter.BACK_QUOTE, "sharding_db".length() + 1));
         routeResult = new SQLRouteResult(showTablesStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
@@ -559,7 +559,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, "table_x", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
+        showTablesStatement.addSQLToken(new TableToken(18, "`table_x`", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
         routeResult = new SQLRouteResult(showTablesStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM `sharding_db`.`table_x`", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW COLUMNS FROM `table_1`"));
@@ -567,7 +567,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
-        showTablesStatement.addSQLToken(new TableToken(18, "table_x", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
+        showTablesStatement.addSQLToken(new TableToken(18, "`table_x`", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
         routeResult = new SQLRouteResult(showTablesStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
@@ -604,7 +604,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertTableTokenWithSchemaForDelete() {
-        dmlStatement.addSQLToken(new TableToken(12, "table_x", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
+        dmlStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, "`sharding_db`".length() + 1));
         routeResult = new SQLRouteResult(dmlStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("DELETE FROM `table_1` WHERE user_id=1"));
@@ -727,7 +727,7 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_z");
         dmlStatement.addSQLToken(new TableToken(7, "table_z", QuoteCharacter.NONE, 0));
         dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        dmlStatement.getUpdateColumnValues().put(column, new SQLNumberExpression(1));
+        dmlStatement.getAssignments().put(column, new SQLNumberExpression(1));
         dmlStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
@@ -746,7 +746,7 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_k");
         dmlStatement.addSQLToken(new TableToken(7, "table_k", QuoteCharacter.NONE, 0));
         dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        dmlStatement.getUpdateColumnValues().put(column, new SQLPlaceholderExpression(0));
+        dmlStatement.getAssignments().put(column, new SQLPlaceholderExpression(0));
         dmlStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));

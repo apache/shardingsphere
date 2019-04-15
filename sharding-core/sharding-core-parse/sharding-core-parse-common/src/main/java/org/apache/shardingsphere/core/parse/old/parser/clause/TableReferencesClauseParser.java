@@ -110,7 +110,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (isSingleTableOnly || shardingRule.findTableRule(tableName).isPresent()
                 || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, tableName, QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, literals, QuoteCharacter.getQuoteCharacter(literals), skippedSchemaNameLength));
             sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName).orNull()));
         } else {
             aliasExpressionParser.parseTableAlias();

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFi
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -39,10 +40,9 @@ public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>
     
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
-        // FIXME judge sqlStatement.getTables().isEmpty() is for rename table, should not extract all table, should extract with correct clauses 
-        if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
+        if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement)) {
             sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
-            sqlStatement.getSQLTokens().add(sqlSegment.getToken());
+            sqlStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), sqlSegment.getName(), sqlSegment.getQuoteCharacter(), sqlSegment.getOwnerLength()));
         }
     }
     

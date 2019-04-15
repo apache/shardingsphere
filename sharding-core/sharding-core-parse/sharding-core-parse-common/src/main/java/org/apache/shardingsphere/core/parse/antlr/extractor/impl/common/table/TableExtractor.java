@@ -20,23 +20,21 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 import java.util.List;
 
 /**
- *  Table name extractor.
+ *  Table extractor.
  *
  * @author duhongjun
  * @author panjuan
  */
-public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
+public final class TableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<TableSegment> extract(final ParserRuleContext ancestorNode) {
@@ -46,27 +44,27 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
         }
         String nodeText = tableNameNode.get().getText();
         String tableName;
-        Optional<String> schemaName;
-        int schemaNameLength;
+        Optional<String> owner;
         if (nodeText.contains(Symbol.DOT.getLiterals())) {
-            List<String> nodeTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
-            tableName = nodeTextSegments.get(nodeTextSegments.size() - 1);
-            schemaName = Optional.of(nodeTextSegments.get(nodeTextSegments.size() - 2));
-            schemaNameLength = nodeText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
+            List<String> textValues = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
+            tableName = textValues.get(textValues.size() - 1);
+            owner = Optional.of(textValues.get(textValues.size() - 2));
         } else {
             tableName = nodeText;
-            schemaName = Optional.absent();
-            schemaNameLength = 0;
+            owner = Optional.absent();
         }
-        return Optional.of(new TableSegment(getTableToken(tableNameNode.get(), tableName, schemaNameLength), schemaName.orNull(), getTableAlias(tableNameNode.get()).orNull()));
+        TableSegment result = new TableSegment(tableNameNode.get().getStart().getStartIndex(), tableName);
+        if (owner.isPresent()) {
+            result.setOwner(owner.get());
+        }
+        setAlias(tableNameNode.get(), result);
+        return Optional.of(result);
     }
     
-    private TableToken getTableToken(final ParserRuleContext tableNameNode, final String tableName, final int schemaNameLength) {
-        return new TableToken(tableNameNode.getStart().getStartIndex(), tableName, QuoteCharacter.getQuoteCharacter(tableName), schemaNameLength);
-    }
-    
-    private Optional<String> getTableAlias(final ParserRuleContext tableNameNode) {
+    private void setAlias(final ParserRuleContext tableNameNode, final TableSegment tableSegment) {
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.getParent(), RuleName.ALIAS);
-        return aliasNode.isPresent() ? Optional.of(aliasNode.get().getText()) : Optional.<String>absent();
+        if (aliasNode.isPresent()) {
+            tableSegment.setAlias(aliasNode.get().getText());
+        }
     }
 }

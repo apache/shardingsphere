@@ -22,8 +22,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegme
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 
-import java.util.Map.Entry;
-
 /**
  * Encrypt delete from where filler.
  *
@@ -37,9 +35,6 @@ public class EncryptDeleteFromWhereFiller extends EncryptFromWhereFiller {
         DeleteFromWhereSegment deleteFromWhereSegment = (DeleteFromWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         dmlStatement.setDeleteStatement(true);
-        for (Entry<String, String> each : sqlSegment.getTableAliases().entrySet()) {
-            dmlStatement.getUpdateTableAlias().put(each.getKey(), each.getValue());
-        }
         dmlStatement.setWhereStartIndex(deleteFromWhereSegment.getWhereStartIndex());
         dmlStatement.setWhereStopIndex(deleteFromWhereSegment.getWhereStopIndex());
         dmlStatement.setWhereParameterStartIndex(deleteFromWhereSegment.getWhereParameterStartIndex());

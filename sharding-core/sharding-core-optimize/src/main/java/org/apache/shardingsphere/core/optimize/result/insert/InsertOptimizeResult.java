@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.optimize.result.insert;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 import java.util.Collection;
@@ -34,13 +33,13 @@ import java.util.List;
 @Getter
 public final class InsertOptimizeResult {
     
-    private final DefaultKeyword type;
+    private final InsertType type;
     
     private final Collection<String> columnNames = new LinkedHashSet<>();
     
     private final List<InsertOptimizeResultUnit> units = new LinkedList<>();
     
-    public InsertOptimizeResult(final DefaultKeyword type, final Collection<String> columnNames) {
+    public InsertOptimizeResult(final InsertType type, final Collection<String> columnNames) {
         this.type = type;
         this.columnNames.addAll(columnNames);
     }
@@ -52,7 +51,7 @@ public final class InsertOptimizeResult {
      * @param columnParameters column parameters
      */
     public void addUnit(final SQLExpression[] columnValues, final Object[] columnParameters) {
-        if (type == DefaultKeyword.VALUES) {
+        if (type == InsertType.VALUES) {
             this.units.add(new ColumnValueOptimizeResult(columnNames, columnValues, columnParameters));
         } else {
             this.units.add(new SetAssignmentOptimizeResult(columnNames, columnValues, columnParameters));

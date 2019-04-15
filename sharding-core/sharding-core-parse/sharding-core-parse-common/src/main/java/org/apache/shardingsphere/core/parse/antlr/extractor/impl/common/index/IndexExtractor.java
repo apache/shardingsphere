@@ -26,11 +26,11 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSeg
 import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
 
 /**
- * Index name extractor.
+ * Index extractor.
  * 
  * @author duhongjun
  */
-public final class IndexNameExtractor implements OptionalSQLSegmentExtractor {
+public final class IndexExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
@@ -31,9 +31,9 @@ import static org.junit.Assert.assertThat;
 
 public final class InsertOptimizeResultTest {
     
-    private InsertOptimizeResult setInsertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.SET, Lists.newArrayList("id", "value", "status"));
+    private InsertOptimizeResult setInsertOptimizeResult = new InsertOptimizeResult(InsertType.SET, Lists.newArrayList("id", "value", "status"));
     
-    private InsertOptimizeResult valuesInsertOptimizeResult = new InsertOptimizeResult(DefaultKeyword.VALUES, Lists.newArrayList("id", "value", "status"));
+    private InsertOptimizeResult valuesInsertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Lists.newArrayList("id", "value", "status"));
     
     @Test
     public void assertAddUnitWithSet() {
@@ -41,7 +41,7 @@ public final class InsertOptimizeResultTest {
         Object[] parameters = {"parameter"};
         setInsertOptimizeResult.addUnit(expressions, parameters);
         assertThat(setInsertOptimizeResult.getColumnNames().size(), is(3));
-        assertThat(setInsertOptimizeResult.getType(), is(DefaultKeyword.SET));
+        assertThat(setInsertOptimizeResult.getType(), is(InsertType.SET));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getValues(), is(expressions));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getParameters()[0], is((Object) "parameter"));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getDataNodes().size(), is(0));

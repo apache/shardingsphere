@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Index names extractor.
+ * Tables extractor.
  *
  * @author duhongjun
  */
-public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor {
+public final class TablesExtractor implements CollectionSQLSegmentExtractor {
     
-    private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
+    private final TableExtractor tableExtractor = new TableExtractor();
     
     @Override
-    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<IndexSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            Optional<IndexSegment> indexSegment = indexNameExtractor.extract(each);
-            if (indexSegment.isPresent()) {
-                result.add(indexSegment.get());
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
+            Optional<TableSegment> tableSegment = tableExtractor.extract(each);
+            if (tableSegment.isPresent()) {
+                result.add(tableSegment.get());
             }
         }
         return result;

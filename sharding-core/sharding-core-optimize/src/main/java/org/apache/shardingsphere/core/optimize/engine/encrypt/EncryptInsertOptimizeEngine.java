@@ -23,9 +23,9 @@ import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
@@ -71,13 +71,13 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     }
     
     private InsertOptimizeResult createInsertOptimizeResult() {
-        DefaultKeyword type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
+        InsertType type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? InsertType.VALUES : InsertType.SET;
         return new InsertOptimizeResult(type, insertStatement.getColumnNames());
     }
     
     private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {
-        SQLExpression[] result = new SQLExpression[insertValue.getColumnValues().size() + getIncrement()];
-        insertValue.getColumnValues().toArray(result);
+        SQLExpression[] result = new SQLExpression[insertValue.getAssignments().size() + getIncrement()];
+        insertValue.getAssignments().toArray(result);
         return result;
     }
     

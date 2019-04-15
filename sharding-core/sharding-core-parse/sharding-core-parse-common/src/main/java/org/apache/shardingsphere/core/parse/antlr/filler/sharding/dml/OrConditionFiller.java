@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
@@ -155,7 +154,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
             String owner = column.getOwner().get();
             Optional<Table> logicTable = sqlStatement.getTables().find(owner);
             if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
-                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), owner, QuoteCharacter.getQuoteCharacter(owner), 0));
+                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), owner, column.getOwnerQuoteCharacter(), 0));
             }
         }
     }

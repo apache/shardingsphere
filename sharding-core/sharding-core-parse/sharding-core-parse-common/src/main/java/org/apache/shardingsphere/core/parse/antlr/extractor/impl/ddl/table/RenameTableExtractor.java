@@ -20,10 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.table;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNameExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTableSegment;
 
 /**
@@ -35,14 +33,7 @@ public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE_SPECIFICATION);
-        if (!renameTableNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<TableSegment> tableSegment = new TableNameExtractor().extract(renameTableNode.get());
-        if (tableSegment.isPresent()) {
-            return Optional.of(new RenameTableSegment(tableSegment.get().getName()));
-        }
-        return Optional.absent();
+        Optional<ParserRuleContext> newTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.NEW_TABLE_NAME);
+        return newTableNode.isPresent() ? Optional.of(new RenameTableSegment(newTableNode.get().getText())) : Optional.<RenameTableSegment>absent();
     }
 }

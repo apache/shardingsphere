@@ -19,8 +19,12 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.common;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -28,46 +32,48 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * 
  * @author duhongjun
  * @author panjuan
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public class TableSegment implements SQLSegment {
+public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
     
-    private final TableToken token;
+    private final int startIndex;
     
-    private final String schemaName;
+    private final String name;
     
-    private final String alias;
+    private final QuoteCharacter quoteCharacter;
     
-    public TableSegment(final TableToken token, final String schemaName, final String alias) {
-        this.token = token;
-        this.schemaName = SQLUtil.getExactlyValue(schemaName);
-        this.alias = alias;
+    private String owner;
+    
+    private int ownerLength;
+    
+    private String alias;
+    
+    public TableSegment(final int startIndex, final String name) {
+        this.startIndex = startIndex;
+        this.name = SQLUtil.getExactlyValue(name);
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
     
-    /**
-     * Get table name.
-     *
-     * @return table name
-     */
-    public String getName() {
-        return token.getTableName();
+    @Override
+    public final Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
     }
     
-    /**
-     * Get schema name.
-     *
-     * @return schema name
-     */
-    public Optional<String> getSchemaName() {
-        return Optional.fromNullable(schemaName);
+    @Override
+    public final void setOwner(final String owner) {
+        this.owner = SQLUtil.getExactlyValue(owner);
+        ownerLength = null == owner ? 0 : owner.length() + Symbol.DOT.getLiterals().length();
     }
     
-    /**
-     * Get table alias.
-     * 
-     * @return table alias
-     */
-    public Optional<String> getAlias() {
+    @Override
+    public final Optional<String> getAlias() {
         return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public final void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

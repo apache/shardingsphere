@@ -24,9 +24,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrCo
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * From where segment.
@@ -36,8 +34,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class FromWhereSegment implements SQLSegment {
-    
-    private final Map<String, String> tableAliases = new HashMap<>();
     
     private final OrConditionSegment conditions = new OrConditionSegment();
     

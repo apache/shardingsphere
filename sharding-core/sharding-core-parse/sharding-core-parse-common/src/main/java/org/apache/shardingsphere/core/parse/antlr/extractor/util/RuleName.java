@@ -57,7 +57,7 @@ public enum RuleName {
     
     DROP_PRIMARY_KEY_SPECIFICATION("DropPrimaryKeySpecification"),
     
-    RENAME_TABLE_SPECIFICATION("RenameTableSpecification"),
+    NEW_TABLE_NAME("NewTableName"),
     
     // TODO hongjun: parse AddIndex
     ADD_INDEX_SPECIFICATION("AddIndexSpecification"),
@@ -109,9 +109,9 @@ public enum RuleName {
     
     TABLE_FACTOR("TableFactor"),
     
-    JOIN_TABLE("JoinTable"),
+    JOINED_TABLE("JoinedTable"),
     
-    JOIN_CONDITION("JoinCondition"),
+    JOIN_SPECIFICATION("JoinSpecification"),
     
     ALIAS("Alias"),
     
@@ -149,11 +149,7 @@ public enum RuleName {
     
     SHOW_PARAM("ShowParam"),
     
-    AUTO_COMMIT_VALUE("AutoCommitValue"),
-    
-    DELETE("Delete"),
-    
-    DELETE_CLAUSE("DeleteClause");
+    AUTO_COMMIT_VALUE("AutoCommitValue");
     
     private final String name;
     

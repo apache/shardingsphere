@@ -68,11 +68,15 @@ unionSelect
     ;
 
 alterTableProperties
-    : renameTableSpecification | REKEY encryptionSpec
+    : renameTableSpecification_ | REKEY encryptionSpec
     ;
 
-renameTableSpecification
-    : RENAME TO tableName
+renameTableSpecification_
+    : RENAME TO newTableName
+    ;
+
+newTableName
+    : IDENTIFIER_
     ;
 
 columnClauses
