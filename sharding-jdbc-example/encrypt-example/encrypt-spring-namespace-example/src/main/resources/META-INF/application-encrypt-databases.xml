@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd 
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <context:component-scan base-package="org.apache.shardingsphere.example.common.mybatis" />
+    
+    <bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+    
+    <bean:properties id="props">
+        <prop key="aes.key.value">123456</prop>
+    </bean:properties>
+    
+    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
+        <encrypt:encryptor-rule id="pwd_encryptor" type="assistedTest" qualified-columns="t_user.pwd" assisted-query-columns="t_user.assisted_query_pwd" />
+        <encrypt:encryptor-rule id="name_encryptor" type="AES" qualified-columns="t_user.user_name" props-ref="props" />
+    </encrypt:data-source>
+    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="encryptDataSource" />
+    </bean>
+    <tx:annotation-driven />
+    
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="encryptDataSource"/>
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+    </bean>
+    
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="org.apache.shardingsphere.example.common.mybatis.repository"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+</beans>
