@@ -35,9 +35,9 @@ import java.util.LinkedList;
 @Getter
 public final class SelectItemsSegment implements SQLSegment {
     
-    private final int firstSelectItemStartIndex;
+    private final int startIndex;
     
-    private final int selectItemsStopIndex;
+    private final int stopIndex;
     
     private final boolean hasDistinct;
     

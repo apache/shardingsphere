@@ -54,8 +54,8 @@ public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegm
     public void fill(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
         selectItemFiller = new SelectItemFiller(shardingTableMetaData);
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setFirstSelectItemStartIndex(sqlSegment.getFirstSelectItemStartIndex());
-        selectStatement.setSelectListStopIndex(sqlSegment.getSelectItemsStopIndex());
+        selectStatement.setFirstSelectItemStartIndex(sqlSegment.getStartIndex());
+        selectStatement.setSelectListStopIndex(sqlSegment.getStopIndex());
         if (sqlSegment.isHasDistinct()) {
             fillDistinct(sqlSegment, selectStatement);
             return;
