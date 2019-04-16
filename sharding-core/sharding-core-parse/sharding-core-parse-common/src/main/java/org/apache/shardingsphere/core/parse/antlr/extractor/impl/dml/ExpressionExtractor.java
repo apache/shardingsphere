@@ -42,7 +42,7 @@ import java.util.Map;
 public final class ExpressionExtractor {
     
     /**
-     *  Extract expression.
+     * Extract expression.
      *
      * @param placeholderIndexes  placeholder index
      * @param expressionNode expression node

@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSelectItemSegment;
@@ -39,19 +39,19 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Select clause filler.
+ * Select items filler.
  *
  * @author duhongjun
  */
 @Setter
-public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSegment>, ShardingTableMetaDataAwareFiller {
+public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegment>, ShardingTableMetaDataAwareFiller {
     
     private ShardingTableMetaData shardingTableMetaData;
     
     private SelectItemFiller selectItemFiller;
     
     @Override
-    public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
         selectItemFiller = new SelectItemFiller(shardingTableMetaData);
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setFirstSelectItemStartIndex(sqlSegment.getFirstSelectItemStartIndex());
@@ -67,8 +67,8 @@ public final class SelectClauseFiller implements SQLSegmentFiller<SelectClauseSe
         }
     }
     
-    private void fillDistinct(final SelectClauseSegment selectClauseSegment, final SelectStatement selectStatement) {
-        Iterator<SelectItemSegment> selectItemSegmentIterator = selectClauseSegment.getSelectItems().iterator();
+    private void fillDistinct(final SelectItemsSegment selectItemsSegment, final SelectStatement selectStatement) {
+        Iterator<SelectItemSegment> selectItemSegmentIterator = selectItemsSegment.getSelectItems().iterator();
         SelectItemSegment firstSelectItemSegment = selectItemSegmentIterator.next();
         Set<String> distinctColumnNames = new LinkedHashSet<>();
         DistinctSelectItem distinctSelectItem = null;

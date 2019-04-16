@@ -26,14 +26,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Select clause segment.
+ * Select items segment.
  * 
  * @author duhongjun
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class SelectClauseSegment implements SQLSegment {
+public final class SelectItemsSegment implements SQLSegment {
     
     private final int firstSelectItemStartIndex;
     

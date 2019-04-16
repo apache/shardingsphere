@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
@@ -47,7 +47,7 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     
     private final boolean subqueryInFrom;
     
-    private SelectClauseSegment selectClauseSegment;
+    private SelectItemsSegment selectItemsSegment;
     
     private WhereSegment whereSegment;
     
@@ -58,12 +58,12 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     private String alias;
     
     /**
-     * Get select clause segment.
+     * Get select items segment.
      * 
-     * @return select clause segment
+     * @return select items segment
      */
-    public Optional<SelectClauseSegment> getSelectClauseSegment() {
-        return Optional.fromNullable(selectClauseSegment);
+    public Optional<SelectItemsSegment> getSelectItemsSegment() {
+        return Optional.fromNullable(selectItemsSegment);
     }
     
     /**

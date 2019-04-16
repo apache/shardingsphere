@@ -35,8 +35,8 @@ public final class SubqueryFiller implements SQLSegmentFiller<SubquerySegment> {
         SelectStatement subqueryStatement = new SelectStatement();
         subqueryStatement.setParentStatement(selectStatement);
         selectStatement.getSubqueryStatements().add(subqueryStatement);
-        if (sqlSegment.getSelectClauseSegment().isPresent()) {
-            new SelectClauseFiller().fill(sqlSegment.getSelectClauseSegment().get(), subqueryStatement);
+        if (sqlSegment.getSelectItemsSegment().isPresent()) {
+            new SelectItemsFiller().fill(sqlSegment.getSelectItemsSegment().get(), subqueryStatement);
         }
         if (sqlSegment.getWhereSegment().isPresent()) {
            // new WhereFiller().fill(sqlSegment.getWhereSegment().get(), subqueryStatement, sql);
