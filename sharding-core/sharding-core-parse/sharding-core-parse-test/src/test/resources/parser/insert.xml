@@ -618,4 +618,16 @@
             <and-condition/>
         </or-condition>
     </parser-result>
+    <parser-result sql-case-id="insert_with_double_value">
+        <tables>
+            <table name="t_double_test" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_double_test" length="13" />
+            <insert-values-token begin-position="25" />
+        </tokens>
+        <or-condition>
+            <and-condition/>
+        </or-condition>
+    </parser-result>
 </parser-result-sets>

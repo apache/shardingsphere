@@ -30,7 +30,11 @@ STRING_
     ;
 
 NUMBER_
-    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
+    : MINUS_? INT_
+    ;
+
+DOUBLE_VALUE_
+    : MINUS_? INT_? DOT_ INT_ (E [+\-]? INT_)?
     ;
 
 HEX_DIGIT_

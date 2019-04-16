@@ -117,6 +117,8 @@ public enum RuleName {
     
     NUMBER("Number"),
     
+    DOUBLE_VALUE("DoubleValue"),
+    
     STRING("String"),
     
     EXPR("Expr"),
