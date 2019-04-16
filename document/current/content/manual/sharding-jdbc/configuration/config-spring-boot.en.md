@@ -251,7 +251,7 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= #Om
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #Auto-increment column name; default means not using auto-increment key generator
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE or UUID) can both be selected
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Property configuration of auto-increament key generator, such as worker.id and max.tolerate.time.difference.milliseconds or SNOWFLAKE algorithm
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.logic-index= #Logic index name; for table-sharding DROP INDEX XXX in Oracle/PostgreSQL, logic index name needs to be configured to locate actual sharding tables of the executing SQL
 
@@ -303,7 +303,7 @@ spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta
 spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.type= #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES 
 spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.qualifiedColumns= #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
 spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.assistedQueryColumns= #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #Properties, e.g. `aes.key.value` for AES encryptor
+spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set
 ```
 
 ### Orchestration

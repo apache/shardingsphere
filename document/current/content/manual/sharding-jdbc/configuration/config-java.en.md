@@ -270,7 +270,7 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
 | column            | String                       | Column name of key generator                                                                |
 | type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
-| props             | Properties                   | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`|
+| props             | Properties                   | Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set|
 
 #### EncryptorRuleConfiguration
 
@@ -279,7 +279,7 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | type                | String                       | Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES                               |
 | qualifiedColumns    | String                       | Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas|
 | assistedQueryColumns| String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
-| props               | Properties                   | Properties, e.g. `aes.key.value` for AES encryptor                                                    |
+| props               | Properties                   | Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set          |
 
 
 #### ShardingPropertiesConstant
