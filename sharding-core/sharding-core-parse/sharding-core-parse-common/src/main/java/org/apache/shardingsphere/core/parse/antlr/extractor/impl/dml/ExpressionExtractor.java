@@ -100,10 +100,6 @@ public final class ExpressionExtractor {
         if (numberNode.isPresent()) {
             result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
         }
-        Optional<ParserRuleContext> doubleNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DOUBLE_VALUE);
-        if (doubleNode.isPresent()) {
-            result.setLiterals(Double.parseDouble(doubleNode.get().getText()));
-        }
         Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING);
         if (stringNode.isPresent()) {
             String text = stringNode.get().getText();

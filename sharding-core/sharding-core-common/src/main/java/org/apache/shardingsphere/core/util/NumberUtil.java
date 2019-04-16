@@ -69,6 +69,14 @@ public final class NumberUtil {
      * @return exactly number value and type
      */
     public static Number getExactlyNumber(final String value, final int radix) {
+        try {
+            return getBigInteger(value, radix);
+        } catch (final NumberFormatException ex) {
+            return new BigDecimal(value);
+        }
+    }
+    
+    private static Number getBigInteger(final String value, final int radix) {
         BigInteger result = new BigInteger(value, radix);
         if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
             return result.intValue();

@@ -191,7 +191,6 @@ variable
 literal
     : question
     | number
-    | doubleValue
     | TRUE
     | FALSE
     | NULL
@@ -209,10 +208,6 @@ question
 
 number
    : NUMBER_
-   ;
-
-doubleValue
-   : DOUBLE_VALUE_
    ;
 
 string
