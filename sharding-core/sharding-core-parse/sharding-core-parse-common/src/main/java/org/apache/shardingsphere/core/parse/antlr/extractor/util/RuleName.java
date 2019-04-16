@@ -85,7 +85,7 @@ public enum RuleName {
     
     ASSIGNMENT("Assignment"),
     
-    SELECT_SPECIFICATION("SelectSpecification"),
+    DUPLICATE_SPECIFICATION("DuplicateSpecification"),
     
     SELECT_ITEMS("SelectItems"),
     

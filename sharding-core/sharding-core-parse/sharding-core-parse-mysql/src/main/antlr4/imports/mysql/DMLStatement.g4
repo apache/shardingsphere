@@ -101,11 +101,15 @@ unionClause_
     ;
 
 selectClause
-    : SELECT selectSpecification selectItems fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause?
+    : SELECT selectSpecification_* selectItems fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause?
     ;
 
-selectSpecification
-    : (ALL | distinct | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT? SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
+selectSpecification_
+    : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | (SQL_CACHE | SQL_NO_CACHE) | SQL_CALC_FOUND_ROWS
+    ;
+
+duplicateSpecification
+    : ALL | DISTINCT | DISTINCTROW
     ;
 
 selectItems
