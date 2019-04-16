@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
@@ -56,9 +56,9 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
             parentNode = parentNode.getParent();
         }
         SubquerySegment result = new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex(), subqueryInFrom);
-        Optional<SelectClauseSegment> selectClauseSegment = new SelectClauseExtractor().extract(subqueryNode);
-        if (selectClauseSegment.isPresent()) {
-            result.setSelectClauseSegment(selectClauseSegment.get());
+        Optional<SelectItemsSegment> selectItemsSegment = new SelectItemsExtractor().extract(subqueryNode);
+        if (selectItemsSegment.isPresent()) {
+            result.setSelectItemsSegment(selectItemsSegment.get());
         }
         Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode);
         if (whereSegment.isPresent()) {

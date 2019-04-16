@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
@@ -32,30 +31,32 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Abstract where extractor.
+ * Where extractor.
  *
  * @author duhongjun
+ * @author zhangliang
  */
 @Setter
-public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
+public final class WhereExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
     
     private final PredicateExtractor predicateExtractor = new PredicateExtractor();
     
     private Map<ParserRuleContext, Integer> placeholderIndexes;
     
     @Override
-    public final Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
         WhereSegment result = new WhereSegment();
         result.setParameterCount(placeholderIndexes.size());
-        Optional<ParserRuleContext> whereNode = extractWhere(ancestorNode);
+        Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
         if (whereNode.isPresent()) {
             setPropertiesForRevert(result, placeholderIndexes, whereNode.get());
-            extractAndFillWhere(result, placeholderIndexes, whereNode.get());
+            Optional<OrConditionSegment> orConditionSegment = extractOrConditionSegment(placeholderIndexes, whereNode.get());
+            if (orConditionSegment.isPresent()) {
+                result.getConditions().getAndConditions().addAll(orConditionSegment.get().getAndConditions());
+            }
         }
         return Optional.of(result);
     }
-    
-    protected abstract Optional<ParserRuleContext> extractWhere(ParserRuleContext ancestorNode);
     
     private void setPropertiesForRevert(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
         whereSegment.setWhereStartIndex(whereNode.getStart().getStartIndex());
@@ -72,15 +73,8 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
         whereSegment.setWhereParameterEndIndex(whereParameterStartIndex + questionNodes.size() - 1);
     }
     
-    private void extractAndFillWhere(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
-        Optional<OrConditionSegment> conditions = buildCondition((ParserRuleContext) whereNode.getChild(1), placeholderIndexes);
-        if (conditions.isPresent()) {
-            whereSegment.getConditions().getAndConditions().addAll(conditions.get().getAndConditions());
-        }
-    }
-    
-    private Optional<OrConditionSegment> buildCondition(final ParserRuleContext node, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode(node, RuleName.EXPR);
+    private Optional<OrConditionSegment> extractOrConditionSegment(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
+        Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) whereNode.getChild(1), RuleName.EXPR);
         return exprNode.isPresent() ? predicateExtractor.extract(placeholderIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
     }
 }

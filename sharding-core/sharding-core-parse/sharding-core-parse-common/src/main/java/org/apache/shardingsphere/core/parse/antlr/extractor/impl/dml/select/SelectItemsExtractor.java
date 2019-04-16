@@ -23,23 +23,23 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.SelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
 /**
- * Select clause extractor.
+ * Select items extractor.
  *
  * @author duhongjun
  * @author panjuan
  */
-public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
+public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     
     private final SelectItemExtractor selectItemExtractor = new SelectItemExtractor();
     
     @Override
-    public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode) {
         ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
-        SelectClauseSegment result = new SelectClauseSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), hasDistinct(ancestorNode));
+        SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), hasDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result);
@@ -48,23 +48,23 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
         return Optional.of(result);
     }
     
-    private void setUnqualifiedShorthandSelectItemSegment(final ParserRuleContext unqualifiedShorthandNode, final SelectClauseSegment selectClauseSegment) {
+    private void setUnqualifiedShorthandSelectItemSegment(final ParserRuleContext unqualifiedShorthandNode, final SelectItemsSegment selectItemsSegment) {
         Optional<? extends SelectItemSegment> unqualifiedShorthandSelectItemSegment = selectItemExtractor.extract(unqualifiedShorthandNode);
         if (unqualifiedShorthandSelectItemSegment.isPresent()) {
-            selectClauseSegment.getSelectItems().add(unqualifiedShorthandSelectItemSegment.get());
+            selectItemsSegment.getSelectItems().add(unqualifiedShorthandSelectItemSegment.get());
         }
     }
     
-    private void setSelectItemSegment(final ParserRuleContext selectClauseNode, final SelectClauseSegment selectClauseSegment) {
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(selectClauseNode, RuleName.SELECT_ITEM)) {
+    private void setSelectItemSegment(final ParserRuleContext ancestorNode, final SelectItemsSegment selectItemsSegment) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SELECT_ITEM)) {
             Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract(each);
             if (selectItemSegment.isPresent()) {
-                selectClauseSegment.getSelectItems().add(selectItemSegment.get());
+                selectItemsSegment.getSelectItems().add(selectItemSegment.get());
             }
         }
     }
     
-    private boolean hasDistinct(final ParserRuleContext selectClauseNode) {
-        return ExtractorUtils.findFirstChildNode(ExtractorUtils.getFirstChildNode(selectClauseNode, RuleName.SELECT_SPECIFICATION), RuleName.DISTINCT).isPresent();
+    private boolean hasDistinct(final ParserRuleContext ancestorNode) {
+        return ExtractorUtils.findFirstChildNode(ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_SPECIFICATION), RuleName.DISTINCT).isPresent();
     }
 }

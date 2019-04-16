@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.update;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 
-import com.google.common.base.Optional;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.AbstractWhereExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Where extractor for update.
- *
+ * Select items segment.
+ * 
  * @author duhongjun
+ * @author panjuan
  */
-public final class UpdateWhereExtractor extends AbstractWhereExtractor {
+@RequiredArgsConstructor
+@Getter
+public final class SelectItemsSegment implements SQLSegment {
     
-    @Override
-    protected Optional<ParserRuleContext> extractWhere(final ParserRuleContext ancestorNode) {
-        return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
-    }
+    private final int firstSelectItemStartIndex;
+    
+    private final int selectItemsStopIndex;
+    
+    private final boolean hasDistinct;
+    
+    private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
 }
