@@ -21,10 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Where segment.
@@ -36,8 +32,6 @@ import java.util.LinkedList;
 public final class WhereSegment implements SQLSegment {
     
     private final OrConditionSegment conditions = new OrConditionSegment();
-    
-    private final Collection<SubquerySegment> subqueries = new LinkedList<>();
     
     private int parameterCount;
     
