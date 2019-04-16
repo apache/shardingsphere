@@ -11,6 +11,16 @@ dataSources:
     password:
 
 shardingRule:
+  tables:
+    t_sportsman:
+      actualDataNodes: ds_${0..1}.t_sportsman
+      keyGenerator:
+        type: SNOWFLAKE
+        column: id
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: id
+      algorithmExpression: ds_${id % 2}
   broadcastTables:
     - t_country
 
