@@ -20,11 +20,23 @@ grammar DCLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 grant
-    : GRANT (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
+    : GRANT (objectPrivilegeClause_ | systemPrivilegeClause_ | roleClause_) 
     ;
 
 revoke
-    : REVOKE (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
+    : REVOKE (objectPrivilegeClause_ | systemPrivilegeClause_ | roleClause_)
+    ;
+
+objectPrivilegeClause_
+    : objectPrivileges_ ON onObjectClause_
+    ;
+
+systemPrivilegeClause_
+    : systemPrivilege_
+    ;
+    
+roleClause_
+    : ignoredIdentifiers_
     ;
 
 objectPrivileges_
@@ -61,8 +73,9 @@ onObjectClause_
     | tableName
     ;
 
-otherPrivileges_
-    : STRING_+ | IDENTIFIER_+
+systemPrivilege_
+    : ALL PRIVILEGES
+    | ignoredIdentifiers_
     ;
 
 createUser
