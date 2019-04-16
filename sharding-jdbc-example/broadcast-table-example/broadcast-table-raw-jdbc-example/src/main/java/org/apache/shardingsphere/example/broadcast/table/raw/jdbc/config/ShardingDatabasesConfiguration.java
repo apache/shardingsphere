@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.example.broadcast.table.raw.jdbc.config;
 
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.example.common.DataSourceUtil;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
@@ -33,8 +36,16 @@ public class ShardingDatabasesConfiguration implements ExampleConfiguration {
     @Override
     public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getSportsmanTableRuleConfiguration());
         shardingRuleConfig.getBroadcastTables().add("t_country");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "demo_ds_${id % 2}"));
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
+    }
+
+    private TableRuleConfiguration getSportsmanTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_sportsman");
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "id", new Properties()));
+        return result;
     }
 
     private static Map<String, DataSource> createDataSourceMap() {

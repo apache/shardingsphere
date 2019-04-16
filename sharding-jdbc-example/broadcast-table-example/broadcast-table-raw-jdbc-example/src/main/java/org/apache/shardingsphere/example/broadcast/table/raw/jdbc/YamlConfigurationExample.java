@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.example.broadcast.table.raw.jdbc;
 
 import org.apache.shardingsphere.example.common.jdbc.repository.CountryRepositoryImpl;
-import org.apache.shardingsphere.example.common.jdbc.service.CountryServiceImpl;
+import org.apache.shardingsphere.example.common.jdbc.repository.SportsmanRepositoryImpl;
+import org.apache.shardingsphere.example.common.jdbc.service.SportsmanServiceImpl;
 import org.apache.shardingsphere.example.common.service.CommonService;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
@@ -42,6 +43,6 @@ public class YamlConfigurationExample {
     }
 
     private static CommonService getCountryService(final DataSource dataSource) {
-        return new CountryServiceImpl(new CountryRepositoryImpl(dataSource));
+        return new SportsmanServiceImpl(new CountryRepositoryImpl(dataSource), new SportsmanRepositoryImpl(dataSource));
     }
 }
