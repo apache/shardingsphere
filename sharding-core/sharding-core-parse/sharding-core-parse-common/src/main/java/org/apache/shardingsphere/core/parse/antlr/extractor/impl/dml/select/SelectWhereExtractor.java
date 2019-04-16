@@ -18,19 +18,32 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.WhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
+
+import java.util.Map;
 
 /**
  * Where extractor for select.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-public final class SelectWhereExtractor extends AbstractWhereExtractor {
+@Setter
+public final class SelectWhereExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
+    
+    private final WhereExtractor whereExtractor = new WhereExtractor();
+    
+    private Map<ParserRuleContext, Integer> placeholderIndexes;
     
     @Override
-    protected Optional<ParserRuleContext> extractWhere(final ParserRuleContext ancestorNode) {
+    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> selectItemsNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
         if (!selectItemsNode.isPresent()) {
             return Optional.absent();
@@ -39,6 +52,7 @@ public final class SelectWhereExtractor extends AbstractWhereExtractor {
         if (!fromNode.isPresent()) {
             return Optional.absent();
         }
-        return ExtractorUtils.findFirstChildNodeNoneRecursive(fromNode.get().getParent(), RuleName.WHERE_CLAUSE);
+        whereExtractor.setPlaceholderIndexes(placeholderIndexes);
+        return whereExtractor.extract(fromNode.get().getParent());
     }
 }
