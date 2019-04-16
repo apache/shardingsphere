@@ -479,7 +479,7 @@ weight = 4
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
 | column            | 属性                          | 自增列名称                                                                       |
 | type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
-| props-ref         | 属性                          | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds | 
+| props-ref         | 属性                          | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 | 
 
 #### \<sharding:encrypt-rules />
 
@@ -493,7 +493,7 @@ weight = 4
 | type                  | 属性                    | 加解密器类型，可自定义或选择内置类型：MD5/AES                               |
 | qualified-columns     | 属性                    | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔             |
 | assisted-query-columns| 属性                    | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询   |
-| props-ref             | 属性                    | 属性配置, 比如AES算法的KEY属性：aes.key.value                             | 
+| props-ref             | 属性                    | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value       | 
  
 
 #### \<sharding:props />

@@ -251,7 +251,7 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= #�
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #自增列名称，缺省表示不使用自增主键生成器
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #自增列值生成器属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.logic-index= #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
 
@@ -302,7 +302,7 @@ spring.shardingsphere.props.check.table.metadata.enabled= #是否在启动时检
 spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.type= #加解密器类型，可自定义或选择内置类型：MD5/AES 
 spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.qualifiedColumns= #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
 spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.assistedQueryColumns= #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
-spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 比如AES算法的KEY属性：aes.key.value
+spring.shardingsphere.sharding.encryptRule.encryptors.<encryptor-name>.props.<property-name>= #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
 ```
 ### 治理
 
