@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.common.jdbc.repository;
 
 import org.apache.shardingsphere.example.common.entity.Sportsman;
-import org.apache.shardingsphere.example.common.entity.SportsmanExtend;
 import org.apache.shardingsphere.example.common.repository.SportsmanRepository;
 
 import javax.sql.DataSource;
@@ -121,5 +120,33 @@ public class SportsmanRepositoryImpl implements SportsmanRepository {
         } catch (final SQLException ignored) {
         }
         return result;
+    }
+
+    private class SportsmanExtend extends Sportsman {
+
+        private String countryName;
+
+        private String countryLanguage;
+
+        public String getCountryName() {
+            return countryName;
+        }
+
+        public void setCountryName(final String countryName) {
+            this.countryName = countryName;
+        }
+
+        public String getCountryLanguage() {
+            return countryLanguage;
+        }
+
+        public void setCountryLanguage(final String countryLanguage) {
+            this.countryLanguage = countryLanguage;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("id: %s, name: %s, countryCode: %s, countryName: %s, countryLanguage: %s", getId(), getName(), getCountryCode(), countryName, countryLanguage);
+        }
     }
 }
