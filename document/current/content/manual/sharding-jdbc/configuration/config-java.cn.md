@@ -276,7 +276,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | column            | String                       | 自增列名称                                                                      |
 | type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
-| props             | Properties                   | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds |  
+| props             | Properties                   | 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性 |  
 
 #### EncryptorRuleConfiguration
 
@@ -285,7 +285,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | type                | String                       | 加解密器类型，可自定义或选择内置类型：MD5/AES                                        |
 | qualifiedColumns    | String                       | 加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔                      |
 | assistedQueryColumns| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
-| props               | Properties                   | 属性配置, 比如AES算法的KEY属性：aes.key.value                                      |  
+| props               | Properties                   | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value                                      |  
 
 #### PropertiesConstant
 

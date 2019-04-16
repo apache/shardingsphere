@@ -274,7 +274,7 @@ shardingRule:
       keyGenerator:   
         column: #Column name of key generator
         type: #Type of key generator, use default key generator if absent
-        props: #Properties of key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`         
+        props: #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set         
         
       logicIndex: #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
   bindingTables: #Binding table rule configurations
@@ -337,7 +337,7 @@ shardingRule:
         type: #Type of encryptor，use user-defined ones or built-in ones, e.g. MD5/AES
         qualifiedColumns: #Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas
         assistedQueryColumns: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-        props: #Properties, e.g. `aes.key.value` for AES encryptor
+        props: #Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set
           aes.key.value:
 ```
 

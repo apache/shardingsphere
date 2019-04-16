@@ -489,7 +489,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | --------- | --------- | ------------------------------------------------------------ |
 | column    | Attribute | Auto-increment column name                                   |
 | type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE or UUID) can both be selected |
-| props-ref | Attribute | Attribute configuration, such as `worker.id` and `max.tolerate.time.difference.milliseconds` in SNOWFLAKE algorithm |
+| props-ref | Attribute | Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set |
 
 #### \<sharding:encrypt-rules />
 
@@ -504,7 +504,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | type                   | Attribute | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID                                                                  |
 | qualified-columns      | Attribute | Column names to be encrypted, the format is `tableName`.`columnName`, e.g. tb.col1. When configuring multiple column names, separate them with commas|
 | assisted-query-columns | Attribute | assistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data                                                  |
-| props-ref              | Attribute | Properties, e.g. `aes.key.value` for AES encryptor           |
+| props-ref              | Attribute | Properties, Notice: when use AES encryptor, `aes.key.value` for AES encryptor need to be set           |
 
 #### \<sharding:props />
 

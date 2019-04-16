@@ -326,7 +326,7 @@ shardingRule: # sharding的配置
     column: # 自增键对应的列名称
     type: #自增键的类型,主要用于调用内置的主键生成算法有三个可用值:SNOWFLAKE(时间戳+worker id+自增id),UUID(java.util.UUID类生成的随机UUID),LEAF,其中Snowflake算法与UUID算法已经实现,LEAF目前(2018-01-14)尚未实现
     props:
-      # 定制算法需要设置的参数,比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
+      # 属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性
   tables: #配置表sharding的主要位置
     sharding_t1:
       actualDataNodes: master_test_${0..1}.t_order${0..1} # sharidng 表对应的数据源以及物理名称,需要用表达式处理,表示表实际上在哪些数据源存在,配置示例中,意思是总共存在4个分片master_test_0.t_order0,master_test_0.t_order1,master_test_1.t_order0,master_test_1.t_order1
@@ -380,7 +380,7 @@ shardingRule: #省略分片规则配
         type: #加解密器类型，可自定义或选择内置类型：MD5/AES
         qualifiedColumns: #加解密字段，格式为：表名.列名，例如：tb.col1。多个列，请用逗号分隔
         assistedQueryColumns: #辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询
-        props: #属性配置, 比如AES算法的KEY属性：aes.key.value
+        props: #属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value
           aes.key.value:
 ```
 
