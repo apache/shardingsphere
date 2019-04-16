@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSelectItemSegment;
 
 /**
- * Expression select item extractor.
+ * Column select item extractor.
  *
  * @author zhangliang
  */
-public final class ExpressionSelectItemExtractor implements OptionalSQLSegmentExtractor {
+public final class ColumnSelectItemExtractor implements OptionalSQLSegmentExtractor {
+    
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
-        // TODO parse table inside expression
-        ExpressionSelectItemSegment result = new ExpressionSelectItemSegment(expressionNode.getText(), expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
+    public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+        if (!RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
+            return Optional.absent();
+        }
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) expressionNode.getChild(0));
+        Preconditions.checkState(columnSegment.isPresent());
+        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnSegment.get());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());

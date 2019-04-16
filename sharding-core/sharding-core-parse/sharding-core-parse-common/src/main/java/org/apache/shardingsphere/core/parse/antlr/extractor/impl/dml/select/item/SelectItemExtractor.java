@@ -21,6 +21,10 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ColumnSelectItemExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ExpressionSelectItemExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.FunctionSelectItemExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ShorthandSelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
 /**
