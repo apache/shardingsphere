@@ -25,7 +25,6 @@
         <module>broadcast-table-raw-jdbc-example</module>
         <module>broadcast-table-spring-boot-example</module>
         <module>broadcast-table-spring-namespace-example</module>
-        <module>broadcast-table-raw-jdbc-multi-example</module>
     </modules>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
