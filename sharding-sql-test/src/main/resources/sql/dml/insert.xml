@@ -43,4 +43,5 @@
     <!--<sql-case id="insert_on_duplicate_key_update_with_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE t_order.status = VALUES(t_order.status)" db-types="MySQL" />-->
     <sql-case id="insert_with_geography" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (?, ?, ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), ?::jsonb)" db-types="PostgreSQL" />
     <sql-case id="insert_with_one_auto_increment_column" value="INSERT INTO t_auto_increment_table values()" db-types="MySQL" />
+    <sql-case id="insert_with_double_value" value="INSERT INTO t_double_test(test_value) values(1.22)" db-types="MySQL" />
 </sql-cases>
