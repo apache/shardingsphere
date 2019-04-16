@@ -50,7 +50,10 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
         Optional<ParserRuleContext> whereNode = extractWhere(ancestorNode);
         if (whereNode.isPresent()) {
             setPropertiesForRevert(result, placeholderIndexes, whereNode.get());
-            extractAndFillWhere(result, placeholderIndexes, whereNode.get());
+            Optional<OrConditionSegment> orConditionSegment = extractOrConditionSegment(placeholderIndexes, whereNode.get());
+            if (orConditionSegment.isPresent()) {
+                result.getConditions().getAndConditions().addAll(orConditionSegment.get().getAndConditions());
+            }
         }
         return Optional.of(result);
     }
@@ -72,15 +75,9 @@ public abstract class AbstractWhereExtractor implements OptionalSQLSegmentExtrac
         whereSegment.setWhereParameterEndIndex(whereParameterStartIndex + questionNodes.size() - 1);
     }
     
-    private void extractAndFillWhere(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
-        Optional<OrConditionSegment> conditions = buildCondition((ParserRuleContext) whereNode.getChild(1), placeholderIndexes);
-        if (conditions.isPresent()) {
-            whereSegment.getConditions().getAndConditions().addAll(conditions.get().getAndConditions());
-        }
-    }
-    
-    private Optional<OrConditionSegment> buildCondition(final ParserRuleContext node, final Map<ParserRuleContext, Integer> placeholderIndexes) {
-        Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode(node, RuleName.EXPR);
+    private Optional<OrConditionSegment> extractOrConditionSegment(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
+        Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) whereNode.getChild(1), RuleName.EXPR);
         return exprNode.isPresent() ? predicateExtractor.extract(placeholderIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
     }
+    
 }
