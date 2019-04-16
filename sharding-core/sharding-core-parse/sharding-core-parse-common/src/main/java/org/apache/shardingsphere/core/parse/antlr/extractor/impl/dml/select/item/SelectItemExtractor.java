@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
  */
 public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     
-    private final StarSelectItemSegmentExtractor starItemExpressionExtractor = new StarSelectItemSegmentExtractor();
+    private final ShorthandSelectItemExtractor shorthandSelectItemExtractor = new ShorthandSelectItemExtractor();
     
     private final ColumnSelectItemSegmentExtractor columnSelectItemSegmentExtractor = new ColumnSelectItemSegmentExtractor();
     
@@ -43,7 +43,7 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<? extends SelectItemSegment> extract(final ParserRuleContext expressionNode) {
         Optional<? extends SelectItemSegment> result;
-        result = starItemExpressionExtractor.extract(expressionNode);
+        result = shorthandSelectItemExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }

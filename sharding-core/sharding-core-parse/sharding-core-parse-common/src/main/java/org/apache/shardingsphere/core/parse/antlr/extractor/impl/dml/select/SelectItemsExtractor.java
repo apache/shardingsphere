@@ -39,7 +39,7 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode) {
         ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
-        SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), hasDistinct(ancestorNode));
+        SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result);
@@ -64,7 +64,7 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
         }
     }
     
-    private boolean hasDistinct(final ParserRuleContext ancestorNode) {
+    private boolean extractDistinct(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> duplicateSpecificationNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DUPLICATE_SPECIFICATION);
         return duplicateSpecificationNode.isPresent()
                 && (duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCT") || duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCTROW"));

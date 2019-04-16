@@ -20,24 +20,29 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.ite
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
+import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 /**
- * Star select item segment extractor.
+ * Shorthand select item extractor.
  *
  * @author zhangliang
  */
-public final class StarSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
+public final class ShorthandSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<StarSelectItemSegment> extract(final ParserRuleContext expressionNode) {
-        String text = expressionNode.getText();
-        if (!text.endsWith(Symbol.STAR.getLiterals())) {
-            return Optional.absent();
+        Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.UNQUALIFIED_SHORTHAND);
+        if (unqualifiedShorthandNode.isPresent()) {
+            return Optional.of(new StarSelectItemSegment(unqualifiedShorthandNode.get().getStart().getStartIndex()));
         }
-        StarSelectItemSegment result = new StarSelectItemSegment(expressionNode.getStart().getStartIndex());
-        result.setOwner(text.contains(Symbol.DOT.getLiterals()) ? text.substring(0, text.indexOf(Symbol.DOT.getLiterals())) : null);
-        return Optional.of(result);
+        Optional<ParserRuleContext> qualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUALIFIED_SHORTHAND);
+        if (qualifiedShorthandNode.isPresent()) {
+            StarSelectItemSegment result = new StarSelectItemSegment(qualifiedShorthandNode.get().getStart().getStartIndex());
+            result.setOwner(qualifiedShorthandNode.get().getChild(0).getText());
+            return Optional.of(result);
+        }
+        return Optional.absent();
     }
 }
