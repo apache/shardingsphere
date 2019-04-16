@@ -32,11 +32,11 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     private final ShorthandSelectItemExtractor shorthandSelectItemExtractor = new ShorthandSelectItemExtractor();
     
-    private final ColumnSelectItemSegmentExtractor columnSelectItemSegmentExtractor = new ColumnSelectItemSegmentExtractor();
+    private final ColumnSelectItemExtractor columnSelectItemExtractor = new ColumnSelectItemExtractor();
     
-    private final FunctionSelectItemSegmentExtractor functionSelectItemSegmentExtractor = new FunctionSelectItemSegmentExtractor();
+    private final FunctionSelectItemExtractor functionSelectItemSegmentExtractor = new FunctionSelectItemExtractor();
     
-    private final ExpressionSelectItemSegmentExtractor expressionSelectItemSegmentExtractor = new ExpressionSelectItemSegmentExtractor();
+    private final ExpressionSelectItemExtractor expressionSelectItemExtractor = new ExpressionSelectItemExtractor();
     
     private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
     
@@ -47,7 +47,7 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
-        result = columnSelectItemSegmentExtractor.extract(expressionNode);
+        result = columnSelectItemExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }
@@ -55,7 +55,7 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
-        result = expressionSelectItemSegmentExtractor.extract(expressionNode);
+        result = expressionSelectItemExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }

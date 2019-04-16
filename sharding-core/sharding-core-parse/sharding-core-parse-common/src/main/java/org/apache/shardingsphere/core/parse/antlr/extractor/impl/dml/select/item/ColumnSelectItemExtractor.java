@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSel
  *
  * @author zhangliang
  */
-public final class ColumnSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
+public final class ColumnSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode) {

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
  *
  * @author zhangliang
  */
-public final class FunctionSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
+public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode) {

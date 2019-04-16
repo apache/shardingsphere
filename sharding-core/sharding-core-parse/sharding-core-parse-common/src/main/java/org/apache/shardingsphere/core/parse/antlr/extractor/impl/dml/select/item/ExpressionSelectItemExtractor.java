@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Expressio
  *
  * @author zhangliang
  */
-public final class ExpressionSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
+public final class ExpressionSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
