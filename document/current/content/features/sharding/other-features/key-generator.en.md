@@ -52,7 +52,7 @@ The result is approximately equal to 69.73 years. The time of ShardingSphere sno
 - work ID bit (10bit)
 
 The sign is only in Java process. If applied in distributed deployment, each work ID should be different. 
-The default value is 0 and can be set by calling for statistic method `DefaultKeyGenerator.setWorkerId()`.
+The default value is 0 and can be set by using properties.
 
 - sequence number bit (12bit)
 
@@ -64,7 +64,7 @@ If the number generated in that millisecond exceeds 4,096 (2 to the power of 12)
 Server clock-back can lead to the generation of repeated sequence, so the default distributed primary key generator has provided a maximumly tolerant clock-back millisecond number. 
 If the clock-back time has exceeded it, the program will report an error. 
 If it is within the tolerance range, the generator will wait till after the last generation time and then continue to work. 
-The default value of maximumly tolerant clock-back millisecond is 0 and can be set by calling for statistic method `DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds()`.
+The default value of maximumly tolerant clock-back millisecond is 0 and can be set by using properties.
 
 Please refer to the following picture for the detailed structure of snowflake algorithm primary key.
 
