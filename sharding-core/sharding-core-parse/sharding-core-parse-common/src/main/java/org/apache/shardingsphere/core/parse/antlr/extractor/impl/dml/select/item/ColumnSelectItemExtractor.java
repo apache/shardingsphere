@@ -18,27 +18,33 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSelectItemSegment;
 
 /**
- * Column select item segment extractor.
+ * Column select item extractor.
  *
  * @author zhangliang
  */
 public final class ColumnSelectItemExtractor implements OptionalSQLSegmentExtractor {
+    
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
     public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode) {
         if (!RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
             return Optional.absent();
         }
-        ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnNode.getStart().getStartIndex(), columnNode.getText());
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) expressionNode.getChild(0));
+        Preconditions.checkState(columnSegment.isPresent());
+        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnSegment.get());
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());
         }

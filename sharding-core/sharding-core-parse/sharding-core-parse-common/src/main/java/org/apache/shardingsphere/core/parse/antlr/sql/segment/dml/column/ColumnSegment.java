@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SQLRightValueExpressionSegment;
@@ -42,6 +44,7 @@ public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvail
     
     private String owner;
     
+    @Setter(AccessLevel.PROTECTED)
     private QuoteCharacter ownerQuoteCharacter = QuoteCharacter.NONE;
     
     public ColumnSegment(final int startIndex, final String name) {

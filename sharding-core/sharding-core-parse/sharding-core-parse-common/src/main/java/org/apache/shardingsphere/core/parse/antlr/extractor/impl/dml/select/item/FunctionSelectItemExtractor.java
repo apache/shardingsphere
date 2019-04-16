@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Expressio
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
 /**
- * Function select item segment extractor.
+ * Function select item extractor.
  *
  * @author zhangliang
  */
@@ -40,10 +40,7 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
     @Override
     public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
-        if (!functionNode.isPresent()) {
-            return Optional.absent();
-        }
-        return Optional.of(extractFunctionSelectItemSegment(expressionNode, functionNode.get()));
+        return functionNode.isPresent() ? Optional.of(extractFunctionSelectItemSegment(expressionNode, functionNode.get())) : Optional.<SelectItemSegment>absent();
     }
     
     private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
@@ -51,7 +48,7 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
         Optional<AggregationType> aggregationType = findAggregationType(functionName);
         AliasAvailable result = aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), functionNode)
                 : new ExpressionSelectItemSegment(functionNode.getText(), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());
         }
