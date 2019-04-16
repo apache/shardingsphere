@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Or condition segment.
@@ -31,5 +31,5 @@ import java.util.List;
 @Getter
 public final class OrConditionSegment implements SQLSegment {
     
-    private List<AndConditionSegment> andConditions = new LinkedList<>();
+    private Collection<AndConditionSegment> andConditions = new LinkedList<>();
 }
