@@ -24,13 +24,13 @@ import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Star select item segment.
+ * Shorthand select item segment.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class StarSelectItemSegment implements SelectItemSegment, OwnerAvailable {
+public final class ShorthandSelectItemSegment implements SelectItemSegment, OwnerAvailable {
     
     private final int startIndex;
     

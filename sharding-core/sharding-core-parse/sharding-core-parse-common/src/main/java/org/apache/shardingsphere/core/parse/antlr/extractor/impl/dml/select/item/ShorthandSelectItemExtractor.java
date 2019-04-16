@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ShorthandSelectItemSegment;
 
 /**
  * Shorthand select item extractor.
@@ -32,14 +32,14 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelec
 public final class ShorthandSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<StarSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<ShorthandSelectItemSegment> extract(final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
-            return Optional.of(new StarSelectItemSegment(unqualifiedShorthandNode.get().getStart().getStartIndex()));
+            return Optional.of(new ShorthandSelectItemSegment(unqualifiedShorthandNode.get().getStart().getStartIndex()));
         }
         Optional<ParserRuleContext> qualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUALIFIED_SHORTHAND);
         if (qualifiedShorthandNode.isPresent()) {
-            StarSelectItemSegment result = new StarSelectItemSegment(qualifiedShorthandNode.get().getStart().getStartIndex());
+            ShorthandSelectItemSegment result = new ShorthandSelectItemSegment(qualifiedShorthandNode.get().getStart().getStartIndex());
             result.setOwner(qualifiedShorthandNode.get().getChild(0).getText());
             return Optional.of(result);
         }

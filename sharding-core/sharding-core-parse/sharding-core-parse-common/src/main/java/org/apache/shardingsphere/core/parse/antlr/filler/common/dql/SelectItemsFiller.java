@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Aggregati
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedAlias;
@@ -73,7 +73,7 @@ public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegm
         Set<String> distinctColumnNames = new LinkedHashSet<>();
         DistinctSelectItem distinctSelectItem = null;
         int offset = 0;
-        if (firstSelectItemSegment instanceof StarSelectItemSegment) {
+        if (firstSelectItemSegment instanceof ShorthandSelectItemSegment) {
             selectItemFiller.fill(firstSelectItemSegment, selectStatement);
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
         } else if (firstSelectItemSegment instanceof ColumnSelectItemSegment) {
