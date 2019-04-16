@@ -85,7 +85,7 @@ public final class BasicExpressionParser {
     
     private SQLExpression getExpression(final String literals, final SQLStatement sqlStatement) {
         if (lexerEngine.equalAny(Symbol.QUESTION)) {
-            sqlStatement.increaseParametersIndex();
+            sqlStatement.setParametersIndex(sqlStatement.getParametersIndex() + 1);
             return new SQLPlaceholderExpression(sqlStatement.getParametersIndex() - 1);
         }
         if (lexerEngine.equalAny(Literals.CHARS)) {
@@ -123,7 +123,7 @@ public final class BasicExpressionParser {
     private void skipRestCompositeExpression(final SQLStatement sqlStatement) {
         while (lexerEngine.skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT)) {
             if (lexerEngine.equalAny(Symbol.QUESTION)) {
-                sqlStatement.increaseParametersIndex();
+                sqlStatement.setParametersIndex(sqlStatement.getParametersIndex() + 1);
             }
             lexerEngine.nextToken();
             lexerEngine.skipParentheses(sqlStatement);

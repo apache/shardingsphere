@@ -91,9 +91,11 @@ public interface SQLStatement {
     int getParametersIndex();
     
     /**
-     * Increase parameters index.
+     * Set parameters index.
+     * 
+     * @param parametersIndex parameters index
      */
-    void increaseParametersIndex();
+    void setParametersIndex(int parametersIndex);
     
     /**
      * Get logic SQL.

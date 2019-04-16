@@ -94,7 +94,7 @@ public final class LexerEngine {
             lexer.nextToken();
             while (true) {
                 if (equalAny(Symbol.QUESTION)) {
-                    sqlStatement.increaseParametersIndex();
+                    sqlStatement.setParametersIndex(sqlStatement.getParametersIndex() + 1);
                 }
                 if (Assist.END == lexer.getCurrentToken().getType() || (Symbol.RIGHT_PAREN == lexer.getCurrentToken().getType() && 0 == count)) {
                     break;

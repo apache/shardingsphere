@@ -80,9 +80,4 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         Collections.sort(sqlTokens);
         return sqlTokens;
     }
-    
-    @Override
-    public final void increaseParametersIndex() {
-        ++parametersIndex;
-    }
 }

@@ -44,11 +44,7 @@ public class EncryptWhereFiller implements SQLSegmentFiller<WhereSegment>, Encry
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
         new EncryptOrConditionFiller(encryptRule, shardingTableMetaData).fill(sqlSegment.getConditions(), sqlStatement);
-        int count = 0;
-        while (count < sqlSegment.getParameterCount()) {
-            sqlStatement.increaseParametersIndex();
-            count++;
-        }
+        sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
             deleteStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
