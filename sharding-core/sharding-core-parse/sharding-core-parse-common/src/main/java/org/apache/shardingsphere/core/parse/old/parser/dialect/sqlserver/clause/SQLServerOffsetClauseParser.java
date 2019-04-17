@@ -54,7 +54,7 @@ public final class SQLServerOffsetClauseParser implements SQLClauseParser {
             offsetValue = Integer.parseInt(lexerEngine.getCurrentToken().getLiterals());
         } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
             offsetIndex = selectStatement.getParametersIndex();
-            selectStatement.increaseParametersIndex();
+            selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
             throw new SQLParsingException(lexerEngine);
         }
@@ -69,7 +69,7 @@ public final class SQLServerOffsetClauseParser implements SQLClauseParser {
                 rowCountValue = Integer.parseInt(lexerEngine.getCurrentToken().getLiterals());
             } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
                 rowCountIndex = selectStatement.getParametersIndex();
-                selectStatement.increaseParametersIndex();
+                selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
             } else {
                 throw new SQLParsingException(lexerEngine);
             }

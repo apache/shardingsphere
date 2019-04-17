@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.old.parser.sql.dml.update;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
@@ -48,7 +49,7 @@ public abstract class AbstractUpdateParser implements SQLParser {
         lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenUpdateAndTable());
         lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBetweenUpdateAndTable());
-        DMLStatement result = new DMLStatement();
+        DMLStatement result = new UpdateStatement();
         updateClauseParserFacade.getTableReferencesClauseParser().parse(result, true);
         updateClauseParserFacade.getUpdateSetItemsClauseParser().parse(result);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);

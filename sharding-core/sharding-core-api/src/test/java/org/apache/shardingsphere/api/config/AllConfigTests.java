@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.api.config;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfigurationTest;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfigurationTest;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigurationTest;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfigurationTest;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfigurationTest;
@@ -38,7 +38,7 @@ import org.junit.runners.Suite.SuiteClasses;
         HintShardingStrategyConfigurationTest.class, 
         MasterSlaveRuleConfigurationTest.class,
         KeyGeneratorConfigurationTest.class, 
-        EncryptorConfigurationTest.class
+        EncryptorRuleConfigurationTest.class
     })
 public final class AllConfigTests {
 }

@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Insert value.
@@ -35,12 +35,20 @@ import java.util.List;
 @ToString
 public final class InsertValue {
     
-    private final int parametersCount;
+    private final Collection<SQLExpression> assignments;
     
-    private final List<SQLExpression> columnValues;
-    
-    // TODO to be removed, for old parse engine only
-    public InsertValue(final int parametersCount) {
-        this(parametersCount, new LinkedList<SQLExpression>());
+    /**
+     * Get parameters count.
+     * 
+     * @return parameters count
+     */
+    public int getParametersCount() {
+        int result = 0;
+        for (SQLExpression each : assignments) {
+            if (each instanceof SQLPlaceholderExpression) {
+                result++;
+            }
+        }
+        return result;
     }
 }

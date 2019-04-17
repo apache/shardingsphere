@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class PostgreSQLInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public PostgreSQLInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new PostgreSQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
+        super(new PostgreSQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(lexerEngine), 
                 new PostgreSQLInsertValuesClauseParser(shardingRule, lexerEngine), new PostgreSQLInsertSetClauseParser(shardingRule, lexerEngine), 
                 new PostgreSQLInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }

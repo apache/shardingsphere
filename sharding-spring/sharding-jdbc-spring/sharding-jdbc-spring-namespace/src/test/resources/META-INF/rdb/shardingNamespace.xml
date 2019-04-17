@@ -47,13 +47,15 @@
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
     </bean:properties>
-    <sharding:encryptor id="encryptor" type="test" columns="pwd1, pwd2" assisted-query-columns="pwd1_index, pwd2_index" props-ref="dataProtectorProps" />
     
     <sharding:data-source id="simpleShardingDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" encryptor-ref="encryptor" />
+                <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
+            <sharding:encrypt-rules>
+                <sharding:encryptor-rule id="encryptor" type="test" qualified-columns="t_order.pwd1, t_order.pwd2" assisted-query-columns="t_order.pwd1_index, t_order.pwd2_index" props-ref="dataProtectorProps" />
+            </sharding:encrypt-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 

@@ -17,4 +17,5 @@
 
 name: min_config
 registry:
+  type: SecondTestRegistryCenter
   serverLists: localhost:3181

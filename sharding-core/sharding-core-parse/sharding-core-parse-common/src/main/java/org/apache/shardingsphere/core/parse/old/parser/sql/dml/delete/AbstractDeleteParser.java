@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.old.parser.sql.dml.delete;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
@@ -48,7 +49,7 @@ public abstract class AbstractDeleteParser implements SQLParser {
         lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenDeleteAndTable());
         lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBetweenDeleteAndTable());
-        DMLStatement result = new DMLStatement();
+        DMLStatement result = new DeleteStatement();
         deleteClauseParserFacade.getTableReferencesClauseParser().parse(result, true);
         lexerEngine.skipUntil(DefaultKeyword.WHERE);
         deleteClauseParserFacade.getWhereClauseParser().parse(shardingRule, result, Collections.<SelectItem>emptyList());

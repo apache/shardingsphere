@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Test;
 
@@ -34,23 +33,58 @@ public final class ShardingEncryptorStrategyTest {
     
     @Test
     public void assertValidConstructor() {
-        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("test", "pwd1, pwd2", new Properties());
-        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorConfiguration);
-        assertThat(actual.getColumns().iterator().next(), is("pwd1"));
-        assertTrue(actual.getAssistedQueryColumns().isEmpty());
-        assertThat(actual.getShardingEncryptor(), instanceOf(ShardingEncryptor.class));
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getShardingEncryptor("test", "pwd2").get(), instanceOf(ShardingEncryptor.class));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertInvalidConstructor() {
-        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("test", "pwd1, pwd2", "pwd1_index", new Properties());
-        new ShardingEncryptorStrategy(encryptorConfiguration);
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", "test.pwd1, test.pwd2", "test.pwd1_index", new Properties());
+        new ShardingEncryptorStrategy(encryptorRuleConfiguration);
     }
     
     @Test
     public void assertGetAssistedQueryColumn() {
-        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("test", "pwd1, pwd2", "pwd1_index,pwd2_index", new Properties());
-        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorConfiguration);
-        assertThat(actual.getAssistedQueryColumn("pwd1"), is(Optional.of("pwd1_index")));
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", "test.pwd1, test.pwd2", "test.pwd1_index,test.pwd2_index", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getAssistedQueryColumn("test", "pwd1"), is(Optional.of("pwd1_index")));
+        assertThat(actual.getAssistedQueryColumn("test", "pwd3"), is(Optional.<String>absent()));
+    }
+    
+    @Test
+    public void assertGetAssistedQueryColumnWithoutResult() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getAssistedQueryColumn("test", "pwd1"), is(Optional.<String>absent()));
+    }
+    
+    @Test
+    public void assertGetAssistedQueryCount() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", "test.pwd1, test.pwd2", "test.pwd1_index,test.pwd2_index", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getAssistedQueryColumnCount("test"), is(2));
+    }
+    
+    @Test
+    public void assertGetAssistedQueryColumnCountWithoutResult() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("test", "test.pwd1, test.pwd2", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getAssistedQueryColumnCount("test"), is(0));
+        assertThat(actual.getAssistedQueryColumnCount("test1"), is(0));
+    }
+    
+    @Test
+    public void assertGetEncryptTableNames() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", "test.pwd1, test.pwd2", "test.pwd1_index,test.pwd2_index", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertThat(actual.getEncryptTableNames().size(), is(1));
+    }
+    
+    @Test
+    public void assertIsHasShardingQueryAssistedEncryptor() {
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", "test.pwd1, test.pwd2", "test.pwd1_index,test.pwd2_index", new Properties());
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(encryptorRuleConfiguration);
+        assertTrue(actual.isHasShardingQueryAssistedEncryptor("test"));
     }
 }

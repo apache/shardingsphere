@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
@@ -29,24 +28,24 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 public interface ExpressionSegment extends SQLSegment {
     
     /**
-     * Convert to SQL Expression.
-     * 
-     * @param sql SQL text
-     * @return sql expression object
-     */
-    Optional<SQLExpression> convertToSQLExpression(String sql);
-    
-    /**
      * Get start index.
-     * 
+     *
      * @return start index
      */
     int getStartIndex();
     
     /**
      * Get stop index.
-     * 
+     *
      * @return stop index
      */
     int getStopIndex();
+    
+    /**
+     * Get SQL Expression.
+     * 
+     * @param sql SQL text
+     * @return SQL expression
+     */
+    SQLExpression getSQLExpression(String sql);
 }

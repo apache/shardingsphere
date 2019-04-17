@@ -391,7 +391,7 @@ KEEP
     : K E E P
     ;
 
-SEQUENCEE
+SEQUENCE
     : S E Q U E N C E
     ;
 

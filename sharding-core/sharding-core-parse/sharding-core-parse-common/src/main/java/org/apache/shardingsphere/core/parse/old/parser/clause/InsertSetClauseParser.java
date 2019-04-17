@@ -44,6 +44,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Insert set clause parser.
@@ -100,8 +101,8 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
                 insertStatement.getRouteConditions().add(new Condition(column, right));
             }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex());
-        insertStatement.getInsertValues().getValues().add(insertValue);
+        InsertValue insertValue = new InsertValue(new LinkedList<SQLExpression>());
+        insertStatement.getValues().add(insertValue);
     }
     
     private void removeUnnecessaryToken(final InsertStatement insertStatement) {

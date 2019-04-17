@@ -101,7 +101,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (int i = 1; i <= queryResult.getColumnCount(); i++) {
+        for (int i = queryResult.getColumnCount(); i > 0; i--) {
             result.put(SQLUtil.getExactlyValue(queryResult.getColumnLabel(i)), i);
         }
         return result;

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class MySQLInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public MySQLInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new MySQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
+        super(new MySQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(lexerEngine), 
                 new MySQLInsertValuesClauseParser(shardingRule, lexerEngine), new MySQLInsertSetClauseParser(shardingRule, lexerEngine),
                 new MySQLInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }

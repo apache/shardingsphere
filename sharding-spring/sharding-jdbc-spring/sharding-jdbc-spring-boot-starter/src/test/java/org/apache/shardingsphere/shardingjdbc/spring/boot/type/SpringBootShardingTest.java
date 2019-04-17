@@ -24,10 +24,11 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorStrategy;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestShardingEncryptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -64,10 +65,10 @@ public class SpringBootShardingTest {
         ShardingProperties shardingProperties = shardingContext.getShardingProperties();
         assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
-        ShardingEncryptorStrategy shardingEncryptorStrategy = shardingContext.getShardingRule().getTableRule("t_order").getShardingEncryptorStrategy();
-        assertThat(shardingEncryptorStrategy.getColumns().size(), is(2));
-        assertThat(shardingEncryptorStrategy.getAssistedQueryColumns().size(), is(0));
-        assertThat(shardingEncryptorStrategy.getShardingEncryptor().getProperties().getProperty("appToken"), is("business"));
+        ShardingEncryptorEngine shardingEncryptorEngine = shardingContext.getShardingRule().getShardingEncryptorEngine();
+        assertThat(shardingEncryptorEngine.getEncryptTableNames().iterator().next(), is("t_order"));
+        assertThat(shardingEncryptorEngine.getAssistedQueryColumnCount("t_order"), is(0));
+        assertThat(shardingEncryptorEngine.getShardingEncryptor("t_order", "pwd2").get(), instanceOf(TestShardingEncryptor.class));
     }
     
     @Test

@@ -458,7 +458,6 @@
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
             <table-token start-index="56" table-name="t_order_item" length="12" />
-            <index-token start-index="38" stop-index="48" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>

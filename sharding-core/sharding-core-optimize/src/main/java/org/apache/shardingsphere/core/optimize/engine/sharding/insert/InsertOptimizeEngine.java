@@ -23,16 +23,14 @@ import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
@@ -43,6 +41,7 @@ import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,32 +69,32 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
         List<ShardingCondition> shardingConditions = new ArrayList<>(andConditions.size());
-        InsertColumnValues insertColumnValues = createInsertColumnValues();
+        InsertOptimizeResult insertOptimizeResult = createInsertOptimizeResult();
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
-            InsertValue insertValue = insertStatement.getInsertValues().getValues().get(i);
+            InsertValue insertValue = insertStatement.getValues().get(i);
             SQLExpression[] currentColumnValues = createCurrentColumnValues(insertValue);
             Object[] currentParameters = createCurrentParameters(parametersCount, insertValue);
             parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
-            insertColumnValues.addInsertColumnValue(currentColumnValues, currentParameters);
+            insertOptimizeResult.addUnit(currentColumnValues, currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
-                fillWithGeneratedKeyName(insertColumnValues);
-                fillWithColumnValue(insertColumnValues.getColumnValues().get(i), currentGeneratedKey);
+                fillWithGeneratedKeyName(insertOptimizeResult);
+                fillInsertOptimizeResultUnit(insertOptimizeResult.getUnits().get(i), currentGeneratedKey);
                 fillShardingCondition(shardingCondition, currentGeneratedKey);
             }
             if (isNeededToAppendQueryAssistedColumn()) {
-                fillWithQueryAssistedColumn(insertColumnValues, i);
+                fillWithQueryAssistedColumn(insertOptimizeResult, i);
             }
             shardingConditions.add(shardingCondition);
         }
-        return new OptimizeResult(new ShardingConditions(shardingConditions), insertColumnValues);
+        return new OptimizeResult(new ShardingConditions(shardingConditions), insertOptimizeResult);
     }
     
-    private InsertColumnValues createInsertColumnValues() {
-        DefaultKeyword type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? DefaultKeyword.VALUES : DefaultKeyword.SET;
-        return new InsertColumnValues(type, insertStatement.getInsertColumnNames());
+    private InsertOptimizeResult createInsertOptimizeResult() {
+        InsertType type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? InsertType.VALUES : InsertType.SET;
+        return new InsertOptimizeResult(type, insertStatement.getColumnNames());
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {
@@ -103,8 +102,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {
-        SQLExpression[] result = new SQLExpression[insertValue.getColumnValues().size() + getIncrement()];
-        insertValue.getColumnValues().toArray(result);
+        SQLExpression[] result = new SQLExpression[insertValue.getAssignments().size() + getIncrement()];
+        insertValue.getAssignments().toArray(result);
         return result;
     }
     
@@ -123,7 +122,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             result += 1;
         }
         if (isNeededToAppendQueryAssistedColumn()) {
-            result += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName()).get();
+            result += shardingRule.getShardingEncryptorEngine().getAssistedQueryColumnCount(insertStatement.getTables().getSingleTableName());
         }
         return result;
     }
@@ -131,7 +130,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private boolean isNeededToAppendGeneratedKey() {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
-        return generateKeyColumn.isPresent() && !insertStatement.getColumns().contains(new Column(generateKeyColumn.get(), tableName));
+        int valueSize = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
+        return insertStatement.getColumnNames().size() != valueSize || generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get());
     }
     
     private ShardingCondition createShardingCondition(final AndCondition andCondition) {
@@ -148,49 +148,47 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void fillWithGeneratedKeyName(final InsertColumnValues insertColumnValues) {
+    private void fillWithGeneratedKeyName(final InsertOptimizeResult insertOptimizeResult) {
         String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName()).get();
-        insertColumnValues.getColumnNames().add(generateKeyColumnName);
+        insertOptimizeResult.getColumnNames().remove(generateKeyColumnName);
+        insertOptimizeResult.getColumnNames().add(generateKeyColumnName);
     }
     
     private void fillShardingCondition(final ShardingCondition shardingCondition, final Comparable<?> currentGeneratedKey) {
         String tableName = insertStatement.getTables().getSingleTableName();
         String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName).get();
         if (shardingRule.isShardingColumn(generateKeyColumnName, tableName)) {
-            Column generateKeyColumn = new Column(generateKeyColumnName, tableName);
-            List<Comparable<?>> conditionValues = new GeneratedKeyCondition(generateKeyColumn, -1, currentGeneratedKey).getConditionValues(parameters);
-            shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumn.getName(), generateKeyColumn.getTableName(), conditionValues));
+            shardingCondition.getShardingValues().add(new ListRouteValue<>(generateKeyColumnName, tableName, Collections.<Comparable<?>>singletonList(currentGeneratedKey)));
         }
-        insertStatement.setContainGenerateKey(true);
     }
     
     private boolean isNeededToAppendQueryAssistedColumn() {
         return shardingRule.getShardingEncryptorEngine().isHasShardingQueryAssistedEncryptor(insertStatement.getTables().getSingleTableName());
     }
     
-    private void fillWithQueryAssistedColumn(final InsertColumnValues insertColumnValues, final int insertColumnValueIndex) {
+    private void fillWithQueryAssistedColumn(final InsertOptimizeResult insertOptimizeResult, final int insertOptimizeResultIndex) {
         Collection<String> assistedColumnNames = new LinkedList<>();
-        for (String each : insertColumnValues.getColumnNames()) {
-            InsertColumnValue insertColumnValue = insertColumnValues.getColumnValues().get(insertColumnValueIndex);
+        for (String each : insertOptimizeResult.getColumnNames()) {
+            InsertOptimizeResultUnit unit = insertOptimizeResult.getUnits().get(insertOptimizeResultIndex);
             Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
                 assistedColumnNames.add(assistedColumnName.get());
-                fillWithColumnValue(insertColumnValue, (Comparable<?>) insertColumnValue.getColumnValue(each));
+                fillInsertOptimizeResultUnit(unit, (Comparable<?>) unit.getColumnValue(each));
             }
         }
         if (!assistedColumnNames.isEmpty()) {
-            insertColumnValues.getColumnNames().addAll(assistedColumnNames);
+            insertOptimizeResult.getColumnNames().addAll(assistedColumnNames);
         }
     }
     
-    private void fillWithColumnValue(final InsertColumnValue insertColumnValue, final Comparable<?> columnValue) {
+    private void fillInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Comparable<?> columnValue) {
         if (!parameters.isEmpty()) {
-            insertColumnValue.addColumnValue(new SQLPlaceholderExpression(parameters.size() - 1));
-            insertColumnValue.addColumnParameter(columnValue);
+            unit.addColumnValue(new SQLPlaceholderExpression(parameters.size() - 1));
+            unit.addColumnParameter(columnValue);
         } else if (columnValue.getClass() == String.class) {
-            insertColumnValue.addColumnValue(new SQLTextExpression(columnValue.toString()));
+            unit.addColumnValue(new SQLTextExpression(columnValue.toString()));
         } else {
-            insertColumnValue.addColumnValue(new SQLNumberExpression((Number) columnValue));
+            unit.addColumnValue(new SQLNumberExpression((Number) columnValue));
         }
     }
 }

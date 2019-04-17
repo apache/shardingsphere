@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 
 /**
- * Equals value expression segment.
+ * Compare value expression segment.
  * 
  * @author duhongjun
  */
@@ -37,6 +37,6 @@ public final class CompareValueExpressionSegment implements SQLRightValueExpress
 
     @Override
     public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, compareOperator, expression.convertToSQLExpression(sql).get());
+        return new Condition(column, compareOperator, expression.getSQLExpression(sql));
     }
 }

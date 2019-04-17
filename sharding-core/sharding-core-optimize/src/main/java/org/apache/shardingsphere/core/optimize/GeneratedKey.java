@@ -21,9 +21,16 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,39 +51,80 @@ public final class GeneratedKey {
     
     /**
      * Get generate key.
-     * 
+     *
      * @param shardingRule sharding rule
      * @param parameters SQL parameters
      * @param insertStatement insert statement
      * @return generate key
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final List<Object> parameters, final InsertStatement insertStatement) {
-        return insertStatement.isContainGenerateKeyColumn(shardingRule) ? findGeneratedKey(parameters, insertStatement) : createGeneratedKey(shardingRule, insertStatement);
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        if (!generateKeyColumnName.isPresent()) {
+            return Optional.absent();
+        }
+        return isContainsGenerateKeyColumn(insertStatement, generateKeyColumnName.get()) 
+                ? findGeneratedKey(parameters, insertStatement, generateKeyColumnName.get()) : Optional.of(createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
     }
     
-    private static Optional<GeneratedKey> createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        return generateKeyColumnName.isPresent()
-                ? Optional.of(createGeneratedKey(shardingRule, generateKeyColumnName.get(), tableName, insertStatement.getInsertValues().getValues().size())) : Optional.<GeneratedKey>absent();
+    private static boolean isContainsGenerateKeyColumn(final InsertStatement insertStatement, final String generateKeyColumnName) {
+        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
+        return valuesCount == insertStatement.getColumnNames().size() && insertStatement.getColumnNames().contains(generateKeyColumnName);
     }
     
-    private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final String generateKeyColumnName, final String generateKeyTableName, final int insertValueSize) {
-        GeneratedKey result = new GeneratedKey(generateKeyColumnName);
-        for (int i = 0; i < insertValueSize; i++) {
-            result.getGeneratedKeys().add(shardingRule.generateKey(generateKeyTableName));
+    private static Optional<GeneratedKey> findGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
+        GeneratedKey result = null;
+        for (SQLExpression each : findGenerateKeyExpressions(insertStatement, generateKeyColumnName)) {
+            if (null == result) {
+                result = new GeneratedKey(generateKeyColumnName);
+            }
+            if (each instanceof SQLPlaceholderExpression) {
+                result.getGeneratedKeys().add((Comparable<?>) parameters.get(((SQLPlaceholderExpression) each).getIndex()));
+            } else if (each instanceof SQLNumberExpression) {
+                result.getGeneratedKeys().add((Comparable<?>) ((SQLNumberExpression) each).getNumber());
+            } else if (each instanceof SQLTextExpression) {
+                result.getGeneratedKeys().add(((SQLTextExpression) each).getText());
+            }
+        }
+        return Optional.fromNullable(result);
+    }
+    
+    private static Collection<SQLExpression> findGenerateKeyExpressions(final InsertStatement insertStatement, final String generateKeyColumnName) {
+        Collection<SQLExpression> result = new LinkedList<>();
+        Collection<String> columnNames = getColumnNames(insertStatement, generateKeyColumnName);
+        for (InsertValue each : insertStatement.getValues()) {
+            Optional<SQLExpression> generateKeyExpression = findGenerateKeyExpression(generateKeyColumnName, columnNames.iterator(), each);
+            if (generateKeyExpression.isPresent()) {
+                result.add(generateKeyExpression.get());
+            }
         }
         return result;
     }
     
-    private static Optional<GeneratedKey> findGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement) {
-        GeneratedKey result = null;
-        for (GeneratedKeyCondition each : insertStatement.getGeneratedKeyConditions()) {
-            if (null == result) {
-                result = new GeneratedKey(each.getColumn().getName());
-            }
-            result.getGeneratedKeys().add(-1 == each.getIndex() ? each.getValue() : (Comparable<?>) parameters.get(each.getIndex()));
+    private static Collection<String> getColumnNames(final InsertStatement insertStatement, final String generateKeyColumnName) {
+        int valuesCount = insertStatement.getValues().isEmpty() ? 0 : insertStatement.getValues().get(0).getAssignments().size();
+        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
+        if (valuesCount != insertStatement.getColumnNames().size()) {
+            result.remove(generateKeyColumnName);
         }
-        return Optional.fromNullable(result);
+        return result;
+    }
+    
+    private static Optional<SQLExpression> findGenerateKeyExpression(final String generateKeyColumnName, final Iterator<String> columnNames, final InsertValue insertValue) {
+        for (SQLExpression each : insertValue.getAssignments()) {
+            String columnName = columnNames.next();
+            if (generateKeyColumnName.equalsIgnoreCase(columnName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
+        String tableName = insertStatement.getTables().getSingleTableName();
+        GeneratedKey result = new GeneratedKey(generateKeyColumnName);
+        for (int i = 0; i < insertStatement.getValues().size(); i++) {
+            result.getGeneratedKeys().add(shardingRule.generateKey(tableName));
+        }
+        return result;
     }
 }

@@ -93,7 +93,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             return ((SelectStatement) sqlStatement).getItems().size();
         }
         if (sqlStatement instanceof InsertStatement) {
-            return ((InsertStatement) sqlStatement).getColumns().size();
+            return ((InsertStatement) sqlStatement).getColumnNames().size();
         }
         return 0;
     }

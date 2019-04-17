@@ -32,4 +32,11 @@ public interface OwnerAvailable {
      * @return owner
      */
     Optional<String> getOwner();
+    
+    /**
+     * Set owner.
+     *
+     * @param owner owner
+     */
+    void setOwner(String owner);
 }

@@ -21,6 +21,10 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ColumnSelectItemExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ExpressionSelectItemExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.FunctionSelectItemExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ShorthandSelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
 /**
@@ -30,24 +34,24 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
  */
 public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     
-    private final StarSelectItemSegmentExtractor starItemExpressionExtractor = new StarSelectItemSegmentExtractor();
+    private final ShorthandSelectItemExtractor shorthandSelectItemExtractor = new ShorthandSelectItemExtractor();
     
-    private final ColumnSelectItemSegmentExtractor columnSelectItemSegmentExtractor = new ColumnSelectItemSegmentExtractor();
+    private final ColumnSelectItemExtractor columnSelectItemExtractor = new ColumnSelectItemExtractor();
     
-    private final FunctionSelectItemSegmentExtractor functionSelectItemSegmentExtractor = new FunctionSelectItemSegmentExtractor();
+    private final FunctionSelectItemExtractor functionSelectItemSegmentExtractor = new FunctionSelectItemExtractor();
     
-    private final ExpressionSelectItemSegmentExtractor expressionSelectItemSegmentExtractor = new ExpressionSelectItemSegmentExtractor();
+    private final ExpressionSelectItemExtractor expressionSelectItemExtractor = new ExpressionSelectItemExtractor();
     
     private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
     
     @Override
     public Optional<? extends SelectItemSegment> extract(final ParserRuleContext expressionNode) {
         Optional<? extends SelectItemSegment> result;
-        result = starItemExpressionExtractor.extract(expressionNode);
+        result = shorthandSelectItemExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }
-        result = columnSelectItemSegmentExtractor.extract(expressionNode);
+        result = columnSelectItemExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }
@@ -55,7 +59,7 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
-        result = expressionSelectItemSegmentExtractor.extract(expressionNode);
+        result = expressionSelectItemExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }

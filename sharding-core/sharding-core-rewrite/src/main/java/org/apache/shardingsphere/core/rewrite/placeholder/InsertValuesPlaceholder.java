@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.result.InsertColumnValues.InsertColumnValue;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Insert values placeholder for rewrite.
@@ -36,7 +36,7 @@ public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
     
-    private final Set<String> columnNames;
+    private final Collection<String> columnNames;
     
-    private final List<InsertColumnValue> columnValues;
+    private final List<InsertOptimizeResultUnit> units;
 }

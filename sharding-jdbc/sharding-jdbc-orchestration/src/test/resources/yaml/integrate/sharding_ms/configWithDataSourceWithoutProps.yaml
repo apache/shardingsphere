@@ -95,5 +95,6 @@ orchestration:
   name: demo_ds_ms
   overwrite: true
   registry:
+    type: TestRegistryCenter
     serverLists: localhost:3181
     namespace: orchestration-yaml-test

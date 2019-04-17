@@ -36,17 +36,16 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
-        if (columnNode.isPresent()) {
-            return Optional.of(getColumnSegment(columnNode.get()));
-        }
-        return Optional.absent();
+        return columnNode.isPresent() ? Optional.of(getColumnSegment(columnNode.get())) : Optional.<ColumnSegment>absent();
     }
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
         if (1 == columnNode.getChildCount()) {
-            return new ColumnSegment(columnNode.getChild(0).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+            return new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getChild(0).getText());
         }
         Preconditions.checkState(3 == columnNode.getChildCount());
-        return new ColumnSegment(columnNode.getChild(2).getText(), columnNode.getChild(0).getText(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getChild(2).getText());
+        result.setOwner(columnNode.getChild(0).getText());
+        return result;
     }
 }

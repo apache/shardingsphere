@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlTableRuleConfiguration;
@@ -52,9 +50,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
     @Mock
     private KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper;
     
-    @Mock
-    private EncryptorConfigurationYamlSwapper encryptorConfigurationYamlSwapper;
-    
     private TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
     
     @Before
@@ -65,9 +60,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         setSwapper("keyGeneratorConfigurationYamlSwapper", keyGeneratorConfigurationYamlSwapper);
         when(keyGeneratorConfigurationYamlSwapper.swap(ArgumentMatchers.<KeyGeneratorConfiguration>any())).thenReturn(mock(YamlKeyGeneratorConfiguration.class));
         when(keyGeneratorConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlKeyGeneratorConfiguration>any())).thenReturn(mock(KeyGeneratorConfiguration.class));
-        setSwapper("encryptorConfigurationYamlSwapper", encryptorConfigurationYamlSwapper);
-        when(encryptorConfigurationYamlSwapper.swap(ArgumentMatchers.<EncryptorConfiguration>any())).thenReturn(mock(YamlEncryptorConfiguration.class));
-        when(encryptorConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlEncryptorConfiguration>any())).thenReturn(mock(EncryptorConfiguration.class));
     }
     
     private void setSwapper(final String swapperFieldName, final YamlSwapper swapperFieldValue) throws ReflectiveOperationException {
@@ -84,7 +76,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDatabaseStrategy());
         assertNull(actual.getTableStrategy());
         assertNull(actual.getKeyGenerator());
-        assertNull(actual.getEncryptor());
         assertNull(actual.getLogicIndex());
     }
     
@@ -94,7 +85,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         tableRuleConfiguration.setDatabaseShardingStrategyConfig(mock(InlineShardingStrategyConfiguration.class));
         tableRuleConfiguration.setTableShardingStrategyConfig(mock(InlineShardingStrategyConfiguration.class));
         tableRuleConfiguration.setKeyGeneratorConfig(mock(KeyGeneratorConfiguration.class));
-        tableRuleConfiguration.setEncryptorConfig(mock(EncryptorConfiguration.class));
         tableRuleConfiguration.setLogicIndex("idx");
         YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(tableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
@@ -102,7 +92,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDatabaseStrategy());
         assertNotNull(actual.getTableStrategy());
         assertNotNull(actual.getKeyGenerator());
-        assertNotNull(actual.getEncryptor());
         assertThat(actual.getLogicIndex(), is("idx"));
     }
     
@@ -122,7 +111,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDatabaseShardingStrategyConfig());
         assertNull(actual.getTableShardingStrategyConfig());
         assertNull(actual.getKeyGeneratorConfig());
-        assertNull(actual.getEncryptorConfig());
         assertNull(actual.getLogicIndex());
     }
     
@@ -134,7 +122,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         yamlConfiguration.setDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setTableStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setKeyGenerator(mock(YamlKeyGeneratorConfiguration.class));
-        yamlConfiguration.setEncryptor(mock(YamlEncryptorConfiguration.class));
         yamlConfiguration.setLogicIndex("idx");
         TableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
@@ -142,7 +129,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDatabaseShardingStrategyConfig());
         assertNotNull(actual.getTableShardingStrategyConfig());
         assertNotNull(actual.getKeyGeneratorConfig());
-        assertNotNull(actual.getEncryptorConfig());
         assertThat(actual.getLogicIndex(), is("idx"));
     }
 }

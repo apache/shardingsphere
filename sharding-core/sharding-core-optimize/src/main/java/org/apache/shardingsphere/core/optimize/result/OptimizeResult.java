@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 
 import java.util.Collections;
 
@@ -36,22 +37,22 @@ public final class OptimizeResult {
     @Getter
     private final ShardingConditions shardingConditions;
     
-    private final InsertColumnValues insertColumnValues;
+    private final InsertOptimizeResult insertOptimizeResult;
     
     public OptimizeResult(final ShardingConditions shardingConditions) {
         this(shardingConditions, null);
     }
     
-    public OptimizeResult(final InsertColumnValues insertColumnValues) {
-        this(new ShardingConditions(Collections.<ShardingCondition>emptyList()), insertColumnValues);
+    public OptimizeResult(final InsertOptimizeResult insertOptimizeResult) {
+        this(new ShardingConditions(Collections.<ShardingCondition>emptyList()), insertOptimizeResult);
     }
     
     /**
-     * Get insert column values.
+     * Get insert optimize result.
      * 
-     * @return insert column values optional
+     * @return insert optimize result
      */
-    public Optional<InsertColumnValues> getInsertColumnValues() {
-        return Optional.fromNullable(insertColumnValues);
+    public Optional<InsertOptimizeResult> getInsertOptimizeResult() {
+        return Optional.fromNullable(insertOptimizeResult);
     }
 }

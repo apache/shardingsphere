@@ -74,7 +74,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             return;
         }
         if (isParameterForValue) {
-            selectStatement.increaseParametersIndex();
+            selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
             selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
         }
@@ -101,12 +101,12 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         }
         lexerEngine.nextToken();
         if (isParameterForValue) {
-            selectStatement.increaseParametersIndex();
+            selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
             selectStatement.addSQLToken(new OffsetToken(valueBeginPosition, value));
         }
         if (isParameterForRowCount) {
-            selectStatement.increaseParametersIndex();
+            selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
             selectStatement.addSQLToken(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
@@ -133,12 +133,12 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         }
         lexerEngine.nextToken();
         if (isParameterForOffset) {
-            selectStatement.increaseParametersIndex();
+            selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
             selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, offsetValue));
         }
         if (isParameterForValue) {
-            selectStatement.increaseParametersIndex();
+            selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
             selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
         }

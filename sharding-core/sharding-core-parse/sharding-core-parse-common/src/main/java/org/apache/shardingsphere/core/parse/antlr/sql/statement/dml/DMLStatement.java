@@ -25,14 +25,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.AbstractSQLState
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * DML statement.
@@ -42,23 +37,9 @@ import java.util.Map;
 @ToString(callSuper = true)
 @Getter
 @Setter
-public class DMLStatement extends AbstractSQLStatement {
+public abstract class DMLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.INSERT, DefaultKeyword.UPDATE, DefaultKeyword.DELETE);
-    
-    private boolean deleteStatement;
-    
-    private final Map<String, String> updateTableAlias = new HashMap<>();
-    
-    private final Map<Column, SQLExpression> updateColumnValues = new LinkedHashMap<>();
-    
-    private int whereStartIndex;
-    
-    private int whereStopIndex;
-    
-    private int whereParameterStartIndex;
-    
-    private int whereParameterEndIndex;
     
     public DMLStatement() {
         super(SQLType.DML);

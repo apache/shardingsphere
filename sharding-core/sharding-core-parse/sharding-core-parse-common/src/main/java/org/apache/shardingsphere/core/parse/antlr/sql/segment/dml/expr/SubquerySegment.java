@@ -22,12 +22,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -40,11 +41,15 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Setter
 public final class SubquerySegment implements SelectItemSegment, ExpressionSegment, AliasAvailable {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final boolean subqueryInFrom;
     
-    private SelectClauseSegment selectClauseSegment;
+    private SelectItemsSegment selectItemsSegment;
     
-    private FromWhereSegment fromWhereSegment;
+    private WhereSegment whereSegment;
     
     private GroupBySegment groupBySegment;
     
@@ -52,17 +57,13 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     
     private String alias;
     
-    private final int startIndex;
-    
-    private final int stopIndex; 
-    
     /**
-     * Get select clause segment.
+     * Get select items segment.
      * 
-     * @return select clause segment
+     * @return select items segment
      */
-    public Optional<SelectClauseSegment> getSelectClauseSegment() {
-        return Optional.fromNullable(selectClauseSegment);
+    public Optional<SelectItemsSegment> getSelectItemsSegment() {
+        return Optional.fromNullable(selectItemsSegment);
     }
     
     /**
@@ -70,8 +71,8 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
      *
      * @return from where segment
      */
-    public Optional<FromWhereSegment> getFromWhereSegment() {
-        return Optional.fromNullable(fromWhereSegment);
+    public Optional<WhereSegment> getWhereSegment() {
+        return Optional.fromNullable(whereSegment);
     }
     
     /**
@@ -103,7 +104,7 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     }
 
     @Override
-    public Optional<SQLExpression> convertToSQLExpression(final String sql) {
-        return Optional.absent();
+    public SQLExpression getSQLExpression(final String sql) {
+        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
     }
 }

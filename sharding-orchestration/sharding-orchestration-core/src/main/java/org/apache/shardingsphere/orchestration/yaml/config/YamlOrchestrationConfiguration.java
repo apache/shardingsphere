@@ -20,7 +20,6 @@ package org.apache.shardingsphere.orchestration.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
 /**
  * Orchestration configuration for YAML.
@@ -34,7 +33,7 @@ public class YamlOrchestrationConfiguration implements YamlConfiguration {
     
     private String name;
     
-    private RegistryCenterConfiguration registry;
+    private YamlRegistryCenterConfiguration registry;
     
     private boolean overwrite;
 }

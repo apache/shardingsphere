@@ -95,6 +95,9 @@ public final class LogicSchemas {
     
     private void initSchemas(final Collection<String> localSchemaNames, 
                              final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+        if (schemaRules.isEmpty()) {
+            logicSchemas.put(schemaDataSources.keySet().iterator().next(), createLogicSchema(schemaDataSources.keySet().iterator().next(), schemaDataSources, null, isUsingRegistry));
+        }
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
                 logicSchemas.put(entry.getKey(), createLogicSchema(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
@@ -106,9 +109,13 @@ public final class LogicSchemas {
             final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         LogicSchema result;
         try {
-            result = ruleConfiguration instanceof ShardingRuleConfiguration
-                    ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
-                    : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
+            if (ruleConfiguration instanceof ShardingRuleConfiguration) {
+                result = new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry);
+            } else if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
+                result = new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
+            } else {
+                result = new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
+            }
         } catch (final Exception ex) {
             log.error("Exception occur when create schema {}.\nThe exception detail is {}.", schemaName, ex.getMessage());
             throw ex;

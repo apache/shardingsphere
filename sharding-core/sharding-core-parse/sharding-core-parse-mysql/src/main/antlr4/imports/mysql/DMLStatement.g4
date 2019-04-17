@@ -27,10 +27,6 @@ insertSpecification_
     : (LOW_PRIORITY | DELAYED | HIGH_PRIORITY)? IGNORE?
     ;
 
-partitionNames_ 
-    : PARTITION identifier_ (COMMA_ identifier_)*
-    ;
-
 insertValuesClause
     : columnNames? (VALUES | VALUE) assignmentValues (COMMA_ assignmentValues)*
     ;
@@ -43,8 +39,20 @@ onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
+update
+    : UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause?
+    ;
+
+updateSpecification_
+    : LOW_PRIORITY? IGNORE?
+    ;
+
 assignment
     : columnName EQ_ assignmentValue
+    ;
+
+setAssignmentsClause
+    : SET assignment (COMMA_ assignment)*
     ;
 
 assignmentValues
@@ -56,68 +64,60 @@ assignmentValue
     : expr | DEFAULT
     ;
 
-setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
-    ;
-
-update
-    : updateClause setAssignmentsClause whereClause?
-    ;
-
-updateClause
-    : UPDATE LOW_PRIORITY? IGNORE? tableReferences
-    ;
-
 delete
-    : deleteClause whereClause?
+    : DELETE deleteSpecification_ (singleTableClause_ | multipleTablesClause_) whereClause?
     ;
 
-deleteClause
-    : DELETE LOW_PRIORITY? QUICK? IGNORE? (fromMulti | fromSingle) 
+deleteSpecification_
+    : LOW_PRIORITY? QUICK? IGNORE?
     ;
 
-fromSingle
-    : FROM tableName (PARTITION ignoredIdentifiers_)?
+singleTableClause_
+    : FROM tableName (AS? alias)? partitionNames_?
     ;
 
-fromMulti
-    : fromMultiTables FROM tableReferences | FROM fromMultiTables USING tableReferences
+multipleTablesClause_
+    : multipleTableNames_ FROM tableReferences | FROM multipleTableNames_ USING tableReferences
     ;
 
-fromMultiTables
-    : fromMultiTable (COMMA_ fromMultiTable)*
-    ;
-
-fromMultiTable
-    : tableName DOT_ASTERISK_?
+multipleTableNames_
+    : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
 select 
-    : unionSelect | withClause_
+    : withClause_? unionClause_
     ;
 
-unionSelect
-    : selectExpression (UNION (ALL | DISTINCT)? selectExpression)*
+withClause_
+    : WITH RECURSIVE? cteClause_ (COMMA_ cteClause_)*
     ;
 
-selectExpression
-    : selectClause fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause?
+cteClause_
+    : ignoredIdentifier_ columnNames? AS subquery
+    ;
+
+unionClause_
+    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
     ;
 
 selectClause
-    : SELECT selectSpecification selectExprs
+    : SELECT selectSpecification_* selectItems fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause?
     ;
 
-selectSpecification
-    : (ALL | distinct | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT? SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
+selectSpecification_
+    : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | (SQL_CACHE | SQL_NO_CACHE) | SQL_CALC_FOUND_ROWS
     ;
 
-selectExprs
-    : (unqualifiedShorthand | selectExpr) (COMMA_ selectExpr)*
-    ; 
+duplicateSpecification
+    : ALL | DISTINCT | DISTINCTROW
+    ;
 
-selectExpr
-    : (columnName | expr) AS? alias? | qualifiedShorthand
+selectItems
+    : (unqualifiedShorthand | selectItem) (COMMA_ selectItem)*
+    ;
+
+selectItem
+    : (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 alias
@@ -137,34 +137,40 @@ fromClause
     ;
 
 tableReferences
-    : tableReference (COMMA_ tableReference)*
+    : escapedTableReference_ (COMMA_ escapedTableReference_)*
+    ;
+
+escapedTableReference_
+    : tableReference  | LBE_ OJ tableReference RBE_
     ;
 
 tableReference
-    : (tableFactor joinTable)+ | tableFactor joinTable+ | tableFactor
+    : (tableFactor joinedTable)+ | tableFactor joinedTable*
     ;
 
 tableFactor
-    : tableName (PARTITION ignoredIdentifiers_)? (AS? alias)? indexHintList_? | subquery AS? alias | LP_ tableReferences RP_
+    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    ;
+
+partitionNames_ 
+    : PARTITION LP_ identifier_ (COMMA_ identifier_)* RP_
     ;
 
 indexHintList_
-    : indexHint_(COMMA_ indexHint_)*
+    : indexHint_ (COMMA_ indexHint_)*
     ;
 
 indexHint_
-    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* LP_ indexName (COMMA_ indexName)* RP_
+    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))? LP_ indexName (COMMA_ indexName)* RP_
     ;
 
-joinTable
-    : (INNER | CROSS)? JOIN tableFactor joinCondition?
-    | STRAIGHT_JOIN tableFactor
-    | STRAIGHT_JOIN tableFactor joinCondition
-    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinCondition
+joinedTable
+    : ((INNER | CROSS)? JOIN | STRAIGHT_JOIN) tableFactor joinSpecification?
+    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinSpecification
     | NATURAL (INNER | (LEFT | RIGHT) (OUTER))? JOIN tableFactor
     ;
 
-joinCondition
+joinSpecification
     : ON expr | USING columnNames
     ;
 
@@ -197,45 +203,5 @@ windowItem_
     ;
 
 subquery
-    : LP_ unionSelect RP_
-    ;
-
-caseExpress
-    : caseCond | caseComp
-    ;
-
-caseComp
-    : CASE simpleExpr caseWhenComp+ elseResult? END
-    ;
-
-caseWhenComp
-    : WHEN simpleExpr THEN caseResult
-    ;
-
-caseCond
-    : CASE whenResult+ elseResult? END
-    ;
-
-whenResult
-    : WHEN expr THEN caseResult
-    ;
-
-elseResult
-    : ELSE caseResult
-    ;
-
-caseResult
-    : expr
-    ;
-
-intervalExpr
-    : INTERVAL expr ignoredIdentifier_
-    ;
-
-withClause_
-    : WITH RECURSIVE? cteClause_ (COMMA_ cteClause_)* unionSelect
-    ;
-
-cteClause_
-    : ignoredIdentifier_ columnNames? AS subquery
+    : LP_ unionClause_ RP_
     ;

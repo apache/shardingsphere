@@ -20,18 +20,16 @@ package org.apache.shardingsphere.orchestration.internal.registry;
 import org.apache.shardingsphere.orchestration.internal.registry.fixture.SecondTestRegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class RegistryCenterLoaderTest {
     
-    private RegistryCenter regCenter;
-    
     @Test
     public void assertLoad() {
-        regCenter = RegistryCenterLoader.load(new RegistryCenterConfiguration());
-        assertThat(regCenter, CoreMatchers.<RegistryCenter>instanceOf(SecondTestRegistryCenter.class));
+        RegistryCenter regCenter = new RegistryCenterServiceLoader().load(new RegistryCenterConfiguration("SecondTestRegistryCenter"));
+        assertThat(regCenter, instanceOf(SecondTestRegistryCenter.class));
     }
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Aggregati
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.StarSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
@@ -57,8 +57,8 @@ public final class SelectItemFiller implements SQLSegmentFiller {
             return;
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (sqlSegment instanceof StarSelectItemSegment) {
-            fillStarSelectItemSegment((StarSelectItemSegment) sqlSegment, selectStatement);
+        if (sqlSegment instanceof ShorthandSelectItemSegment) {
+            fillShorthandSelectItemSegment((ShorthandSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof ColumnSelectItemSegment) {
@@ -78,13 +78,14 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         }
     }
     
-    private void fillStarSelectItemSegment(final StarSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
+    private void fillShorthandSelectItemSegment(final ShorthandSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.setContainStar(true);
         Optional<String> owner = selectItemSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
+                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
                 selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }
@@ -95,6 +96,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         if (owner.isPresent()) {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
+                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
                 selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
             }
         }

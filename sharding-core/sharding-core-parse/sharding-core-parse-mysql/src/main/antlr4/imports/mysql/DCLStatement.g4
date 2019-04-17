@@ -20,11 +20,11 @@ grammar DCLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 grant
-    : GRANT (proxyClause_ | privilegeClause_ | roleClause_) TO
+    : GRANT (proxyClause_ | privilegeClause_ | roleClause_)
     ;
 
 revoke
-    : REVOKE (proxyClause_ | privilegeClause_ | allClause_ | roleClause_) FROM
+    : REVOKE (proxyClause_ | privilegeClause_ | allClause_ | roleClause_)
     ;  
 
 proxyClause_

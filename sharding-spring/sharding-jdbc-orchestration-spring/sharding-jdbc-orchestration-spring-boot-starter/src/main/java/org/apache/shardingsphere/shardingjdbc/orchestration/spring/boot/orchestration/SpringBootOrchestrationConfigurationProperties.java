@@ -25,6 +25,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author caohao
  */
-@ConfigurationProperties(prefix = "sharding.jdbc.config.orchestration")
+@ConfigurationProperties(prefix = "spring.shardingsphere.orchestration")
 public class SpringBootOrchestrationConfigurationProperties extends YamlOrchestrationConfiguration {
 }

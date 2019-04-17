@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.insert;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -41,22 +39,16 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
     public void fill(final InsertValuesSegment sqlSegment, final SQLStatement sqlStatement) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
-        insertStatement.getInsertValues().getValues().add(insertValue);
+        insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
     }
     
     private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {
-        int parametersCount = 0;
         List<SQLExpression> columnValues = new LinkedList<>();
         for (CommonExpressionSegment each : sqlSegment.getValues()) {
-            Optional<SQLExpression> sqlExpression = each.convertToSQLExpression(sql);
-            if (sqlExpression.isPresent()) {
-                columnValues.add(sqlExpression.get());
-                if (sqlExpression.get() instanceof SQLPlaceholderExpression) {
-                    parametersCount++;
-                }
-            }
+            SQLExpression sqlExpression = each.getSQLExpression(sql);
+            columnValues.add(sqlExpression);
         }
-        return new InsertValue(parametersCount, columnValues);
+        return new InsertValue(columnValues);
     }
 }

@@ -17,10 +17,10 @@
   -->
 
 <extractor-rule-definition>
-    <extractor-rule id="tableName" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNameExtractor" />
-    <extractor-rule id="tableNames" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableNamesExtractor" />
-    <extractor-rule id="indexName" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index.IndexNameExtractor" />
-    <extractor-rule id="indexNames" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index.IndexNamesExtractor" />
+    <extractor-rule id="table" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableExtractor" />
+    <extractor-rule id="tables" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TablesExtractor" />
+    <extractor-rule id="index" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index.IndexExtractor" />
+    <extractor-rule id="indexes" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index.IndexesExtractor" />
     <extractor-rule id="columnDefinitions" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.ColumnDefinitionsExtractor" />
     <extractor-rule id="outlinePrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.constraint.OutlinePrimaryKeyExtractor" />
     <extractor-rule id="renameTable" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.table.RenameTableExtractor" />
@@ -30,10 +30,10 @@
     <extractor-rule id="insertValues" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.InsertValuesExtractor" />
     <extractor-rule id="setAssignments" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.SetAssignmentsExtractor" />
     <extractor-rule id="onDuplicateKeyColumns" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.OnDuplicateKeyColumnsExtractor" />
-    <extractor-rule id="selectClause" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SelectClauseExtractor" />
-    <extractor-rule id="fromWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.FromWhereExtractor" />
-    <extractor-rule id="updateSetWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.update.UpdateSetWhereExtractor" />
-    <extractor-rule id="deleteFromWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.delete.DeleteFromWhereExtractor" />
+    <extractor-rule id="tableReferences" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.TableReferencesExtractor" />
+    <extractor-rule id="where" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.WhereExtractor" />
+    <extractor-rule id="selectItems" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SelectItemsExtractor" />
+    <extractor-rule id="selectWhere" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SelectWhereExtractor" />
     <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.GroupByExtractor" />
     <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.OrderByExtractor" />
     <extractor-rule id="limit" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.LimitExtractor" />

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.old.parser.clause.expression.BasicEx
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.dialect.ExpressionParserFactory;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholder
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -87,13 +87,11 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
      * @param insertStatement insert statement
      */
     private void parseValues(final InsertStatement insertStatement) {
-        int startParametersIndex;
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         Preconditions.checkState(insertValuesToken.isPresent());
         insertStatement.getSQLTokens().remove(insertValuesToken.get());
         insertStatement.addSQLToken(new InsertValuesToken(insertValuesToken.get().getStartIndex()));
         do {
-            startParametersIndex = insertStatement.getParametersIndex();
             lexerEngine.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
             int count = 0;
@@ -102,46 +100,29 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
                 skipsDoubleColon();
                 count++;
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-            removeGenerateKeyColumn(insertStatement, count);
+            Collection<String> columnNames = new ArrayList<>(insertStatement.getColumnNames());
+            Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+            if (generateKeyColumnName.isPresent() && count != insertStatement.getColumnNames().size()) {
+                columnNames.remove(generateKeyColumnName.get());
+            }
             count = 0;
             AndCondition andCondition = new AndCondition();
-            for (Column each : insertStatement.getColumns()) {
+            String tableName = insertStatement.getTables().getSingleTableName();
+            for (String each : columnNames) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
-                if (shardingRule.isShardingColumn(each.getName(), each.getTableName())) {
+                if (shardingRule.isShardingColumn(each, tableName)) {
                     if (!(sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression || sqlExpression instanceof SQLPlaceholderExpression)) {
-                        throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each.getName());
+                        throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each);
                     }
-                    andCondition.getConditions().add(new Condition(each, sqlExpression));
-                }
-                Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-                if (generateKeyColumnName.isPresent() && generateKeyColumnName.get().equals(each.getName())) {
-                    insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(each, sqlExpression));
+                    andCondition.getConditions().add(new Condition(new Column(each, tableName), sqlExpression));
                 }
                 count++;
             }
             lexerEngine.accept(Symbol.RIGHT_PAREN);
-            InsertValue insertValue = new InsertValue(insertStatement.getParametersIndex() - startParametersIndex);
-            insertValue.getColumnValues().addAll(sqlExpressions);
-            insertStatement.getInsertValues().getValues().add(insertValue);
+            InsertValue insertValue = new InsertValue(sqlExpressions);
+            insertStatement.getValues().add(insertValue);
             insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-    }
-    
-    private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (generateKeyColumnName.isPresent() && valueCount < insertStatement.getColumns().size()) {
-            insertStatement.getColumns().remove(new Column(generateKeyColumnName.get(), insertStatement.getTables().getSingleTableName()));
-        }
-    }
-    
-    private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
-            return new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
-        }
-        if (sqlExpression instanceof SQLNumberExpression) {
-            return new GeneratedKeyCondition(column, -1, (Comparable<?>) ((SQLNumberExpression) sqlExpression).getNumber());
-        }
-        return new GeneratedKeyCondition(column, -1, ((SQLTextExpression) sqlExpression).getText());
     }
     
     private void skipsDoubleColon() {

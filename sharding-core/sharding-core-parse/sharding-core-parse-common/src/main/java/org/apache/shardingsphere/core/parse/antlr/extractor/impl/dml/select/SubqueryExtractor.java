@@ -22,8 +22,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.FromWhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectClauseSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderByS
  */
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     
-    private final FromWhereExtractor fromWhereExtractor = new FromWhereExtractor();
+    private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
     
     private final GroupByExtractor groupByExtractor = new GroupByExtractor();
     
@@ -55,14 +55,14 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
             }
             parentNode = parentNode.getParent();
         }
-        SubquerySegment result = new SubquerySegment(subqueryInFrom, subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex());
-        Optional<SelectClauseSegment> selectClauseSegment = new SelectClauseExtractor().extract(subqueryNode);
-        if (selectClauseSegment.isPresent()) {
-            result.setSelectClauseSegment(selectClauseSegment.get());
+        SubquerySegment result = new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex(), subqueryInFrom);
+        Optional<SelectItemsSegment> selectItemsSegment = new SelectItemsExtractor().extract(subqueryNode);
+        if (selectItemsSegment.isPresent()) {
+            result.setSelectItemsSegment(selectItemsSegment.get());
         }
-        Optional<FromWhereSegment> fromWhereSegment = fromWhereExtractor.extract(subqueryNode);
-        if (fromWhereSegment.isPresent()) {
-            result.setFromWhereSegment(fromWhereSegment.get());
+        Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode);
+        if (whereSegment.isPresent()) {
+            result.setWhereSegment(whereSegment.get());
         }
         Optional<GroupBySegment> groupBySegment = groupByExtractor.extract(subqueryNode);
         if (groupBySegment.isPresent()) {

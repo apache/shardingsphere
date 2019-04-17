@@ -28,7 +28,7 @@ import java.util.Properties;
  *
  * @author zhangliang
  */
-@ConfigurationProperties(prefix = "sharding.jdbc.config")
+@ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter
 @Setter
 public class SpringBootPropertiesConfigurationProperties {

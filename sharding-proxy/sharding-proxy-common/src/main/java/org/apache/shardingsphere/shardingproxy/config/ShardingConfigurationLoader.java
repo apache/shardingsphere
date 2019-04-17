@@ -87,8 +87,6 @@ public final class ShardingConfigurationLoader {
         }
         Preconditions.checkNotNull(result.getSchemaName(), "Property `schemaName` in file `%s` is required.", yamlFile.getName());
         Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration in file `%s` is required.", yamlFile.getName());
-        Preconditions.checkState(null != result.getShardingRule() || null != result.getMasterSlaveRule() || null != serverConfiguration.getOrchestration(),
-                "Configuration invalid in file `%s`, local and orchestration configuration are required at least one.", yamlFile.getName());
         return Optional.of(result);
     }
     

@@ -25,7 +25,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
     <import resource="namespace/masterSlaveDataSourceNamespace.xml" />
 
-    <orchestraion:registry-center id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
+    <orchestraion:registry-center type="TestRegistry" id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
 
     <orchestraion:master-slave-data-source id="defaultMasterSlaveDataSourceOrchestration" data-source-ref="defaultMasterSlaveDataSource" registry-center-ref="regCenter" />
     <orchestraion:master-slave-data-source id="randomMasterSlaveDataSourceOrchestration" data-source-ref="randomMasterSlaveDataSource" registry-center-ref="regCenter" />

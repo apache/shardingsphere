@@ -111,6 +111,10 @@ MOD
     : M O D
     ;
 
+DIV
+    : D I V
+    ;
+
 NOT
     : N O T
     ;
@@ -1189,4 +1193,8 @@ INSTANT
 
 ENFORCED
     : E N F O R C E D
+    ;
+
+OJ
+    : O J
     ;

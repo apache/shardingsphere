@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class OracleInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public OracleInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new OracleInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), new OracleInsertValuesClauseParser(shardingRule, lexerEngine), 
+        super(new OracleInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(lexerEngine), new OracleInsertValuesClauseParser(shardingRule, lexerEngine), 
                 new OracleInsertSetClauseParser(shardingRule, lexerEngine), new OracleInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }
 }

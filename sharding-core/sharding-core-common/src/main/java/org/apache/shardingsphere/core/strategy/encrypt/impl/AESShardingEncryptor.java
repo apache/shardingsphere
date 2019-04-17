@@ -66,6 +66,9 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     @Override
     @SneakyThrows
     public Object decrypt(final String ciphertext) {
+        if (null == ciphertext) {
+            return null;
+        }
         byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(String.valueOf(ciphertext)));
         return new String(result);
     }
@@ -78,6 +81,7 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     }
     
     private byte[] createSecretKey() {
-        return Arrays.copyOf(DigestUtils.sha1(properties.getProperty(AES_KEY)), 16);
+        Preconditions.checkArgument(null != properties.get(AES_KEY), String.format("%s can not be null.", AES_KEY));
+        return Arrays.copyOf(DigestUtils.sha1(properties.get(AES_KEY).toString()), 16);
     }
 }

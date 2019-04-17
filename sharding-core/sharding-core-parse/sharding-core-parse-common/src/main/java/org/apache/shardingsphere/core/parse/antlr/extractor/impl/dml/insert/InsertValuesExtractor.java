@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -28,7 +30,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExp
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -37,9 +38,12 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public final class InsertValuesExtractor implements CollectionSQLSegmentExtractor {
+@Setter
+public final class InsertValuesExtractor implements CollectionSQLSegmentExtractor, PlaceholderIndexesAware {
     
     private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
+    
+    private Map<ParserRuleContext, Integer> placeholderIndexes;
     
     @Override
     public Collection<InsertValuesSegment> extract(final ParserRuleContext ancestorNode) {
@@ -48,19 +52,8 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
             return Collections.emptyList();
         }
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ancestorNode);
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(insertValuesClauseNode.get(), RuleName.ASSIGNMENT_VALUES)) {
             result.add(new InsertValuesSegment(extractCommonExpressionSegments(each, placeholderIndexes)));
-        }
-        return result;
-    }
-    
-    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
-        int index = 0;
-        for (ParserRuleContext each : placeholderNodes) {
-            result.put(each, index++);
         }
         return result;
     }
