@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegmen
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *  Table extractor.
@@ -37,7 +38,7 @@ import java.util.List;
 public final class TableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<TableSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<TableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> tableNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
         if (!tableNameNode.isPresent()) {
             return Optional.absent();

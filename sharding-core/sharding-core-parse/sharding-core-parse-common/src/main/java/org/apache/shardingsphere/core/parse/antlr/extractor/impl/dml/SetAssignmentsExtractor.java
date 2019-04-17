@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
-import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
@@ -36,15 +34,12 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-@Setter
-public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
+public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtractor {
     
     private final AssignmentExtractor assignmentExtractor = new AssignmentExtractor();
     
-    private Map<ParserRuleContext, Integer> placeholderIndexes;
-            
     @Override
-    public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> setAssignmentsClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
         if (!setAssignmentsClauseNode.isPresent()) {
             return Optional.absent();

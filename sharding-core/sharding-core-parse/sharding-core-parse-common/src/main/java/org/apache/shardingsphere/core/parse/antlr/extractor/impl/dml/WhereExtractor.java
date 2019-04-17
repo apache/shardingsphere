@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
-import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
@@ -36,15 +34,12 @@ import java.util.Map;
  * @author duhongjun
  * @author zhangliang
  */
-@Setter
-public final class WhereExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
+public final class WhereExtractor implements OptionalSQLSegmentExtractor {
     
     private final PredicateExtractor predicateExtractor = new PredicateExtractor();
     
-    private Map<ParserRuleContext, Integer> placeholderIndexes;
-    
     @Override
-    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         WhereSegment result = new WhereSegment();
         result.setParameterCount(placeholderIndexes.size());
         Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);

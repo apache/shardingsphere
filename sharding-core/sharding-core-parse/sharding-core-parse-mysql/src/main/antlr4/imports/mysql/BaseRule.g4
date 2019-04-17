@@ -30,22 +30,24 @@ identifier_
 unreservedWord_
     : ACCOUNT | ACTION | AFTER | ALGORITHM | ALWAYS | ANY | AUTO_INCREMENT 
     | AVG_ROW_LENGTH | BEGIN | BTREE | CHAIN | CHARSET | CHECKSUM | CIPHER 
-    | CLIENT | COALESCE | COLUMNS | COLUMN_FORMAT| COMMENT | COMMIT | COMMITTED 
+    | CLIENT | COALESCE | COLUMNS | COLUMN_FORMAT | COMMENT | COMMIT | COMMITTED 
     | COMPACT | COMPRESSED | COMPRESSION | CONNECTION | CONSISTENT | CURRENT | DATA 
-    | DATE | DAY | DELAY_KEY_WRITE | DISABLE | DISCARD | DISK | DUPLICATE 
-    | ENABLE | ENCRYPTION | ENFORCED | END | ENGINE | ESCAPE | EVENT 
-    | EXCHANGE| EXECUTE | FILE | FIRST | FIXED | FOLLOWING | GLOBAL 
-    | HASH | IMPORT_ | INSERT_METHOD | INVISIBLE | KEY_BLOCK_SIZE | LAST | LESS 
-    | LEVEL | MAX_ROWS | MEMORY | MIN_ROWS | MODIFY | NO | NONE 
-    | OFFSET | PACK_KEYS | PARSER | PARTIAL | PARTITIONING | PASSWORD | PERSIST 
-    | PERSIST_ONLY | PRECEDING | PRIVILEGES | PROCESS | PROXY | QUICK | REBUILD 
-    | REDUNDANT | RELOAD | REMOVE | REORGANIZE | REPAIR | REVERSE | ROLLBACK 
-    | ROLLUP | ROW_FORMAT | SAVEPOINT | SESSION | SHUTDOWN | SIMPLE | SLAVE 
-    | SOUNDS | SQL_BIG_RESULT | SQL_BUFFER_RESULT | SQL_CACHE | SQL_NO_CACHE | START | STATS_AUTO_RECALC 
-    | STATS_PERSISTENT | STATS_SAMPLE_PAGES | STORAGE | SUBPARTITION | SUPER | TABLES | TABLESPACE 
-    | TEMPORARY | THAN | TIME | TIMESTAMP | TRANSACTION | TRUNCATE | UNBOUNDED 
-    | UNKNOWN | UPGRADE | VALIDATION | VALUE | VIEW | VISIBLE | WEIGHT_STRING 
-    | WITHOUT
+    | DATE | DELAY_KEY_WRITE | DISABLE | DISCARD | DISK | DUPLICATE | ENABLE 
+    | ENCRYPTION | ENFORCED | END | ENGINE | ESCAPE | EVENT | EXCHANGE 
+    | EXECUTE | FILE | FIRST | FIXED | FOLLOWING | GLOBAL | HASH 
+    | IMPORT_ | INSERT_METHOD | INVISIBLE | KEY_BLOCK_SIZE | LAST | LESS 
+    | LEVEL | MAX_ROWS | MEMORY | MIN_ROWS | MODIFY | NO | NONE | OFFSET 
+    | PACK_KEYS | PARSER | PARTIAL | PARTITIONING | PASSWORD | PERSIST | PERSIST_ONLY 
+    | PRECEDING | PRIVILEGES | PROCESS | PROXY | QUICK | REBUILD | REDUNDANT 
+    | RELOAD | REMOVE | REORGANIZE | REPAIR | REVERSE | ROLLBACK | ROLLUP 
+    | ROW_FORMAT | SAVEPOINT | SESSION | SHUTDOWN | SIMPLE | SLAVE | SOUNDS 
+    | SQL_BIG_RESULT | SQL_BUFFER_RESULT | SQL_CACHE | SQL_NO_CACHE | START | STATS_AUTO_RECALC | STATS_PERSISTENT 
+    | STATS_SAMPLE_PAGES | STORAGE | SUBPARTITION | SUPER | TABLES | TABLESPACE | TEMPORARY 
+    | THAN | TIME | TIMESTAMP | TRANSACTION | TRUNCATE | UNBOUNDED | UNKNOWN 
+    | UPGRADE | VALIDATION | VALUE | VIEW | VISIBLE | WEIGHT_STRING | WITHOUT 
+    | MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
+    | QUARTER | YEAR | AGAINST | LANGUAGE | MODE | QUERY | EXPANSION
+    | BOOLEAN
     ;
 
 tableName
@@ -65,18 +67,22 @@ indexName
     ;
 
 expr
-    : expr AND expr
-    | expr AND_ expr
-    | expr OR expr
-    | expr OR_ expr
-    | expr XOR expr
+    : expr logicalOperator_ expr
+    | notOperator_ expr
     | LP_ expr RP_
-    | (NOT | NOT_) expr
     | booleanPrimary
     ;
 
+notOperator_
+    : NOT | NOT_
+    ;
+
+logicalOperator_
+    : OR | OR_ | XOR | AND | AND_
+    ;
+
 booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -84,12 +90,7 @@ booleanPrimary
     ;
 
 comparisonOperator
-    : EQ_
-    | GTE_
-    | GT_
-    | LTE_
-    | LT_
-    | NEQ_
+    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
 predicate
@@ -115,8 +116,8 @@ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpr
-    | bitExpr MINUS_ intervalExpr
+    | bitExpr PLUS_ intervalExpression_
+    | bitExpr MINUS_ intervalExpression_
     | simpleExpr
     ;
 
@@ -126,14 +127,14 @@ simpleExpr
     | columnName
     | simpleExpr collateClause_
     | variable
-    | simpleExpr AND_ simpleExpr
+    | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    // | (identifier_ expr)
-    //| match_expr
-    | caseExpr
-    | intervalExpr
+    | LBE_ identifier_ expr RBE_
+    | matchExpression_
+    | caseExpression_
+    | intervalExpression_
     ;
 
 functionCall
@@ -152,36 +153,34 @@ distinct
     : DISTINCT
     ;
 
-caseExpr
-    : caseCond | caseComp
+matchExpression_
+    : MATCH columnNames AGAINST (expr matchSearchModifier_?)
     ;
 
-caseComp
-    : CASE simpleExpr caseWhenComp+ elseResult? END
+matchSearchModifier_
+    : IN NATURAL LANGUAGE MODE | IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION | IN BOOLEAN MODE | WITH QUERY EXPANSION
     ;
 
-caseWhenComp
-    : WHEN simpleExpr THEN caseResult
+caseExpression_
+    : CASE simpleExpr? caseWhen_+ caseElse_? END
     ;
 
-caseCond
-    : CASE whenResult+ elseResult? END
+caseWhen_
+    : WHEN expr THEN expr
     ;
 
-whenResult
-    : WHEN expr THEN caseResult
+caseElse_
+    : ELSE expr
     ;
 
-elseResult
-    : ELSE caseResult
+intervalExpression_
+    : INTERVAL expr intervalUnit_
     ;
 
-caseResult
-    : expr
-    ;
-
-intervalExpr
-    : INTERVAL expr ignoredIdentifier_
+intervalUnit_
+    : MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
+    | QUARTER | YEAR | SECOND_MICROSECOND | MINUTE_MICROSECOND | MINUTE_SECOND | HOUR_MICROSECOND | HOUR_SECOND
+    | HOUR_MINUTE | DAY_MICROSECOND | DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH
     ;
 
 variable

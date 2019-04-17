@@ -54,7 +54,7 @@ public final class AssignmentExtractor {
         if (!assignmentNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0));
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0), placeholderIndexes);
         Preconditions.checkState(columnSegment.isPresent());
         CommonExpressionSegment expressionSegment = expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) assignmentNode.get().getChild(2));
         return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment));

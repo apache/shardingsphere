@@ -26,6 +26,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
+import java.util.Map;
+
 /**
  * Select items extractor.
  *
@@ -37,27 +39,28 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     private final SelectItemExtractor selectItemExtractor = new SelectItemExtractor();
     
     @Override
-    public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
         SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
-            setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result);
+            setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result, placeholderIndexes);
         }
-        setSelectItemSegment(selectItemsNode, result);
+        setSelectItemSegment(selectItemsNode, result, placeholderIndexes);
         return Optional.of(result);
     }
     
-    private void setUnqualifiedShorthandSelectItemSegment(final ParserRuleContext unqualifiedShorthandNode, final SelectItemsSegment selectItemsSegment) {
-        Optional<? extends SelectItemSegment> unqualifiedShorthandSelectItemSegment = selectItemExtractor.extract(unqualifiedShorthandNode);
+    private void setUnqualifiedShorthandSelectItemSegment(final ParserRuleContext unqualifiedShorthandNode, 
+                                                          final SelectItemsSegment selectItemsSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+        Optional<? extends SelectItemSegment> unqualifiedShorthandSelectItemSegment = selectItemExtractor.extract(unqualifiedShorthandNode, placeholderIndexes);
         if (unqualifiedShorthandSelectItemSegment.isPresent()) {
             selectItemsSegment.getSelectItems().add(unqualifiedShorthandSelectItemSegment.get());
         }
     }
     
-    private void setSelectItemSegment(final ParserRuleContext selectItemsNode, final SelectItemsSegment selectItemsSegment) {
+    private void setSelectItemSegment(final ParserRuleContext selectItemsNode, final SelectItemsSegment selectItemsSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(selectItemsNode, RuleName.SELECT_ITEM)) {
-            Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract(each);
+            Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract(each, placeholderIndexes);
             if (selectItemSegment.isPresent()) {
                 selectItemsSegment.getSelectItems().add(selectItemSegment.get());
             }

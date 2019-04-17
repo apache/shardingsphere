@@ -30,6 +30,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Aggregati
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
+import java.util.Map;
+
 /**
  * Function select item extractor.
  *
@@ -38,7 +40,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
 public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         return functionNode.isPresent() ? Optional.of(extractFunctionSelectItemSegment(expressionNode, functionNode.get())) : Optional.<SelectItemSegment>absent();
     }

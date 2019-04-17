@@ -25,6 +25,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.ShowParamSegment;
 
+import java.util.Map;
+
 /**
  * PostgreSQL show param extractor.
  *
@@ -33,7 +35,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.ShowParamSeg
 public final class ShowParamExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> showParamNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_PARAM);
         if (!showParamNode.isPresent()) {
             return Optional.absent();

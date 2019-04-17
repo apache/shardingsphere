@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Drop column definition extractor.
@@ -36,7 +37,7 @@ import java.util.HashSet;
 public final class DropColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
-    public Collection<DropColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Collection<DropColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Collection<DropColumnDefinitionSegment> result = new HashSet<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN_SPECIFICATION)) {
             result.addAll(extractDropColumnSegments(each));

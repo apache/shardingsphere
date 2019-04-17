@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -50,17 +49,15 @@ public final class SQLSegmentsExtractorEngine {
     public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
         Preconditions.checkState(ast.getSQLStatementRule().isPresent());
+        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ast.getParserRuleContext());
         for (SQLSegmentExtractor each : ast.getSQLStatementRule().get().getExtractors()) {
-            if (each instanceof PlaceholderIndexesAware) {
-                ((PlaceholderIndexesAware) each).setPlaceholderIndexes(getPlaceholderIndexes(ast.getParserRuleContext()));
-            }
             if (each instanceof OptionalSQLSegmentExtractor) {
-                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext());
+                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), placeholderIndexes);
                 if (sqlSegment.isPresent()) {
                     result.add(sqlSegment.get());
                 }
             } else if (each instanceof CollectionSQLSegmentExtractor) {
-                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext()));
+                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), placeholderIndexes));
             }
         }
         return result;

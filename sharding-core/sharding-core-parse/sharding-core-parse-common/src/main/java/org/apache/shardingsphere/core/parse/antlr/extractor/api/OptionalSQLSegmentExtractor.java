@@ -21,6 +21,8 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
+import java.util.Map;
+
 /**
  * Optional SQL segment extractor.
  * 
@@ -32,7 +34,8 @@ public interface OptionalSQLSegmentExtractor extends SQLSegmentExtractor {
      * Extract SQL segment from SQL AST.
      *  
      * @param ancestorNode ancestor node of AST
+     * @param placeholderIndexes placeholder indexes
      * @return SQL segment
      */
-    Optional<? extends SQLSegment> extract(ParserRuleContext ancestorNode);
+    Optional<? extends SQLSegment> extract(ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);
 }

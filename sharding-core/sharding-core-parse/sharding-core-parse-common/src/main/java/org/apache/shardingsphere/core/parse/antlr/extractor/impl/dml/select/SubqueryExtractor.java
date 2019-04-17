@@ -28,6 +28,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubqueryS
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 
+import java.util.Map;
+
 /**
  * Subquery extractor.
  *
@@ -42,7 +44,7 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     private final OrderByExtractor orderByExtractor = new OrderByExtractor();
     
     @Override
-    public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode) {
+    public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         if (!RuleName.SUBQUERY.getName().endsWith(subqueryNode.getClass().getSimpleName())) {
             return Optional.absent();
         }
@@ -56,19 +58,19 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
             parentNode = parentNode.getParent();
         }
         SubquerySegment result = new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex(), subqueryInFrom);
-        Optional<SelectItemsSegment> selectItemsSegment = new SelectItemsExtractor().extract(subqueryNode);
+        Optional<SelectItemsSegment> selectItemsSegment = new SelectItemsExtractor().extract(subqueryNode, placeholderIndexes);
         if (selectItemsSegment.isPresent()) {
             result.setSelectItemsSegment(selectItemsSegment.get());
         }
-        Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode);
+        Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode, placeholderIndexes);
         if (whereSegment.isPresent()) {
             result.setWhereSegment(whereSegment.get());
         }
-        Optional<GroupBySegment> groupBySegment = groupByExtractor.extract(subqueryNode);
+        Optional<GroupBySegment> groupBySegment = groupByExtractor.extract(subqueryNode, placeholderIndexes);
         if (groupBySegment.isPresent()) {
             result.setGroupBySegment(groupBySegment.get());
         }
-        Optional<OrderBySegment> orderBySegment = orderByExtractor.extract(subqueryNode);
+        Optional<OrderBySegment> orderBySegment = orderByExtractor.extract(subqueryNode, placeholderIndexes);
         if (orderBySegment.isPresent()) {
             result.setOrderBySegment(orderBySegment.get());
         }

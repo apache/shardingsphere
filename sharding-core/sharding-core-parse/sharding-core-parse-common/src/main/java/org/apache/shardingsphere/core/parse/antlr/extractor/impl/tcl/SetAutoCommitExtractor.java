@@ -25,6 +25,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.SetAutoCommitSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
+import java.util.Map;
+
 /**
  * Set auto commit extractor.
  *
@@ -33,7 +35,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 public final class SetAutoCommitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SetAutoCommitSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<SetAutoCommitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
         return autoCommitValueNode.isPresent()
                 ? Optional.of(new SetAutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<SetAutoCommitSegment>absent();
