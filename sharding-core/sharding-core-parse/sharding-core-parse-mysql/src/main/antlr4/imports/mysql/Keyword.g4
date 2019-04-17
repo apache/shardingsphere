@@ -1274,3 +1274,27 @@ DAY_HOUR
 YEAR_MONTH
     : D A Y UL_ M O N T H
     ;
+
+AGAINST
+    : A G A I N S T
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+MODE
+    : M O D E
+    ;
+
+QUERY
+    : Q U E R Y
+    ;
+
+EXPANSION
+    : E X P A N S I O N
+    ;
+
+BOOLEAN
+    : B O O L E A N
+    ;

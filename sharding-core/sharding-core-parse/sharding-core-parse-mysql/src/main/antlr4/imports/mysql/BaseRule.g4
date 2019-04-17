@@ -46,7 +46,8 @@ unreservedWord_
     | THAN | TIME | TIMESTAMP | TRANSACTION | TRUNCATE | UNBOUNDED | UNKNOWN 
     | UPGRADE | VALIDATION | VALUE | VIEW | VISIBLE | WEIGHT_STRING | WITHOUT 
     | MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
-    | QUARTER | YEAR
+    | QUARTER | YEAR | AGAINST | LANGUAGE | MODE | QUERY | EXPANSION
+    | BOOLEAN
     ;
 
 tableName
@@ -130,8 +131,8 @@ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
- // | (identifierExpression)
- // | matchExpression
+    | LBE_ identifier_ expr RBE_
+    | matchExpression_
     | caseExpression_
     | intervalExpression_
     ;
@@ -150,6 +151,14 @@ specialFunction
 
 distinct
     : DISTINCT
+    ;
+
+matchExpression_
+    : MATCH columnNames AGAINST (expr matchSearchModifier_?)
+    ;
+
+matchSearchModifier_
+    : IN NATURAL LANGUAGE MODE | IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION | IN BOOLEAN MODE | WITH QUERY EXPANSION
     ;
 
 caseExpression_
