@@ -37,4 +37,12 @@ import java.util.Map;
 public final class UpdateStatement extends DMLStatement {
     
     private final Map<Column, SQLExpression> assignments = new LinkedHashMap<>();
+    
+    private int whereStartIndex;
+    
+    private int whereStopIndex;
+    
+    private int whereParameterStartIndex;
+    
+    private int whereParameterEndIndex;
 }
