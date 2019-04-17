@@ -39,7 +39,7 @@ public final class MySQLChangeColumnDefinitionExtractor implements OptionalSQLSe
     private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public Optional<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> changeColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN_SPECIFICATION);
         if (!changeColumnNode.isPresent()) {
             return Optional.absent();
@@ -52,10 +52,11 @@ public final class MySQLChangeColumnDefinitionExtractor implements OptionalSQLSe
         if (!columnDefinitionNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(columnDefinitionNode.get(), placeholderIndexes);
+        Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(columnDefinitionNode.get(), parameterMarkerIndexes);
         if (columnDefinitionSegment.isPresent()) {
             ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(oldColumnNameNode.get().getText(), columnDefinitionSegment.get());
-            Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(columnDefinitionSegment.get().getColumnName()).extract(changeColumnNode.get(), placeholderIndexes);
+            Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(
+                    columnDefinitionSegment.get().getColumnName()).extract(changeColumnNode.get(), parameterMarkerIndexes);
             if (columnPositionSegment.isPresent()) {
                 result.setColumnPosition(columnPositionSegment.get());
             }

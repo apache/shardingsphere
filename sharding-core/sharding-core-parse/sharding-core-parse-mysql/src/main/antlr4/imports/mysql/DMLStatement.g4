@@ -191,7 +191,7 @@ limitClause
     ;
 
 rangeItem_
-    : number | question
+    : number | parameterMarker
     ;
 
 windowClause_

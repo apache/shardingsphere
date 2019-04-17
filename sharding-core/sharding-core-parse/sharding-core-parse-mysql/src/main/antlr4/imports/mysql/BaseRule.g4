@@ -188,7 +188,7 @@ variable
     ;
 
 literal
-    : question
+    : parameterMarker
     | number
     | TRUE
     | FALSE
@@ -201,7 +201,7 @@ literal
     | characterSet_? BIT_NUM_ collateClause_?
     ;
 
-question
+parameterMarker
     : QUESTION_
     ;
 

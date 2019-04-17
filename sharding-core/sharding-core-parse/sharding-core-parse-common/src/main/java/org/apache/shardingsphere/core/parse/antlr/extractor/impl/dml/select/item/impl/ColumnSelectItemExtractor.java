@@ -39,12 +39,12 @@ public final class ColumnSelectItemExtractor implements OptionalSQLSegmentExtrac
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.COLUMN_NAME);
         if (!columnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ColumnSegment> columnSegment = columnExtractor.extract(columnNode.get(), placeholderIndexes);
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract(columnNode.get(), parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent());
         ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnSegment.get());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);

@@ -39,13 +39,13 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
     private final PredicateExtractor predicateExtractor = new PredicateExtractor();
     
     @Override
-    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         WhereSegment result = new WhereSegment();
-        result.setParameterCount(placeholderIndexes.size());
+        result.setParameterCount(parameterMarkerIndexes.size());
         Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
         if (whereNode.isPresent()) {
-            setPropertiesForRevert(result, placeholderIndexes, whereNode.get());
-            Optional<OrConditionSegment> orConditionSegment = extractOrConditionSegment(placeholderIndexes, whereNode.get());
+            setPropertiesForRevert(result, parameterMarkerIndexes, whereNode.get());
+            Optional<OrConditionSegment> orConditionSegment = extractOrConditionSegment(parameterMarkerIndexes, whereNode.get());
             if (orConditionSegment.isPresent()) {
                 result.getConditions().getAndConditions().addAll(orConditionSegment.get().getAndConditions());
             }
@@ -53,23 +53,23 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
         return Optional.of(result);
     }
     
-    private void setPropertiesForRevert(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
+    private void setPropertiesForRevert(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext whereNode) {
         whereSegment.setWhereStartIndex(whereNode.getStart().getStartIndex());
         whereSegment.setWhereStopIndex(whereNode.getStop().getStopIndex());
-        if (placeholderIndexes.isEmpty()) {
+        if (parameterMarkerIndexes.isEmpty()) {
             return;
         }
-        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(whereNode, RuleName.QUESTION);
+        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(whereNode, RuleName.PARAMETER_MARKER);
         if (questionNodes.isEmpty()) {
             return;
         }
-        int whereParameterStartIndex = placeholderIndexes.get(questionNodes.iterator().next());
+        int whereParameterStartIndex = parameterMarkerIndexes.get(questionNodes.iterator().next());
         whereSegment.setWhereParameterStartIndex(whereParameterStartIndex);
         whereSegment.setWhereParameterEndIndex(whereParameterStartIndex + questionNodes.size() - 1);
     }
     
-    private Optional<OrConditionSegment> extractOrConditionSegment(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext whereNode) {
+    private Optional<OrConditionSegment> extractOrConditionSegment(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext whereNode) {
         Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) whereNode.getChild(1), RuleName.EXPR);
-        return exprNode.isPresent() ? predicateExtractor.extract(placeholderIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
+        return exprNode.isPresent() ? predicateExtractor.extract(parameterMarkerIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
     }
 }

@@ -39,13 +39,13 @@ public class ModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtr
     private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public final Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public final Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ModifyColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN_SPECIFICATION)) {
-            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, placeholderIndexes);
+            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, parameterMarkerIndexes);
             if (columnDefinitionSegment.isPresent()) {
                 ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = new ModifyColumnDefinitionSegment(null, columnDefinitionSegment.get());
-                postExtractColumnDefinition(each, modifyColumnDefinitionSegment, placeholderIndexes);
+                postExtractColumnDefinition(each, modifyColumnDefinitionSegment, parameterMarkerIndexes);
                 result.add(modifyColumnDefinitionSegment);
             }
         }
@@ -53,6 +53,6 @@ public class ModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtr
     }
     
     protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, 
-                                               final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+                                               final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
     }
 }

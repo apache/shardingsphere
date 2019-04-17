@@ -44,16 +44,16 @@ public final class TableReferencesExtractor implements CollectionSQLSegmentExtra
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> tableReferencesNodes = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
         if (!tableReferencesNodes.isPresent()) {
             return Collections.emptyList();
         }
         Collection<TableSegment> result = new LinkedList<>();
-        Collection<TableSegment> tableSegments = tablesExtractor.extract(tableReferencesNodes.get(), placeholderIndexes);
+        Collection<TableSegment> tableSegments = tablesExtractor.extract(tableReferencesNodes.get(), parameterMarkerIndexes);
         result.addAll(tableSegments);
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(tableReferencesNodes.get(), RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, placeholderIndexes);
+            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
             if (columnSegment.isPresent() && columnSegment.get().getOwner().isPresent() && isTableName(columnSegment.get().getOwner().get(), tableSegments)) {
                 result.add(new TableSegment(columnSegment.get().getStartIndex(), columnSegment.get().getOwner().get(), columnSegment.get().getOwnerQuoteCharacter()));
             }

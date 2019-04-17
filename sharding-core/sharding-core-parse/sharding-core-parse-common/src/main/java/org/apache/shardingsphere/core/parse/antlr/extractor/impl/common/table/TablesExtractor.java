@@ -38,10 +38,10 @@ public final class TablesExtractor implements CollectionSQLSegmentExtractor {
     private final TableExtractor tableExtractor = new TableExtractor();
     
     @Override
-    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<TableSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            Optional<TableSegment> tableSegment = tableExtractor.extract(each, placeholderIndexes);
+            Optional<TableSegment> tableSegment = tableExtractor.extract(each, parameterMarkerIndexes);
             if (tableSegment.isPresent()) {
                 result.add(tableSegment.get());
             }

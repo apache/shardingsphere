@@ -40,7 +40,7 @@ import java.util.Map;
 public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         return functionNode.isPresent() ? Optional.of(extractFunctionSelectItemSegment(expressionNode, functionNode.get())) : Optional.<SelectItemSegment>absent();
     }

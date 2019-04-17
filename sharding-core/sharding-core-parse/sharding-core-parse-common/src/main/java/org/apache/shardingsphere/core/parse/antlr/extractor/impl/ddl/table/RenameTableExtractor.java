@@ -34,7 +34,7 @@ import java.util.Map;
 public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> newTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.NEW_TABLE_NAME);
         return newTableNode.isPresent() ? Optional.of(new RenameTableSegment(newTableNode.get().getText())) : Optional.<RenameTableSegment>absent();
     }

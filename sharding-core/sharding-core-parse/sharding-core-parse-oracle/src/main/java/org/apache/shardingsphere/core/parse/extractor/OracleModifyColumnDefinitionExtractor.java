@@ -41,7 +41,7 @@ public final class OracleModifyColumnDefinitionExtractor implements CollectionSQ
     private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN_SPECIFICATION);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
@@ -50,7 +50,7 @@ public final class OracleModifyColumnDefinitionExtractor implements CollectionSQ
         for (ParserRuleContext modifyColumnNode : modifyColumnNodes) {
             for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
-                Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each, placeholderIndexes);
+                Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each, parameterMarkerIndexes);
                 if (columnDefinition.isPresent()) {
                     result.add(new ModifyColumnDefinitionSegment(null, columnDefinition.get()));
                 }

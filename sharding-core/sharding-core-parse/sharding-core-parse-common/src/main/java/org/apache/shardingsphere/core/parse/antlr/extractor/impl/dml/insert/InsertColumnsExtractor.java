@@ -40,17 +40,17 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> insertValuesClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_VALUES_CLAUSE);
         return insertValuesClause.isPresent()
-                ? Optional.of(new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(), extractColumns(insertValuesClause.get(), placeholderIndexes)))
+                ? Optional.of(new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(), extractColumns(insertValuesClause.get(), parameterMarkerIndexes)))
                 : Optional.<InsertColumnsSegment>absent();
     }
     
-    private Collection<ColumnSegment> extractColumns(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    private Collection<ColumnSegment> extractColumns(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ColumnSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, placeholderIndexes);
+            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
             if (columnSegment.isPresent()) {
                 result.add(columnSegment.get());
             }

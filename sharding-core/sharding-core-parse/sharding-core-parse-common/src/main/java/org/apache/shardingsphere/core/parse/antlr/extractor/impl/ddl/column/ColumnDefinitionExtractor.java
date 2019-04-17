@@ -35,7 +35,7 @@ import java.util.Map;
 public final class ColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
             return Optional.absent();
