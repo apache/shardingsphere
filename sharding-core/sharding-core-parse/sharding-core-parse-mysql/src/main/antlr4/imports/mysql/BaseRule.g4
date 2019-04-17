@@ -125,7 +125,7 @@ simpleExpr
     : functionCall
     | literal
     | columnName
-    | simpleExpr collateClause_
+    | simpleExpr COLLATE (STRING_ | identifier_)
     | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
