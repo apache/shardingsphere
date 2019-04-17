@@ -127,7 +127,7 @@ simpleExpr
     | columnName
     | simpleExpr collateClause_
     | variable
-    | simpleExpr AND_ simpleExpr
+    | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
