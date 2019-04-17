@@ -630,4 +630,16 @@
             <and-condition/>
         </or-condition>
     </parser-result>
+    <parser-result sql-case-id="insert_with_null_value">
+        <tables>
+            <table name="t_null_value_test" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_null_value_test" length="17" />
+            <insert-values-token begin-position="29" />
+        </tokens>
+        <or-condition>
+            <and-condition/>
+        </or-condition>
+    </parser-result>
 </parser-result-sets>
