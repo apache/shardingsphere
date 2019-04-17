@@ -126,7 +126,7 @@ mvn clean install -Prelease
 ``` 
 构建产物：
 ```
-sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-4.0.0-RC1-SNAPSHOT-sharding-jdbc-bin.tar.gz: Sharding-JDBC的二进制包
-sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-4.0.0-RC1-SNAPSHOT-sharding-proxy-bin.tar.gz: Sharding-Proxy的二进制包
-sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-4.0.0-RC1-SNAPSHOT-src.zip: ShardingSphere的源码包
+sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${VERSION}-SNAPSHOT-sharding-jdbc-bin.tar.gz: Sharding-JDBC的二进制包
+sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${VERSION}-SNAPSHOT-sharding-proxy-bin.tar.gz: Sharding-Proxy的二进制包
+sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${VERSION}-SNAPSHOT-src.zip: ShardingSphere的源码包
 ```
