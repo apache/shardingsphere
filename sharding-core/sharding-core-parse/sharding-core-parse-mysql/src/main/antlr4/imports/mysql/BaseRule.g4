@@ -65,18 +65,22 @@ indexName
     ;
 
 expr
-    : expr AND expr
-    | expr AND_ expr
-    | expr OR expr
-    | expr OR_ expr
-    | expr XOR expr
+    : expr logicalOperator_ expr
+    | notOperator_ expr
     | LP_ expr RP_
-    | (NOT | NOT_) expr
     | booleanPrimary
     ;
 
+notOperator_
+    : NOT | NOT_
+    ;
+
+logicalOperator_
+    : OR | OR_ | XOR | AND | AND_
+    ;
+
 booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -84,12 +88,7 @@ booleanPrimary
     ;
 
 comparisonOperator
-    : EQ_
-    | GTE_
-    | GT_
-    | LTE_
-    | LT_
-    | NEQ_
+    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
 predicate
