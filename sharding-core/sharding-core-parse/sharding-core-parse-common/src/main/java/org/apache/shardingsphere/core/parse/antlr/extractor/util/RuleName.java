@@ -103,14 +103,6 @@ public enum RuleName {
     
     TABLE_REFERENCES("TableReferences"),
     
-    TABLE_REFERENCE("TableReference"),
-    
-    TABLE_FACTOR("TableFactor"),
-    
-    JOINED_TABLE("JoinedTable"),
-    
-    JOIN_SPECIFICATION("JoinSpecification"),
-    
     ALIAS("Alias"),
     
     PARAMETER_MARKER("ParameterMarker"),
