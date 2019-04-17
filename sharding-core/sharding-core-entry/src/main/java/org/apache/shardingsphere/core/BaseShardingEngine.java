@@ -22,6 +22,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.hook.SPIShardingHook;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
@@ -52,6 +53,8 @@ public abstract class BaseShardingEngine {
     
     private final DatabaseType databaseType;
     
+    private final SPIShardingHook shardingHook = new SPIShardingHook();
+    
     /**
      * Shard.
      *
@@ -60,14 +63,23 @@ public abstract class BaseShardingEngine {
      * @return SQL route result
      */
     public SQLRouteResult shard(final String sql, final List<Object> parameters) {
-        List<Object> clonedParameters = cloneParameters(parameters);
-        SQLRouteResult result = route(sql, clonedParameters);
-        result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
-        if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
-            boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
-            SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
+        shardingHook.start(sql);
+        try {
+            List<Object> clonedParameters = cloneParameters(parameters);
+            SQLRouteResult result = route(sql, clonedParameters);
+            result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
+            if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
+                boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
+                SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
+            }
+            shardingHook.finishSuccess(result, metaData.getTable());
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            shardingHook.finishFailure(ex);
+            throw ex;
         }
-        return result;
     }
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
