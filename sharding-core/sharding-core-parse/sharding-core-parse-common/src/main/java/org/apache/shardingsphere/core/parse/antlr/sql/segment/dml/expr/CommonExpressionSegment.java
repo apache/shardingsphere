@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
@@ -55,6 +56,10 @@ public final class CommonExpressionSegment implements ExpressionSegment {
         if (literals instanceof String) {
             return new SQLTextExpression(literals.toString());
         }
-        return new SQLTextExpression(sql.substring(startIndex, stopIndex + 1));
+        String value = sql.substring(startIndex, stopIndex + 1);
+        if (DefaultKeyword.NULL.name().equalsIgnoreCase(value)) {
+            return new SQLNumberExpression(null);
+        }
+        return new SQLTextExpression(value);
     } 
 }
