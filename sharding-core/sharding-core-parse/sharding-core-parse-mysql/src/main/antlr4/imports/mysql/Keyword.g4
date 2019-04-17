@@ -247,10 +247,6 @@ CURRENT
     : C U R R E N T
     ;
 
-DAY
-    : D A Y
-    ;
-
 DEFAULT
     : D E F A U L T
     ;
@@ -1197,4 +1193,84 @@ ENFORCED
 
 OJ
     : O J
+    ;
+
+MICROSECOND
+    : M I C R O S E C O N D
+    ;
+
+SECOND
+    : S E C O N D
+    ;
+   
+MINUTE
+    : M I N U T E
+    ;
+   
+HOUR
+    : H O U R
+    ;
+
+DAY
+    : D A Y
+    ;
+
+WEEK
+    : W E E K
+    ;
+
+MONTH
+    : M O N T H
+    ;
+
+QUARTER
+    : Q U A R T E R
+    ;
+
+YEAR
+    : Y E A R
+    ;
+
+SECOND_MICROSECOND
+    : S E C O N D UL_ M I C R O S E C O N D
+    ;
+
+MINUTE_MICROSECOND
+    : M I N U T E UL_ M I C R O S E C O N D
+    ;
+
+MINUTE_SECOND
+    : M I N U T E UL_ S E C O N D
+    ;
+
+HOUR_MICROSECOND
+    : H O U R UL_ M I C R O S E C O N D
+    ;
+
+HOUR_SECOND
+    : H O U R UL_ S E C O N D
+    ;
+
+HOUR_MINUTE
+    : H O U R UL_ M I N U T E
+    ;
+
+DAY_MICROSECOND
+    : D A Y UL_ M I C R O S E C O N D
+    ;
+
+DAY_SECOND
+    : D A Y UL_ S E C O N D
+    ;
+
+DAY_MINUTE
+    : D A Y UL_ M I N U T E
+    ;
+
+DAY_HOUR
+    : D A Y UL_ H O U R
+    ;
+
+YEAR_MONTH
+    : D A Y UL_ M O N T H
     ;
