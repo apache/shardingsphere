@@ -128,3 +128,9 @@ Install `maven` in your computer and run command:
 ```shell
 mvn clean install -Prelease
 ``` 
+Artifact:
+```
+sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-4.0.0-RC1-SNAPSHOT-sharding-jdbc-bin.tar.gz: Binary package of Sharding-JDBC
+sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-4.0.0-RC1-SNAPSHOT-sharding-proxy-bin.tar.gz: Binary package of Sharding-Proxy
+sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-4.0.0-RC1-SNAPSHOT-src.zip: Source code package of ShardingSphere
+```
