@@ -130,7 +130,7 @@ mvn clean install -Prelease
 ``` 
 Artifact:
 ```
-sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${VERSION}-SNAPSHOT-sharding-jdbc-bin.tar.gz: Binary package of Sharding-JDBC
-sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${VERSION}-SNAPSHOT-sharding-proxy-bin.tar.gz: Binary package of Sharding-Proxy
-sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${VERSION}-SNAPSHOT-src.zip: Source code package of ShardingSphere
+sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${VERSION}-sharding-jdbc-bin.tar.gz: Binary package of Sharding-JDBC
+sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${VERSION}-sharding-proxy-bin.tar.gz: Binary package of Sharding-Proxy
+sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${VERSION}-src.zip: Source code package of ShardingSphere
 ```
