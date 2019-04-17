@@ -61,10 +61,10 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
-        result = expressionSelectItemExtractor.extract(expressionNode, placeholderIndexes);
+        result = subqueryExtractor.extract(expressionNode, placeholderIndexes);
         if (result.isPresent()) {
             return result;
         }
-        return subqueryExtractor.extract(expressionNode, placeholderIndexes);
+        return expressionSelectItemExtractor.extract(expressionNode, placeholderIndexes);
     }
 }
