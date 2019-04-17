@@ -170,9 +170,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         for (ConditionSegment eachCondition : shardingCondition) {
             Optional<String> tableName = getTableName(sqlStatement, eachCondition);
             Column column = new Column(eachCondition.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(shardingTableMetaData, shardingRule, sqlStatement, eachCondition));
-            Condition condition = eachCondition.getExpression().buildCondition(column, sqlStatement.getLogicSQL());
-            condition.checkValueNotNull();
-            andConditionResult.getConditions().add(condition);
+            andConditionResult.getConditions().add(eachCondition.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         }
     }
     

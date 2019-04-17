@@ -31,8 +31,6 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpre
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
-import com.google.common.base.Preconditions;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -128,18 +126,5 @@ public class Condition {
             }
         }
         return result;
-    }
-    
-    /**
-     * Check value not null.
-     *
-     */
-    public void checkValueNotNull() {
-        for (Integer each : positionIndexMap.values()) {
-            Preconditions.checkState(null != each, "Conditioin value position index must not be null.");
-        }
-        for (Object each : positionValueMap.values()) {
-            Preconditions.checkState(null != each, "Conditioin value must not be null.");
-        }
     }
 }

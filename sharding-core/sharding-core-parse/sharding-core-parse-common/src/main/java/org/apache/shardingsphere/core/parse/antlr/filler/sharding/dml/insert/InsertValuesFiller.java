@@ -88,9 +88,7 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
             if (sqlExpression instanceof SQLPlaceholderExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression) {
-                Condition condition = new Condition(new Column(columnName, tableName), sqlExpression);
-                condition.checkValueNotNull();
-                andCondition.getConditions().add(condition);
+                andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
             } else {
                 throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
             }
