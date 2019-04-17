@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.hook.SPIShardingHook;
+import org.apache.shardingsphere.core.hook.SPIShardHook;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
@@ -53,7 +53,7 @@ public abstract class BaseShardingEngine {
     
     private final DatabaseType databaseType;
     
-    private final SPIShardingHook shardingHook = new SPIShardingHook();
+    private final SPIShardHook shardHook = new SPIShardHook();
     
     /**
      * Shard.
@@ -63,7 +63,7 @@ public abstract class BaseShardingEngine {
      * @return SQL route result
      */
     public SQLRouteResult shard(final String sql, final List<Object> parameters) {
-        shardingHook.start(sql);
+        shardHook.start(sql);
         try {
             List<Object> clonedParameters = cloneParameters(parameters);
             SQLRouteResult result = route(sql, clonedParameters);
@@ -72,12 +72,12 @@ public abstract class BaseShardingEngine {
                 boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
                 SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
             }
-            shardingHook.finishSuccess(result, metaData.getTable());
+            shardHook.finishSuccess(result, metaData.getTable());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            shardingHook.finishFailure(ex);
+            shardHook.finishFailure(ex);
             throw ex;
         }
     }

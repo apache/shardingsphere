@@ -19,41 +19,33 @@ package org.apache.shardingsphere.core.hook;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-
-import java.util.Collection;
 
 /**
- * Sharding hook for SPI.
+ * Shard hook.
  *
  * @author zhaojun
  */
-public final class SPIShardingHook implements ShardingHook {
+public interface ShardHook {
     
-    private final Collection<ShardingHook> shardingHooks = NewInstanceServiceLoader.newServiceInstances(ShardingHook.class);
+    /**
+     * Handle when shard started.
+     *
+     * @param sql SQL to be sharding
+     */
+    void start(String sql);
     
-    static {
-        NewInstanceServiceLoader.register(ShardingHook.class);
-    }
+    /**
+     * Handle when shard finished success.
+     *
+     * @param sqlRouteResult sql route result
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void finishSuccess(SQLRouteResult sqlRouteResult, ShardingTableMetaData shardingTableMetaData);
     
-    @Override
-    public void start(final String sql) {
-        for (ShardingHook each : shardingHooks) {
-            each.start(sql);
-        }
-    }
-    
-    @Override
-    public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
-        for (ShardingHook each : shardingHooks) {
-            each.finishSuccess(sqlRouteResult, shardingTableMetaData);
-        }
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-        for (ShardingHook each : shardingHooks) {
-            each.finishFailure(cause);
-        }
-    }
+    /**
+     * Handle when shard finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }
