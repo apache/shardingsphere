@@ -115,8 +115,8 @@ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpr_
-    | bitExpr MINUS_ intervalExpr_
+    | bitExpr PLUS_ intervalExpression_
+    | bitExpr MINUS_ intervalExpression_
     | simpleExpr
     ;
 
@@ -130,10 +130,10 @@ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    // | (identifier_ expr)
-    //| match_expr
-    | caseExpr
-    | intervalExpr_
+ // | (identifierExpression)
+ // | matchExpression
+    | caseExpression_
+    | intervalExpression_
     ;
 
 functionCall
@@ -152,35 +152,19 @@ distinct
     : DISTINCT
     ;
 
-caseExpr
-    : caseComp | caseCond
+caseExpression_
+    : CASE simpleExpr? caseWhen_+ caseElse_? END
     ;
 
-caseComp
-    : CASE simpleExpr caseWhenComp+ elseResult? END
+caseWhen_
+    : WHEN expr THEN expr
     ;
 
-caseWhenComp
-    : WHEN simpleExpr THEN caseResult
+caseElse_
+    : ELSE expr
     ;
 
-caseCond
-    : CASE whenResult+ elseResult? END
-    ;
-
-whenResult
-    : WHEN expr THEN caseResult
-    ;
-
-elseResult
-    : ELSE caseResult
-    ;
-
-caseResult
-    : expr
-    ;
-
-intervalExpr_
+intervalExpression_
     : INTERVAL expr intervalUnit_
     ;
 
