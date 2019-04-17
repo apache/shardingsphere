@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnS
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Table references extractor.
@@ -43,16 +44,16 @@ public final class TableReferencesExtractor implements CollectionSQLSegmentExtra
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> tableReferencesNodes = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
         if (!tableReferencesNodes.isPresent()) {
             return Collections.emptyList();
         }
         Collection<TableSegment> result = new LinkedList<>();
-        Collection<TableSegment> tableSegments = tablesExtractor.extract(tableReferencesNodes.get());
+        Collection<TableSegment> tableSegments = tablesExtractor.extract(tableReferencesNodes.get(), placeholderIndexes);
         result.addAll(tableSegments);
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(tableReferencesNodes.get(), RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each);
+            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, placeholderIndexes);
             if (columnSegment.isPresent() && columnSegment.get().getOwner().isPresent() && isTableName(columnSegment.get().getOwner().get(), tableSegments)) {
                 result.add(new TableSegment(columnSegment.get().getStartIndex(), columnSegment.get().getOwner().get(), columnSegment.get().getOwnerQuoteCharacter()));
             }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertC
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Insert columns extractor.
@@ -39,17 +40,17 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> insertValuesClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_VALUES_CLAUSE);
         return insertValuesClause.isPresent()
-                ? Optional.of(new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(), extractColumns(insertValuesClause.get())))
+                ? Optional.of(new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(), extractColumns(insertValuesClause.get(), placeholderIndexes)))
                 : Optional.<InsertColumnsSegment>absent();
     }
     
-    private Collection<ColumnSegment> extractColumns(final ParserRuleContext ancestorNode) {
+    private Collection<ColumnSegment> extractColumns(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Collection<ColumnSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each);
+            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, placeholderIndexes);
             if (columnSegment.isPresent()) {
                 result.add(columnSegment.get());
             }

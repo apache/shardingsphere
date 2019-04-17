@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 
+import java.util.Map;
+
 /**
  * Drop primary key extractor for Oracle.
  *
@@ -32,7 +34,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.Dro
 public final class OracleDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> dropConstraintNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_CONSTRAINT_CLAUSE);
         if (!dropConstraintNode.isPresent()) {
             return Optional.absent();

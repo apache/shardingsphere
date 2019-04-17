@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.M
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Modify column definition extractor for Oracle.
@@ -40,7 +41,7 @@ public final class OracleModifyColumnDefinitionExtractor implements CollectionSQ
     private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN_SPECIFICATION);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
@@ -49,7 +50,7 @@ public final class OracleModifyColumnDefinitionExtractor implements CollectionSQ
         for (ParserRuleContext modifyColumnNode : modifyColumnNodes) {
             for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
-                Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+                Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each, placeholderIndexes);
                 if (columnDefinition.isPresent()) {
                     result.add(new ModifyColumnDefinitionSegment(null, columnDefinition.get()));
                 }

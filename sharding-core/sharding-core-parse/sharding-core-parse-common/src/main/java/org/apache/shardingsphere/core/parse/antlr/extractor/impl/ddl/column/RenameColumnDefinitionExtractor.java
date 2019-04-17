@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.R
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Rename column definition extractor.
@@ -35,7 +36,7 @@ import java.util.Iterator;
 public final class RenameColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameColumnSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<RenameColumnSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN_SPECIFICATION);
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();

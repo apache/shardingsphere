@@ -50,7 +50,7 @@ public final class ExpressionExtractor {
      */
     public Optional<? extends ExpressionSegment> extract(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get()) : Optional.of(extractExpression(placeholderIndexes, expressionNode));
+        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get(), placeholderIndexes) : Optional.of(extractExpression(placeholderIndexes, expressionNode));
     }
     
     private ExpressionSegment extractExpression(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
@@ -59,7 +59,7 @@ public final class ExpressionExtractor {
             return extractFunctionExpressionSegment(functionNode.get());
         }
         if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
-            return extractPropertyExpressionSegment(expressionNode);
+            return extractPropertyExpressionSegment(expressionNode, placeholderIndexes);
         }
         return extractCommonExpressionSegment(placeholderIndexes, expressionNode);
     }
@@ -70,9 +70,9 @@ public final class ExpressionExtractor {
                 ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
     }
     
-    private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode) {
+    private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode);
+        Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode, placeholderIndexes);
         Preconditions.checkState(columnSegment.isPresent());
         return new PropertyExpressionSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), columnSegment.get().getName(), columnSegment.get().getOwner().orNull());
     }

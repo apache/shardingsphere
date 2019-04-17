@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
 
+import java.util.Map;
+
 /**
  * Group by extractor.
  *
@@ -35,13 +37,13 @@ public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
     
     @Override
-    public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> groupByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
         if (!groupByNode.isPresent()) {
             return Optional.absent();
         }
         GroupBySegment result = new GroupBySegment(groupByNode.get().getStop().getStopIndex());
-        result.getGroupByItems().addAll(orderByItemExtractor.extract(groupByNode.get()));
+        result.getGroupByItems().addAll(orderByItemExtractor.extract(groupByNode.get(), placeholderIndexes));
         return Optional.of(result);
     }
 }

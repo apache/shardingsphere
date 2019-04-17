@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Add primary key extractor for SQLServer.
@@ -35,7 +36,7 @@ import java.util.Collection;
 public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> addColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN_SPECIFICATION);
         if (!addColumnNode.isPresent()) {
             return Optional.absent();

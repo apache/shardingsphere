@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ShorthandSelectItemSegment;
 
+import java.util.Map;
+
 /**
  * Shorthand select item extractor.
  *
@@ -32,7 +34,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Shorthand
 public final class ShorthandSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ShorthandSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<ShorthandSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             return Optional.of(new ShorthandSelectItemSegment(unqualifiedShorthandNode.get().getStart().getStartIndex()));

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.AddC
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
 
+import java.util.Map;
+
 /**
  * Add column definition extractor for MySQL.
  * 
@@ -31,8 +33,10 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.positio
 public final class MySQLAddColumnDefinitionExtractor extends AddColumnDefinitionExtractor {
     
     @Override
-    protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
-        Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(addColumnDefinitionSegment.getColumnDefinition().getColumnName()).extract(addColumnNode);
+    protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, 
+                                               final AddColumnDefinitionSegment addColumnDefinitionSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+        Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(
+                addColumnDefinitionSegment.getColumnDefinition().getColumnName()).extract(addColumnNode, placeholderIndexes);
         if (columnPositionSegment.isPresent()) {
             addColumnDefinitionSegment.setColumnPosition(columnPositionSegment.get());
         }

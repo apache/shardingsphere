@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTableSegment;
 
+import java.util.Map;
+
 /**
  * Rename table extractor.
  *
@@ -32,7 +34,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTa
 public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> newTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.NEW_TABLE_NAME);
         return newTableNode.isPresent() ? Optional.of(new RenameTableSegment(newTableNode.get().getText())) : Optional.<RenameTableSegment>absent();
     }

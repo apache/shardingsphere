@@ -161,12 +161,12 @@ public final class PredicateExtractor {
             return Optional.absent();
         }
         if (leftNode.isPresent() && rightNode.isPresent()) {
-            Optional<ColumnSegment> leftColumn = buildColumn(leftNode.get());
-            Optional<ColumnSegment> rightColumn = buildColumn(rightNode.get());
+            Optional<ColumnSegment> leftColumn = buildColumn(leftNode.get(), placeholderIndexes);
+            Optional<ColumnSegment> rightColumn = buildColumn(rightNode.get(), placeholderIndexes);
             Preconditions.checkState(leftColumn.isPresent() && rightColumn.isPresent());
             return Optional.of(new ConditionSegment(leftColumn.get(), comparisionNode.get().getText(), rightColumn.get(), predicateNode.getStop().getStopIndex()));
         }
-        Optional<ColumnSegment> column = buildColumn(exprNode);
+        Optional<ColumnSegment> column = buildColumn(exprNode, placeholderIndexes);
         Preconditions.checkState(column.isPresent());
         ParserRuleContext valueNode = leftNode.isPresent() ? (ParserRuleContext) comparisionNode.get().parent.getChild(2) : (ParserRuleContext) comparisionNode.get().parent.getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(placeholderIndexes, valueNode);
@@ -175,7 +175,7 @@ public final class PredicateExtractor {
     }
     
     private Optional<ConditionSegment> buildBetweenCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext predicateNode) {
-        Optional<ColumnSegment> column = buildColumn((ParserRuleContext) predicateNode.getChild(0));
+        Optional<ColumnSegment> column = buildColumn((ParserRuleContext) predicateNode.getChild(0), placeholderIndexes);
         if (!column.isPresent()) {
             return Optional.absent();
         }
@@ -189,7 +189,7 @@ public final class PredicateExtractor {
     }
     
     private Optional<ConditionSegment> buildInCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext predicateNode) {
-        Optional<ColumnSegment> column = buildColumn((ParserRuleContext) predicateNode.getChild(0));
+        Optional<ColumnSegment> column = buildColumn((ParserRuleContext) predicateNode.getChild(0), placeholderIndexes);
         if (!column.isPresent()) {
             return Optional.absent();
         }
@@ -212,7 +212,7 @@ public final class PredicateExtractor {
         return Optional.absent();
     }
     
-    private Optional<ColumnSegment> buildColumn(final ParserRuleContext parentNode) {
-        return new ColumnExtractor().extract(parentNode);
+    private Optional<ColumnSegment> buildColumn(final ParserRuleContext parentNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+        return new ColumnExtractor().extract(parentNode, placeholderIndexes);
     }
 }

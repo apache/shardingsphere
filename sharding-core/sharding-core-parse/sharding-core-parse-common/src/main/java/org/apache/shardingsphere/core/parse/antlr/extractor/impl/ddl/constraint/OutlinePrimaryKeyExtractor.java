@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Outline primary key extractor.
@@ -34,7 +35,7 @@ import java.util.Collection;
 public final class OutlinePrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> primaryKeyNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
