@@ -32,7 +32,17 @@ string
     ;
 
 literals_
-    : BIT_NUM_ | NUMBER_ | HEX_DIGIT_ | STRING_
+    : number
+    | string
+    | TRUE
+    | FALSE
+    | NULL
+    | BIT_NUM_
+    | HEX_DIGIT_
+    | (DATE | TIME | TIMESTAMP) STRING_
+    | LBE_ identifier_ STRING_ RBE_
+    | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
+    | characterSet_? BIT_NUM_ collateClause_?
     ;
 
 identifier_
@@ -141,7 +151,8 @@ bitExpr
 
 simpleExpr
     : functionCall
-    | literal
+    | parameterMarker
+    | literals_
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier_)
     | variable_
@@ -291,20 +302,6 @@ intervalUnit_
     : MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
     | QUARTER | YEAR | SECOND_MICROSECOND | MINUTE_MICROSECOND | MINUTE_SECOND | HOUR_MICROSECOND | HOUR_SECOND
     | HOUR_MINUTE | DAY_MICROSECOND | DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH
-    ;
-
-literal
-    : parameterMarker
-    | number
-    | TRUE
-    | FALSE
-    | NULL
-    | LBE_ identifier_ STRING_ RBE_
-    | HEX_DIGIT_
-    | string
-    | identifier_ STRING_ collateClause_?
-    | (DATE | TIME | TIMESTAMP) STRING_
-    | characterSet_? BIT_NUM_ collateClause_?
     ;
 
 subquery
