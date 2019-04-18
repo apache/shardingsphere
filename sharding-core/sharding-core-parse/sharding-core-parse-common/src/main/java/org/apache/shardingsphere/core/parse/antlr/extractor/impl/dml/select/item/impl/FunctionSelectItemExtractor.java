@@ -54,8 +54,11 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
     }
     
     private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext functionCallNode) {
-        String functionName = functionCallNode.getChild(0).getText();
-        Optional<AggregationType> aggregationType = findAggregationType(functionName);
+        Optional<ParserRuleContext> functionNameNode = ExtractorUtils.findFirstChildNodeNoneRecursive(functionCallNode, RuleName.FUNCTION_NAME);
+        if (!functionNameNode.isPresent()) {
+            return new ExpressionSelectItemSegment(functionCallNode.getText(), functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex());
+        }
+        Optional<AggregationType> aggregationType = findAggregationType(functionNameNode.get().getText());
         return aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), functionCallNode)
                 : new ExpressionSelectItemSegment(functionCallNode.getText(), functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex());
     }
@@ -68,12 +71,12 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
         }
     }
     
-    private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext functionNode) {
-        int innerExpressionStartIndex = ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex();
-        return ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent()
+    private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext functionCallNode) {
+        int innerExpressionStartIndex = ((TerminalNode) functionCallNode.getChild(1)).getSymbol().getStartIndex();
+        return ExtractorUtils.findFirstChildNode(functionCallNode, RuleName.DISTINCT).isPresent()
                 ? new AggregationDistinctSelectItemSegment(
-                type, innerExpressionStartIndex, functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), getDistinctExpression(functionNode))
-                : new AggregationSelectItemSegment(type, innerExpressionStartIndex, functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
+                        type, innerExpressionStartIndex, functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex(), getDistinctExpression(functionCallNode))
+                : new AggregationSelectItemSegment(type, innerExpressionStartIndex, functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex());
     }
     
     private String getDistinctExpression(final ParserRuleContext functionNode) {
