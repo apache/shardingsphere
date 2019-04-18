@@ -47,7 +47,9 @@ unreservedWord_
     | UPGRADE | VALIDATION | VALUE | VIEW | VISIBLE | WEIGHT_STRING | WITHOUT 
     | MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
     | QUARTER | YEAR | AGAINST | LANGUAGE | MODE | QUERY | EXPANSION
-    | BOOLEAN | MAX | MIN | SUM | COUNT | AVG
+    | BOOLEAN | MAX | MIN | SUM | COUNT | AVG | BIT_AND
+    | BIT_OR | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV
+    | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 tableName
@@ -138,11 +140,17 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunctionCall | specialFunctionCall_ | functionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_ 
+    : aggregationFunction | specialFunction_ | userDefinedFunction_ 
     ;
 
-aggregationFunctionCall
-    : (MAX | MIN | SUM | COUNT | AVG) LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ 
+aggregationFunction
+    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause_?
+    ;
+
+aggregationFunctionName_
+    : MAX | MIN | SUM | COUNT | AVG | BIT_AND | BIT_OR
+    | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV | STDDEV_POP
+    | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 distinct
@@ -177,12 +185,8 @@ frameBetween_
     : BETWEEN frameStart_ AND frameEnd_
     ;
 
-specialFunctionCall_
+specialFunction_
     : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
-    ;
-
-functionName
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHAR | TRIM
     ;
 
 matchExpression_
@@ -328,6 +332,14 @@ characterSet_
 
 collateClause_
     : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
+    ;
+
+userDefinedFunction_
+    : userDefinedfunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    ;
+
+userDefinedfunctionName_
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHAR | TRIM
     ;
 
 ignoredIdentifier_

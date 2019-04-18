@@ -54,7 +54,7 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
     }
     
     private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext functionCallNode) {
-        Optional<ParserRuleContext> aggregationFunctionCallNode = ExtractorUtils.findFirstChildNodeNoneRecursive(functionCallNode, RuleName.AGGREGATION_FUNCTION_CALL);
+        Optional<ParserRuleContext> aggregationFunctionCallNode = ExtractorUtils.findFirstChildNodeNoneRecursive(functionCallNode, RuleName.AGGREGATION_FUNCTION);
         if (!aggregationFunctionCallNode.isPresent()) {
             return new ExpressionSelectItemSegment(functionCallNode.getText(), functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex());
         }

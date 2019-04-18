@@ -647,10 +647,6 @@ GLOBAL
     : G L O B A L
     ;
 
-GROUP_CONCAT
-    : G R O U P UL_ C O N C A T
-    ;
-
 GROUP_REPLICATION_ADMIN
     : G R O U P UL_ R E P L I C A T I O N UL_ A D M I N
     ;
@@ -1317,4 +1313,56 @@ COUNT
 
 AVG
     : A V G
+    ;
+
+BIT_AND
+    : B I T UL_ A N D
+    ;
+
+BIT_OR
+    : B I T UL_ O R
+    ;
+
+BIT_XOR
+    : B I T UL_ X O R
+    ;
+
+GROUP_CONCAT
+    : G R O U P UL_ C O N C A T
+    ;
+
+JSON_ARRAYAGG
+    : J S O N UL_ A R R A Y A G G
+    ;
+
+JSON_OBJECTAGG
+    : J S O N UL_ O B J E C T A G G
+    ;
+
+STD
+    : S T D
+    ;
+
+STDDEV
+    : S T D D E V
+    ;
+
+STDDEV_POP
+    : S T D D E V UL_ P O P
+    ;
+
+STDDEV_SAMP
+    : S T D D E V UL_ S A M P
+    ;
+
+VAR_POP
+    : V A R UL_ P O P
+    ;
+
+VAR_SAMP
+    : V A R UL_ S A M P
+    ;
+
+VARIANCE
+    : V A R I A N C E
     ;
