@@ -19,12 +19,28 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
+parameterMarker
+    : QUESTION_
+    ;
+
+number
+   : NUMBER_
+   ;
+
+string
+    : STRING_
+    ;
+
 literals_
     : BIT_NUM_ | NUMBER_ | HEX_DIGIT_ | STRING_
     ;
 
 identifier_
     : IDENTIFIER_ | unreservedWord_
+    ;
+
+variable_
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
     ;
 
 unreservedWord_
@@ -128,7 +144,7 @@ simpleExpr
     | literal
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier_)
-    | variable
+    | variable_
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
@@ -140,7 +156,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | userDefinedFunction_ 
+    : aggregationFunction | specialFunction_ | regularFunction_ 
     ;
 
 aggregationFunction
@@ -228,7 +244,23 @@ trimFunction_
     ;
 
 weightStringFunction_
-    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
+    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
+    ;
+
+levelClause_
+    : LEVEL (levelInWeightListElement_ (COMMA_ levelInWeightListElement_)* | NUMBER_ MINUS_ NUMBER_)
+    ;
+
+levelInWeightListElement_
+    : NUMBER_ (ASC | DESC)? REVERSE?
+    ;
+
+regularFunction_
+    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    ;
+
+regularFunctionName_
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE
     ;
 
 matchExpression_
@@ -261,10 +293,6 @@ intervalUnit_
     | HOUR_MINUTE | DAY_MICROSECOND | DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH
     ;
 
-variable
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
-    ;
-
 literal
     : parameterMarker
     | number
@@ -279,18 +307,6 @@ literal
     | characterSet_? BIT_NUM_ collateClause_?
     ;
 
-parameterMarker
-    : QUESTION_
-    ;
-
-number
-   : NUMBER_
-   ;
-
-string
-    : STRING_
-    ;
-
 subquery
     : 'Default does not match anything'
     ;
@@ -301,18 +317,6 @@ orderByClause
 
 orderByItem
     : (columnName | number | expr) (ASC | DESC)?
-    ;
-
-levelClause
-    : LEVEL (levelInWeightListElements | (NUMBER_ MINUS_ NUMBER_))
-    ;
-
-levelInWeightListElements
-    : levelInWeightListElement (COMMA_ levelInWeightListElement)*
-    ;
-
-levelInWeightListElement
-    : NUMBER_ (ASC | DESC)? REVERSE?
     ;
 
 dataType
@@ -333,14 +337,6 @@ characterSet_
 
 collateClause_
     : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
-    ;
-
-userDefinedFunction_
-    : userDefinedfunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
-    ;
-
-userDefinedfunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHAR | TRIM
     ;
 
 ignoredIdentifier_
