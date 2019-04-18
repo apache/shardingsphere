@@ -41,20 +41,23 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
     
     @Override
     public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
-        return functionNode.isPresent() ? Optional.of(extractFunctionSelectItemSegment(expressionNode, functionNode.get())) : Optional.<SelectItemSegment>absent();
+        Optional<ParserRuleContext> functionCallNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
+        if (!functionCallNode.isPresent()) {
+            return Optional.absent();
+        }
+        SelectItemSegment result = extractFunctionSelectItemSegment(functionCallNode.get());
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
+        if (aliasNode.isPresent() && result instanceof AliasAvailable) {
+            ((AliasAvailable) result).setAlias(aliasNode.get().getText());
+        }
+        return Optional.of(result);
     }
     
-    private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
-        String functionName = functionNode.getChild(0).getText();
+    private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext functionCallNode) {
+        String functionName = functionCallNode.getChild(0).getText();
         Optional<AggregationType> aggregationType = findAggregationType(functionName);
-        AliasAvailable result = aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), functionNode)
-                : new ExpressionSelectItemSegment(functionNode.getText(), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
-        if (aliasNode.isPresent()) {
-            result.setAlias(aliasNode.get().getText());
-        }
-        return (SelectItemSegment) result;
+        return aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), functionCallNode)
+                : new ExpressionSelectItemSegment(functionCallNode.getText(), functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex());
     }
     
     private Optional<AggregationType> findAggregationType(final String functionName) {
