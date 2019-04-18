@@ -36,7 +36,7 @@ import java.util.Map;
 public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> addColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN_SPECIFICATION);
         if (!addColumnNode.isPresent()) {
             return Optional.absent();

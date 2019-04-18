@@ -34,9 +34,9 @@ public final class MySQLAddColumnDefinitionExtractor extends AddColumnDefinition
     
     @Override
     protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, 
-                                               final AddColumnDefinitionSegment addColumnDefinitionSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+                                               final AddColumnDefinitionSegment addColumnDefinitionSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(
-                addColumnDefinitionSegment.getColumnDefinition().getColumnName()).extract(addColumnNode, placeholderIndexes);
+                addColumnDefinitionSegment.getColumnDefinition().getColumnName()).extract(addColumnNode, parameterMarkerIndexes);
         if (columnPositionSegment.isPresent()) {
             addColumnDefinitionSegment.setColumnPosition(columnPositionSegment.get());
         }

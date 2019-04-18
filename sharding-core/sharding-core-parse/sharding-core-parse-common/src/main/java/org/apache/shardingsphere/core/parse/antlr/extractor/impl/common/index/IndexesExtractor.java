@@ -38,10 +38,10 @@ public final class IndexesExtractor implements CollectionSQLSegmentExtractor {
     private final IndexExtractor indexExtractor = new IndexExtractor();
     
     @Override
-    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<IndexSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            Optional<IndexSegment> indexSegment = indexExtractor.extract(each, placeholderIndexes);
+            Optional<IndexSegment> indexSegment = indexExtractor.extract(each, parameterMarkerIndexes);
             if (indexSegment.isPresent()) {
                 result.add(indexSegment.get());
             }

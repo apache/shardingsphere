@@ -37,13 +37,13 @@ public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
     
     @Override
-    public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> groupByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
         if (!groupByNode.isPresent()) {
             return Optional.absent();
         }
         GroupBySegment result = new GroupBySegment(groupByNode.get().getStop().getStopIndex());
-        result.getGroupByItems().addAll(orderByItemExtractor.extract(groupByNode.get(), placeholderIndexes));
+        result.getGroupByItems().addAll(orderByItemExtractor.extract(groupByNode.get(), parameterMarkerIndexes));
         return Optional.of(result);
     }
 }

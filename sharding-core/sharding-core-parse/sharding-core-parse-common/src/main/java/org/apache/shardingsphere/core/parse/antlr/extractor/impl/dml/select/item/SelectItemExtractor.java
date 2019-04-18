@@ -47,24 +47,24 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
     
     @Override
-    public Optional<? extends SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<? extends SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<? extends SelectItemSegment> result;
-        result = shorthandSelectItemExtractor.extract(expressionNode, placeholderIndexes);
+        result = shorthandSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        result = columnSelectItemExtractor.extract(expressionNode, placeholderIndexes);
+        result = columnSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        result = functionSelectItemSegmentExtractor.extract(expressionNode, placeholderIndexes);
+        result = functionSelectItemSegmentExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        result = subqueryExtractor.extract(expressionNode, placeholderIndexes);
+        result = subqueryExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        return expressionSelectItemExtractor.extract(expressionNode, placeholderIndexes);
+        return expressionSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
     }
 }

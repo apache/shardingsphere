@@ -34,7 +34,7 @@ import java.util.Map;
 public final class OracleDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> dropConstraintNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_CONSTRAINT_CLAUSE);
         if (!dropConstraintNode.isPresent()) {
             return Optional.absent();

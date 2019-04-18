@@ -34,7 +34,7 @@ import java.util.Map;
 public final class ShorthandSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ShorthandSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<ShorthandSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             return Optional.of(new ShorthandSelectItemSegment(unqualifiedShorthandNode.get().getStart().getStartIndex()));

@@ -37,7 +37,7 @@ import java.util.Map;
 public final class DropColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
-    public Collection<DropColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Collection<DropColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<DropColumnDefinitionSegment> result = new HashSet<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN_SPECIFICATION)) {
             result.addAll(extractDropColumnSegments(each));

@@ -44,24 +44,24 @@ public final class ExpressionExtractor {
     /**
      * Extract expression.
      *
-     * @param placeholderIndexes  placeholder index
+     * @param parameterMarkerIndexes  parameter marker indexes
      * @param expressionNode expression node
      * @return expression segment
      */
-    public Optional<? extends ExpressionSegment> extract(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
+    public Optional<? extends ExpressionSegment> extract(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get(), placeholderIndexes) : Optional.of(extractExpression(placeholderIndexes, expressionNode));
+        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get(), parameterMarkerIndexes) : Optional.of(extractExpression(parameterMarkerIndexes, expressionNode));
     }
     
-    private ExpressionSegment extractExpression(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
+    private ExpressionSegment extractExpression(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (functionNode.isPresent()) {
             return extractFunctionExpressionSegment(functionNode.get());
         }
         if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
-            return extractPropertyExpressionSegment(expressionNode, placeholderIndexes);
+            return extractPropertyExpressionSegment(expressionNode, parameterMarkerIndexes);
         }
-        return extractCommonExpressionSegment(placeholderIndexes, expressionNode);
+        return extractCommonExpressionSegment(parameterMarkerIndexes, expressionNode);
     }
     
     // TODO extract column name and value from function
@@ -70,9 +70,9 @@ public final class ExpressionExtractor {
                 ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
     }
     
-    private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode, placeholderIndexes);
+        Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode, parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent());
         return new PropertyExpressionSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), columnSegment.get().getName(), columnSegment.get().getOwner().orNull());
     }
@@ -80,15 +80,15 @@ public final class ExpressionExtractor {
     /**
      * Extract common expression segment.
      *
-     * @param placeholderIndexes placeholder index
+     * @param parameterMarkerIndexes parameter marker indexes
      * @param expressionNode expression node
      * @return common expression segment
      */
-    public CommonExpressionSegment extractCommonExpressionSegment(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
+    public CommonExpressionSegment extractCommonExpressionSegment(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext expressionNode) {
         CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUESTION);
+        Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
         if (questionNode.isPresent()) {
-            Integer index = placeholderIndexes.get(questionNode.get());
+            Integer index = parameterMarkerIndexes.get(questionNode.get());
             result.setPlaceholderIndex(index);
             return result;
         }

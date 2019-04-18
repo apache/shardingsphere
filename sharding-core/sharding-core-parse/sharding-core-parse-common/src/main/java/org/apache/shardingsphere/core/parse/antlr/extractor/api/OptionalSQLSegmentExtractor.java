@@ -34,8 +34,8 @@ public interface OptionalSQLSegmentExtractor extends SQLSegmentExtractor {
      * Extract SQL segment from SQL AST.
      *  
      * @param ancestorNode ancestor node of AST
-     * @param placeholderIndexes placeholder indexes
+     * @param parameterMarkerIndexes parameter marker indexes
      * @return SQL segment
      */
-    Optional<? extends SQLSegment> extract(ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);
+    Optional<? extends SQLSegment> extract(ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> parameterMarkerIndexes);
 }

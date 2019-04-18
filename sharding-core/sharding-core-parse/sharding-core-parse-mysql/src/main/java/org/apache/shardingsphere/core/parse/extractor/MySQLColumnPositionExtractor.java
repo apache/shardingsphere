@@ -40,7 +40,7 @@ public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExt
     private final String columnName;
     
     @Override
-    public Optional<ColumnPositionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<ColumnPositionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> firstOrAfterColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
         if (!firstOrAfterColumnNode.isPresent()) {
             return Optional.absent();

@@ -41,22 +41,22 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
     private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
     @Override
-    public Collection<InsertValuesSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Collection<InsertValuesSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> insertValuesClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_VALUES_CLAUSE);
         if (!insertValuesClauseNode.isPresent()) {
             return Collections.emptyList();
         }
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(insertValuesClauseNode.get(), RuleName.ASSIGNMENT_VALUES)) {
-            result.add(new InsertValuesSegment(extractCommonExpressionSegments(each, placeholderIndexes)));
+            result.add(new InsertValuesSegment(extractCommonExpressionSegments(each, parameterMarkerIndexes)));
         }
         return result;
     }
     
-    private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<CommonExpressionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
-            result.add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, each));
+            result.add(expressionExtractor.extractCommonExpressionSegment(parameterMarkerIndexes, each));
         }
         return result;
     }

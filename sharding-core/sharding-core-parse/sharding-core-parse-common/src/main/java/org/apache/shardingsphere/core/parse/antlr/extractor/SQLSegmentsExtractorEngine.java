@@ -49,22 +49,22 @@ public final class SQLSegmentsExtractorEngine {
     public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
         Preconditions.checkState(ast.getSQLStatementRule().isPresent());
-        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ast.getParserRuleContext());
+        Map<ParserRuleContext, Integer> parameterMarkerIndexes = getParameterMarkerIndexes(ast.getParserRuleContext());
         for (SQLSegmentExtractor each : ast.getSQLStatementRule().get().getExtractors()) {
             if (each instanceof OptionalSQLSegmentExtractor) {
-                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), placeholderIndexes);
+                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), parameterMarkerIndexes);
                 if (sqlSegment.isPresent()) {
                     result.add(sqlSegment.get());
                 }
             } else if (each instanceof CollectionSQLSegmentExtractor) {
-                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), placeholderIndexes));
+                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext(), parameterMarkerIndexes));
             }
         }
         return result;
     }
     
-    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
+    private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {
+        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.PARAMETER_MARKER);
         Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
         int index = 0;
         for (ParserRuleContext each : placeholderNodes) {

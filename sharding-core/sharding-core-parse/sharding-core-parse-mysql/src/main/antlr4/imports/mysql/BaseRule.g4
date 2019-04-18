@@ -19,12 +19,38 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
+parameterMarker
+    : QUESTION_
+    ;
+
+number
+   : NUMBER_
+   ;
+
+string
+    : STRING_
+    ;
+
 literals_
-    : BIT_NUM_ | NUMBER_ | HEX_DIGIT_ | STRING_
+    : number
+    | string
+    | TRUE
+    | FALSE
+    | NULL
+    | BIT_NUM_
+    | HEX_DIGIT_
+    | (DATE | TIME | TIMESTAMP) STRING_
+    | LBE_ identifier_ STRING_ RBE_
+    | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
+    | characterSet_? BIT_NUM_ collateClause_?
     ;
 
 identifier_
     : IDENTIFIER_ | unreservedWord_
+    ;
+
+variable_
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
     ;
 
 unreservedWord_
@@ -47,7 +73,9 @@ unreservedWord_
     | UPGRADE | VALIDATION | VALUE | VIEW | VISIBLE | WEIGHT_STRING | WITHOUT 
     | MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
     | QUARTER | YEAR | AGAINST | LANGUAGE | MODE | QUERY | EXPANSION
-    | BOOLEAN
+    | BOOLEAN | MAX | MIN | SUM | COUNT | AVG | BIT_AND
+    | BIT_OR | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV
+    | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 tableName
@@ -123,10 +151,11 @@ bitExpr
 
 simpleExpr
     : functionCall
-    | literal
+    | parameterMarker
+    | literals_
     | columnName
-    | simpleExpr collateClause_
-    | variable
+    | simpleExpr COLLATE (STRING_ | identifier_)
+    | variable_
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
@@ -138,19 +167,111 @@ simpleExpr
     ;
 
 functionCall
-    : functionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ | specialFunction
+    : aggregationFunction | specialFunction_ | regularFunction_ 
     ;
 
-functionName
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHARSET | CHAR | TRIM | WEIGHT_STRING
+aggregationFunction
+    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause_?
     ;
 
-specialFunction
-    : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
+aggregationFunctionName_
+    : MAX | MIN | SUM | COUNT | AVG | BIT_AND | BIT_OR
+    | BIT_XOR | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV | STDDEV_POP | STDDEV_SAMP
+    | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 distinct
     : DISTINCT
+    ;
+
+overClause_
+    : OVER (LP_ windowSpecification_ RP_ | identifier_)
+    ;
+
+windowSpecification_
+    : identifier_? partitionClause_? orderByClause? frameClause_?
+    ;
+
+partitionClause_
+    : PARTITION BY expr (COMMA_ expr)*
+    ;
+
+frameClause_
+    : (ROWS | RANGE) (frameStart_ | frameBetween_)
+    ;
+
+frameStart_
+    : CURRENT ROW | UNBOUNDED PRECEDING | UNBOUNDED FOLLOWING | expr PRECEDING | expr FOLLOWING
+    ;
+
+frameEnd_
+    : frameStart_
+    ;
+
+frameBetween_
+    : BETWEEN frameStart_ AND frameEnd_
+    ;
+
+specialFunction_
+    : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
+    | charFunction_ | trimFunction_ | weightStringFunction_
+    ;
+
+groupConcatFunction_
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
+    ;
+
+windowFunction_
+    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause_
+    ;
+
+castFunction_
+    : CAST LP_ expr AS dataType RP_
+    ;
+
+convertFunction_
+    : CONVERT LP_ expr COMMA_ dataType RP_
+    | CONVERT LP_ expr USING identifier_ RP_ 
+    ;
+
+positionFunction_
+    : POSITION LP_ expr IN expr RP_
+    ;
+
+substringFunction_
+    :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
+    ;
+
+extractFunction_
+    : EXTRACT LP_ identifier_ FROM expr RP_
+    ;
+
+charFunction_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    ;
+
+trimFunction_
+    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    ;
+
+weightStringFunction_
+    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
+    ;
+
+levelClause_
+    : LEVEL (levelInWeightListElement_ (COMMA_ levelInWeightListElement_)* | NUMBER_ MINUS_ NUMBER_)
+    ;
+
+levelInWeightListElement_
+    : NUMBER_ (ASC | DESC)? REVERSE?
+    ;
+
+regularFunction_
+    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    ;
+
+regularFunctionName_
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE
     ;
 
 matchExpression_
@@ -183,36 +304,6 @@ intervalUnit_
     | HOUR_MINUTE | DAY_MICROSECOND | DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH
     ;
 
-variable
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
-    ;
-
-literal
-    : question
-    | number
-    | TRUE
-    | FALSE
-    | NULL
-    | LBE_ identifier_ STRING_ RBE_
-    | HEX_DIGIT_
-    | string
-    | identifier_ STRING_ collateClause_?
-    | (DATE | TIME | TIMESTAMP) STRING_
-    | characterSet_? BIT_NUM_ collateClause_?
-    ;
-
-question
-    : QUESTION_
-    ;
-
-number
-   : NUMBER_
-   ;
-
-string
-    : STRING_
-    ;
-
 subquery
     : 'Default does not match anything'
     ;
@@ -223,99 +314,6 @@ orderByClause
 
 orderByItem
     : (columnName | number | expr) (ASC | DESC)?
-    ;
-
-groupConcat
-    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
-    ;
-
-castFunction
-    : CAST LP_ expr AS dataType RP_
-    ;
-
-convertFunction
-    : CONVERT LP_ expr ',' dataType RP_
-    | CONVERT LP_ expr USING ignoredIdentifier_ RP_ 
-    ;
-
-positionFunction
-    : POSITION LP_ expr IN expr RP_
-    ;
-
-substringFunction
-    :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
-    ;
-
-extractFunction
-    : EXTRACT LP_ identifier_ FROM expr RP_
-    ;
-
-charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
-    ;
-
-trimFunction
-    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
-    ;
-
-weightStringFunction
-    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
-    ;
-
-levelClause
-    : LEVEL (levelInWeightListElements | (NUMBER_ MINUS_ NUMBER_))
-    ;
-
-levelInWeightListElements
-    : levelInWeightListElement (COMMA_ levelInWeightListElement)*
-    ;
-
-levelInWeightListElement
-    : NUMBER_ (ASC | DESC)? REVERSE?
-    ;
-
-windowFunction
-    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause
-    ;
-
-overClause
-    : OVER LP_ windowSpec RP_ | OVER identifier_
-    ;
-
-windowSpec
-    : identifier_? windowPartitionClause? orderByClause? frameClause?
-    ;
-
-windowPartitionClause
-    : PARTITION BY expr (COMMA_ expr)*
-    ;
-
-frameClause
-    : frameUnits frameExtent
-    ;
-
-frameUnits
-    : ROWS | RANGE
-    ;
-
-frameExtent
-    : frameStart | frameBetween
-    ;
-
-frameStart
-    : CURRENT ROW
-    | UNBOUNDED PRECEDING
-    | UNBOUNDED FOLLOWING
-    | expr PRECEDING
-    | expr FOLLOWING
-    ;
-
-frameBetween
-    : BETWEEN frameStart AND frameEnd
-    ;
-
-frameEnd
-    : frameStart
     ;
 
 dataType

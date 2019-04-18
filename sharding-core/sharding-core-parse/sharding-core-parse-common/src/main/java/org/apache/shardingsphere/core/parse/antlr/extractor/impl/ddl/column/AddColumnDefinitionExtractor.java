@@ -39,21 +39,21 @@ public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtract
     private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public final Collection<AddColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public final Collection<AddColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<AddColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN_SPECIFICATION)) {
-            result.addAll(extractAddColumnDefinitions(each, placeholderIndexes));
+            result.addAll(extractAddColumnDefinitions(each, parameterMarkerIndexes));
         }
         return result;
     }
     
-    private Collection<AddColumnDefinitionSegment> extractAddColumnDefinitions(final ParserRuleContext addColumnNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    private Collection<AddColumnDefinitionSegment> extractAddColumnDefinitions(final ParserRuleContext addColumnNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<AddColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, placeholderIndexes);
+            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, parameterMarkerIndexes);
             if (columnDefinitionSegment.isPresent()) {
                 AddColumnDefinitionSegment addColumnDefinitionSegment = new AddColumnDefinitionSegment(columnDefinitionSegment.get());
-                postExtractColumnDefinition(addColumnNode, addColumnDefinitionSegment, placeholderIndexes);
+                postExtractColumnDefinition(addColumnNode, addColumnDefinitionSegment, parameterMarkerIndexes);
                 result.add(addColumnDefinitionSegment);
             }
         }
@@ -61,6 +61,6 @@ public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtract
     }
     
     protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, 
-                                               final AddColumnDefinitionSegment addColumnDefinitionSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+                                               final AddColumnDefinitionSegment addColumnDefinitionSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
     }
 }
