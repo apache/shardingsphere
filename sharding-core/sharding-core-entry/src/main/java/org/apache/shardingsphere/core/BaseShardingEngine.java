@@ -18,11 +18,15 @@
 package org.apache.shardingsphere.core;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
@@ -31,9 +35,11 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -67,9 +73,46 @@ public abstract class BaseShardingEngine {
             boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
             SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
         }
+        checkSupport(result);
         return result;
     }
-    
+
+    private void checkSupport(final SQLRouteResult routeResult) {
+        SQLStatement statement = routeResult.getSqlStatement();
+        if (!(statement instanceof UpdateStatement)) {
+            return;
+        }
+        List<String> shardingColums = new LinkedList<>();
+        shardingColums.addAll(shardingRule.getDefaultDatabaseShardingStrategy().getShardingColumns());
+        shardingColums.addAll(shardingRule.getDefaultTableShardingStrategy().getShardingColumns());
+        UpdateStatement updateStatement = (UpdateStatement) statement;
+        if (CollectionUtils.isNotEmpty(shardingRule.getTableRules())) {
+            for (TableRule tableRule : shardingRule.getTableRules()) {
+                shardingColums.addAll(getShardingColumns(updateStatement, tableRule));
+            }
+        }
+        for (Column column : updateStatement.getAssignments().keySet()) {
+            if (shardingColums.contains(column.getName())) {
+                throw new UnsupportedOperationException(String.format("Cannot support update shard key,logicTable: [%s],colum: [%s].", column.getTableName(), column.getName()));
+            }
+        }
+    }
+
+    private List<String> getShardingColumns(final UpdateStatement updateStatement, final TableRule tableRule) {
+        List<String> shardingColums = new LinkedList<>();
+        for (Column column : updateStatement.getAssignments().keySet()) {
+            if (column.getTableName().equals(tableRule.getLogicTable())) {
+                if (tableRule.getDatabaseShardingStrategy() != null) {
+                    shardingColums.addAll(tableRule.getDatabaseShardingStrategy().getShardingColumns());
+                }
+                if (tableRule.getTableShardingStrategy() != null) {
+                    shardingColums.addAll(tableRule.getTableShardingStrategy().getShardingColumns());
+                }
+            }
+        }
+        return shardingColums;
+    }
+
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
     protected abstract SQLRouteResult route(String sql, List<Object> parameters);
