@@ -40,18 +40,18 @@ public final class OnDuplicateKeyColumnsExtractor implements OptionalSQLSegmentE
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<OnDuplicateKeyColumnsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<OnDuplicateKeyColumnsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> onDuplicateKeyClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ON_DUPLICATE_KEY_CLAUSE);
         if (!onDuplicateKeyClauseNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new OnDuplicateKeyColumnsSegment(extractColumnSegments(onDuplicateKeyClauseNode.get(), placeholderIndexes)));
+        return Optional.of(new OnDuplicateKeyColumnsSegment(extractColumnSegments(onDuplicateKeyClauseNode.get(), parameterMarkerIndexes)));
     }
     
-    private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext onDuplicateKeyClauseNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext onDuplicateKeyClauseNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ColumnSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateKeyClauseNode, RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, placeholderIndexes);
+            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
             if (columnSegment.isPresent()) {
                 result.add(columnSegment.get());
             }

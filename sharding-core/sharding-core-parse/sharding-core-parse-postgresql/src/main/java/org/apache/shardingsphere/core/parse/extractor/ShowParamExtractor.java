@@ -35,7 +35,7 @@ import java.util.Map;
 public final class ShowParamExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> showParamNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_PARAM);
         if (!showParamNode.isPresent()) {
             return Optional.absent();

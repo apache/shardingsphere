@@ -44,7 +44,7 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     private final OrderByExtractor orderByExtractor = new OrderByExtractor();
     
     @Override
-    public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         if (!RuleName.SUBQUERY.getName().endsWith(subqueryNode.getClass().getSimpleName())) {
             return Optional.absent();
         }
@@ -58,19 +58,19 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
             parentNode = parentNode.getParent();
         }
         SubquerySegment result = new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex(), subqueryInFrom);
-        Optional<SelectItemsSegment> selectItemsSegment = new SelectItemsExtractor().extract(subqueryNode, placeholderIndexes);
+        Optional<SelectItemsSegment> selectItemsSegment = new SelectItemsExtractor().extract(subqueryNode, parameterMarkerIndexes);
         if (selectItemsSegment.isPresent()) {
             result.setSelectItemsSegment(selectItemsSegment.get());
         }
-        Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode, placeholderIndexes);
+        Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode, parameterMarkerIndexes);
         if (whereSegment.isPresent()) {
             result.setWhereSegment(whereSegment.get());
         }
-        Optional<GroupBySegment> groupBySegment = groupByExtractor.extract(subqueryNode, placeholderIndexes);
+        Optional<GroupBySegment> groupBySegment = groupByExtractor.extract(subqueryNode, parameterMarkerIndexes);
         if (groupBySegment.isPresent()) {
             result.setGroupBySegment(groupBySegment.get());
         }
-        Optional<OrderBySegment> orderBySegment = orderByExtractor.extract(subqueryNode, placeholderIndexes);
+        Optional<OrderBySegment> orderBySegment = orderByExtractor.extract(subqueryNode, parameterMarkerIndexes);
         if (orderBySegment.isPresent()) {
             result.setOrderBySegment(orderBySegment.get());
         }

@@ -853,4 +853,17 @@
             <table-token start-index="31" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
+    <parser-result sql-case-id="select_special_function_nested">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="36" table-name="t_order" length="7" />
+        </tokens>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(if(status=0, 1, 0))"/>
+            </aggregation-select-items>
+        </select-items>
+    </parser-result>
 </parser-result-sets>

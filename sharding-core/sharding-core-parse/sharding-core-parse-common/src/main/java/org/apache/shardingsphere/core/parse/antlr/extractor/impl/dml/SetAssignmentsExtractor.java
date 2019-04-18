@@ -39,14 +39,14 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
     private final AssignmentExtractor assignmentExtractor = new AssignmentExtractor();
     
     @Override
-    public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> setAssignmentsClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
         if (!setAssignmentsClauseNode.isPresent()) {
             return Optional.absent();
         }
         Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT)) {
-            Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(placeholderIndexes, each);
+            Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(parameterMarkerIndexes, each);
             if (assignmentSegment.isPresent()) {
                 assignmentSegments.add(assignmentSegment.get());
             }

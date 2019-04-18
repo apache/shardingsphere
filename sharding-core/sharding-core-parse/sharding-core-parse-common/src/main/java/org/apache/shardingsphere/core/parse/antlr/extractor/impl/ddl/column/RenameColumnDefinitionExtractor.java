@@ -36,7 +36,7 @@ import java.util.Map;
 public final class RenameColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<RenameColumnSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<RenameColumnSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN_SPECIFICATION);
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();

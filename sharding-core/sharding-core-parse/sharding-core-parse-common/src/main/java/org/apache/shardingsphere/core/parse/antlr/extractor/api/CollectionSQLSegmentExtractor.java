@@ -34,8 +34,8 @@ public interface CollectionSQLSegmentExtractor extends SQLSegmentExtractor {
      * Extract SQL segments from SQL AST.
      *  
      * @param ancestorNode ancestor node of AST
-     * @param placeholderIndexes placeholder indexes
+     * @param parameterMarkerIndexes parameter marker indexes
      * @return SQL segments
      */
-    Collection<? extends SQLSegment> extract(ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);
+    Collection<? extends SQLSegment> extract(ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> parameterMarkerIndexes);
 }

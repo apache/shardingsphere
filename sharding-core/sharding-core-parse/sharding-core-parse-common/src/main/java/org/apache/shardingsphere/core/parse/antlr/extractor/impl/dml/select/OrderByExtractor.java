@@ -36,13 +36,13 @@ public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
     private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
     
     @Override
-    public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
+    public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
         if (!orderByNode.isPresent()) {
             return Optional.absent();
         }
         OrderBySegment result = new OrderBySegment();
-        result.getOrderByItems().addAll(orderByItemExtractor.extract(orderByNode.get(), placeholderIndexes));
+        result.getOrderByItems().addAll(orderByItemExtractor.extract(orderByNode.get(), parameterMarkerIndexes));
         return Optional.of(result);
     }
 }
