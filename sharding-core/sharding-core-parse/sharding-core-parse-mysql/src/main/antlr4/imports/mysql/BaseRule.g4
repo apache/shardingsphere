@@ -149,8 +149,8 @@ aggregationFunction
 
 aggregationFunctionName_
     : MAX | MIN | SUM | COUNT | AVG | BIT_AND | BIT_OR
-    | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV | STDDEV_POP
-    | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
+    | BIT_XOR | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV | STDDEV_POP | STDDEV_SAMP
+    | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 distinct
@@ -186,7 +186,49 @@ frameBetween_
     ;
 
 specialFunction_
-    : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
+    : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
+    | charFunction_ | trimFunction_ | weightStringFunction_
+    ;
+
+groupConcatFunction_
+    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
+    ;
+
+windowFunction_
+    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause_
+    ;
+
+castFunction_
+    : CAST LP_ expr AS dataType RP_
+    ;
+
+convertFunction_
+    : CONVERT LP_ expr COMMA_ dataType RP_
+    | CONVERT LP_ expr USING identifier_ RP_ 
+    ;
+
+positionFunction_
+    : POSITION LP_ expr IN expr RP_
+    ;
+
+substringFunction_
+    :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
+    ;
+
+extractFunction_
+    : EXTRACT LP_ identifier_ FROM expr RP_
+    ;
+
+charFunction_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    ;
+
+trimFunction_
+    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    ;
+
+weightStringFunction_
+    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
     ;
 
 matchExpression_
@@ -261,43 +303,6 @@ orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
 
-groupConcat
-    : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
-    ;
-
-castFunction
-    : CAST LP_ expr AS dataType RP_
-    ;
-
-convertFunction
-    : CONVERT LP_ expr ',' dataType RP_
-    | CONVERT LP_ expr USING ignoredIdentifier_ RP_ 
-    ;
-
-positionFunction
-    : POSITION LP_ expr IN expr RP_
-    ;
-
-substringFunction
-    :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
-    ;
-
-extractFunction
-    : EXTRACT LP_ identifier_ FROM expr RP_
-    ;
-
-charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
-    ;
-
-trimFunction
-    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
-    ;
-
-weightStringFunction
-    : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
-    ;
-
 levelClause
     : LEVEL (levelInWeightListElements | (NUMBER_ MINUS_ NUMBER_))
     ;
@@ -308,10 +313,6 @@ levelInWeightListElements
 
 levelInWeightListElement
     : NUMBER_ (ASC | DESC)? REVERSE?
-    ;
-
-windowFunction
-    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause_
     ;
 
 dataType
