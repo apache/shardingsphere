@@ -47,7 +47,7 @@ unreservedWord_
     | UPGRADE | VALIDATION | VALUE | VIEW | VISIBLE | WEIGHT_STRING | WITHOUT 
     | MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
     | QUARTER | YEAR | AGAINST | LANGUAGE | MODE | QUERY | EXPANSION
-    | BOOLEAN
+    | BOOLEAN | MAX | MIN | SUM | COUNT | AVG
     ;
 
 tableName
@@ -138,19 +138,51 @@ simpleExpr
     ;
 
 functionCall
-    : functionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ | specialFunction_
+    : aggregationFunctionCall | specialFunctionCall_ | functionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_ 
     ;
 
-functionName
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHAR | TRIM
-    ;
-
-specialFunction_
-    : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
+aggregationFunctionCall
+    : (MAX | MIN | SUM | COUNT | AVG) LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ 
     ;
 
 distinct
     : DISTINCT
+    ;
+
+overClause_
+    : OVER (LP_ windowSpecification_ RP_ | identifier_)
+    ;
+
+windowSpecification_
+    : identifier_? partitionClause_? orderByClause? frameClause_?
+    ;
+
+partitionClause_
+    : PARTITION BY expr (COMMA_ expr)*
+    ;
+
+frameClause_
+    : (ROWS | RANGE) (frameStart_ | frameBetween_)
+    ;
+
+frameStart_
+    : CURRENT ROW | UNBOUNDED PRECEDING | UNBOUNDED FOLLOWING | expr PRECEDING | expr FOLLOWING
+    ;
+
+frameEnd_
+    : frameStart_
+    ;
+
+frameBetween_
+    : BETWEEN frameStart_ AND frameEnd_
+    ;
+
+specialFunctionCall_
+    : groupConcat | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction | charFunction | trimFunction | weightStringFunction
+    ;
+
+functionName
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | CAST | CONVERT | POSITION | CHAR | TRIM
     ;
 
 matchExpression_
@@ -275,47 +307,7 @@ levelInWeightListElement
     ;
 
 windowFunction
-    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause
-    ;
-
-overClause
-    : OVER LP_ windowSpec RP_ | OVER identifier_
-    ;
-
-windowSpec
-    : identifier_? windowPartitionClause? orderByClause? frameClause?
-    ;
-
-windowPartitionClause
-    : PARTITION BY expr (COMMA_ expr)*
-    ;
-
-frameClause
-    : frameUnits frameExtent
-    ;
-
-frameUnits
-    : ROWS | RANGE
-    ;
-
-frameExtent
-    : frameStart | frameBetween
-    ;
-
-frameStart
-    : CURRENT ROW
-    | UNBOUNDED PRECEDING
-    | UNBOUNDED FOLLOWING
-    | expr PRECEDING
-    | expr FOLLOWING
-    ;
-
-frameBetween
-    : BETWEEN frameStart AND frameEnd
-    ;
-
-frameEnd
-    : frameStart
+    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause_
     ;
 
 dataType

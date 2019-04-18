@@ -199,7 +199,7 @@ windowClause_
     ;
 
 windowItem_
-    : ignoredIdentifier_ AS LP_ windowSpec RP_
+    : ignoredIdentifier_ AS LP_ windowSpecification_ RP_
     ;
 
 subquery

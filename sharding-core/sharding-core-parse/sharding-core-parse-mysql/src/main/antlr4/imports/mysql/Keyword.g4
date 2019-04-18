@@ -1298,3 +1298,23 @@ EXPANSION
 BOOLEAN
     : B O O L E A N
     ;
+
+MAX
+    : M A X
+    ;
+
+MIN
+    : M I N
+    ;
+    
+SUM
+    : S U M
+    ;
+
+COUNT
+    : C O U N T
+    ;
+
+AVG
+    : A V G
+    ;

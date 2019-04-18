@@ -99,6 +99,8 @@ public enum RuleName {
     
     FUNCTION_NAME("FunctionName"),
     
+    AGGREGATION_FUNCTION_CALL("AggregationFunctionCall"),
+    
     DISTINCT("Distinct"),
     
     TABLE_CONSTRAINT("TableConstraint"),
