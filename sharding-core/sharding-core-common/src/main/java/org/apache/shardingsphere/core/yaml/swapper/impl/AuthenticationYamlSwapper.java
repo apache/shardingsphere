@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  */
 public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthentication, Authentication> {
     
-    private final UserYamlSwapper userYamlSwapper = new UserYamlSwapper();
+    private final ProxyUserYamlSwapper proxyUserYamlSwapper = new ProxyUserYamlSwapper();
     
     @Override
     public YamlAuthentication swap(final Authentication data) {
@@ -41,7 +41,7 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     
             @Override
             public YamlUser apply(final ProxyUser input) {
-                return userYamlSwapper.swap(input);
+                return proxyUserYamlSwapper.swap(input);
             }
         }));
         return result;
@@ -54,7 +54,7 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
             
             @Override
             public ProxyUser apply(final YamlUser input) {
-                return userYamlSwapper.swap(input);
+                return proxyUserYamlSwapper.swap(input);
             }
         }));
         return result;
