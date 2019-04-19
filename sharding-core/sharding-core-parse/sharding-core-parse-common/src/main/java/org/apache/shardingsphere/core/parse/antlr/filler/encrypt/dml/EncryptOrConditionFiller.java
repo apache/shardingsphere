@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
@@ -99,8 +100,12 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
         return result;
     }
     
-    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final SQLStatement sqlStatement) {
+    private void fillEncryptCondition(final Column column, final ConditionSegment conditionSegment, final SQLStatement sqlStatement) {
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+            return;
+        }
+        Condition condition = conditionSegment.getExpression().buildCondition(column, sqlStatement.getLogicSQL());
+        if (condition.isHasIgnoreExpression()) {
             return;
         }
         AndCondition andCondition;
@@ -110,8 +115,8 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
-        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getStopIndex(), column, true));
+        andCondition.getConditions().add(condition);
+        sqlStatement.getSQLTokens().add(new EncryptColumnToken(conditionSegment.getColumn().getStartIndex(), conditionSegment.getStopIndex(), column, true));
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only

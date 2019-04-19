@@ -173,8 +173,12 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         }
     }
     
-    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final ShardingRule shardingRule, final SQLStatement sqlStatement) {
+    private void fillEncryptCondition(final Column column, final ConditionSegment conditionSegment, final ShardingRule shardingRule, final SQLStatement sqlStatement) {
         if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+            return;
+        }
+        Condition condition = conditionSegment.getExpression().buildCondition(column, sqlStatement.getLogicSQL());
+        if (condition.isHasIgnoreExpression()) {
             return;
         }
         AndCondition andCondition;
@@ -184,8 +188,8 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
-        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getStopIndex(), column, true));
+        andCondition.getConditions().add(condition);
+        sqlStatement.getSQLTokens().add(new EncryptColumnToken(conditionSegment.getColumn().getStartIndex(), conditionSegment.getStopIndex(), column, true));
     }
     
     private boolean isShardingCondition(final String operator) {

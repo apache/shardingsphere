@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
@@ -60,6 +61,9 @@ public class Condition {
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
+    @Getter
+    private boolean hasIgnoreExpression;
+    
     protected Condition() {
         column = null;
         operator = null;
@@ -67,6 +71,7 @@ public class Condition {
     
     public Condition(final Column column, final SQLExpression sqlExpression) {
         this(column, ShardingOperator.EQUAL);
+        hasIgnoreExpression = sqlExpression instanceof SQLIgnoreExpression;
         init(sqlExpression, 0);
     }
     
@@ -79,12 +84,14 @@ public class Condition {
             operator = null;
         }
         init(sqlExpression, 0);
+        hasIgnoreExpression = sqlExpression instanceof SQLIgnoreExpression;
     }
     
     public Condition(final Column column, final SQLExpression beginSQLExpression, final SQLExpression endSQLExpression) {
         this(column, ShardingOperator.BETWEEN);
         init(beginSQLExpression, 0);
         init(endSQLExpression, 1);
+        hasIgnoreExpression = beginSQLExpression instanceof SQLIgnoreExpression || endSQLExpression instanceof SQLIgnoreExpression;
     }
     
     public Condition(final Column column, final List<SQLExpression> sqlExpressions) {
@@ -92,6 +99,9 @@ public class Condition {
         int count = 0;
         for (SQLExpression each : sqlExpressions) {
             init(each, count);
+            if (!hasIgnoreExpression) {
+                hasIgnoreExpression = each instanceof SQLIgnoreExpression;
+            }
             count++;
         }
     }

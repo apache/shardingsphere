@@ -64,10 +64,10 @@ public final class ExpressionExtractor {
         return extractCommonExpressionSegment(parameterMarkerIndexes, expressionNode);
     }
     
-    // TODO extract column name and value from function
     private ExpressionSegment extractFunctionExpressionSegment(final ParserRuleContext functionNode) {
-        return new FunctionExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), functionNode.getChild(0).getText(), 
-                ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
+        ParserRuleContext actualFunctionNode = (ParserRuleContext) functionNode.getChild(0);
+        return new FunctionExpressionSegment(actualFunctionNode.getStart().getStartIndex(), actualFunctionNode.getStop().getStopIndex(), actualFunctionNode.getChild(0).getText(),
+                ((TerminalNode) actualFunctionNode.getChild(1)).getSymbol().getStartIndex(), actualFunctionNode.getStop().getStopIndex(), -1);
     }
     
     private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
@@ -86,19 +86,20 @@ public final class ExpressionExtractor {
      */
     public CommonExpressionSegment extractCommonExpressionSegment(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext expressionNode) {
         CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> questionNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(expressionNode, RuleName.PARAMETER_MARKER);
+        Optional<ParserRuleContext> bitExprNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(expressionNode, RuleName.BIT_EXPR);
+        if (!bitExprNode.isPresent()) {
+            return result;
+        }
+        Optional<ParserRuleContext> questionNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(bitExprNode.get(), RuleName.PARAMETER_MARKER);
         if (questionNode.isPresent()) {
             Integer index = parameterMarkerIndexes.get(questionNode.get());
             result.setPlaceholderIndex(index);
             return result;
         }
-        Optional<ParserRuleContext> bitExprNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(expressionNode, RuleName.BIT_EXPR);
-        if (!bitExprNode.isPresent()) {
-            return result;
-        }
         Optional<ParserRuleContext> numberNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(bitExprNode.get(), RuleName.NUMBER);
         if (numberNode.isPresent()) {
             result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
+            return result;
         }
         Optional<ParserRuleContext> stringNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(bitExprNode.get(), RuleName.STRING);
         if (stringNode.isPresent()) {
