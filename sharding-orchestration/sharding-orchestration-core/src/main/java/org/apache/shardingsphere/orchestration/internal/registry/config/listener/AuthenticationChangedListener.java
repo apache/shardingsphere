@@ -27,7 +27,7 @@ import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 
 /**
- * User changed listener.
+ * Authentication changed listener.
  *
  * @author panjuan
  */
