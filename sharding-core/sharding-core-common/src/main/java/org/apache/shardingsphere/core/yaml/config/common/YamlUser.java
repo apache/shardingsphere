@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
- * User for YAML.
+ * Proxy user for YAML.
  *
  * @author zhangliang
  */
