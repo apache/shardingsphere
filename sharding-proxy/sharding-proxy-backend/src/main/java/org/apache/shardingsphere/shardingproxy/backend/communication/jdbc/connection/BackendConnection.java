@@ -62,6 +62,9 @@ public final class BackendConnection implements AutoCloseable {
     @Setter
     private int connectionId;
     
+    @Setter
+    private String userName;
+    
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
