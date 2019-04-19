@@ -47,7 +47,7 @@ public final class AuthenticationChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        assertThat(
-                authenticationChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, ChangedType.UPDATED)).getAuthentication().getUsers().get("root1").getPassword(), is("root1"));
+        assertThat(authenticationChangedListener.createShardingOrchestrationEvent(
+                new DataChangedEvent("test", AUTHENTICATION_YAML, ChangedType.UPDATED)).getAuthentication().getUsers().get("root1").getPassword(), is("root1"));
     }
 }
