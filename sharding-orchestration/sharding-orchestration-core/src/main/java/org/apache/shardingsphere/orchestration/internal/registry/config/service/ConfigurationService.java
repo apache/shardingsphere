@@ -26,7 +26,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
@@ -211,7 +211,7 @@ public final class ConfigurationService {
      * @return authentication
      */
     public Authentication loadAuthentication() {
-        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getAuthenticationPath()), YamlAuthentication.class));
+        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getAuthenticationPath()), YamlAuthenticationConfiguration.class));
     }
     
     /**
