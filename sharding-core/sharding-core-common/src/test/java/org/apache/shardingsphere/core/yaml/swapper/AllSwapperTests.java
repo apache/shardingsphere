@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.swapper;
 
-import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapperTest;
+import org.apache.shardingsphere.core.yaml.swapper.impl.UserYamlSwapperTest;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptorRuleConfigurationYamlSwapperTest;
 import org.apache.shardingsphere.core.yaml.swapper.impl.KeyGeneratorConfigurationYamlSwapperTest;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapperTest;
@@ -36,7 +36,7 @@ import org.junit.runners.Suite.SuiteClasses;
         ShardingStrategyConfigurationYamlSwapperTest.class, 
         KeyGeneratorConfigurationYamlSwapperTest.class, 
         EncryptorRuleConfigurationYamlSwapperTest.class, 
-        AuthenticationYamlSwapperTest.class
+        UserYamlSwapperTest.class
 })
 public final class AllSwapperTests {
 }
