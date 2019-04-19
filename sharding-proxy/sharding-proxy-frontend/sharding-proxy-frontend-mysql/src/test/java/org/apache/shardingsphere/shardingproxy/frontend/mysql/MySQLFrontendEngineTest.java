@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -70,7 +71,7 @@ public final class MySQLFrontendEngineTest {
     
     @Test
     public void assertAuthWhenLoginSuccess() {
-        User user = new User("", "db1");
+        User user = new User("", Collections.singleton("db1"));
         setAuthentication(user);
         when(payload.readStringNul()).thenReturn("root");
         assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
@@ -79,7 +80,7 @@ public final class MySQLFrontendEngineTest {
     
     @Test
     public void assertAuthWhenLoginFailure() {
-        User user = new User("error", "db1");
+        User user = new User("error", Collections.singleton("db1"));
         setAuthentication(user);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
