@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * User.
+ * Proxy user.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class User {
+public final class ProxyUser {
     
     private final String password;
     
