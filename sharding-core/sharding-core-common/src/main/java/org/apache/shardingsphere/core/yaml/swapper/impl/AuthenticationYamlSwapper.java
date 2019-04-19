@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.User;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.config.common.YamlUser;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
 /**
@@ -30,17 +32,31 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  */
 public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthentication, Authentication> {
     
+    private final UserYamlSwapper userYamlSwapper = new UserYamlSwapper();
+    
     @Override
     public YamlAuthentication swap(final Authentication data) {
         YamlAuthentication result = new YamlAuthentication();
-        result.setUsername(data.getUsername());
-        result.setPassword(data.getPassword());
+        result.getUsers().putAll(Maps.transformValues(data.getUsers(), new Function<User, YamlUser>() {
+    
+            @Override
+            public YamlUser apply(final User input) {
+                return userYamlSwapper.swap(input);
+            }
+        }));
         return result;
     }
     
     @Override
     public Authentication swap(final YamlAuthentication yamlConfiguration) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(yamlConfiguration.getUsername()), "Username is required.");
-        return new Authentication(yamlConfiguration.getUsername(), yamlConfiguration.getPassword());
+        Authentication result = new Authentication();
+        result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), new Function<YamlUser, User>() {
+            
+            @Override
+            public User apply(final YamlUser input) {
+                return userYamlSwapper.swap(input);
+            }
+        }));
+        return result;
     }
 }
