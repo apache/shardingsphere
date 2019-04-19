@@ -74,7 +74,7 @@ public final class ShardingOrchestrationFacadeTest {
     public void assertInitWithParameters() {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, RuleConfiguration> ruleConfigurationMap = Collections.singletonMap("sharding_db", mock(RuleConfiguration.class));
-        User user = new User("root", "db1");
+        User user = new User("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", user);
         Properties props = new Properties();
