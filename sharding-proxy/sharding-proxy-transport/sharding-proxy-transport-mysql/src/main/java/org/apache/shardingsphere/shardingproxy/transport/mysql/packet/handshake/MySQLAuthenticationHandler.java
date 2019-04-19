@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.core.rule.User;
+import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.util.Arrays;
@@ -47,12 +47,12 @@ public final class MySQLAuthenticationHandler {
      * @return login success or failure
      */
     public boolean login(final String username, final byte[] authResponse) {
-        Optional<User> user = getUser(username);
+        Optional<ProxyUser> user = getUser(username);
         return user.isPresent() && (Strings.isNullOrEmpty(user.get().getPassword()) || Arrays.equals(getAuthCipherBytes(user.get().getPassword()), authResponse));
     }
     
-    private Optional<User> getUser(final String username) {
-        for (Entry<String, User> entry : SHARDING_PROXY_CONTEXT.getAuthentication().getUsers().entrySet()) {
+    private Optional<ProxyUser> getUser(final String username) {
+        for (Entry<String, ProxyUser> entry : SHARDING_PROXY_CONTEXT.getAuthentication().getUsers().entrySet()) {
             if (entry.getKey().equals(username)) {
                 return Optional.of(entry.getValue());
             }

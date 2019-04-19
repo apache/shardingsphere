@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.context;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.rule.User;
+import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -38,9 +38,9 @@ public final class ShardingProxyContextTest {
     
     @Test
     public void assertInit() {
-        User user = new User("root", Collections.singleton("db1"));
+        ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
-        authentication.getUsers().put("root", user);
+        authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
         props.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE.getKey(), "BASE");
@@ -52,9 +52,9 @@ public final class ShardingProxyContextTest {
     
     @Test
     public void assertRenewShardingProperties() {
-        User user = new User("root", Collections.singleton("db1"));
+        ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
-        authentication.getUsers().put("root", user);
+        authentication.getUsers().put("root", proxyUser);
         ShardingProxyContext.getInstance().init(authentication, new Properties());
         assertTrue(ShardingProxyContext.getInstance().getShardingProperties().getProps().isEmpty());
         Properties props = new Properties();
@@ -65,9 +65,9 @@ public final class ShardingProxyContextTest {
     
     @Test
     public void assertRenewAuthentication() {
-        User user = new User("root", Collections.singleton("db1"));
+        ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
-        authentication.getUsers().put("root", user);
+        authentication.getUsers().put("root", proxyUser);
         ShardingProxyContext.getInstance().init(authentication, new Properties());
         ShardingOrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
         assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().keySet().iterator().next(), is("root"));
