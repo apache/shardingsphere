@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,7 +58,10 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private List<String> getSchemaNames() {
         List<String> result = new LinkedList<>(LogicSchemas.getInstance().getSchemaNames());
-        result.retainAll(ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas());
+        Collection<String> authorizedSchemas = ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        if (!authorizedSchemas.isEmpty()) {
+            result.retainAll(authorizedSchemas);
+        }
         return result;
     }
     
