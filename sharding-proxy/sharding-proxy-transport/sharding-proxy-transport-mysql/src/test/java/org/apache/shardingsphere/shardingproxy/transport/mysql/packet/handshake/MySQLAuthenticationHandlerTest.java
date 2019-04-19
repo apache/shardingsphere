@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.User;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,20 +54,22 @@ public final class MySQLAuthenticationHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        setAuthentication(new Authentication("root", "root"));
+        setAuthentication(new User("root", "db1"));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authenticationHandler.login("root", authResponse));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        setAuthentication(new Authentication("root", null));
+        setAuthentication(new User(null, null));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authenticationHandler.login("root", authResponse));
     }
     
     @SneakyThrows
-    private void setAuthentication(final Authentication authentication) {
+    private void setAuthentication(final User user) {
+        Authentication authentication = new Authentication();
+        authentication.getUsers().put("root", user);
         Field field = ShardingProxyContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
         field.set(ShardingProxyContext.getInstance(), authentication);
