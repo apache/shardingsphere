@@ -79,8 +79,8 @@ public final class ConfigurationServiceTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
-    private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n" + "      password: root1\n" + "      authorizedSchemas: sharding_db\n" 
-            + "    root2:\n" + "      password: root2\n" + "      authorizedSchemas: sharding_db,ms_db";
+    private static final String AUTHENTICATION_YAML = "users:\n" + "  root1:\n" + "    authorizedSchemas: sharding_db\n" + "    password: root1\n" 
+            + "  root2:\n" + "    authorizedSchemas: sharding_db,ms_db\n" + "    password: root2\n";
     
     private static final String PROPS_YAML = "sql.show: false\n";
     
