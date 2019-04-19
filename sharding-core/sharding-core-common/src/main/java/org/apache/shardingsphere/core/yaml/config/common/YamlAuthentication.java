@@ -21,16 +21,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Authentication for YAML.
- *
- * @author zhangliang
+ * Authentication configuration for YAML.
+ * 
+ * @author panjuan
  */
 @Getter
 @Setter
 public final class YamlAuthentication implements YamlConfiguration {
     
-    private String username;
-    
-    private String password;
+    private Map<String, YamlUser> users = new HashMap<>();
 }
