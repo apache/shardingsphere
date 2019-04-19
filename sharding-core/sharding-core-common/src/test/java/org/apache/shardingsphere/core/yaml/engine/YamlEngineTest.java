@@ -56,6 +56,6 @@ public final class YamlEngineTest {
         YamlUser actual = new YamlUser();
         actual.setPassword("pwd");
         actual.setAuthorizedSchemas("db1");
-        assertThat(YamlEngine.marshal(actual), is("password: pwd\nauthorizedSchemas: db1\n"));
+        assertThat(YamlEngine.marshal(actual), is("authorizedSchemas: db1\npassword: pwd\n"));
     }
 }
