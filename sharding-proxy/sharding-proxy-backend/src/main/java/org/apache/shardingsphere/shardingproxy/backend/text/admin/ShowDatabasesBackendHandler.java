@@ -17,33 +17,48 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Show databases backend handler.
  *
  * @author chenqingyang
  * @author zhaojun
+ * @author panjuan
  */
+@RequiredArgsConstructor
 public final class ShowDatabasesBackendHandler implements TextProtocolBackendHandler {
+    
+    private final BackendConnection backendConnection;
     
     private MergedResult mergedResult;
     
     @Override
     public BackendResponse execute() {
-        mergedResult = new ShowDatabasesMergedResult(LogicSchemas.getInstance().getSchemaNames());
+        mergedResult = new ShowDatabasesMergedResult(getSchemaNames());
         return new QueryResponse(Collections.singletonList(new QueryHeader("information_schema", "SCHEMATA", "Database", "SCHEMA_NAME", 100, Types.VARCHAR, 0)));
+    }
+    
+    private List<String> getSchemaNames() {
+        List<String> result = new LinkedList<>(LogicSchemas.getInstance().getSchemaNames());
+        result.retainAll(ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas());
+        return result;
     }
     
     @Override
