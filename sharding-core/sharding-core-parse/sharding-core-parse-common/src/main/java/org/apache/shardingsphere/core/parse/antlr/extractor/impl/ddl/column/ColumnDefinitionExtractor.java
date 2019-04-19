@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
 
+import java.util.Map;
+
 /**
  * Column definition extractor.
  * 
@@ -33,7 +35,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnD
 public final class ColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
             return Optional.absent();

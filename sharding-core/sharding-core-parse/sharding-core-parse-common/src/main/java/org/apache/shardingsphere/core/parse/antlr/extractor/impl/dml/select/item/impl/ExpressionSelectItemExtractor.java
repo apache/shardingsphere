@@ -24,6 +24,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
 
+import java.util.Map;
+
 /**
  * Expression select item extractor.
  *
@@ -32,7 +34,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Expressio
 public final class ExpressionSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         // TODO parse table inside expression
         ExpressionSelectItemSegment result = new ExpressionSelectItemSegment(expressionNode.getText(), expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);

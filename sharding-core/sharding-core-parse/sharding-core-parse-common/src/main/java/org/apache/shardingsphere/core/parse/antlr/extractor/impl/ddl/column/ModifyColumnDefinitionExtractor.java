@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.M
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Modify column definition extractor.
@@ -38,19 +39,20 @@ public class ModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtr
     private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public final Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public final Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ModifyColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN_SPECIFICATION)) {
-            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
+            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, parameterMarkerIndexes);
             if (columnDefinitionSegment.isPresent()) {
                 ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = new ModifyColumnDefinitionSegment(null, columnDefinitionSegment.get());
-                postExtractColumnDefinition(each, modifyColumnDefinitionSegment);
+                postExtractColumnDefinition(each, modifyColumnDefinitionSegment, parameterMarkerIndexes);
                 result.add(modifyColumnDefinitionSegment);
             }
         }
         return result;
     }
     
-    protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment) {
+    protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, 
+                                               final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
     }
 }

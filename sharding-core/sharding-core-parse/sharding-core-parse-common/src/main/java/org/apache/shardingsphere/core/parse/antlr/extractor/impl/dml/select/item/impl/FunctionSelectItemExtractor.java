@@ -30,6 +30,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Aggregati
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
+import java.util.Map;
+
 /**
  * Function select item extractor.
  *
@@ -38,21 +40,27 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
 public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode) {
-        Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
-        return functionNode.isPresent() ? Optional.of(extractFunctionSelectItemSegment(expressionNode, functionNode.get())) : Optional.<SelectItemSegment>absent();
+    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> functionCallNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
+        if (!functionCallNode.isPresent()) {
+            return Optional.absent();
+        }
+        SelectItemSegment result = extractFunctionSelectItemSegment(functionCallNode.get());
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
+        if (aliasNode.isPresent() && result instanceof AliasAvailable) {
+            ((AliasAvailable) result).setAlias(aliasNode.get().getText());
+        }
+        return Optional.of(result);
     }
     
-    private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
-        String functionName = functionNode.getChild(0).getText();
-        Optional<AggregationType> aggregationType = findAggregationType(functionName);
-        AliasAvailable result = aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), functionNode)
-                : new ExpressionSelectItemSegment(functionNode.getText(), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
-        if (aliasNode.isPresent()) {
-            result.setAlias(aliasNode.get().getText());
+    private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext functionCallNode) {
+        Optional<ParserRuleContext> aggregationFunctionCallNode = ExtractorUtils.findFirstChildNodeNoneRecursive(functionCallNode, RuleName.AGGREGATION_FUNCTION);
+        if (!aggregationFunctionCallNode.isPresent()) {
+            return new ExpressionSelectItemSegment(functionCallNode.getText(), functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex());
         }
-        return (SelectItemSegment) result;
+        Optional<AggregationType> aggregationType = findAggregationType(aggregationFunctionCallNode.get().getChild(0).getText());
+        return aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), aggregationFunctionCallNode.get())
+                : new ExpressionSelectItemSegment(functionCallNode.getText(), functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex());
     }
     
     private Optional<AggregationType> findAggregationType(final String functionName) {
@@ -63,12 +71,12 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
         }
     }
     
-    private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext functionNode) {
-        int innerExpressionStartIndex = ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex();
-        return ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent()
-                ? new AggregationDistinctSelectItemSegment(
-                type, innerExpressionStartIndex, functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), getDistinctExpression(functionNode))
-                : new AggregationSelectItemSegment(type, innerExpressionStartIndex, functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
+    private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext aggregationFunctionCallNode) {
+        int innerExpressionStartIndex = ((TerminalNode) aggregationFunctionCallNode.getChild(1)).getSymbol().getStartIndex();
+        return ExtractorUtils.findFirstChildNode(aggregationFunctionCallNode, RuleName.DISTINCT).isPresent()
+                ? new AggregationDistinctSelectItemSegment(type, innerExpressionStartIndex,
+                aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), getDistinctExpression(aggregationFunctionCallNode))
+                : new AggregationSelectItemSegment(type, innerExpressionStartIndex, aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex());
     }
     
     private String getDistinctExpression(final ParserRuleContext functionNode) {

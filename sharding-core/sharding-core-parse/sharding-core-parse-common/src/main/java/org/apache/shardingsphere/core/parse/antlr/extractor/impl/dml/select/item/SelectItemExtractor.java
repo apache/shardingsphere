@@ -27,6 +27,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ShorthandSelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
+import java.util.Map;
+
 /**
  * Select item extractor.
  *
@@ -45,24 +47,24 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
     
     @Override
-    public Optional<? extends SelectItemSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<? extends SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<? extends SelectItemSegment> result;
-        result = shorthandSelectItemExtractor.extract(expressionNode);
+        result = shorthandSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        result = columnSelectItemExtractor.extract(expressionNode);
+        result = columnSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        result = functionSelectItemSegmentExtractor.extract(expressionNode);
+        result = functionSelectItemSegmentExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        result = expressionSelectItemExtractor.extract(expressionNode);
+        result = subqueryExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }
-        return subqueryExtractor.extract(expressionNode);
+        return expressionSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
     }
 }

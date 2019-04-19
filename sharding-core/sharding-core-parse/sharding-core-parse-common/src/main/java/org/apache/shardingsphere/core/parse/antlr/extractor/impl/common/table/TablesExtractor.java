@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegmen
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Tables extractor.
@@ -37,10 +38,10 @@ public final class TablesExtractor implements CollectionSQLSegmentExtractor {
     private final TableExtractor tableExtractor = new TableExtractor();
     
     @Override
-    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<TableSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            Optional<TableSegment> tableSegment = tableExtractor.extract(each);
+            Optional<TableSegment> tableSegment = tableExtractor.extract(each, parameterMarkerIndexes);
             if (tableSegment.isPresent()) {
                 result.add(tableSegment.get());
             }

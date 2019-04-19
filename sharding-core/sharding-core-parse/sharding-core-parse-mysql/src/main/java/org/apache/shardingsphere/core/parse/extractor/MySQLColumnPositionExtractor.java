@@ -27,6 +27,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.positio
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnFirstPositionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
 
+import java.util.Map;
+
 /**
  * Column position extractor for MySQL.
  * 
@@ -38,7 +40,7 @@ public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExt
     private final String columnName;
     
     @Override
-    public Optional<ColumnPositionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ColumnPositionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> firstOrAfterColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
         if (!firstOrAfterColumnNode.isPresent()) {
             return Optional.absent();

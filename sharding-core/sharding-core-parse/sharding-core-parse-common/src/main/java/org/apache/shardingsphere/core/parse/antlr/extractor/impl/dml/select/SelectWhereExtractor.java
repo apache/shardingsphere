@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
-import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.WhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -35,15 +33,12 @@ import java.util.Map;
  * @author duhongjun
  * @author zhangliang
  */
-@Setter
-public final class SelectWhereExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
+public final class SelectWhereExtractor implements OptionalSQLSegmentExtractor {
     
     private final WhereExtractor whereExtractor = new WhereExtractor();
     
-    private Map<ParserRuleContext, Integer> placeholderIndexes;
-    
     @Override
-    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> selectItemsNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
         if (!selectItemsNode.isPresent()) {
             return Optional.absent();
@@ -52,7 +47,6 @@ public final class SelectWhereExtractor implements OptionalSQLSegmentExtractor, 
         if (!fromNode.isPresent()) {
             return Optional.absent();
         }
-        whereExtractor.setPlaceholderIndexes(placeholderIndexes);
-        return whereExtractor.extract(fromNode.get().getParent());
+        return whereExtractor.extract(fromNode.get().getParent(), parameterMarkerIndexes);
     }
 }

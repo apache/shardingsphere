@@ -97,23 +97,17 @@ public enum RuleName {
     
     FUNCTION_CALL("FunctionCall"),
     
+    AGGREGATION_FUNCTION("AggregationFunction"),
+    
     DISTINCT("Distinct"),
     
     TABLE_CONSTRAINT("TableConstraint"),
     
     TABLE_REFERENCES("TableReferences"),
     
-    TABLE_REFERENCE("TableReference"),
-    
-    TABLE_FACTOR("TableFactor"),
-    
-    JOINED_TABLE("JoinedTable"),
-    
-    JOIN_SPECIFICATION("JoinSpecification"),
-    
     ALIAS("Alias"),
     
-    QUESTION("Question"),
+    PARAMETER_MARKER("ParameterMarker"),
     
     NUMBER("Number"),
     

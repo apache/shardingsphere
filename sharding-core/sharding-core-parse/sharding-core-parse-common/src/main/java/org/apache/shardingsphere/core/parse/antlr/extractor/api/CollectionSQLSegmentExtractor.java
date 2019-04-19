@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Collection SQL segment extractor.
@@ -33,7 +34,8 @@ public interface CollectionSQLSegmentExtractor extends SQLSegmentExtractor {
      * Extract SQL segments from SQL AST.
      *  
      * @param ancestorNode ancestor node of AST
+     * @param parameterMarkerIndexes parameter marker indexes
      * @return SQL segments
      */
-    Collection<? extends SQLSegment> extract(ParserRuleContext ancestorNode);
+    Collection<? extends SQLSegment> extract(ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> parameterMarkerIndexes);
 }

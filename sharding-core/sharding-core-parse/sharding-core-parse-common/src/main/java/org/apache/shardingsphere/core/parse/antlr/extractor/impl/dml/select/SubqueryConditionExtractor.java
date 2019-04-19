@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
-import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.PlaceholderIndexesAware;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
@@ -35,20 +33,16 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-@Setter
-public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtractor, PlaceholderIndexesAware {
+public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtractor {
     
     private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
     
-    private Map<ParserRuleContext, Integer> placeholderIndexes;
-    
     @Override
-    public Optional<SubqueryConditionSegment> extract(final ParserRuleContext ancestorNode) {
-        selectWhereExtractor.setPlaceholderIndexes(placeholderIndexes);
+    public Optional<SubqueryConditionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
         SubqueryConditionSegment result = new SubqueryConditionSegment();
         for (ParserRuleContext each : suQueryNodes) {
-            Optional<WhereSegment> condition = selectWhereExtractor.extract(each);
+            Optional<WhereSegment> condition = selectWhereExtractor.extract(each, parameterMarkerIndexes);
             if (condition.isPresent()) {
                 result.getOrConditions().add(condition.get().getConditions());
             }

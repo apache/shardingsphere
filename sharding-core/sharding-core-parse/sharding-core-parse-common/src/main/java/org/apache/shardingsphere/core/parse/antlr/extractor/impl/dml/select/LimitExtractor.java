@@ -40,7 +40,7 @@ import java.util.Map;
 public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> limitNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         if (!limitNode.isPresent()) {
             return Optional.absent();
@@ -57,7 +57,7 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final ParserRuleContext ancestorNode) {
         Map<ParserRuleContext, Integer> result = new HashMap<>();
         int index = 0;
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.PARAMETER_MARKER)) {
             result.put(each, index++);
         }
         return result;

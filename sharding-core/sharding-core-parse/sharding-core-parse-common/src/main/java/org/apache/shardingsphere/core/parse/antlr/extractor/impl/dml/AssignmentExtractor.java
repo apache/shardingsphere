@@ -45,18 +45,18 @@ public final class AssignmentExtractor {
     /**
      * Extract.
      * 
-     * @param placeholderIndexes placeholder indexes
+     * @param parameterMarkerIndexes parameter marker indexes
      * @param ancestorNode ancestor node
      * @return assignment segment
      */
-    public Optional<AssignmentSegment> extract(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext ancestorNode) {
+    public Optional<AssignmentSegment> extract(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> assignmentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ASSIGNMENT);
         if (!assignmentNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0));
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0), parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent());
-        CommonExpressionSegment expressionSegment = expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) assignmentNode.get().getChild(2));
+        CommonExpressionSegment expressionSegment = expressionExtractor.extractCommonExpressionSegment(parameterMarkerIndexes, (ParserRuleContext) assignmentNode.get().getChild(2));
         return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment));
     }
 }

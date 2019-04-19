@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnD
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Column definitions extractor.
@@ -37,10 +38,10 @@ public final class ColumnDefinitionsExtractor implements CollectionSQLSegmentExt
     private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
+            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each, parameterMarkerIndexes);
             if (columnDefinitionSegment.isPresent()) {
                 result.add(columnDefinitionSegment.get());
             }

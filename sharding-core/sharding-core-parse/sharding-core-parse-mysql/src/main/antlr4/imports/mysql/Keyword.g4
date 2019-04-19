@@ -247,10 +247,6 @@ CURRENT
     : C U R R E N T
     ;
 
-DAY
-    : D A Y
-    ;
-
 DEFAULT
     : D E F A U L T
     ;
@@ -649,10 +645,6 @@ FULLTEXT
 
 GLOBAL
     : G L O B A L
-    ;
-
-GROUP_CONCAT
-    : G R O U P UL_ C O N C A T
     ;
 
 GROUP_REPLICATION_ADMIN
@@ -1197,4 +1189,180 @@ ENFORCED
 
 OJ
     : O J
+    ;
+
+MICROSECOND
+    : M I C R O S E C O N D
+    ;
+
+SECOND
+    : S E C O N D
+    ;
+   
+MINUTE
+    : M I N U T E
+    ;
+   
+HOUR
+    : H O U R
+    ;
+
+DAY
+    : D A Y
+    ;
+
+WEEK
+    : W E E K
+    ;
+
+MONTH
+    : M O N T H
+    ;
+
+QUARTER
+    : Q U A R T E R
+    ;
+
+YEAR
+    : Y E A R
+    ;
+
+SECOND_MICROSECOND
+    : S E C O N D UL_ M I C R O S E C O N D
+    ;
+
+MINUTE_MICROSECOND
+    : M I N U T E UL_ M I C R O S E C O N D
+    ;
+
+MINUTE_SECOND
+    : M I N U T E UL_ S E C O N D
+    ;
+
+HOUR_MICROSECOND
+    : H O U R UL_ M I C R O S E C O N D
+    ;
+
+HOUR_SECOND
+    : H O U R UL_ S E C O N D
+    ;
+
+HOUR_MINUTE
+    : H O U R UL_ M I N U T E
+    ;
+
+DAY_MICROSECOND
+    : D A Y UL_ M I C R O S E C O N D
+    ;
+
+DAY_SECOND
+    : D A Y UL_ S E C O N D
+    ;
+
+DAY_MINUTE
+    : D A Y UL_ M I N U T E
+    ;
+
+DAY_HOUR
+    : D A Y UL_ H O U R
+    ;
+
+YEAR_MONTH
+    : D A Y UL_ M O N T H
+    ;
+
+AGAINST
+    : A G A I N S T
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+MODE
+    : M O D E
+    ;
+
+QUERY
+    : Q U E R Y
+    ;
+
+EXPANSION
+    : E X P A N S I O N
+    ;
+
+BOOLEAN
+    : B O O L E A N
+    ;
+
+MAX
+    : M A X
+    ;
+
+MIN
+    : M I N
+    ;
+    
+SUM
+    : S U M
+    ;
+
+COUNT
+    : C O U N T
+    ;
+
+AVG
+    : A V G
+    ;
+
+BIT_AND
+    : B I T UL_ A N D
+    ;
+
+BIT_OR
+    : B I T UL_ O R
+    ;
+
+BIT_XOR
+    : B I T UL_ X O R
+    ;
+
+GROUP_CONCAT
+    : G R O U P UL_ C O N C A T
+    ;
+
+JSON_ARRAYAGG
+    : J S O N UL_ A R R A Y A G G
+    ;
+
+JSON_OBJECTAGG
+    : J S O N UL_ O B J E C T A G G
+    ;
+
+STD
+    : S T D
+    ;
+
+STDDEV
+    : S T D D E V
+    ;
+
+STDDEV_POP
+    : S T D D E V UL_ P O P
+    ;
+
+STDDEV_SAMP
+    : S T D D E V UL_ S A M P
+    ;
+
+VAR_POP
+    : V A R UL_ P O P
+    ;
+
+VAR_SAMP
+    : V A R UL_ S A M P
+    ;
+
+VARIANCE
+    : V A R I A N C E
     ;

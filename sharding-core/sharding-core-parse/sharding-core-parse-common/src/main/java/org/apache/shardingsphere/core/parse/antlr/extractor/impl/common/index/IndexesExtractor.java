@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSeg
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Indexes extractor.
@@ -37,10 +38,10 @@ public final class IndexesExtractor implements CollectionSQLSegmentExtractor {
     private final IndexExtractor indexExtractor = new IndexExtractor();
     
     @Override
-    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
+    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<IndexSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            Optional<IndexSegment> indexSegment = indexExtractor.extract(each);
+            Optional<IndexSegment> indexSegment = indexExtractor.extract(each, parameterMarkerIndexes);
             if (indexSegment.isPresent()) {
                 result.add(indexSegment.get());
             }
