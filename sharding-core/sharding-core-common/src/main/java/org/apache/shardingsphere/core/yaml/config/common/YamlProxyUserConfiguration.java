@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
  */
 @Getter
 @Setter
-public final class YamlProxyUser implements YamlConfiguration {
+public final class YamlProxyUserConfiguration implements YamlConfiguration {
     
     private String password;
     
