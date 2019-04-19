@@ -35,7 +35,7 @@ import java.util.Properties;
 @Setter
 public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
-    private YamlAuthentication authentication = new YamlAuthentication();
+    private YamlAuthentication authentication;
     
     private YamlOrchestrationConfiguration orchestration;
     
