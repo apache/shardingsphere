@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.apache.shardingsphere.core.yaml.config.common.YamlUser;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUser;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
 import java.util.Collections;
@@ -31,11 +31,11 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
-public final class ProxyUserYamlSwapper implements YamlSwapper<YamlUser, ProxyUser> {
+public final class ProxyUserYamlSwapper implements YamlSwapper<YamlProxyUser, ProxyUser> {
     
     @Override
-    public YamlUser swap(final ProxyUser data) {
-        YamlUser result = new YamlUser();
+    public YamlProxyUser swap(final ProxyUser data) {
+        YamlProxyUser result = new YamlProxyUser();
         result.setPassword(data.getPassword());
         String authorizedSchemas = null == data.getAuthorizedSchemas() ? "" : Joiner.on(',').join(data.getAuthorizedSchemas());
         result.setAuthorizedSchemas(authorizedSchemas);
@@ -43,7 +43,7 @@ public final class ProxyUserYamlSwapper implements YamlSwapper<YamlUser, ProxyUs
     }
     
     @Override
-    public ProxyUser swap(final YamlUser yamlConfiguration) {
+    public ProxyUser swap(final YamlProxyUser yamlConfiguration) {
         if (Strings.isNullOrEmpty(yamlConfiguration.getAuthorizedSchemas())) {
             return new ProxyUser(yamlConfiguration.getPassword(), Collections.<String>emptyList());
         }
