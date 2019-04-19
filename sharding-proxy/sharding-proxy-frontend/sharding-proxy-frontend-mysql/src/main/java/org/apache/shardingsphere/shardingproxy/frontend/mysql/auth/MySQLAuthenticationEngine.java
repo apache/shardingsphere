@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
 import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
- * Authentication engine for MySQL.
+ * User engine for MySQL.
  *
  * @author zhangliang
  */
