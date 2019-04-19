@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.admin.initdb;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -56,7 +55,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        return Strings.isNullOrEmpty(backendConnection.getUserName())
-                || ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas().contains(schema);
+        Collection<String> authorizedSchemas = ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
 }
