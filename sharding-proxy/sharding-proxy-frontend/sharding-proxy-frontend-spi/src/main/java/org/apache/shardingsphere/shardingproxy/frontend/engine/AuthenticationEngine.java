@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
- * User engine.
+ * Authentication engine.
  *
  * @author zhangliang
  */
@@ -37,7 +37,7 @@ public interface AuthenticationEngine {
     void handshake(ChannelHandlerContext context, BackendConnection backendConnection);
     
     /**
-     * User.
+     * Authentication.
      *
      * @param context channel handler context
      * @param payload packet payload
