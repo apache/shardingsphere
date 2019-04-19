@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 
 /**
- * Authentication changed event.
+ * User changed event.
  *
  * @author panjuan
  */
