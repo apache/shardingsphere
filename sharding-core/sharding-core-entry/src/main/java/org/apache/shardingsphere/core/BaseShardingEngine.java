@@ -36,11 +36,12 @@ import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Base sharding engine.
@@ -49,19 +50,19 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public abstract class BaseShardingEngine {
-    
+
     private final ShardingRule shardingRule;
-    
+
     private final ShardingProperties shardingProperties;
-    
+
     private final ShardingMetaData metaData;
-    
+
     private final DatabaseType databaseType;
-    
+
     /**
      * Shard.
      *
-     * @param sql SQL
+     * @param sql        SQL
      * @param parameters parameters of SQL
      * @return SQL route result
      */
@@ -82,41 +83,50 @@ public abstract class BaseShardingEngine {
         if (!(statement instanceof UpdateStatement)) {
             return;
         }
-        List<String> shardingColums = new LinkedList<>();
-        shardingColums.addAll(shardingRule.getDefaultDatabaseShardingStrategy().getShardingColumns());
-        shardingColums.addAll(shardingRule.getDefaultTableShardingStrategy().getShardingColumns());
         UpdateStatement updateStatement = (UpdateStatement) statement;
-        if (CollectionUtils.isNotEmpty(shardingRule.getTableRules())) {
-            for (TableRule tableRule : shardingRule.getTableRules()) {
-                shardingColums.addAll(getShardingColumns(updateStatement, tableRule));
-            }
+        Set<Column> updateColumns = updateStatement.getAssignments().keySet();
+        checkDefaultShardingStrategy(updateColumns);
+        checkTableRulesShardingStrategy(updateColumns);
+    }
+
+    private void checkDefaultShardingStrategy(final Set<Column> updateColumns) {
+        for (Column column : updateColumns) {
+            checkShardingStrategy(shardingRule.getDefaultDatabaseShardingStrategy(), column);
+            checkShardingStrategy(shardingRule.getDefaultTableShardingStrategy(), column);
         }
-        for (Column column : updateStatement.getAssignments().keySet()) {
-            if (shardingColums.contains(column.getName())) {
-                throw new UnsupportedOperationException(String.format("Cannot support update shard key,logicTable: [%s],colum: [%s].", column.getTableName(), column.getName()));
+    }
+
+    private void checkTableRulesShardingStrategy(final Set<Column> updateColumns) {
+        if (CollectionUtils.isEmpty(shardingRule.getTableRules())) {
+            return;
+        }
+        for (Column column : updateColumns) {
+            for (TableRule tableRule : shardingRule.getTableRules()) {
+                if (!tableRule.getLogicTable().equals(column.getTableName())) {
+                    continue;
+                }
+                checkShardingStrategy(tableRule.getDatabaseShardingStrategy(), column);
+                checkShardingStrategy(tableRule.getTableShardingStrategy(), column);
             }
         }
     }
 
-    private List<String> getShardingColumns(final UpdateStatement updateStatement, final TableRule tableRule) {
-        List<String> shardingColums = new LinkedList<>();
-        for (Column column : updateStatement.getAssignments().keySet()) {
-            if (column.getTableName().equals(tableRule.getLogicTable())) {
-                if (tableRule.getDatabaseShardingStrategy() != null) {
-                    shardingColums.addAll(tableRule.getDatabaseShardingStrategy().getShardingColumns());
-                }
-                if (tableRule.getTableShardingStrategy() != null) {
-                    shardingColums.addAll(tableRule.getTableShardingStrategy().getShardingColumns());
-                }
-            }
+    private void checkShardingStrategy(final ShardingStrategy shardingstrategy, final Column column) {
+        if (shardingstrategy == null) {
+            return;
         }
-        return shardingColums;
+        if (CollectionUtils.isEmpty(shardingstrategy.getShardingColumns())) {
+            return;
+        }
+        if (shardingstrategy.getShardingColumns().contains(column.getName())) {
+            throw new UnsupportedOperationException(String.format("Cannot support update shard key,logicTable: [%s],colum: [%s].", column.getTableName(), column.getName()));
+        }
     }
 
     protected abstract List<Object> cloneParameters(List<Object> parameters);
-    
+
     protected abstract SQLRouteResult route(String sql, List<Object> parameters);
-    
+
     private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
@@ -124,7 +134,7 @@ public abstract class BaseShardingEngine {
         }
         return result;
     }
-    
+
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters, sqlRouteResult.getOptimizeResult());
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(sqlRouteResult.getRoutingResult().isSingleRouting());
