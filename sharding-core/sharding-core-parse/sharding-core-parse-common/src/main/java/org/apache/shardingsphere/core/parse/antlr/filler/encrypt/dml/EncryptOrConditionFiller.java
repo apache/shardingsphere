@@ -90,9 +90,8 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
                 }
                 if (filledConditionStopIndexes.contains(condition.getStopIndex())) {
                     continue;
-                } else {
-                    filledConditionStopIndexes.add(condition.getStopIndex());
                 }
+                filledConditionStopIndexes.add(condition.getStopIndex());
                 Column column = new Column(condition.getColumn().getName(), getTableName(sqlStatement, condition));
                 fillEncryptCondition(column, condition, sqlStatement);
             }

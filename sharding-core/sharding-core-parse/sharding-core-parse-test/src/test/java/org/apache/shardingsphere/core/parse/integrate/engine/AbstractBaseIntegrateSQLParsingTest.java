@@ -67,6 +67,8 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
         tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false), 
                 new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
         tableMetaDataMap.put("t_place", new TableMetaData(Arrays.asList(new ColumnMetaData("user_new_id", "int", true), new ColumnMetaData("user_new_id", "int", false))));
+        tableMetaDataMap.put("t_encrypt", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "int", true), new ColumnMetaData("name", "varchar", false),
+                new ColumnMetaData("mobile", "varchar", false), new ColumnMetaData("status", "int", false))));
         return new ShardingTableMetaData(tableMetaDataMap);
     }
 }

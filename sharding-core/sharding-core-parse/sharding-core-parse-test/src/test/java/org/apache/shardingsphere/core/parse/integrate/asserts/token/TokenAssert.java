@@ -88,7 +88,7 @@ public final class TokenAssert {
         offsetTokenAssert.assertOffsetToken(actual, expected);
         rowCountTokenAssert.assertRowCountToken(actual, expected);
         aggregationDistinctTokenAssert.assertAggregationDistinctTokens(actual, expected);
-        if(DatabaseType.MySQL == databaseType) {
+        if (DatabaseType.MySQL == databaseType) {
             encryptColumnTokenAssert.assertEncryptColumnsToken(actual, expected);
         }
     }

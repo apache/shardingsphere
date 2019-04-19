@@ -86,21 +86,21 @@ public final class ExpressionExtractor {
      */
     public CommonExpressionSegment extractCommonExpressionSegment(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
         CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUESTION);
+        Optional<ParserRuleContext> questionNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(expressionNode, RuleName.QUESTION);
         if (questionNode.isPresent()) {
             Integer index = placeholderIndexes.get(questionNode.get());
             result.setPlaceholderIndex(index);
             return result;
         }
-        Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
-        if (bitExprNode.isPresent() && 1 != bitExprNode.get().getChildCount()) {
+        Optional<ParserRuleContext> bitExprNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(expressionNode, RuleName.BIT_EXPR);
+        if (!bitExprNode.isPresent()) {
             return result;
         }
-        Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER);
+        Optional<ParserRuleContext> numberNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(bitExprNode.get(), RuleName.NUMBER);
         if (numberNode.isPresent()) {
             result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
         }
-        Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING);
+        Optional<ParserRuleContext> stringNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(bitExprNode.get(), RuleName.STRING);
         if (stringNode.isPresent()) {
             String text = stringNode.get().getText();
             result.setLiterals(text.substring(1, text.length() - 1));

@@ -139,9 +139,8 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
                 }
                 if (filledConditionStopIndexes.contains(condition.getStopIndex())) {
                     continue;
-                } else {
-                    filledConditionStopIndexes.add(condition.getStopIndex());
                 }
+                filledConditionStopIndexes.add(condition.getStopIndex());
                 Column column = new Column(condition.getColumn().getName(), getTableName(shardingTableMetaData, shardingRule, sqlStatement, condition));
                 fillEncryptCondition(column, condition, shardingRule, sqlStatement);
             }

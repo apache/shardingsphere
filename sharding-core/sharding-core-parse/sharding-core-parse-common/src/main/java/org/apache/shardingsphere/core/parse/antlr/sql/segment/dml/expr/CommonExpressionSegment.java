@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
@@ -55,6 +56,7 @@ public final class CommonExpressionSegment implements ExpressionSegment {
         if (literals instanceof String) {
             return new SQLTextExpression(literals.toString());
         }
-        return new SQLTextExpression(sql.substring(startIndex, stopIndex + 1));
+        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
     } 
 }
+

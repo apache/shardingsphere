@@ -35,7 +35,6 @@ public final class ExpectedEncryptColumnToken {
     @XmlAttribute(name = "stop-index-for-placeholder")
     private int stopIndexForPlaceholder;
     
-    
     @XmlAttribute(name = "start-index-for-literal")
     private int startIndexForLiteral;
     

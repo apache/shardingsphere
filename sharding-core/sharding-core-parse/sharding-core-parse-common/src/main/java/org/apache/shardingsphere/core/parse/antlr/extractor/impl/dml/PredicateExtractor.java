@@ -155,8 +155,8 @@ public final class PredicateExtractor {
             return Optional.absent();
         }
         ParserRuleContext predicateNode = comparisionNode.get().getParent();
-        Optional<ParserRuleContext> leftNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) predicateNode.getChild(0), RuleName.COLUMN_NAME);
-        Optional<ParserRuleContext> rightNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) predicateNode.getChild(2), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> leftNode = ExtractorUtils.getNodeOnlyFromFirstDescendant((ParserRuleContext) predicateNode.getChild(0), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> rightNode = ExtractorUtils.getNodeOnlyFromFirstDescendant((ParserRuleContext) predicateNode.getChild(2), RuleName.COLUMN_NAME);
         if (!leftNode.isPresent() && !rightNode.isPresent()) {
             return Optional.absent();
         }
