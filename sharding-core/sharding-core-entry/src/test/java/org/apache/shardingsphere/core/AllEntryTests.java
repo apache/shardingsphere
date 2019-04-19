@@ -23,9 +23,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        BaseShardingEngineTest.class,
         SimpleQueryShardingEngineTest.class,
-        PreparedQueryShardingEngineTest.class,
-        UpdateShardKeyTest.class
+        PreparedQueryShardingEngineTest.class
 })
 public final class AllEntryTests {
 }

@@ -17,65 +17,51 @@
 
 package org.apache.shardingsphere.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.List;
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-@RequiredArgsConstructor
-@Getter
-public abstract class BaseShardingEngineTest {
-    
-    private final String sql;
-    
-    private final List<Object> parameters;
-    
-    protected final ShardingProperties getShardingProperties() {
-        Properties result = new Properties();
-        result.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        return new ShardingProperties(result);
+@RunWith(MockitoJUnitRunner.class)
+public final class BaseShardingEngineTest extends AbstractShardingEngineTest {
+
+    private BaseShardingEngine shardingEngine;
+
+    public BaseShardingEngineTest() {
+        super("update user set country_id = 1 where id = 100", Collections.emptyList());
     }
-    
-    protected final SQLRouteResult createSQLRouteResult() {
-        SQLRouteResult result = new SQLRouteResult(new SelectStatement());
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getTableUnits().getTableUnits().add(new TableUnit("ds"));
-        result.setRoutingResult(routingResult);
-        return result;
+
+    @Before
+    public void setUp() {
+        shardingEngine = new SimpleQueryShardingEngine(createShardingRule(), getShardingProperties(), mock(ShardingMetaData.class), DatabaseType.MySQL, new ParsingResultCache());
     }
-    
-    protected final void assertSQLRouteResult(final SQLRouteResult actual) {
-        assertThat(actual.getRouteUnits().size(), is(1));
-        RouteUnit actualRouteUnit = actual.getRouteUnits().iterator().next();
-        assertThat(actualRouteUnit.getDataSourceName(), is("ds"));
-        assertThat(actualRouteUnit.getSqlUnit().getSql(), is(sql));
-        assertThat(actualRouteUnit.getSqlUnit().getParameters(), is(parameters));
+
+    private ShardingRule createShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("country_id", "ds_${country_id % 2}"));
+        Collection<String> dataSourceNames = Arrays.asList("ds_0", "ds_1");
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceNames);
+        return shardingRule;
     }
-    
-    @Test
-    public void assertShardWithHintDatabaseShardingOnly() {
-        HintManager.getInstance().setDatabaseShardingValue("1");
-        assertShard();
-        HintManager.clear();
+
+    @Override
+    protected void assertShard() {
     }
-    
-    @Test
-    public void assertShardWithoutHint() {
-        assertShard();
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertUpdateShardKey() {
+        shardingEngine.shard(getSql(), getParameters());
     }
-    
-    protected abstract void assertShard();
 }

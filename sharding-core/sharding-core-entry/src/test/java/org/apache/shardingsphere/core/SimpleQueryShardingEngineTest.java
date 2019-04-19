@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest {
+public final class SimpleQueryShardingEngineTest extends AbstractShardingEngineTest {
     
     @Mock
     private StatementRoutingEngine routingEngine;
