@@ -33,5 +33,5 @@ import java.util.Map;
 @Setter
 public final class YamlAuthentication implements YamlConfiguration {
     
-    private Map<String, YamlUser> users = new HashMap<>();
+    private Map<String, YamlProxyUser> users = new HashMap<>();
 }

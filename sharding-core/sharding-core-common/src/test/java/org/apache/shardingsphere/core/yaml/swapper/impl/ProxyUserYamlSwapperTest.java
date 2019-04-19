@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
 import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.apache.shardingsphere.core.yaml.config.common.YamlUser;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUser;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -30,17 +30,17 @@ public final class ProxyUserYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlUser actual = new UserYamlSwapper().swap(new ProxyUser("pwd", Collections.singleton("db1")));
+        YamlProxyUser actual = new ProxyUserYamlSwapper().swap(new ProxyUser("pwd", Collections.singleton("db1")));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
     
     @Test
     public void assertSwapToObject() {
-        YamlUser yamlUser = new YamlUser();
-        yamlUser.setAuthorizedSchemas("db1");
-        yamlUser.setPassword("pwd");
-        ProxyUser actual = new UserYamlSwapper().swap(yamlUser);
+        YamlProxyUser yamlProxyUser = new YamlProxyUser();
+        yamlProxyUser.setAuthorizedSchemas("db1");
+        yamlProxyUser.setPassword("pwd");
+        ProxyUser actual = new ProxyUserYamlSwapper().swap(yamlProxyUser);
         assertThat(actual.getAuthorizedSchemas().iterator().next(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
