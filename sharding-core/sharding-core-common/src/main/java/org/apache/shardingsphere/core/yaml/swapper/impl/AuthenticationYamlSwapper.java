@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUser;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
 /**
@@ -37,10 +37,10 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     @Override
     public YamlAuthenticationConfiguration swap(final Authentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
-        result.getUsers().putAll(Maps.transformValues(data.getUsers(), new Function<ProxyUser, YamlProxyUser>() {
+        result.getUsers().putAll(Maps.transformValues(data.getUsers(), new Function<ProxyUser, YamlProxyUserConfiguration>() {
     
             @Override
-            public YamlProxyUser apply(final ProxyUser input) {
+            public YamlProxyUserConfiguration apply(final ProxyUser input) {
                 return proxyUserYamlSwapper.swap(input);
             }
         }));
@@ -50,10 +50,10 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     @Override
     public Authentication swap(final YamlAuthenticationConfiguration yamlConfiguration) {
         Authentication result = new Authentication();
-        result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), new Function<YamlProxyUser, ProxyUser>() {
+        result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), new Function<YamlProxyUserConfiguration, ProxyUser>() {
             
             @Override
-            public ProxyUser apply(final YamlProxyUser input) {
+            public ProxyUser apply(final YamlProxyUserConfiguration input) {
                 return proxyUserYamlSwapper.swap(input);
             }
         }));
