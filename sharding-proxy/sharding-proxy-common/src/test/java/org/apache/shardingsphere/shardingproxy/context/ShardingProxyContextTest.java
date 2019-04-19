@@ -26,6 +26,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Pr
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,7 +38,7 @@ public final class ShardingProxyContextTest {
     
     @Test
     public void assertInit() {
-        User user = new User("root", "db1");
+        User user = new User("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", user);
         Properties props = new Properties();
@@ -51,7 +52,7 @@ public final class ShardingProxyContextTest {
     
     @Test
     public void assertRenewShardingProperties() {
-        User user = new User("root", "db1");
+        User user = new User("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", user);
         ShardingProxyContext.getInstance().init(authentication, new Properties());
@@ -64,14 +65,14 @@ public final class ShardingProxyContextTest {
     
     @Test
     public void assertRenewAuthentication() {
-        User user = new User("root", "db1");
+        User user = new User("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", user);
         ShardingProxyContext.getInstance().init(authentication, new Properties());
         ShardingOrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
         assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().keySet().iterator().next(), is("root"));
         assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().get("root").getPassword(), is("root"));
-        assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().get("root").getAuthorizedSchemas(), is("db1"));
+        assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().get("root").getAuthorizedSchemas().iterator().next(), is("db1"));
     }
     
     @Test
