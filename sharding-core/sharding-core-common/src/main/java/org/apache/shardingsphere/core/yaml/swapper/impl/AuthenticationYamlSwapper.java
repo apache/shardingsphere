@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUser;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  *
  * @author zhangliang
  */
-public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthentication, Authentication> {
+public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, Authentication> {
     
     private final ProxyUserYamlSwapper proxyUserYamlSwapper = new ProxyUserYamlSwapper();
     
     @Override
-    public YamlAuthentication swap(final Authentication data) {
-        YamlAuthentication result = new YamlAuthentication();
+    public YamlAuthenticationConfiguration swap(final Authentication data) {
+        YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
         result.getUsers().putAll(Maps.transformValues(data.getUsers(), new Function<ProxyUser, YamlProxyUser>() {
     
             @Override
@@ -48,7 +48,7 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     }
     
     @Override
-    public Authentication swap(final YamlAuthentication yamlConfiguration) {
+    public Authentication swap(final YamlAuthenticationConfiguration yamlConfiguration) {
         Authentication result = new Authentication();
         result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), new Function<YamlProxyUser, ProxyUser>() {
             

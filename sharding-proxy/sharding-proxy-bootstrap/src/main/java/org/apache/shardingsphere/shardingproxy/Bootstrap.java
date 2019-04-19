@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
@@ -87,7 +87,8 @@ public final class Bootstrap {
         }
     }
     
-    private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final YamlAuthentication authentication, final Properties prop, final int port) {
+    private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs, 
+                                                   final YamlAuthenticationConfiguration authentication, final Properties prop, final int port) {
         ShardingProxyContext.getInstance().init(getAuthentication(authentication), prop);
         LogicSchemas.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
         initOpenTracing();
@@ -170,7 +171,7 @@ public final class Bootstrap {
         return result;
     }
     
-    private static Authentication getAuthentication(final YamlAuthentication yamlAuthentication) {
-        return new AuthenticationYamlSwapper().swap(yamlAuthentication);
+    private static Authentication getAuthentication(final YamlAuthenticationConfiguration yamlAuthenticationConfig) {
+        return new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
     }
 }
