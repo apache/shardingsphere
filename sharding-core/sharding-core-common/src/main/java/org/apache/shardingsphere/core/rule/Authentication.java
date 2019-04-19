@@ -32,5 +32,5 @@ import java.util.Map;
 @Getter
 public final class Authentication {
     
-    private Map<String, User> users = new HashMap<>();
+    private Map<String, ProxyUser> users = new HashMap<>();
 }
