@@ -31,7 +31,7 @@ import java.util.Collections;
  *
  * @author zhangliang
  */
-public final class UserYamlSwapper implements YamlSwapper<YamlUser, ProxyUser> {
+public final class ProxyUserYamlSwapper implements YamlSwapper<YamlUser, ProxyUser> {
     
     @Override
     public YamlUser swap(final ProxyUser data) {
