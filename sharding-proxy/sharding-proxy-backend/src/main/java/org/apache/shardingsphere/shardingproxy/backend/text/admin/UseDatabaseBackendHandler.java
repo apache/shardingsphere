@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -30,6 +29,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+
+import java.util.Collection;
 
 /**
  * Use database backend handler.
@@ -56,8 +57,8 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        return Strings.isNullOrEmpty(backendConnection.getUserName()) 
-                || ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas().contains(schema);
+        Collection<String> authorizedSchemas = ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
     
     @Override
