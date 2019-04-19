@@ -47,6 +47,6 @@ public final class UserYamlSwapper implements YamlSwapper<YamlUser, User> {
         if (Strings.isNullOrEmpty(yamlConfiguration.getAuthorizedSchemas())) {
             return new User(yamlConfiguration.getPassword(), Collections.<String>emptyList());
         }
-        return new User(yamlConfiguration.getPassword(), Splitter.on(',').splitToList(yamlConfiguration.getAuthorizedSchemas()));
+        return new User(yamlConfiguration.getPassword(), Splitter.on(',').trimResults().splitToList(yamlConfiguration.getAuthorizedSchemas()));
     }
 }
