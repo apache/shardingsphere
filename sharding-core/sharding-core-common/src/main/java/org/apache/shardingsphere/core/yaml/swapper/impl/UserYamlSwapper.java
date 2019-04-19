@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.rule.User;
 import org.apache.shardingsphere.core.yaml.config.common.YamlUser;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+
+import java.util.Collections;
 
 /**
  * User YAML swapper.
@@ -32,12 +37,16 @@ public final class UserYamlSwapper implements YamlSwapper<YamlUser, User> {
     public YamlUser swap(final User data) {
         YamlUser result = new YamlUser();
         result.setPassword(data.getPassword());
-        result.setAuthorizedSchemas(data.getAuthorizedSchemas());
+        String authorizedSchemas = null == data.getAuthorizedSchemas() ? "" : Joiner.on(',').join(data.getAuthorizedSchemas());
+        result.setAuthorizedSchemas(authorizedSchemas);
         return result;
     }
     
     @Override
     public User swap(final YamlUser yamlConfiguration) {
-        return new User(yamlConfiguration.getPassword(), yamlConfiguration.getAuthorizedSchemas());
+        if (Strings.isNullOrEmpty(yamlConfiguration.getAuthorizedSchemas())) {
+            return new User(yamlConfiguration.getPassword(), Collections.<String>emptyList());
+        }
+        return new User(yamlConfiguration.getPassword(), Splitter.on(',').splitToList(yamlConfiguration.getAuthorizedSchemas()));
     }
 }
