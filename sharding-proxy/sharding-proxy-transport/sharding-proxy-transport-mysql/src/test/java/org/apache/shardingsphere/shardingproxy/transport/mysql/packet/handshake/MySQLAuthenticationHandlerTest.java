@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -54,7 +55,7 @@ public final class MySQLAuthenticationHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        setAuthentication(new User("root", "db1"));
+        setAuthentication(new User("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authenticationHandler.login("root", authResponse));
     }
