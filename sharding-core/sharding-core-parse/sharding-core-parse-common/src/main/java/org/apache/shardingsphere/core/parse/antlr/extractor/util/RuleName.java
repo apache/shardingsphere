@@ -97,7 +97,7 @@ public enum RuleName {
     
     FUNCTION_CALL("FunctionCall"),
     
-    FUNCTION_NAME("FunctionName"),
+    AGGREGATION_FUNCTION("AggregationFunction"),
     
     DISTINCT("Distinct"),
     

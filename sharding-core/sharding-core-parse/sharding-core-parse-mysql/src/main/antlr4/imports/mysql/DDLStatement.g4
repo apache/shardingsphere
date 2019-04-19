@@ -38,7 +38,7 @@ columnDefinition
 inlineDataType_
     : commonDataTypeOption_
     | AUTO_INCREMENT
-    | DEFAULT (literal | expr)
+    | DEFAULT (literals_ | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
     ;
@@ -126,7 +126,7 @@ alterSpecification_
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
     | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
-    | ALTER COLUMN? columnName (SET DEFAULT literal | DROP DEFAULT)
+    | ALTER COLUMN? columnName (SET DEFAULT literals_ | DROP DEFAULT)
     | ALTER INDEX indexName (VISIBLE | INVISIBLE)
     | changeColumnSpecification
     | DEFAULT? characterSet_ collateClause_?
