@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 /**
  * Use database backend handler.
@@ -45,11 +47,17 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     @Override
     public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!LogicSchemas.getInstance().schemaExists(schema)) {
-            return new ErrorResponse(new UnknownDatabaseException(schema));
+        if (LogicSchemas.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
+            backendConnection.setCurrentSchema(schema);
+            return new UpdateResponse();
         }
-        backendConnection.setCurrentSchema(schema);
-        return new UpdateResponse();
+        return new ErrorResponse(new UnknownDatabaseException(schema));
+        
+    }
+    
+    private boolean isAuthorizedSchema(final String schema) {
+        return Strings.isNullOrEmpty(backendConnection.getUserName()) 
+                || ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas().contains(schema);
     }
     
     @Override
