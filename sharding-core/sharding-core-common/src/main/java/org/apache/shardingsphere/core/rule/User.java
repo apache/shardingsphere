@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
  * User.
  *
@@ -31,5 +33,5 @@ public final class User {
     
     private final String password;
     
-    private final String authorizedSchemas;
+    private final Collection<String> authorizedSchemas;
 }
