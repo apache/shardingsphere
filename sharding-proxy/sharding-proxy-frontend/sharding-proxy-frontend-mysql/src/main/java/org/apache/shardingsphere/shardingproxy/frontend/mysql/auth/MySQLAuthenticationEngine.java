@@ -57,6 +57,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
                 return true;
             }
             backendConnection.setCurrentSchema(response41.getDatabase());
+            backendConnection.setUserName(response41.getUsername());
             context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
         } else {
             // TODO localhost should replace to real ip address
