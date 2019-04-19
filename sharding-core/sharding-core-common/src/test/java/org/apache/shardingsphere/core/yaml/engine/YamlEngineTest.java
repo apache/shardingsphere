@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.engine;
 
-import org.apache.shardingsphere.core.yaml.config.common.YamlUser;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUser;
 import org.junit.Test;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshal() {
-        YamlUser actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlUser.class);
+        YamlProxyUser actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlProxyUser.class);
         assertThat(actual.getPassword(), is("pwd"));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
     }
@@ -53,7 +53,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertMarshal() {
-        YamlUser actual = new YamlUser();
+        YamlProxyUser actual = new YamlProxyUser();
         actual.setPassword("pwd");
         actual.setAuthorizedSchemas("db1");
         assertThat(YamlEngine.marshal(actual), is("authorizedSchemas: db1\npassword: pwd\n"));
