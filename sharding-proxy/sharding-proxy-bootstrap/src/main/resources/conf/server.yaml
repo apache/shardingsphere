@@ -27,6 +27,7 @@
 #  registry:
 #    serverLists: localhost:2181
 #    namespace: orchestration
+#    type: zookeeper
 #
 #authentication:
 #  username: root
