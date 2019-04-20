@@ -138,7 +138,7 @@ This command will be executed in all physical database instances to ensure that 
 
 ### Unicast Route
 Unicast route is used in the situation of acquiring the information of some certain physical table. 
-It only requires to acquire data from any physical table in any database, for instance:
+It only requires to acquire data from any physical table in any database. For example:
 
 ```sql
 DESCRIBE t_order;
