@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.opentracing.hook;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
