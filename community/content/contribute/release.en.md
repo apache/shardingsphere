@@ -138,14 +138,14 @@ Be sure to remove \<distributionManagement\> section from your POM so they inher
 ### Create Release Branch
 
 Suppose ShardingSphere source codes downloaded from github is under `~/incubator-shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
-Create `4.0.0-RC1-release` branch, where all the following operations are performed.
+Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
 cd ~/incubator-shardingsphere/
 git pull
-git branch 4.0.0-RC1-release
-git push origin 4.0.0-RC1-release
-git checkout 4.0.0-RC1-release
+git branch ${RELEASE.VERSION}-release
+git push origin ${RELEASE.VERSION}-release
+git checkout ${RELEASE.VERSION}-release
 ```
 
 ### Pre-Release Check
@@ -228,34 +228,34 @@ gpg -a --export ${GPG username} >> KEYS
 Create folder by version number.
 
 ```shell
-mkdir -p ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cd ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+mkdir -p ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/4.0.0-RC1
-cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/4.0.0-RC1
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### Generate sign files
 
 ```shell
-shasum -a 512 apache-shardingsphere-incubating-4.0.0-RC1-src.zip >> apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 ```
 
 ### Commit to Apache SVN
 
 ```shell
 svn add *
-svn --username=${APACHE LDAP username} commit -m "release 4.0.0-RC1"
+svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 ```
 
 ## Check Release
@@ -263,9 +263,9 @@ svn --username=${APACHE LDAP username} commit -m "release 4.0.0-RC1"
 ### Check sha512 hash
 
 ```shell
-shasum -c apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512
-shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
+shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 ```
 
 ### Check gpg Signature
@@ -284,16 +284,16 @@ gpg --edit-key "${GPG username of releaser}"
 Then, check the gpg signature.
 
 ```shell
-gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-src.zip.asc apache-shardingsphere-incubating-4.0.0-RC1-src.zip
-gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz
-gpg --verify apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz
+gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
+gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz
+gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 ```
 
 ### Check Released Files
 
 #### Check source package
 
-Decompress `apache-shardingsphere-incubating-4.0.0-RC1-src.zip` and check the following items:
+Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and check the following items:
 
 *   The release files have the word `incubating` in their name
 *   `DISCLAIMER` file exists
@@ -306,7 +306,7 @@ Decompress `apache-shardingsphere-incubating-4.0.0-RC1-src.zip` and check the fo
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz` and `apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz` to check the following items:
+Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz` and `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` to check the following items:
 
 *   The release files have the word `incubating` in their name
 *   `DISCLAIMER` file exists
@@ -340,7 +340,7 @@ After at least 72 hours and with at least 3 `+1 binding` votes (only IPMC's vote
 Title:
 
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0-RC1
+[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 
 ```
 
@@ -349,19 +349,19 @@ Body:
 ```
 Hello ShardingSphere Community,
 
-This is a call for vote to release Apache ShardingSphere (Incubating) version 4.0.0-RC1
+This is a call for vote to release Apache ShardingSphere (Incubating) version ${RELEASE.VERSION}
 
 Release notes:
 https://github.com/apache/incubator-shardingsphere/releases/edit/xxxxxxxxxxxxxxxxxxxxxxx
 
 The release candidates:
-https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
+https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
 https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
 
 Git tag for the release:
-https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
+https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}
 
 Release Commit ID:
 https://github.com/apache/incubator-shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
@@ -404,7 +404,7 @@ Checklist for reference:
 Title:
 
 ```
-[VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0-RC1
+[VOTE]: Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
 
 ```
 
@@ -413,10 +413,10 @@ Body:
 ```
 Hello all,
 
-This is a call for vote to release Apache ShardingSphere (Incubating) version 4.0.0-RC1.
+This is a call for vote to release Apache ShardingSphere (Incubating) version ${RELEASE.VERSION}.
 
 The Apache ShardingSphere community has voted on and approved a proposal to release
-Apache ShardingSphere (Incubating) version 4.0.0-RC1.
+Apache ShardingSphere (Incubating) version ${RELEASE.VERSION}.
 
 We now kindly request the Incubator PMC members review and vote on this
 incubator release.
@@ -449,13 +449,13 @@ Release notes:
 https://github.com/apache/incubator-shardingsphere/releases/edit/xxxxxxxxxxxxxxxxxxxxxxx
 
 The release candidates:
-https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/
+https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Maven 2 staging repository:
 https://repository.apache.org/content/repositories/staging/org/apache/shardingsphere/
 
 Git tag for the release:
-https://github.com/apache/incubator-shardingsphere/tree/4.0.0-RC1
+https://github.com/apache/incubator-shardingsphere/tree/${RELEASE.VERSION}
 
 Release Commit ID:
 https://github.com/apache/incubator-shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
@@ -496,13 +496,6 @@ Checklist for reference:
 
 3. Announce the vote result:
 
-Title:
-
-```
-[RESULT] [VOTE]: Release Apache ShardingSphere (Incubating) 4.0.0-RC1
-
-```
-
 Body:
 
 ```
@@ -524,12 +517,19 @@ I will process to publish the release and send ANNOUNCE.
 1. Move source packages and binary packages from the `dev` directory to `release` directory
 
 ```shell
-svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/4.0.0-RC1/ https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
+svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/ https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
 ```
 
 2. Find ShardingSphere in staging repository and click `Release`
 
 3. Merge release branch to `dev` and delete release branch on Github
+
+```shell
+git checkout dev
+git merge origin/${RELEASE.VERSION}-release
+git push
+git push --delete origin ${RELEASE.VERSION}-release
+```
 
 4. Send e-mail to `general@incubator.apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished.
 
@@ -538,8 +538,7 @@ Announcement e-mail template:
 Title:
 
 ```
-[ANN] Apache ShardingSphere 4.0.0-RC1 available
-
+[ANNOUNCE] Apache ShardingSphere ${RELEASE.VERSION} available
 ```
 
 Body:
@@ -547,7 +546,7 @@ Body:
 ```
 Hi all,
 
-Apache ShardingSphere (incubating) Team is glad to announce the first release of Apache ShardingSphere Incubating 4.0.0-RC1.
+Apache ShardingSphere (incubating) Team is glad to announce the first release of Apache ShardingSphere Incubating ${RELEASE.VERSION}.
 
 ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC & Sharding-Proxy. 
 They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
@@ -567,19 +566,18 @@ Sharding-Proxy defines itself as a transparent database proxy, providing a datab
 Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
 
 * Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
-
 * Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
 
-Vote Thread: 
+Vote Thread: https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
 
-Download Links: 
+Download Links: https://dist.apache.org/repos/dist/release/incubator/shardingsphere/${RELEASE.VERSION}/
 
-Release Notes: 
+Release Notes: https://github.com/apache/incubator-shardingsphere/releases/tag/${RELEASE.VERSION}/
 
 Website: https://shardingsphere.apache.org/
 
 ShardingSphere Resources:
-- Issue: https://github.com/apache/incubator-shardingsphere/issues
+- Issue: https://github.com/apache/incubator-shardingsphere/issues/
 - Mailing list: dev@shardingsphere.apache.org
-- Documents: https://github.com/apache/incubator-shardingsphere/blob/dev/README.md
+- Documents: https://shardingsphere.apache.org/document/current/
 ```
