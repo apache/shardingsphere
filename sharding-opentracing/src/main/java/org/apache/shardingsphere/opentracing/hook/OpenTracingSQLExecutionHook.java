@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.opentracing.hook;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
@@ -61,7 +64,11 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     }
     
     private String toString(final List<Object> parameterSets) {
-        return parameterSets.isEmpty() ? "" : String.format("[%s]", Joiner.on(", ").join(parameterSets));
+
+        if (null == parameterSets || parameterSets.isEmpty()) {
+            return "";
+        }
+        return String.format("[%s]", Joiner.on(", ").join(parameterSets));
     }
     
     @Override
