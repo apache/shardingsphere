@@ -17,34 +17,31 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.rule.ProxyUser;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class AuthenticationYamlSwapperTest {
+public final class ProxyUserYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlAuthentication actual = new AuthenticationYamlSwapper().swap(new Authentication("root", "pwd"));
-        assertThat(actual.getUsername(), is("root"));
+        YamlProxyUserConfiguration actual = new ProxyUserYamlSwapper().swap(new ProxyUser("pwd", Collections.singleton("db1")));
+        assertThat(actual.getAuthorizedSchemas(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
     
     @Test
     public void assertSwapToObject() {
-        YamlAuthentication yamlAuthentication = new YamlAuthentication();
-        yamlAuthentication.setUsername("root");
-        yamlAuthentication.setPassword("pwd");
-        Authentication actual = new AuthenticationYamlSwapper().swap(yamlAuthentication);
-        assertThat(actual.getUsername(), is("root"));
+        YamlProxyUserConfiguration yamlProxyUserConfiguration = new YamlProxyUserConfiguration();
+        yamlProxyUserConfiguration.setAuthorizedSchemas("db1");
+        yamlProxyUserConfiguration.setPassword("pwd");
+        ProxyUser actual = new ProxyUserYamlSwapper().swap(yamlProxyUserConfiguration);
+        assertThat(actual.getAuthorizedSchemas().iterator().next(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertSwapToObjectWithoutUsername() {
-        new AuthenticationYamlSwapper().swap(new YamlAuthentication());
     }
 }

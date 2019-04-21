@@ -18,16 +18,21 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Arrays;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -40,12 +45,21 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class UseDatabaseBackendHandlerTest {
     
-    @Mock
     private BackendConnection backendConnection;
     
     @Before
     public void setUp() {
         MockLogicSchemasUtil.setLogicSchemas("schema", 10);
+        backendConnection = mock(BackendConnection.class);
+        when(backendConnection.getUserName()).thenReturn("root");
+        ShardingProxyContext.getInstance().init(getAuthentication(), new Properties());
+    }
+    
+    private Authentication getAuthentication() {
+        ProxyUser proxyUser = new ProxyUser("root", Arrays.asList("schema_0", "schema_1"));
+        Authentication result = new Authentication();
+        result.getUsers().put("root", proxyUser);
+        return result;
     }
     
     @Test

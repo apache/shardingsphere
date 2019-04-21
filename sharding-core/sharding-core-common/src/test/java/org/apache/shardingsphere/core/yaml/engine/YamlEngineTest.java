@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.engine;
 
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.junit.Test;
 
 import java.util.Map;
@@ -30,32 +30,32 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshal() {
-        YamlAuthentication actual = YamlEngine.unmarshal("username: root\npassword: pwd", YamlAuthentication.class);
-        assertThat(actual.getUsername(), is("root"));
+        YamlProxyUserConfiguration actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlProxyUserConfiguration.class);
         assertThat(actual.getPassword(), is("pwd"));
+        assertThat(actual.getAuthorizedSchemas(), is("db1"));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertUnmarshalMap() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("username: root\npassword: pwd");
-        assertThat(actual.get("username").toString(), is("root"));
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1");
         assertThat(actual.get("password").toString(), is("pwd"));
+        assertThat(actual.get("authorizedSchemas").toString(), is("db1"));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalProperties("username: root\npassword: pwd");
-        assertThat(actual.getProperty("username"), is("root"));
+        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1");
+        assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     
     @Test
     public void assertMarshal() {
-        YamlAuthentication actual = new YamlAuthentication();
-        actual.setUsername("root");
+        YamlProxyUserConfiguration actual = new YamlProxyUserConfiguration();
         actual.setPassword("pwd");
-        assertThat(YamlEngine.marshal(actual), is("password: pwd\nusername: root\n"));
+        actual.setAuthorizedSchemas("db1");
+        assertThat(YamlEngine.marshal(actual), is("authorizedSchemas: db1\npassword: pwd\n"));
     }
 }

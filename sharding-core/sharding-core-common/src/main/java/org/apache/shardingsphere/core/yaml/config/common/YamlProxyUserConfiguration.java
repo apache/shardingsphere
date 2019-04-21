@@ -22,15 +22,15 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
- * Authentication for YAML.
+ * Proxy user for YAML.
  *
  * @author zhangliang
  */
 @Getter
 @Setter
-public final class YamlAuthentication implements YamlConfiguration {
-    
-    private String username;
+public final class YamlProxyUserConfiguration implements YamlConfiguration {
     
     private String password;
+    
+    private String authorizedSchemas;
 }

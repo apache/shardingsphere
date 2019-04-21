@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>4.0.0-RC1-SNAPSHOT</version>
+        <version>4.0.0-RC2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-sql-test</artifactId>
     <name>${project.artifactId}</name>

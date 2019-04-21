@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.constant;
+package org.apache.shardingsphere.core.rule;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Sharding-Proxy's information for MySQL.
- * 
- * @author zhangliang 
+ * Proxy user.
+ *
+ * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLServerInfo {
+@RequiredArgsConstructor
+@Getter
+public final class ProxyUser {
     
-    /**
-     * Protocol version is always 0x0A.
-     */
-    public static final int PROTOCOL_VERSION = 0x0A;
+    private final String password;
     
-    /**
-     * Server version.
-     */
-    public static final String SERVER_VERSION = "5.6.0-Sharding-Proxy 4.0.0-RC2";
-    
-    /**
-     * Charset code 0x21 is utf8_general_ci.
-     */
-    public static final int CHARSET = 0x21;
+    private final Collection<String> authorizedSchemas;
 }
