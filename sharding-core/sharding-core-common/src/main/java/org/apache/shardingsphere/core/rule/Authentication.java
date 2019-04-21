@@ -20,6 +20,9 @@ package org.apache.shardingsphere.core.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Authentication.
  *
@@ -29,7 +32,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class Authentication {
     
-    private final String username;
-    
-    private final String password;
+    private Map<String, ProxyUser> users = new HashMap<>();
 }

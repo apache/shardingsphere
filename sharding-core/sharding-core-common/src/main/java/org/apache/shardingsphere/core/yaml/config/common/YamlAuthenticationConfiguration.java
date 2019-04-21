@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml;
+package org.apache.shardingsphere.core.yaml.config.common;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Server configuration for YAML.
+ * Authentication configuration for YAML.
  * 
- * @author chenqingyang
  * @author panjuan
  */
 @Getter
 @Setter
-public final class YamlProxyServerConfiguration implements YamlConfiguration {
+public final class YamlAuthenticationConfiguration implements YamlConfiguration {
     
-    private YamlAuthenticationConfiguration authentication;
-    
-    private YamlOrchestrationConfiguration orchestration;
-    
-    private Properties props = new Properties();
+    private Map<String, YamlProxyUserConfiguration> users = new HashMap<>();
 }

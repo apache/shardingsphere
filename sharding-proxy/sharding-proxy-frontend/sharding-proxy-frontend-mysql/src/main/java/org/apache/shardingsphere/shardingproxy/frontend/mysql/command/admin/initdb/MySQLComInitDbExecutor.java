@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.admin.initdb;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
@@ -44,10 +46,16 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        if (LogicSchemas.getInstance().schemaExists(packet.getSchema())) {
+        String schema = SQLUtil.getExactlyValue(packet.getSchema());
+        if (LogicSchemas.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(packet.getSchema());
             return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
         }
         return Collections.<DatabasePacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getSchema()));
+    }
+    
+    private boolean isAuthorizedSchema(final String schema) {
+        Collection<String> authorizedSchemas = ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
 }

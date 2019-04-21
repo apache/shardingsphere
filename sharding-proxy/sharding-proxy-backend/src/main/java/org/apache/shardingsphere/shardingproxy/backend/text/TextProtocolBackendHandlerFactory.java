@@ -85,7 +85,7 @@ public final class TextProtocolBackendHandlerFactory {
             return new UseDatabaseBackendHandler((UseStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof ShowDatabasesStatement) {
-            return new ShowDatabasesBackendHandler();
+            return new ShowDatabasesBackendHandler(backendConnection);
         }
         return new UnicastBackendHandler(sql, backendConnection);
     }
