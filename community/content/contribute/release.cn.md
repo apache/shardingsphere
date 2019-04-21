@@ -543,22 +543,6 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
-Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
-With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
-It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
-
-* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
-* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
-
-Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
-
-* Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
-* Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
-
-Vote Thread: https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
-
 Download Links: https://dist.apache.org/repos/dist/release/incubator/shardingsphere/${RELEASE.VERSION}/
 
 Release Notes: https://github.com/apache/incubator-shardingsphere/releases/tag/${RELEASE.VERSION}/
@@ -569,4 +553,19 @@ ShardingSphere Resources:
 - Issue: https://github.com/apache/incubator-shardingsphere/issues/
 - Mailing list: dev@shardingsphere.apache.org
 - Documents: https://shardingsphere.apache.org/document/current/
+
+
+
+- Apache ShardingSphere (incubating) Team
+
+
+=====
+*Disclaimer*
+
+Apache ShardingSphere (incubating) is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator PMC.
+Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, 
+communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. 
+While incubation status is not necessarily a reflection of the completeness or stability of the code, 
+it does indicate that the project has yet to be fully endorsed by the ASF.
+
 ```
