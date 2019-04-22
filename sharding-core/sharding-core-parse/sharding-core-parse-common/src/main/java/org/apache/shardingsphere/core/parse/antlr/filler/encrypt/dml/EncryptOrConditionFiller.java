@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndPredicateSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
@@ -47,18 +47,18 @@ import java.util.Set;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSegment> {
+public class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     private final EncryptRule encryptRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, columnNameToTable, columnNameCount);
-        filterCondition(sqlStatement, sqlSegment);
+        filterPredicate(sqlStatement, sqlSegment);
     }
     
     private void fillColumnTableMap(final SQLStatement sqlStatement, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
@@ -80,10 +80,10 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
         }
     }
     
-    private OrCondition filterCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition) {
+    private OrCondition filterPredicate(final SQLStatement sqlStatement, final OrPredicateSegment orPredicate) {
         OrCondition result = new OrCondition();
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
-        for (AndPredicateSegment each : orCondition.getAndPredicates()) {
+        for (AndPredicateSegment each : orPredicate.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (null == predicate.getColumn()) {
                     continue;

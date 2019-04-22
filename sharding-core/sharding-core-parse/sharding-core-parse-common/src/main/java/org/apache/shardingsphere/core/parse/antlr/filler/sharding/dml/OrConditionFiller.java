@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndPredicateSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
@@ -53,14 +53,14 @@ import java.util.Set;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegment> {
+public final class OrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     private final ShardingRule shardingRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(buildCondition(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData).getAndConditions());
     }
     
@@ -73,7 +73,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
      * @param shardingTableMetaData sharding table meta data
      * @return or condition
      */
-    public OrCondition buildCondition(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public OrCondition buildCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
@@ -100,9 +100,9 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
         }
     }
     
-    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final ShardingRule shardingRule) {
+    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrPredicateSegment orPredicate, final ShardingRule shardingRule) {
         OrCondition result = new OrCondition();
-        for (AndPredicateSegment each : orCondition.getAndPredicates()) {
+        for (AndPredicateSegment each : orPredicate.getAndPredicates()) {
             List<PredicateSegment> predicates = new LinkedList<>();
             boolean needSharding = false;
             for (PredicateSegment predicate : each.getPredicates()) {
@@ -129,7 +129,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
             }
         }
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
-        for (AndPredicateSegment each : orCondition.getAndPredicates()) {
+        for (AndPredicateSegment each : orPredicate.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (null == predicate.getColumn()) {
                     continue;

@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Table join segment.
- *
+ * Or predicate segment.
+ * 
  * @author duhongjun
  */
 @Getter
-public final class TableJoinSegment extends TableSegment {
+public final class OrPredicateSegment implements SQLSegment {
     
-    private final OrConditionSegment joinConditions = new OrConditionSegment();
-    
-    public TableJoinSegment(final TableSegment parent) {
-        super(parent.getStartIndex(), parent.getName());
-        setOwner(parent.getOwner().orNull());
-        setAlias(parent.getAlias().orNull());
-    }
+    private Collection<AndPredicateSegment> andPredicates = new LinkedList<>();
 }

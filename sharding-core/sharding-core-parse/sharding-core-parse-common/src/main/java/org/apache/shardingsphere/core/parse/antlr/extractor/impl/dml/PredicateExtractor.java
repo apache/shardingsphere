@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndPredicateSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
@@ -59,19 +59,19 @@ public final class PredicateExtractor {
      * @param exprNode expression node of AST
      * @return or condition
      */
-    public Optional<OrConditionSegment> extract(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
+    public Optional<OrPredicateSegment> extract(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
         return extractConditionInternal(parameterMarkerIndexes, exprNode);
     }
     
-    private Optional<OrConditionSegment> extractConditionInternal(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
+    private Optional<OrPredicateSegment> extractConditionInternal(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
         Optional<Integer> index = getLogicalOperatorIndex(exprNode);
         if (!index.isPresent()) {
             return extractConditionForParen(parameterMarkerIndexes, exprNode);
         }
-        Optional<OrConditionSegment> leftOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() - 1));
-        Optional<OrConditionSegment> rightOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() + 1));
+        Optional<OrPredicateSegment> leftOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() - 1));
+        Optional<OrPredicateSegment> rightOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() + 1));
         if (leftOrCondition.isPresent() && rightOrCondition.isPresent()) {
-            return Optional.of(mergeCondition(leftOrCondition.get(), rightOrCondition.get(), exprNode.getChild(index.get()).getText()));
+            return Optional.of(mergePredicate(leftOrCondition.get(), rightOrCondition.get(), exprNode.getChild(index.get()).getText()));
         }
         return leftOrCondition.isPresent() ? leftOrCondition : rightOrCondition;
     }
@@ -85,7 +85,7 @@ public final class PredicateExtractor {
         return Optional.absent();
     }
     
-    private Optional<OrConditionSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
+    private Optional<OrPredicateSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
         Optional<Integer> index = getLeftParenIndex(exprNode);
         if (index.isPresent()) {
             if (RuleName.EXPR.getName().equals(exprNode.getChild(index.get() + 1).getClass().getSimpleName())) {
@@ -97,7 +97,7 @@ public final class PredicateExtractor {
         if (!predicate.isPresent()) {
             return Optional.absent();
         }
-        OrConditionSegment result = new OrConditionSegment();
+        OrPredicateSegment result = new OrPredicateSegment();
         AndPredicateSegment newAndPredicate = new AndPredicateSegment();
         newAndPredicate.getPredicates().add(predicate.get());
         result.getAndPredicates().add(newAndPredicate);
@@ -192,14 +192,14 @@ public final class PredicateExtractor {
         return result;
     }
     
-    private OrConditionSegment mergeCondition(final OrConditionSegment leftOrCondition, final OrConditionSegment rightOrCondition, final String operator) {
+    private OrPredicateSegment mergePredicate(final OrPredicateSegment leftOrPredicate, final OrPredicateSegment rightOrPredicate, final String operator) {
         if (LogicalOperator.isOrOperator(operator)) {
-            leftOrCondition.getAndPredicates().addAll(rightOrCondition.getAndPredicates());
-            return leftOrCondition;
+            leftOrPredicate.getAndPredicates().addAll(rightOrPredicate.getAndPredicates());
+            return leftOrPredicate;
         }
-        OrConditionSegment result = new OrConditionSegment();
-        for (AndPredicateSegment each : leftOrCondition.getAndPredicates()) {
-            for (AndPredicateSegment eachRightOr : rightOrCondition.getAndPredicates()) {
+        OrPredicateSegment result = new OrPredicateSegment();
+        for (AndPredicateSegment each : leftOrPredicate.getAndPredicates()) {
+            for (AndPredicateSegment eachRightOr : rightOrPredicate.getAndPredicates()) {
                 AndPredicateSegment tempList = new AndPredicateSegment();
                 tempList.getPredicates().addAll(each.getPredicates());
                 tempList.getPredicates().addAll(eachRightOr.getPredicates());

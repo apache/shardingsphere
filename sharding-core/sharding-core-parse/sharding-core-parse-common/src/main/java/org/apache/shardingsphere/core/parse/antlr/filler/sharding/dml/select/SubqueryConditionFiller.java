@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.OrConditionFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
@@ -45,7 +45,7 @@ public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryC
     public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         OrConditionFiller orConditionFiller = new OrConditionFiller(shardingRule, shardingTableMetaData);
-        for (OrConditionSegment each : sqlSegment.getOrConditions()) {
+        for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
             selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
         }
     }

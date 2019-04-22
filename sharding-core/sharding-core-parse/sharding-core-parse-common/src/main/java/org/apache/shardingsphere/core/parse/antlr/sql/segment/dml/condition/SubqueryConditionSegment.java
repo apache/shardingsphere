@@ -31,5 +31,5 @@ import java.util.LinkedList;
 @Getter
 public final class SubqueryConditionSegment implements SQLSegment {
     
-    private Collection<OrConditionSegment> orConditions = new LinkedList<>();
+    private Collection<OrPredicateSegment> orPredicates = new LinkedList<>();
 }
