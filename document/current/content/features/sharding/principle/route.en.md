@@ -24,7 +24,7 @@ The conditions for direct route are relatively strict.
 It requires to shard through Hint (use HintAPI to appoint the route to databases and tables directly). 
 On the premise of having database sharding but not table sharding, SQL parsing and the following result merging can be avoided. 
 Therefore, with the highest compatibility, it can execute any SQL in complex situations including sub-queries, self-defined functions. 
-Direct route can also be used in the situation where sharding keys are not in SQL.For example, set sharding key to '3'.
+Direct route can also be used in the situation where sharding keys are not in SQL. For example, set sharding key to`3`.
 
 ```java
 hintManager.setDatabaseShardingValue(3);
@@ -118,7 +118,7 @@ SELECT * FROM t_order_3 WHERE good_prority IN (1, 10);
 
 ### Database Schema Broadcast Route
 Database schema broadcast route is used to deal with the operation for database, including the SET database management order used to set the database and transaction control statement as TCL.
-In this case, all physical databases matching the name match are traversed according to the name of the logical database, and the command is executed in the physical database, for example:
+In this case, all physical databases matching the name match are traversed according to the name of the logical database, and the command is executed in the physical database. For example:
 
 ```sql
 SET autocommit=0;
@@ -147,7 +147,7 @@ DESCRIBE t_order;
 The descriptions of the two physical tables t_order_0 and t_order_1 of t_order are the same, so this command is selected to execute once on any physical table.
 
 ### Ignore Route
-Ignore route is used to block the operation of SQL to the database, for instance:
+Ignore route is used to block the operation of SQL to the database. For example:
 
 ```sql
 USE order_db;
