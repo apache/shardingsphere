@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.proxy.spring.boot.mybatis.service;
 
 import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
 import org.apache.shardingsphere.example.common.service.CommonService;
-import io.shardingsphere.transaction.annotation.ShardingTransactionType;
+import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

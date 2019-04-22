@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.transaction.xa.spring.namespace;
 
 import org.apache.shardingsphere.example.common.mybatis.service.SpringPojoService;
-import io.shardingsphere.transaction.annotation.ShardingTransactionType;
+import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
