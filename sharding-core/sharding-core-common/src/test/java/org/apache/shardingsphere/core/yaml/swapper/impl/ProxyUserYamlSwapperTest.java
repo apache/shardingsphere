@@ -44,4 +44,12 @@ public final class ProxyUserYamlSwapperTest {
         assertThat(actual.getAuthorizedSchemas().iterator().next(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
     }
+    
+    @Test
+    public void assertSwapToObjectWithoutAuthorizedSchemas() {
+        YamlProxyUserConfiguration yamlProxyUserConfiguration = new YamlProxyUserConfiguration();
+        yamlProxyUserConfiguration.setPassword("pwd");
+        ProxyUser actual = new ProxyUserYamlSwapper().swap(yamlProxyUserConfiguration);
+        assertThat(actual.getAuthorizedSchemas().size(), is(0));
+    }
 }
