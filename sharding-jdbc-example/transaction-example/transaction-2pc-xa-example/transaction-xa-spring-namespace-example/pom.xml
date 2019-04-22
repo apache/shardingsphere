@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-spring</artifactId>
+            <artifactId>sharding-transaction-jdbc-spring</artifactId>
         </dependency>
 
         <dependency>

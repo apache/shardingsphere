@@ -102,12 +102,22 @@
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-transaction-spring</artifactId>
+                <artifactId>sharding-transaction-jdbc-spring</artifactId>
                 <version>${sharding-sphere.spi.impl.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-transaction-spring-boot-starter</artifactId>
+                <artifactId>sharding-transaction-proxy-spring</artifactId>
+                <version>${sharding-sphere.spi.impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-transaction-jdbc-spring-boot-starter</artifactId>
+                <version>${sharding-sphere.spi.impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-transaction-proxy-spring-boot-starter</artifactId>
                 <version>${sharding-sphere.spi.impl.version}</version>
             </dependency>
             <dependency>
