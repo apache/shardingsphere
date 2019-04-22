@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
@@ -84,23 +84,23 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
         OrCondition result = new OrCondition();
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
-            for (ConditionSegment condition : each.getConditions()) {
-                if (null == condition.getColumn()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                if (null == predicate.getColumn()) {
                     continue;
                 }
-                if (filledConditionStopIndexes.contains(condition.getStopIndex())) {
+                if (filledConditionStopIndexes.contains(predicate.getStopIndex())) {
                     continue;
                 } else {
-                    filledConditionStopIndexes.add(condition.getStopIndex());
+                    filledConditionStopIndexes.add(predicate.getStopIndex());
                 }
-                Column column = new Column(condition.getColumn().getName(), getTableName(sqlStatement, condition));
-                fillEncryptCondition(column, condition, sqlStatement);
+                Column column = new Column(predicate.getColumn().getName(), getTableName(sqlStatement, predicate));
+                fillEncryptCondition(column, predicate, sqlStatement);
             }
         }
         return result;
     }
     
-    private void fillEncryptCondition(final Column column, final ConditionSegment condition, final SQLStatement sqlStatement) {
+    private void fillEncryptCondition(final Column column, final PredicateSegment predicate, final SQLStatement sqlStatement) {
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
@@ -111,32 +111,32 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        andCondition.getConditions().add(condition.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
-        sqlStatement.getSQLTokens().add(new EncryptColumnToken(condition.getColumn().getStartIndex(), condition.getStopIndex(), column, true));
+        andCondition.getConditions().add(predicate.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+        sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicate.getColumn().getStartIndex(), predicate.getStopIndex(), column, true));
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private String getTableName(final SQLStatement sqlStatement, final ConditionSegment conditionSegment) {
+    private String getTableName(final SQLStatement sqlStatement, final PredicateSegment predicateSegment) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            return getTableName(sqlStatement.getTables(), conditionSegment);
+            return getTableName(sqlStatement.getTables(), predicateSegment);
         }
         SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
         while (null != currentSelectStatement.getParentStatement()) {
             currentSelectStatement = currentSelectStatement.getParentStatement();
-            String tableName = getTableName(currentSelectStatement.getTables(), conditionSegment);
+            String tableName = getTableName(currentSelectStatement.getTables(), predicateSegment);
             if (!"".equals(tableName)) {
                 return tableName;
             }
         }
-        return getTableName(currentSelectStatement.getTables(), conditionSegment);
+        return getTableName(currentSelectStatement.getTables(), predicateSegment);
     }
     
-    private String getTableName(final Tables tables, final ConditionSegment conditionSegment) {
-        if (conditionSegment.getColumn().getOwner().isPresent()) {
-            Optional<Table> table = tables.find(conditionSegment.getColumn().getOwner().get());
+    private String getTableName(final Tables tables, final PredicateSegment predicateSegment) {
+        if (predicateSegment.getColumn().getOwner().isPresent()) {
+            Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
             return table.isPresent() ? table.get().getName() : "";
         } else {
-            return getTableNameFromMetaData(tables, conditionSegment.getColumn().getName());
+            return getTableNameFromMetaData(tables, predicateSegment.getColumn().getName());
         }
     }
     

@@ -24,13 +24,13 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnS
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SQLRightValueExpressionSegment;
 
 /**
- * Condition segment.
+ * Predicate segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConditionSegment implements SQLSegment {
+public final class PredicateSegment implements SQLSegment {
     
     private final ColumnSegment column;
     

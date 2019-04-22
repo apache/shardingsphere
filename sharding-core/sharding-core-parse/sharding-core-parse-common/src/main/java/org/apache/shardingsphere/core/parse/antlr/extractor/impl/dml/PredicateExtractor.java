@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.ConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
@@ -93,13 +93,13 @@ public final class PredicateExtractor {
             }
             return Optional.absent();
         }
-        Optional<ConditionSegment> condition = extractPredicate(parameterMarkerIndexes, exprNode);
-        if (!condition.isPresent()) {
+        Optional<PredicateSegment> predicate = extractPredicate(parameterMarkerIndexes, exprNode);
+        if (!predicate.isPresent()) {
             return Optional.absent();
         }
         OrConditionSegment result = new OrConditionSegment();
         AndConditionSegment newAndCondition = new AndConditionSegment();
-        newAndCondition.getConditions().add(condition.get());
+        newAndCondition.getPredicates().add(predicate.get());
         result.getAndConditions().add(newAndCondition);
         return Optional.of(result);
     }
@@ -113,8 +113,8 @@ public final class PredicateExtractor {
         return Optional.absent();
     }
     
-    private Optional<ConditionSegment> extractPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
-        Optional<ConditionSegment> result = extractComparisonPredicate(parameterMarkerIndexes, exprNode);
+    private Optional<PredicateSegment> extractPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
+        Optional<PredicateSegment> result = extractComparisonPredicate(parameterMarkerIndexes, exprNode);
         if (result.isPresent()) {
             return result;
         }
@@ -141,7 +141,7 @@ public final class PredicateExtractor {
         return Optional.absent();
     }
     
-    private Optional<ConditionSegment> extractComparisonPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
+    private Optional<PredicateSegment> extractComparisonPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
         Optional<ParserRuleContext> comparisonOperatorNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.COMPARISON_OPERATOR);
         if (!comparisonOperatorNode.isPresent()) {
             return Optional.absent();
@@ -158,23 +158,23 @@ public final class PredicateExtractor {
                 ? (ParserRuleContext) comparisonOperatorNode.get().parent.getChild(2) : (ParserRuleContext) comparisonOperatorNode.get().parent.getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(parameterMarkerIndexes, valueNode);
         String compareOperator = comparisonOperatorNode.get().getText();
-        return sqlExpression.isPresent() ? Optional.of(new ConditionSegment(column.get(), compareOperator, 
-                new CompareValueExpressionSegment(sqlExpression.get(), compareOperator), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<ConditionSegment>absent();
+        return sqlExpression.isPresent() ? Optional.of(new PredicateSegment(column.get(), compareOperator, 
+                new CompareValueExpressionSegment(sqlExpression.get(), compareOperator), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<PredicateSegment>absent();
     }
     
-    private Optional<ConditionSegment> extractBetweenPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext predicateNode, final ColumnSegment column) {
+    private Optional<PredicateSegment> extractBetweenPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext predicateNode, final ColumnSegment column) {
         Optional<? extends ExpressionSegment> beginSQLExpression = expressionExtractor.extract(parameterMarkerIndexes, (ParserRuleContext) predicateNode.getChild(2));
         Optional<? extends ExpressionSegment> endSQLExpression = expressionExtractor.extract(parameterMarkerIndexes, (ParserRuleContext) predicateNode.getChild(4));
         return beginSQLExpression.isPresent() && endSQLExpression.isPresent()
-                ? Optional.of(new ConditionSegment(
+                ? Optional.of(new PredicateSegment(
                         column, ShardingOperator.BETWEEN.name(), new BetweenValueExpressionSegment(beginSQLExpression.get(), endSQLExpression.get()), predicateNode.getStop().getStopIndex()))
-                : Optional.<ConditionSegment>absent();
+                : Optional.<PredicateSegment>absent();
     }
     
-    private Optional<ConditionSegment> extractInPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext predicateNode, final ColumnSegment column) {
+    private Optional<PredicateSegment> extractInPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext predicateNode, final ColumnSegment column) {
         Collection<ExpressionSegment> sqlExpressions = extractExpressionSegments(parameterMarkerIndexes, predicateNode);
-        return sqlExpressions.isEmpty() ? Optional.<ConditionSegment>absent()
-                : Optional.of(new ConditionSegment(column, ShardingOperator.IN.name(), new InValueExpressionSegment(sqlExpressions), predicateNode.getStop().getStopIndex()));
+        return sqlExpressions.isEmpty() ? Optional.<PredicateSegment>absent()
+                : Optional.of(new PredicateSegment(column, ShardingOperator.IN.name(), new InValueExpressionSegment(sqlExpressions), predicateNode.getStop().getStopIndex()));
     }
     
     private Collection<ExpressionSegment> extractExpressionSegments(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext predicateNode) {
@@ -201,8 +201,8 @@ public final class PredicateExtractor {
         for (AndConditionSegment each : leftOrCondition.getAndConditions()) {
             for (AndConditionSegment eachRightOr : rightOrCondition.getAndConditions()) {
                 AndConditionSegment tempList = new AndConditionSegment();
-                tempList.getConditions().addAll(each.getConditions());
-                tempList.getConditions().addAll(eachRightOr.getConditions());
+                tempList.getPredicates().addAll(each.getPredicates());
+                tempList.getPredicates().addAll(eachRightOr.getPredicates());
                 result.getAndConditions().add(tempList);
             }
         }

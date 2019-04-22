@@ -33,5 +33,5 @@ import java.util.List;
 @Getter
 public final class AndConditionSegment implements SQLSegment {
     
-    private List<ConditionSegment> conditions = new LinkedList<>();
+    private List<PredicateSegment> predicates = new LinkedList<>();
 }
