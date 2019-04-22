@@ -9,7 +9,7 @@
 - [x] Statement
 - [x] Prepared Statement
 - [x] Result Set
-- [x] Result Set Metadata
+- [ ] Result Set Metadata
 
 ### Database
 - [x] MySQL
@@ -22,6 +22,7 @@
 - [x] YAML
 - [x] Spring Namespace
 - [x] Spring Boot Starter
+- [x] Inline expression
 
 ## Sharding-Proxy
 
@@ -39,12 +40,20 @@
   - [x] COM_STMT_EXECUTE
   - [x] COM_STMT_CLOSE
   - [x] COM_STMT_RESET
+- [ ] PostgreSQL
+  - [x] Auth
+  - [x] Simple Query
+  - [x] Parse
+  - [x] Bind
+  - [x] Describe
+  - [x] Execute
+  - [x] Sync
 - [ ] Oracle
 - [ ] SQLServer
-- [ ] PostgreSQL
 
 ### Configuration
 - [x] YAML
+- [x] Inline expression
 
 ## Sharding-Sidecar
 - [ ] TODO
@@ -61,13 +70,13 @@
     - [x] GROUP BY
     - [x] Aggregation Functions
     - [x] LIMIT, rownum, TOP
-    - [x] Simple Sub Query
+    - [x] Simple Subquery
     - [x] OR
-    - [ ] DISTINCT
+    - [x] DISTINCT
     - [ ] HAVING
     - [ ] UNION, UNION ALL
     - [ ] Calculate Expression, eg: SUM(pv) / COUNT(uv)
-    - [ ] Complicated Sub Query
+    - [ ] Complicated Subquery
     - [ ] SQL Hint
 - [x] DML
     - [x] INSERT INTO
@@ -140,6 +149,7 @@
 ### Distribute Sequence
 - [x] Strategy API
 - [x] Snowflake algorithm
+- [x] UUID algorithm
 
 ## Orchestration
 
@@ -159,25 +169,25 @@
 - [ ] LoadBalance
 - [ ] Flow Limit
 - [ ] Failover
+- [x] Data Encryption
 
 ### APM
 - [x] Tracing Collector
 - [x] Open Tracing
 
-## BASE Transaction
+## Transaction
 
-### Best Efforts Delivery
-- [x] Post DML event
-- [x] Transaction Journal Storage
-- [x] Synchronized Delivery
-- [x] Asynchronized Delivery
+### BASE
+- [x] BASE Transaction Manager SPI
+- [x] SQL revert
+- [ ] Isolation Engine
+- [x] Saga Integrate
 
-### Try Confirm Cancel
-- [x] Post DML event
-- [ ] Transaction Journal Storage
-- [ ] Try
-- [ ] Confirm
-- [ ] Cancel
+### XA
+- [x] XA Transaction Manager SPI
+- [x] Atomikos Integrate
+- [x] Narayana Integrate
+- [x] Bitronix Integrate
 
 ## Operation Tool
 

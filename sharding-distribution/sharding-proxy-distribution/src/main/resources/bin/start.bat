@@ -1,0 +1,42 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+@echo off & setlocal enabledelayedexpansion
+
+cd %~dp0
+
+set CLASS_PATH="..;..\conf;..\lib\*"
+
+set PORT=%1
+
+set CONFIG=%2
+
+if "%PORT%"=="" (
+set MAIN_CLASS=org.apache.shardingsphere.shardingproxy.Bootstrap
+) else ( if "%CONFIG%"=="" (
+    set MAIN_CLASS=org.apache.shardingsphere.shardingproxy.Bootstrap %PORT%
+    echo The port is configured as %PORT%
+    ) else (
+    set MAIN_CLASS=org.apache.shardingsphere.shardingproxy.Bootstrap %PORT% %CONFIG%
+    echo The port is configured as %PORT%
+    echo The configuration file is %CONFIG%
+    )
+)
+
+java -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -Dfile.encoding=UTF-8 -classpath %CLASS_PATH% %MAIN_CLASS%
+
+pause

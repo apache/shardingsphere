@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets>
-    <parser-result sql-case-id="drop_user_without_hostname" />
-    <parser-result sql-case-id="drop_user_with_hostname" />
-    <parser-result sql-case-id="drop_user_cascade" />
-    <parser-result sql-case-id="drop_role" />
-    <parser-result sql-case-id="drop_login" />
-</parser-result-sets>

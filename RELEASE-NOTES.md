@@ -1,34 +1,36 @@
-## 3.0.1
+## 4.0.0.RC1
 
-### API changes
+Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First apache release.
 
-1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) Adjust persist structure for orchestration's registry center
+### API Changes
+
+1. Adjust persist structure for orchestration's registry center.
+1. Adjust Sharding-JDBC configuration API.
+1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
+1. Adjust spring-boot-starter.
 
 ### New Features
 
-#### Core
+1. XA Transaction available.
+1. Data encrypt available.
+1. Use PostgreSQL protocol access Sharding-Proxy available.
+1. DISTINCT SQL syntax available.
+1. Broadcast table.
+1. All SQL 100% compatible if route to single data node (MySQL Only).
 
-1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) Support broadcast table
-1. [ISSUE #1486](https://github.com/sharding-sphere/sharding-sphere/issues/1486) Support `DISTINCT` syntax
+###  Change Logs
 
-### Bug Fixes
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+1. [MILESTONE #5](https://github.com/sharding-sphere/sharding-sphere/milestone/5)
+1. [MILESTONE #6](https://github.com/sharding-sphere/sharding-sphere/milestone/6)
 
-#### Core
-
-1. [ISSUE #1348](https://github.com/sharding-sphere/sharding-sphere/issues/1348) Exception occur when using PreparedStatement to run SELECT LIMIT in multi datasources
-1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) Exception occur when using defaultDataSourceName and defaultDatabaseStrategy at same time
-
-#### Sharding-Proxy
-
-1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) master-slave mode exception when using PreparedStatement
-1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) `SHOW CREATE TABLE tb_name` execution exception when configuring multiple logic schema
-1. [ISSUE #1475](https://github.com/sharding-sphere/sharding-sphere/issues/1475) `SHOW [FUll] TABLES FROM db_name LIKE 'tb_name'` failed to return the logic table
 
 ## 3.0.0
 
 ### Milestones
 
-1. Sharding-Proxy launch. Support the use of Sharding-Sphere in the form of database to support for MySQL CLI and GUI client
+1. Sharding-Proxy launch. Support the use of ShardingSphere in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
 
@@ -442,7 +444,7 @@ Automatic generation key implementation, including
 
 1. [ISSUE #43](https://github.com/sharding-sphere/sharding-sphere/issues/43) The yaml file contains Chinese, and the operating system mode is not UTF-8 encoding, resulting in yaml can not be parsed
 1. [ISSUE #48](https://github.com/sharding-sphere/sharding-sphere/issues/48) Yaml file is not closed after reading
-1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify sub queries to ensure that the behavior of supplementary columns can be accurately positioned
+1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify subqueries to ensure that the behavior of supplementary columns can be accurately positioned
 
 ## 1.1.0
 
