@@ -18,7 +18,7 @@
 FROM java:7
 MAINTAINER ShardingSphere "dev@shardingsphere.incubator.apache.org"
 
-ENV CURRENT_VERSION 4.0.0-RC1
+ENV CURRENT_VERSION 4.0.0-RC2
 ENV APP_NAME apache-shardingsphere-incubating
 ENV MODULE_NAME sharding-proxy
 ENV LOCAL_PATH /opt/sharding-proxy
