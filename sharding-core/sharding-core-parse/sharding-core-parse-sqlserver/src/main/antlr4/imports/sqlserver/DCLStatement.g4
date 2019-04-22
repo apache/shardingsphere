@@ -24,27 +24,31 @@ grant
     ;
 
 revoke
-    : REVOKE ((GRANT OPTION FOR)? classPrivilegesClause_ | classTypePrivilegesClause_)
+    : REVOKE (optionFor_? classPrivilegesClause_ | classTypePrivilegesClause_)
     ;
 
 deny
-    : DENY classPrivilegesClause_
+    : DENY (classPrivilegesClause_ | classTypePrivilegesClause_)
     ;
 
 classPrivilegesClause_
     : classPrivileges_ (ON onClassClause_)?
     ;
-
+    
+classTypePrivilegesClause_
+    : classTypePrivileges_ (ON onClassTypeClause_)?
+    ;
+    
+optionFor_
+    : GRANT OPTION FOR
+    ;
+    
 classPrivileges_
     : (ALL PRIVILEGES? | (privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*))
     ;
 
 onClassClause_
     : class_? tableName
-    ;
-
-classTypePrivilegesClause_
-    : classTypePrivileges_ (ON onClassTypeClause_)?
     ;
 
 classTypePrivileges_
