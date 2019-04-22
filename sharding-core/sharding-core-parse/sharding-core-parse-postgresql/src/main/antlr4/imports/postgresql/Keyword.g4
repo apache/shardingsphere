@@ -39,6 +39,10 @@ ASC
     : A S C
     ;
 
+ADMIN
+    : A D M I N
+    ;
+
 BETWEEN
     : B E T W E E N
     ;
