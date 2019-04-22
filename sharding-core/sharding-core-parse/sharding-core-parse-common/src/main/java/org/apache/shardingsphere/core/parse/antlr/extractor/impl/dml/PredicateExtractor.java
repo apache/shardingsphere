@@ -49,6 +49,8 @@ public final class PredicateExtractor {
     
     private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
+    
     /**
      * Extract.
      *
@@ -85,7 +87,6 @@ public final class PredicateExtractor {
     private Optional<OrConditionSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
         Optional<Integer> index = getLeftParenIndex(exprNode);
         if (index.isPresent()) {
-            Preconditions.checkState(Paren.match(exprNode.getChild(index.get()).getText(), exprNode.getChild(index.get() + 2).getText()), "Missing right paren.");
             if (RuleName.EXPR.getName().equals(exprNode.getChild(index.get() + 1).getClass().getSimpleName())) {
                 return extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() + 1));
             }
@@ -112,7 +113,7 @@ public final class PredicateExtractor {
     }
     
     private Optional<ConditionSegment> buildCondition(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
-        Optional<ConditionSegment> result = buildCompareCondition(parameterMarkerIndexes, exprNode);
+        Optional<ConditionSegment> result = extractComparisonPredicate(parameterMarkerIndexes, exprNode);
         if (result.isPresent()) {
             return result;
         }
@@ -138,33 +139,34 @@ public final class PredicateExtractor {
         return Optional.absent();
     }
     
-    private Optional<ConditionSegment> buildCompareCondition(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
-        Optional<ParserRuleContext> comparisionNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.COMPARISON_OPERATOR);
-        if (!comparisionNode.isPresent()) {
+    private Optional<ConditionSegment> extractComparisonPredicate(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
+        Optional<ParserRuleContext> comparisonOperatorNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.COMPARISON_OPERATOR);
+        if (!comparisonOperatorNode.isPresent()) {
             return Optional.absent();
         }
-        ParserRuleContext predicateNode = comparisionNode.get().getParent();
-        Optional<ParserRuleContext> leftNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) predicateNode.getChild(0), RuleName.COLUMN_NAME);
-        Optional<ParserRuleContext> rightNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) predicateNode.getChild(2), RuleName.COLUMN_NAME);
-        if (!leftNode.isPresent() && !rightNode.isPresent()) {
+        ParserRuleContext booleanPrimaryNode = comparisonOperatorNode.get().getParent();
+        Optional<ParserRuleContext> leftColumnNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) booleanPrimaryNode.getChild(0), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> rightColumnNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) booleanPrimaryNode.getChild(2), RuleName.COLUMN_NAME);
+        if (!leftColumnNode.isPresent() && !rightColumnNode.isPresent()) {
             return Optional.absent();
         }
-        if (leftNode.isPresent() && rightNode.isPresent()) {
-            Optional<ColumnSegment> leftColumn = buildColumn(leftNode.get(), parameterMarkerIndexes);
-            Optional<ColumnSegment> rightColumn = buildColumn(rightNode.get(), parameterMarkerIndexes);
+        if (leftColumnNode.isPresent() && rightColumnNode.isPresent()) {
+            Optional<ColumnSegment> leftColumn = columnExtractor.extract(leftColumnNode.get(), parameterMarkerIndexes);
+            Optional<ColumnSegment> rightColumn = columnExtractor.extract(rightColumnNode.get(), parameterMarkerIndexes);
             Preconditions.checkState(leftColumn.isPresent() && rightColumn.isPresent());
-            return Optional.of(new ConditionSegment(leftColumn.get(), comparisionNode.get().getText(), rightColumn.get(), predicateNode.getStop().getStopIndex()));
+            return Optional.of(new ConditionSegment(leftColumn.get(), comparisonOperatorNode.get().getText(), rightColumn.get(), booleanPrimaryNode.getStop().getStopIndex()));
         }
-        Optional<ColumnSegment> column = buildColumn(exprNode, parameterMarkerIndexes);
+        Optional<ColumnSegment> column = columnExtractor.extract(exprNode, parameterMarkerIndexes);
         Preconditions.checkState(column.isPresent());
-        ParserRuleContext valueNode = leftNode.isPresent() ? (ParserRuleContext) comparisionNode.get().parent.getChild(2) : (ParserRuleContext) comparisionNode.get().parent.getChild(0);
+        ParserRuleContext valueNode = leftColumnNode.isPresent()
+                ? (ParserRuleContext) comparisonOperatorNode.get().parent.getChild(2) : (ParserRuleContext) comparisonOperatorNode.get().parent.getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(parameterMarkerIndexes, valueNode);
-        return sqlExpression.isPresent() ? Optional.of(new ConditionSegment(column.get(), comparisionNode.get().getText(), 
-                new CompareValueExpressionSegment(sqlExpression.get(), comparisionNode.get().getText()), predicateNode.getStop().getStopIndex())) : Optional.<ConditionSegment>absent();
+        return sqlExpression.isPresent() ? Optional.of(new ConditionSegment(column.get(), comparisonOperatorNode.get().getText(), 
+                new CompareValueExpressionSegment(sqlExpression.get(), comparisonOperatorNode.get().getText()), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<ConditionSegment>absent();
     }
     
     private Optional<ConditionSegment> buildBetweenCondition(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext predicateNode) {
-        Optional<ColumnSegment> column = buildColumn((ParserRuleContext) predicateNode.getChild(0), parameterMarkerIndexes);
+        Optional<ColumnSegment> column = columnExtractor.extract((ParserRuleContext) predicateNode.getChild(0), parameterMarkerIndexes);
         if (!column.isPresent()) {
             return Optional.absent();
         }
@@ -178,7 +180,7 @@ public final class PredicateExtractor {
     }
     
     private Optional<ConditionSegment> buildInCondition(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext predicateNode) {
-        Optional<ColumnSegment> column = buildColumn((ParserRuleContext) predicateNode.getChild(0), parameterMarkerIndexes);
+        Optional<ColumnSegment> column = columnExtractor.extract((ParserRuleContext) predicateNode.getChild(0), parameterMarkerIndexes);
         if (!column.isPresent()) {
             return Optional.absent();
         }
@@ -199,10 +201,6 @@ public final class PredicateExtractor {
             return Optional.of(new ConditionSegment(column.get(), ShardingOperator.IN.name(), inExpressionSegment, predicateNode.getStop().getStopIndex()));
         }
         return Optional.absent();
-    }
-    
-    private Optional<ColumnSegment> buildColumn(final ParserRuleContext parentNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        return new ColumnExtractor().extract(parentNode, parameterMarkerIndexes);
     }
     
     private OrConditionSegment mergeCondition(final OrConditionSegment leftOrCondition, final OrConditionSegment rightOrCondition, final String operator) {
