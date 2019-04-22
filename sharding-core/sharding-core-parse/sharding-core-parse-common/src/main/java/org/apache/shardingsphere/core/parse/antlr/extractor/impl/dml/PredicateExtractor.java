@@ -83,17 +83,11 @@ public final class PredicateExtractor {
     }
     
     private Optional<OrConditionSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
-        int index = -1;
-        for (int i = 0; i < exprNode.getChildCount(); i++) {
-            if (Paren.isLeftParen(exprNode.getChild(i).getText())) {
-                index = i;
-                break;
-            }
-        }
-        if (-1 != index) {
-            Preconditions.checkState(Paren.match(exprNode.getChild(index).getText(), exprNode.getChild(index + 2).getText()), "Missing right paren.");
-            if (RuleName.EXPR.getName().equals(exprNode.getChild(index + 1).getClass().getSimpleName())) {
-                return extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index + 1));
+        Optional<Integer> index = getLeftParenIndex(exprNode);
+        if (index.isPresent()) {
+            Preconditions.checkState(Paren.match(exprNode.getChild(index.get()).getText(), exprNode.getChild(index.get() + 2).getText()), "Missing right paren.");
+            if (RuleName.EXPR.getName().equals(exprNode.getChild(index.get() + 1).getClass().getSimpleName())) {
+                return extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() + 1));
             }
             return Optional.absent();
         }
@@ -106,6 +100,15 @@ public final class PredicateExtractor {
         newAndCondition.getConditions().add(condition.get());
         result.getAndConditions().add(newAndCondition);
         return Optional.of(result);
+    }
+    
+    private Optional<Integer> getLeftParenIndex(final ParserRuleContext exprNode) {
+        for (int i = 0; i < exprNode.getChildCount(); i++) {
+            if (Paren.isLeftParen(exprNode.getChild(i).getText())) {
+                return Optional.of(i);
+            }
+        }
+        return Optional.absent();
     }
     
     private Optional<ConditionSegment> buildCondition(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
