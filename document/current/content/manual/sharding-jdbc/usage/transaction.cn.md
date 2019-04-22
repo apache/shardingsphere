@@ -176,17 +176,23 @@ TransactionTypeHolder.set(TransactionType.BASE);
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring-boot-starter</artifactId>
+    <artifactId>sharding-transaction-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-aop</artifactId>
-    <version>${spring-boot.version}</version>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>${aspectjweaver.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${springframework.version}</version>
 </dependency>
 
-<spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
+<aspectjweaver.version>1.8.9</aspectjweaver.version>
+<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
 ```
 
 #### Spring namespace
@@ -196,7 +202,7 @@ TransactionTypeHolder.set(TransactionType.BASE);
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring</artifactId>
+    <artifactId>sharding-transaction-jdbc-spring</artifactId>
     <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 
