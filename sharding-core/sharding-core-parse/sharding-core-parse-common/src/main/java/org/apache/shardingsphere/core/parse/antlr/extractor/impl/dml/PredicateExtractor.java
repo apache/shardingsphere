@@ -61,39 +61,25 @@ public final class PredicateExtractor {
     }
     
     private Optional<OrConditionSegment> extractConditionInternal(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
-        int index = -1;
-        for (int i = 0; i < exprNode.getChildCount(); i++) {
-            if (LogicalOperator.isLogicalOperator(exprNode.getChild(i).getText())) {
-                index = i;
-                break;
-            }
+        Optional<Integer> index = getLogicalOperatorIndex(exprNode);
+        if (!index.isPresent()) {
+            return extractConditionForParen(parameterMarkerIndexes, exprNode);
         }
-        if (index > 0) {
-            Optional<OrConditionSegment> leftOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index - 1));
-            Optional<OrConditionSegment> rightOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index + 1));
-            if (leftOrCondition.isPresent() && rightOrCondition.isPresent()) {
-                return Optional.of(mergeCondition(leftOrCondition.get(), rightOrCondition.get(), exprNode.getChild(index).getText()));
-            }
-            return leftOrCondition.isPresent() ? leftOrCondition : rightOrCondition;
+        Optional<OrConditionSegment> leftOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() - 1));
+        Optional<OrConditionSegment> rightOrCondition = extractConditionInternal(parameterMarkerIndexes, (ParserRuleContext) exprNode.getChild(index.get() + 1));
+        if (leftOrCondition.isPresent() && rightOrCondition.isPresent()) {
+            return Optional.of(mergeCondition(leftOrCondition.get(), rightOrCondition.get(), exprNode.getChild(index.get()).getText()));
         }
-        return extractConditionForParen(parameterMarkerIndexes, exprNode);
+        return leftOrCondition.isPresent() ? leftOrCondition : rightOrCondition;
     }
     
-    private OrConditionSegment mergeCondition(final OrConditionSegment leftOrCondition, final OrConditionSegment rightOrCondition, final String operator) {
-        if (LogicalOperator.isOrOperator(operator)) {
-            leftOrCondition.getAndConditions().addAll(rightOrCondition.getAndConditions());
-            return leftOrCondition;
-        }
-        OrConditionSegment result = new OrConditionSegment();
-        for (AndConditionSegment each : leftOrCondition.getAndConditions()) {
-            for (AndConditionSegment eachRightOr : rightOrCondition.getAndConditions()) {
-                AndConditionSegment tempList = new AndConditionSegment();
-                tempList.getConditions().addAll(each.getConditions());
-                tempList.getConditions().addAll(eachRightOr.getConditions());
-                result.getAndConditions().add(tempList);
+    private Optional<Integer> getLogicalOperatorIndex(final ParserRuleContext exprNode) {
+        for (int i = 0; i < exprNode.getChildCount(); i++) {
+            if (LogicalOperator.isLogicalOperator(exprNode.getChild(i).getText())) {
+                return Optional.of(i);
             }
         }
-        return result;
+        return Optional.absent();
     }
     
     private Optional<OrConditionSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext exprNode) {
@@ -214,5 +200,22 @@ public final class PredicateExtractor {
     
     private Optional<ColumnSegment> buildColumn(final ParserRuleContext parentNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         return new ColumnExtractor().extract(parentNode, parameterMarkerIndexes);
+    }
+    
+    private OrConditionSegment mergeCondition(final OrConditionSegment leftOrCondition, final OrConditionSegment rightOrCondition, final String operator) {
+        if (LogicalOperator.isOrOperator(operator)) {
+            leftOrCondition.getAndConditions().addAll(rightOrCondition.getAndConditions());
+            return leftOrCondition;
+        }
+        OrConditionSegment result = new OrConditionSegment();
+        for (AndConditionSegment each : leftOrCondition.getAndConditions()) {
+            for (AndConditionSegment eachRightOr : rightOrCondition.getAndConditions()) {
+                AndConditionSegment tempList = new AndConditionSegment();
+                tempList.getConditions().addAll(each.getConditions());
+                tempList.getConditions().addAll(eachRightOr.getConditions());
+                result.getAndConditions().add(tempList);
+            }
+        }
+        return result;
     }
 }
