@@ -20,11 +20,10 @@ package org.apache.shardingsphere.core.yaml.swapper.impl;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -35,11 +34,9 @@ public class AuthenticationYamlSwapperTest {
     public void assertSwapToYaml() {
         ProxyUser user1 = new ProxyUser("pwd1", Collections.singleton("db1"));
         ProxyUser user2 = new ProxyUser("pwd2", Collections.singleton("db2"));
-        Map<String, ProxyUser> users = new HashMap<>();
-        users.put("user1", user1);
-        users.put("user2", user2);
         Authentication authentication = new Authentication();
-        authentication.getUsers().putAll(users);
+        authentication.getUsers().put("user1", user1);
+        authentication.getUsers().put("user2", user2);
         YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swap(authentication);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user2").getPassword(), is("pwd2"));
@@ -47,5 +44,17 @@ public class AuthenticationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
+        YamlProxyUserConfiguration user1 = new YamlProxyUserConfiguration();
+        user1.setPassword("pwd1");
+        user1.setAuthorizedSchemas("db1");
+        YamlProxyUserConfiguration user2 = new YamlProxyUserConfiguration();
+        user2.setPassword("pwd2");
+        user2.setAuthorizedSchemas("db2,db1");
+        YamlAuthenticationConfiguration configuration = new YamlAuthenticationConfiguration();
+        configuration.getUsers().put("user1", user1);
+        configuration.getUsers().put("user2", user2);
+        Authentication actual = new AuthenticationYamlSwapper().swap(configuration);
+        assertThat(actual.getUsers().size(), is(2));
+        assertThat(actual.getUsers().get("user2").getAuthorizedSchemas().size(), is(2));
     }
 }
