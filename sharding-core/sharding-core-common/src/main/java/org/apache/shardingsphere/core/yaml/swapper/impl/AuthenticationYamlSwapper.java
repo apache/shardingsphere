@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.rule.ProxyUser;
+import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
 
 /**
@@ -28,19 +30,33 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  *
  * @author zhangliang
  */
-public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthentication, Authentication> {
+public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, Authentication> {
+    
+    private final ProxyUserYamlSwapper proxyUserYamlSwapper = new ProxyUserYamlSwapper();
     
     @Override
-    public YamlAuthentication swap(final Authentication data) {
-        YamlAuthentication result = new YamlAuthentication();
-        result.setUsername(data.getUsername());
-        result.setPassword(data.getPassword());
+    public YamlAuthenticationConfiguration swap(final Authentication data) {
+        YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
+        result.getUsers().putAll(Maps.transformValues(data.getUsers(), new Function<ProxyUser, YamlProxyUserConfiguration>() {
+    
+            @Override
+            public YamlProxyUserConfiguration apply(final ProxyUser input) {
+                return proxyUserYamlSwapper.swap(input);
+            }
+        }));
         return result;
     }
     
     @Override
-    public Authentication swap(final YamlAuthentication yamlConfiguration) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(yamlConfiguration.getUsername()), "Username is required.");
-        return new Authentication(yamlConfiguration.getUsername(), yamlConfiguration.getPassword());
+    public Authentication swap(final YamlAuthenticationConfiguration yamlConfiguration) {
+        Authentication result = new Authentication();
+        result.getUsers().putAll(Maps.transformValues(yamlConfiguration.getUsers(), new Function<YamlProxyUserConfiguration, ProxyUser>() {
+            
+            @Override
+            public ProxyUser apply(final YamlProxyUserConfiguration input) {
+                return proxyUserYamlSwapper.swap(input);
+            }
+        }));
+        return result;
     }
 }

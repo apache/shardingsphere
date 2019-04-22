@@ -20,6 +20,7 @@ package org.apache.shardingsphere.orchestration.internal.registry;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
@@ -73,7 +74,9 @@ public final class ShardingOrchestrationFacadeTest {
     public void assertInitWithParameters() {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, RuleConfiguration> ruleConfigurationMap = Collections.singletonMap("sharding_db", mock(RuleConfiguration.class));
-        Authentication authentication = new Authentication("root", "root");
+        ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
+        Authentication authentication = new Authentication();
+        authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
         shardingOrchestrationFacade.init(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
         verify(configService).persistConfiguration("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, true);

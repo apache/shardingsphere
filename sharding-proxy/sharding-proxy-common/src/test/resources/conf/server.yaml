@@ -22,9 +22,11 @@ orchestration:
     serverLists: localhost:2181
     namespace: orchestration
 
-authentication:
-  username: root
-  password: root
+authentication:    
+  users:
+    root:
+      password: root
+      authorizedSchemas: sharding_db,master_slave_db
 
 props:
   max.connections.size.per.query: 1

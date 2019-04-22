@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
+import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,19 +31,34 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShowDatabasesBackendHandlerTest {
     
-    private ShowDatabasesBackendHandler showDatabasesBackendHandler = new ShowDatabasesBackendHandler();
+    private ShowDatabasesBackendHandler showDatabasesBackendHandler;
     
     @Before
     public void setUp() {
         MockLogicSchemasUtil.setLogicSchemas("schema", 5);
+        BackendConnection backendConnection = mock(BackendConnection.class);
+        when(backendConnection.getUserName()).thenReturn("root");
+        ShardingProxyContext.getInstance().init(getAuthentication(), new Properties());
+        showDatabasesBackendHandler = new ShowDatabasesBackendHandler(backendConnection);
+    }
+    
+    private Authentication getAuthentication() {
+        ProxyUser proxyUser = new ProxyUser("root", Arrays.asList("schema_0", "schema_1"));
+        Authentication result = new Authentication();
+        result.getUsers().put("root", proxyUser);
+        return result;
     }
     
     @Test

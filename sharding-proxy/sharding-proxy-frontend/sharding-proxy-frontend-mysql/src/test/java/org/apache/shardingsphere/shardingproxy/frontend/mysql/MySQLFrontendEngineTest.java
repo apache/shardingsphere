@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
@@ -34,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -69,8 +71,8 @@ public final class MySQLFrontendEngineTest {
     
     @Test
     public void assertAuthWhenLoginSuccess() {
-        Authentication authentication = new Authentication("root", "");
-        setAuthentication(authentication);
+        ProxyUser proxyUser = new ProxyUser("", Collections.singleton("db1"));
+        setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
         assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
         verify(context).writeAndFlush(isA(MySQLOKPacket.class));
@@ -78,8 +80,8 @@ public final class MySQLFrontendEngineTest {
     
     @Test
     public void assertAuthWhenLoginFailure() {
-        Authentication authentication = new Authentication("root", "error");
-        setAuthentication(authentication);
+        ProxyUser proxyUser = new ProxyUser("error", Collections.singleton("db1"));
+        setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
@@ -87,9 +89,11 @@ public final class MySQLFrontendEngineTest {
     }
     
     @SneakyThrows
-    private void setAuthentication(final Object value) {
+    private void setAuthentication(final ProxyUser proxyUser) {
+        Authentication authentication = new Authentication();
+        authentication.getUsers().put("root", proxyUser);
         Field field = ShardingProxyContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
-        field.set(ShardingProxyContext.getInstance(), value);
+        field.set(ShardingProxyContext.getInstance(), authentication);
     }
 }

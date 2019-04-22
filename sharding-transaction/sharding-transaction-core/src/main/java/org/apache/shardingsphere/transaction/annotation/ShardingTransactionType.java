@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.constant;
+package org.apache.shardingsphere.transaction.annotation;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Sharding-Proxy's information for MySQL.
- * 
- * @author zhangliang 
+ * Sharding transactional annotation.
+ *
+ * @author yangyi
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLServerInfo {
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface ShardingTransactionType {
     
     /**
-     * Protocol version is always 0x0A.
+     * Sharding transaction type, include LOCAL, XA, BASE.
+     * default LOCAL.
+     *
+     * @return Sharding transaction type
      */
-    public static final int PROTOCOL_VERSION = 0x0A;
+    TransactionType value() default TransactionType.LOCAL;
     
-    /**
-     * Server version.
-     */
-    public static final String SERVER_VERSION = "5.6.0-Sharding-Proxy 4.0.0-RC2";
-    
-    /**
-     * Charset code 0x21 is utf8_general_ci.
-     */
-    public static final int CHARSET = 0x21;
 }
