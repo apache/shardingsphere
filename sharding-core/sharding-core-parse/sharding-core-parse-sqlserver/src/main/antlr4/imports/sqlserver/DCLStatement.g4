@@ -34,15 +34,15 @@ deny
 classPrivilegesClause_
     : classPrivileges_ (ON onClassClause_)?
     ;
-    
+
 classTypePrivilegesClause_
     : classTypePrivileges_ (ON onClassTypeClause_)?
     ;
-    
+
 optionForClause_
     : GRANT OPTION FOR
     ;
-    
+
 classPrivileges_
     : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
@@ -61,7 +61,7 @@ onClassTypeClause_
 
 privilegeType_
     : ALL PRIVILEGES?
-    | IDENTIFIER_+?
+    | ignoredIdentifiers_
     ;
 
 class_
