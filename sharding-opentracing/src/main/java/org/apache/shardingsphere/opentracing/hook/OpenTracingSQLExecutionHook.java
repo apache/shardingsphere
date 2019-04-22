@@ -61,7 +61,6 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     }
     
     private String toString(final List<Object> parameterSets) {
-
         if (null == parameterSets || parameterSets.isEmpty()) {
             return "";
         }

@@ -95,7 +95,6 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM success_tbl;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("[1, 2]"));
         verify(activeSpan, times(0)).deactivate();
-
         sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", null), dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
     }
