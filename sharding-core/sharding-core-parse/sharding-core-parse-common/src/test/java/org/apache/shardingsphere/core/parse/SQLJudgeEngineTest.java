@@ -150,6 +150,11 @@ public final class SQLJudgeEngineTest {
         assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fshow session ").judge(), instanceOf(ShowOtherStatement.class));
     }
     
+    @Test
+    public void assertJudgeForCall() {
+        assertThat(new SQLJudgeEngine("call test_procedure()").judge(), instanceOf(DQLStatement.class));
+    }
+    
     @Test(expected = SQLParsingException.class)
     public void assertJudgeForInvalidSQL() {
         new SQLJudgeEngine("int i = 0").judge();
