@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -102,7 +102,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
     
     private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final ShardingRule shardingRule) {
         OrCondition result = new OrCondition();
-        for (AndConditionSegment each : orCondition.getAndConditions()) {
+        for (AndPredicateSegment each : orCondition.getAndPredicates()) {
             List<PredicateSegment> predicates = new LinkedList<>();
             boolean needSharding = false;
             for (PredicateSegment predicate : each.getPredicates()) {
@@ -129,7 +129,7 @@ public final class OrConditionFiller implements SQLSegmentFiller<OrConditionSegm
             }
         }
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
-        for (AndConditionSegment each : orCondition.getAndConditions()) {
+        for (AndPredicateSegment each : orCondition.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (null == predicate.getColumn()) {
                     continue;

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.C
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
@@ -98,9 +98,9 @@ public final class PredicateExtractor {
             return Optional.absent();
         }
         OrConditionSegment result = new OrConditionSegment();
-        AndConditionSegment newAndCondition = new AndConditionSegment();
-        newAndCondition.getPredicates().add(predicate.get());
-        result.getAndConditions().add(newAndCondition);
+        AndPredicateSegment newAndPredicate = new AndPredicateSegment();
+        newAndPredicate.getPredicates().add(predicate.get());
+        result.getAndPredicates().add(newAndPredicate);
         return Optional.of(result);
     }
     
@@ -194,16 +194,16 @@ public final class PredicateExtractor {
     
     private OrConditionSegment mergeCondition(final OrConditionSegment leftOrCondition, final OrConditionSegment rightOrCondition, final String operator) {
         if (LogicalOperator.isOrOperator(operator)) {
-            leftOrCondition.getAndConditions().addAll(rightOrCondition.getAndConditions());
+            leftOrCondition.getAndPredicates().addAll(rightOrCondition.getAndPredicates());
             return leftOrCondition;
         }
         OrConditionSegment result = new OrConditionSegment();
-        for (AndConditionSegment each : leftOrCondition.getAndConditions()) {
-            for (AndConditionSegment eachRightOr : rightOrCondition.getAndConditions()) {
-                AndConditionSegment tempList = new AndConditionSegment();
+        for (AndPredicateSegment each : leftOrCondition.getAndPredicates()) {
+            for (AndPredicateSegment eachRightOr : rightOrCondition.getAndPredicates()) {
+                AndPredicateSegment tempList = new AndPredicateSegment();
                 tempList.getPredicates().addAll(each.getPredicates());
                 tempList.getPredicates().addAll(eachRightOr.getPredicates());
-                result.getAndConditions().add(tempList);
+                result.getAndPredicates().add(tempList);
             }
         }
         return result;

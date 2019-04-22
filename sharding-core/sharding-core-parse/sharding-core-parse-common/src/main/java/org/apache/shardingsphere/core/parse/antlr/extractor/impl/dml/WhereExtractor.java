@@ -47,7 +47,7 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
             setPropertiesForRevert(result, parameterMarkerIndexes, whereNode.get());
             Optional<OrConditionSegment> orConditionSegment = extractOrConditionSegment(parameterMarkerIndexes, whereNode.get());
             if (orConditionSegment.isPresent()) {
-                result.getConditions().getAndConditions().addAll(orConditionSegment.get().getAndConditions());
+                result.getConditions().getAndPredicates().addAll(orConditionSegment.get().getAndPredicates());
             }
         }
         return Optional.of(result);

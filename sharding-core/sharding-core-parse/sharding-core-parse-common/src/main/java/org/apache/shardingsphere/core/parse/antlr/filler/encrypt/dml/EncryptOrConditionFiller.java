@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -83,7 +83,7 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrConditionSeg
     private OrCondition filterCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition) {
         OrCondition result = new OrCondition();
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
-        for (AndConditionSegment each : orCondition.getAndConditions()) {
+        for (AndPredicateSegment each : orCondition.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (null == predicate.getColumn()) {
                     continue;

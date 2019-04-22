@@ -25,13 +25,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * And condition segment.
+ * And predicate segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class AndConditionSegment implements SQLSegment {
+public final class AndPredicateSegment implements SQLSegment {
     
     private List<PredicateSegment> predicates = new LinkedList<>();
 }
