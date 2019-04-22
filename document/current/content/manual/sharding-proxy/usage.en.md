@@ -61,18 +61,6 @@ If users use JDBC-Driver method to connect Sharding-Proxy, users can send SQL tr
 
 #### Spring Note Method
 
-Introduce Maven dependency:
-
-```xml
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-```
-
-Then, add relevant notes in methods or types that require transactions, for example:
-
 ```java
 @ShardingTransactionType(TransactionType.LOCAL)
 @Transactional
@@ -86,6 +74,64 @@ Or
 ```
 
 To be noticed: `@ShardingTransactionType` needs to be used together with `@Transactional` of Spring, and then transactions will take effect.
+
+#### SpringBootStarter Usage
+
+Introduce Maven Dependency:
+
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-jdbc-spring-boot-starter</artifactId>
+    <version>${shardingsphere-spi-impl.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>${aspectjweaver.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${springframework.version}</version>
+</dependency>
+
+<aspectjweaver.version>1.8.9</aspectjweaver.version>
+<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
+```
+
+#### Spring Namespace Usage
+
+Introduce Maven Dependency:
+
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-jdbc-spring</artifactId>
+    <version>${shardingsphere-spi-impl.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>${aspectjweaver.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${springframework.version}</version>
+</dependency>
+
+<aspectjweaver.version>1.8.9</aspectjweaver.version>
+<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
+```
+
+Load section configuration information:
+
+```xml
+<import resource="classpath:META-INF/shardingTransaction.xml"/>
+```
 
 ### Atomikos Parameter Configuration
 

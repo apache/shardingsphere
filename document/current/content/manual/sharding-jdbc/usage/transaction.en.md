@@ -41,18 +41,6 @@ Introduce Maven Dependency:
 
 ```xml
 <dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring-boot-starter</artifactId>
-    <version>${sharding-sphere.version}</version>
-</dependency>
-```
-
-### SpringBoot Usage
-
-Introduce Maven Dependency:
-
-```xml
-<dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-transaction-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere-spi-impl.version}</version>
@@ -71,15 +59,6 @@ Introduce Maven Dependency:
 
 <aspectjweaver.version>1.8.9</aspectjweaver.version>
 <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
-```
-
-AutoConfiguration:
-
-```java
-@SpringBootApplication(exclude = JtaAutoConfiguration.class)
-@ComponentScan("org.apache.shardingsphere.transaction.aspect")
-public class StartMain {
-}
 ```
 
 ### Spring Namespace Usage
