@@ -29,6 +29,7 @@ The list here will be shown in the registered order.
 * [souche](https://www.souche.com/zh/)
 * [newbeescm](https://www.newbeescm.com/)
 * [xiaohongchun](https://www.xiaohongchun.com/)
+* [58](https://bj.58.com/)
 
 ## FinTech
 

@@ -29,6 +29,7 @@ chapter = true
 * [大搜车](https://www.souche.com/zh/)
 * [蜂网](https://www.newbeescm.com/)
 * [小红唇](https://www.xiaohongchun.com/)
+* [58同城](https://bj.58.com/)
 
 ## 互联网金融
 
