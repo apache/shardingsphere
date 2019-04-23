@@ -83,17 +83,23 @@ mysql> sctl: show transaction_type
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring-boot-starter</artifactId>
+    <artifactId>sharding-transaction-proxy-spring-boot-starter</artifactId>
     <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-aop</artifactId>
-    <version>${spring-boot.version}</version>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>${aspectjweaver.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${springframework.version}</version>
 </dependency>
 
-<spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
+<aspectjweaver.version>1.8.9</aspectjweaver.version>
+<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
 ```
 
 #### Spring namespace
@@ -103,7 +109,7 @@ mysql> sctl: show transaction_type
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring</artifactId>
+    <artifactId>sharding-transaction-proxy-spring</artifactId>
     <version>${shardingsphere-spi-impl.version}</version>
 </dependency>
 
@@ -125,7 +131,16 @@ mysql> sctl: show transaction_type
 
 ```xml
 <import resource="classpath:META-INF/shardingTransaction.xml"/>
+```
 
+注意：若通过JPA的ORM框架使用`@ShardingTransactionType`进行Sharding-Proxy的事务切换时，需要通过SPI的方式实现`sharding-transaction-proxy-spring`中的`io.shardingsphere.transaction.spi.JpaConnectionExtractor`接口。
+例如使用Hibernate时，可编译并引入以下依赖
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-proxy-hibernate-spring</artifactId>
+    <version>${shardingsphere-spi-impl.version}</version>
+</dependency>
 ```
 
 ### Atomikos参数配置
