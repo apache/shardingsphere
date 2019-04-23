@@ -109,7 +109,7 @@ public abstract class ParsingRuleRegistry {
     /**
      * Find SQL statement rule.
      *
-     * @param databaseType     database type
+     * @param databaseType database type
      * @param contextClassName context class name
      * @return SQL statement rule
      */

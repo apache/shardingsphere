@@ -42,6 +42,8 @@ import java.util.Map;
  */
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
+    
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
@@ -67,7 +69,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode, parameterMarkerIndexes);
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract(columnNode, parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent());
         return new PropertyExpressionSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), columnSegment.get().getName(), columnSegment.get().getOwner().orNull());
     }
