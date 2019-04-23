@@ -93,9 +93,9 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         OrPredicateSegment result = new OrPredicateSegment();
-        AndPredicateSegment newAndPredicate = new AndPredicateSegment();
-        newAndPredicate.getPredicates().add(predicate.get());
-        result.getAndPredicates().add(newAndPredicate);
+        AndPredicateSegment andPredicate = new AndPredicateSegment();
+        andPredicate.getPredicates().add(predicate.get());
+        result.getAndPredicates().add(andPredicate);
         return Optional.of(result);
     }
     
@@ -199,14 +199,18 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return leftPredicate;
         }
         OrPredicateSegment result = new OrPredicateSegment();
-        for (AndPredicateSegment each : leftPredicate.getAndPredicates()) {
-            for (AndPredicateSegment eachRightOr : rightPredicate.getAndPredicates()) {
-                AndPredicateSegment tempList = new AndPredicateSegment();
-                tempList.getPredicates().addAll(each.getPredicates());
-                tempList.getPredicates().addAll(eachRightOr.getPredicates());
-                result.getAndPredicates().add(tempList);
+        for (AndPredicateSegment eachLeftPredicate : leftPredicate.getAndPredicates()) {
+            for (AndPredicateSegment eachRightPredicate : rightPredicate.getAndPredicates()) {
+                result.getAndPredicates().add(getAndPredicateSegment(eachLeftPredicate, eachRightPredicate));
             }
         }
+        return result;
+    }
+    
+    private AndPredicateSegment getAndPredicateSegment(final AndPredicateSegment leftPredicate, final AndPredicateSegment rightPredicate) {
+        AndPredicateSegment result = new AndPredicateSegment();
+        result.getPredicates().addAll(leftPredicate.getPredicates());
+        result.getPredicates().addAll(rightPredicate.getPredicates());
         return result;
     }
 }

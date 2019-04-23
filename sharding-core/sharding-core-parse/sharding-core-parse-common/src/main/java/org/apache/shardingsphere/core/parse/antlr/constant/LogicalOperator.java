@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 /**
  * Logical operator.
@@ -28,10 +27,6 @@ import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogicalOperator {
-    
-    private static final String AND = "AND";
-    
-    private static final String OR = "OR";
     
     /**
      * Judge is logical operator or not.
@@ -44,7 +39,7 @@ public final class LogicalOperator {
     }
     
     private static boolean isAndOperator(final String token) {
-        return AND.equalsIgnoreCase(token) || Symbol.DOUBLE_AMP.getLiterals().equalsIgnoreCase(token);
+        return "AND".equalsIgnoreCase(token) || "&&".equals(token);
     }
     
     /**
@@ -54,6 +49,6 @@ public final class LogicalOperator {
      * @return OR operator or not
      */
     public static boolean isOrOperator(final String token) {
-        return OR.equalsIgnoreCase(token) || Symbol.DOUBLE_BAR.getLiterals().equalsIgnoreCase(token);
+        return "OR".equalsIgnoreCase(token) || "||".equals(token);
     }
 }
