@@ -144,8 +144,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         ParserRuleContext booleanPrimaryNode = comparisonOperatorNode.get().getParent();
         Optional<ParserRuleContext> leftColumnNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) booleanPrimaryNode.getChild(0), RuleName.COLUMN_NAME);
         Optional<ParserRuleContext> rightColumnNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) booleanPrimaryNode.getChild(2), RuleName.COLUMN_NAME);
-        if (leftColumnNode.isPresent() && rightColumnNode.isPresent() || !leftColumnNode.isPresent() && !rightColumnNode.isPresent()) {
+        if (!leftColumnNode.isPresent() && !rightColumnNode.isPresent()) {
             return Optional.absent();
+        }
+        if (leftColumnNode.isPresent() && rightColumnNode.isPresent()) {
+            Optional<ColumnSegment> leftColumn = columnExtractor.extract(leftColumnNode.get(), parameterMarkerIndexes);
+            Optional<ColumnSegment> rightColumn = columnExtractor.extract(rightColumnNode.get(), parameterMarkerIndexes);
+            Preconditions.checkState(leftColumn.isPresent() && rightColumn.isPresent());
+            return Optional.of(new PredicateSegment(leftColumn.get(), comparisonOperatorNode.get().getText(), rightColumn.get(), booleanPrimaryNode.getStop().getStopIndex()));
         }
         Optional<ColumnSegment> column = columnExtractor.extract(exprNode, parameterMarkerIndexes);
         Preconditions.checkState(column.isPresent());
