@@ -29,28 +29,42 @@ number
 
 string
     : STRING_
+    | characterSet_? STRING_ collateClause_?
+    | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
     ;
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
+    | LBE_ identifier_ STRING_ RBE_
     ;
 
 hexadecimalLiterals
     : HEX_DIGIT_
+    | characterSet_? HEX_DIGIT_ collateClause_?
+    ;
+
+bitValueLiterals
+    : BIT_NUM_
+    | characterSet_? BIT_NUM_ collateClause_?
+    ;
+    
+booleanLiterals
+    : TRUE
+    | FALSE
+    ;
+    
+nullValueLiterals
+    : NULL
     ;
 
 literals_
     : number
     | string
-    | TRUE
-    | FALSE
-    | NULL
-    | BIT_NUM_
+    | booleanLiterals
+    | nullValueLiterals
+    | bitValueLiterals
     | hexadecimalLiterals
     | dateTimeLiterals
-    | LBE_ identifier_ STRING_ RBE_
-    | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
-    | characterSet_? BIT_NUM_ collateClause_?
     ;
 
 identifier_
