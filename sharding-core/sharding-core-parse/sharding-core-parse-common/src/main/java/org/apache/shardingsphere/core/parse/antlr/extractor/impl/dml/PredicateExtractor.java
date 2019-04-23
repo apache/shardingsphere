@@ -55,16 +55,16 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<OrPredicateSegment> extract(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        return extractRecursive(exprNode, parameterMarkerIndexes);
+        return extractRecursiveWithLogicalOperator(exprNode, parameterMarkerIndexes);
     }
     
-    private Optional<OrPredicateSegment> extractRecursive(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    private Optional<OrPredicateSegment> extractRecursiveWithLogicalOperator(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<Integer> index = getLogicalOperatorIndex(exprNode);
         if (!index.isPresent()) {
-            return extractPredicateForParen(exprNode, parameterMarkerIndexes);
+            return extractRecursiveWithParen(exprNode, parameterMarkerIndexes);
         }
-        Optional<OrPredicateSegment> leftPredicate = extractRecursive((ParserRuleContext) exprNode.getChild(index.get() - 1), parameterMarkerIndexes);
-        Optional<OrPredicateSegment> rightPredicate = extractRecursive((ParserRuleContext) exprNode.getChild(index.get() + 1), parameterMarkerIndexes);
+        Optional<OrPredicateSegment> leftPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(index.get() - 1), parameterMarkerIndexes);
+        Optional<OrPredicateSegment> rightPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(index.get() + 1), parameterMarkerIndexes);
         if (leftPredicate.isPresent() && rightPredicate.isPresent()) {
             return Optional.of(mergePredicate(leftPredicate.get(), rightPredicate.get(), exprNode.getChild(index.get()).getText()));
         }
@@ -80,23 +80,15 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         return Optional.absent();
     }
     
-    private Optional<OrPredicateSegment> extractPredicateForParen(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    private Optional<OrPredicateSegment> extractRecursiveWithParen(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<Integer> index = getLeftParenIndex(exprNode);
         if (index.isPresent()) {
-            if (RuleName.EXPR.getName().equals(exprNode.getChild(index.get() + 1).getClass().getSimpleName())) {
-                return extractRecursive((ParserRuleContext) exprNode.getChild(index.get() + 1), parameterMarkerIndexes);
-            }
-            return Optional.absent();
+            ParserRuleContext expressionNode = (ParserRuleContext) exprNode.getChild(index.get() + 1);
+            return RuleName.EXPR.getName().equals(expressionNode.getClass().getSimpleName())
+                    ? extractRecursiveWithLogicalOperator(expressionNode, parameterMarkerIndexes) : Optional.<OrPredicateSegment>absent();
         }
         Optional<PredicateSegment> predicate = extractPredicate(exprNode, parameterMarkerIndexes);
-        if (!predicate.isPresent()) {
-            return Optional.absent();
-        }
-        OrPredicateSegment result = new OrPredicateSegment();
-        AndPredicateSegment andPredicate = new AndPredicateSegment();
-        andPredicate.getPredicates().add(predicate.get());
-        result.getAndPredicates().add(andPredicate);
-        return Optional.of(result);
+        return predicate.isPresent() ? Optional.of(getOrPredicateSegment(predicate.get())) : Optional.<OrPredicateSegment>absent();
     }
     
     private Optional<Integer> getLeftParenIndex(final ParserRuleContext exprNode) {
@@ -106,6 +98,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             }
         }
         return Optional.absent();
+    }
+    
+    private OrPredicateSegment getOrPredicateSegment(final PredicateSegment predicate) {
+        OrPredicateSegment result = new OrPredicateSegment();
+        AndPredicateSegment andPredicate = new AndPredicateSegment();
+        andPredicate.getPredicates().add(predicate);
+        result.getAndPredicates().add(andPredicate);
+        return result;
     }
     
     private Optional<PredicateSegment> extractPredicate(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
