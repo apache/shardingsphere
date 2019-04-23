@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.SubqueryPredicateSegment;
 
 import java.util.Collection;
 import java.util.Map;
@@ -38,9 +38,9 @@ public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtra
     private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
     
     @Override
-    public Optional<SubqueryConditionSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<SubqueryPredicateSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
-        SubqueryConditionSegment result = new SubqueryConditionSegment();
+        SubqueryPredicateSegment result = new SubqueryPredicateSegment();
         for (ParserRuleContext each : suQueryNodes) {
             Optional<WhereSegment> condition = selectWhereExtractor.extract(each, parameterMarkerIndexes);
             if (condition.isPresent()) {
