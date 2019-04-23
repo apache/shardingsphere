@@ -17,38 +17,40 @@
 
 package org.apache.shardingsphere.core.parse.antlr.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.common.base.Optional;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.TreeSet;
 
 /**
  * Logical operator.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LogicalOperator {
+public enum LogicalOperator {
     
-    /**
-     * Judge is logical operator or not.
-     *
-     * @param token token
-     * @return is logical operator or not
-     */
-    public static boolean isLogicalOperator(final String token) {
-        return isAndOperator(token) || isOrOperator(token);
-    }
+    AND("AND", "&&"), 
+    OR("OR", "||");
     
-    private static boolean isAndOperator(final String token) {
-        return "AND".equalsIgnoreCase(token) || "&&".equals(token);
+    private final Collection<String> texts = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    
+    LogicalOperator(final String... texts) {
+        this.texts.addAll(Arrays.asList(texts));
     }
     
     /**
-     * Judge is or operator or not.
+     * Get logical operator value from text.
      *
-     * @param token token
-     * @return OR operator or not
+     * @param text text
+     * @return logical operator value
      */
-    public static boolean isOrOperator(final String token) {
-        return "OR".equalsIgnoreCase(token) || "||".equals(token);
+    public static Optional<LogicalOperator> valueFrom(final String text) {
+        for (LogicalOperator each : LogicalOperator.values()) {
+            if (each.texts.contains(text)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
 }
