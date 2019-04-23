@@ -119,6 +119,8 @@ public enum RuleName {
     
     BIT_EXPR("BitExpr"),
     
+    LOGICAL_OPERATOR("LogicalOperator"),
+    
     FROM_CLAUSE("FromClause"),
     
     WHERE_CLAUSE("WhereClause"),

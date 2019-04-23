@@ -59,25 +59,16 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<OrPredicateSegment> extractRecursiveWithLogicalOperator(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<Integer> index = getLogicalOperatorIndex(exprNode);
-        if (!index.isPresent()) {
+        Optional<ParserRuleContext> logicalOperatorNode = ExtractorUtils.findFirstChildNodeNoneRecursive(exprNode, RuleName.LOGICAL_OPERATOR);
+        if (!logicalOperatorNode.isPresent()) {
             return extractRecursiveWithParen(exprNode, parameterMarkerIndexes);
         }
-        Optional<OrPredicateSegment> leftPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(index.get() - 1), parameterMarkerIndexes);
-        Optional<OrPredicateSegment> rightPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(index.get() + 1), parameterMarkerIndexes);
+        Optional<OrPredicateSegment> leftPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(0), parameterMarkerIndexes);
+        Optional<OrPredicateSegment> rightPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(2), parameterMarkerIndexes);
         if (leftPredicate.isPresent() && rightPredicate.isPresent()) {
-            return Optional.of(mergePredicate(leftPredicate.get(), rightPredicate.get(), exprNode.getChild(index.get()).getText()));
+            return Optional.of(mergePredicate(leftPredicate.get(), rightPredicate.get(), logicalOperatorNode.get().getText()));
         }
         return leftPredicate.isPresent() ? leftPredicate : rightPredicate;
-    }
-    
-    private Optional<Integer> getLogicalOperatorIndex(final ParserRuleContext exprNode) {
-        for (int i = 0; i < exprNode.getChildCount(); i++) {
-            if (LogicalOperator.isLogicalOperator(exprNode.getChild(i).getText())) {
-                return Optional.of(i);
-            }
-        }
-        return Optional.absent();
     }
     
     private Optional<OrPredicateSegment> extractRecursiveWithParen(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
