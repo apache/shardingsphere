@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * And predicate segment.
@@ -33,5 +33,5 @@ import java.util.List;
 @Getter
 public final class AndPredicateSegment implements SQLSegment {
     
-    private List<PredicateSegment> predicates = new LinkedList<>();
+    private final Collection<PredicateSegment> predicates = new LinkedList<>();
 }
