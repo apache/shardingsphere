@@ -31,6 +31,14 @@ string
     : STRING_
     ;
 
+dateTimeLiterals
+    : (DATE | TIME | TIMESTAMP) STRING_
+    ;
+
+hexadecimalLiterals
+    : HEX_DIGIT_
+    ;
+
 literals_
     : number
     | string
@@ -38,8 +46,8 @@ literals_
     | FALSE
     | NULL
     | BIT_NUM_
-    | HEX_DIGIT_
-    | (DATE | TIME | TIMESTAMP) STRING_
+    | hexadecimalLiterals
+    | dateTimeLiterals
     | LBE_ identifier_ STRING_ RBE_
     | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
     | characterSet_? BIT_NUM_ collateClause_?
