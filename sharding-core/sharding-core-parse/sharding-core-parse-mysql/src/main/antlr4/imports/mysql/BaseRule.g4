@@ -23,7 +23,7 @@ parameterMarker
     : QUESTION_
     ;
 
-literals_
+literals
     : stringLiterals
     | numberLiterals
     | dateTimeLiterals
@@ -177,7 +177,7 @@ bitExpr
 simpleExpr
     : functionCall
     | parameterMarker
-    | literals_
+    | literals
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier_)
     | variable_
