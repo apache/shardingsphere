@@ -55,8 +55,7 @@ bitValueLiterals
     ;
     
 booleanLiterals
-    : TRUE
-    | FALSE
+    : TRUE | FALSE
     ;
 
 nullValueLiterals
