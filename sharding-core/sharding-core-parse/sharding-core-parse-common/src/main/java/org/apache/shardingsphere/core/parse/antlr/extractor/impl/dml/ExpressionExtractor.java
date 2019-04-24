@@ -44,29 +44,26 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private ExpressionSegment extractExpression(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
-        if (functionNode.isPresent()) {
-            return extractCommonExpressionSegment(functionNode.get());
-        }
-        if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
+        if (ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL).isPresent()
+                || ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.COLUMN_NAME).isPresent()) {
             return extractCommonExpressionSegment(expressionNode);
         }
-        return extractCommonExpressionSegment(expressionNode, parameterMarkerIndexes);
+        return extractLiteralExpressionSegment(expressionNode, parameterMarkerIndexes);
     }
     
-    // TODO extract column name and value from function
+    // TODO extract column name and value from expression
     private ExpressionSegment extractCommonExpressionSegment(final ParserRuleContext functionNode) {
         return new CommonExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
     }
     
     /**
-     * Extract common expression segment.
+     * Extract literal expression segment.
      *
      * @param parameterMarkerIndexes parameter marker indexes
      * @param expressionNode expression node
      * @return common expression segment
      */
-    public LiteralExpressionSegment extractCommonExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public LiteralExpressionSegment extractLiteralExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         LiteralExpressionSegment result = new LiteralExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
         if (questionNode.isPresent()) {
