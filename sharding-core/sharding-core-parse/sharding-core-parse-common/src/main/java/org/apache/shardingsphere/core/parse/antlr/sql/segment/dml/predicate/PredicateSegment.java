@@ -39,5 +39,4 @@ public final class PredicateSegment implements SQLSegment {
     private final SQLRightValueExpressionSegment expression;
     
     private final int stopIndex;
-    
 }

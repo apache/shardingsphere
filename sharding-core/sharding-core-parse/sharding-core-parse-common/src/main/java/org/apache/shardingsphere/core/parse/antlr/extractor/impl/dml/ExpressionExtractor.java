@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
@@ -42,6 +41,8 @@ import java.util.Map;
  */
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
+    
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
@@ -61,13 +62,12 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     // TODO extract column name and value from function
     private ExpressionSegment extractFunctionExpressionSegment(final ParserRuleContext functionNode) {
-        return new FunctionExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), functionNode.getChild(0).getText(), 
-                ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
+        return new FunctionExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
     }
     
     private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        Optional<ColumnSegment> columnSegment = new ColumnExtractor().extract(columnNode, parameterMarkerIndexes);
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract(columnNode, parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent());
         return new PropertyExpressionSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), columnSegment.get().getName(), columnSegment.get().getOwner().orNull());
     }
