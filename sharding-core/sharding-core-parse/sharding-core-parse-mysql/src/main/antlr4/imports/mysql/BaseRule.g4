@@ -23,11 +23,11 @@ parameterMarker
     : QUESTION_
     ;
 
-number
+numberLiterals
    : NUMBER_
    ;
 
-string
+stringLiterals
     : STRING_
     | characterSet_? STRING_ collateClause_?
     | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
@@ -58,8 +58,8 @@ nullValueLiterals
     ;
 
 literals_
-    : number
-    | string
+    : numberLiterals
+    | stringLiterals
     | booleanLiterals
     | nullValueLiterals
     | bitValueLiterals
@@ -335,7 +335,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | number | expr) (ASC | DESC)?
+    : (columnName | numberLiterals | expr) (ASC | DESC)?
     ;
 
 dataType
