@@ -20,12 +20,11 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.ExpressionExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,11 +56,9 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
     private Collection<ExpressionSegment> extractExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
-            Optional<ParameterMarkerExpressionSegment> parameterMarkerExpressionSegment = expressionExtractor.extractParameterMarkerExpressionSegment(each, parameterMarkerIndexes);
-            if (parameterMarkerExpressionSegment.isPresent()) {
-                result.add(parameterMarkerExpressionSegment.get());
-            } else {
-                result.add(expressionExtractor.extractLiteralExpressionSegment(each));
+            Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract(each, parameterMarkerIndexes);
+            if (expressionSegment.isPresent()) {
+                result.add(expressionSegment.get());
             }
         }
         return result;
