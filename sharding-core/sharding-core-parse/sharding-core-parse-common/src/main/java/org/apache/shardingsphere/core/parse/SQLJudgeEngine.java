@@ -102,6 +102,9 @@ public final class SQLJudgeEngine {
             } else {
                 lexerEngine.nextToken();
             }
+            if (sql.toUpperCase().startsWith("CALL")) {
+                return getDQLStatement();
+            }
             if (tokenType instanceof Assist && Assist.END == tokenType) {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }

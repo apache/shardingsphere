@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 
 import java.util.Collection;
 import java.util.Map;
@@ -44,16 +44,16 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
         result.setParameterCount(parameterMarkerIndexes.size());
         Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
         if (whereNode.isPresent()) {
-            setPropertiesForRevert(result, parameterMarkerIndexes, whereNode.get());
-            Optional<OrConditionSegment> orConditionSegment = extractOrConditionSegment(parameterMarkerIndexes, whereNode.get());
+            setPropertiesForRevert(result, whereNode.get(), parameterMarkerIndexes);
+            Optional<OrPredicateSegment> orConditionSegment = extractOrConditionSegment(whereNode.get(), parameterMarkerIndexes);
             if (orConditionSegment.isPresent()) {
-                result.getConditions().getAndConditions().addAll(orConditionSegment.get().getAndConditions());
+                result.getOrPredicate().getAndPredicates().addAll(orConditionSegment.get().getAndPredicates());
             }
         }
         return Optional.of(result);
     }
     
-    private void setPropertiesForRevert(final WhereSegment whereSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext whereNode) {
+    private void setPropertiesForRevert(final WhereSegment whereSegment, final ParserRuleContext whereNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         whereSegment.setWhereStartIndex(whereNode.getStart().getStartIndex());
         whereSegment.setWhereStopIndex(whereNode.getStop().getStopIndex());
         if (parameterMarkerIndexes.isEmpty()) {
@@ -68,8 +68,8 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
         whereSegment.setWhereParameterEndIndex(whereParameterStartIndex + questionNodes.size() - 1);
     }
     
-    private Optional<OrConditionSegment> extractOrConditionSegment(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext whereNode) {
+    private Optional<OrPredicateSegment> extractOrConditionSegment(final ParserRuleContext whereNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) whereNode.getChild(1), RuleName.EXPR);
-        return exprNode.isPresent() ? predicateExtractor.extract(parameterMarkerIndexes, exprNode.get()) : Optional.<OrConditionSegment>absent();
+        return exprNode.isPresent() ? predicateExtractor.extract(exprNode.get(), parameterMarkerIndexes) : Optional.<OrPredicateSegment>absent();
     }
 }

@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
@@ -39,21 +40,15 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class ExpressionExtractor {
+public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
-    /**
-     * Extract expression.
-     *
-     * @param parameterMarkerIndexes  parameter marker indexes
-     * @param expressionNode expression node
-     * @return expression segment
-     */
-    public Optional<? extends ExpressionSegment> extract(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext expressionNode) {
+    @Override
+    public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get(), parameterMarkerIndexes) : Optional.of(extractExpression(parameterMarkerIndexes, expressionNode));
+        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get(), parameterMarkerIndexes) : Optional.of(extractExpression(expressionNode, parameterMarkerIndexes));
     }
     
-    private ExpressionSegment extractExpression(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext expressionNode) {
+    private ExpressionSegment extractExpression(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (functionNode.isPresent()) {
             return extractFunctionExpressionSegment(functionNode.get());
@@ -61,7 +56,7 @@ public final class ExpressionExtractor {
         if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
             return extractPropertyExpressionSegment(expressionNode, parameterMarkerIndexes);
         }
-        return extractCommonExpressionSegment(parameterMarkerIndexes, expressionNode);
+        return extractCommonExpressionSegment(expressionNode, parameterMarkerIndexes);
     }
     
     private ExpressionSegment extractFunctionExpressionSegment(final ParserRuleContext functionNode) {
@@ -84,7 +79,7 @@ public final class ExpressionExtractor {
      * @param expressionNode expression node
      * @return common expression segment
      */
-    public CommonExpressionSegment extractCommonExpressionSegment(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext expressionNode) {
+    public CommonExpressionSegment extractCommonExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> bitExprNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(expressionNode, RuleName.BIT_EXPR);
         if (!bitExprNode.isPresent()) {

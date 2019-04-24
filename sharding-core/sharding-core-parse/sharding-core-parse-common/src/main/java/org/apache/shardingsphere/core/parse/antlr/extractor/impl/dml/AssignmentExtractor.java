@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
@@ -36,27 +37,21 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class AssignmentExtractor {
+public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
     
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
-    /**
-     * Extract.
-     * 
-     * @param parameterMarkerIndexes parameter marker indexes
-     * @param ancestorNode ancestor node
-     * @return assignment segment
-     */
-    public Optional<AssignmentSegment> extract(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext ancestorNode) {
+    @Override
+    public Optional<AssignmentSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> assignmentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ASSIGNMENT);
         if (!assignmentNode.isPresent()) {
             return Optional.absent();
         }
         Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0), parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent());
-        CommonExpressionSegment expressionSegment = expressionExtractor.extractCommonExpressionSegment(parameterMarkerIndexes, (ParserRuleContext) assignmentNode.get().getChild(2));
+        CommonExpressionSegment expressionSegment = expressionExtractor.extractCommonExpressionSegment((ParserRuleContext) assignmentNode.get().getChild(2), parameterMarkerIndexes);
         return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment));
     }
 }

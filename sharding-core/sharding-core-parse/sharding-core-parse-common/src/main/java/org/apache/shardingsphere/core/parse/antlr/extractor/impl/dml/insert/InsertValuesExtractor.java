@@ -56,7 +56,7 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
     private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<CommonExpressionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
-            result.add(expressionExtractor.extractCommonExpressionSegment(parameterMarkerIndexes, each));
+            result.add(expressionExtractor.extractCommonExpressionSegment(each, parameterMarkerIndexes));
         }
         return result;
     }

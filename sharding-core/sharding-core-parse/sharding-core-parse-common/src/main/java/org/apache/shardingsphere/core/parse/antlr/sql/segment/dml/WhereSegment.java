@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 
 /**
  * Where segment.
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrCo
 @Setter
 public final class WhereSegment implements SQLSegment {
     
-    private final OrConditionSegment conditions = new OrConditionSegment();
+    private final OrPredicateSegment orPredicate = new OrPredicateSegment();
     
     private int parameterCount;
     

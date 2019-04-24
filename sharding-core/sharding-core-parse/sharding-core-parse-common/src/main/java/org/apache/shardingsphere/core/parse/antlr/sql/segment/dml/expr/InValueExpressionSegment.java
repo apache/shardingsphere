@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ import java.util.List;
 @Getter
 public final class InValueExpressionSegment implements SQLRightValueExpressionSegment {
     
-    private final List<ExpressionSegment> sqlExpressions = new LinkedList<>();
+    private final Collection<ExpressionSegment> sqlExpressions;
     
     @Override
     public Condition buildCondition(final Column column, final String sql) {

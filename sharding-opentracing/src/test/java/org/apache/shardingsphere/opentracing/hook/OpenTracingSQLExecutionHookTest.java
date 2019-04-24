@@ -95,6 +95,29 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM success_tbl;"));
         assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("[1, 2]"));
         verify(activeSpan, times(0)).deactivate();
+        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", null), dataSourceMetaData, true, null);
+        sqlExecutionHook.finishSuccess();
+    }
+
+    @Test
+    public void assertExecuteSuccessForTrunkThreadWhenParamsIsNull() {
+        DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
+        when(dataSourceMetaData.getHostName()).thenReturn("localhost");
+        when(dataSourceMetaData.getPort()).thenReturn(8888);
+        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", null), dataSourceMetaData, true, null);
+        sqlExecutionHook.finishSuccess();
+        MockSpan actual = getActualSpan();
+        assertThat(actual.operationName(), is("/Sharding-Sphere/executeSQL/"));
+        Map<String, Object> actualTags = actual.tags();
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
+        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), CoreMatchers.<Object>is("localhost"));
+        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), CoreMatchers.<Object>is(8888));
+        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), CoreMatchers.<Object>is("sql"));
+        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("success_ds"));
+        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM success_tbl;"));
+        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is(""));
+        verify(activeSpan, times(0)).deactivate();
     }
     
     @Test
