@@ -23,6 +23,30 @@ createTable
     : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)
     ;
 
+createLike_
+    : LIKE tableName | LP_ LIKE tableName RP_
+    ;
+
+createIndex
+    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
+    ;
+
+alterTable
+    : ALTER TABLE tableName alterSpecifications_?
+    ;
+
+dropTable
+    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    ;
+
+dropIndex
+    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
+    ;
+
+truncateTable
+    : TRUNCATE TABLE? tableName
+    ;
+
 createDefinitions_
     : createDefinition_ (COMMA_ createDefinition_)*
     ;
@@ -103,14 +127,6 @@ foreignKeyOption_
 
 checkConstraintDefinition_
     : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
-    ;
-
-createLike_
-    : LIKE tableName | LP_ LIKE tableName RP_
-    ;
-
-alterTable
-    : ALTER TABLE tableName alterSpecifications_?
     ;
 
 alterSpecifications_
@@ -279,20 +295,4 @@ partitionDefinitionOption_
 
 subpartitionDefinition_
     : SUBPARTITION identifier_ partitionDefinitionOption_*
-    ;
-
-dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
-    ;
-
-truncateTable
-    : TRUNCATE TABLE? tableName
-    ;
-
-createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
-    ;
-
-dropIndex
-    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
     ;
