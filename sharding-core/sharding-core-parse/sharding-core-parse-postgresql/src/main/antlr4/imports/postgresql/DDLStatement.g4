@@ -19,32 +19,32 @@ grammar DDLStatement;
 
 import Symbol, Keyword, Literals, BaseRule;
 
-createIndex
-    : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
-    ;
-
-dropIndex
-    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
-    ;
-
-alterIndex
-    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
-    ;
-
 createTable
     : createTableHeader createDefinitions inheritClause?
+    ;
+
+createIndex
+    : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
     ;
 
 alterTable
     : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification_
     ;
 
-truncateTable
-    : TRUNCATE TABLE? ONLY? tableNameParts
+alterIndex
+    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
     ;
 
 dropTable
     : DROP TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    ;
+
+dropIndex
+    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
+    ;
+    
+truncateTable
+    : TRUNCATE TABLE? ONLY? tableNameParts
     ;
 
 alterIndexName
