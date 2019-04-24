@@ -65,9 +65,9 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
      */
     public LiteralExpressionSegment extractLiteralExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         LiteralExpressionSegment result = new LiteralExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
-        if (questionNode.isPresent()) {
-            Integer index = parameterMarkerIndexes.get(questionNode.get());
+        Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
+        if (parameterMarkerNode.isPresent()) {
+            Integer index = parameterMarkerIndexes.get(parameterMarkerNode.get());
             result.setPlaceholderIndex(index);
             return result;
         }
