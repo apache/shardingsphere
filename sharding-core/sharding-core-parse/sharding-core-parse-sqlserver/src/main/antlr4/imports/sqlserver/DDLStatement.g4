@@ -19,20 +19,12 @@ grammar DDLStatement;
 
 import Symbol, Keyword, Literals, BaseRule;
 
-createIndex
-    : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnNames
-    ;
-
-alterIndex
-    : ALTER INDEX (indexName | ALL) ON tableName
-    ;
-
-dropIndex
-    : DROP INDEX (IF EXISTS)? indexName ON tableName
-    ;
-
 createTable
     : createTableHeader createTableBody
+    ;
+
+createIndex
+    : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnNames
     ;
 
 alterTable
@@ -50,12 +42,20 @@ alterTable
     )
     ;
 
-truncateTable
-    : TRUNCATE TABLE tableName
+alterIndex
+    : ALTER INDEX (indexName | ALL) ON tableName
     ;
 
 dropTable
     : DROP TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    ;
+
+dropIndex
+    : DROP INDEX (IF EXISTS)? indexName ON tableName
+    ;
+
+truncateTable
+    : TRUNCATE TABLE tableName
     ;
 
 createTableHeader
