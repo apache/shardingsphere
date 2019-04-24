@@ -23,12 +23,25 @@ createTable
     : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
     ;
 
+createIndex
+    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
+    ;
+
 alterTable
     : ALTER TABLE tableName (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
     ;
 
+// TODO hongjun throw exeption when alter index on oracle
+alterIndex
+    : ALTER INDEX indexName (RENAME TO indexName)?
+    ;
+
 dropTable
     : DROP TABLE tableName
+    ;
+ 
+dropIndex
+    : DROP INDEX indexName
     ;
 
 truncateTable
@@ -287,10 +300,6 @@ substitutableColumnClause
     : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
 
-createIndex
-    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
-    ;
-
 tableIndexClause_
     : tableName alias? LP_ indexExpr_ (COMMA_ indexExpr_)* RP_
     ;
@@ -307,11 +316,4 @@ columnSortClause_
     : tableName alias? columnName (ASC | DESC)?
     ;
 
-dropIndex
-    : DROP INDEX indexName
-    ;
 
-// TODO hongjun throw exeption when alter index on oracle
-alterIndex
-    : ALTER INDEX indexName (RENAME TO indexName)?
-    ;
