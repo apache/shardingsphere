@@ -35,7 +35,6 @@ literals_
 
 stringLiterals
     : characterSetName_? STRING_ collateName_?
-    | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
     ;
 
 numberLiterals
