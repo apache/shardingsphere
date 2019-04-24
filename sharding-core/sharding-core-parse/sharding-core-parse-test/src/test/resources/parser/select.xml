@@ -866,4 +866,20 @@
             </aggregation-select-items>
         </select-items>
     </parser-result>
+    <parser-result sql-case-id="select_with_coloumns_in_paren">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="14" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="select_with_coloumns_in_row">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="14" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>
