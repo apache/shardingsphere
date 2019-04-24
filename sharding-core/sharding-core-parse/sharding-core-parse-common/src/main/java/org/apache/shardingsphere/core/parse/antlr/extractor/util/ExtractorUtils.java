@@ -94,13 +94,13 @@ public final class ExtractorUtils {
     }
     
     /**
-     * Find node only from first descendant which only has one child.
+     * Find single node from first descendant which only has one child.
      *
      * @param node start node
      * @param ruleName rule name
      * @return matched node
      */
-    public static Optional<ParserRuleContext> findNodeOnlyFromFirstDescendant(final ParserRuleContext node, final RuleName ruleName) {
+    public static Optional<ParserRuleContext> findSingleNodeFromFirstDescendant(final ParserRuleContext node, final RuleName ruleName) {
         ParserRuleContext nextNode = node;
         do {
             if (isMatchedNode(nextNode, ruleName)) {

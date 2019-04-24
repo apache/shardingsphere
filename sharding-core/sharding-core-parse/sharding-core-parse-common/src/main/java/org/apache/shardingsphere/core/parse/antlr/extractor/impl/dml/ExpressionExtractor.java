@@ -44,16 +44,12 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private ExpressionSegment extractExpression(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        if (ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL).isPresent()
-                || ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.COLUMN_NAME).isPresent()) {
-            return extractCommonExpressionSegment(expressionNode);
+        Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.PARAMETER_MARKER);
+        if (parameterMarkerNode.isPresent()) {
+            return extractLiteralExpressionSegment(parameterMarkerNode.get(), parameterMarkerIndexes);
         }
-        return extractLiteralExpressionSegment(expressionNode, parameterMarkerIndexes);
-    }
-    
-    // TODO extract column name and value from expression
-    private ExpressionSegment extractCommonExpressionSegment(final ParserRuleContext functionNode) {
-        return new CommonExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
+        Optional<ParserRuleContext> literalsNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.LITERALS);
+        return literalsNode.isPresent() ? extractLiteralExpressionSegment(literalsNode.get(), parameterMarkerIndexes) : extractCommonExpressionSegment(expressionNode);
     }
     
     /**
@@ -67,23 +63,23 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         LiteralExpressionSegment result = new LiteralExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
         if (parameterMarkerNode.isPresent()) {
-            Integer index = parameterMarkerIndexes.get(parameterMarkerNode.get());
-            result.setParameterMarkerIndex(index);
+            result.setParameterMarkerIndex(parameterMarkerIndexes.get(parameterMarkerNode.get()));
             return result;
         }
-        Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
-        if (bitExprNode.isPresent() && 1 != bitExprNode.get().getChildCount()) {
-            return result;
+        Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER_LITERALS);
+        if (numberLiteralsNode.isPresent()) {
+            result.setLiterals(NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10));
         }
-        Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER_LITERALS);
-        if (numberNode.isPresent()) {
-            result.setLiterals(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
-        }
-        Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING_LITERALS);
-        if (stringNode.isPresent()) {
-            String text = stringNode.get().getText();
+        Optional<ParserRuleContext> stringLiteralsNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING_LITERALS);
+        if (stringLiteralsNode.isPresent()) {
+            String text = stringLiteralsNode.get().getText();
             result.setLiterals(text.substring(1, text.length() - 1));
         }
         return result;
+    }
+    
+    // TODO extract column name and value from expression
+    private ExpressionSegment extractCommonExpressionSegment(final ParserRuleContext functionNode) {
+        return new CommonExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
     }
 }
