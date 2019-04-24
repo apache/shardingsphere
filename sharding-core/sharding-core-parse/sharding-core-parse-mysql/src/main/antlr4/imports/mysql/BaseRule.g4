@@ -23,15 +23,25 @@ parameterMarker
     : QUESTION_
     ;
 
-numberLiterals
-   : NUMBER_
-   ;
+literals_
+    : stringLiterals
+    | numberLiterals
+    | dateTimeLiterals
+    | hexadecimalLiterals
+    | bitValueLiterals
+    | booleanLiterals
+    | nullValueLiterals
+    ;
 
 stringLiterals
     : STRING_
     | characterSet_? STRING_ collateClause_?
     | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
     ;
+
+numberLiterals
+   : NUMBER_
+   ;
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
@@ -52,19 +62,9 @@ booleanLiterals
     : TRUE
     | FALSE
     ;
-    
+
 nullValueLiterals
     : NULL
-    ;
-
-literals_
-    : numberLiterals
-    | stringLiterals
-    | booleanLiterals
-    | nullValueLiterals
-    | bitValueLiterals
-    | hexadecimalLiterals
-    | dateTimeLiterals
     ;
 
 identifier_
