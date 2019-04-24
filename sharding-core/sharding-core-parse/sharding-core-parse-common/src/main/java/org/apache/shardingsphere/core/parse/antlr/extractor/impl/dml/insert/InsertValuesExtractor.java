@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.ExpressionE
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,10 +53,10 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
         return result;
     }
     
-    private Collection<CommonExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<CommonExpressionSegment> result = new LinkedList<>();
+    private Collection<LiteralExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Collection<LiteralExpressionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
-            result.add(expressionExtractor.extractCommonExpressionSegment(each, parameterMarkerIndexes));
+            result.add(expressionExtractor.extractLiteralExpressionSegment(each, parameterMarkerIndexes));
         }
         return result;
     }

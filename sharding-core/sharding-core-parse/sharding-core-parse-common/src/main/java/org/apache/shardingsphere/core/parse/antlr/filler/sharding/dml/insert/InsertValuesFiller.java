@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
@@ -58,7 +58,7 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         AndCondition andCondition = new AndCondition();
         Iterator<String> columnNames = getColumnNames(sqlSegment, insertStatement);
         List<SQLExpression> columnValues = new LinkedList<>();
-        for (CommonExpressionSegment each : sqlSegment.getValues()) {
+        for (LiteralExpressionSegment each : sqlSegment.getValues()) {
             String columnName = columnNames.next();
             SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnName, each);
             columnValues.add(columnValue);
@@ -78,7 +78,7 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
         return result.iterator();
     }
     
-    private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final CommonExpressionSegment expressionSegment) {
+    private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final LiteralExpressionSegment expressionSegment) {
         SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
         String tableName = insertStatement.getTables().getSingleTableName();
         fillShardingCondition(andCondition, tableName, columnName, result);

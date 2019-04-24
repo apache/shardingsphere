@@ -23,26 +23,51 @@ parameterMarker
     : QUESTION_
     ;
 
-number
+literals
+    : stringLiterals
+    | numberLiterals
+    | dateTimeLiterals
+    | hexadecimalLiterals
+    | bitValueLiterals
+    | booleanLiterals
+    | nullValueLiterals
+    ;
+
+stringLiterals
+    : characterSetName_? STRING_ collateName_?
+    ;
+
+numberLiterals
    : NUMBER_
    ;
 
-string
-    : STRING_
+dateTimeLiterals
+    : (DATE | TIME | TIMESTAMP) STRING_
+    | LBE_ identifier_ STRING_ RBE_
     ;
 
-literals_
-    : number
-    | string
-    | TRUE
-    | FALSE
-    | NULL
-    | BIT_NUM_
-    | HEX_DIGIT_
-    | (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier_ STRING_ RBE_
-    | IDENTIFIER_ STRING_ COLLATE (STRING_ | IDENTIFIER_)?
-    | characterSet_? BIT_NUM_ collateClause_?
+hexadecimalLiterals
+    : characterSetName_? HEX_DIGIT_ collateName_?
+    ;
+
+bitValueLiterals
+    : characterSetName_? BIT_NUM_ collateName_?
+    ;
+    
+booleanLiterals
+    : TRUE | FALSE
+    ;
+
+nullValueLiterals
+    : NULL
+    ;
+
+characterSetName_
+    : IDENTIFIER_
+    ;
+
+collateName_
+    : IDENTIFIER_
     ;
 
 identifier_
@@ -153,7 +178,7 @@ bitExpr
 simpleExpr
     : functionCall
     | parameterMarker
-    | literals_
+    | literals
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier_)
     | variable_
@@ -314,7 +339,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | number | expr) (ASC | DESC)?
+    : (columnName | numberLiterals | expr) (ASC | DESC)?
     ;
 
 dataType

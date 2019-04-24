@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
 
 import java.util.Map;
 
@@ -51,7 +51,7 @@ public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
         }
         Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0), parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent());
-        CommonExpressionSegment expressionSegment = expressionExtractor.extractCommonExpressionSegment((ParserRuleContext) assignmentNode.get().getChild(2), parameterMarkerIndexes);
+        LiteralExpressionSegment expressionSegment = expressionExtractor.extractLiteralExpressionSegment((ParserRuleContext) assignmentNode.get().getChild(2), parameterMarkerIndexes);
         return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment));
     }
 }
