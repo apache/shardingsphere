@@ -66,8 +66,8 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     public Optional<ParameterMarkerExpressionSegment> extractParameterMarkerExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
         return parameterMarkerNode.isPresent()
-                ? Optional.of(new ParameterMarkerExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(),
-                parameterMarkerIndexes.get(parameterMarkerNode.get()))) : Optional.<ParameterMarkerExpressionSegment>absent();
+                ? Optional.of(new ParameterMarkerExpressionSegment(expressionNode.getStop().getStopIndex(), parameterMarkerIndexes.get(parameterMarkerNode.get())))
+                : Optional.<ParameterMarkerExpressionSegment>absent();
     }
     
     /**

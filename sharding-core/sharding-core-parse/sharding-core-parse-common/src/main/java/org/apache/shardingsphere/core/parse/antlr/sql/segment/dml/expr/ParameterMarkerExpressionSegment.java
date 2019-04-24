@@ -31,8 +31,6 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholder
 @Getter
 public final class ParameterMarkerExpressionSegment implements ExpressionSegment {
     
-    private final int startIndex;
-    
     private final int stopIndex;
     
     private final int parameterMarkerIndex;
