@@ -94,6 +94,27 @@ public final class ExtractorUtils {
     }
     
     /**
+     * Find node only from first descendant which only has one child.
+     *
+     * @param node start node
+     * @param ruleName rule name
+     * @return matched node
+     */
+    public static Optional<ParserRuleContext> findNodeOnlyFromFirstDescendant(final ParserRuleContext node, final RuleName ruleName) {
+        ParserRuleContext nextNode = node;
+        do {
+            if (isMatchedNode(nextNode, ruleName)) {
+                return Optional.of(nextNode);
+            }
+            if (1 != nextNode.getChildCount() || !(nextNode.getChild(0) instanceof ParserRuleContext)) {
+                return Optional.absent();
+            }
+            nextNode = (ParserRuleContext) nextNode.getChild(0);
+        } while (null != nextNode);
+        return Optional.absent();
+    }
+    
+    /**
      * Get all descendant nodes.
      *
      * @param node start node
