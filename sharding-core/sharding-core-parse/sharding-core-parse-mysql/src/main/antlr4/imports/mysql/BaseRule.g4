@@ -66,6 +66,7 @@ nullValueLiterals
 characterSetName_
     : IDENTIFIER_
     ;
+
 collateName_
     : IDENTIFIER_
     ;
