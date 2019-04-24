@@ -24,7 +24,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.ExpressionE
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,15 +49,20 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
         }
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(insertValuesClauseNode.get(), RuleName.ASSIGNMENT_VALUES)) {
-            result.add(new InsertValuesSegment(extractCommonExpressionSegments(each, parameterMarkerIndexes)));
+            result.add(new InsertValuesSegment(extractExpressionSegments(each, parameterMarkerIndexes)));
         }
         return result;
     }
     
-    private Collection<LiteralExpressionSegment> extractCommonExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<LiteralExpressionSegment> result = new LinkedList<>();
+    private Collection<ExpressionSegment> extractExpressionSegments(final ParserRuleContext assignmentValuesNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(assignmentValuesNode, RuleName.ASSIGNMENT_VALUE)) {
-            result.add(expressionExtractor.extractLiteralExpressionSegment(each, parameterMarkerIndexes));
+            Optional<ParameterMarkerExpressionSegment> parameterMarkerExpressionSegment = expressionExtractor.extractParameterMarkerExpressionSegment(each, parameterMarkerIndexes);
+            if (parameterMarkerExpressionSegment.isPresent()) {
+                result.add(parameterMarkerExpressionSegment.get());
+            } else {
+                result.add(expressionExtractor.extractLiteralExpressionSegment(each));
+            }
         }
         return result;
     }

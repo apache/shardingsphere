@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
  * Assignment segment.
@@ -34,5 +34,5 @@ public final class AssignmentSegment implements SQLSegment {
     
     private final ColumnSegment column;
     
-    private final LiteralExpressionSegment value;
+    private final ExpressionSegment value;
 }

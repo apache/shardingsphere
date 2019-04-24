@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
 /**
@@ -42,15 +41,10 @@ public final class LiteralExpressionSegment implements ExpressionSegment {
     
     private final int stopIndex;
     
-    private int parameterMarkerIndex = -1;
-    
     private Object literals;
     
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        if (-1 != parameterMarkerIndex) {
-            return new SQLPlaceholderExpression(parameterMarkerIndex);
-        }
         if (literals instanceof Number) {
             return new SQLNumberExpression((Number) literals);
         }

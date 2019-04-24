@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.Map;
@@ -46,26 +48,36 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     private ExpressionSegment extractExpression(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.PARAMETER_MARKER);
         if (parameterMarkerNode.isPresent()) {
-            return extractLiteralExpressionSegment(parameterMarkerNode.get(), parameterMarkerIndexes);
+            Optional<ParameterMarkerExpressionSegment> result = extractParameterMarkerExpressionSegment(parameterMarkerNode.get(), parameterMarkerIndexes);
+            Preconditions.checkState(result.isPresent());
+            return result.get();
         }
         Optional<ParserRuleContext> literalsNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.LITERALS);
-        return literalsNode.isPresent() ? extractLiteralExpressionSegment(literalsNode.get(), parameterMarkerIndexes) : extractCommonExpressionSegment(expressionNode);
+        return literalsNode.isPresent() ? extractLiteralExpressionSegment(literalsNode.get()) : extractCommonExpressionSegment(expressionNode);
+    }
+    
+    /**
+     * Extract parameter marker expression segment.
+     *
+     * @param parameterMarkerIndexes parameter marker indexes
+     * @param expressionNode expression node
+     * @return parameter marker expression segment
+     */
+    public Optional<ParameterMarkerExpressionSegment> extractParameterMarkerExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
+        return parameterMarkerNode.isPresent()
+                ? Optional.of(new ParameterMarkerExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(),
+                parameterMarkerIndexes.get(parameterMarkerNode.get()))) : Optional.<ParameterMarkerExpressionSegment>absent();
     }
     
     /**
      * Extract literal expression segment.
      *
-     * @param parameterMarkerIndexes parameter marker indexes
      * @param expressionNode expression node
-     * @return common expression segment
+     * @return literal expression segment
      */
-    public LiteralExpressionSegment extractLiteralExpressionSegment(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public LiteralExpressionSegment extractLiteralExpressionSegment(final ParserRuleContext expressionNode) {
         LiteralExpressionSegment result = new LiteralExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
-        Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
-        if (parameterMarkerNode.isPresent()) {
-            result.setParameterMarkerIndex(parameterMarkerIndexes.get(parameterMarkerNode.get()));
-            return result;
-        }
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER_LITERALS);
         if (numberLiteralsNode.isPresent()) {
             result.setLiterals(NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10));
