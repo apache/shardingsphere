@@ -53,6 +53,6 @@ public class EncryptUpdateItemColumnPlaceholderTest {
         assertThat(encryptUpdateItemColumnPlaceholder.getAssistedColumnName(), is("column_assist"));
         assertThat(encryptUpdateItemColumnPlaceholder.getColumnValue(), is((Comparable) "a"));
         assertThat(encryptUpdateItemColumnPlaceholder.getAssistedColumnValue(), is((Comparable) 1));
-        assertThat(encryptUpdateItemColumnPlaceholder.getPlaceholderIndex(), is(-1));
+        assertThat(encryptUpdateItemColumnPlaceholder.getParameterMarkerIndex(), is(-1));
     }
 }

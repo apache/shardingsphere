@@ -68,7 +68,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.PARAMETER_MARKER);
         if (parameterMarkerNode.isPresent()) {
             Integer index = parameterMarkerIndexes.get(parameterMarkerNode.get());
-            result.setPlaceholderIndex(index);
+            result.setParameterMarkerIndex(index);
             return result;
         }
         Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);

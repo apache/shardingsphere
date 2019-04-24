@@ -42,14 +42,14 @@ public final class LiteralExpressionSegment implements ExpressionSegment {
     
     private final int stopIndex;
     
-    private int placeholderIndex = -1;
+    private int parameterMarkerIndex = -1;
     
     private Object literals;
     
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        if (-1 != placeholderIndex) {
-            return new SQLPlaceholderExpression(placeholderIndex);
+        if (-1 != parameterMarkerIndex) {
+            return new SQLPlaceholderExpression(parameterMarkerIndex);
         }
         if (literals instanceof Number) {
             return new SQLNumberExpression((Number) literals);
