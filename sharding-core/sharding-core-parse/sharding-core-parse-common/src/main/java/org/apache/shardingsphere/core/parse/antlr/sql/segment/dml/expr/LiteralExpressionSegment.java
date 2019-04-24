@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
@@ -34,14 +33,13 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpress
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class LiteralExpressionSegment implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private Object literals;
+    private final Object literals;
     
     @Override
     public SQLExpression getSQLExpression(final String sql) {

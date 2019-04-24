@@ -77,17 +77,17 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
      * @return literal expression segment
      */
     public LiteralExpressionSegment extractLiteralExpressionSegment(final ParserRuleContext expressionNode) {
-        LiteralExpressionSegment result = new LiteralExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER_LITERALS);
+        Object literals = null;
         if (numberLiteralsNode.isPresent()) {
-            result.setLiterals(NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10));
+            literals = NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10);
         }
         Optional<ParserRuleContext> stringLiteralsNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING_LITERALS);
         if (stringLiteralsNode.isPresent()) {
             String text = stringLiteralsNode.get().getText();
-            result.setLiterals(text.substring(1, text.length() - 1));
+            literals = text.substring(1, text.length() - 1);
         }
-        return result;
+        return new LiteralExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(), literals);
     }
     
     // TODO extract column name and value from expression
