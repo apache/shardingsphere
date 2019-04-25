@@ -44,23 +44,18 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get(), parameterMarkerIndexes) : Optional.of(extractExpression(expressionNode, parameterMarkerIndexes));
-    }
-    
-    private ExpressionSegment extractExpression(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        if (subqueryNode.isPresent()) {
+            return new SubqueryExtractor().extract(subqueryNode.get(), parameterMarkerIndexes);
+        }
         Optional<ParameterMarkerExpressionSegment> parameterMarkerExpressionSegment = parameterMarkerExpressionExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (parameterMarkerExpressionSegment.isPresent()) {
-            return parameterMarkerExpressionSegment.get();
+            return parameterMarkerExpressionSegment;
         }
         Optional<LiteralExpressionSegment> literalExpressionSegment = literalExpressionExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (literalExpressionSegment.isPresent()) {
-            return literalExpressionSegment.get();
+            return literalExpressionSegment;
         }
-        return extractCommonExpressionSegment(expressionNode);
-    }
-    
-    // TODO extract column name and value from expression
-    private ExpressionSegment extractCommonExpressionSegment(final ParserRuleContext functionNode) {
-        return new CommonExpressionSegment(functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
+        // TODO extract column name and value from expression
+        return Optional.of(new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex()));
     }
 }
