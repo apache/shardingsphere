@@ -30,12 +30,12 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Subquery predicate filler.
+ * Subquery predicate filler for sharding.
  *
  * @author duhongjun
  */
 @Setter
-public final class SubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
     
