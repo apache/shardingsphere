@@ -32,6 +32,7 @@
     <extractor-rule id="onDuplicateKeyColumns" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.insert.OnDuplicateKeyColumnsExtractor" />
     <extractor-rule id="tableReferences" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.TableReferencesExtractor" />
     <extractor-rule id="where" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.WhereExtractor" />
+    <extractor-rule id="predicate" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor" />
     <extractor-rule id="selectItems" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SelectItemsExtractor" />
     <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.GroupByExtractor" />
     <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.OrderByExtractor" />

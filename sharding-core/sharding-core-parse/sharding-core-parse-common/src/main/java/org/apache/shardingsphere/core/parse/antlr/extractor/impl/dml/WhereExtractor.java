@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,18 +35,12 @@ import java.util.Map;
  */
 public final class WhereExtractor implements OptionalSQLSegmentExtractor {
     
-    private final PredicateExtractor predicateExtractor = new PredicateExtractor();
-    
     @Override
     public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         WhereSegment result = new WhereSegment(parameterMarkerIndexes.size());
         Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
         if (whereNode.isPresent()) {
             setPropertiesForRevert(result, whereNode.get(), parameterMarkerIndexes);
-            Optional<OrPredicateSegment> orConditionSegment = extractOrConditionSegment(whereNode.get(), parameterMarkerIndexes);
-            if (orConditionSegment.isPresent()) {
-                result.getOrPredicate().getAndPredicates().addAll(orConditionSegment.get().getAndPredicates());
-            }
         }
         return Optional.of(result);
     }
@@ -65,10 +58,5 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
         int whereParameterStartIndex = parameterMarkerIndexes.get(parameterMarkerNodes.iterator().next());
         whereSegment.setWhereParameterStartIndex(whereParameterStartIndex);
         whereSegment.setWhereParameterEndIndex(whereParameterStartIndex + parameterMarkerNodes.size() - 1);
-    }
-    
-    private Optional<OrPredicateSegment> extractOrConditionSegment(final ParserRuleContext whereNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) whereNode.getChild(1), RuleName.EXPR);
-        return exprNode.isPresent() ? predicateExtractor.extract(exprNode.get(), parameterMarkerIndexes) : Optional.<OrPredicateSegment>absent();
     }
 }

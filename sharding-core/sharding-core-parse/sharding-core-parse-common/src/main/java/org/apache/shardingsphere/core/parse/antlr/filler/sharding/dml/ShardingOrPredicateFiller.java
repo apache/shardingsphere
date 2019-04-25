@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
@@ -51,12 +53,12 @@ import java.util.Set;
  * @author duhongjun
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
+@Setter
+public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
-    private final ShardingRule shardingRule;
+    private ShardingRule shardingRule;
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -42,12 +44,12 @@ import java.util.HashSet;
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
-public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
+@Setter
+public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
-    private final EncryptRule encryptRule;
+    private EncryptRule encryptRule;
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private ShardingTableMetaData shardingTableMetaData;
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {

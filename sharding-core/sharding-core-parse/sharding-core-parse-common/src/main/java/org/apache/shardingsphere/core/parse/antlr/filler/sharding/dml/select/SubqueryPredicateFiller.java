@@ -44,7 +44,9 @@ public final class SubqueryPredicateFiller implements SQLSegmentFiller<SubqueryP
     @Override
     public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        ShardingOrPredicateFiller shardingOrPredicateFiller = new ShardingOrPredicateFiller(shardingRule, shardingTableMetaData);
+        ShardingOrPredicateFiller shardingOrPredicateFiller = new ShardingOrPredicateFiller();
+        shardingOrPredicateFiller.setShardingRule(shardingRule);
+        shardingOrPredicateFiller.setShardingTableMetaData(shardingTableMetaData);
         for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
             selectStatement.getSubqueryConditions().add(shardingOrPredicateFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
         }

@@ -17,31 +17,20 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Where filler for sharding.
  *
  * @author duhongjun
  */
-@Setter
-public final class ShardingWhereFiller implements SQLSegmentFiller<WhereSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
-    
-    private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class ShardingWhereFiller implements SQLSegmentFiller<WhereSegment> {
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        new ShardingOrPredicateFiller(shardingRule, shardingTableMetaData).fill(sqlSegment.getOrPredicate(), sqlStatement);
         sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
