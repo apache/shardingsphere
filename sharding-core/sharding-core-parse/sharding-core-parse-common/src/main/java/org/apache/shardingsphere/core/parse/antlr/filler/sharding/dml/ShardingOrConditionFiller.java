@@ -40,11 +40,9 @@ import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -75,35 +73,8 @@ public final class ShardingOrConditionFiller implements SQLSegmentFiller<OrPredi
      * @return or condition
      */
     public OrCondition buildCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        Map<String, String> columnNameToTable = new HashMap<>();
-        Map<String, Integer> columnNameCount = new HashMap<>();
-        fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        return filterCondition(shardingTableMetaData, sqlStatement, sqlSegment, shardingRule);
-    }
-    
-    private void fillColumnTableMap(final SQLStatement sqlStatement, 
-                                    final ShardingTableMetaData shardingTableMetaData, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
-        if (null == shardingTableMetaData) {
-            return;
-        }
-        for (String each : sqlStatement.getTables().getTableNames()) {
-            Collection<String> tableColumns = shardingTableMetaData.getAllColumnNames(each);
-            for (String columnName : tableColumns) {
-                columnNameToTable.put(columnName, each);
-                Integer count = columnNameCount.get(columnName);
-                if (null == count) {
-                    count = 1;
-                } else {
-                    count++;
-                }
-                columnNameCount.put(columnName, count);
-            }
-        }
-    }
-    
-    private OrCondition filterCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrPredicateSegment orPredicate, final ShardingRule shardingRule) {
         OrCondition result = new OrCondition();
-        for (AndPredicateSegment each : orPredicate.getAndPredicates()) {
+        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             List<PredicateSegment> predicates = new LinkedList<>();
             boolean needSharding = false;
             for (PredicateSegment predicate : each.getPredicates()) {
@@ -130,7 +101,7 @@ public final class ShardingOrConditionFiller implements SQLSegmentFiller<OrPredi
             }
         }
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
-        for (AndPredicateSegment each : orPredicate.getAndPredicates()) {
+        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (null == predicate.getColumn()) {
                     continue;

@@ -30,15 +30,11 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -47,7 +43,7 @@ import java.util.Set;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
+public final class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     private final EncryptRule encryptRule;
     
@@ -55,35 +51,8 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSeg
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        Map<String, String> columnNameToTable = new HashMap<>();
-        Map<String, Integer> columnNameCount = new HashMap<>();
-        fillColumnTableMap(sqlStatement, columnNameToTable, columnNameCount);
-        filterPredicate(sqlStatement, sqlSegment);
-    }
-    
-    private void fillColumnTableMap(final SQLStatement sqlStatement, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
-        if (null == shardingTableMetaData) {
-            return;
-        }
-        for (String each : sqlStatement.getTables().getTableNames()) {
-            Collection<String> tableColumns = shardingTableMetaData.getAllColumnNames(each);
-            for (String columnName : tableColumns) {
-                columnNameToTable.put(columnName, each);
-                Integer count = columnNameCount.get(columnName);
-                if (null == count) {
-                    count = 1;
-                } else {
-                    count++;
-                }
-                columnNameCount.put(columnName, count);
-            }
-        }
-    }
-    
-    private OrCondition filterPredicate(final SQLStatement sqlStatement, final OrPredicateSegment orPredicate) {
-        OrCondition result = new OrCondition();
         Set<Integer> filledConditionStopIndexes = new HashSet<>();
-        for (AndPredicateSegment each : orPredicate.getAndPredicates()) {
+        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (null == predicate.getColumn()) {
                     continue;
@@ -97,7 +66,6 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSeg
                 fillEncryptCondition(column, predicate, sqlStatement);
             }
         }
-        return result;
     }
     
     private void fillEncryptCondition(final Column column, final PredicateSegment predicate, final SQLStatement sqlStatement) {
