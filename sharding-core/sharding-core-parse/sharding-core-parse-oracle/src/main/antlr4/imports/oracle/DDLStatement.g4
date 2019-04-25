@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
+    : CREATE temporaryClause_ TABLE tableName relationalTable
     ;
 
 createIndex
@@ -48,6 +48,10 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
+temporaryClause_
+    : (GLOBAL TEMPORARY)?
+    ;
+
 tablespaceClauseWithParen
     : LP_ tablespaceClause RP_
     ;
@@ -61,7 +65,7 @@ domainIndexClause
     ;
 
 relationalTable
-    : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)? tableProperties
+    : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
 relationalProperties
@@ -188,7 +192,7 @@ alterExternalTable
     ;
 
 columnDefinition
-    : columnName dataType SORT? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpec)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName dataType SORT? (VISIBLE | INVISIBLE)? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpec)? (inlineConstraint+ | inlineRefConstraint)?
     ;
 
 identityClause
