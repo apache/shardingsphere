@@ -56,15 +56,18 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
-                    fill(new Column(predicate.getColumn().getName(), getTableName(predicate, sqlStatement)), predicate, sqlStatement);
+                    Optional<String> tableName = findTableName(predicate, sqlStatement);
+                    if (tableName.isPresent()) {
+                        fill(predicate, tableName.get(), sqlStatement);
+                    }
                 }
             }
         }
     }
     
-    private void fill(final Column column, final PredicateSegment predicate, final SQLStatement sqlStatement) {
+    private void fill(final PredicateSegment predicate, final String tableName, final SQLStatement sqlStatement) {
         // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
-        if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+        if (!encryptRule.getEncryptorEngine().getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent()) {
             return;
         }
         AndCondition andCondition;
@@ -74,41 +77,42 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
+        Column column = new Column(predicate.getColumn().getName(), tableName);
         andCondition.getConditions().add(predicate.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicate.getColumn().getStartIndex(), predicate.getStopIndex(), column, true));
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private String getTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+    private Optional<String> findTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            return sqlStatement.getTables().getSingleTableName();
+            return Optional.of(sqlStatement.getTables().getSingleTableName());
         }
         SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
         while (null != currentSelectStatement.getParentStatement()) {
             currentSelectStatement = currentSelectStatement.getParentStatement();
-            String tableName = getTableName(predicateSegment, currentSelectStatement.getTables());
-            if (!"".equals(tableName)) {
+            Optional<String> tableName = findTableName(predicateSegment, currentSelectStatement.getTables());
+            if (tableName.isPresent()) {
                 return tableName;
             }
         }
-        return getTableName(predicateSegment, currentSelectStatement.getTables());
+        return findTableName(predicateSegment, currentSelectStatement.getTables());
     }
     
-    private String getTableName(final PredicateSegment predicateSegment, final Tables tables) {
+    private Optional<String> findTableName(final PredicateSegment predicateSegment, final Tables tables) {
         if (predicateSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
-            return table.isPresent() ? table.get().getName() : "";
+            return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         } else {
-            return getTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
+            return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
         }
     }
     
-    private String getTableNameFromMetaData(final String columnName, final Tables tables) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
         for (String each : tables.getTableNames()) {
             if (shardingTableMetaData.containsColumn(each, columnName)) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return "";
+        return Optional.absent();
     }
 }
