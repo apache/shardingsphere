@@ -85,7 +85,6 @@ checkConstraintDefinition_
 
 inlineDataType_
     : commonDataTypeOption_
-    | NOT? NULL
     | AUTO_INCREMENT
     | DEFAULT (literals | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
@@ -99,7 +98,7 @@ generatedDataType_
     ;
 
 commonDataTypeOption_
-    : primaryKey | UNIQUE KEY? | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateName_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
     ;
 
 referenceDefinition_
