@@ -35,16 +35,8 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     
     private final int stopIndex;
     
-    private final String functionName;
-    
-    private final int innerExpressionStartIndex;
-    
-    private final int innerExpressionStopIndex; 
-    
-    private final int distinctExpressionStartIndex;
-    
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
+        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
     }
 }

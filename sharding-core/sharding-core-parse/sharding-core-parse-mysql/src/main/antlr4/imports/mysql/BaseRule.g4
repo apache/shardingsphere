@@ -95,18 +95,19 @@ indexName
     ;
 
 expr
-    : expr logicalOperator_ expr
+    : expr logicalOperator expr
+    | expr XOR expr
     | notOperator_ expr
     | LP_ expr RP_
     | booleanPrimary
     ;
 
-notOperator_
-    : NOT | NOT_
+logicalOperator
+    : OR | OR_ | AND | AND_
     ;
 
-logicalOperator_
-    : OR | OR_ | XOR | AND | AND_
+notOperator_
+    : NOT | NOT_
     ;
 
 booleanPrimary

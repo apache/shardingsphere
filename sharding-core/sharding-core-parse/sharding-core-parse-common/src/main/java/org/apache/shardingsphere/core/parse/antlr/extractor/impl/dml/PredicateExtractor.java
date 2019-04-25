@@ -55,57 +55,28 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<OrPredicateSegment> extract(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        return extractRecursiveWithLogicalOperator(exprNode, parameterMarkerIndexes);
+        return extractRecursiveWithLogicalOperation(exprNode, parameterMarkerIndexes);
     }
     
-    private Optional<OrPredicateSegment> extractRecursiveWithLogicalOperator(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<Integer> index = getLogicalOperatorIndex(exprNode);
-        if (!index.isPresent()) {
+    private Optional<OrPredicateSegment> extractRecursiveWithLogicalOperation(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> logicalOperatorNode = ExtractorUtils.findFirstChildNodeNoneRecursive(exprNode, RuleName.LOGICAL_OPERATOR);
+        if (!logicalOperatorNode.isPresent()) {
             return extractRecursiveWithParen(exprNode, parameterMarkerIndexes);
         }
-        Optional<OrPredicateSegment> leftPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(index.get() - 1), parameterMarkerIndexes);
-        Optional<OrPredicateSegment> rightPredicate = extractRecursiveWithLogicalOperator((ParserRuleContext) exprNode.getChild(index.get() + 1), parameterMarkerIndexes);
+        Optional<OrPredicateSegment> leftPredicate = extractRecursiveWithLogicalOperation((ParserRuleContext) exprNode.getChild(0), parameterMarkerIndexes);
+        Optional<OrPredicateSegment> rightPredicate = extractRecursiveWithLogicalOperation((ParserRuleContext) exprNode.getChild(2), parameterMarkerIndexes);
         if (leftPredicate.isPresent() && rightPredicate.isPresent()) {
-            return Optional.of(mergePredicate(leftPredicate.get(), rightPredicate.get(), exprNode.getChild(index.get()).getText()));
+            return Optional.of(mergePredicate(leftPredicate.get(), rightPredicate.get(), logicalOperatorNode.get().getText()));
         }
         return leftPredicate.isPresent() ? leftPredicate : rightPredicate;
     }
     
-    private Optional<Integer> getLogicalOperatorIndex(final ParserRuleContext exprNode) {
-        for (int i = 0; i < exprNode.getChildCount(); i++) {
-            if (LogicalOperator.isLogicalOperator(exprNode.getChild(i).getText())) {
-                return Optional.of(i);
-            }
-        }
-        return Optional.absent();
-    }
-    
     private Optional<OrPredicateSegment> extractRecursiveWithParen(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<Integer> index = getLeftParenIndex(exprNode);
-        if (index.isPresent()) {
-            ParserRuleContext expressionNode = (ParserRuleContext) exprNode.getChild(index.get() + 1);
-            return RuleName.EXPR.getName().equals(expressionNode.getClass().getSimpleName())
-                    ? extractRecursiveWithLogicalOperator(expressionNode, parameterMarkerIndexes) : Optional.<OrPredicateSegment>absent();
+        if (Paren.isLeftParen(exprNode.getChild(0).getText())) {
+            return extractRecursiveWithLogicalOperation((ParserRuleContext) exprNode.getChild(1), parameterMarkerIndexes);
         }
         Optional<PredicateSegment> predicate = extractPredicate(exprNode, parameterMarkerIndexes);
         return predicate.isPresent() ? Optional.of(getOrPredicateSegment(predicate.get())) : Optional.<OrPredicateSegment>absent();
-    }
-    
-    private Optional<Integer> getLeftParenIndex(final ParserRuleContext exprNode) {
-        for (int i = 0; i < exprNode.getChildCount(); i++) {
-            if (Paren.isLeftParen(exprNode.getChild(i).getText())) {
-                return Optional.of(i);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private OrPredicateSegment getOrPredicateSegment(final PredicateSegment predicate) {
-        OrPredicateSegment result = new OrPredicateSegment();
-        AndPredicateSegment andPredicate = new AndPredicateSegment();
-        andPredicate.getPredicates().add(predicate);
-        result.getAndPredicates().add(andPredicate);
-        return result;
     }
     
     private Optional<PredicateSegment> extractPredicate(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
@@ -137,7 +108,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<PredicateSegment> extractComparisonPredicate(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> booleanPrimaryNode = ExtractorUtils.getNodeOnlyFromFirstDescendant(exprNode, RuleName.BOOLEAN_PRIMARY);
+        Optional<ParserRuleContext> booleanPrimaryNode = ExtractorUtils.findNodeOnlyFromFirstDescendant(exprNode, RuleName.BOOLEAN_PRIMARY);
         if (!booleanPrimaryNode.isPresent() || 3 != booleanPrimaryNode.get().getChildCount()) {
             return Optional.absent();
         }
@@ -148,8 +119,8 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (RuleName.SUBQUERY.getName().equals(booleanPrimaryNode.get().getChild(2).getClass().getSimpleName())) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> leftColumnNode = ExtractorUtils.getNodeOnlyFromFirstDescendant((ParserRuleContext) booleanPrimaryNode.get().getChild(0), RuleName.COLUMN_NAME);
-        Optional<ParserRuleContext> rightColumnNode = ExtractorUtils.getNodeOnlyFromFirstDescendant((ParserRuleContext) booleanPrimaryNode.get().getChild(2), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> leftColumnNode = ExtractorUtils.findNodeOnlyFromFirstDescendant((ParserRuleContext) booleanPrimaryNode.get().getChild(0), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> rightColumnNode = ExtractorUtils.findNodeOnlyFromFirstDescendant((ParserRuleContext) booleanPrimaryNode.get().getChild(2), RuleName.COLUMN_NAME);
         if (!leftColumnNode.isPresent() && !rightColumnNode.isPresent()) {
             return Optional.absent();
         }
@@ -199,8 +170,18 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
+    private OrPredicateSegment getOrPredicateSegment(final PredicateSegment predicate) {
+        OrPredicateSegment result = new OrPredicateSegment();
+        AndPredicateSegment andPredicate = new AndPredicateSegment();
+        andPredicate.getPredicates().add(predicate);
+        result.getAndPredicates().add(andPredicate);
+        return result;
+    }
+    
     private OrPredicateSegment mergePredicate(final OrPredicateSegment leftPredicate, final OrPredicateSegment rightPredicate, final String operator) {
-        if (LogicalOperator.isOrOperator(operator)) {
+        Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(operator);
+        Preconditions.checkState(logicalOperator.isPresent());
+        if (LogicalOperator.OR == logicalOperator.get()) {
             leftPredicate.getAndPredicates().addAll(rightPredicate.getAndPredicates());
             return leftPredicate;
         }

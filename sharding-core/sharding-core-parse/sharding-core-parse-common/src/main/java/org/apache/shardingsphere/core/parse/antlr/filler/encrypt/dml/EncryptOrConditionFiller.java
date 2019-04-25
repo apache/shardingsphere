@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
@@ -104,10 +103,6 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSeg
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
-        Condition condition = predicate.getExpression().buildCondition(column, sqlStatement.getLogicSQL());
-        if (condition.isHasIgnoreExpression()) {
-            return;
-        }
         AndCondition andCondition;
         if (0 == sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().size()) {
             andCondition = new AndCondition();
@@ -115,7 +110,7 @@ public class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSeg
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        andCondition.getConditions().add(condition);
+        andCondition.getConditions().add(predicate.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicate.getColumn().getStartIndex(), predicate.getStopIndex(), column, true));
     }
     

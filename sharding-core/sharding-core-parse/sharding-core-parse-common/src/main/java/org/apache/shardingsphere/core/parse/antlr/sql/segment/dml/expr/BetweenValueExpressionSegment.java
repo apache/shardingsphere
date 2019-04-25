@@ -31,12 +31,12 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditi
 @Getter
 public final class BetweenValueExpressionSegment implements SQLRightValueExpressionSegment {
     
-    private final ExpressionSegment beginExpress;
+    private final ExpressionSegment betweenExpression;
     
-    private final ExpressionSegment endExpress;
+    private final ExpressionSegment andExpression;
     
     @Override
     public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, beginExpress.getSQLExpression(sql), endExpress.getSQLExpression(sql));
+        return new Condition(column, betweenExpression.getSQLExpression(sql), andExpression.getSQLExpression(sql));
     }
 }
