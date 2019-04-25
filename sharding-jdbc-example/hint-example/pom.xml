@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>sharding-jdbc-example</artifactId>
-        <version>4.0.0-RC1-SNAPSHOT</version>
+        <version>4.0.0-RC1</version>
     </parent>
     <artifactId>hint-example</artifactId>
 

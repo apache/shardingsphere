@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>orchestration-example</artifactId>
-        <version>4.0.0-RC1-SNAPSHOT</version>
+        <version>4.0.0-RC1</version>
     </parent>
     <artifactId>orchestration-spring-boot-example</artifactId>
 
