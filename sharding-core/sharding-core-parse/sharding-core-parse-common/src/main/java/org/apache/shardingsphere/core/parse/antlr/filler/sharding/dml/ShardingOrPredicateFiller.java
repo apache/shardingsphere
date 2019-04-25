@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Or predicate filler for sharding.
@@ -73,78 +72,69 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
      */
     public OrCondition buildCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         OrCondition result = new OrCondition();
-        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
-            List<PredicateSegment> predicates = new LinkedList<>();
-            boolean needSharding = false;
-            for (PredicateSegment predicate : each.getPredicates()) {
-                if (null == predicate.getColumn()) {
-                    continue;
-                }
-                addTableTokenForColumn(sqlStatement, predicate.getColumn());
-                if (predicate.getExpression() instanceof ColumnSegment) {
-                    addTableTokenForColumn(sqlStatement, (ColumnSegment) predicate.getExpression());
-                    needSharding = true;
-                    continue;
-                }
-                Column column = new Column(predicate.getColumn().getName(), getTableName(sqlStatement, predicate));
-                if (isShardingCondition(predicate.getOperator()) && shardingRule.isShardingColumn(column.getName(), column.getTableName())) {
-                    predicates.add(predicate);
-                    needSharding = true;
-                }
-            }
-            if (needSharding) {
-                fillResult(sqlStatement, result, predicates);
-            } else {
-                result.getAndConditions().clear();
-                break;
-            }
-        }
-        Set<Integer> filledConditionStopIndexes = new HashSet<>();
+        fillShardingConditions(sqlSegment, sqlStatement, result);
+        Collection<Integer> stopIndexes = new HashSet<>();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                if (null == predicate.getColumn()) {
-                    continue;
+                if (!(predicate.getExpression() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
+                    fillEncryptCondition(predicate.getColumn().getName(), getTableName(sqlStatement, predicate), predicate, sqlStatement);
                 }
-                if (predicate.getExpression() instanceof ColumnSegment) {
-                    continue;
-                }
-                if (filledConditionStopIndexes.contains(predicate.getStopIndex())) {
-                    continue;
-                } else {
-                    filledConditionStopIndexes.add(predicate.getStopIndex());
-                }
-                Column column = new Column(predicate.getColumn().getName(), getTableName(sqlStatement, predicate));
-                fillEncryptCondition(column, predicate, sqlStatement);
             }
         }
         return result;
     }
     
-    private void addTableTokenForColumn(final SQLStatement sqlStatement, final ColumnSegment column) {
-        if (column.getOwner().isPresent()) {
-            String owner = column.getOwner().get();
-            Optional<Table> logicTable = sqlStatement.getTables().find(owner);
-            if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
-                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), owner, column.getOwnerQuoteCharacter(), 0));
+    private void fillShardingConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement, final OrCondition orCondition) {
+        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
+            List<PredicateSegment> predicates = new LinkedList<>();
+            boolean isNeedSharding = false;
+            for (PredicateSegment predicate : each.getPredicates()) {
+                addTableTokenForColumn(sqlStatement, predicate.getColumn());
+                if (predicate.getExpression() instanceof ColumnSegment) {
+                    addTableTokenForColumn(sqlStatement, (ColumnSegment) predicate.getExpression());
+                    isNeedSharding = true;
+                    continue;
+                }
+                if (isShardingCondition(predicate.getOperator()) && shardingRule.isShardingColumn(predicate.getColumn().getName(), getTableName(sqlStatement, predicate))) {
+                    predicates.add(predicate);
+                    isNeedSharding = true;
+                }
+            }
+            if (isNeedSharding) {
+                fillAndCondition(sqlStatement, orCondition, predicates);
+            } else {
+                orCondition.getAndConditions().clear();
+                return;
             }
         }
     }
     
-    private void fillResult(final SQLStatement sqlStatement, final OrCondition orCondition, final List<PredicateSegment> shardingCondition) {
-        if (shardingCondition.isEmpty()) {
+    private void addTableTokenForColumn(final SQLStatement sqlStatement, final ColumnSegment column) {
+        if (!column.getOwner().isPresent()) {
             return;
         }
-        AndCondition andConditionResult = new AndCondition();
-        orCondition.getAndConditions().add(andConditionResult);
-        for (PredicateSegment each : shardingCondition) {
-            Optional<String> tableName = getTableName(each, sqlStatement);
-            Column column = new Column(each.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(sqlStatement, each));
-            andConditionResult.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+        String owner = column.getOwner().get();
+        Optional<Table> logicTable = sqlStatement.getTables().find(owner);
+        if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
+            sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), owner, column.getOwnerQuoteCharacter(), 0));
         }
     }
     
-    private void fillEncryptCondition(final Column column, final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
+    private void fillAndCondition(final SQLStatement sqlStatement, final OrCondition orCondition, final List<PredicateSegment> predicateSegments) {
+        if (predicateSegments.isEmpty()) {
+            return;
+        }
+        AndCondition andCondition = new AndCondition();
+        orCondition.getAndConditions().add(andCondition);
+        for (PredicateSegment each : predicateSegments) {
+            Optional<String> tableName = getTableName(each, sqlStatement);
+            Column column = new Column(each.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(sqlStatement, each));
+            andCondition.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+        }
+    }
+    
+    private void fillEncryptCondition(final String columnName, final String tableName, final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+        if (!shardingRule.getShardingEncryptorEngine().getShardingEncryptor(tableName, columnName).isPresent()) {
             return;
         }
         AndCondition andCondition;
@@ -154,6 +144,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
+        Column column = new Column(columnName, tableName);
         andCondition.getConditions().add(predicateSegment.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), column, true));
     }
