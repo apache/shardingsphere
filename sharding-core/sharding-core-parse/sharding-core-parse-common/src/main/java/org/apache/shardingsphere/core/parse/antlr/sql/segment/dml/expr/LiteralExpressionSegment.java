@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
@@ -55,6 +56,6 @@ public final class LiteralExpressionSegment implements ExpressionSegment {
         if (DefaultKeyword.NULL.name().equalsIgnoreCase(value)) {
             return new SQLNumberExpression(null);
         }
-        return new SQLTextExpression(value);
+        return new SQLIgnoreExpression(value);
     } 
 }
