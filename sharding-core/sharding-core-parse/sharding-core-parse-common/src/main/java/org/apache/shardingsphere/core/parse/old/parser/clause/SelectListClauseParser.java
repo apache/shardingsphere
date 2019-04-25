@@ -134,7 +134,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private boolean isDistinctSelectItem() {
         return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
     }
-    
+
     private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
         lexerEngine.nextToken();
         String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
@@ -192,16 +192,18 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private boolean isAggregationSelectItem() {
         return lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
     }
-    
+
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         int endPosition = lexerEngine.getCurrentToken().getEndPosition();
-        lexerEngine.nextToken();
+
         String innerExpression = lexerEngine.skipParentheses(selectStatement);
         endPosition = endPosition + innerExpression.length();
-        return isAggregationDistinctSelectItem(innerExpression) ? getAggregationDistinctSelectItem(selectStatement, aggregationType, beginPosition, endPosition, innerExpression)
-                : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+        SelectItem selectItem =  isAggregationDistinctSelectItem(innerExpression) ? getAggregationDistinctSelectItem(selectStatement, aggregationType, beginPosition, endPosition, innerExpression)
+            : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+        lexerEngine.nextToken();
+        return selectItem;
     }
     
     private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, 
