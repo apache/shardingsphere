@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.WhereExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
@@ -35,14 +36,14 @@ import java.util.Map;
  */
 public final class SubqueryPredicateExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
+    private final WhereExtractor whereExtractor = new WhereExtractor();
     
     @Override
     public Optional<SubqueryPredicateSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<ParserRuleContext> subqueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
         SubqueryPredicateSegment result = new SubqueryPredicateSegment();
         for (ParserRuleContext each : subqueryNodes) {
-            Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(each, parameterMarkerIndexes);
+            Optional<WhereSegment> whereSegment = whereExtractor.extract(each, parameterMarkerIndexes);
             if (whereSegment.isPresent()) {
                 result.getOrPredicates().add(whereSegment.get().getOrPredicate());
             }

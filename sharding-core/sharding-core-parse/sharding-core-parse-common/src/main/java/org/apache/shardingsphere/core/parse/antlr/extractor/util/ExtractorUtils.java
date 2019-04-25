@@ -84,14 +84,12 @@ public final class ExtractorUtils {
         parserRuleContexts.add(node);
         ParserRuleContext parserRuleContext;
         while (null != (parserRuleContext = parserRuleContexts.poll())) {
-            if (parserRuleContext instanceof ParserRuleContext) {
-                if (isMatchedNode((ParserRuleContext) parserRuleContext, ruleName)) {
-                    return Optional.of((ParserRuleContext) parserRuleContext);
-                }
-                for (int i = 0; i < parserRuleContext.getChildCount(); i++) {
-                    if (parserRuleContext.getChild(i) instanceof ParserRuleContext) {
-                        parserRuleContexts.add((ParserRuleContext) parserRuleContext.getChild(i));
-                    }
+            if (isMatchedNode(parserRuleContext, ruleName)) {
+                return Optional.of(parserRuleContext);
+            }
+            for (int i = 0; i < parserRuleContext.getChildCount(); i++) {
+                if (parserRuleContext.getChild(i) instanceof ParserRuleContext) {
+                    parserRuleContexts.add((ParserRuleContext) parserRuleContext.getChild(i));
                 }
             }
         }
