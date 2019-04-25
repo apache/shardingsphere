@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
@@ -29,13 +28,12 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatem
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Where filler.
+ * Where filler for sharding.
  *
  * @author duhongjun
  */
-@Getter
 @Setter
-public class WhereFiller implements SQLSegmentFiller<WhereSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingWhereFiller implements SQLSegmentFiller<WhereSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
     

@@ -40,8 +40,7 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        WhereSegment result = new WhereSegment();
-        result.setParameterCount(parameterMarkerIndexes.size());
+        WhereSegment result = new WhereSegment(parameterMarkerIndexes.size());
         Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
         if (whereNode.isPresent()) {
             setPropertiesForRevert(result, whereNode.get(), parameterMarkerIndexes);
