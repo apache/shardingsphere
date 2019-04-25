@@ -20,11 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)
-    ;
-
-createLike_
-    : LIKE tableName | LP_ LIKE tableName RP_
+    : CREATE temporaryClause_ TABLE existClause_ tableName (createDefinitionClause_ | createLikeClause_)
     ;
 
 createIndex
@@ -47,6 +43,22 @@ truncateTable
     : TRUNCATE TABLE? tableName
     ;
 
+temporaryClause_
+    : TEMPORARY?
+    ;
+
+existClause_
+    : (IF NOT EXISTS)?
+    ;
+
+createDefinitionClause_
+    : LP_ createDefinitions_ RP_
+    ;
+
+createLikeClause_
+    : LP_? LIKE tableName RP_?
+    ;
+
 createDefinitions_
     : createDefinition_ (COMMA_ createDefinition_)*
     ;
@@ -57,6 +69,18 @@ createDefinition_
 
 columnDefinition
     : columnName dataType (inlineDataType_* | generatedDataType_*)
+    ;
+
+indexDefinition_
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
+    ;
+
+constraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
+    ;
+
+checkConstraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
 inlineDataType_
@@ -85,10 +109,6 @@ referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-indexDefinition_
-    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
-    ;
-
 indexType_
     : USING (BTREE | HASH)
     ;
@@ -105,10 +125,6 @@ indexOption_
     : KEY_BLOCK_SIZE EQ_? NUMBER_ | indexType_ | WITH PARSER identifier_ | COMMENT STRING_ | VISIBLE | INVISIBLE
     ;
 
-constraintDefinition_
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
-    ;
-
 primaryKeyOption_
     : primaryKey indexType_? columnNames indexOption_*
     ;
@@ -123,10 +139,6 @@ uniqueOption_
 
 foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
-    ;
-
-checkConstraintDefinition_
-    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
 alterSpecifications_
