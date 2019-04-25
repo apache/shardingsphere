@@ -866,7 +866,7 @@
             </aggregation-select-items>
         </select-items>
     </parser-result>
-    <parser-result sql-case-id="select_with_row_subquery_without_row">
+    <parser-result sql-case-id="select_with_row_subquery_without_row_keyword">
         <tables>
             <table name="t_order"/>
         </tables>
