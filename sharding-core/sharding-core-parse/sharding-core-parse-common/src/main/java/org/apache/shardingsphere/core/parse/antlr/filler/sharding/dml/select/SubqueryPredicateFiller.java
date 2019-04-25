@@ -30,12 +30,12 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Subquery condition filler.
+ * Subquery predicate filler.
  *
  * @author duhongjun
  */
 @Setter
-public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class SubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
     
@@ -44,9 +44,9 @@ public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryP
     @Override
     public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        ShardingOrConditionFiller orConditionFiller = new ShardingOrConditionFiller(shardingRule, shardingTableMetaData);
+        ShardingOrConditionFiller shardingOrConditionFiller = new ShardingOrConditionFiller(shardingRule, shardingTableMetaData);
         for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
-            selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
+            selectStatement.getSubqueryConditions().add(shardingOrConditionFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
         }
     }
 }

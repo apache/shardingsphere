@@ -29,22 +29,22 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Subquery condition extractor.
+ * Subquery predicate extractor.
  *
  * @author duhongjun
  */
-public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtractor {
+public final class SubqueryPredicateExtractor implements OptionalSQLSegmentExtractor {
     
     private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
     
     @Override
     public Optional<SubqueryPredicateSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
+        Collection<ParserRuleContext> subqueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
         SubqueryPredicateSegment result = new SubqueryPredicateSegment();
-        for (ParserRuleContext each : suQueryNodes) {
-            Optional<WhereSegment> condition = selectWhereExtractor.extract(each, parameterMarkerIndexes);
-            if (condition.isPresent()) {
-                result.getOrPredicates().add(condition.get().getOrPredicate());
+        for (ParserRuleContext each : subqueryNodes) {
+            Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(each, parameterMarkerIndexes);
+            if (whereSegment.isPresent()) {
+                result.getOrPredicates().add(whereSegment.get().getOrPredicate());
             }
         }
         return Optional.of(result);

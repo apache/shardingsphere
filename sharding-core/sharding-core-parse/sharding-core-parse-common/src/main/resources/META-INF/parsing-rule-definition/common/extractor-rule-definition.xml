@@ -37,5 +37,5 @@
     <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.GroupByExtractor" />
     <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.OrderByExtractor" />
     <extractor-rule id="limit" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.LimitExtractor" />
-    <extractor-rule id="subqueryCondition" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryConditionExtractor" />
+    <extractor-rule id="subqueryPredicate" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryPredicateExtractor" />
 </extractor-rule-definition>
