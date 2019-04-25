@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.impl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 
 import java.util.Map;
 
 /**
- * Parameter marker expression extractor.
+ * Common expression extractor.
  *
  * @author zhangliang
  */
-public final class ParameterMarkerExpressionExtractor implements OptionalSQLSegmentExtractor {
+public final class CommonExpressionExtractor implements OptionalSQLSegmentExtractor {
     
+    // TODO extract column name and value from expression
     @Override
-    public Optional<ParameterMarkerExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.PARAMETER_MARKER);
-        return parameterMarkerNode.isPresent() ? Optional.of(new ParameterMarkerExpressionSegment(expressionNode.getStop().getStopIndex(), parameterMarkerIndexes.get(parameterMarkerNode.get())))
-                : Optional.<ParameterMarkerExpressionSegment>absent();
+    public Optional<CommonExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        return Optional.of(new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex()));
     }
 }
