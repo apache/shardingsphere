@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Encrypt or condition filler.
+ * Or condition filler for encrypt.
  *
  * @author duhongjun
  */

@@ -48,12 +48,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Or condition filler.
+ * Or condition filler for sharding.
  *
  * @author duhongjun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class OrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
+public final class ShardingOrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     private final ShardingRule shardingRule;
     
