@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExp
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.Map;
 
@@ -40,6 +39,8 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private final ParameterMarkerExpressionExtractor parameterMarkerExpressionExtractor = new ParameterMarkerExpressionExtractor();
     
+    private final LiteralExpressionExtractor literalExpressionExtractor = new LiteralExpressionExtractor();
+    
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
@@ -51,22 +52,11 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         if (parameterMarkerExpressionSegment.isPresent()) {
             return parameterMarkerExpressionSegment.get();
         }
-        Optional<ParserRuleContext> literalsNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.LITERALS);
-        return literalsNode.isPresent() ? extractLiteralExpressionSegment(literalsNode.get()) : extractCommonExpressionSegment(expressionNode);
-    }
-    
-    private LiteralExpressionSegment extractLiteralExpressionSegment(final ParserRuleContext expressionNode) {
-        Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER_LITERALS);
-        Object literals = null;
-        if (numberLiteralsNode.isPresent()) {
-            literals = NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10);
+        Optional<LiteralExpressionSegment> literalExpressionSegment = literalExpressionExtractor.extract(expressionNode, parameterMarkerIndexes);
+        if (literalExpressionSegment.isPresent()) {
+            return literalExpressionSegment.get();
         }
-        Optional<ParserRuleContext> stringLiteralsNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING_LITERALS);
-        if (stringLiteralsNode.isPresent()) {
-            String text = stringLiteralsNode.get().getText();
-            literals = text.substring(1, text.length() - 1);
-        }
-        return new LiteralExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(), literals);
+        return extractCommonExpressionSegment(expressionNode);
     }
     
     // TODO extract column name and value from expression
