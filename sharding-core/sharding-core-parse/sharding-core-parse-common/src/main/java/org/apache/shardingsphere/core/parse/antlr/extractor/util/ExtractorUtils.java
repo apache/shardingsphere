@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Extractor utility.
@@ -65,6 +66,32 @@ public final class ExtractorUtils {
                 Optional<ParserRuleContext> result = findFirstChildNode((ParserRuleContext) child, ruleName);
                 if (result.isPresent()) {
                     return result;
+                }
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Find first child node breadth first.
+     *
+     * @param node start node
+     * @param ruleName rule name
+     * @return matched node
+     */
+    public static Optional<ParserRuleContext> findFirstChildNodeBreadthFirst(final ParserRuleContext node, final RuleName ruleName) {
+        Queue<ParserRuleContext> parserRuleContexts = new LinkedList<>();
+        parserRuleContexts.add(node);
+        ParserRuleContext parserRuleContext;
+        while (null != (parserRuleContext = parserRuleContexts.poll())) {
+            if (parserRuleContext instanceof ParserRuleContext) {
+                if (isMatchedNode((ParserRuleContext) parserRuleContext, ruleName)) {
+                    return Optional.of((ParserRuleContext) parserRuleContext);
+                }
+                for (int i = 0; i < parserRuleContext.getChildCount(); i++) {
+                    if (parserRuleContext.getChild(i) instanceof ParserRuleContext) {
+                        parserRuleContexts.add((ParserRuleContext) parserRuleContext.getChild(i));
+                    }
                 }
             }
         }
