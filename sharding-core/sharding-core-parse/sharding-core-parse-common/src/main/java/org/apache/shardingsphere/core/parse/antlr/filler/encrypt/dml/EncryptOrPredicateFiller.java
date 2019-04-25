@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
@@ -64,11 +63,12 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     }
     
     private void fill(final Column column, final PredicateSegment predicate, final SQLStatement sqlStatement) {
+        // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
         AndCondition andCondition;
-        if (0 == sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().size()) {
+        if (sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().isEmpty()) {
             andCondition = new AndCondition();
             sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(andCondition);
         } else {
@@ -81,35 +81,32 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
     private String getTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            return getTableName(sqlStatement.getTables(), predicateSegment);
+            return sqlStatement.getTables().getSingleTableName();
         }
         SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
         while (null != currentSelectStatement.getParentStatement()) {
             currentSelectStatement = currentSelectStatement.getParentStatement();
-            String tableName = getTableName(currentSelectStatement.getTables(), predicateSegment);
+            String tableName = getTableName(predicateSegment, currentSelectStatement.getTables());
             if (!"".equals(tableName)) {
                 return tableName;
             }
         }
-        return getTableName(currentSelectStatement.getTables(), predicateSegment);
+        return getTableName(predicateSegment, currentSelectStatement.getTables());
     }
     
-    private String getTableName(final Tables tables, final PredicateSegment predicateSegment) {
+    private String getTableName(final PredicateSegment predicateSegment, final Tables tables) {
         if (predicateSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
             return table.isPresent() ? table.get().getName() : "";
         } else {
-            return getTableNameFromMetaData(tables, predicateSegment.getColumn().getName());
+            return getTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
         }
     }
     
-    private String getTableNameFromMetaData(final Tables tables, final String columnName) {
+    private String getTableNameFromMetaData(final String columnName, final Tables tables) {
         for (String each : tables.getTableNames()) {
-            TableMetaData tableMetaData = shardingTableMetaData.get(each);
-            if (null != tableMetaData) {
-                if (tableMetaData.getColumns().containsKey(columnName)) {
-                    return each;
-                }
+            if (shardingTableMetaData.containsColumn(each, columnName)) {
+                return each;
             }
         }
         return "";

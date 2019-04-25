@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
@@ -169,7 +168,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
     private String getTableName(final ShardingTableMetaData shardingTableMetaData, final ShardingRule shardingRule, final SQLStatement sqlStatement, final PredicateSegment predicateSegment) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            return getTableName(shardingTableMetaData, shardingRule, sqlStatement.getTables(), predicateSegment);
+            return sqlStatement.getTables().getSingleTableName();
         }
         SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
         while (null != currentSelectStatement.getParentStatement()) {
@@ -207,11 +206,8 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     private String getTableNameFromMetaData(final ShardingTableMetaData shardingTableMetaData, final Tables tables, final String columnName) {
         for (String each : tables.getTableNames()) {
-            TableMetaData tableMetaData = shardingTableMetaData.get(each);
-            if (null != tableMetaData) {
-                if (tableMetaData.getColumns().containsKey(columnName)) {
-                    return each;
-                }
+            if (shardingTableMetaData.containsColumn(each, columnName)) {
+                return each;
             }
         }
         return "";
