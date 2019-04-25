@@ -46,13 +46,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Or condition filler for sharding.
+ * Or predicate filler for sharding.
  *
  * @author duhongjun
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingOrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
+public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     private final ShardingRule shardingRule;
     

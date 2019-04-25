@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.ShardingOrConditionFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.ShardingOrPredicateFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -44,9 +44,9 @@ public final class SubqueryPredicateFiller implements SQLSegmentFiller<SubqueryP
     @Override
     public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        ShardingOrConditionFiller shardingOrConditionFiller = new ShardingOrConditionFiller(shardingRule, shardingTableMetaData);
+        ShardingOrPredicateFiller shardingOrPredicateFiller = new ShardingOrPredicateFiller(shardingRule, shardingTableMetaData);
         for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
-            selectStatement.getSubqueryConditions().add(shardingOrConditionFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
+            selectStatement.getSubqueryConditions().add(shardingOrPredicateFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
         }
     }
 }

@@ -41,7 +41,7 @@ public final class ShardingWhereFiller implements SQLSegmentFiller<WhereSegment>
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        new ShardingOrConditionFiller(shardingRule, shardingTableMetaData).fill(sqlSegment.getOrPredicate(), sqlStatement);
+        new ShardingOrPredicateFiller(shardingRule, shardingTableMetaData).fill(sqlSegment.getOrPredicate(), sqlStatement);
         sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;

@@ -38,12 +38,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Or condition filler for encrypt.
+ * Or predicate filler for encrypt.
  *
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class EncryptOrConditionFiller implements SQLSegmentFiller<OrPredicateSegment> {
+public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment> {
     
     private final EncryptRule encryptRule;
     
