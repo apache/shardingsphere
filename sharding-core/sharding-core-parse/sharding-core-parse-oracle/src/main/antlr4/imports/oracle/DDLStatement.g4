@@ -229,13 +229,10 @@ referencesClause
 constraintState
     : notDeferrable 
     | initiallyClause 
-    | RELY 
-    | NORELY 
+    | RELY | NORELY 
     | usingIndexClause 
-    | ENABLE 
-    | DISABLE 
-    | VALIDATE 
-    | NOVALIDATE 
+    | ENABLE | DISABLE 
+    | VALIDATE | NOVALIDATE 
     | exceptionsClause
     ;
 
@@ -248,7 +245,7 @@ initiallyClause
     ;
 
 exceptionsClause
-    : EXCEPTIONS INTO
+    : EXCEPTIONS INTO tableName
     ;
 
 usingIndexClause
@@ -261,13 +258,11 @@ inlineRefConstraint
 
 outOfLineConstraint
     : (CONSTRAINT ignoredIdentifier_)?
-    (
-    	UNIQUE columnNames
-        | primaryKey columnNames 
-        | FOREIGN KEY columnNames referencesClause
-        | CHECK LP_ expr RP_
-    ) 
-    constraintState*
+    (UNIQUE columnNames
+    | primaryKey columnNames 
+    | FOREIGN KEY columnNames referencesClause
+    | CHECK LP_ expr RP_
+    ) constraintState*
     ;
 
 outOfLineRefConstraint
