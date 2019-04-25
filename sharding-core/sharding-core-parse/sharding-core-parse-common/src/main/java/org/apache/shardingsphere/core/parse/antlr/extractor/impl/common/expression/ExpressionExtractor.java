@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.SubqueryExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
@@ -41,6 +40,8 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private final LiteralExpressionExtractor literalExpressionExtractor = new LiteralExpressionExtractor();
     
+    private final CommonExpressionExtractor commonExpressionExtractor = new CommonExpressionExtractor();
+    
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
@@ -55,7 +56,6 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         if (literalExpressionSegment.isPresent()) {
             return literalExpressionSegment;
         }
-        // TODO extract column name and value from expression
-        return Optional.of(new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex()));
+        return commonExpressionExtractor.extract(expressionNode, parameterMarkerIndexes);
     }
 }
