@@ -28,6 +28,7 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.DropPrimaryKeySegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter.DropPrimaryKeyFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.InsertColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dql.SelectItemsFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.WhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dql.GroupByFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dql.OrderByFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dql.LimitFiller" />

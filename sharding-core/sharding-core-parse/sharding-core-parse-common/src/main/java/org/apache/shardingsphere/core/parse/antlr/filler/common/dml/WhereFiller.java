@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
@@ -23,11 +23,12 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
 
 /**
- * Where filler for encrypt.
+ * Where filler.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-public final class EncryptWhereFiller implements SQLSegmentFiller<WhereSegment> {
+public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
