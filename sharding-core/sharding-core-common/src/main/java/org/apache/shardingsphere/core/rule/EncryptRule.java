@@ -28,9 +28,9 @@ import java.util.Collection;
  *
  * @author panjuan
  */
+@Getter
 public final class EncryptRule implements BaseRule {
     
-    @Getter
     private final ShardingEncryptorEngine encryptorEngine;
     
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {

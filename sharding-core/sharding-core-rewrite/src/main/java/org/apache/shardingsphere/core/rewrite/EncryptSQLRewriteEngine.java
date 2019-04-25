@@ -208,7 +208,7 @@ public final class EncryptSQLRewriteEngine {
     
     private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
         List<Condition> conditions = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
-        if (0 == conditions.size()) {
+        if (conditions.isEmpty()) {
             return Optional.absent();
         }
         if (1 == conditions.size()) {

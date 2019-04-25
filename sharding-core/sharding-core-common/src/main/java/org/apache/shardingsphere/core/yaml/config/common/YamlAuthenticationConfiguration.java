@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
+package org.apache.shardingsphere.core.yaml.config.common;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Or condition segment.
+ * Authentication configuration for YAML.
  * 
- * @author duhongjun
+ * @author panjuan
  */
 @Getter
-public final class OrConditionSegment implements SQLSegment {
+@Setter
+public final class YamlAuthenticationConfiguration implements YamlConfiguration {
     
-    private Collection<AndConditionSegment> andConditions = new LinkedList<>();
+    private Map<String, YamlProxyUserConfiguration> users = new HashMap<>();
 }

@@ -37,6 +37,26 @@
         </or-condition>
     </parser-result>
     
+    <parser-result sql-case-id="insert_with_now_function" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+            <insert-values-token begin-position="20" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
     <parser-result sql-case-id="insert_without_parameters">
         <tables>
             <table name="t_order" />

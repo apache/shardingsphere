@@ -109,15 +109,19 @@ public enum RuleName {
     
     PARAMETER_MARKER("ParameterMarker"),
     
-    NUMBER("Number"),
+    LITERALS("Literals"),
     
-    STRING("String"),
+    NUMBER_LITERALS("NumberLiterals"),
+    
+    STRING_LITERALS("StringLiterals"),
     
     EXPR("Expr"),
     
     SIMPLE_EXPR("SimpleExpr"),
     
     BIT_EXPR("BitExpr"),
+    
+    LOGICAL_OPERATOR("LogicalOperator"),
     
     FROM_CLAUSE("FromClause"),
     

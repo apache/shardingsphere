@@ -47,7 +47,7 @@ public class EncryptWhereColumnPlaceholderTest {
         assertThat(encryptWhereColumnPlaceholder.getColumnName(), is("column_x"));
         assertThat(encryptWhereColumnPlaceholder.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(encryptWhereColumnPlaceholder.getIndexValues(), is(indexValues));
-        assertThat(encryptWhereColumnPlaceholder.getPlaceholderIndexes().size(), is(0));
+        assertThat(encryptWhereColumnPlaceholder.getParameterMarkerIndexes().size(), is(0));
     }
     
     @Test

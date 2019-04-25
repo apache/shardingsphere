@@ -28,6 +28,9 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+
+import java.util.Collection;
 
 /**
  * Use database backend handler.
@@ -45,11 +48,17 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     @Override
     public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!LogicSchemas.getInstance().schemaExists(schema)) {
-            return new ErrorResponse(new UnknownDatabaseException(schema));
+        if (LogicSchemas.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
+            backendConnection.setCurrentSchema(schema);
+            return new UpdateResponse();
         }
-        backendConnection.setCurrentSchema(schema);
-        return new UpdateResponse();
+        return new ErrorResponse(new UnknownDatabaseException(schema));
+        
+    }
+    
+    private boolean isAuthorizedSchema(final String schema) {
+        Collection<String> authorizedSchemas = ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
     
     @Override

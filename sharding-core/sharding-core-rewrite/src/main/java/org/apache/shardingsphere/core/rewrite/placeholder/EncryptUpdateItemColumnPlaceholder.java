@@ -38,7 +38,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final Comparable<?> assistedColumnValue;
     
-    private final int placeholderIndex;
+    private final int parameterMarkerIndex;
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName) {
         this.logicTableName = logicTableName;
@@ -46,7 +46,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         columnValue = null;
         this.assistedColumnName = null;
         assistedColumnValue = null;
-        placeholderIndex = 0;
+        parameterMarkerIndex = 0;
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final Comparable<?> columnValue) {
@@ -55,7 +55,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         this.columnValue = columnValue;
         this.assistedColumnName = null;
         this.assistedColumnValue = null;
-        placeholderIndex = -1;
+        parameterMarkerIndex = -1;
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final String assistedColumnName) {
@@ -64,7 +64,7 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         columnValue = null;
         this.assistedColumnName = assistedColumnName;
         assistedColumnValue = null;
-        placeholderIndex = 0;
+        parameterMarkerIndex = 0;
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName,
@@ -74,16 +74,16 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
         this.columnValue = columnValue;
         this.assistedColumnName = assistedColumnName;
         this.assistedColumnValue = assistedColumnValue;
-        placeholderIndex = -1;
+        parameterMarkerIndex = -1;
     }
     
     @Override
     @SuppressWarnings("all")
     public String toString() {
         if (Strings.isNullOrEmpty(assistedColumnName)) {
-            return -1 != placeholderIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
+            return -1 != parameterMarkerIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
         }
-        return -1 != placeholderIndex ? String.format("%s = ?, %s = ?", columnName, assistedColumnName) 
+        return -1 != parameterMarkerIndex ? String.format("%s = ?, %s = ?", columnName, assistedColumnName) 
                 : String.format("%s = %s, %s = %s", columnName, toStringForColumnValue(columnValue), assistedColumnName, toStringForColumnValue(assistedColumnValue));
     }
     

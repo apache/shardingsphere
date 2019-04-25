@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
+package org.apache.shardingsphere.core.yaml.config.common;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
- * Subquery condition segment.
+ * Proxy user for YAML.
  *
- * @author duhongjun
+ * @author zhangliang
  */
 @Getter
-public final class SubqueryConditionSegment implements SQLSegment {
+@Setter
+public final class YamlProxyUserConfiguration implements YamlConfiguration {
     
-    private Collection<OrConditionSegment> orConditions = new LinkedList<>();
+    private String password;
+    
+    private String authorizedSchemas;
 }

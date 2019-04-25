@@ -17,41 +17,26 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIdentifierExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPropertyExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
 /**
- * Property expression segment.
- * 
- * @author duhongjun
+ * Parameter marker expression segment.
+ *
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class PropertyExpressionSegment implements ExpressionSegment {
-    
-    private final int startIndex;
+public final class ParameterMarkerExpressionSegment implements ExpressionSegment {
     
     private final int stopIndex;
     
-    private final String name;
+    private final int parameterMarkerIndex;
     
-    private final String owner;
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
-    }
-
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        return new SQLPropertyExpression(null == owner ? null : new SQLIdentifierExpression(owner), name);
-    }
+        return new SQLPlaceholderExpression(parameterMarkerIndex);
+    } 
 }

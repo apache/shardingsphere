@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.common;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Authentication for YAML.
- *
- * @author zhangliang
+ * And predicate segment.
+ * 
+ * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlAuthentication implements YamlConfiguration {
+public final class AndPredicateSegment implements SQLSegment {
     
-    private String username;
-    
-    private String password;
+    private final Collection<PredicateSegment> predicates = new LinkedList<>();
 }

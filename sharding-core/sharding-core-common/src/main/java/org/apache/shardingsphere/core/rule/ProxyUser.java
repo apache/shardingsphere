@@ -15,36 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
+
+import java.util.Collection;
 
 /**
- * Function expression segment.
- * 
- * @author duhongjun
+ * Proxy user.
+ *
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class FunctionExpressionSegment implements ExpressionSegment {
+public final class ProxyUser {
     
-    private final int startIndex;
+    private final String password;
     
-    private final int stopIndex;
-    
-    private final String functionName;
-    
-    private final int innerExpressionStartIndex;
-    
-    private final int innerExpressionStopIndex; 
-    
-    private final int distinctExpressionStartIndex;
-    
-    @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
-    }
+    private final Collection<String> authorizedSchemas;
 }
