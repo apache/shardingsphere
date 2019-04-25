@@ -57,29 +57,6 @@ public final class ExtractorUtils {
      * @return matched node
      */
     public static Optional<ParserRuleContext> findFirstChildNode(final ParserRuleContext node, final RuleName ruleName) {
-        if (isMatchedNode(node, ruleName)) {
-            return Optional.of(node);
-        }
-        for (int i = 0; i < node.getChildCount(); i++) {
-            ParseTree child = node.getChild(i);
-            if (child instanceof ParserRuleContext) {
-                Optional<ParserRuleContext> result = findFirstChildNode((ParserRuleContext) child, ruleName);
-                if (result.isPresent()) {
-                    return result;
-                }
-            }
-        }
-        return Optional.absent();
-    }
-    
-    /**
-     * Find first child node breadth first.
-     *
-     * @param node start node
-     * @param ruleName rule name
-     * @return matched node
-     */
-    public static Optional<ParserRuleContext> findFirstChildNodeBreadthFirst(final ParserRuleContext node, final RuleName ruleName) {
         Queue<ParserRuleContext> parserRuleContexts = new LinkedList<>();
         parserRuleContexts.add(node);
         ParserRuleContext parserRuleContext;
