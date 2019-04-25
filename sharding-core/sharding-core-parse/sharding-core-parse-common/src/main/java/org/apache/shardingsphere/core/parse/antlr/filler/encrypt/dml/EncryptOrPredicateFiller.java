@@ -34,8 +34,8 @@ import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Or predicate filler for encrypt.
@@ -51,24 +51,17 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        Set<Integer> filledConditionStopIndexes = new HashSet<>();
+        Collection<Integer> stopIndexes = new HashSet<>();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                if (null == predicate.getColumn()) {
-                    continue;
+                if (stopIndexes.add(predicate.getStopIndex())) {
+                    fill(new Column(predicate.getColumn().getName(), getTableName(predicate, sqlStatement)), predicate, sqlStatement);
                 }
-                if (filledConditionStopIndexes.contains(predicate.getStopIndex())) {
-                    continue;
-                } else {
-                    filledConditionStopIndexes.add(predicate.getStopIndex());
-                }
-                Column column = new Column(predicate.getColumn().getName(), getTableName(sqlStatement, predicate));
-                fillEncryptCondition(column, predicate, sqlStatement);
             }
         }
     }
     
-    private void fillEncryptCondition(final Column column, final PredicateSegment predicate, final SQLStatement sqlStatement) {
+    private void fill(final Column column, final PredicateSegment predicate, final SQLStatement sqlStatement) {
         if (!encryptRule.getEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             return;
         }
@@ -84,7 +77,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private String getTableName(final SQLStatement sqlStatement, final PredicateSegment predicateSegment) {
+    private String getTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
             return getTableName(sqlStatement.getTables(), predicateSegment);
         }

@@ -139,7 +139,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         AndCondition andConditionResult = new AndCondition();
         orCondition.getAndConditions().add(andConditionResult);
         for (PredicateSegment each : shardingCondition) {
-            Optional<String> tableName = getTableName(sqlStatement, each);
+            Optional<String> tableName = getTableName(each, sqlStatement);
             Column column = new Column(each.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(shardingTableMetaData, shardingRule, sqlStatement, each));
             andConditionResult.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         }
@@ -180,9 +180,9 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return getTableName(shardingTableMetaData, shardingRule, currentSelectStatement.getTables(), predicateSegment);
     }
     
-    private Optional<String> getTableName(final SQLStatement sqlStatement, final PredicateSegment conditionSegment) {
-        if (conditionSegment.getColumn().getOwner().isPresent()) {
-            Optional<Table> table = sqlStatement.getTables().find(conditionSegment.getColumn().getOwner().get());
+    private Optional<String> getTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+        if (predicateSegment.getColumn().getOwner().isPresent()) {
+            Optional<Table> table = sqlStatement.getTables().find(predicateSegment.getColumn().getOwner().get());
             if (table.isPresent()) {
                 return Optional.of(table.get().getName());
             }
