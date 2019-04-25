@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.constant.LogicalOperator;
 import org.apache.shardingsphere.core.parse.antlr.constant.Paren;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;

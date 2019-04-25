@@ -23,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
 
 import java.util.Map;
 
@@ -51,11 +51,8 @@ public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0), parameterMarkerIndexes);
-        Preconditions.checkState(columnSegment.isPresent());
-        Optional<ParameterMarkerExpressionSegment> parameterMarkerExpressionSegment = expressionExtractor.extractParameterMarkerExpressionSegment(
-                (ParserRuleContext) assignmentNode.get().getChild(2), parameterMarkerIndexes);
-        ExpressionSegment expressionSegment = parameterMarkerExpressionSegment.isPresent()
-                ? parameterMarkerExpressionSegment.get() : expressionExtractor.extractLiteralExpressionSegment((ParserRuleContext) assignmentNode.get().getChild(2));
-        return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment));
+        Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(2), parameterMarkerIndexes);
+        Preconditions.checkState(columnSegment.isPresent() && expressionSegment.isPresent());
+        return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment.get()));
     }
 }

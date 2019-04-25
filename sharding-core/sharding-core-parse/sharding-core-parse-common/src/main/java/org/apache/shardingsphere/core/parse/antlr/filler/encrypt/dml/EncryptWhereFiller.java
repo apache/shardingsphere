@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
@@ -33,9 +32,8 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
  *
  * @author duhongjun
  */
-@Getter
 @Setter
-public class EncryptWhereFiller implements SQLSegmentFiller<WhereSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class EncryptWhereFiller implements SQLSegmentFiller<WhereSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private EncryptRule encryptRule;
     
