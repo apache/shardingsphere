@@ -38,19 +38,19 @@ pgp -ka KEYS
 要验证二进制文件或源代码，您可以从主发布目录下载相关的asc文件，并按照以下指南进行操作。
 
 ```shell
-gpg --verify  apache-shardingsphere-incubating-********.asc  apache-shardingsphere-incubating-*********
+gpg --verify apache-shardingsphere-incubating-********.asc apache-shardingsphere-incubating-*********
 ```
 
 or
 
 ```shell
-pgpv  apache-shardingsphere-incubating-********.asc
+pgpv apache-shardingsphere-incubating-********.asc
 ```
 
 or
 
 ```shell
-pgp  apache-shardingsphere-incubating-********.asc
+pgp apache-shardingsphere-incubating-********.asc
 ```
 
 ## 免责声明

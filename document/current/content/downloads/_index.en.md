@@ -38,19 +38,19 @@ pgp -ka KEYS
 To verify the binaries/sources you can download the relevant asc files for it from main distribution directory and follow the below guide.
 
 ```shell
-gpg --verify  apache-shardingsphere-incubating-********.asc  apache-shardingsphere-incubating-*********
+gpg --verify apache-shardingsphere-incubating-********.asc apache-shardingsphere-incubating-*********
 ```
 
 or
 
 ```shell
-pgpv  apache-shardingsphere-incubating-********.asc
+pgpv apache-shardingsphere-incubating-********.asc
 ```
 
 or
 
 ```shell
-pgp  apache-shardingsphere-incubating-********.asc
+pgp apache-shardingsphere-incubating-********.asc
 ```
 
 ## Disclaimer
