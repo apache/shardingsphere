@@ -27,8 +27,16 @@ tableName
     : IDENTIFIER_
     ;
 
+tableNames
+    : LP_? tableName (COMMA_ tableName)* RP_?
+    ;
+
 columnName
     : IDENTIFIER_
+    ;
+
+columnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 collationName
@@ -49,10 +57,6 @@ dataTypeLength
 
 primaryKey
     : PRIMARY? KEY
-    ;
-
-columnNames
-    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 exprs
