@@ -67,15 +67,6 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     }
     
     /**
-     * Get from where segment.
-     *
-     * @return from where segment
-     */
-    public Optional<WhereSegment> getWhereSegment() {
-        return Optional.fromNullable(whereSegment);
-    }
-    
-    /**
      * Get group by segment.
      *
      * @return group by segment
@@ -105,6 +96,6 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
 
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, startIndex + 1));
+        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
     }
 }

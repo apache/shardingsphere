@@ -109,9 +109,11 @@ public enum RuleName {
     
     PARAMETER_MARKER("ParameterMarker"),
     
-    NUMBER("Number"),
+    LITERALS("Literals"),
     
-    STRING("String"),
+    NUMBER_LITERALS("NumberLiterals"),
+    
+    STRING_LITERALS("StringLiterals"),
     
     EXPR("Expr"),
     

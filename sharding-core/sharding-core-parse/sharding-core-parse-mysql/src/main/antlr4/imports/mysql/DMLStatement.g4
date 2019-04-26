@@ -191,7 +191,7 @@ limitClause
     ;
 
 rangeItem_
-    : number | parameterMarker
+    : numberLiterals | parameterMarker
     ;
 
 windowClause_

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.insert;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
@@ -45,7 +45,7 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
     
     private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {
         List<SQLExpression> columnValues = new LinkedList<>();
-        for (CommonExpressionSegment each : sqlSegment.getValues()) {
+        for (ExpressionSegment each : sqlSegment.getValues()) {
             SQLExpression sqlExpression = each.getSQLExpression(sql);
             columnValues.add(sqlExpression);
         }
