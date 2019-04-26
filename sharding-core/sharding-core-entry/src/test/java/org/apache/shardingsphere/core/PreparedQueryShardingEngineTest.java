@@ -24,11 +24,13 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
@@ -62,5 +64,11 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     protected void assertShard() {
         when(routingEngine.route(getParameters())).thenReturn(createSQLRouteResult());
         assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertWithRouteException() {
+        when(routingEngine.route(getParameters())).thenThrow(SQLException.class);
+        shardingEngine.shard(getSql(), getParameters());
     }
 }

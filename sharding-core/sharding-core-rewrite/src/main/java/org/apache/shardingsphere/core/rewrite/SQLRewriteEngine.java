@@ -57,8 +57,6 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpre
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
-import org.apache.shardingsphere.core.rewrite.hook.RewriteHook;
-import org.apache.shardingsphere.core.rewrite.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptUpdateItemColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlaceholder;
@@ -115,8 +113,6 @@ public final class SQLRewriteEngine {
     private final Map<Integer, Object> appendedIndexAndParameters;
     
     private final OptimizeResult optimizeResult;
-    
-    private final RewriteHook rewriteHook = new SPIRewriteHook();
     
     /**
      * Constructs SQL rewrite engine.
@@ -516,17 +512,7 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        rewriteHook.start(tableUnit);
-        try {
-            SQLUnit result = sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
-            rewriteHook.finishSuccess(result);
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            rewriteHook.finishFailure(ex);
-            throw ex;
-        }
+        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
     }
    
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {
