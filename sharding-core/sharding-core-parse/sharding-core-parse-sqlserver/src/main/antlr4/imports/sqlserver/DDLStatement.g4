@@ -150,30 +150,64 @@ checkConstraint
     : CHECK(NOT FOR REPLICATION)? LP_ expr RP_
     ;
 
+columnIndex
+    : INDEX indexName (CLUSTERED | NONCLUSTERED)? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
+    ;
+
+indexOnClause
+    : onSchemaColumn | onFileGroup | onDefault
+    ;
+
+onDefault
+    : ON DEFAULT
+    ;
+
 columnConstraints
     : (columnConstraint(COMMA_ columnConstraint)*)?
     ;
 
-partitionScheme_
-    : (ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
+computedColumnDefinition
+    : columnName AS expr (PERSISTED(NOT NULL)?)? columnConstraint?
     ;
 
-fileGroup_
-    : (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
+columnSetDefinition 
+    : ignoredIdentifier_ IDENTIFIER_ COLUMN_SET FOR ALL_SPARSE_COLUMNS
     ;
 
-periodClause
-    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
+tableConstraint 
+    : (CONSTRAINT ignoredIdentifier_)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    ;
+
+tablePrimaryConstraint
+    : primaryKeyUnique (diskTablePrimaryConstraintOption | memoryTablePrimaryConstraintOption)
+    ;
+
+primaryKeyUnique
+    : primaryKey | UNIQUE
+    ;
+
+diskTablePrimaryConstraintOption
+    : (CLUSTERED | NONCLUSTERED)? columnNames primaryKeyWithClause? primaryKeyOnClause?
+    ;
+
+memoryTablePrimaryConstraintOption
+    : NONCLUSTERED (columnNames | hashWithBucket)
+    ;
+
+hashWithBucket
+    : HASH columnNames withBucket
+    ;
+
+tableForeignKeyConstraint
+    : (FOREIGN KEY)? columnNames REFERENCES tableName columnNames foreignKeyOnAction*
     ;
 
 tableIndex
     : INDEX indexName
-    (
-        (CLUSTERED | NONCLUSTERED)? columnNames
-        | CLUSTERED COLUMNSTORE
-        | NONCLUSTERED? (COLUMNSTORE columnNames | hashWithBucket) 
-        | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER_ MINUTES?) RP_)?
-    )
+    ((CLUSTERED | NONCLUSTERED)? columnNames
+    | CLUSTERED COLUMNSTORE
+    | NONCLUSTERED? (COLUMNSTORE columnNames | hashWithBucket) 
+    | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER_ MINUTES?) RP_)?)
     (WHERE expr)?
     (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause?
     (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
@@ -213,52 +247,16 @@ tableStretchOptions
     : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA_)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)
     ;
 
-hashWithBucket
-    : HASH columnNames withBucket
+partitionScheme_
+    : (ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
     ;
 
-columnIndex
-    : INDEX indexName (CLUSTERED | NONCLUSTERED)? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
+fileGroup_
+    : (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
     ;
 
-indexOnClause
-    : onSchemaColumn | onFileGroup | onDefault
-    ;
-
-onDefault
-    : ON DEFAULT
-    ;
-
-tableConstraint 
-    : (CONSTRAINT ignoredIdentifier_)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
-    ;
-
-tablePrimaryConstraint
-    : primaryKeyUnique (diskTablePrimaryConstraintOption | memoryTablePrimaryConstraintOption)
-    ;
-
-primaryKeyUnique
-    : primaryKey | UNIQUE
-    ;
-
-diskTablePrimaryConstraintOption
-    : (CLUSTERED | NONCLUSTERED)? columnNames primaryKeyWithClause? primaryKeyOnClause?
-    ;
-
-memoryTablePrimaryConstraintOption
-    : NONCLUSTERED (columnNames | hashWithBucket)
-    ;
-
-tableForeignKeyConstraint
-    : (FOREIGN KEY)? columnNames REFERENCES tableName columnNames foreignKeyOnAction*
-    ;
-
-computedColumnDefinition
-    : columnName AS expr (PERSISTED(NOT NULL)?)? columnConstraint?
-    ;
-
-columnSetDefinition 
-    : ignoredIdentifier_ IDENTIFIER_ COLUMN_SET FOR ALL_SPARSE_COLUMNS
+periodClause
+    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
     ;
 
 alterTableOp
