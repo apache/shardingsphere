@@ -63,6 +63,6 @@
     <sql-case id="select_alias_as_single_quote_string" value="SELECT status as 'status' FROM t_order" />
     <sql-case id="select_alias_as_string_double_quote" value="SELECT status as &quot;status&quot; FROM t_order" />
     <sql-case id="select_special_function_nested" value="SELECT sum(if(status=0, 1, 0)) FROM t_order" />
-    <sql-case id="select_with_coloumns_in_paren" value="SELECT * FROM t_order WHERE (user_id,order_id) = (SELECT user_id,order_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
-    <sql-case id="select_with_coloumns_in_row" value="SELECT * FROM t_order WHERE ROW(user_id,order_id) = (SELECT user_id,order_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
+    <sql-case id="select_with_row_subquery_without_row_keyword" value="SELECT * FROM t_order WHERE (user_id,order_id) = (SELECT user_id,order_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
+    <sql-case id="select_with_row_subquery" value="SELECT * FROM t_order WHERE ROW(user_id,order_id) = (SELECT user_id,order_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
 </sql-cases>

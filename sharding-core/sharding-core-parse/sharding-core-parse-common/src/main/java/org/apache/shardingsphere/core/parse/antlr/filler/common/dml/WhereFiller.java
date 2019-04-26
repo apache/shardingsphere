@@ -15,35 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Where filler for encrypt.
+ * Where filler.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-@Getter
-@Setter
-public class EncryptWhereFiller implements SQLSegmentFiller<WhereSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
-    
-    private EncryptRule encryptRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        new EncryptOrConditionFiller(encryptRule, shardingTableMetaData).fill(sqlSegment.getOrPredicate(), sqlStatement);
         sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;

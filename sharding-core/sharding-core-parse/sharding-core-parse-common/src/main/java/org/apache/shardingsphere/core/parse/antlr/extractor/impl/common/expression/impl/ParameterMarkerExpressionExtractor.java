@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.impl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ParameterMarkerExpressionSegment;
 
 import java.util.Map;
 
 /**
- * Subquery extractor.
+ * Parameter marker expression extractor.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
+public final class ParameterMarkerExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        return RuleName.SUBQUERY.getName().equals(subqueryNode.getClass().getSimpleName())
-                ? Optional.of(new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex())) : Optional.<SubquerySegment>absent();
+    public Optional<ParameterMarkerExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.PARAMETER_MARKER);
+        return parameterMarkerNode.isPresent() ? Optional.of(new ParameterMarkerExpressionSegment(expressionNode.getStop().getStopIndex(), parameterMarkerIndexes.get(parameterMarkerNode.get())))
+                : Optional.<ParameterMarkerExpressionSegment>absent();
     }
 }

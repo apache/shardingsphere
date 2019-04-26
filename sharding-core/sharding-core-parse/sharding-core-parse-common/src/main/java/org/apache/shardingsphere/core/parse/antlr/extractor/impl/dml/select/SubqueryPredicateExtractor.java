@@ -20,31 +20,32 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.SubqueryPredicateSegment;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Subquery condition extractor.
+ * Subquery predicate extractor.
  *
  * @author duhongjun
  */
-public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtractor {
+public final class SubqueryPredicateExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
+    private final PredicateExtractor predicateExtractor = new PredicateExtractor();
     
     @Override
     public Optional<SubqueryPredicateSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
+        Collection<ParserRuleContext> subqueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
         SubqueryPredicateSegment result = new SubqueryPredicateSegment();
-        for (ParserRuleContext each : suQueryNodes) {
-            Optional<WhereSegment> condition = selectWhereExtractor.extract(each, parameterMarkerIndexes);
-            if (condition.isPresent()) {
-                result.getOrPredicates().add(condition.get().getOrPredicate());
+        for (ParserRuleContext each : subqueryNodes) {
+            Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(each, parameterMarkerIndexes);
+            if (orPredicateSegment.isPresent()) {
+                result.getOrPredicates().add(orPredicateSegment.get());
             }
         }
         return Optional.of(result);

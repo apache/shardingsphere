@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Subquery expression segment.
@@ -37,62 +29,12 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-@Getter
-@Setter
-public final class SubquerySegment implements SelectItemSegment, ExpressionSegment, AliasAvailable {
+public final class SubquerySegment implements SelectItemSegment, ExpressionSegment {
     
     private final int startIndex;
     
+    @Getter
     private final int stopIndex;
-    
-    private final boolean subqueryInFrom;
-    
-    private SelectItemsSegment selectItemsSegment;
-    
-    private WhereSegment whereSegment;
-    
-    private GroupBySegment groupBySegment;
-    
-    private OrderBySegment orderBySegment;
-    
-    private String alias;
-    
-    /**
-     * Get select items segment.
-     * 
-     * @return select items segment
-     */
-    public Optional<SelectItemsSegment> getSelectItemsSegment() {
-        return Optional.fromNullable(selectItemsSegment);
-    }
-    
-    /**
-     * Get group by segment.
-     *
-     * @return group by segment
-     */
-    public Optional<GroupBySegment> getGroupBySegment() {
-        return Optional.fromNullable(groupBySegment);
-    }
-    
-    /**
-     * Get order by segment.
-     *
-     * @return order by segment
-     */
-    public Optional<OrderBySegment> getOrderBySegment() {
-        return Optional.fromNullable(orderBySegment);
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = SQLUtil.getExactlyValue(alias);
-    }
 
     @Override
     public SQLExpression getSQLExpression(final String sql) {

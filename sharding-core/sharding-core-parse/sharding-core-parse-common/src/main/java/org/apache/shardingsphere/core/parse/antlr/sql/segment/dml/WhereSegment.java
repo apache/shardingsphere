@@ -18,22 +18,21 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 
 /**
  * Where segment.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class WhereSegment implements SQLSegment {
     
-    private final OrPredicateSegment orPredicate = new OrPredicateSegment();
-    
-    private int parameterCount;
+    private final int parameterCount;
     
     private int whereStartIndex;
     

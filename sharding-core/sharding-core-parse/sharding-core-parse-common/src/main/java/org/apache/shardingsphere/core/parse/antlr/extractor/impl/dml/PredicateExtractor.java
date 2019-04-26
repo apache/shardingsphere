@@ -47,6 +47,7 @@ import java.util.Map;
  * Predicate extractor.
  *
  * @author duhongjun
+ * @author zhangliang
  */
 public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
@@ -55,8 +56,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<OrPredicateSegment> extract(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        return extractRecursiveWithLogicalOperation(exprNode, parameterMarkerIndexes);
+    public Optional<OrPredicateSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> whereNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
+        if (!whereNode.isPresent()) {
+            return Optional.absent();
+        }
+        Optional<ParserRuleContext> exprNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) whereNode.get().getChild(1), RuleName.EXPR);
+        Preconditions.checkState(exprNode.isPresent());
+        return extractRecursiveWithLogicalOperation(exprNode.get(), parameterMarkerIndexes);
     }
     
     private Optional<OrPredicateSegment> extractRecursiveWithLogicalOperation(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
