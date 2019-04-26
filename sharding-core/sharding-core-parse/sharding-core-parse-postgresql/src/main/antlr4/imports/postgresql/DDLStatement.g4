@@ -47,6 +47,103 @@ truncateTable
     : TRUNCATE TABLE? ONLY? tableNameParts
     ;
 
+temporaryClause_
+    : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
+    ;
+
+existClause_
+    : (IF NOT EXISTS)?
+    ;
+
+createDefinitions
+    : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
+    ;
+
+createDefinition
+    : columnDefinition | tableConstraint | LIKE tableName likeOption*
+    ;
+
+columnDefinition
+    : columnName dataType collateClause? columnConstraint*
+    ;
+
+columnConstraint
+    : constraintClause? columnConstraintOption constraintOptionalParam
+    ;
+
+constraintClause
+    : CONSTRAINT ignoredIdentifier_
+    ;
+
+columnConstraintOption
+    : NOT? NULL
+    | checkOption
+    | DEFAULT defaultExpr
+    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
+    | UNIQUE indexParameters
+    | primaryKey indexParameters
+    | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    ;
+
+checkOption
+    : CHECK expr (NO INHERIT)?
+    ;
+
+defaultExpr
+    : CURRENT_TIMESTAMP | expr
+    ;
+
+sequenceOptions
+    : sequenceOption+
+    ;
+
+sequenceOption
+    : START WITH? NUMBER_
+    | INCREMENT BY? NUMBER_
+    | MAXVALUE NUMBER_
+    | NO MAXVALUE
+    | MINVALUE NUMBER_
+    | NO MINVALUE
+    | CYCLE
+    | NO CYCLE
+    | CACHE NUMBER_
+    | OWNED BY
+    ;
+
+indexParameters
+    : (USING INDEX TABLESPACE ignoredIdentifier_)?
+    | INCLUDE columnNames
+    | WITH
+    ;
+
+action
+    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
+    ;
+
+constraintOptionalParam
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
+    ;
+
+likeOption
+    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
+    ;
+
+tableConstraint
+    : constraintClause? tableConstraintOption constraintOptionalParam
+    ;
+
+tableConstraintOption
+    : checkOption
+    | UNIQUE columnNames indexParameters
+    | primaryKey columnNames indexParameters
+    | EXCLUDE (USING ignoredIdentifier_)?
+    | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    ;
+
+inheritClause
+    : INHERITS tableNames
+    ;
+
 alterIndexName
     : ALTER INDEX (IF EXISTS)? indexName
     ;
@@ -69,29 +166,6 @@ tableNameParts
 
 tableNamePart
     : tableName ASTERISK_?
-    ;
-
-temporaryClause_
-    : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
-    ;
-
-existClause_
-    : (IF NOT EXISTS)?
-    ;
-createDefinitions
-    : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
-    ;
-
-createDefinition
-    : columnDefinition | tableConstraint | LIKE tableName likeOption*
-    ;
-
-likeOption
-    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
-    ;
-
-inheritClause
-    : INHERITS tableNames
     ;
 
 alterTableNameWithAsterisk
@@ -206,79 +280,6 @@ newTableName
 
 usingIndexType
     : USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
-    ;
-
-tableConstraint
-    : constraintClause? tableConstraintOption constraintOptionalParam
-    ;
-
-columnDefinition
-    : columnName dataType collateClause? columnConstraint*
-    ;
-
-columnConstraint
-    : constraintClause? columnConstraintOption constraintOptionalParam
-    ;
-
-constraintClause
-    : CONSTRAINT ignoredIdentifier_
-    ;
-
-columnConstraintOption
-    : NOT? NULL
-    | checkOption
-    | DEFAULT defaultExpr
-    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | UNIQUE indexParameters
-    | primaryKey indexParameters
-    | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
-    ;
-
-checkOption
-    : CHECK expr (NO INHERIT)?
-    ;
-
-defaultExpr
-    : CURRENT_TIMESTAMP | expr
-    ;
-
-sequenceOptions
-    : sequenceOption+
-    ;
-
-sequenceOption
-    : START WITH? NUMBER_
-    | INCREMENT BY? NUMBER_
-    | MAXVALUE NUMBER_
-    | NO MAXVALUE
-    | MINVALUE NUMBER_
-    | NO MINVALUE
-    | CYCLE
-    | NO CYCLE
-    | CACHE NUMBER_
-    | OWNED BY
-    ;
-
-indexParameters
-    : (USING INDEX TABLESPACE ignoredIdentifier_)?
-    | INCLUDE columnNames
-    | WITH
-    ;
-
-action
-    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
-    ;
-
-constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
-    ;
-
-tableConstraintOption
-    : checkOption
-    | UNIQUE columnNames indexParameters
-    | primaryKey columnNames indexParameters
-    | EXCLUDE (USING ignoredIdentifier_)?
-    | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
     ;
 
 excludeElement
