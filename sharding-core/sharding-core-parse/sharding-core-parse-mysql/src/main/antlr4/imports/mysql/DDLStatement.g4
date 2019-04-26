@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE temporaryClause_ TABLE existClause_ tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createSpecification_ TABLE notExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
     ;
 
 createIndex
@@ -43,11 +43,11 @@ truncateTable
     : TRUNCATE TABLE? tableName
     ;
 
-temporaryClause_
+createSpecification_
     : TEMPORARY?
     ;
 
-existClause_
+notExistClause_
     : (IF NOT EXISTS)?
     ;
 
