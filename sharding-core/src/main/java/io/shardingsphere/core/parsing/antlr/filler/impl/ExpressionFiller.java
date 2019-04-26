@@ -60,7 +60,12 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
         if (sqlSegment instanceof CommonExpressionSegment) {
             CommonExpressionSegment commonSegment = (CommonExpressionSegment) sqlSegment;
-            String expression = sql.substring(commonSegment.getStartPosition(), commonSegment.getEndPosition() + 1);
+            String expression;
+            if (commonSegment.isText()) {
+                expression = sql.substring(commonSegment.getStartPosition() + 1, commonSegment.getEndPosition());
+            } else {
+                expression = sql.substring(commonSegment.getStartPosition(), commonSegment.getEndPosition() + 1);
+            }
             selectStatement.getItems().add(new CommonSelectItem(expression, commonSegment.getAlias()));
             return;
         }

@@ -228,7 +228,12 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         if (null != commonExpressionSegment.getValue()) {
             return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
         }
-        String expression = sql.substring(commonExpressionSegment.getStartPosition(), commonExpressionSegment.getEndPosition() + 1);
+        String expression;
+        if (commonExpressionSegment.isText()) {
+            expression = sql.substring(commonExpressionSegment.getStartPosition() + 1, commonExpressionSegment.getEndPosition());
+        } else {
+            expression = sql.substring(commonExpressionSegment.getStartPosition(), commonExpressionSegment.getEndPosition() + 1);
+        }
         return Optional.<SQLExpression>of(new SQLTextExpression(expression));
     }
 }
