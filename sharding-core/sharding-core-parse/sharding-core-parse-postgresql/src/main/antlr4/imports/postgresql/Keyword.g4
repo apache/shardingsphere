@@ -75,6 +75,10 @@ EXISTS
     : E X I S T S
     ;
 
+EXCLUDE
+    : E X C L U D E
+    ;
+
 FALSE
     : F A L S E
     ;
@@ -557,6 +561,10 @@ INHERITS
 
 INITIALLY
     : I N I T I A L L Y
+    ;
+
+INCLUDE
+    : I N C L U D E
     ;
 
 INSERT
