@@ -209,6 +209,67 @@ tableConstraint
     : constraintClause? tableConstraintOption constraintOptionalParam
     ;
 
+columnDefinition
+    : columnName dataType collateClause? columnConstraint*
+    ;
+
+columnConstraint
+    : constraintClause? columnConstraintOption constraintOptionalParam
+    ;
+
+constraintClause
+    : CONSTRAINT ignoredIdentifier_
+    ;
+
+columnConstraintOption
+    : NOT? NULL
+    | checkOption
+    | DEFAULT defaultExpr
+    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
+    | UNIQUE indexParameters
+    | primaryKey indexParameters
+    | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    ;
+
+checkOption
+    : CHECK expr (NO INHERIT)?
+    ;
+
+defaultExpr
+    : CURRENT_TIMESTAMP | expr
+    ;
+
+sequenceOptions
+    : sequenceOption+
+    ;
+
+sequenceOption
+    : START WITH? NUMBER_
+    | INCREMENT BY? NUMBER_
+    | MAXVALUE NUMBER_
+    | NO MAXVALUE
+    | MINVALUE NUMBER_
+    | NO MINVALUE
+    | CYCLE
+    | NO CYCLE
+    | CACHE NUMBER_
+    | OWNED BY
+    ;
+
+indexParameters
+    : (USING INDEX TABLESPACE ignoredIdentifier_)?
+    | INCLUDE columnNames
+    | WITH
+    ;
+
+action
+    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
+    ;
+
+constraintOptionalParam
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
+    ;
+
 tableConstraintOption
     : checkOption
     | UNIQUE columnNames indexParameters
