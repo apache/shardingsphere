@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE TABLE tableName fileTableClause_ createDefinitionClause_
+    : CREATE TABLE tableName fileTableSpecification__ createDefinitionClause_
     ;
 
 createIndex
@@ -58,7 +58,7 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
-fileTableClause_
+fileTableSpecification__
     : (AS FILETABLE)?
     ;
 
