@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE temporaryClause_ TABLE existClause_ tableName createDefinitions inheritClause?
+    : CREATE temporaryClause_ TABLE existClause_ tableName createDefinitionClause_ inheritClause
     ;
 
 createIndex
@@ -55,7 +55,7 @@ existClause_
     : (IF NOT EXISTS)?
     ;
 
-createDefinitions
+createDefinitionClause_
     : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
     ;
 
@@ -141,7 +141,7 @@ tableConstraintOption
     ;
 
 inheritClause
-    : INHERITS tableNames
+    : (INHERITS tableNames)?
     ;
 
 alterIndexName
