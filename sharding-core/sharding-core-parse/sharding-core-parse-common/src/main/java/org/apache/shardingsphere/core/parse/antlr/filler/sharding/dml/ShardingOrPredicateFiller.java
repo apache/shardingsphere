@@ -88,7 +88,8 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
                     isNeedSharding = true;
                     continue;
                 }
-                if (isShardingCondition(predicate.getOperator()) && shardingRule.isShardingColumn(predicate.getColumn().getName(), getTableName(predicate, sqlStatement))) {
+                Optional<String> tableName = findTableName(predicate, sqlStatement);
+                if (isShardingCondition(predicate.getOperator()) && tableName.isPresent() && shardingRule.isShardingColumn(predicate.getColumn().getName(), tableName.get())) {
                     predicates.add(predicate);
                     isNeedSharding = true;
                 }
@@ -116,9 +117,11 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     private AndCondition getAndCondition(final List<PredicateSegment> predicateSegments, final SQLStatement sqlStatement) {
         AndCondition result = new AndCondition();
         for (PredicateSegment each : predicateSegments) {
-            Optional<Table> table = findTable(each, sqlStatement);
-            Column column = new Column(each.getColumn().getName(), table.isPresent() ? table.get().getName() : getTableName(each, sqlStatement));
-            result.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+            Optional<String> tableName = findTableName(each, sqlStatement);
+            if (tableName.isPresent()) {
+                Column column = new Column(each.getColumn().getName(), tableName.get());
+                result.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+            }
         }
         return result;
     }
@@ -128,7 +131,10 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (!(predicate.getExpression() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
-                    fillEncryptCondition(predicate.getColumn().getName(), getTableName(predicate, sqlStatement), predicate, sqlStatement);
+                    Optional<String> tableName = findTableName(predicate, sqlStatement);
+                    if (tableName.isPresent()) {
+                        fillEncryptCondition(predicate.getColumn().getName(), tableName.get(), predicate, sqlStatement);
+                    }
                 }
             }
         }
@@ -154,46 +160,41 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator) || ShardingOperator.BETWEEN.name().equals(operator);
     }
     
-    private Optional<Table> findTable(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> owner = predicateSegment.getColumn().getOwner();
-        return owner.isPresent() ? sqlStatement.getTables().find(owner.get()) : Optional.<Table>absent();
-    }
-    
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private String getTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+    private Optional<String> findTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            return sqlStatement.getTables().getSingleTableName();
+            return Optional.of(sqlStatement.getTables().getSingleTableName());
         }
         SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
         while (null != currentSelectStatement.getParentStatement()) {
             currentSelectStatement = currentSelectStatement.getParentStatement();
-            String tableName = getTableName(predicateSegment, currentSelectStatement.getTables());
-            if (!"".equals(tableName)) {
+            Optional<String> tableName = findTableName(predicateSegment, currentSelectStatement.getTables());
+            if (tableName.isPresent()) {
                 return tableName;
             }
         }
-        return getTableName(predicateSegment, currentSelectStatement.getTables());
+        return findTableName(predicateSegment, currentSelectStatement.getTables());
     }
     
-    private String getTableName(final PredicateSegment predicateSegment, final Tables tables) {
+    private Optional<String> findTableName(final PredicateSegment predicateSegment, final Tables tables) {
         Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tables.getTableNames());
         if (tables.isSingleTable() || tables.isSameTable() || 1 == shardingLogicTableNames.size() || shardingRule.isAllBindingTables(shardingLogicTableNames)) {
-            return tables.getSingleTableName();
+            return Optional.of(tables.getSingleTableName());
         }
         if (predicateSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
-            return table.isPresent() ? table.get().getName() : "";
+            return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         } else {
-            return getTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
+            return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
         }
     }
     
-    private String getTableNameFromMetaData(final String columnName, final Tables tables) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
         for (String each : tables.getTableNames()) {
             if (shardingTableMetaData.containsColumn(each, columnName)) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return "";
+        return Optional.absent();
     }
 }
