@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : createTableHeader createDefinitions inheritClause?
+    : CREATE temporaryClause_ TABLE existClause_ tableName createDefinitions inheritClause?
     ;
 
 createIndex
@@ -71,10 +71,13 @@ tableNamePart
     : tableName ASTERISK_?
     ;
 
-createTableHeader
-    : CREATE ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)? TABLE (IF NOT EXISTS)? tableName
+temporaryClause_
+    : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
     ;
 
+existClause_
+    : (IF NOT EXISTS)?
+    ;
 createDefinitions
     : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
     ;
