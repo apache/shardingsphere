@@ -15,42 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
+package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.select;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
+import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.ShardingOrPredicateFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Where filler.
+ * Subquery predicate filler for sharding.
  *
  * @author duhongjun
  */
-@Getter
 @Setter
-public class WhereFiller implements SQLSegmentFiller<WhereSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
     
     private ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        new OrConditionFiller(shardingRule, shardingTableMetaData).fill(sqlSegment.getOrPredicate(), sqlStatement);
-        sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
-        if (sqlStatement instanceof DeleteStatement) {
-            DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
-            deleteStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
-            deleteStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
-            deleteStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
-            deleteStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
+    public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        ShardingOrPredicateFiller shardingOrPredicateFiller = getShardingOrPredicateFiller();
+        for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
+            selectStatement.getSubqueryConditions().add(shardingOrPredicateFiller.buildCondition(each, sqlStatement));
         }
+    }
+    
+    private ShardingOrPredicateFiller getShardingOrPredicateFiller() {
+        ShardingOrPredicateFiller result = new ShardingOrPredicateFiller();
+        result.setShardingRule(shardingRule);
+        result.setShardingTableMetaData(shardingTableMetaData);
+        return result;
     }
 }

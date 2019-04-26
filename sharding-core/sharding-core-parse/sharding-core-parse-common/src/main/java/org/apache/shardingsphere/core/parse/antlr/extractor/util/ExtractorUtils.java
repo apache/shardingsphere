@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Extractor utility.
@@ -56,15 +57,16 @@ public final class ExtractorUtils {
      * @return matched node
      */
     public static Optional<ParserRuleContext> findFirstChildNode(final ParserRuleContext node, final RuleName ruleName) {
-        if (isMatchedNode(node, ruleName)) {
-            return Optional.of(node);
-        }
-        for (int i = 0; i < node.getChildCount(); i++) {
-            ParseTree child = node.getChild(i);
-            if (child instanceof ParserRuleContext) {
-                Optional<ParserRuleContext> result = findFirstChildNode((ParserRuleContext) child, ruleName);
-                if (result.isPresent()) {
-                    return result;
+        Queue<ParserRuleContext> parserRuleContexts = new LinkedList<>();
+        parserRuleContexts.add(node);
+        ParserRuleContext parserRuleContext;
+        while (null != (parserRuleContext = parserRuleContexts.poll())) {
+            if (isMatchedNode(parserRuleContext, ruleName)) {
+                return Optional.of(parserRuleContext);
+            }
+            for (int i = 0; i < parserRuleContext.getChildCount(); i++) {
+                if (parserRuleContext.getChild(i) instanceof ParserRuleContext) {
+                    parserRuleContexts.add((ParserRuleContext) parserRuleContext.getChild(i));
                 }
             }
         }
@@ -90,6 +92,27 @@ public final class ExtractorUtils {
                 }
             }
         }
+        return Optional.absent();
+    }
+    
+    /**
+     * Find single node from first descendant which only has one child.
+     *
+     * @param node start node
+     * @param ruleName rule name
+     * @return matched node
+     */
+    public static Optional<ParserRuleContext> findSingleNodeFromFirstDescendant(final ParserRuleContext node, final RuleName ruleName) {
+        ParserRuleContext nextNode = node;
+        do {
+            if (isMatchedNode(nextNode, ruleName)) {
+                return Optional.of(nextNode);
+            }
+            if (1 != nextNode.getChildCount() || !(nextNode.getChild(0) instanceof ParserRuleContext)) {
+                return Optional.absent();
+            }
+            nextNode = (ParserRuleContext) nextNode.getChild(0);
+        } while (null != nextNode);
         return Optional.absent();
     }
     

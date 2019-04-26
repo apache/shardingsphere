@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 
@@ -34,5 +34,5 @@ import java.util.Collection;
 @Getter
 public final class InsertValuesSegment implements SQLSegment {
     
-    private final Collection<LiteralExpressionSegment> values;
+    private final Collection<ExpressionSegment> values;
 }

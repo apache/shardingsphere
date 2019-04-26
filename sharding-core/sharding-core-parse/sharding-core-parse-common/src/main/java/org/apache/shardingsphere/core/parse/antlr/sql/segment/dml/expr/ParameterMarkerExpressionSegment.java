@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
 /**
- * Where segment.
- * 
- * @author duhongjun
+ * Parameter marker expression segment.
+ *
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class WhereSegment implements SQLSegment {
+public final class ParameterMarkerExpressionSegment implements ExpressionSegment {
     
-    private final int parameterCount;
+    private final int stopIndex;
     
-    private int whereStartIndex;
+    private final int parameterMarkerIndex;
     
-    private int whereStopIndex;
-    
-    private int whereParameterStartIndex;
-    
-    private int whereParameterEndIndex;
+    @Override
+    public SQLExpression getSQLExpression(final String sql) {
+        return new SQLPlaceholderExpression(parameterMarkerIndex);
+    } 
 }

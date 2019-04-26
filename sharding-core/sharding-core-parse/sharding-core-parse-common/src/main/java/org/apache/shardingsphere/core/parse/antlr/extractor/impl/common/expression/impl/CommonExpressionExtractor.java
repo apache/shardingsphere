@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.impl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
 
 import java.util.Map;
 
 /**
- * Subquery extractor.
+ * Common expression extractor.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
+public final class CommonExpressionExtractor implements OptionalSQLSegmentExtractor {
     
+    // TODO extract column name and value from expression
     @Override
-    public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        return RuleName.SUBQUERY.getName().equals(subqueryNode.getClass().getSimpleName())
-                ? Optional.of(new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex())) : Optional.<SubquerySegment>absent();
+    public Optional<CommonExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        return Optional.of(new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex()));
     }
 }

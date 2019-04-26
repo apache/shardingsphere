@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDa
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
@@ -107,7 +107,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         return insertStatement.getColumnNames().size() - assistedQueryColumnCount;
     }
     
-    private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final LiteralExpressionSegment expressionSegment) {
+    private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
         SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
         String tableName = insertStatement.getTables().getSingleTableName();
         fillShardingCondition(andCondition, columnName, tableName, result);

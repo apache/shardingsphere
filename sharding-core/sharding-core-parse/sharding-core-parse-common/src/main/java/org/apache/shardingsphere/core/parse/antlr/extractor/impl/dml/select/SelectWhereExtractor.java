@@ -40,13 +40,6 @@ public final class SelectWhereExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<WhereSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> selectItemsNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
-        if (!selectItemsNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<ParserRuleContext> fromNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectItemsNode.get().getParent(), RuleName.FROM_CLAUSE);
-        if (!fromNode.isPresent()) {
-            return Optional.absent();
-        }
-        return whereExtractor.extract(fromNode.get().getParent(), parameterMarkerIndexes);
+        return selectItemsNode.isPresent() ? whereExtractor.extract(selectItemsNode.get().getParent(), parameterMarkerIndexes) : Optional.<WhereSegment>absent();
     }
 }

@@ -19,11 +19,10 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
 /**
@@ -35,22 +34,16 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpress
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class LiteralExpressionSegment implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private int placeholderIndex = -1;
-    
-    private Object literals;
+    private final Object literals;
     
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        if (-1 != placeholderIndex) {
-            return new SQLPlaceholderExpression(placeholderIndex);
-        }
         if (literals instanceof Number) {
             return new SQLNumberExpression((Number) literals);
         }
@@ -61,6 +54,6 @@ public final class LiteralExpressionSegment implements ExpressionSegment {
         if (DefaultKeyword.NULL.name().equalsIgnoreCase(value)) {
             return new SQLNumberExpression(null);
         }
-        return new SQLTextExpression(value);
+        return new SQLIgnoreExpression(value);
     } 
 }

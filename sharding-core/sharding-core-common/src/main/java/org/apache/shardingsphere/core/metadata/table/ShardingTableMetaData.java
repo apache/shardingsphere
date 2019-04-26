@@ -90,7 +90,7 @@ public final class ShardingTableMetaData {
      * Get all column names via table.
      *
      * @param tableName table name
-     * @return column names.
+     * @return column names
      */
     public Collection<String> getAllColumnNames(final String tableName) {
         return tables.containsKey(tableName) ? tables.get(tableName).getColumns().keySet() : Collections.<String>emptyList();
