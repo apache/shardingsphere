@@ -15,28 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.fixture;
+package org.apache.shardingsphere.core.route.hook;
 
-import org.apache.shardingsphere.core.hook.ShardHook;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+
+import java.util.Collection;
 
 /**
- * Shard hook fixture.
+ * Routing hook for SPI.
  *
  * @author zhaojun
  */
-public class ShardHookFixture implements ShardHook {
+public final class SPIRoutingHook implements RoutingHook {
+    
+    private final Collection<RoutingHook> routingHooks = NewInstanceServiceLoader.newServiceInstances(RoutingHook.class);
+    
+    static {
+        NewInstanceServiceLoader.register(RoutingHook.class);
+    }
     
     @Override
     public void start(final String sql) {
+        for (RoutingHook each : routingHooks) {
+            each.start(sql);
+        }
     }
     
     @Override
     public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
+        for (RoutingHook each : routingHooks) {
+            each.finishSuccess(sqlRouteResult, shardingTableMetaData);
+        }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
+        for (RoutingHook each : routingHooks) {
+            each.finishFailure(cause);
+        }
     }
 }

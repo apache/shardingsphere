@@ -15,37 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.hook;
+package org.apache.shardingsphere.core.fixture;
 
+import org.apache.shardingsphere.core.route.hook.RoutingHook;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Shard hook.
+ * Routing hook fixture.
  *
  * @author zhaojun
  */
-public interface ShardHook {
+public class RoutingHookFixture implements RoutingHook {
     
-    /**
-     * Handle when shard started.
-     *
-     * @param sql SQL to be sharding
-     */
-    void start(String sql);
+    @Override
+    public void start(final String sql) {
+    }
     
-    /**
-     * Handle when shard finished success.
-     *
-     * @param sqlRouteResult sql route result
-     * @param shardingTableMetaData sharding table meta data
-     */
-    void finishSuccess(SQLRouteResult sqlRouteResult, ShardingTableMetaData shardingTableMetaData);
+    @Override
+    public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
+    }
     
-    /**
-     * Handle when shard finished failure.
-     * 
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    @Override
+    public void finishFailure(final Exception cause) {
+    }
 }

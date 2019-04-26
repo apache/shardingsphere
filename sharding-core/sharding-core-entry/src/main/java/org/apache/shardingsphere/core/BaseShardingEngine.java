@@ -22,7 +22,6 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.hook.SPIShardHook;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -53,7 +53,7 @@ public abstract class BaseShardingEngine {
     
     private final DatabaseType databaseType;
     
-    private final SPIShardHook shardHook = new SPIShardHook();
+    private final SPIRoutingHook routingHook = new SPIRoutingHook();
     
     /**
      * Shard.
@@ -63,28 +63,34 @@ public abstract class BaseShardingEngine {
      * @return SQL route result
      */
     public SQLRouteResult shard(final String sql, final List<Object> parameters) {
-        shardHook.start(sql);
-        try {
-            List<Object> clonedParameters = cloneParameters(parameters);
-            SQLRouteResult result = route(sql, clonedParameters);
-            result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
-            if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
-                boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
-                SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
-            }
-            shardHook.finishSuccess(result, metaData.getTable());
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            shardHook.finishFailure(ex);
-            throw ex;
+        List<Object> clonedParameters = cloneParameters(parameters);
+        SQLRouteResult result = executeRoute(sql, clonedParameters);
+        result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
+        if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
+            boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
+            SQLLogger.logSQL(sql, showSimple, result.getSqlStatement(), result.getRouteUnits());
         }
+        return result;
     }
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
     protected abstract SQLRouteResult route(String sql, List<Object> parameters);
+    
+    private SQLRouteResult executeRoute(final String sql, final List<Object> clonedParameters) {
+        SQLRouteResult result;
+        routingHook.start(sql);
+        try {
+            result = route(sql, clonedParameters);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            routingHook.finishFailure(ex);
+            throw ex;
+        }
+        routingHook.finishSuccess(result, metaData.getTable());
+        return result;
+    }
     
     private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
