@@ -55,10 +55,6 @@ createDefinitionClause_
     : LP_ createDefinitions_ RP_
     ;
 
-createLikeClause_
-    : LP_? LIKE tableName RP_?
-    ;
-
 createDefinitions_
     : createDefinition_ (COMMA_ createDefinition_)*
     ;
@@ -79,10 +75,6 @@ constraintDefinition_
     : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
-checkConstraintDefinition_
-    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
-    ;
-
 inlineDataType_
     : commonDataTypeOption_
     | AUTO_INCREMENT
@@ -91,14 +83,12 @@ inlineDataType_
     | STORAGE (DISK | MEMORY | DEFAULT)
     ;
 
-generatedDataType_
-    : commonDataTypeOption_
-    | (GENERATED ALWAYS)? AS expr
-    | (VIRTUAL | STORED)
-    ;
-
 commonDataTypeOption_
     : primaryKey | UNIQUE KEY? | NOT? NULL | collateName_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
+    ;
+
+checkConstraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
 referenceDefinition_
@@ -107,6 +97,12 @@ referenceDefinition_
 
 referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
+    ;
+
+generatedDataType_
+    : commonDataTypeOption_
+    | (GENERATED ALWAYS)? AS expr
+    | (VIRTUAL | STORED)
     ;
 
 indexType_
@@ -139,6 +135,10 @@ uniqueOption_
 
 foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
+    ;
+
+createLikeClause_
+    : LP_? LIKE tableName RP_?
     ;
 
 alterSpecifications_
