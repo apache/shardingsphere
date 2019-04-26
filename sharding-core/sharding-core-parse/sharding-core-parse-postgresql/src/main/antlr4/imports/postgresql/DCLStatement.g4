@@ -61,7 +61,7 @@ privilegeType_
     ;
 
 onObjectClause_
-    : TABLE? tableName (COMMA_ tableName)*
+    : TABLE? tableNames
     | DATABASE
     | SCHEMA
     | DOMAIN

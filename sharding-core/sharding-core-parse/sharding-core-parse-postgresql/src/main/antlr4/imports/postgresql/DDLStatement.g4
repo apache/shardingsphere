@@ -36,7 +36,7 @@ alterIndex
     ;
 
 dropTable
-    : DROP TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    : DROP TABLE (IF EXISTS)? tableNames
     ;
 
 dropIndex
@@ -91,7 +91,7 @@ likeOption
     ;
 
 inheritClause
-    : INHERITS LP_ tableName (COMMA_ tableName)* RP_
+    : INHERITS tableNames
     ;
 
 alterTableNameWithAsterisk
