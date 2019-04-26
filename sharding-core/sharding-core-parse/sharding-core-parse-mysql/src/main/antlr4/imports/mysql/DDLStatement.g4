@@ -67,14 +67,6 @@ columnDefinition
     : columnName dataType (inlineDataType_* | generatedDataType_*)
     ;
 
-indexDefinition_
-    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
-    ;
-
-constraintDefinition_
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
-    ;
-
 inlineDataType_
     : commonDataTypeOption_
     | AUTO_INCREMENT
@@ -105,6 +97,10 @@ generatedDataType_
     | (VIRTUAL | STORED)
     ;
 
+indexDefinition_
+    : (FULLTEXT | SPATIAL)? (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
+    ;
+
 indexType_
     : USING (BTREE | HASH)
     ;
@@ -119,6 +115,10 @@ keyPart_
 
 indexOption_
     : KEY_BLOCK_SIZE EQ_? NUMBER_ | indexType_ | WITH PARSER identifier_ | COMMENT STRING_ | VISIBLE | INVISIBLE
+    ;
+
+constraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
 primaryKeyOption_
