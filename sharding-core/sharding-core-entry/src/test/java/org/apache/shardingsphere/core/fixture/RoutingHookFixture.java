@@ -15,36 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.hook;
+package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.hook.RoutingHook;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Rewrite Hook.
+ * Routing hook fixture.
  *
- * @author yangyi
+ * @author zhaojun
  */
-public interface RewriteHook {
+public class RoutingHookFixture implements RoutingHook {
     
-    /**
-     * Handle when rewrite started.
-     *
-     * @param tableUnit table unit
-     */
-    void start(TableUnit tableUnit);
+    @Override
+    public void start(final String sql) {
+    }
     
-    /**
-     * Handle when rewrite finished success.
-     *
-     * @param sqlUnit sql unit
-     */
-    void finishSuccess(SQLUnit sqlUnit);
+    @Override
+    public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
+    }
     
-    /**
-     * Handle when rewrite finished failure.
-     *
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    @Override
+    public void finishFailure(final Exception cause) {
+    }
 }

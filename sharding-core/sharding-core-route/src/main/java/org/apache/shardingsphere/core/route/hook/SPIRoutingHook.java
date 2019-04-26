@@ -15,44 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.hook;
+package org.apache.shardingsphere.core.route.hook;
 
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
 
 /**
- * Rewrite hook for SPI.
+ * Routing hook for SPI.
  *
- * @author yangyi
+ * @author zhaojun
  */
-public final class SPIRewriteHook implements RewriteHook {
+public final class SPIRoutingHook implements RoutingHook {
     
-    private final Collection<RewriteHook> rewriteHooks = NewInstanceServiceLoader.newServiceInstances(RewriteHook.class);
+    private final Collection<RoutingHook> routingHooks = NewInstanceServiceLoader.newServiceInstances(RoutingHook.class);
     
     static {
-        NewInstanceServiceLoader.register(RewriteHook.class);
+        NewInstanceServiceLoader.register(RoutingHook.class);
     }
     
     @Override
-    public void start(final TableUnit tableUnit) {
-        for (RewriteHook each : rewriteHooks) {
-            each.start(tableUnit);
+    public void start(final String sql) {
+        for (RoutingHook each : routingHooks) {
+            each.start(sql);
         }
     }
     
     @Override
-    public void finishSuccess(final SQLUnit sqlUnit) {
-        for (RewriteHook each : rewriteHooks) {
-            each.finishSuccess(sqlUnit);
+    public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
+        for (RoutingHook each : routingHooks) {
+            each.finishSuccess(sqlRouteResult, shardingTableMetaData);
         }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        for (RewriteHook each : rewriteHooks) {
+        for (RoutingHook each : routingHooks) {
             each.finishFailure(cause);
         }
     }

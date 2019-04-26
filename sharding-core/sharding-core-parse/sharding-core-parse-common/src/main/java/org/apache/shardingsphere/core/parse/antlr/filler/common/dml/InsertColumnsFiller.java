@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertC
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 
 /**
  * Insert columns filler.
@@ -59,12 +58,8 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
     }
     
     private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
         for (ColumnSegment each : sqlSegment.getColumns()) {
             insertStatement.getColumnNames().add(each.getName());
-            if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), tableName, each.getOwnerQuoteCharacter(), 0));
-            }
         }
     }
 }
