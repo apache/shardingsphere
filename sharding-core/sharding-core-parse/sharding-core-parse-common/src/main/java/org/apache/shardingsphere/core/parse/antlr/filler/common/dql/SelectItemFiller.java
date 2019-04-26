@@ -92,14 +92,6 @@ public final class SelectItemFiller implements SQLSegmentFiller {
     }
     
     private void fillColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
-        Optional<String> owner = selectItemSegment.getOwner();
-        if (owner.isPresent()) {
-            Optional<Table> table = selectStatement.getTables().find(owner.get());
-            if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
-                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
-            }
-        }
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));
     }
     
