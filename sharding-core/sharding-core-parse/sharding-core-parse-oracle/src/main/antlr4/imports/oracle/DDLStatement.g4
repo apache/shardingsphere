@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE temporaryClause_ TABLE tableName relationalTable
+    : CREATE temporaryClause_ TABLE tableName createDefinitionClause_
     ;
 
 createIndex
@@ -64,7 +64,7 @@ domainIndexClause
     : indexTypeName
     ;
 
-relationalTable
+createDefinitionClause_
     : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
@@ -74,6 +74,90 @@ relationalProperties
 
 relationalProperty
     : columnDefinition | virtualColumnDefinition | outOfLineConstraint | outOfLineRefConstraint
+    ;
+
+columnDefinition
+    : columnName dataType SORT? (VISIBLE | INVISIBLE)? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpec)? (inlineConstraint+ | inlineRefConstraint)?
+    ;
+
+identityClause
+    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LP_? (identityOptions+)? RP_?
+    ;
+
+identityOptions
+    : START WITH (NUMBER_ | LIMIT VALUE)
+    | INCREMENT BY NUMBER_
+    | MAXVALUE NUMBER_
+    | NOMAXVALUE
+    | MINVALUE NUMBER_
+    | NOMINVALUE
+    | CYCLE
+    | NOCYCLE
+    | CACHE NUMBER_
+    | NOCACHE
+    | ORDER
+    | NOORDER
+    ;
+
+encryptionSpec
+    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
+    ;
+
+inlineConstraint
+    : (CONSTRAINT ignoredIdentifier_)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
+    ;
+
+referencesClause
+    : REFERENCES tableName columnNames? (ON DELETE (CASCADE | SET NULL))?
+    ;
+
+constraintState
+    : notDeferrable 
+    | initiallyClause 
+    | RELY | NORELY 
+    | usingIndexClause 
+    | ENABLE | DISABLE 
+    | VALIDATE | NOVALIDATE 
+    | exceptionsClause
+    ;
+
+notDeferrable
+    : NOT? DEFERRABLE
+    ;
+
+initiallyClause
+    : INITIALLY (IMMEDIATE | DEFERRED)
+    ;
+
+exceptionsClause
+    : EXCEPTIONS INTO tableName
+    ;
+
+usingIndexClause
+    : USING INDEX (indexName | LP_ createIndex RP_)?
+    ;
+
+inlineRefConstraint
+    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier_)? referencesClause constraintState*
+    ;
+
+virtualColumnDefinition
+    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
+    ;
+
+outOfLineConstraint
+    : (CONSTRAINT ignoredIdentifier_)?
+    (UNIQUE columnNames
+    | primaryKey columnNames 
+    | FOREIGN KEY columnNames referencesClause
+    | CHECK LP_ expr RP_
+    ) constraintState*
+    ;
+
+outOfLineRefConstraint
+    : SCOPE FOR LP_ lobItem RP_ IS tableName
+    | REF LP_ lobItem RP_ WITH ROWID
+    | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;
 
 tableProperties
@@ -189,90 +273,6 @@ dropConstraintClause
 
 alterExternalTable
     : (addColumnSpecification | modifyColumnSpecification | dropColumnSpecification)+
-    ;
-
-columnDefinition
-    : columnName dataType SORT? (VISIBLE | INVISIBLE)? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpec)? (inlineConstraint+ | inlineRefConstraint)?
-    ;
-
-identityClause
-    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LP_? (identityOptions+)? RP_?
-    ;
-
-identityOptions
-    : START WITH (NUMBER_ | LIMIT VALUE)
-    | INCREMENT BY NUMBER_
-    | MAXVALUE NUMBER_
-    | NOMAXVALUE
-    | MINVALUE NUMBER_
-    | NOMINVALUE
-    | CYCLE
-    | NOCYCLE
-    | CACHE NUMBER_
-    | NOCACHE
-    | ORDER
-    | NOORDER
-    ;
-
-virtualColumnDefinition
-    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
-    ;
-
-inlineConstraint
-    : (CONSTRAINT ignoredIdentifier_)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
-    ;
-
-referencesClause
-    : REFERENCES tableName columnNames? (ON DELETE (CASCADE | SET NULL))?
-    ;
-
-constraintState
-    : notDeferrable 
-    | initiallyClause 
-    | RELY | NORELY 
-    | usingIndexClause 
-    | ENABLE | DISABLE 
-    | VALIDATE | NOVALIDATE 
-    | exceptionsClause
-    ;
-
-notDeferrable
-    : NOT? DEFERRABLE
-    ;
-
-initiallyClause
-    : INITIALLY (IMMEDIATE | DEFERRED)
-    ;
-
-exceptionsClause
-    : EXCEPTIONS INTO tableName
-    ;
-
-usingIndexClause
-    : USING INDEX (indexName | LP_ createIndex RP_)?
-    ;
-
-inlineRefConstraint
-    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier_)? referencesClause constraintState*
-    ;
-
-outOfLineConstraint
-    : (CONSTRAINT ignoredIdentifier_)?
-    (UNIQUE columnNames
-    | primaryKey columnNames 
-    | FOREIGN KEY columnNames referencesClause
-    | CHECK LP_ expr RP_
-    ) constraintState*
-    ;
-
-outOfLineRefConstraint
-    : SCOPE FOR LP_ lobItem RP_ IS tableName
-    | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
-    ;
-
-encryptionSpec
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
     ;
 
 objectProperties
