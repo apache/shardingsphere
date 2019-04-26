@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE temporaryClause_ TABLE tableName createDefinitionClause_
+    : CREATE createSpecification_ TABLE tableName createDefinitionClause_
     ;
 
 createIndex
@@ -48,7 +48,7 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
-temporaryClause_
+createSpecification_
     : (GLOBAL TEMPORARY)?
     ;
 
@@ -77,7 +77,7 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName dataType SORT? (VISIBLE | INVISIBLE)? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpec)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName dataType SORT? (VISIBLE | INVISIBLE)? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpecification_)? (inlineConstraint+ | inlineRefConstraint)?
     ;
 
 identityClause
@@ -99,7 +99,7 @@ identityOptions
     | NOORDER
     ;
 
-encryptionSpec
+encryptionSpecification_
     : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
     ;
 
@@ -169,7 +169,7 @@ unionSelect
     ;
 
 alterTableProperties
-    : renameTableSpecification_ | REKEY encryptionSpec
+    : renameTableSpecification_ | REKEY encryptionSpecification_
     ;
 
 renameTableSpecification_
@@ -205,7 +205,7 @@ modifyColumnSpecification
     ;
 
 modifyColProperties
-    : columnName dataType? (DEFAULT expr)? (ENCRYPT encryptionSpec | DECRYPT)? inlineConstraint* 
+    : columnName dataType? (DEFAULT expr)? (ENCRYPT encryptionSpecification_ | DECRYPT)? inlineConstraint* 
     ;
 
 modifyColSubstitutable
