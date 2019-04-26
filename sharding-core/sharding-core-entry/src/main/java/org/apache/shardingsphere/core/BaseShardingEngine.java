@@ -78,18 +78,17 @@ public abstract class BaseShardingEngine {
     protected abstract SQLRouteResult route(String sql, List<Object> parameters);
     
     private SQLRouteResult executeRoute(final String sql, final List<Object> clonedParameters) {
-        SQLRouteResult result;
         routingHook.start(sql);
         try {
-            result = route(sql, clonedParameters);
+            SQLRouteResult result = route(sql, clonedParameters);
+            routingHook.finishSuccess(result, metaData.getTable());
+            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             routingHook.finishFailure(ex);
             throw ex;
         }
-        routingHook.finishSuccess(result, metaData.getTable());
-        return result;
     }
     
     private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
