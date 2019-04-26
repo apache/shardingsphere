@@ -73,14 +73,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     public OrCondition buildCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         OrCondition result = new OrCondition();
         fillShardingConditions(sqlSegment, sqlStatement, result);
-        Collection<Integer> stopIndexes = new HashSet<>();
-        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                if (!(predicate.getExpression() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
-                    fillEncryptCondition(predicate.getColumn().getName(), getTableName(sqlStatement, predicate), predicate, sqlStatement);
-                }
-            }
-        }
+        fillEncryptConditions(sqlSegment, sqlStatement);
         return result;
     }
     
@@ -130,6 +123,17 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             Optional<String> tableName = getTableName(each, sqlStatement);
             Column column = new Column(each.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(sqlStatement, each));
             andCondition.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+        }
+    }
+    
+    private void fillEncryptConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        Collection<Integer> stopIndexes = new HashSet<>();
+        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                if (!(predicate.getExpression() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
+                    fillEncryptCondition(predicate.getColumn().getName(), getTableName(sqlStatement, predicate), predicate, sqlStatement);
+                }
+            }
         }
     }
     
