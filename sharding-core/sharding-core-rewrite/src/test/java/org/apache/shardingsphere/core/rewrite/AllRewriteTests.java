@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
-import org.apache.shardingsphere.core.rewrite.hook.SPIRewriteHookTest;
 import org.apache.shardingsphere.core.rewrite.placeholder.AllPlaceholderTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,7 +26,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         SQLBuilderTest.class, 
         SQLRewriteEngineTest.class,
-        SPIRewriteHookTest.class,
         AllPlaceholderTests.class
     })
 public final class AllRewriteTests {

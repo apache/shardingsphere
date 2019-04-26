@@ -71,20 +71,13 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
      * @return or condition
      */
     public OrCondition buildCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        OrCondition result = new OrCondition();
-        fillShardingConditions(sqlSegment, sqlStatement, result);
-        Collection<Integer> stopIndexes = new HashSet<>();
-        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                if (!(predicate.getExpression() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
-                    fillEncryptCondition(predicate.getColumn().getName(), getTableName(sqlStatement, predicate), predicate, sqlStatement);
-                }
-            }
-        }
+        OrCondition result = fillShardingConditions(sqlSegment, sqlStatement);
+        fillEncryptConditions(sqlSegment, sqlStatement);
         return result;
     }
     
-    private void fillShardingConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement, final OrCondition orCondition) {
+    private OrCondition fillShardingConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        OrCondition result = new OrCondition();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             List<PredicateSegment> predicates = new LinkedList<>();
             boolean isNeedSharding = false;
@@ -95,18 +88,19 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
                     isNeedSharding = true;
                     continue;
                 }
-                if (isShardingCondition(predicate.getOperator()) && shardingRule.isShardingColumn(predicate.getColumn().getName(), getTableName(sqlStatement, predicate))) {
+                Optional<String> tableName = findTableName(predicate, sqlStatement);
+                if (isShardingCondition(predicate.getOperator()) && tableName.isPresent() && shardingRule.isShardingColumn(predicate.getColumn().getName(), tableName.get())) {
                     predicates.add(predicate);
                     isNeedSharding = true;
                 }
             }
-            if (isNeedSharding) {
-                fillAndCondition(sqlStatement, orCondition, predicates);
-            } else {
-                orCondition.getAndConditions().clear();
-                return;
+            if (!isNeedSharding || predicates.isEmpty()) {
+                result.getAndConditions().clear();
+                return result;
             }
+            result.getAndConditions().add(getAndCondition(predicates, sqlStatement));
         }
+        return result;
     }
     
     private void addTableTokenForColumn(final SQLStatement sqlStatement, final ColumnSegment column) {
@@ -120,16 +114,29 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         }
     }
     
-    private void fillAndCondition(final SQLStatement sqlStatement, final OrCondition orCondition, final List<PredicateSegment> predicateSegments) {
-        if (predicateSegments.isEmpty()) {
-            return;
-        }
-        AndCondition andCondition = new AndCondition();
-        orCondition.getAndConditions().add(andCondition);
+    private AndCondition getAndCondition(final List<PredicateSegment> predicateSegments, final SQLStatement sqlStatement) {
+        AndCondition result = new AndCondition();
         for (PredicateSegment each : predicateSegments) {
-            Optional<String> tableName = getTableName(each, sqlStatement);
-            Column column = new Column(each.getColumn().getName(), tableName.isPresent() ? tableName.get() : getTableName(sqlStatement, each));
-            andCondition.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+            Optional<String> tableName = findTableName(each, sqlStatement);
+            if (tableName.isPresent()) {
+                Column column = new Column(each.getColumn().getName(), tableName.get());
+                result.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+            }
+        }
+        return result;
+    }
+    
+    private void fillEncryptConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        Collection<Integer> stopIndexes = new HashSet<>();
+        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                if (!(predicate.getExpression() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
+                    Optional<String> tableName = findTableName(predicate, sqlStatement);
+                    if (tableName.isPresent()) {
+                        fillEncryptCondition(predicate.getColumn().getName(), tableName.get(), predicate, sqlStatement);
+                    }
+                }
+            }
         }
     }
     
@@ -154,50 +161,40 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private String getTableName(final SQLStatement sqlStatement, final PredicateSegment predicateSegment) {
+    private Optional<String> findTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            return sqlStatement.getTables().getSingleTableName();
+            return Optional.of(sqlStatement.getTables().getSingleTableName());
         }
         SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
         while (null != currentSelectStatement.getParentStatement()) {
             currentSelectStatement = currentSelectStatement.getParentStatement();
-            String tableName = getTableName(predicateSegment, currentSelectStatement.getTables());
-            if (!"".equals(tableName)) {
+            Optional<String> tableName = findTableName(predicateSegment, currentSelectStatement.getTables());
+            if (tableName.isPresent()) {
                 return tableName;
             }
         }
-        return getTableName(predicateSegment, currentSelectStatement.getTables());
+        return findTableName(predicateSegment, currentSelectStatement.getTables());
     }
     
-    private Optional<String> getTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        if (predicateSegment.getColumn().getOwner().isPresent()) {
-            Optional<Table> table = sqlStatement.getTables().find(predicateSegment.getColumn().getOwner().get());
-            if (table.isPresent()) {
-                return Optional.of(table.get().getName());
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private String getTableName(final PredicateSegment predicateSegment, final Tables tables) {
+    private Optional<String> findTableName(final PredicateSegment predicateSegment, final Tables tables) {
         Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tables.getTableNames());
         if (tables.isSingleTable() || tables.isSameTable() || 1 == shardingLogicTableNames.size() || shardingRule.isAllBindingTables(shardingLogicTableNames)) {
-            return tables.getSingleTableName();
+            return Optional.of(tables.getSingleTableName());
         }
         if (predicateSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
-            return table.isPresent() ? table.get().getName() : "";
+            return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         } else {
-            return getTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
+            return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
         }
     }
     
-    private String getTableNameFromMetaData(final String columnName, final Tables tables) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
         for (String each : tables.getTableNames()) {
             if (shardingTableMetaData.containsColumn(each, columnName)) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return "";
+        return Optional.absent();
     }
 }
