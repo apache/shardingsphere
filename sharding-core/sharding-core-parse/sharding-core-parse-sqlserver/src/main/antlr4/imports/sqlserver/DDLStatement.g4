@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : createTableHeader createTableBody
+    : CREATE TABLE tableName fileTableClause_ createDefinitionClause_
     ;
 
 createIndex
@@ -58,17 +58,108 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
-createTableHeader
-    : CREATE TABLE tableName
+fileTableClause_
+    : (AS FILETABLE)?
     ;
 
-createTableBody
-    : (AS FILETABLE)? LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_(ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
-    (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
+createDefinitionClause_
+    : createTableDefinitions_ partitionScheme_ fileGroup_
     ;
 
-createTableDefinition
+createTableDefinitions_
+    : LP_ createTableDefinition_ (COMMA_ createTableDefinition_)* (COMMA_ periodClause)? RP_
+    ;
+
+createTableDefinition_
     : columnDefinition | computedColumnDefinition | columnSetDefinition | tableConstraint | tableIndex
+    ;
+
+columnDefinition
+    : columnName dataType columnDefinitionOption* columnConstraints columnIndex?
+    ;
+
+columnDefinitionOption
+    : FILESTREAM
+    | COLLATE collationName
+    | SPARSE
+    | MASKED WITH LP_ FUNCTION EQ_ STRING_ RP_
+    | (CONSTRAINT ignoredIdentifier_)? DEFAULT expr
+    | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?
+    | NOT FOR REPLICATION
+    | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
+    | NOT? NULL
+    | ROWGUIDCOL 
+    | ENCRYPTED WITH LP_ COLUMN_ENCRYPTION_KEY EQ_ ignoredIdentifier_ COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
+    | columnConstraint (COMMA_ columnConstraint)*
+    | columnIndex
+    ;
+
+columnConstraint
+    : (CONSTRAINT ignoredIdentifier_)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
+    ;
+
+primaryKeyConstraint
+    : (primaryKey | UNIQUE) (diskTablePrimaryKeyConstraintOption | memoryTablePrimaryKeyConstraintOption)
+    ;
+
+diskTablePrimaryKeyConstraintOption
+    : (CLUSTERED | NONCLUSTERED)? primaryKeyWithClause? primaryKeyOnClause?
+    ;
+
+primaryKeyWithClause
+    : WITH (FILLFACTOR EQ_ NUMBER_ | LP_ indexOption (COMMA_ indexOption)* RP_)
+    ;
+
+primaryKeyOnClause
+    : onSchemaColumn | onFileGroup | onString
+    ;
+
+onSchemaColumn
+    : ON schemaName LP_ columnName RP_
+    ;
+
+onFileGroup
+    : ON ignoredIdentifier_
+    ;
+
+onString
+    : ON STRING_
+    ;
+
+memoryTablePrimaryKeyConstraintOption
+    : CLUSTERED withBucket?
+    ;
+
+withBucket
+    : WITH LP_ BUCKET_COUNT EQ_ NUMBER_ RP_
+    ;
+
+columnForeignKeyConstraint
+    : (FOREIGN KEY)? REFERENCES tableName LP_ columnName RP_ foreignKeyOnAction*
+    ;
+
+foreignKeyOnAction
+    : ON (DELETE | UPDATE) foreignKeyOn | NOT FOR REPLICATION
+    ;
+
+foreignKeyOn
+    : NO ACTION | CASCADE | SET (NULL | DEFAULT)
+    ;
+
+checkConstraint
+    : CHECK(NOT FOR REPLICATION)? LP_ expr RP_
+    ;
+
+columnConstraints
+    : (columnConstraint(COMMA_ columnConstraint)*)?
+    ;
+
+partitionScheme_
+    : (ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
+    ;
+
+fileGroup_
+    : (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
     ;
 
 periodClause
@@ -122,84 +213,8 @@ tableStretchOptions
     : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA_)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)
     ;
 
-columnDefinition
-    : columnName dataType columnDefinitionOption* (columnConstraint(COMMA_ columnConstraint)*)? columnIndex?
-    ;
-
-columnDefinitionOption
-    : FILESTREAM
-    | COLLATE collationName
-    | SPARSE
-    | MASKED WITH LP_ FUNCTION EQ_ STRING_ RP_
-    | (CONSTRAINT ignoredIdentifier_)? DEFAULT expr
-    | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?
-    | NOT FOR REPLICATION
-    | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
-    | NOT? NULL
-    | ROWGUIDCOL 
-    | ENCRYPTED WITH LP_ COLUMN_ENCRYPTION_KEY EQ_ ignoredIdentifier_ COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
-    | columnConstraint (COMMA_ columnConstraint)*
-    | columnIndex
-    ;
-
-columnConstraint
-    : (CONSTRAINT ignoredIdentifier_)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
-    ;
-
-primaryKeyConstraint
-    : (primaryKey | UNIQUE) (diskTablePrimaryKeyConstraintOption | memoryTablePrimaryKeyConstraintOption)
-    ;
-
-diskTablePrimaryKeyConstraintOption
-    : (CLUSTERED | NONCLUSTERED)? primaryKeyWithClause? primaryKeyOnClause?
-    ;
-
-columnForeignKeyConstraint
-    : (FOREIGN KEY)? REFERENCES tableName LP_ columnName RP_ foreignKeyOnAction*
-    ;
-
-foreignKeyOnAction
-    : ON (DELETE | UPDATE) foreignKeyOn | NOT FOR REPLICATION
-    ;
-
-foreignKeyOn
-    : NO ACTION | CASCADE | SET (NULL | DEFAULT)
-    ;
-
-memoryTablePrimaryKeyConstraintOption
-    : CLUSTERED withBucket?
-    ;
-
 hashWithBucket
     : HASH columnNames withBucket
-    ;
-
-withBucket
-    : WITH LP_ BUCKET_COUNT EQ_ NUMBER_ RP_
-    ;
-
-primaryKeyWithClause
-    : WITH (FILLFACTOR EQ_ NUMBER_ | LP_ indexOption (COMMA_ indexOption)* RP_)
-    ;
-
-primaryKeyOnClause
-    : onSchemaColumn | onFileGroup | onString
-    ;
-
-onSchemaColumn
-    : ON schemaName LP_ columnName RP_
-    ;
-
-onFileGroup
-    : ON ignoredIdentifier_
-    ;
-
-onString
-    : ON STRING_
-    ;
-
-checkConstraint
-    : CHECK(NOT FOR REPLICATION)? LP_ expr RP_
     ;
 
 columnIndex
