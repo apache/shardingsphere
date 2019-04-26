@@ -241,7 +241,7 @@ columnConstraintOption
     | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
     | UNIQUE indexParameters
     | primaryKey indexParameters
-    | REFERENCES tableName (LP_ columnName RP_)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
+    | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
     ;
 
 checkOption
@@ -266,22 +266,17 @@ sequenceOption
     | CYCLE
     | NO CYCLE
     | CACHE NUMBER_
+    | OWNED BY
     ;
 
 indexParameters
     : (USING INDEX TABLESPACE ignoredIdentifier_)?
+    | INCLUDE columnNames
+    | WITH
     ;
 
 action
     : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
-    ;
-
-foreignKeyOnAction
-    : ON (UPDATE foreignKeyOn | DELETE foreignKeyOn)
-    ;
-
-foreignKeyOn
-    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
 constraintOptionalParam
