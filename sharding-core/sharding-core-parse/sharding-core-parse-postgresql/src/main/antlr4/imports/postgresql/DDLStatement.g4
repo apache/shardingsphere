@@ -213,7 +213,8 @@ tableConstraintOption
     : checkOption
     | UNIQUE columnNames indexParameters
     | primaryKey columnNames indexParameters
-    | FOREIGN KEY columnNames REFERENCES tableName columnNames (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
+    | EXCLUDE (USING ignoredIdentifier_)?
+    | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
     ;
 
 excludeElement
