@@ -67,7 +67,7 @@ characterSetName_
     ;
 
 collateName_
-    : IDENTIFIER_
+    : COLLATE IDENTIFIER_
     ;
 
 identifier_

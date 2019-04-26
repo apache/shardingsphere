@@ -19,32 +19,129 @@ grammar DDLStatement;
 
 import Symbol, Keyword, Literals, BaseRule;
 
+createTable
+    : CREATE createSpecification_ TABLE notExistClause_ tableName createDefinitionClause_ inheritClause_
+    ;
+
 createIndex
     : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
-    ;
-
-dropIndex
-    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
-    ;
-
-alterIndex
-    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
-    ;
-
-createTable
-    : createTableHeader createDefinitions inheritClause?
     ;
 
 alterTable
     : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification_
     ;
 
+alterIndex
+    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
+    ;
+
+dropTable
+    : DROP TABLE (IF EXISTS)? tableNames
+    ;
+
+dropIndex
+    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
+    ;
+    
 truncateTable
     : TRUNCATE TABLE? ONLY? tableNameParts
     ;
 
-dropTable
-    : DROP TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+createSpecification_
+    : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
+    ;
+
+notExistClause_
+    : (IF NOT EXISTS)?
+    ;
+
+createDefinitionClause_
+    : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
+    ;
+
+createDefinition
+    : columnDefinition | tableConstraint | LIKE tableName likeOption*
+    ;
+
+columnDefinition
+    : columnName dataType collateClause? columnConstraint*
+    ;
+
+columnConstraint
+    : constraintClause? columnConstraintOption constraintOptionalParam
+    ;
+
+constraintClause
+    : CONSTRAINT ignoredIdentifier_
+    ;
+
+columnConstraintOption
+    : NOT? NULL
+    | checkOption
+    | DEFAULT defaultExpr
+    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
+    | UNIQUE indexParameters
+    | primaryKey indexParameters
+    | REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    ;
+
+checkOption
+    : CHECK expr (NO INHERIT)?
+    ;
+
+defaultExpr
+    : CURRENT_TIMESTAMP | expr
+    ;
+
+sequenceOptions
+    : sequenceOption+
+    ;
+
+sequenceOption
+    : START WITH? NUMBER_
+    | INCREMENT BY? NUMBER_
+    | MAXVALUE NUMBER_
+    | NO MAXVALUE
+    | MINVALUE NUMBER_
+    | NO MINVALUE
+    | CYCLE
+    | NO CYCLE
+    | CACHE NUMBER_
+    | OWNED BY
+    ;
+
+indexParameters
+    : (USING INDEX TABLESPACE ignoredIdentifier_)?
+    | INCLUDE columnNames
+    | WITH
+    ;
+
+action
+    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
+    ;
+
+constraintOptionalParam
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
+    ;
+
+likeOption
+    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
+    ;
+
+tableConstraint
+    : constraintClause? tableConstraintOption constraintOptionalParam
+    ;
+
+tableConstraintOption
+    : checkOption
+    | UNIQUE columnNames indexParameters
+    | primaryKey columnNames indexParameters
+    | EXCLUDE (USING ignoredIdentifier_)?
+    | FOREIGN KEY columnNames REFERENCES tableName columnNames? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (DELETE | UPDATE) action)*
+    ;
+
+inheritClause_
+    : (INHERITS tableNames)?
     ;
 
 alterIndexName
@@ -69,26 +166,6 @@ tableNameParts
 
 tableNamePart
     : tableName ASTERISK_?
-    ;
-
-createTableHeader
-    : CREATE ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)? TABLE (IF NOT EXISTS)? tableName
-    ;
-
-createDefinitions
-    : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
-    ;
-
-createDefinition
-    : columnDefinition | tableConstraint | LIKE tableName likeOption*
-    ;
-
-likeOption
-    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
-    ;
-
-inheritClause
-    : INHERITS LP_ tableName (COMMA_ tableName)* RP_
     ;
 
 alterTableNameWithAsterisk
@@ -203,17 +280,6 @@ newTableName
 
 usingIndexType
     : USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
-    ;
-
-tableConstraint
-    : constraintClause? tableConstraintOption constraintOptionalParam
-    ;
-
-tableConstraintOption
-    : checkOption
-    | UNIQUE columnNames indexParameters
-    | primaryKey columnNames indexParameters
-    | FOREIGN KEY columnNames REFERENCES tableName columnNames (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
     ;
 
 excludeElement
