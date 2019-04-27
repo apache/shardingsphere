@@ -24,7 +24,7 @@ createTable
     ;
 
 createIndex
-    : CREATE UNIQUE? (CLUSTERED | NONCLUSTERED)? INDEX indexName ON tableName columnNames
+    : CREATE createIndexSpecification_ INDEX indexName ON tableName columnNames
     ;
 
 alterTable
@@ -212,6 +212,18 @@ tableIndex
     (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause?
     (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
     ;
+
+
+createIndexSpecification_
+    : UNIQUE? (CLUSTERED | NONCLUSTERED)?
+    ;
+
+
+
+
+
+
+
 
 tableOption
     : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
