@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE notExistClause_ tableName createDefinitionClause_ inheritClause_
+    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName createDefinitionClause_ inheritClause_
     ;
 
 createIndex
@@ -51,7 +51,7 @@ createTableSpecification_
     : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
     ;
 
-notExistClause_
+tableNotExistClause_
     : (IF NOT EXISTS)?
     ;
 
