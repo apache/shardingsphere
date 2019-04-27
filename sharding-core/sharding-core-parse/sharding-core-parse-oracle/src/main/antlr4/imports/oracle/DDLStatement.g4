@@ -20,11 +20,11 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE createSpecification_ TABLE tableName createDefinitionClause_
+    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause_
     ;
 
 createIndex
-    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
+    : CREATE createIndexSpecification_ INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
     ;
 
 alterTable
@@ -48,7 +48,7 @@ truncateTable
     : TRUNCATE TABLE tableName
     ;
 
-createSpecification_
+createTableSpecification_
     : (GLOBAL TEMPORARY)?
     ;
 
@@ -159,6 +159,35 @@ outOfLineRefConstraint
     | REF LP_ lobItem RP_ WITH ROWID
     | (CONSTRAINT ignoredIdentifier_)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;
+
+createIndexSpecification_
+    : (UNIQUE | BITMAP)?
+    ;
+
+tableIndexClause_
+    : tableName alias? LP_ indexExpr_ (COMMA_ indexExpr_)* RP_
+    ;
+
+indexExpr_
+    : (columnName | expr) (ASC | DESC)?
+    ;
+
+bitmapJoinIndexClause_
+    : tableName LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_ FROM tableName alias? (COMMA_ tableName alias?)* WHERE expr
+    ;
+
+columnSortClause_
+    : tableName alias? columnName (ASC | DESC)?
+    ;
+
+
+
+
+
+
+
+
+
 
 tableProperties
     : columnProperties? (AS unionSelect)?
@@ -298,21 +327,4 @@ objectTypeColProperties
 substitutableColumnClause
     : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
-
-tableIndexClause_
-    : tableName alias? LP_ indexExpr_ (COMMA_ indexExpr_)* RP_
-    ;
-
-indexExpr_
-    : (columnName | expr) (ASC | DESC)?
-    ;
-
-bitmapJoinIndexClause_
-    : tableName LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_ FROM tableName alias? (COMMA_ tableName alias?)* WHERE expr
-    ;
-
-columnSortClause_
-    : tableName alias? columnName (ASC | DESC)?
-    ;
-
 
