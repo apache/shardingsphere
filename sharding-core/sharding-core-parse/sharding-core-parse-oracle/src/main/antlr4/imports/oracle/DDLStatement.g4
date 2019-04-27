@@ -165,10 +165,14 @@ createIndexSpecification_
     ;
 
 tableIndexClause_
-    : tableName alias? LP_ indexExpr_ (COMMA_ indexExpr_)* RP_
+    : tableName alias? indexExpressions_
     ;
 
-indexExpr_
+indexExpressions_
+    : LP_ indexExpression_ (COMMA_ indexExpression_)* RP_
+    ;
+
+indexExpression_
     : (columnName | expr) (ASC | DESC)?
     ;
 
