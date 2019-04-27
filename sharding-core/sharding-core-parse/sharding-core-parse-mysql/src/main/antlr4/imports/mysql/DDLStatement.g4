@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE notExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
     ;
 
 createIndex
@@ -47,7 +47,7 @@ createTableSpecification_
     : TEMPORARY?
     ;
 
-notExistClause_
+tableNotExistClause_
     : (IF NOT EXISTS)?
     ;
 
@@ -144,6 +144,9 @@ createLikeClause_
 createIndexSpecification_
     : (UNIQUE | FULLTEXT | SPATIAL)?
     ;
+
+
+
 
 
 
