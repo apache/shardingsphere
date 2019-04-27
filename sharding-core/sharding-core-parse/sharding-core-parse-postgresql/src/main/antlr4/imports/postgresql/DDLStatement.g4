@@ -20,11 +20,11 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE createSpecification_ TABLE notExistClause_ tableName createDefinitionClause_ inheritClause_
+    : CREATE createTableSpecification_ TABLE notExistClause_ tableName createDefinitionClause_ inheritClause_
     ;
 
 createIndex
-    : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
+    : CREATE createIndexSpecification_ (indexNotExistClause_ indexName)? ON tableName 
     ;
 
 alterTable
@@ -47,7 +47,7 @@ truncateTable
     : TRUNCATE TABLE? ONLY? tableNameParts
     ;
 
-createSpecification_
+createTableSpecification_
     : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
     ;
 
@@ -143,6 +143,20 @@ tableConstraintOption
 inheritClause_
     : (INHERITS tableNames)?
     ;
+
+createIndexSpecification_
+    : UNIQUE? INDEX CONCURRENTLY?
+    ;
+
+indexNotExistClause_
+    : (IF NOT EXISTS)?
+    ;
+
+
+
+
+
+
 
 alterIndexName
     : ALTER INDEX (IF EXISTS)? indexName
