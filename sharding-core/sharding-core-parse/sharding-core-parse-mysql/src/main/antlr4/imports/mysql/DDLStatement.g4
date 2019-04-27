@@ -20,11 +20,11 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE createSpecification_ TABLE notExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createTableSpecification_ TABLE notExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
     ;
 
 createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
+    : CREATE createIndexSpecification_ INDEX indexName indexType_? ON tableName
     ;
 
 alterTable
@@ -43,7 +43,7 @@ truncateTable
     : TRUNCATE TABLE? tableName
     ;
 
-createSpecification_
+createTableSpecification_
     : TEMPORARY?
     ;
 
@@ -140,6 +140,15 @@ foreignKeyOption_
 createLikeClause_
     : LP_? LIKE tableName RP_?
     ;
+
+createIndexSpecification_
+    : (UNIQUE | FULLTEXT | SPATIAL)?
+    ;
+
+
+
+
+
 
 alterSpecifications_
     : alterSpecification_ (COMMA_ alterSpecification_)*
