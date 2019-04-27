@@ -24,7 +24,7 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ (indexNotExistClause_ indexName)? ON tableName 
+    : CREATE createIndexSpecification_ INDEX concurrentlyClause_ (indexNotExistClause_ indexName)? ON onlyClause_ tableName 
     ;
 
 alterTable
@@ -145,14 +145,20 @@ inheritClause_
     ;
 
 createIndexSpecification_
-    : UNIQUE? INDEX CONCURRENTLY?
+    : UNIQUE?
+    ;
+
+concurrentlyClause_
+    : CONCURRENTLY?
     ;
 
 indexNotExistClause_
     : (IF NOT EXISTS)?
     ;
 
-
+onlyClause_
+    : ONLY
+    ;
 
 
 
