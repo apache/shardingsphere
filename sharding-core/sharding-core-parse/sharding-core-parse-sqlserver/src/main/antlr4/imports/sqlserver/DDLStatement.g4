@@ -340,7 +340,7 @@ alterDrop
     ;
 
 alterTableDropConstraint
-    : CONSTRAINT? (IF EXISTS)? dropConstraintName (COMMA_ dropConstraintName)*
+    : CONSTRAINT? tableExistClause_? dropConstraintName (COMMA_ dropConstraintName)*
     ;
 
 dropConstraintName
@@ -356,11 +356,11 @@ dropConstraintOption
     ;
 
 dropColumnSpecification
-    : COLUMN (IF EXISTS)? columnName (COMMA_ columnName)*
+    : COLUMN columnExistClause_? columnName (COMMA_ columnName)*
     ;
 
 dropIndexSpecification
-    : INDEX (IF EXISTS)? indexName (COMMA_ indexName)*
+    : INDEX indexExistClause_ indexName (COMMA_ indexName)*
     ;
 
 alterCheckConstraint 
@@ -442,7 +442,9 @@ indexExistClause_
     : (IF EXISTS)?
     ;
 
-
+columnExistClause_
+    : (IF EXISTS)?
+    ;
 
 
 
