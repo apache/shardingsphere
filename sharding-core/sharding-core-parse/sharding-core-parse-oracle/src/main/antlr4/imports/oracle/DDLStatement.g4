@@ -24,16 +24,16 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX indexName ON (tableIndexClause_ | bitmapJoinIndexClause_)
+    : CREATE createIndexSpecification_ INDEX indexName ON createIndexDefinitionClause_
     ;
 
 alterTable
-    : ALTER TABLE tableName alterClause_
+    : ALTER TABLE tableName alterDefinitionClause_
     ;
 
 // TODO hongjun throw exeption when alter index on oracle
 alterIndex
-    : ALTER INDEX indexName (RENAME TO indexName)?
+    : ALTER INDEX indexName renameIndexClause_
     ;
 
 dropTable
@@ -188,11 +188,15 @@ columnSortClause_
     : (tableName | alias)? columnName (ASC | DESC)?
     ;
 
+createIndexDefinitionClause_
+    : tableIndexClause_ | bitmapJoinIndexClause_
+    ;
+
 tableAlias
     : tableName alias? (COMMA_ tableName alias?)*
     ;
 
-alterClause_
+alterDefinitionClause_
     : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
     ;
 
@@ -327,4 +331,6 @@ objectProperty
     : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
 
-
+renameIndexClause_
+    : (RENAME TO indexName)?
+    ;
