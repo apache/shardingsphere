@@ -28,18 +28,7 @@ createIndex
     ;
 
 alterTable
-    : alterTableOp
-    (
-        alterColumn
-        | addColumnSpecification
-        | alterDrop
-        | alterCheckConstraint
-        | alterTrigger
-        | alterSwitch
-        | alterSet
-        | alterTableTableOption
-        | REBUILD
-    )
+    : ALTER TABLE tableName alterClause_
     ;
 
 alterIndex
@@ -213,12 +202,13 @@ tableIndex
     (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
     ;
 
-
 createIndexSpecification_
     : UNIQUE? (CLUSTERED | NONCLUSTERED)?
     ;
 
-
+alterClause_
+    : alterColumn | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableTableOption | REBUILD
+    ;
 
 
 
@@ -271,19 +261,15 @@ periodClause
     : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
     ;
 
-alterTableOp
-    : ALTER TABLE tableName
-    ;
-
 alterColumn
     : modifyColumnSpecification
     ;
 
 modifyColumnSpecification
-    : alterColumnOp dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
+    : alterColumnOperation dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
     ;
 
-alterColumnOp
+alterColumnOperation
     : ALTER COLUMN columnName
     ;
 
