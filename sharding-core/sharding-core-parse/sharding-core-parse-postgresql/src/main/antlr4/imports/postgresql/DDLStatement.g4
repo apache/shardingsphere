@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableExistClause_ onlyClause_ tableName asteriskClause_ alterDefinitionClause_
+    : ALTER TABLE tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause_
     ;
 
 alterIndex
