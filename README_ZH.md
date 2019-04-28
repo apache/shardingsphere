@@ -34,7 +34,7 @@ ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/pr
 
 __目前所有的可用发布都是进入Apache孵化器之前的发布版本，Apache官方发布将从4.0.0版本开始。__
 
-![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_cn.png)
+![ShardingSphere Scope](https://shardingsphere.apache.org//document/current/img/shardingsphere-scope_cn.png)
 
 ### Sharding-JDBC
 
@@ -47,7 +47,7 @@ __目前所有的可用发布都是进入Apache孵化器之前的发布版本，
 * 基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP等。
 * 支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
 
-![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](https://shardingsphere.apache.org//document/current/img/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
@@ -60,7 +60,7 @@ __目前所有的可用发布都是进入Apache孵化器之前的发布版本，
 * 向应用程序完全透明，可直接当做MySQL或PostgreSQL使用。
 * 适用于任何兼容MySQL或PostgreSQL协议的的客户端。
 
-![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](https://shardingsphere.apache.org//document/current/img/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar（TBD）
 
@@ -70,7 +70,7 @@ __目前所有的可用发布都是进入Apache孵化器之前的发布版本，
 Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。
 使用Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
-![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
+![Sharding-Sidecar Architecture](https://shardingsphere.apache.org//document/current/img/sharding-sidecar-brief_v2.png)
 
 |           | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | --------- | --------------- | ---------------- | ------------------ |
@@ -88,7 +88,7 @@ Sharding-JDBC采用无中心化架构，适用于Java开发的高性能的轻量
 ShardingSphere是多接入端共同组成的生态圈。
 通过混合使用Sharding-JDBC和Sharding-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
 
-![ShardingSphere Hybrid Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
+![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org//document/current/img/shardingsphere-hybrid.png)
 
 ## 功能列表
 
@@ -115,7 +115,7 @@ ShardingSphere是多接入端共同组成的生态圈。
 
 ## Roadmap
 
-![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_cn.png)
+![Roadmap](https://shardingsphere.apache.org//document/current/img/shardingsphere-roadmap_cn.png)
 
 ## 如何构建
 

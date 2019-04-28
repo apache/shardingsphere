@@ -33,7 +33,7 @@ Therefore, at current stage, we prefer to focus on its increment instead of a to
 
 __All available releases are not Apache releases, Apache releases will begin from version 4.0.0__
 
-![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_en.png)
+![ShardingSphere Scope](https://shardingsphere.apache.org//document/current/img/shardingsphere-scope_en.png)
 
 ### Sharding-JDBC
 
@@ -47,7 +47,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 * Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
 
-![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](https://shardingsphere.apache.org//document/current/img/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
@@ -60,7 +60,7 @@ Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of
 * Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
 * Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
 
-![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](https://shardingsphere.apache.org//document/current/img/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar(TBD)
 
@@ -72,7 +72,7 @@ Focusing on interaction, it effectively organizes the interaction between messy 
 The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. 
 They are all governed by mesh layer.
 
-![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
+![Sharding-Sidecar Architecture](https://shardingsphere.apache.org//document/current/img/sharding-sidecar-brief_v2.png)
 
 |                         | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | ----------------------- | --------------- | -------------------- | ------------------ |
@@ -92,7 +92,7 @@ ShardingSphere is an ecosphere consists of multiple endpoints together.
 Through mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by one registry center, ShardingSphere can build application system applicable to all kinds of situations. 
 Architects can adjust the system architecture to the most applicable one to current business more freely.
 
-![ShardingSphere Hybrid Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
+![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org//document/current/img/shardingsphere-hybrid.png)
 
 ## Features
 
@@ -119,7 +119,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## Roadmap
 
-![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)
+![Roadmap](https://shardingsphere.apache.org//document/current/img/shardingsphere-roadmap_en.png)
 
 ## How to Build
 
