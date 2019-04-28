@@ -28,19 +28,19 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableExistClause_ onlyClause_ tableName asteriskClause_ alterClause_
+    : ALTER TABLE existClause_ onlyClause_ tableName asteriskClause_ alterDefinitionClause_
     ;
 
 alterIndex
-    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
+    : ALTER INDEX existClause_ indexName alterIndexDefinitionClause_
     ;
 
 dropTable
-    : DROP TABLE (IF EXISTS)? tableNames
+    : DROP TABLE existClause_ tableNames
     ;
 
 dropIndex
-    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
+    : DROP INDEX (CONCURRENTLY)? existClause_ indexName (COMMA_ indexName)*
     ;
     
 truncateTable
@@ -160,7 +160,7 @@ onlyClause_
     : ONLY?
     ;
 
-tableExistClause_
+existClause_
     : (IF EXISTS)?
     ;
 
@@ -168,12 +168,12 @@ asteriskClause_
     : ASTERISK_?
     ;
 
-alterClause_
+alterDefinitionClause_
     : alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_
     ;
 
-alterIndexName
-    : ALTER INDEX (IF EXISTS)? indexName
+alterIndexDefinitionClause_
+    : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
     ;
 
 renameIndexSpecification
@@ -207,7 +207,7 @@ alterTableAction
     | addConstraintSpecification
     | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
     | VALIDATE CONSTRAINT ignoredIdentifier_
-    | DROP CONSTRAINT (IF EXISTS)? ignoredIdentifier_ (RESTRICT | CASCADE)?
+    | DROP CONSTRAINT existClause_ ignoredIdentifier_ (RESTRICT | CASCADE)?
     | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
     | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
     | (DISABLE | ENABLE) RULE ignoredIdentifier_
@@ -233,7 +233,7 @@ addColumnSpecification
     ;
 
 dropColumnSpecification
-    : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
+    : DROP COLUMN? existClause_ columnName (RESTRICT | CASCADE)?
     ;
 
 modifyColumnSpecification
@@ -243,7 +243,7 @@ modifyColumnSpecification
     | alterColumn (SET | DROP) NOT NULL
     | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
     | alterColumn alterColumnSetOption alterColumnSetOption*
-    | alterColumn DROP IDENTITY (IF EXISTS)?
+    | alterColumn DROP IDENTITY existClause_
     | alterColumn SET STATISTICS NUMBER_
     | alterColumn SET LP_ attributeOptions RP_
     | alterColumn RESET LP_ attributeOptions RP_
