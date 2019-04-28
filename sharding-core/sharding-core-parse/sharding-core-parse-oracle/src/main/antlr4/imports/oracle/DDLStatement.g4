@@ -146,7 +146,11 @@ exceptionsClause
     ;
 
 usingIndexClause
-    : USING INDEX (indexName | LP_ createIndex RP_)?
+    : USING INDEX (indexName | createIndexClause_)?
+    ;
+
+createIndexClause_ 
+    :  LP_ createIndex RP_
     ;
 
 inlineRefConstraint
