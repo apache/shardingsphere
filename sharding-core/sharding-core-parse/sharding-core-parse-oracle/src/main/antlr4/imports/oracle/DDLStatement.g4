@@ -177,15 +177,20 @@ indexExpression_
     ;
 
 bitmapJoinIndexClause_
-    : tableName LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_ FROM tableName alias? (COMMA_ tableName alias?)* WHERE expr
+    : tableName columnSortsClause_ FROM tableAlias WHERE expr
     ;
 
+columnSortsClause_
+    : LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_
+    ;
+    
 columnSortClause_
-    : tableName alias? columnName (ASC | DESC)?
+    : (tableName | alias)? columnName (ASC | DESC)?
     ;
 
-
-
+tableAlias
+    : tableName alias? (COMMA_ tableName alias?)*
+    ;
 
 
 
