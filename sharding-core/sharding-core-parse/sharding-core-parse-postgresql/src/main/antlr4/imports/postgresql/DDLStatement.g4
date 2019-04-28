@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableExistClause_ onlyClause_ tableName asteriskClause_ (alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_)
+    : ALTER TABLE tableExistClause_ onlyClause_ tableName asteriskClause_ alterClause_
     ;
 
 alterIndex
@@ -168,10 +168,9 @@ asteriskClause_
     : ASTERISK_?
     ;
 
-
-
-
-
+alterClause_
+    : alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_
+    ;
 
 alterIndexName
     : ALTER INDEX (IF EXISTS)? indexName
@@ -195,10 +194,6 @@ tableNameParts
 
 tableNamePart
     : tableName ASTERISK_?
-    ;
-
-alterTableNameWithAsterisk
-    : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK_?
     ;
 
 alterTableActions
@@ -231,10 +226,6 @@ alterTableAction
     | NOT OF
     | OWNER TO (ignoredIdentifier_ | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
-    ;
-
-tableConstraintUsingIndex
-    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
 addColumnSpecification
@@ -279,12 +270,8 @@ addConstraintSpecification
     : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
 
-renameColumnSpecification
-    : RENAME COLUMN? columnName TO columnName
-    ;
-
-renameConstraint
-    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
+tableConstraintUsingIndex
+    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
 storageParameterWithValue
@@ -295,18 +282,18 @@ storageParameter
     : IDENTIFIER_
     ;
 
+renameColumnSpecification
+    : RENAME COLUMN? columnName TO columnName
+    ;
+
+renameConstraint
+    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
+    ;
+
 renameTableSpecification_
     : RENAME TO newTableName
     ;
 
 newTableName
     : IDENTIFIER_
-    ;
-
-usingIndexType
-    : USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
-    ;
-
-excludeElement
-    : (columnName | expr) ignoredIdentifier_? (ASC | DESC)? (NULLS (FIRST | LAST))?
     ;
