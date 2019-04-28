@@ -28,11 +28,11 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterClause_?
+    : ALTER TABLE tableName alterDefinitionClause_?
     ;
 
 dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    : DROP dropTableSpecification_ TABLE tableExistClause_ tableNames
     ;
 
 dropIndex
@@ -145,7 +145,7 @@ createIndexSpecification_
     : (UNIQUE | FULLTEXT | SPATIAL)?
     ;
 
-alterClause_
+alterDefinitionClause_
     : alterSpecification_ (COMMA_ alterSpecification_)*
     ;
 
@@ -311,4 +311,12 @@ partitionDefinitionOption_
 
 subpartitionDefinition_
     : SUBPARTITION identifier_ partitionDefinitionOption_*
+    ;
+
+dropTableSpecification_
+    : TEMPORARY?
+    ;
+
+tableExistClause_
+    : (IF EXISTS)?
     ;
