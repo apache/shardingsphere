@@ -204,14 +204,73 @@ tableForeignKeyConstraint
     ;
 
 tableIndex
-    : INDEX indexName
-    ((CLUSTERED | NONCLUSTERED)? columnNames
-    | CLUSTERED COLUMNSTORE
-    | NONCLUSTERED? (COLUMNSTORE columnNames | hashWithBucket) 
-    | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER_ MINUTES?) RP_)?)
-    (WHERE expr)?
-    (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause?
-    (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
+    : INDEX indexName indexNameOption_ (WITH indexOptions_)? indexOnClause? fileStreamOn_?
+    ;
+
+indexNameOption_
+    : (CLUSTERED | NONCLUSTERED)? columnNames | CLUSTERED COLUMNSTORE | NONCLUSTERED? COLUMNSTORE columnNames
+    ;
+
+indexOptions_
+    : LP_ indexOption (COMMA_ indexOption)* RP_
+    ;
+
+periodClause
+    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
+    ;
+
+partitionScheme_
+    : (ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
+    ;
+
+fileGroup_
+    : (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH tableOptions)?
+    ;
+
+tableOptions
+    : LP_ tableOption (COMMA_ tableOption)* RP_
+    ;
+
+tableOption
+    : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
+    | FILETABLE_DIRECTORY EQ_ ignoredIdentifier_ 
+    | FILETABLE_COLLATE_FILENAME EQ_ (collationName | DATABASE_DEAULT)
+    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ ignoredIdentifier_
+    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
+    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
+    | SYSTEM_VERSIONING EQ_ ON onHistoryTableClause?
+    | REMOTE_DATA_ARCHIVE EQ_ (ON tableStretchOptions? | OFF migrationState_)
+    | tableOperationOption
+    | distributionOption
+    | dataWareHouseTableOption
+    ;
+
+tableStretchOptions
+    : LP_ tableStretchOptions (COMMA_ tableStretchOptions)* RP_
+    ;
+
+tableStretchOption
+    : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA_)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)
+    ;
+
+migrationState_
+    : LP_ MIGRATION_STATE EQ_ PAUSED RP_
+    ;
+
+tableOperationOption
+    : (MEMORY_OPTIMIZED EQ_ ON) | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) | (SYSTEM_VERSIONING EQ_ ON onHistoryTableClause?)
+    ;
+
+distributionOption
+    : DISTRIBUTION EQ_ (HASH LP_ columnName RP_ | ROUND_ROBIN | REPLICATE) 
+    ;
+
+dataWareHouseTableOption
+    : CLUSTERED COLUMNSTORE INDEX | HEAP | dataWareHousePartitionOption
+    ;
+
+dataWareHousePartitionOption
+    : (PARTITION LP_ columnName RANGE (LEFT | RIGHT)? FOR VALUES LP_ simpleExpr (COMMA_ simpleExpr)* RP_ RP_)
     ;
 
 createIndexSpecification_
@@ -301,11 +360,11 @@ dropIndexSpecification
     ;
 
 alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | ignoredIdentifiers_)
     ;
 
 alterTrigger 
-    : (ENABLE| DISABLE) TRIGGER (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
+    : (ENABLE| DISABLE) TRIGGER (ALL | ignoredIdentifiers_)
     ;
 
 alterSwitch
@@ -349,7 +408,7 @@ indexWithName
     ;
 
 indexNonClusterClause
-    : NONCLUSTERED (hashWithBucket | (columnNameWithSortsWithParen alterTableIndexOnClause?)) 
+    : NONCLUSTERED (hashWithBucket | columnNameWithSortsWithParen alterTableIndexOnClause?) 
     ;
 
 alterTableIndexOnClause
@@ -364,7 +423,11 @@ alterTableOption
     : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RP_
     | MEMORY_OPTIMIZED EQ_ ON
     | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
-    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
+    | SYSTEM_VERSIONING EQ_ ON onHistoryTableClause?
+    ;
+
+onHistoryTableClause
+    : LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_
     ;
 
 tableExistClause_
@@ -382,48 +445,4 @@ indexExistClause_
 
 
 
-tableOption
-    : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
-    | FILETABLE_DIRECTORY EQ_ ignoredIdentifier_ 
-    | FILETABLE_COLLATE_FILENAME EQ_ (collationName | DATABASE_DEAULT)
-    | FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME EQ_ ignoredIdentifier_
-    | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
-    | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ ignoredIdentifier_
-    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
-    | REMOTE_DATA_ARCHIVE EQ_ (ON (LP_ tableStretchOptions (COMMA_ tableStretchOptions)* RP_)? | OFF LP_ MIGRATION_STATE EQ_ PAUSED RP_)
-    | tableOptOption
-    | distributionOption
-    | dataWareHouseTableOption
-    ;
 
-tableOptOption
-    : (MEMORY_OPTIMIZED EQ_ ON) | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) | (SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?)
-    ;
-
-distributionOption
-    : DISTRIBUTION EQ_ (HASH LP_ columnName RP_ | ROUND_ROBIN | REPLICATE) 
-    ;
-
-dataWareHouseTableOption
-    : CLUSTERED COLUMNSTORE INDEX | HEAP | dataWareHousePartitionOption
-    ;
-
-dataWareHousePartitionOption
-    : (PARTITION LP_ columnName RANGE (LEFT | RIGHT)? FOR VALUES LP_ simpleExpr (COMMA_ simpleExpr)* RP_ RP_)
-    ;
-
-tableStretchOptions 
-    : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA_)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)
-    ;
-
-partitionScheme_
-    : (ON (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))?
-    ;
-
-fileGroup_
-    : (TEXTIMAGE_ON (ignoredIdentifier_ | STRING_))? ((FILESTREAM_ON (schemaName) | ignoredIdentifier_ STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
-    ;
-
-periodClause
-    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
-    ;
