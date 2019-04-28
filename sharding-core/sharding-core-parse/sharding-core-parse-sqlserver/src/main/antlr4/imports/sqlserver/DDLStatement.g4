@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterClause_
+    : ALTER TABLE tableName alterDefinitionClause_
     ;
 
 alterIndex
@@ -36,11 +36,11 @@ alterIndex
     ;
 
 dropTable
-    : DROP TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    : DROP TABLE tableExistClause_ tableNames
     ;
 
 dropIndex
-    : DROP INDEX (IF EXISTS)? indexName ON tableName
+    : DROP INDEX indexExistClause_ indexName ON tableName
     ;
 
 truncateTable
@@ -206,7 +206,7 @@ createIndexSpecification_
     : UNIQUE? (CLUSTERED | NONCLUSTERED)?
     ;
 
-alterClause_
+alterDefinitionClause_
     : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 
@@ -355,6 +355,13 @@ alterTableOption
     | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
     ;
 
+tableExistClause_
+    : (IF EXISTS)?
+    ;
+
+indexExistClause_
+    : (IF EXISTS)?
+    ;
 
 
 
