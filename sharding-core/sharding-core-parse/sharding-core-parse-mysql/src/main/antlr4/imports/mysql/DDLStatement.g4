@@ -145,14 +145,6 @@ createIndexSpecification_
     : (UNIQUE | FULLTEXT | SPATIAL)?
     ;
 
-
-
-
-
-
-
-
-
 alterSpecifications_
     : alterSpecification_ (COMMA_ alterSpecification_)*
     ;
