@@ -543,7 +543,7 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
-Download Links: https://dist.apache.org/repos/dist/release/incubator/shardingsphere/${RELEASE.VERSION}/
+Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
 Release Notes: https://github.com/apache/incubator-shardingsphere/releases/tag/${RELEASE.VERSION}/
 
