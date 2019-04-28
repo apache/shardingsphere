@@ -96,11 +96,11 @@ The current core developers all work for companies that have developed or contri
 Liang Zhang, PMC. He is the lead of two open source projects, Sharding-Sphere and [Elastic-Job](https://github.com/elasticjob). 
 Also Committer of [Apache Dubbo (Incubator)](https://incubator.apache.org/projects/dubbo.html).
 
-Sheng Wu, PMC. He is the  PPMC and committer of [Apache SkyWalking(Incubating)](https://github.com/apache/incubator-skywalking), 
+Sheng Wu, PMC. He is the  PPMC and committer of [Apache SkyWalking](https://github.com/apache/skywalking), 
 [Apache Zipkin(Incubating)](https://zipkin.io/) contributor, CNCF [OpenTracing](http://opentracing.io/) member. 
 Also contributed a lot other open source projects.
 
-Hongtao Gao, PMC. He is the PPMC and committer of [Apache SkyWalking(Incubating)](https://github.com/apache/incubator-skywalking) too. 
+Hongtao Gao, PMC. He is the PPMC and committer of [Apache SkyWalking](https://github.com/apache/skywalking) too. 
 Also contribute a lot of features of [Elastic-Job](https://github.com/elasticjob).
  
 Therefore, we believe we have enough experience to deal with open source.
