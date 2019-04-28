@@ -77,14 +77,26 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName dataType SORT? (VISIBLE | INVISIBLE)? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpecification_)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName dataType SORT? visibleClause_ (defaultNullClause_ expr | identityClause)? (ENCRYPT encryptionSpecification_)? (inlineConstraint+ | inlineRefConstraint)?
+    ;
+
+visibleClause_
+    : (VISIBLE | INVISIBLE)?
+    ;
+
+defaultNullClause_
+    : DEFAULT (ON NULL)?
     ;
 
 identityClause
-    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LP_? (identityOptions+)? RP_?
+    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY identifyOptions
     ;
 
-identityOptions
+identifyOptions
+    : LP_? (identityOption+)? RP_?
+    ;
+
+identityOption
     : START WITH (NUMBER_ | LIMIT VALUE)
     | INCREMENT BY NUMBER_
     | MAXVALUE NUMBER_
