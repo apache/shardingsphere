@@ -4,14 +4,14 @@ Official website: https://shardingsphere.apache.org/
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
-[![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg)](https://github.com/sharding-sphere/sharding-sphere/releases)
+[![GitHub release](https://img.shields.io/github/release/apache/incubator-shardingsphere.svg)](https://github.com/apache/incubator-shardingsphere/releases)
 [![Stargazers over time](https://starchart.cc/apache/incubator-shardingsphere.svg)](https://starchart.cc/apache/incubator-shardingsphere)
 
-[![Total Lines](https://tokei.rs/b1/github/sharding-sphere/sharding-sphere?category=lines)](https://github.com/sharding-sphere/sharding-sphere)
+[![Total Lines](https://tokei.rs/b1/github/apache/incubator-shardingsphere?category=lines)](https://github.com/apache/incubator-shardingsphere)
 [![Build Status](https://travis-ci.org/apache/incubator-shardingsphere.svg?branch=dev)](https://travis-ci.org/apache/incubator-shardingsphere)
 [![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
-[![snyk](https://snyk.io/test/github/sharding-sphere/sharding-sphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/sharding-sphere/sharding-sphere?targetFile=pom.xml)
+[![snyk](https://snyk.io/test/github/apache/incubator-shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/incubator-shardingsphere?targetFile=pom.xml)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
@@ -37,7 +37,7 @@ __All available releases are not Apache releases, Apache releases will begin fro
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc/4.0.0-RC1)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc)
 
 Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
 With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
@@ -51,7 +51,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
