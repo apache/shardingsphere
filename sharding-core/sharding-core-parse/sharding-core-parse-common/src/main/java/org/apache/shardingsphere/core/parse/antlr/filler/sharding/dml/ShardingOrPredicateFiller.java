@@ -124,6 +124,10 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return Optional.absent();
     }
     
+    private boolean isShardingCondition(final String operator) {
+        return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator) || ShardingOperator.BETWEEN.name().equals(operator);
+    }
+    
     private Optional<Condition> createEqualCondition(final CompareValueExpressionSegment expressionSegment, final Column column, final String sql) {
         SQLExpression sqlExpression = expressionSegment.getExpression().getSQLExpression(sql);
         return isShardingExpressionType(sqlExpression) ? Optional.of(new Condition(column, sqlExpression)) : Optional.<Condition>absent();
@@ -182,10 +186,6 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         Column column = new Column(columnName, tableName);
         andCondition.getConditions().add(predicateSegment.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
         sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), column, true));
-    }
-    
-    private boolean isShardingCondition(final String operator) {
-        return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator) || ShardingOperator.BETWEEN.name().equals(operator);
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
