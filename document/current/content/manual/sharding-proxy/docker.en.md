@@ -38,12 +38,12 @@ docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS=
 
 You can define JVM related parameters to environment variable `JVM_OPTS`.
 
-## Visit Sharding-Proxy
+## Access Sharding-Proxy
 
-It is in the same way as connecting to MySQL.
+It is in the same way as connecting to PostgreSQL.
 
 ```
-mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308
+psql -U ${your_user_name} -h ${your_host} -p 13308
 ```
 
 ## FAQ
@@ -54,4 +54,4 @@ Answer: before building clone, please make sure docker daemon thread is running.
 
 Question 2: there is error report of being unable to connect to the database.
 
-Answer: please make sure designated mysql  IP in `/${your_work_dir}/conf/sharding-config.yaml` configuration is accessible to Docker container.
+Answer: please make sure designated PostgreSQL  IP in `/${your_work_dir}/conf/sharding-config.yaml` configuration is accessible to Docker container.

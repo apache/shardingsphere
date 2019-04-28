@@ -18,7 +18,7 @@ schemaName: sharding_db
 
 dataSources:
   ds0: 
-    url: jdbc:mysql://localhost:3306/ds0
+    url: jdbc:postgresql://localhost:5432/ds0
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds1:
-    url: jdbc:mysql://localhost:3306/ds1
+    url: jdbc:postgresql://localhost:5432/ds1
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -73,7 +73,7 @@ schemaName: master_slave_db
 
 dataSources:
   ds_master:
-    url: jdbc:mysql://localhost:3306/ds_master
+    url: jdbc:postgresql://localhost:5432/ds_master
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -83,7 +83,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds_slave0:
-    url: jdbc:mysql://localhost:3306/ds_slave0
+    url: jdbc:postgresql://localhost:5432/ds_slave0
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -93,7 +93,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds_slave1:
-    url: jdbc:mysql://localhost:3306/ds_slave1
+    url: jdbc:postgresql://localhost:5432/ds_slave1
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -118,7 +118,7 @@ schemaName: sharding_master_slave_db
 
 dataSources:
   ds0:
-    url: jdbc:mysql://localhost:3306/ds0
+    url: jdbc:postgresql://localhost:5432/ds0
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -128,7 +128,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds0_slave0:
-    url: jdbc:mysql://localhost:3306/ds0_slave0
+    url: jdbc:postgresql://localhost:5432/ds0_slave0
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -138,7 +138,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds0_slave1:
-    url: jdbc:mysql://localhost:3306/ds0_slave1
+    url: jdbc:postgresql://localhost:5432/ds0_slave1
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -148,7 +148,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds1:
-    url: jdbc:mysql://localhost:3306/ds1
+    url: jdbc:postgresql://localhost:5432/ds1
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -158,7 +158,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds1_slave0:
-    url: jdbc:mysql://localhost:3306/ds1_slave0
+    url: jdbc:postgresql://localhost:5432/ds1_slave0
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -168,7 +168,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds1_slave1:
-    url: jdbc:mysql://localhost:3306/ds1_slave1
+    url: jdbc:postgresql://localhost:5432/ds1_slave1
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -233,7 +233,7 @@ schemaName: sharding_db
 
 dataSources:
   ds0: 
-    url: jdbc:mysql://localhost:3306/ds0
+    url: jdbc:postgresql://localhost:5432/ds0
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000
@@ -243,7 +243,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   ds1:
-    url: jdbc:mysql://localhost:3306/ds1
+    url: jdbc:postgresql://localhost:5432/ds1
     username: root
     password: 
     connectionTimeoutMilliseconds: 30000

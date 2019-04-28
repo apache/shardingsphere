@@ -12,7 +12,7 @@ weight = 1
 1. 解压缩后修改conf/server.yaml和以config-前缀开头的文件，如：conf/config-xxx.yaml文件，进行分片规则、读写分离规则配置. 配置方式请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
 1. Linux操作系统请运行`bin/start.sh`，Windows操作系统请运行`bin/start.bat`启动Sharding-Proxy。如需配置启动端口、配置文件位置，可参考[快速入门](/cn/quick-start/sharding-proxy-quick-start/)
 进行启动。
-1. 使用任何MySQL的客户端连接。如: `mysql -u root -h 127.0.0.1 -P 3307`
+1. 使用任何PostgreSQL的客户端连接。如: `psql -U root -h 127.0.0.1 -p 3307`
 
 ## 注册中心使用
 
@@ -52,8 +52,8 @@ proxy.transaction.type: XA
 #### 命令行方式
 
 ```shell
-mysql> sctl: set transantcion_type=XA
-mysql> sctl: show transaction_type
+postgres=# sctl: set transantcion_type=XA
+postgres=# sctl: show transaction_type
 ```
 
 #### 原生JDBC方式

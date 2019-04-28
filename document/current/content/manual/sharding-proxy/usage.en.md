@@ -11,7 +11,7 @@ weight = 1
 2. If users use docker, they can implement `docker pull shardingsphere/sharding-proxy` to get the clone. Please refer to [Docker Clone](/en/manual/sharding-proxy/docker/) for more details.
 3. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and read-write split rules. Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/) for the configuration method.
 4. Please run `bin/start.sh` for Linux operating system; run `bin/start.bat` for Windows operating system to start Sharding-Proxy. To configure start port and document location, please refer to [Quick Start](/en/quick-start/sharding-proxy-quick-start/).
-5. Use any MySQL server client end to connect, such as `mysql -u root -h 127.0.0.1 -P 3307`.
+5. Use any PostgreSQL server client end to connect, such as `psql -U root -h 127.0.0.1 -p 3307`.
 
 ## Use of Registry Center
 
@@ -51,8 +51,8 @@ proxy.transaction.type: XA
 #### Command Line
 
 ```shell
-mysql> sctl: set transantcion_type=XA
-mysql> sctl: show transaction_type
+postgres=# sctl: set transantcion_type=XA
+postgres=# sctl: show transaction_type
 ```
 
 #### Native JDBC
