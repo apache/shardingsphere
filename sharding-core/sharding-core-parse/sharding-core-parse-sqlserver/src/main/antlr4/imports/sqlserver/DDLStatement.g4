@@ -96,7 +96,11 @@ primaryKeyConstraint
     ;
 
 diskTablePrimaryKeyConstraintOption
-    : (CLUSTERED | NONCLUSTERED)? primaryKeyWithClause? primaryKeyOnClause?
+    : clusterOption_? primaryKeyWithClause? primaryKeyOnClause?
+    ;
+
+clusterOption_
+    : CLUSTERED | NONCLUSTERED
     ;
 
 primaryKeyWithClause
@@ -144,7 +148,7 @@ checkConstraint
     ;
 
 columnIndex
-    : INDEX indexName (CLUSTERED | NONCLUSTERED)? withIndexOption_? indexOnClause? fileStreamOn_?
+    : INDEX indexName clusterOption_? withIndexOption_? indexOnClause? fileStreamOn_?
     ;
 
 withIndexOption_
@@ -188,7 +192,7 @@ primaryKeyUnique
     ;
 
 diskTablePrimaryConstraintOption
-    : (CLUSTERED | NONCLUSTERED)? columnNames primaryKeyWithClause? primaryKeyOnClause?
+    : clusterOption_? columnNames primaryKeyWithClause? primaryKeyOnClause?
     ;
 
 memoryTablePrimaryConstraintOption
@@ -208,7 +212,7 @@ tableIndex
     ;
 
 indexNameOption_
-    : (CLUSTERED | NONCLUSTERED)? columnNames | CLUSTERED COLUMNSTORE | NONCLUSTERED? COLUMNSTORE columnNames
+    : clusterOption_? columnNames | CLUSTERED COLUMNSTORE | NONCLUSTERED? COLUMNSTORE columnNames
     ;
 
 indexOptions_
@@ -274,7 +278,7 @@ dataWareHousePartitionOption
     ;
 
 createIndexSpecification_
-    : UNIQUE? (CLUSTERED | NONCLUSTERED)?
+    : UNIQUE? clusterOption_?
     ;
 
 alterDefinitionClause_
