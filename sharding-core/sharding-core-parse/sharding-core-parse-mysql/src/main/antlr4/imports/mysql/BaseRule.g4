@@ -111,6 +111,10 @@ columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;
 
+tableNames
+    : LP_? tableName (COMMA_ tableName)* RP_?
+    ;
+
 indexName
     : identifier_
     ;
