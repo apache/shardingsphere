@@ -355,7 +355,7 @@ dataTypeLength
     ;
 
 characterSet_
-    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_ | CHARSET EQ_? ignoredIdentifier_
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
     ;
 
 collateClause_
