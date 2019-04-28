@@ -181,7 +181,7 @@ alterSpecification_
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumnSpecification
     // TODO hongjun investigate ORDER BY col_name [, col_name] ...
-    | ORDER BY columnName (COMMA_ columnName)*
+    | ORDER BY columnNames
     | renameColumnSpecification
     | renameIndexSpecification
     | renameTableSpecification_

@@ -108,7 +108,7 @@ columnName
     ;
 
 columnNames
-    : LP_ columnName (COMMA_ columnName)* RP_
+    : LP_? columnName (COMMA_ columnName)* RP_?
     ;
 
 indexName
