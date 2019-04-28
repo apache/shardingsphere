@@ -241,20 +241,20 @@ columnExistClause_
     ;
     
 modifyColumnSpecification
-    : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
-    | alterColumn SET DEFAULT expr
-    | alterColumn DROP DEFAULT
-    | alterColumn (SET | DROP) NOT NULL
-    | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | alterColumn alterColumnSetOption alterColumnSetOption*
-    | alterColumn DROP IDENTITY columnExistClause_
-    | alterColumn SET STATISTICS NUMBER_
-    | alterColumn SET LP_ attributeOptions RP_
-    | alterColumn RESET LP_ attributeOptions RP_
-    | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
+    : modifyColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
+    | modifyColumn SET DEFAULT expr
+    | modifyColumn DROP DEFAULT
+    | modifyColumn (SET | DROP) NOT NULL
+    | modifyColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
+    | modifyColumn alterColumnSetOption alterColumnSetOption*
+    | modifyColumn DROP IDENTITY columnExistClause_
+    | modifyColumn SET STATISTICS NUMBER_
+    | modifyColumn SET LP_ attributeOptions RP_
+    | modifyColumn RESET LP_ attributeOptions RP_
+    | modifyColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
 
-alterColumn
+modifyColumn
     : ALTER COLUMN? columnName
     ;
 
