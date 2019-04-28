@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
+    : ALTER TABLE tableName alterClause_
     ;
 
 // TODO hongjun throw exeption when alter index on oracle
@@ -192,18 +192,8 @@ tableAlias
     : tableName alias? (COMMA_ tableName alias?)*
     ;
 
-
-
-
-
-
-
-tableProperties
-    : columnProperties? (AS unionSelect)?
-    ;
-
-unionSelect
-    : matchNone
+alterClause_
+    : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
     ;
 
 alterTableProperties
@@ -218,11 +208,21 @@ newTableName
     : IDENTIFIER_
     ;
 
+
+
+
+
+
+
+
+
+
+
 columnClauses
-    : opColumnClause+ | renameColumnSpecification
+    : operateColumnClause+ | renameColumnClause
     ;
 
-opColumnClause
+operateColumnClause
     : addColumnSpecification | modifyColumnSpecification | dropColumnClause
     ;
 
@@ -236,6 +236,22 @@ columnOrVirtualDefinitions
 
 columnOrVirtualDefinition
     : columnDefinition | virtualColumnDefinition
+    ;
+
+columnProperties
+    : columnProperty+
+    ;
+
+columnProperty
+    : objectTypeColProperties
+    ;
+
+objectTypeColProperties
+    : COLUMN columnName substitutableColumnClause
+    ;
+
+substitutableColumnClause
+    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
 
 modifyColumnSpecification
@@ -270,7 +286,7 @@ checkpointNumber
     : CHECKPOINT NUMBER_
     ;
 
-renameColumnSpecification
+renameColumnClause
     : RENAME COLUMN columnName TO columnName
     ;
 
@@ -321,19 +337,4 @@ objectProperty
     : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
 
-columnProperties
-    : columnProperty+
-    ;
-
-columnProperty
-    : objectTypeColProperties
-    ;
-
-objectTypeColProperties
-    : COLUMN columnName substitutableColumnClause
-    ;
-
-substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
-    ;
 
