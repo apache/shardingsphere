@@ -36,7 +36,7 @@ dropTable
     ;
 
 dropIndex
-    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
+    : DROP INDEX dropIndexSpecification_ indexName ON tableName
     ;
 
 truncateTable
@@ -319,4 +319,8 @@ dropTableSpecification_
 
 tableExistClause_
     : (IF EXISTS)?
+    ;
+
+dropIndexSpecification_
+    : (ONLINE | OFFLINE)?
     ;
