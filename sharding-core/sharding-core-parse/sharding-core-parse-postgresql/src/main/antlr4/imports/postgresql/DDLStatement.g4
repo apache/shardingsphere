@@ -157,7 +157,7 @@ indexNotExistClause_
     ;
 
 onlyClause_
-    : ONLY
+    : ONLY?
     ;
 
 
