@@ -37,7 +37,7 @@ __All available releases are not Apache releases, Apache releases will begin fro
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc/4.0.0-RC1)
 
 Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
 With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
