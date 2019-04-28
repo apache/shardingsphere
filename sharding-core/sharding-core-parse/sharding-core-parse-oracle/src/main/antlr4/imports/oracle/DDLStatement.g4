@@ -208,16 +208,6 @@ newTableName
     : IDENTIFIER_
     ;
 
-
-
-
-
-
-
-
-
-
-
 columnClauses
     : operateColumnClause+ | renameColumnClause
     ;
