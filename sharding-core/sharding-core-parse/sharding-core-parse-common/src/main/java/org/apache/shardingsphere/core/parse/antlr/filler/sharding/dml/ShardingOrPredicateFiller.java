@@ -89,7 +89,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             AndCondition andCondition = new AndCondition();
             for (PredicateSegment predicate : each.getPredicates()) {
-                Optional<Condition> condition = createCondition(predicate, sqlStatement);
+                Optional<Condition> condition = createShardingCondition(predicate, sqlStatement);
                 if (condition.isPresent()) {
                     andCondition.getConditions().add(condition.get());
                 }
@@ -103,7 +103,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return result;
     }
     
-    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+    private Optional<Condition> createShardingCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         if (!isShardingCondition(predicateSegment.getOperator())) {
             return Optional.absent();
         }
@@ -183,9 +183,33 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        Column column = new Column(columnName, tableName);
-        andCondition.getConditions().add(predicateSegment.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
-        sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), column, true));
+        Optional<Condition> condition = createEncryptCondition(predicateSegment, sqlStatement);
+        if (condition.isPresent()) {
+            andCondition.getConditions().add(condition.get());
+            sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), new Column(columnName, tableName), true));
+        }
+    }
+    
+    private Optional<Condition> createEncryptCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+        if (!isEncryptCondition(predicateSegment.getOperator())) {
+            return Optional.absent();
+        }
+        Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
+        if (!tableName.isPresent() || !shardingRule.getShardingEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
+            return Optional.absent();
+        }
+        Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
+        if (predicateSegment.getExpression() instanceof CompareValueExpressionSegment) {
+            return createEqualCondition((CompareValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        }
+        if (predicateSegment.getExpression() instanceof InValueExpressionSegment) {
+            return createInCondition((InValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        }
+        return Optional.absent();
+    }
+    
+    private boolean isEncryptCondition(final String operator) {
+        return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator);
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only
