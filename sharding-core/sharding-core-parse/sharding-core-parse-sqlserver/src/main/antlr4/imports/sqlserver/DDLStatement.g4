@@ -352,7 +352,11 @@ dropConstraintWithClause
     ;
 
 dropConstraintOption
-    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ (ON | OFF) | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))
+    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ onOffOption_ | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))
+    ;
+
+onOffOption_
+    : ON | OFF
     ;
 
 dropColumnSpecification
@@ -392,7 +396,7 @@ alterSetOnClause
     ;
 
 dataConsistencyCheckClause_
-    : COMMA_? DATA_CONSISTENCY_CHECK EQ_ (ON | OFF)
+    : COMMA_? DATA_CONSISTENCY_CHECK EQ_ onOffOption_
     ;
 
 historyRetentionPeriodClause_
@@ -431,7 +435,7 @@ alterTableOption
     ;
 
 onHistoryTableClause
-    : LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_
+    : LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ onOffOption_)? RP_
     ;
 
 tableExistClause_
