@@ -207,7 +207,7 @@ createIndexSpecification_
     ;
 
 alterClause_
-    : alterColumn | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableTableOption | REBUILD
+    : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableTableOption | REBUILD
     ;
 
 
@@ -261,10 +261,6 @@ periodClause
     : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
     ;
 
-alterColumn
-    : modifyColumnSpecification
-    ;
-
 modifyColumnSpecification
     : alterColumnOperation dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
     ;
@@ -274,7 +270,11 @@ alterColumnOperation
     ;
 
 addColumnSpecification
-    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOption (COMMA_ alterColumnAddOption)* | (columnNameGeneratedClause COMMA_ periodClause| periodClause COMMA_ columnNameGeneratedClause))
+    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOptions | (generatedColumnNameClause COMMA_ periodClause | periodClause COMMA_ generatedColumnNameClause))
+    ;
+
+alterColumnAddOptions
+    : alterColumnAddOption (COMMA_ alterColumnAddOption)*
     ;
 
 alterColumnAddOption
@@ -298,11 +298,12 @@ columnNameWithSort
     : columnName (ASC | DESC)?
     ;
 
-columnNameGeneratedClause
-    : columnNameGenerated DEFAULT simpleExpr (WITH VALUES)? COMMA_ columnNameGenerated
+
+generatedColumnNameClause
+    : generatedColumnName DEFAULT simpleExpr (WITH VALUES)? COMMA_ generatedColumnName
     ;
 
-columnNameGenerated
+generatedColumnName
     : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
     ;
 
