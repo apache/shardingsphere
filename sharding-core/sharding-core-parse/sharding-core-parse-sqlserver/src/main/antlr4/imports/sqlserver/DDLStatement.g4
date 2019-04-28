@@ -207,7 +207,7 @@ createIndexSpecification_
     ;
 
 alterClause_
-    : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableTableOption | REBUILD
+    : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 
 
@@ -260,7 +260,100 @@ generatedColumnName
     : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
     ;
 
+alterDrop
+    : DROP (alterTableDropConstraint | dropColumnSpecification | dropIndexSpecification | PERIOD FOR SYSTEM_TIME)
+    ;
 
+alterTableDropConstraint
+    : CONSTRAINT? (IF EXISTS)? dropConstraintName (COMMA_ dropConstraintName)*
+    ;
+
+dropConstraintName
+    : ignoredIdentifier_ dropConstraintWithClause?
+    ;
+
+dropConstraintWithClause
+    : WITH LP_ dropConstraintOption (COMMA_ dropConstraintOption)* RP_
+    ;
+
+dropConstraintOption
+    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ (ON | OFF) | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))
+    ;
+
+dropColumnSpecification
+    : COLUMN (IF EXISTS)? columnName (COMMA_ columnName)*
+    ;
+
+dropIndexSpecification
+    : INDEX (IF EXISTS)? indexName (COMMA_ indexName)*
+    ;
+
+alterCheckConstraint 
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
+    ;
+
+alterTrigger 
+    : (ENABLE| DISABLE) TRIGGER (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
+    ;
+
+alterSwitch
+    : SWITCH (PARTITION expr)? TO tableName (PARTITION expr)? (WITH LP_ lowPriorityLockWait RP_)?
+    ;
+
+alterSet
+    : SET LP_ (setFileStreamClause | setSystemVersionClause) RP_ 
+    ;
+
+setFileStreamClause
+    : FILESTREAM_ON EQ_ (schemaName | ignoredIdentifier_ | STRING_)
+    ;
+
+setSystemVersionClause
+    : SYSTEM_VERSIONING EQ_ (OFF | ON alterSetOnClause?)
+    ;
+
+alterSetOnClause
+    : LP_ (HISTORY_TABLE EQ_ tableName)? dataConsistencyCheckClause_? historyRetentionPeriodClause_? RP_
+    ;
+
+dataConsistencyCheckClause_
+    : COMMA_? DATA_CONSISTENCY_CHECK EQ_ (ON | OFF)
+    ;
+
+historyRetentionPeriodClause_
+    : COMMA_? HISTORY_RETENTION_PERIOD EQ_ historyRetentionPeriod
+    ;
+
+historyRetentionPeriod
+    : INFINITE | (NUMBER_ (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS))
+    ;
+
+alterTableTableIndex
+    : indexWithName (indexNonClusterClause | indexClusterClause)
+    ;
+
+indexWithName
+    : INDEX indexName
+    ;
+
+indexNonClusterClause
+    : NONCLUSTERED (hashWithBucket | (columnNameWithSortsWithParen alterTableIndexOnClause?)) 
+    ;
+
+alterTableIndexOnClause
+    : ON ignoredIdentifier_ | DEFAULT
+    ;
+
+indexClusterClause
+    : CLUSTERED COLUMNSTORE (WITH COMPRESSION_DELAY EQ_ NUMBER_ MINUTES?)? indexOnClause?
+    ;
+
+alterTableOption
+    : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RP_
+    | MEMORY_OPTIMIZED EQ_ ON
+    | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
+    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
+    ;
 
 
 
@@ -314,99 +407,4 @@ fileGroup_
 
 periodClause
     : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
-    ;
-
-alterDrop
-    : DROP
-    (
-        alterTableDropConstraint
-        | dropColumnSpecification
-        | dropIndexSpecification
-        | PERIOD FOR SYSTEM_TIME
-    )
-    ;
-
-alterTableDropConstraint
-    : CONSTRAINT? (IF EXISTS)? dropConstraintName (COMMA_ dropConstraintName)*
-    ;
-
-dropConstraintName
-    : ignoredIdentifier_ dropConstraintWithClause?
-    ;
-
-dropConstraintWithClause
-    : WITH LP_ dropConstraintOption (COMMA_ dropConstraintOption)* RP_
-    ;
-
-dropConstraintOption
-    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ (ON | OFF) | MOVE TO (schemaName LP_ columnName RP_ | ignoredIdentifier_ | STRING_))
-    ;
-
-dropColumnSpecification
-    : COLUMN (IF EXISTS)? columnName (COMMA_ columnName)*
-    ;
-
-dropIndexSpecification
-    : INDEX (IF EXISTS)? indexName (COMMA_ indexName)*
-    ;
-
-alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
-    ;
-
-alterTrigger 
-    : (ENABLE| DISABLE) TRIGGER (ALL | (ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*))
-    ;
-
-alterSwitch
-    : SWITCH (PARTITION expr)? TO tableName (PARTITION expr)? (WITH LP_ lowPriorityLockWait RP_)?
-    ;
-
-alterSet
-    : SET LP_ (setFileStreamClause | setSystemVersionClause) RP_ 
-    ;
-
-setFileStreamClause
-    : FILESTREAM_ON EQ_ (schemaName | ignoredIdentifier_ | STRING_)
-    ;
-
-setSystemVersionClause
-    : SYSTEM_VERSIONING EQ_ (OFF | alterSetOnClause)
-    ;
-
-alterSetOnClause
-    : ON
-    (
-        LP_ (HISTORY_TABLE EQ_ tableName)?
-        (COMMA_? DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))?
-        (COMMA_? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER_ (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS))))?
-        RP_
-    )?
-    ;
-
-alterTableTableIndex
-    : indexWithName (indexNonClusterClause | indexClusterClause)
-    ;
-
-indexWithName
-    : INDEX indexName
-    ;
-
-indexNonClusterClause
-    : NONCLUSTERED (hashWithBucket | (columnNameWithSortsWithParen alterTableIndexOnClause?)) 
-    ;
-
-alterTableIndexOnClause
-    : ON ignoredIdentifier_ | DEFAULT
-    ;
-
-indexClusterClause
-    : CLUSTERED COLUMNSTORE (WITH COMPRESSION_DELAY EQ_ NUMBER_ MINUTES?)? indexOnClause?
-    ;
-
-alterTableTableOption
-    : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RP_
-    | MEMORY_OPTIMIZED EQ_ ON
-    | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
-    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
     ;
