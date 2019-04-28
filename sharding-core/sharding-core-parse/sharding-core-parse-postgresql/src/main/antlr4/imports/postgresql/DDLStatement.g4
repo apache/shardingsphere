@@ -28,23 +28,23 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE existClause_ onlyClause_ tableName asteriskClause_ alterDefinitionClause_
+    : ALTER TABLE tableExistClause_ onlyClause_ tableName asteriskClause_ alterDefinitionClause_
     ;
 
 alterIndex
-    : ALTER INDEX existClause_ indexName alterIndexDefinitionClause_
+    : ALTER INDEX indexExistClause_ indexName alterIndexDefinitionClause_
     ;
 
 dropTable
-    : DROP TABLE existClause_ tableNames
+    : DROP TABLE tableExistClause_ tableNames
     ;
 
 dropIndex
-    : DROP INDEX (CONCURRENTLY)? existClause_ indexName (COMMA_ indexName)*
+    : DROP INDEX concurrentlyClause_ indexExistClause_ indexNames
     ;
     
 truncateTable
-    : TRUNCATE TABLE? ONLY? tableNameParts
+    : TRUNCATE TABLE? onlyClause_ tableNamesClause
     ;
 
 createTableSpecification_
@@ -160,7 +160,7 @@ onlyClause_
     : ONLY?
     ;
 
-existClause_
+tableExistClause_
     : (IF EXISTS)?
     ;
 
@@ -188,11 +188,11 @@ alterIndexSetTableSpace
     : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY ignoredIdentifiers_)?
     ;
 
-tableNameParts
-    : tableNamePart (COMMA_ tableNamePart)*
+tableNamesClause
+    : tableNameClause (COMMA_ tableNameClause)*
     ;
 
-tableNamePart
+tableNameClause
     : tableName ASTERISK_?
     ;
 
@@ -207,7 +207,7 @@ alterTableAction
     | addConstraintSpecification
     | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
     | VALIDATE CONSTRAINT ignoredIdentifier_
-    | DROP CONSTRAINT existClause_ ignoredIdentifier_ (RESTRICT | CASCADE)?
+    | DROP CONSTRAINT indexExistClause_ ignoredIdentifier_ (RESTRICT | CASCADE)?
     | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
     | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
     | (DISABLE | ENABLE) RULE ignoredIdentifier_
@@ -233,9 +233,13 @@ addColumnSpecification
     ;
 
 dropColumnSpecification
-    : DROP COLUMN? existClause_ columnName (RESTRICT | CASCADE)?
+    : DROP COLUMN? columnExistClause_ columnName (RESTRICT | CASCADE)?
     ;
 
+columnExistClause_
+    : (IF EXISTS)?
+    ;
+    
 modifyColumnSpecification
     : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
     | alterColumn SET DEFAULT expr
@@ -243,7 +247,7 @@ modifyColumnSpecification
     | alterColumn (SET | DROP) NOT NULL
     | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
     | alterColumn alterColumnSetOption alterColumnSetOption*
-    | alterColumn DROP IDENTITY existClause_
+    | alterColumn DROP IDENTITY columnExistClause_
     | alterColumn SET STATISTICS NUMBER_
     | alterColumn SET LP_ attributeOptions RP_
     | alterColumn RESET LP_ attributeOptions RP_
@@ -296,4 +300,12 @@ renameTableSpecification_
 
 newTableName
     : IDENTIFIER_
+    ;
+
+indexExistClause_
+    : (IF EXISTS)?
+    ;
+
+indexNames
+    : indexName (COMMA_ indexName)*
     ;
