@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification_
+    : ALTER TABLE tableExistClause_ onlyClause_ tableName asteriskClause_ (alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_)
     ;
 
 alterIndex
@@ -160,6 +160,15 @@ onlyClause_
     : ONLY?
     ;
 
+tableExistClause_
+    : (IF EXISTS)?
+    ;
+
+asteriskClause_
+    : ASTERISK_?
+    ;
+
+
 
 
 
@@ -284,10 +293,6 @@ storageParameterWithValue
 
 storageParameter
     : IDENTIFIER_
-    ;
-
-alterTableNameExists
-    : ALTER TABLE (IF EXISTS)? tableName
     ;
 
 renameTableSpecification_
