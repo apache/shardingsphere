@@ -76,7 +76,7 @@ inlineDataType_
     ;
 
 commonDataTypeOption_
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateName_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
     ;
 
 checkConstraintDefinition_

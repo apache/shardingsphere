@@ -34,7 +34,7 @@ literals
     ;
 
 stringLiterals
-    : characterSetName_? STRING_ collateName_?
+    : characterSetName_? STRING_ collateClause_?
     ;
 
 numberLiterals
@@ -47,11 +47,11 @@ dateTimeLiterals
     ;
 
 hexadecimalLiterals
-    : characterSetName_? HEX_DIGIT_ collateName_?
+    : characterSetName_? HEX_DIGIT_ collateClause_?
     ;
 
 bitValueLiterals
-    : characterSetName_? BIT_NUM_ collateName_?
+    : characterSetName_? BIT_NUM_ collateClause_?
     ;
     
 booleanLiterals
@@ -64,10 +64,6 @@ nullValueLiterals
 
 characterSetName_
     : IDENTIFIER_
-    ;
-
-collateName_
-    : COLLATE IDENTIFIER_
     ;
 
 identifier_
