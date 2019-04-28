@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.Pred
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
@@ -82,9 +81,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             List<PredicateSegment> predicates = new LinkedList<>();
             boolean isNeedSharding = false;
             for (PredicateSegment predicate : each.getPredicates()) {
-                addTableTokenForColumn(sqlStatement, predicate.getColumn());
                 if (predicate.getExpression() instanceof ColumnSegment) {
-                    addTableTokenForColumn(sqlStatement, (ColumnSegment) predicate.getExpression());
                     isNeedSharding = true;
                     continue;
                 }
@@ -101,17 +98,6 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             result.getAndConditions().add(getAndCondition(predicates, sqlStatement));
         }
         return result;
-    }
-    
-    private void addTableTokenForColumn(final SQLStatement sqlStatement, final ColumnSegment column) {
-        if (!column.getOwner().isPresent()) {
-            return;
-        }
-        String owner = column.getOwner().get();
-        Optional<Table> logicTable = sqlStatement.getTables().find(owner);
-        if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
-            sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), owner, column.getOwnerQuoteCharacter(), 0));
-        }
     }
     
     private AndCondition getAndCondition(final List<PredicateSegment> predicateSegments, final SQLStatement sqlStatement) {

@@ -57,7 +57,8 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
                     Optional<String> tableName = findTableName(predicate, sqlStatement);
-                    if (tableName.isPresent()) {
+                    // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
+                    if (tableName.isPresent() && encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicate.getColumn().getName()).isPresent()) {
                         fill(predicate, tableName.get(), sqlStatement);
                     }
                 }
@@ -66,10 +67,6 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     }
     
     private void fill(final PredicateSegment predicate, final String tableName, final SQLStatement sqlStatement) {
-        // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
-        if (!encryptRule.getEncryptorEngine().getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent()) {
-            return;
-        }
         AndCondition andCondition;
         if (sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().isEmpty()) {
             andCondition = new AndCondition();
@@ -102,9 +99,8 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         if (predicateSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
-        } else {
-            return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
         }
+        return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
