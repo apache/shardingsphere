@@ -78,9 +78,13 @@ columnDefinitionOption
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
-    | ENCRYPTED WITH LP_ COLUMN_ENCRYPTION_KEY EQ_ ignoredIdentifier_ COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
+    | ENCRYPTED WITH encryptedOptions_
     | columnConstraint (COMMA_ columnConstraint)*
     | columnIndex
+    ;
+
+encryptedOptions_
+    : LP_ COLUMN_ENCRYPTION_KEY EQ_ ignoredIdentifier_ COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
     ;
 
 columnConstraint
@@ -140,7 +144,11 @@ checkConstraint
     ;
 
 columnIndex
-    : INDEX indexName (CLUSTERED | NONCLUSTERED)? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_))?
+    : INDEX indexName (CLUSTERED | NONCLUSTERED)? withIndexOption_? indexOnClause? fileStreamOn_?
+    ;
+
+withIndexOption_
+    : WITH LP_ indexOption (COMMA_ indexOption)* RP_
     ;
 
 indexOnClause
@@ -149,6 +157,10 @@ indexOnClause
 
 onDefault
     : ON DEFAULT
+    ;
+
+fileStreamOn_
+    : FILESTREAM_ON (ignoredIdentifier_ | schemaName | STRING_)
     ;
 
 columnConstraints
