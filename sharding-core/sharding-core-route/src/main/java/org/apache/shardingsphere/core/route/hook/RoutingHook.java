@@ -15,23 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
+package org.apache.shardingsphere.core.route.hook;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Delete statement.
+ * Routing hook.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-@ToString(callSuper = true)
-@Getter
-@Setter
-public final class DeleteStatement extends DMLStatement {
+public interface RoutingHook {
     
-    private int whereStartIndex;
+    /**
+     * Handle when routing started.
+     *
+     * @param sql SQL to be routing
+     */
+    void start(String sql);
     
-    private int whereStopIndex;
+    /**
+     * Handle when routing finished success.
+     *
+     * @param sqlRouteResult sql route result
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void finishSuccess(SQLRouteResult sqlRouteResult, ShardingTableMetaData shardingTableMetaData);
+    
+    /**
+     * Handle when routing finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

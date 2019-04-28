@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -52,6 +53,8 @@ public abstract class BaseShardingEngine {
     
     private final DatabaseType databaseType;
     
+    private final SPIRoutingHook routingHook = new SPIRoutingHook();
+    
     /**
      * Shard.
      *
@@ -61,7 +64,7 @@ public abstract class BaseShardingEngine {
      */
     public SQLRouteResult shard(final String sql, final List<Object> parameters) {
         List<Object> clonedParameters = cloneParameters(parameters);
-        SQLRouteResult result = route(sql, clonedParameters);
+        SQLRouteResult result = executeRoute(sql, clonedParameters);
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
         if (shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW)) {
             boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
@@ -73,6 +76,20 @@ public abstract class BaseShardingEngine {
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
     protected abstract SQLRouteResult route(String sql, List<Object> parameters);
+    
+    private SQLRouteResult executeRoute(final String sql, final List<Object> clonedParameters) {
+        routingHook.start(sql);
+        try {
+            SQLRouteResult result = route(sql, clonedParameters);
+            routingHook.finishSuccess(result, metaData.getTable());
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            routingHook.finishFailure(ex);
+            throw ex;
+        }
+    }
     
     private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();

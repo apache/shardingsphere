@@ -24,7 +24,7 @@ schemaName
     ;
 
 tableName
-    : IDENTIFIER_
+    : (IDENTIFIER_ DOT_)? IDENTIFIER_
     ;
 
 columnName

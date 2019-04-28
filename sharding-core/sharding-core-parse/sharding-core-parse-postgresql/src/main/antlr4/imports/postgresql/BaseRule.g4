@@ -27,8 +27,16 @@ tableName
     : IDENTIFIER_
     ;
 
+tableNames
+    : LP_? tableName (COMMA_ tableName)* RP_?
+    ;
+
 columnName
     : IDENTIFIER_
+    ;
+
+columnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 collationName
@@ -49,10 +57,6 @@ dataTypeLength
 
 primaryKey
     : PRIMARY? KEY
-    ;
-
-columnNames
-    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 exprs
@@ -220,72 +224,6 @@ orderByItem
 
 asterisk
     : ASTERISK_
-    ;
-
-columnDefinition
-    : columnName dataType collateClause? columnConstraint*
-    ;
-
-columnConstraint
-    : constraintClause? columnConstraintOption constraintOptionalParam
-    ;
-
-constraintClause
-    : CONSTRAINT ignoredIdentifier_
-    ;
-
-columnConstraintOption
-    : NOT? NULL
-    | checkOption
-    | DEFAULT defaultExpr
-    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | UNIQUE indexParameters
-    | primaryKey indexParameters
-    | REFERENCES tableName (LP_ columnName RP_)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
-    ;
-
-checkOption
-    : CHECK expr (NO INHERIT)?
-    ;
-
-defaultExpr
-    : CURRENT_TIMESTAMP | expr
-    ;
-
-sequenceOptions
-    : sequenceOption+
-    ;
-
-sequenceOption
-    : START WITH? NUMBER_
-    | INCREMENT BY? NUMBER_
-    | MAXVALUE NUMBER_
-    | NO MAXVALUE
-    | MINVALUE NUMBER_
-    | NO MINVALUE
-    | CYCLE
-    | NO CYCLE
-    | CACHE NUMBER_
-    ;
-
-indexParameters
-    : (USING INDEX TABLESPACE ignoredIdentifier_)?
-    ;
-
-action
-    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
-    ;
-
-foreignKeyOnAction
-    : ON (UPDATE foreignKeyOn | DELETE foreignKeyOn)
-    ;
-
-foreignKeyOn
-    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
-    ;
-
-constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
     ;
 
 dataType

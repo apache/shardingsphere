@@ -20,7 +20,39 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)
+    : CREATE createSpecification_ TABLE notExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
+    ;
+
+createIndex
+    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
+    ;
+
+alterTable
+    : ALTER TABLE tableName alterSpecifications_?
+    ;
+
+dropTable
+    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    ;
+
+dropIndex
+    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
+    ;
+
+truncateTable
+    : TRUNCATE TABLE? tableName
+    ;
+
+createSpecification_
+    : TEMPORARY?
+    ;
+
+notExistClause_
+    : (IF NOT EXISTS)?
+    ;
+
+createDefinitionClause_
+    : LP_ createDefinitions_ RP_
     ;
 
 createDefinitions_
@@ -43,14 +75,12 @@ inlineDataType_
     | STORAGE (DISK | MEMORY | DEFAULT)
     ;
 
-generatedDataType_
-    : commonDataTypeOption_
-    | (GENERATED ALWAYS)? AS expr
-    | (VIRTUAL | STORED)
+commonDataTypeOption_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateName_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
     ;
 
-commonDataTypeOption_
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
+checkConstraintDefinition_
+    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
 referenceDefinition_
@@ -59,6 +89,12 @@ referenceDefinition_
 
 referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
+    ;
+
+generatedDataType_
+    : commonDataTypeOption_
+    | (GENERATED ALWAYS)? AS expr
+    | (VIRTUAL | STORED)
     ;
 
 indexDefinition_
@@ -101,16 +137,8 @@ foreignKeyOption_
     : FOREIGN KEY indexName? columnNames referenceDefinition_
     ;
 
-checkConstraintDefinition_
-    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
-    ;
-
-createLike_
-    : LIKE tableName | LP_ LIKE tableName RP_
-    ;
-
-alterTable
-    : ALTER TABLE tableName alterSpecifications_?
+createLikeClause_
+    : LP_? LIKE tableName RP_?
     ;
 
 alterSpecifications_
@@ -279,20 +307,4 @@ partitionDefinitionOption_
 
 subpartitionDefinition_
     : SUBPARTITION identifier_ partitionDefinitionOption_*
-    ;
-
-dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
-    ;
-
-truncateTable
-    : TRUNCATE TABLE? tableName
-    ;
-
-createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
-    ;
-
-dropIndex
-    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
     ;
