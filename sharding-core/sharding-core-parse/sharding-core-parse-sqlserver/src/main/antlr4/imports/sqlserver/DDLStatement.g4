@@ -211,6 +211,61 @@ alterClause_
     ;
 
 
+modifyColumnSpecification
+    : alterColumnOperation dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
+    ;
+
+alterColumnOperation
+    : ALTER COLUMN columnName
+    ;
+
+addColumnSpecification
+    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOptions | generatedColumnNamesClause)
+    ;
+
+alterColumnAddOptions
+    : alterColumnAddOption (COMMA_ alterColumnAddOption)*
+    ;
+
+alterColumnAddOption
+    : columnDefinition
+    | computedColumnDefinition
+    | columnSetDefinition
+    | tableConstraint
+    | alterTableTableIndex
+    | constraintForColumn
+    ;
+
+constraintForColumn
+    : (CONSTRAINT ignoredIdentifier_)? DEFAULT simpleExpr FOR columnName
+    ;
+
+columnNameWithSortsWithParen
+    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
+    ;
+
+columnNameWithSort
+    : columnName (ASC | DESC)?
+    ;
+
+generatedColumnNamesClause
+    : generatedColumnNameClause COMMA_ periodClause | periodClause COMMA_ generatedColumnNameClause
+    ;
+
+generatedColumnNameClause
+    : generatedColumnName DEFAULT simpleExpr (WITH VALUES)? COMMA_ generatedColumnName
+    ;
+
+generatedColumnName
+    : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
+    ;
+
+
+
+
+
+
+
 
 
 
@@ -259,52 +314,6 @@ fileGroup_
 
 periodClause
     : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
-    ;
-
-modifyColumnSpecification
-    : alterColumnOperation dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
-    ;
-
-alterColumnOperation
-    : ALTER COLUMN columnName
-    ;
-
-addColumnSpecification
-    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOptions | (generatedColumnNameClause COMMA_ periodClause | periodClause COMMA_ generatedColumnNameClause))
-    ;
-
-alterColumnAddOptions
-    : alterColumnAddOption (COMMA_ alterColumnAddOption)*
-    ;
-
-alterColumnAddOption
-    : columnDefinition
-    | computedColumnDefinition
-    | columnSetDefinition
-    | tableConstraint
-    | alterTableTableIndex
-    | constraintForColumn
-    ;
-
-constraintForColumn
-    : (CONSTRAINT ignoredIdentifier_)? DEFAULT simpleExpr FOR columnName
-    ;
-
-columnNameWithSortsWithParen
-    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
-    ;
-
-columnNameWithSort
-    : columnName (ASC | DESC)?
-    ;
-
-
-generatedColumnNameClause
-    : generatedColumnName DEFAULT simpleExpr (WITH VALUES)? COMMA_ generatedColumnName
-    ;
-
-generatedColumnName
-    : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
     ;
 
 alterDrop
