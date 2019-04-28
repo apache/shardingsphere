@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterSpecifications_?
+    : ALTER TABLE tableName alterClause_?
     ;
 
 dropTable
@@ -145,7 +145,7 @@ createIndexSpecification_
     : (UNIQUE | FULLTEXT | SPATIAL)?
     ;
 
-alterSpecifications_
+alterClause_
     : alterSpecification_ (COMMA_ alterSpecification_)*
     ;
 
