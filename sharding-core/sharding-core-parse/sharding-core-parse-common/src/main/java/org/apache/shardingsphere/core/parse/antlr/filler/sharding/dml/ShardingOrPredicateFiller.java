@@ -25,6 +25,10 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.InValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -34,9 +38,14 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -78,38 +87,71 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     private OrCondition fillShardingConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         OrCondition result = new OrCondition();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
-            List<PredicateSegment> predicates = new LinkedList<>();
-            boolean isNeedSharding = false;
+            AndCondition andCondition = new AndCondition();
             for (PredicateSegment predicate : each.getPredicates()) {
-                if (predicate.getExpression() instanceof ColumnSegment) {
-                    isNeedSharding = true;
-                    continue;
-                }
-                Optional<String> tableName = findTableName(predicate, sqlStatement);
-                if (isShardingCondition(predicate.getOperator()) && tableName.isPresent() && shardingRule.isShardingColumn(predicate.getColumn().getName(), tableName.get())) {
-                    predicates.add(predicate);
-                    isNeedSharding = true;
+                Optional<Condition> condition = createCondition(predicate, sqlStatement);
+                if (condition.isPresent()) {
+                    andCondition.getConditions().add(condition.get());
                 }
             }
-            if (!isNeedSharding || predicates.isEmpty()) {
+            if (andCondition.getConditions().isEmpty()) {
                 result.getAndConditions().clear();
                 return result;
             }
-            result.getAndConditions().add(getAndCondition(predicates, sqlStatement));
+            result.getAndConditions().add(andCondition);
         }
         return result;
     }
     
-    private AndCondition getAndCondition(final List<PredicateSegment> predicateSegments, final SQLStatement sqlStatement) {
-        AndCondition result = new AndCondition();
-        for (PredicateSegment each : predicateSegments) {
-            Optional<String> tableName = findTableName(each, sqlStatement);
-            if (tableName.isPresent()) {
-                Column column = new Column(each.getColumn().getName(), tableName.get());
-                result.getConditions().add(each.getExpression().buildCondition(column, sqlStatement.getLogicSQL()));
+    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+        if (!isShardingCondition(predicateSegment.getOperator())) {
+            return Optional.absent();
+        }
+        Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
+        if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicateSegment.getColumn().getName(), tableName.get())) {
+            return Optional.absent();
+        }
+        Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
+        if (predicateSegment.getExpression() instanceof CompareValueExpressionSegment) {
+            return createEqualCondition((CompareValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        }
+        if (predicateSegment.getExpression() instanceof InValueExpressionSegment) {
+            return createInCondition((InValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        }
+        if (predicateSegment.getExpression() instanceof BetweenValueExpressionSegment) {
+            return createBetweenCondition((BetweenValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        }
+        return Optional.absent();
+    }
+    
+    private Optional<Condition> createEqualCondition(final CompareValueExpressionSegment expressionSegment, final Column column, final String sql) {
+        SQLExpression sqlExpression = expressionSegment.getExpression().getSQLExpression(sql);
+        return isShardingExpressionType(sqlExpression) ? Optional.of(new Condition(column, sqlExpression)) : Optional.<Condition>absent();
+    }
+    
+    private Optional<Condition> createInCondition(final InValueExpressionSegment expressionSegment, final Column column, final String sql) {
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
+            SQLExpression sqlExpression = each.getSQLExpression(sql);
+            if (!isShardingExpressionType(sqlExpression)) {
+                sqlExpressions.clear();
+                break;
+            } else {
+                sqlExpressions.add(sqlExpression);
             }
         }
-        return result;
+        return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
+    }
+    
+    private Optional<Condition> createBetweenCondition(final BetweenValueExpressionSegment expressionSegment, final Column column, final String sql) {
+        SQLExpression betweenExpression = expressionSegment.getBetweenExpression().getSQLExpression(sql);
+        SQLExpression andExpression = expressionSegment.getAndExpression().getSQLExpression(sql);
+        return isShardingExpressionType(betweenExpression) && isShardingExpressionType(andExpression)
+                ? Optional.of(new Condition(column, betweenExpression, andExpression)) : Optional.<Condition>absent();
+    }
+    
+    private boolean isShardingExpressionType(final SQLExpression sqlExpression) {
+        return sqlExpression instanceof SQLPlaceholderExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression;
     }
     
     private void fillEncryptConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
