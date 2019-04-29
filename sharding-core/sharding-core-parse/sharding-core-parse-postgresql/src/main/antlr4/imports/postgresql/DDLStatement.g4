@@ -20,38 +20,38 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE createSpecification_ TABLE notExistClause_ tableName createDefinitionClause_ inheritClause_
+    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName createDefinitionClause_ inheritClause_
     ;
 
 createIndex
-    : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
+    : CREATE createIndexSpecification_ INDEX concurrentlyClause_ (indexNotExistClause_ indexName)? ON onlyClause_ tableName 
     ;
 
 alterTable
-    : alterTableNameWithAsterisk (alterTableActions | renameColumnSpecification | renameConstraint) | alterTableNameExists renameTableSpecification_
+    : ALTER TABLE tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause_
     ;
 
 alterIndex
-    : alterIndexName renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
+    : ALTER INDEX indexExistClause_ indexName alterIndexDefinitionClause_
     ;
 
 dropTable
-    : DROP TABLE (IF EXISTS)? tableNames
+    : DROP TABLE tableExistClause_ tableNames
     ;
 
 dropIndex
-    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexName (COMMA_ indexName)*
+    : DROP INDEX concurrentlyClause_ indexExistClause_ indexNames
     ;
     
 truncateTable
-    : TRUNCATE TABLE? ONLY? tableNameParts
+    : TRUNCATE TABLE? onlyClause_ tableNamesClause
     ;
 
-createSpecification_
+createTableSpecification_
     : ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)?
     ;
 
-notExistClause_
+tableNotExistClause_
     : (IF NOT EXISTS)?
     ;
 
@@ -144,8 +144,36 @@ inheritClause_
     : (INHERITS tableNames)?
     ;
 
-alterIndexName
-    : ALTER INDEX (IF EXISTS)? indexName
+createIndexSpecification_
+    : UNIQUE?
+    ;
+
+concurrentlyClause_
+    : CONCURRENTLY?
+    ;
+
+indexNotExistClause_
+    : (IF NOT EXISTS)?
+    ;
+
+onlyClause_
+    : ONLY?
+    ;
+
+tableExistClause_
+    : (IF EXISTS)?
+    ;
+
+asteriskClause_
+    : ASTERISK_?
+    ;
+
+alterDefinitionClause_
+    : alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_
+    ;
+
+alterIndexDefinitionClause_
+    : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace
     ;
 
 renameIndexSpecification
@@ -160,16 +188,12 @@ alterIndexSetTableSpace
     : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY ignoredIdentifiers_)?
     ;
 
-tableNameParts
-    : tableNamePart (COMMA_ tableNamePart)*
+tableNamesClause
+    : tableNameClause (COMMA_ tableNameClause)*
     ;
 
-tableNamePart
+tableNameClause
     : tableName ASTERISK_?
-    ;
-
-alterTableNameWithAsterisk
-    : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK_?
     ;
 
 alterTableActions
@@ -183,7 +207,7 @@ alterTableAction
     | addConstraintSpecification
     | ALTER CONSTRAINT ignoredIdentifier_ constraintOptionalParam
     | VALIDATE CONSTRAINT ignoredIdentifier_
-    | DROP CONSTRAINT (IF EXISTS)? ignoredIdentifier_ (RESTRICT | CASCADE)?
+    | DROP CONSTRAINT indexExistClause_ ignoredIdentifier_ (RESTRICT | CASCADE)?
     | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier_ | ALL | USER)?
     | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier_
     | (DISABLE | ENABLE) RULE ignoredIdentifier_
@@ -204,33 +228,33 @@ alterTableAction
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
     ;
 
-tableConstraintUsingIndex
-    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
-    ;
-
 addColumnSpecification
     : ADD COLUMN? (IF NOT EXISTS)? columnDefinition
     ;
 
 dropColumnSpecification
-    : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
+    : DROP COLUMN? columnExistClause_ columnName (RESTRICT | CASCADE)?
     ;
 
+columnExistClause_
+    : (IF EXISTS)?
+    ;
+    
 modifyColumnSpecification
-    : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
-    | alterColumn SET DEFAULT expr
-    | alterColumn DROP DEFAULT
-    | alterColumn (SET | DROP) NOT NULL
-    | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | alterColumn alterColumnSetOption alterColumnSetOption*
-    | alterColumn DROP IDENTITY (IF EXISTS)?
-    | alterColumn SET STATISTICS NUMBER_
-    | alterColumn SET LP_ attributeOptions RP_
-    | alterColumn RESET LP_ attributeOptions RP_
-    | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
+    : modifyColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
+    | modifyColumn SET DEFAULT expr
+    | modifyColumn DROP DEFAULT
+    | modifyColumn (SET | DROP) NOT NULL
+    | modifyColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
+    | modifyColumn alterColumnSetOption alterColumnSetOption*
+    | modifyColumn DROP IDENTITY columnExistClause_
+    | modifyColumn SET STATISTICS NUMBER_
+    | modifyColumn SET LP_ attributeOptions RP_
+    | modifyColumn RESET LP_ attributeOptions RP_
+    | modifyColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
 
-alterColumn
+modifyColumn
     : ALTER COLUMN? columnName
     ;
 
@@ -250,12 +274,8 @@ addConstraintSpecification
     : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
 
-renameColumnSpecification
-    : RENAME COLUMN? columnName TO columnName
-    ;
-
-renameConstraint
-    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
+tableConstraintUsingIndex
+    : (CONSTRAINT ignoredIdentifier_)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
 
 storageParameterWithValue
@@ -266,8 +286,12 @@ storageParameter
     : IDENTIFIER_
     ;
 
-alterTableNameExists
-    : ALTER TABLE (IF EXISTS)? tableName
+renameColumnSpecification
+    : RENAME COLUMN? columnName TO columnName
+    ;
+
+renameConstraint
+    : RENAME CONSTRAINT ignoredIdentifier_ TO ignoredIdentifier_
     ;
 
 renameTableSpecification_
@@ -278,10 +302,10 @@ newTableName
     : IDENTIFIER_
     ;
 
-usingIndexType
-    : USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
+indexExistClause_
+    : (IF EXISTS)?
     ;
 
-excludeElement
-    : (columnName | expr) ignoredIdentifier_? (ASC | DESC)? (NULLS (FIRST | LAST))?
+indexNames
+    : indexName (COMMA_ indexName)*
     ;

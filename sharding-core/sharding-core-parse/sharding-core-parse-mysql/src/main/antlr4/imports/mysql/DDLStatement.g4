@@ -20,34 +20,34 @@ grammar DDLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 createTable
-    : CREATE createSpecification_ TABLE notExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
     ;
 
 createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType_? ON tableName
+    : CREATE createIndexSpecification_ INDEX indexName indexType_? ON tableName
     ;
 
 alterTable
-    : ALTER TABLE tableName alterSpecifications_?
+    : ALTER TABLE tableName alterDefinitionClause_?
     ;
 
 dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableName (COMMA_ tableName)*
+    : DROP dropTableSpecification_ TABLE tableExistClause_ tableNames
     ;
 
 dropIndex
-    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
+    : DROP INDEX dropIndexSpecification_ indexName ON tableName
     ;
 
 truncateTable
     : TRUNCATE TABLE? tableName
     ;
 
-createSpecification_
+createTableSpecification_
     : TEMPORARY?
     ;
 
-notExistClause_
+tableNotExistClause_
     : (IF NOT EXISTS)?
     ;
 
@@ -76,7 +76,7 @@ inlineDataType_
     ;
 
 commonDataTypeOption_
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateName_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
     ;
 
 checkConstraintDefinition_
@@ -141,7 +141,11 @@ createLikeClause_
     : LP_? LIKE tableName RP_?
     ;
 
-alterSpecifications_
+createIndexSpecification_
+    : (UNIQUE | FULLTEXT | SPATIAL)?
+    ;
+
+alterDefinitionClause_
     : alterSpecification_ (COMMA_ alterSpecification_)*
     ;
 
@@ -169,7 +173,7 @@ alterSpecification_
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumnSpecification
     // TODO hongjun investigate ORDER BY col_name [, col_name] ...
-    | ORDER BY columnName (COMMA_ columnName)*
+    | ORDER BY columnNames
     | renameColumnSpecification
     | renameIndexSpecification
     | renameTableSpecification_
@@ -307,4 +311,16 @@ partitionDefinitionOption_
 
 subpartitionDefinition_
     : SUBPARTITION identifier_ partitionDefinitionOption_*
+    ;
+
+dropTableSpecification_
+    : TEMPORARY?
+    ;
+
+tableExistClause_
+    : (IF EXISTS)?
+    ;
+
+dropIndexSpecification_
+    : (ONLINE | OFFLINE)?
     ;
