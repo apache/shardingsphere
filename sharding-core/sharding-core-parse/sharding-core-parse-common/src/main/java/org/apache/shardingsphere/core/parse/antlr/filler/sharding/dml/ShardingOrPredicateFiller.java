@@ -29,9 +29,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.Expressio
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateBetweenRightValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
@@ -112,14 +112,14 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
-        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValueSegment) {
-            return createEqualCondition((PredicateCompareRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
+            return createEqualCondition((PredicateCompareRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
-        if (predicateSegment.getRightValue() instanceof PredicateInRightValueSegment) {
-            return createInCondition((PredicateInRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
+            return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
-        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValueSegment) {
-            return createBetweenCondition((PredicateBetweenRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
+            return createBetweenCondition((PredicateBetweenRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
     }
@@ -128,12 +128,12 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator) || ShardingOperator.BETWEEN.name().equals(operator);
     }
     
-    private Optional<Condition> createEqualCondition(final PredicateCompareRightValueSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column, final String sql) {
         SQLExpression sqlExpression = expressionSegment.getExpression().getSQLExpression(sql);
         return isShardingExpressionType(sqlExpression) ? Optional.of(new Condition(column, sqlExpression)) : Optional.<Condition>absent();
     }
     
-    private Optional<Condition> createInCondition(final PredicateInRightValueSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createInCondition(final PredicateInRightValue expressionSegment, final Column column, final String sql) {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
             SQLExpression sqlExpression = each.getSQLExpression(sql);
@@ -147,7 +147,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
     }
     
-    private Optional<Condition> createBetweenCondition(final PredicateBetweenRightValueSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue expressionSegment, final Column column, final String sql) {
         SQLExpression betweenExpression = expressionSegment.getBetweenExpression().getSQLExpression(sql);
         SQLExpression andExpression = expressionSegment.getAndExpression().getSQLExpression(sql);
         return isShardingExpressionType(betweenExpression) && isShardingExpressionType(andExpression)
@@ -199,11 +199,11 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
-        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValueSegment) {
-            return createEqualCondition((PredicateCompareRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
+            return createEqualCondition((PredicateCompareRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
-        if (predicateSegment.getRightValue() instanceof PredicateInRightValueSegment) {
-            return createInCondition((PredicateInRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
+            return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
     }

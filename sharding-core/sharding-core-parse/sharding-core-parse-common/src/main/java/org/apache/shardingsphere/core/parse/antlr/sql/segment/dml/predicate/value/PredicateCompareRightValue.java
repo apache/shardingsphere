@@ -22,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * Predicate compare right value segment.
+ * Predicate right value for compare operator.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class PredicateCompareRightValueSegment implements PredicateRightValueSegment {
+public final class PredicateCompareRightValue implements PredicateRightValue {
     
     private final ExpressionSegment expression;
 }

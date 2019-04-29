@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateRightValue;
 
 /**
  * Predicate segment.
@@ -36,7 +36,7 @@ public final class PredicateSegment implements SQLSegment {
     
     private final String operator;
     
-    private final PredicateRightValueSegment rightValue;
+    private final PredicateRightValue rightValue;
     
     private final int stopIndex;
 }
