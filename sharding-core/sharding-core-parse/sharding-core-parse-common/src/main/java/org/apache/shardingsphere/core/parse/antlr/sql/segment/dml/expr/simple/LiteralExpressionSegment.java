@@ -42,9 +42,6 @@ public final class LiteralExpressionSegment implements SimpleExpressionSegment {
     
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        if (literals instanceof Number) {
-            return new SQLNumberExpression((Number) literals);
-        }
-        return new SQLTextExpression(literals.toString());
+        return literals instanceof Number ? new SQLNumberExpression((Number) literals) : new SQLTextExpression(literals.toString());
     } 
 }
