@@ -28,13 +28,6 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 public interface ComplexExpressionSegment extends ExpressionSegment {
     
     /**
-     * Get start index.
-     *
-     * @return start index
-     */
-    int getStartIndex();
-    
-    /**
      * Get SQL expression.
      *
      * @param sql SQL text

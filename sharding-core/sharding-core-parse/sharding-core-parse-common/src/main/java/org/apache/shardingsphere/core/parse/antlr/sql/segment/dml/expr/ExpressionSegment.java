@@ -27,6 +27,13 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 public interface ExpressionSegment extends SQLSegment {
     
     /**
+     * Get start index.
+     *
+     * @return start index
+     */
+    int getStartIndex();
+    
+    /**
      * Get stop index.
      *
      * @return stop index

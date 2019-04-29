@@ -36,7 +36,8 @@ public final class ParameterMarkerExpressionExtractor implements OptionalSQLSegm
     @Override
     public Optional<ParameterMarkerExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.PARAMETER_MARKER);
-        return parameterMarkerNode.isPresent() ? Optional.of(new ParameterMarkerExpressionSegment(expressionNode.getStop().getStopIndex(), parameterMarkerIndexes.get(parameterMarkerNode.get())))
+        return parameterMarkerNode.isPresent() ? Optional.of(
+                new ParameterMarkerExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(), parameterMarkerIndexes.get(parameterMarkerNode.get())))
                 : Optional.<ParameterMarkerExpressionSegment>absent();
     }
 }
