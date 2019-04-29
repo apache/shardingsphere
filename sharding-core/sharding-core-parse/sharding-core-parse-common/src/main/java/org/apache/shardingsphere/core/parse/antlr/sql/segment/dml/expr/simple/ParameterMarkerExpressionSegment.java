@@ -36,7 +36,7 @@ public final class ParameterMarkerExpressionSegment implements SimpleExpressionS
     private final int parameterMarkerIndex;
     
     @Override
-    public SQLExpression getSQLExpression(final String sql) {
+    public SQLExpression getSQLExpression() {
         return new SQLParameterMarkerExpression(parameterMarkerIndex);
     } 
 }

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
@@ -31,9 +33,6 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditi
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
@@ -79,7 +78,10 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
-        SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
+        if (expressionSegment instanceof ComplexExpressionSegment) {
+            throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
+        }
+        SQLExpression result = ((SimpleExpressionSegment) expressionSegment).getSQLExpression();
         String tableName = insertStatement.getTables().getSingleTableName();
         fillShardingCondition(andCondition, tableName, columnName, result);
         return result;
@@ -87,11 +89,7 @@ public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSe
     
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            if (sqlExpression instanceof SQLParameterMarkerExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression) {
-                andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
-            } else {
-                throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
-            }
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
         }
     }
 }

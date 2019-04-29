@@ -41,9 +41,7 @@ public final class LiteralExpressionExtractor implements OptionalSQLSegmentExtra
             return Optional.absent();
         }
         Optional<?> literals = getLiterals(literalsNode.get());
-        return literals.isPresent() 
-                ? Optional.of(new LiteralExpressionSegment(literalsNode.get().getStart().getStartIndex(), literalsNode.get().getStop().getStopIndex(), literals.get()))
-                : Optional.<LiteralExpressionSegment>absent();
+        return literals.isPresent() ? Optional.of(new LiteralExpressionSegment(literalsNode.get().getStop().getStopIndex(), literals.get())) : Optional.<LiteralExpressionSegment>absent();
     }
     
     private Optional<?> getLiterals(final ParserRuleContext literalsNode) {

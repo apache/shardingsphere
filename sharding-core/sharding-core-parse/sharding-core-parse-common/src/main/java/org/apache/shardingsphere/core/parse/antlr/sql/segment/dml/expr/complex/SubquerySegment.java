@@ -29,11 +29,11 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpre
  * @author duhongjun
  */
 @RequiredArgsConstructor
+@Getter
 public final class SubquerySegment implements SelectItemSegment, ComplexExpressionSegment {
     
     private final int startIndex;
     
-    @Getter
     private final int stopIndex;
 
     @Override

@@ -34,14 +34,12 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpress
 @Getter
 public final class LiteralExpressionSegment implements SimpleExpressionSegment {
     
-    private final int startIndex;
-    
     private final int stopIndex;
     
     private final Object literals;
     
     @Override
-    public SQLExpression getSQLExpression(final String sql) {
+    public SQLExpression getSQLExpression() {
         return literals instanceof Number ? new SQLNumberExpression((Number) literals) : new SQLTextExpression(literals.toString());
     } 
 }

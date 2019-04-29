@@ -102,10 +102,10 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue predicateCompareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return "=".equals(predicateCompareRightValue.getOperator()) || "<>".equals(predicateCompareRightValue.getOperator()) || "!=".equals(predicateCompareRightValue.getOperator())
-                    ? createEqualCondition(predicateCompareRightValue, column, sqlStatement.getLogicSQL()) : Optional.<Condition>absent();
+                    ? createEqualCondition(predicateCompareRightValue, column) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+            return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column);
         }
         return Optional.absent();
     }
@@ -116,19 +116,19 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         return encryptorEngine.getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent();
     }
     
-    private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column) {
         return expressionSegment.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new Condition(column, expressionSegment.getExpression().getSQLExpression(sql))) : Optional.<Condition>absent();
+                ? Optional.of(new Condition(column, ((SimpleExpressionSegment) expressionSegment.getExpression()).getSQLExpression())) : Optional.<Condition>absent();
     }
     
-    private Optional<Condition> createInCondition(final PredicateInRightValue expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createInCondition(final PredicateInRightValue expressionSegment, final Column column) {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
             if (!(each instanceof SimpleExpressionSegment)) {
                 sqlExpressions.clear();
                 break;
             } else {
-                sqlExpressions.add(each.getSQLExpression(sql));
+                sqlExpressions.add(((SimpleExpressionSegment) each).getSQLExpression());
             }
         }
         return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));

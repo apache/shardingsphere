@@ -25,6 +25,8 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDa
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
@@ -36,9 +38,6 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditi
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Iterator;
@@ -98,7 +97,10 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
-        SQLExpression result = expressionSegment.getSQLExpression(insertStatement.getLogicSQL());
+        if (expressionSegment instanceof ComplexExpressionSegment) {
+            throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
+        }
+        SQLExpression result = ((SimpleExpressionSegment) expressionSegment).getSQLExpression();
         String tableName = insertStatement.getTables().getSingleTableName();
         fillShardingCondition(andCondition, columnName, tableName, result);
         return result;
@@ -106,11 +108,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     
     private void fillShardingCondition(final AndCondition andCondition, final String columnName, final String tableName, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
-            if (sqlExpression instanceof SQLParameterMarkerExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression) {
-                andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
-            } else {
-                throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
-            }
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
         }
     }
     
@@ -118,7 +116,8 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         String tableName = updateStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             Column column = new Column(each.getColumn().getName(), tableName);
-            SQLExpression expression = each.getValue().getSQLExpression(updateStatement.getLogicSQL());
+            SQLExpression expression = each.getValue() instanceof SimpleExpressionSegment
+                    ? ((SimpleExpressionSegment) each.getValue()).getSQLExpression() : ((ComplexExpressionSegment) each.getValue()).getSQLExpression(updateStatement.getLogicSQL());
             updateStatement.getAssignments().put(column, expression);
             fillEncryptCondition(each, tableName, updateStatement);
         }
@@ -126,7 +125,8 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     
     private void fillEncryptCondition(final AssignmentSegment assignment, final String tableName, final UpdateStatement updateStatement) {
         Column column = new Column(assignment.getColumn().getName(), tableName);
-        SQLExpression expression = assignment.getValue().getSQLExpression(updateStatement.getLogicSQL());
+        SQLExpression expression = assignment.getValue() instanceof SimpleExpressionSegment
+                ? ((SimpleExpressionSegment) assignment.getValue()).getSQLExpression() : ((ComplexExpressionSegment) assignment.getValue()).getSQLExpression(updateStatement.getLogicSQL());
         updateStatement.getAssignments().put(column, expression);
         if (shardingRule.getShardingEncryptorEngine().getShardingEncryptor(column.getTableName(), column.getName()).isPresent()) {
             updateStatement.getSQLTokens().add(new EncryptColumnToken(assignment.getColumn().getStartIndex(), assignment.getValue().getStopIndex(), column, false));

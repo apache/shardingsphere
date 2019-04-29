@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 /**
  * Complex expression segment.
@@ -25,4 +26,19 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.Expressio
  * @author zhangliang
  */
 public interface ComplexExpressionSegment extends ExpressionSegment {
+    
+    /**
+     * Get start index.
+     *
+     * @return start index
+     */
+    int getStartIndex();
+    
+    /**
+     * Get SQL expression.
+     *
+     * @param sql SQL text
+     * @return SQL expression
+     */
+    SQLExpression getSQLExpression(String sql);
 }

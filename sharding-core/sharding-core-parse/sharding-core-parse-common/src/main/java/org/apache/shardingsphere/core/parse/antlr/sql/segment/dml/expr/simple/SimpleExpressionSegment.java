@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 /**
  * Simple expression segment.
@@ -25,4 +26,11 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.Expressio
  * @author zhangliang
  */
 public interface SimpleExpressionSegment extends ExpressionSegment {
+    
+    /**
+     * Get SQL expression.
+     *
+     * @return SQL expression
+     */
+    SQLExpression getSQLExpression();
 }
