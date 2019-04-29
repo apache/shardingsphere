@@ -48,7 +48,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingTable;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -185,7 +185,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(new InsertValuesToken(19));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
-        SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1), new SQLPlaceholderExpression(2)};
+        SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1), new SQLParameterMarkerExpression(2)};
         insertOptimizeResult.addUnit(sqlExpressions, parameters);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
@@ -206,7 +206,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(new InsertValuesToken(21));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
-        SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)};
+        SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, parameters);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
@@ -266,7 +266,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(new TableToken(12, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
         insertStatement.addSQLToken(new InsertValuesToken(21));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
-        SQLExpression[] sqlExpressions = {new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1)};
+        SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
         Object[] parameters = {"x", 1};
         insertOptimizeResult.addUnit(sqlExpressions, parameters);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -623,7 +623,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.addSQLToken(new TableToken(15, "table_z", QuoteCharacter.NONE, 0));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLParameterMarkerExpression(0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
@@ -677,8 +677,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         List<SQLExpression> sqlExpressions = new LinkedList<>();
-        sqlExpressions.add(new SQLPlaceholderExpression(0));
-        sqlExpressions.add(new SQLPlaceholderExpression(1));
+        sqlExpressions.add(new SQLParameterMarkerExpression(0));
+        sqlExpressions.add(new SQLParameterMarkerExpression(1));
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
         routeResult = new SQLRouteResult(selectStatement);
@@ -699,7 +699,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.addSQLToken(new TableToken(15, "table_k", QuoteCharacter.NONE, 0));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLParameterMarkerExpression(0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
@@ -750,10 +750,10 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_k");
         updateStatement.addSQLToken(new TableToken(7, "table_k", QuoteCharacter.NONE, 0));
         updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        updateStatement.getAssignments().put(column, new SQLPlaceholderExpression(0));
+        updateStatement.getAssignments().put(column, new SQLParameterMarkerExpression(0));
         updateStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
         updateStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
+        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLParameterMarkerExpression(1)));
         routeResult = new SQLRouteResult(updateStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, routeResult, parameters, null);

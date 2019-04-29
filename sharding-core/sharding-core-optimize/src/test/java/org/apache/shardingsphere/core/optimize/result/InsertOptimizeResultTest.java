@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResul
 import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class InsertOptimizeResultTest {
     
     @Test
     public void assertAddUnitWithSet() {
-        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLPlaceholderExpression(1), new SQLTextExpression("test")};
+        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
         Object[] parameters = {"parameter"};
         setInsertOptimizeResult.addUnit(expressions, parameters);
         assertThat(setInsertOptimizeResult.getColumnNames().size(), is(3));
@@ -56,7 +56,7 @@ public final class InsertOptimizeResultTest {
     
     @Test
     public void assertAddUnitWithValues() {
-        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLPlaceholderExpression(1), new SQLTextExpression("test")};
+        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
         Object[] parameters = {"parameter"};
         valuesInsertOptimizeResult.addUnit(expressions, parameters);
         assertThat(valuesInsertOptimizeResult.getUnits().get(0).toString(), is("(1, ?, 'test')"));

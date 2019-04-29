@@ -37,7 +37,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIdentifierExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -97,7 +97,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
             lexerEngine.accept(Symbol.EQ);
             SQLExpression right = basicExpressionParser.parse(insertStatement);
             if (shardingRule.isShardingColumn(column.getName(), column.getTableName()) 
-                    && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+                    && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLParameterMarkerExpression)) {
                 insertStatement.getRouteConditions().add(new Condition(column, right));
             }
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));

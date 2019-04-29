@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Placeholder expression.
+ * Parameter marker expression.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLPlaceholderExpression implements SQLExpression {
+public final class SQLParameterMarkerExpression implements SQLExpression {
     
     private final int index;
 }
