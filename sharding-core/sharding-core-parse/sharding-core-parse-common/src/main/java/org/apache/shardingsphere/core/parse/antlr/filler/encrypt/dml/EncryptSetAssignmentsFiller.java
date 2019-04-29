@@ -22,13 +22,11 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFil
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.assignment.SetAssignmentsSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
@@ -57,21 +55,13 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
     }
     
     private void fillInsert(final SetAssignmentsSegment sqlSegment, final InsertStatement insertStatement) {
-        String tableName = insertStatement.getTables().getSingleTableName();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            fillColumn(each.getColumn(), insertStatement, tableName);
+            insertStatement.getColumnNames().add(each.getColumn().getName());
         }
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
         insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex()));
-    }
-    
-    private void fillColumn(final ColumnSegment sqlSegment, final InsertStatement insertStatement, final String tableName) {
-        insertStatement.getColumnNames().add(sqlSegment.getName());
-        if (sqlSegment.getOwner().isPresent() && tableName.equals(sqlSegment.getOwner().get())) {
-            insertStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), tableName, sqlSegment.getOwnerQuoteCharacter(), 0));
-        }
     }
     
     private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final String sql) {

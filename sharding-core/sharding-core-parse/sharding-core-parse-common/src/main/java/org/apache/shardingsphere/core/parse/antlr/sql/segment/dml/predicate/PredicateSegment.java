@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SQLRightValueExpressionSegment;
 
 /**
  * Predicate segment.
@@ -31,7 +32,11 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondi
 @Getter
 public final class PredicateSegment implements SQLSegment {
     
-    private final OrCondition orCondition;
+    private final ColumnSegment column;
     
+    private final String operator;
+    
+    private final SQLRightValueExpressionSegment expression;
+    
+    private final int stopIndex;
 }
-

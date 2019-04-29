@@ -45,7 +45,7 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
         Collection<OrderByItemSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ORDER_BY_ITEM)) {
             OrderDirection orderDirection = 2 == each.getChildCount() && OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(1).getText()) ? OrderDirection.DESC : OrderDirection.ASC;
-            Optional<ParserRuleContext> indexNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER);
+            Optional<ParserRuleContext> indexNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER_LITERALS);
             if (indexNode.isPresent()) {
                 result.add(new IndexOrderByItemSegment(NumberUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, OrderDirection.ASC));
                 continue;

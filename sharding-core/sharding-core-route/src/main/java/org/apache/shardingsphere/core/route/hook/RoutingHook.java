@@ -15,25 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml;
+package org.apache.shardingsphere.core.route.hook;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Table join segment.
+ * Routing hook.
  *
- * @author duhongjun
+ * @author zhaojun
  */
-@Getter
-public final class TableJoinSegment extends TableSegment {
+public interface RoutingHook {
     
-    private final OrConditionSegment joinConditions = new OrConditionSegment();
+    /**
+     * Handle when routing started.
+     *
+     * @param sql SQL to be routing
+     */
+    void start(String sql);
     
-    public TableJoinSegment(final TableSegment parent) {
-        super(parent.getStartIndex(), parent.getName());
-        setOwner(parent.getOwner().orNull());
-        setAlias(parent.getAlias().orNull());
-    }
+    /**
+     * Handle when routing finished success.
+     *
+     * @param sqlRouteResult sql route result
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void finishSuccess(SQLRouteResult sqlRouteResult, ShardingTableMetaData shardingTableMetaData);
+    
+    /**
+     * Handle when routing finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

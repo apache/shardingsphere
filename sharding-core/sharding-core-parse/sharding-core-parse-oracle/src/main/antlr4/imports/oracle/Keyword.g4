@@ -331,6 +331,14 @@ USER
     : U S E R
     ;
 
+VISIBLE
+    : V I S I B L E
+    ;
+
+INVISIBLE
+    : I N V I S I B L E
+    ;
+
 YEAR
     : Y E A R
     ;

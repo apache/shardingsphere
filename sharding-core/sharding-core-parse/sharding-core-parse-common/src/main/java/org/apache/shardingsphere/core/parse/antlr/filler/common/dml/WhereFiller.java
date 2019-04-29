@@ -15,42 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 
 /**
  * Where filler.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-@Getter
-@Setter
-public class WhereFiller implements SQLSegmentFiller<WhereSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
-    
-    private ShardingRule shardingRule;
-    
-    private ShardingTableMetaData shardingTableMetaData;
+public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
     
     @Override
     public void fill(final WhereSegment sqlSegment, final SQLStatement sqlStatement) {
-        new OrConditionFiller(shardingRule, shardingTableMetaData).fill(sqlSegment.getConditions(), sqlStatement);
         sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
             deleteStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
             deleteStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
-            deleteStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
-            deleteStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
+        } else if (sqlStatement instanceof UpdateStatement) {
+            UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
+            updateStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
+            updateStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
+            updateStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
+            updateStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
         }
     }
 }

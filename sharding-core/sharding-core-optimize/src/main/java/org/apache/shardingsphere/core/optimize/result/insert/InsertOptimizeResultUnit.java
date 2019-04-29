@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
@@ -132,6 +133,8 @@ public abstract class InsertOptimizeResultUnit {
             return "?";
         } else if (sqlExpression instanceof SQLTextExpression) {
             return String.format("'%s'", ((SQLTextExpression) sqlExpression).getText());
+        } else if (sqlExpression instanceof SQLIgnoreExpression) {
+            return ((SQLIgnoreExpression) sqlExpression).getExpression();
         } else {
             return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
         }

@@ -22,31 +22,38 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.OrConditionFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition.SubqueryConditionSegment;
+import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.ShardingOrPredicateFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Subquery condition filler.
+ * Subquery predicate filler for sharding.
  *
  * @author duhongjun
  */
 @Setter
-public final class SubqueryConditionFiller implements SQLSegmentFiller<SubqueryConditionSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
     private ShardingRule shardingRule;
     
     private ShardingTableMetaData shardingTableMetaData;
     
     @Override
-    public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final SubqueryPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        OrConditionFiller orConditionFiller = new OrConditionFiller(shardingRule, shardingTableMetaData);
-        for (OrConditionSegment each : sqlSegment.getOrConditions()) {
-            selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, shardingRule, shardingTableMetaData));
+        ShardingOrPredicateFiller shardingOrPredicateFiller = getShardingOrPredicateFiller();
+        for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
+            selectStatement.getSubqueryConditions().add(shardingOrPredicateFiller.buildCondition(each, sqlStatement));
         }
+    }
+    
+    private ShardingOrPredicateFiller getShardingOrPredicateFiller() {
+        ShardingOrPredicateFiller result = new ShardingOrPredicateFiller();
+        result.setShardingRule(shardingRule);
+        result.setShardingTableMetaData(shardingTableMetaData);
+        return result;
     }
 }

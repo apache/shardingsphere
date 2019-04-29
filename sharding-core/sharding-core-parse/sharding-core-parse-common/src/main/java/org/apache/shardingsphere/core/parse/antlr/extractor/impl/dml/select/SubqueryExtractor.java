@@ -20,13 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
 
 import java.util.Map;
 
@@ -37,47 +32,9 @@ import java.util.Map;
  */
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SelectWhereExtractor selectWhereExtractor = new SelectWhereExtractor();
-    
-    private final GroupByExtractor groupByExtractor = new GroupByExtractor();
-    
-    private final OrderByExtractor orderByExtractor = new OrderByExtractor();
-    
     @Override
     public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        if (!RuleName.SUBQUERY.getName().endsWith(subqueryNode.getClass().getSimpleName())) {
-            return Optional.absent();
-        }
-        boolean subqueryInFrom = false;
-        ParserRuleContext parentNode = subqueryNode.getParent();
-        while (null != parentNode) {
-            if (RuleName.FROM_CLAUSE.getName().equals(parentNode.getClass().getSimpleName())) {
-                subqueryInFrom = true;
-                break;
-            }
-            parentNode = parentNode.getParent();
-        }
-        SubquerySegment result = new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex(), subqueryInFrom);
-        Optional<SelectItemsSegment> selectItemsSegment = new SelectItemsExtractor().extract(subqueryNode, parameterMarkerIndexes);
-        if (selectItemsSegment.isPresent()) {
-            result.setSelectItemsSegment(selectItemsSegment.get());
-        }
-        Optional<WhereSegment> whereSegment = selectWhereExtractor.extract(subqueryNode, parameterMarkerIndexes);
-        if (whereSegment.isPresent()) {
-            result.setWhereSegment(whereSegment.get());
-        }
-        Optional<GroupBySegment> groupBySegment = groupByExtractor.extract(subqueryNode, parameterMarkerIndexes);
-        if (groupBySegment.isPresent()) {
-            result.setGroupBySegment(groupBySegment.get());
-        }
-        Optional<OrderBySegment> orderBySegment = orderByExtractor.extract(subqueryNode, parameterMarkerIndexes);
-        if (orderBySegment.isPresent()) {
-            result.setOrderBySegment(orderBySegment.get());
-        }
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(subqueryNode.getParent(), RuleName.ALIAS);
-        if (aliasNode.isPresent()) {
-            result.setAlias(aliasNode.get().getText());
-        }
-        return Optional.of(result);
+        return RuleName.SUBQUERY.getName().equals(subqueryNode.getClass().getSimpleName())
+                ? Optional.of(new SubquerySegment(subqueryNode.getStart().getStartIndex(), subqueryNode.getStop().getStopIndex())) : Optional.<SubquerySegment>absent();
     }
 }

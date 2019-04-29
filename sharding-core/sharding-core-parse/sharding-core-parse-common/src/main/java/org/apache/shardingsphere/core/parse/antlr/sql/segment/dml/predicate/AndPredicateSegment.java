@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Or condition segment.
+ * And predicate segment.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-public final class OrConditionSegment implements SQLSegment {
+public final class AndPredicateSegment implements SQLSegment {
     
-    private Collection<AndConditionSegment> andConditions = new LinkedList<>();
+    private final Collection<PredicateSegment> predicates = new LinkedList<>();
 }

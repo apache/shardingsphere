@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SQLRightValueExpressionSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Condition segment.
- * 
+ * Subquery predicate segment.
+ *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
-public final class ConditionSegment implements SQLSegment {
+public final class SubqueryPredicateSegment implements SQLSegment {
     
-    private final ColumnSegment column;
-    
-    private final String operator;
-    
-    private final SQLRightValueExpressionSegment expression;
-    
-    private final int stopIndex;
-    
+    private Collection<OrPredicateSegment> orPredicates = new LinkedList<>();
 }

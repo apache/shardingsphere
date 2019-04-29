@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.condition;
+package org.apache.shardingsphere.core.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.core.route.hook.RoutingHook;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Subquery condition segment.
+ * Routing hook fixture.
  *
- * @author duhongjun
+ * @author zhaojun
  */
-@Getter
-public final class SubqueryConditionSegment implements SQLSegment {
+public class RoutingHookFixture implements RoutingHook {
     
-    private Collection<OrConditionSegment> orConditions = new LinkedList<>();
+    @Override
+    public void start(final String sql) {
+    }
+    
+    @Override
+    public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
+    }
+    
+    @Override
+    public void finishFailure(final Exception cause) {
+    }
 }

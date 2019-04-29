@@ -39,6 +39,10 @@ ASC
     : A S C
     ;
 
+ADMIN
+    : A D M I N
+    ;
+
 BETWEEN
     : B E T W E E N
     ;
@@ -69,6 +73,10 @@ ESCAPE
 
 EXISTS
     : E X I S T S
+    ;
+
+EXCLUDE
+    : E X C L U D E
     ;
 
 FALSE
@@ -553,6 +561,10 @@ INHERITS
 
 INITIALLY
     : I N I T I A L L Y
+    ;
+
+INCLUDE
+    : I N C L U D E
     ;
 
 INSERT

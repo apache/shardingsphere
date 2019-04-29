@@ -20,20 +20,31 @@ grammar DCLStatement;
 import Symbol, Keyword, Literals, BaseRule;
 
 grant
-    : GRANT (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
+    : GRANT (privilegeClause_ | roleClause_)
     ;
 
 revoke
-    : REVOKE (GRANT OPTION FOR)? (privileges_ ON onObjectClause_ | ignoredIdentifiers_)
+    : REVOKE optionForClause_? (privilegeClause_ | roleClause_)
     ;
 
+privilegeClause_
+    : privileges_ ON onObjectClause_
+    ;
+    
+roleClause_
+    : ignoredIdentifiers_
+    ;
+
+optionForClause_
+    : (GRANT | ADMIN) OPTION FOR
+    ;
+    
 privileges_
     : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
 
 privilegeType_
-    : ALL PRIVILEGES?
-    | SELECT
+    : SELECT
     | INSERT
     | UPDATE
     | DELETE
@@ -46,11 +57,13 @@ privilegeType_
     | TEMP
     | EXECUTE
     | USAGE
+    | ALL PRIVILEGES?
     ;
 
 onObjectClause_
-    : SEQUENCE
+    : TABLE? tableNames
     | DATABASE
+    | SCHEMA
     | DOMAIN
     | FOREIGN
     | FUNCTION
@@ -59,10 +72,9 @@ onObjectClause_
     | ALL
     | LANGUAGE
     | LARGE OBJECT
-    | SCHEMA
     | TABLESPACE
     | TYPE
-    | TABLE? tableName (COMMA_ tableName)*
+    | SEQUENCE
     ;
 
 createUser
