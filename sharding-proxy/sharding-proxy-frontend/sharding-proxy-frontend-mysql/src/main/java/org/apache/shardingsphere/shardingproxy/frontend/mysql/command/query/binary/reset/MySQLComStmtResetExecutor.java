@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.reset;
 
-import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
+import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * COM_STMT_RESET command packet for MySQL.
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-reset.html">COM_STMT_RESET</a>
+ * COM_STMT_RESET command executor for MySQL.
  *
  * @author zhaojun
  */
-@Getter
-public class MySQLComStmtResetPacket extends MySQLCommandPacket {
+@RequiredArgsConstructor
+public final class MySQLComStmtResetExecutor implements CommandExecutor {
     
-    private final int statementId;
+    private final MySQLComStmtResetPacket packet;
     
-    public MySQLComStmtResetPacket(final MySQLPacketPayload payload) {
-        super(MySQLCommandPacketType.COM_STMT_RESET);
-        statementId = payload.readInt4();
+    @Override
+    public Collection<DatabasePacket> execute() throws SQLException {
+        return Collections.emptyList();
     }
 }
