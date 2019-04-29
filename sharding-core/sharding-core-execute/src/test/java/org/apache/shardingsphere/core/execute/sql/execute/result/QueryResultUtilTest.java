@@ -36,6 +36,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -237,4 +238,12 @@ public class QueryResultUtilTest {
         when(resultSet.getObject(1)).thenReturn(object);
         assertThat(QueryResultUtil.getValueByColumnType(resultSet, 1), is(object));
     }
+    
+    @Test
+    @SneakyThrows
+    public void assertNullResultValue() {
+        when(resultSet.getObject(1)).thenReturn(null);
+        assertNull(QueryResultUtil.getValueByColumnType(resultSet, 1));
+    }
+    
 }
