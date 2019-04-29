@@ -87,6 +87,9 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<PredicateSegment> extractPredicate(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        if (ExtractorUtils.findFirstChildNode(exprNode, RuleName.SUBQUERY).isPresent()) {
+            return Optional.absent();
+        }
         Optional<PredicateSegment> result = extractComparisonPredicate(exprNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
