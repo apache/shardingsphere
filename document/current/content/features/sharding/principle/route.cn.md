@@ -140,7 +140,7 @@ CREATE USER customer@127.0.0.1 identified BY '123';
 DESCRIBE t_order;
 ```
 
-t_order的两个真实表t_order_0,t_order_1的描述结构相同，所以这个命令在任意真实表上选择执行一次。
+t_order的两个真实表t_order_0，t_order_1的描述结构相同，所以这个命令在任意真实表上选择执行一次。
 
 ### 阻断路由
 
