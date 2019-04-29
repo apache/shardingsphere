@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpre
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class SubquerySegment implements SelectItemSegment, ExpressionSegment {
+public final class SubquerySegment implements SelectItemSegment, ComplexExpressionSegment {
     
     private final int startIndex;
     
