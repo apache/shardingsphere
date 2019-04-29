@@ -449,10 +449,3 @@ indexExistClause_
 columnExistClause_
     : (IF EXISTS)?
     ;
-
-
-
-
-
-
-
