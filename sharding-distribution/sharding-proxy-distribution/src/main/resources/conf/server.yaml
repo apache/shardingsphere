@@ -25,12 +25,17 @@
 #  name: orchestration_ds
 #  overwrite: true
 #  registry:
+#    type: zookeeper
 #    serverLists: localhost:2181
 #    namespace: orchestration
 #
 #authentication:
-#  username: root
-#  password: root
+#  users:
+#    root:
+#      password: root
+#    sharding:
+#      password: sharding
+#      authorizedSchemas: sharding_db
 #
 #props:
 #  max.connections.size.per.query: 1
