@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFi
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -41,9 +42,6 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondi
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -121,33 +119,27 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     }
     
     private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column, final String sql) {
-        SQLExpression sqlExpression = expressionSegment.getExpression().getSQLExpression(sql);
-        return isShardingExpressionType(sqlExpression) ? Optional.of(new Condition(column, sqlExpression)) : Optional.<Condition>absent();
+        return expressionSegment.getExpression() instanceof SimpleExpressionSegment
+                ? Optional.of(new Condition(column, expressionSegment.getExpression().getSQLExpression(sql))) : Optional.<Condition>absent();
     }
     
     private Optional<Condition> createInCondition(final PredicateInRightValue expressionSegment, final Column column, final String sql) {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-            SQLExpression sqlExpression = each.getSQLExpression(sql);
-            if (!isShardingExpressionType(sqlExpression)) {
+            if (!(each instanceof SimpleExpressionSegment)) {
                 sqlExpressions.clear();
                 break;
             } else {
-                sqlExpressions.add(sqlExpression);
+                sqlExpressions.add(each.getSQLExpression(sql));
             }
         }
         return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
     }
     
     private Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue expressionSegment, final Column column, final String sql) {
-        SQLExpression betweenExpression = expressionSegment.getBetweenExpression().getSQLExpression(sql);
-        SQLExpression andExpression = expressionSegment.getAndExpression().getSQLExpression(sql);
-        return isShardingExpressionType(betweenExpression) && isShardingExpressionType(andExpression)
-                ? Optional.of(new Condition(column, betweenExpression, andExpression)) : Optional.<Condition>absent();
-    }
-    
-    private boolean isShardingExpressionType(final SQLExpression sqlExpression) {
-        return sqlExpression instanceof SQLPlaceholderExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression;
+        return expressionSegment.getBetweenExpression() instanceof SimpleExpressionSegment && expressionSegment.getAndExpression() instanceof SimpleExpressionSegment
+                ? Optional.of(new Condition(column, expressionSegment.getBetweenExpression().getSQLExpression(sql), expressionSegment.getAndExpression().getSQLExpression(sql)))
+                : Optional.<Condition>absent();
     }
     
     private void fillEncryptConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
