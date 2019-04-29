@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 
 /**
  * Between value expression segment.
@@ -34,9 +32,4 @@ public final class BetweenValueExpressionSegment implements SQLRightValueExpress
     private final ExpressionSegment betweenExpression;
     
     private final ExpressionSegment andExpression;
-    
-    @Override
-    public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, betweenExpression.getSQLExpression(sql), andExpression.getSQLExpression(sql));
-    }
 }
