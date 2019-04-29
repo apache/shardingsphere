@@ -26,11 +26,11 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFi
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateBetweenRightValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateCompareRightValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateInRightValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateBetweenRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateCompareRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateInRightValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;

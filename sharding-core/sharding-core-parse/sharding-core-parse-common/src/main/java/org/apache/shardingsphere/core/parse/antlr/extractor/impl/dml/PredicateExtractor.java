@@ -30,11 +30,11 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateBetweenRightValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateCompareRightValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateInRightValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateBetweenRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateCompareRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateInRightValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
 
 import java.util.Collection;

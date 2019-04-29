@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * Predicate in right value segment.
+ * Predicate between right value segment.
  *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class PredicateInRightValueSegment implements PredicateRightValueSegment {
+public final class PredicateBetweenRightValueSegment implements PredicateRightValueSegment {
     
-    private final Collection<ExpressionSegment> sqlExpressions;
+    private final ExpressionSegment betweenExpression;
+    
+    private final ExpressionSegment andExpression;
 }

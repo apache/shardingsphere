@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpress
  */
 @RequiredArgsConstructor
 @Getter
-public final class LiteralExpressionSegment implements ExpressionSegment {
+public final class LiteralExpressionSegment implements SimpleExpressionSegment {
     
     private final int startIndex;
     

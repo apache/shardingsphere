@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholder
  */
 @RequiredArgsConstructor
 @Getter
-public final class ParameterMarkerExpressionSegment implements ExpressionSegment {
+public final class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
     
     private final int stopIndex;
     

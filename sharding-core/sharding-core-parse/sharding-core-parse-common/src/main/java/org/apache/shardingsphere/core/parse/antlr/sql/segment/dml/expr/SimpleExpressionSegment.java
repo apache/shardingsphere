@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
- * Predicate between right value segment.
+ * Simple expression segment.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class PredicateBetweenRightValueSegment implements PredicateRightValueSegment {
-    
-    private final ExpressionSegment betweenExpression;
-    
-    private final ExpressionSegment andExpression;
+public interface SimpleExpressionSegment extends ExpressionSegment {
 }
