@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+
+import java.util.Collection;
 
 /**
- * Predicate segment.
- * 
+ * Predicate right value for IN operator.
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class PredicateSegment implements SQLSegment {
+public final class PredicateInRightValue implements PredicateRightValue {
     
-    private final ColumnSegment column;
-    
-    private final PredicateRightValue rightValue;
-    
-    private final int stopIndex;
+    private final Collection<ExpressionSegment> sqlExpressions;
 }

@@ -15,26 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
+package org.apache.shardingsphere.core.route.hook;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Predicate segment.
- * 
- * @author duhongjun
+ * Routing hook.
+ *
+ * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-public final class PredicateSegment implements SQLSegment {
+public interface RoutingHook {
     
-    private final ColumnSegment column;
+    /**
+     * Handle when routing started.
+     *
+     * @param sql SQL to be routing
+     */
+    void start(String sql);
     
-    private final PredicateRightValue rightValue;
+    /**
+     * Handle when routing finished success.
+     *
+     * @param sqlRouteResult sql route result
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void finishSuccess(SQLRouteResult sqlRouteResult, ShardingTableMetaData shardingTableMetaData);
     
-    private final int stopIndex;
+    /**
+     * Handle when routing finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

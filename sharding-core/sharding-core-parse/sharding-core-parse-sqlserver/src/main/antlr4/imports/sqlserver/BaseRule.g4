@@ -24,7 +24,7 @@ schemaName
     ;
 
 tableName
-    : IDENTIFIER_
+    : (IDENTIFIER_ DOT_)? IDENTIFIER_
     ;
 
 columnName
@@ -53,6 +53,10 @@ primaryKey
 
 columnNames
     : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
+    ;
+
+tableNames
+    : tableName (COMMA_ tableName)*
     ;
 
 exprs

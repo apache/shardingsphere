@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value;
 
 /**
- * Compare value expression segment.
+ * Predicate right value.
  * 
- * @author duhongjun
+ * @author zhanglaing
  */
-@RequiredArgsConstructor
-@Getter
-public final class CompareValueExpressionSegment implements SQLRightValueExpressionSegment {
-    
-    private final ExpressionSegment expression;
-    
-    private final String compareOperator;
-
-    @Override
-    public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, compareOperator, expression.getSQLExpression(sql));
-    }
+public interface PredicateRightValue {
 }

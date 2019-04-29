@@ -15,26 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * Predicate segment.
- * 
- * @author duhongjun
+ * Complex expression segment.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class PredicateSegment implements SQLSegment {
-    
-    private final ColumnSegment column;
-    
-    private final PredicateRightValue rightValue;
-    
-    private final int stopIndex;
+public interface ComplexExpressionSegment extends ExpressionSegment {
 }

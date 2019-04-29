@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SubquerySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 

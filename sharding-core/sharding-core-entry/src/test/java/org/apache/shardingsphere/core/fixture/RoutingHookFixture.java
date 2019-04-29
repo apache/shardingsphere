@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.fixture;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
+import org.apache.shardingsphere.core.route.hook.RoutingHook;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Common expression segment.
- * 
- * @author zhangliang
+ * Routing hook fixture.
+ *
+ * @author zhaojun
  */
-@RequiredArgsConstructor
-@Getter
-public final class CommonExpressionSegment implements ExpressionSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
+public class RoutingHookFixture implements RoutingHook {
     
     @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
+    public void start(final String sql) {
+    }
+    
+    @Override
+    public void finishSuccess(final SQLRouteResult sqlRouteResult, final ShardingTableMetaData shardingTableMetaData) {
+    }
+    
+    @Override
+    public void finishFailure(final Exception cause) {
     }
 }

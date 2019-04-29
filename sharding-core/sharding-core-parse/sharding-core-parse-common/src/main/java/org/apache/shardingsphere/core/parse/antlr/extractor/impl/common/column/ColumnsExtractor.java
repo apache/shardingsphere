@@ -15,28 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.impl;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Parameter marker expression extractor.
+ * Columns extractor.
  *
  * @author zhangliang
  */
-public final class ParameterMarkerExpressionExtractor implements OptionalSQLSegmentExtractor {
+public final class ColumnsExtractor implements CollectionSQLSegmentExtractor {
+    
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<ParameterMarkerExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> parameterMarkerNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.PARAMETER_MARKER);
-        return parameterMarkerNode.isPresent() ? Optional.of(new ParameterMarkerExpressionSegment(expressionNode.getStop().getStopIndex(), parameterMarkerIndexes.get(parameterMarkerNode.get())))
-                : Optional.<ParameterMarkerExpressionSegment>absent();
+    public Collection<ColumnSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_NAME)) {
+            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
+            if (columnSegment.isPresent()) {
+                result.add(columnSegment.get());
+            }
+        }
+        return result;
     }
 }

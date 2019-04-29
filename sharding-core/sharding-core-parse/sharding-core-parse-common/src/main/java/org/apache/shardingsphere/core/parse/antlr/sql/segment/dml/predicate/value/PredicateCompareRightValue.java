@@ -15,36 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.hook;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value;
 
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * Rewrite Hook.
- *
- * @author yangyi
+ * Predicate right value for compare operator.
+ * 
+ * @author duhongjun
  */
-public interface RewriteHook {
+@RequiredArgsConstructor
+@Getter
+public final class PredicateCompareRightValue implements PredicateRightValue {
     
-    /**
-     * Handle when rewrite started.
-     *
-     * @param tableUnit table unit
-     */
-    void start(TableUnit tableUnit);
+    private final String operator;
     
-    /**
-     * Handle when rewrite finished success.
-     *
-     * @param sqlUnit sql unit
-     */
-    void finishSuccess(SQLUnit sqlUnit);
-    
-    /**
-     * Handle when rewrite finished failure.
-     *
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    private final ExpressionSegment expression;
 }

@@ -20,13 +20,11 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ColumnNameOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
@@ -54,13 +52,7 @@ public final class OrderItemBuilder {
             return createOrderItem((IndexOrderByItemSegment) orderByItemSegment);
         }
         if (orderByItemSegment instanceof ColumnNameOrderByItemSegment) {
-            OrderItem result = createOrderItem(selectStatement, (ColumnNameOrderByItemSegment) orderByItemSegment);
-            if (result.getOwner().isPresent() && selectStatement.getTables().getTableNames().contains(result.getOwner().get())) {
-                String owner = result.getOwner().get();
-                // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
-                selectStatement.addSQLToken(new TableToken(((ColumnNameOrderByItemSegment) orderByItemSegment).getStartIndex(), owner, QuoteCharacter.getQuoteCharacter(owner), 0));
-            }
-            return result;
+            return createOrderItem(selectStatement, (ColumnNameOrderByItemSegment) orderByItemSegment);
         }
         if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
             return createOrderItem(selectStatement, (ExpressionOrderByItemSegment) orderByItemSegment);

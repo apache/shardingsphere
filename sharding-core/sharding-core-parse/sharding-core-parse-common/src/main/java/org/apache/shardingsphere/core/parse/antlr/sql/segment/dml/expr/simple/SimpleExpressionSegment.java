@@ -15,28 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * Between value expression segment.
+ * Simple expression segment.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class BetweenValueExpressionSegment implements SQLRightValueExpressionSegment {
-    
-    private final ExpressionSegment betweenExpression;
-    
-    private final ExpressionSegment andExpression;
-    
-    @Override
-    public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, betweenExpression.getSQLExpression(sql), andExpression.getSQLExpression(sql));
-    }
+public interface SimpleExpressionSegment extends ExpressionSegment {
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 
 /**
  * Where filler.
@@ -37,8 +38,12 @@ public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
             deleteStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
             deleteStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
-            deleteStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
-            deleteStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
+        } else if (sqlStatement instanceof UpdateStatement) {
+            UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
+            updateStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
+            updateStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
+            updateStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
+            updateStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
         }
     }
 }

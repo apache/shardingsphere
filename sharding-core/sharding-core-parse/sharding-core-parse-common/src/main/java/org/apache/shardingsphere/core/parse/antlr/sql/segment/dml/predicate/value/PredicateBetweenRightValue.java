@@ -15,35 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * In value expression segment.
+ * Predicate right value for BETWEEN ... AND ... operator.
  *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class InValueExpressionSegment implements SQLRightValueExpressionSegment {
+public final class PredicateBetweenRightValue implements PredicateRightValue {
     
-    private final Collection<ExpressionSegment> sqlExpressions;
+    private final ExpressionSegment betweenExpression;
     
-    @Override
-    public Condition buildCondition(final Column column, final String sql) {
-        List<SQLExpression> result = new LinkedList<>();
-        for (ExpressionSegment each : sqlExpressions) {
-            result.add(each.getSQLExpression(sql));
-        }
-        return new Condition(column, result);
-    }
+    private final ExpressionSegment andExpression;
 }

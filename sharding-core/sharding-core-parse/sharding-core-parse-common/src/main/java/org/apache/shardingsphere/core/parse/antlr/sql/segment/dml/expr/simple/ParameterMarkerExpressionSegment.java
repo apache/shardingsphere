@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
 
 /**
- * SQL right value expression segment.
- * 
- * @author duhongjun
+ * Parameter marker expression segment.
+ *
+ * @author zhangliang
  */
-public interface SQLRightValueExpressionSegment extends SQLSegment {
+@RequiredArgsConstructor
+@Getter
+public final class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
     
-    /**
-     * Build condition.
-     *
-     *  @param column column
-     *  @param sql SQL
-     * @return condition
-     */
-    Condition buildCondition(Column column, String sql);
+    private final int stopIndex;
+    
+    private final int parameterMarkerIndex;
+    
+    @Override
+    public SQLExpression getSQLExpression(final String sql) {
+        return new SQLPlaceholderExpression(parameterMarkerIndex);
+    } 
 }
