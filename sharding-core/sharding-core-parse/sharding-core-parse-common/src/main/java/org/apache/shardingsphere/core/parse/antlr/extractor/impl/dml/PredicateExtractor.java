@@ -139,7 +139,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(valueNode, parameterMarkerIndexes);
         String compareOperator = comparisonOperatorNode.get().getText();
         return sqlExpression.isPresent() ? Optional.of(new PredicateSegment(column.get(), compareOperator, 
-                new PredicateCompareRightValueSegment(sqlExpression.get(), compareOperator), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<PredicateSegment>absent();
+                new PredicateCompareRightValueSegment(sqlExpression.get()), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<PredicateSegment>absent();
     }
     
     private Optional<PredicateSegment> extractBetweenPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {

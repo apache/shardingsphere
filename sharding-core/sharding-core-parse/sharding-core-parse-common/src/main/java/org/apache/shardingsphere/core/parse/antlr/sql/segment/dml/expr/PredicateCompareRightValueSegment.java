@@ -30,6 +30,4 @@ import lombok.RequiredArgsConstructor;
 public final class PredicateCompareRightValueSegment implements PredicateRightValueSegment {
     
     private final ExpressionSegment expression;
-    
-    private final String compareOperator;
 }
