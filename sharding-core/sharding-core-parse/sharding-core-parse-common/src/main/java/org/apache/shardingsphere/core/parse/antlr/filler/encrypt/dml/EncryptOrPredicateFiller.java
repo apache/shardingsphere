@@ -40,6 +40,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -58,6 +59,9 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     
     private ShardingTableMetaData shardingTableMetaData;
     
+    @Deprecated // TODO should use encryptRule, to be refactored
+    private ShardingEncryptorEngine encryptorEngine;
+    
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         Collection<Integer> stopIndexes = new HashSet<>();
@@ -65,8 +69,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
                     Optional<String> tableName = findTableName(predicate, sqlStatement);
-                    // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
-                    if (tableName.isPresent() && encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicate.getColumn().getName()).isPresent()) {
+                    if (tableName.isPresent() && isNeedEncrypt(predicate, tableName.get())) {
                         fill(predicate, tableName.get(), sqlStatement);
                     }
                 }
@@ -92,7 +95,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     
     private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
-        if (!tableName.isPresent() || !encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
+        if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
@@ -105,6 +108,12 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
+    }
+    
+    private boolean isNeedEncrypt(final PredicateSegment predicate, final String tableName) {
+        // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
+        encryptorEngine = null == encryptorEngine ? encryptRule.getEncryptorEngine() : encryptorEngine;
+        return encryptorEngine.getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent();
     }
     
     private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column, final String sql) {
