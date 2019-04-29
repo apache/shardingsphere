@@ -19,9 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
@@ -47,13 +45,6 @@ public final class LiteralExpressionSegment implements SimpleExpressionSegment {
         if (literals instanceof Number) {
             return new SQLNumberExpression((Number) literals);
         }
-        if (literals instanceof String) {
-            return new SQLTextExpression(literals.toString());
-        }
-        String value = sql.substring(startIndex, stopIndex + 1);
-        if (DefaultKeyword.NULL.name().equalsIgnoreCase(value)) {
-            return new SQLNumberExpression(null);
-        }
-        return new SQLIgnoreExpression(value);
+        return new SQLTextExpression(literals.toString());
     } 
 }

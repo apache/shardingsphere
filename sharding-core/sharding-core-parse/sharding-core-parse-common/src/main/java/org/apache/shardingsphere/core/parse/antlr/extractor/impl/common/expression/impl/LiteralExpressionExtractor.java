@@ -37,17 +37,21 @@ public final class LiteralExpressionExtractor implements OptionalSQLSegmentExtra
     @Override
     public Optional<LiteralExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> literalsNode = ExtractorUtils.findSingleNodeFromFirstDescendant(expressionNode, RuleName.LITERALS);
-        return literalsNode.isPresent() 
-                ? Optional.of(new LiteralExpressionSegment(literalsNode.get().getStart().getStartIndex(), literalsNode.get().getStop().getStopIndex(), getLiterals(literalsNode.get())))
+        if (!literalsNode.isPresent()) {
+            return Optional.absent();
+        }
+        Optional<?> literals = getLiterals(literalsNode.get());
+        return literals.isPresent() 
+                ? Optional.of(new LiteralExpressionSegment(literalsNode.get().getStart().getStartIndex(), literalsNode.get().getStop().getStopIndex(), literals.get()))
                 : Optional.<LiteralExpressionSegment>absent();
     }
     
-    private Object getLiterals(final ParserRuleContext literalsNode) {
+    private Optional<?> getLiterals(final ParserRuleContext literalsNode) {
         Optional<Number> numberLiterals = getNumberLiterals(literalsNode);
         if (numberLiterals.isPresent()) {
-            return numberLiterals.get();
+            return numberLiterals;
         }
-        return getStringLiterals(literalsNode).orNull();
+        return getStringLiterals(literalsNode);
     }
     
     private Optional<Number> getNumberLiterals(final ParserRuleContext literalsNode) {
