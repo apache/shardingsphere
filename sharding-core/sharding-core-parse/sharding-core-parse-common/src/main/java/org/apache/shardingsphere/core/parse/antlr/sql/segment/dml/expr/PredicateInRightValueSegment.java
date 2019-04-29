@@ -20,16 +20,16 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Between value expression segment.
+ * Predicate in right value segment.
  *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class BetweenValueExpressionSegment implements SQLRightValueExpressionSegment {
+public final class PredicateInRightValueSegment implements PredicateRightValueSegment {
     
-    private final ExpressionSegment betweenExpression;
-    
-    private final ExpressionSegment andExpression;
+    private final Collection<ExpressionSegment> sqlExpressions;
 }

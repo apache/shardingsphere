@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL right value expression segment.
+ * Predicate compare right value segment.
  * 
  * @author duhongjun
  */
-public interface SQLRightValueExpressionSegment extends SQLSegment {
+@RequiredArgsConstructor
+@Getter
+public final class PredicateCompareRightValueSegment implements PredicateRightValueSegment {
+    
+    private final ExpressionSegment expression;
+    
+    private final String compareOperator;
 }

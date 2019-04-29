@@ -24,9 +24,9 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.InValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateCompareRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateInRightValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -103,11 +103,11 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
-        if (predicateSegment.getExpression() instanceof CompareValueExpressionSegment) {
-            return createEqualCondition((CompareValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValueSegment) {
+            return createEqualCondition((PredicateCompareRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
-        if (predicateSegment.getExpression() instanceof InValueExpressionSegment) {
-            return createInCondition((InValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateInRightValueSegment) {
+            return createInCondition((PredicateInRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
     }
@@ -116,12 +116,12 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator);
     }
     
-    private Optional<Condition> createEqualCondition(final CompareValueExpressionSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createEqualCondition(final PredicateCompareRightValueSegment expressionSegment, final Column column, final String sql) {
         SQLExpression sqlExpression = expressionSegment.getExpression().getSQLExpression(sql);
         return isEncryptExpressionType(sqlExpression) ? Optional.of(new Condition(column, sqlExpression)) : Optional.<Condition>absent();
     }
     
-    private Optional<Condition> createInCondition(final InValueExpressionSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createInCondition(final PredicateInRightValueSegment expressionSegment, final Column column, final String sql) {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
             SQLExpression sqlExpression = each.getSQLExpression(sql);

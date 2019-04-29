@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.SQLRightValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateRightValueSegment;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author zhangliang
  */
 @Getter
-public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvailable {
+public class ColumnSegment implements PredicateRightValueSegment, OwnerAvailable {
     
     private final int startIndex;
     

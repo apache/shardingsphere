@@ -29,10 +29,10 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expressi
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.InValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateBetweenRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateCompareRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateInRightValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -139,7 +139,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(valueNode, parameterMarkerIndexes);
         String compareOperator = comparisonOperatorNode.get().getText();
         return sqlExpression.isPresent() ? Optional.of(new PredicateSegment(column.get(), compareOperator, 
-                new CompareValueExpressionSegment(sqlExpression.get(), compareOperator), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<PredicateSegment>absent();
+                new PredicateCompareRightValueSegment(sqlExpression.get(), compareOperator), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<PredicateSegment>absent();
     }
     
     private Optional<PredicateSegment> extractBetweenPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
@@ -147,14 +147,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Optional<? extends ExpressionSegment> andSQLExpression = expressionExtractor.extract((ParserRuleContext) predicateNode.getChild(4), parameterMarkerIndexes);
         return betweenSQLExpression.isPresent() && andSQLExpression.isPresent()
                 ? Optional.of(new PredicateSegment(
-                        column, ShardingOperator.BETWEEN.name(), new BetweenValueExpressionSegment(betweenSQLExpression.get(), andSQLExpression.get()), predicateNode.getStop().getStopIndex()))
+                        column, ShardingOperator.BETWEEN.name(), new PredicateBetweenRightValueSegment(betweenSQLExpression.get(), andSQLExpression.get()), predicateNode.getStop().getStopIndex()))
                 : Optional.<PredicateSegment>absent();
     }
     
     private Optional<PredicateSegment> extractInPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
         Collection<ExpressionSegment> sqlExpressions = extractInExpressionSegments(predicateNode, parameterMarkerIndexes);
         return sqlExpressions.isEmpty() ? Optional.<PredicateSegment>absent()
-                : Optional.of(new PredicateSegment(column, ShardingOperator.IN.name(), new InValueExpressionSegment(sqlExpressions), predicateNode.getStop().getStopIndex()));
+                : Optional.of(new PredicateSegment(column, ShardingOperator.IN.name(), new PredicateInRightValueSegment(sqlExpressions), predicateNode.getStop().getStopIndex()));
     }
     
     private Collection<ExpressionSegment> extractInExpressionSegments(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
