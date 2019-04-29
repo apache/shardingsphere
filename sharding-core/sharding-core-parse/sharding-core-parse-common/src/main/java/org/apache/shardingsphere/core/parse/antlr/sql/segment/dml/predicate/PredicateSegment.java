@@ -34,8 +34,6 @@ public final class PredicateSegment implements SQLSegment {
     
     private final ColumnSegment column;
     
-    private final String operator;
-    
     private final PredicateRightValue rightValue;
     
     private final int stopIndex;

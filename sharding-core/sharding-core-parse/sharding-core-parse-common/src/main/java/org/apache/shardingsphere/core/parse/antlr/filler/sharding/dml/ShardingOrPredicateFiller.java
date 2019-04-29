@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.valu
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
@@ -104,16 +102,14 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     }
     
     private Optional<Condition> createShardingCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        if (!isShardingCondition(predicateSegment.getOperator())) {
-            return Optional.absent();
-        }
         Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
         if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicateSegment.getColumn().getName(), tableName.get())) {
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            return createEqualCondition((PredicateCompareRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+            PredicateCompareRightValue predicateCompareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
+            return "=".equals(predicateCompareRightValue.getOperator()) ? createEqualCondition(predicateCompareRightValue, column, sqlStatement.getLogicSQL()) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
             return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
@@ -122,10 +118,6 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             return createBetweenCondition((PredicateBetweenRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
-    }
-    
-    private boolean isShardingCondition(final String operator) {
-        return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator) || ShardingOperator.BETWEEN.name().equals(operator);
     }
     
     private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column, final String sql) {
@@ -191,25 +183,20 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     }
     
     private Optional<Condition> createEncryptCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        if (!isEncryptCondition(predicateSegment.getOperator())) {
-            return Optional.absent();
-        }
         Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
         if (!tableName.isPresent() || !shardingRule.getShardingEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            return createEqualCondition((PredicateCompareRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+            PredicateCompareRightValue predicateCompareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
+            return "=".equals(predicateCompareRightValue.getOperator()) || "<>".equals(predicateCompareRightValue.getOperator()) || "!=".equals(predicateCompareRightValue.getOperator())
+                    ? createEqualCondition(predicateCompareRightValue, column, sqlStatement.getLogicSQL()) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
             return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
-    }
-    
-    private boolean isEncryptCondition(final String operator) {
-        return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator);
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only

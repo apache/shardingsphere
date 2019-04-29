@@ -30,5 +30,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.Expressio
 @Getter
 public final class PredicateCompareRightValue implements PredicateRightValue {
     
+    private final String operator;
+    
     private final ExpressionSegment expression;
 }
