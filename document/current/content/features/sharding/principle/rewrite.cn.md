@@ -32,19 +32,19 @@ SELECT order_id FROM t_order_1 WHERE order_id=1;
 但是下面的场景，就无法仅仅通过字符串的查找替换来正确的改写SQL了：
 
 ```sql
-SELECT order_id FROM t_order WHERE order_id=1 AND remarks=` t_order xxx`;
+SELECT order_id FROM t_order WHERE order_id=1 AND remarks=' t_order xxx';
 ```
 
 正确改写的SQL应该是：
 
 ```sql
-SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=` t_order xxx`;
+SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=' t_order xxx';
 ```
 
 而非：
 
 ```sql
-SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=` t_order_1 xxx`;
+SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=' t_order_1 xxx';
 ```
 
 由于表名之外可能含有表名称的类似字符，因此不能通过简单的字符串替换的方式去改写SQL。
@@ -52,25 +52,25 @@ SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=` t_order_1 xxx`;
 下面再来看一个更加复杂的SQL改写场景：
 
 ```sql
-SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=` t_order xxx`;
+SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
 ```
 
 上面的SQL将表名作为字段的标识符，因此在SQL改写时需要一并修改：
 
 ```sql
-SELECT t_order_1.order_id FROM t_order_1 WHERE t_order_1.order_id=1 AND remarks=` t_order xxx`;
+SELECT t_order_1.order_id FROM t_order_1 WHERE t_order_1.order_id=1 AND remarks=' t_order xxx';
 ```
 
 而如果SQL中定义了表的别名，则无需连同别名一起修改，即使别名与表名相同亦是如此。例如：
 
 ```sql
-SELECT t_order.order_id FROM t_order AS t_order WHERE t_order.order_id=1 AND remarks=` t_order xxx`;
+SELECT t_order.order_id FROM t_order AS t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
 ```
 
 SQL改写则仅需要改写表名称就可以了：
 
 ```sql
-SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND remarks=` t_order xxx`;
+SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
 ```
 
 索引名称是另一个有可能改写的标识符。

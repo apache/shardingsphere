@@ -18,13 +18,13 @@ Identifiers that need to be rewritten include table name, index name and schema 
 Table name rewrite refers to the process to locate the position of logic tables in the original SQL and rewrite it as the physical table. 
 Table name rewrite is one typical situation that requires to parse SQL. From a most plain case, if the logic SQL is as follow:
 
-```
+```sql
 SELECT order_id FROM t_order WHERE order_id=1;
 ```
 
 Suppose the SQL is set with sharding key order_id, and its conditions will be routed to Sharding Table 1. Then, the SQL after rewriting should be:
 
-```
+```sql
 SELECT order_id FROM t_order_1 WHERE order_id=1;
 ```
 
@@ -34,45 +34,45 @@ But in the following situation, it is unable to rewrite SQL rightly merely by se
 In this most simple kind of SQL situation, whether parsing SQL to abstract syntax tree seems unimportant, SQL can be rewritten only by searching for and substituting characters. 
 But in the following situation, it is unable to rewrite SQL rightly merely by searching for and substituting characters:
 
-```
-SELECT order_id FROM t_order WHERE order_id=1 AND remarks=` t_order xxx`;
+```sql
+SELECT order_id FROM t_order WHERE order_id=1 AND remarks=' t_order xxx';
 ```
 
 The SQL rightly rewritten is supposed to be:
 
-```
-SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=` t_order xxx`;
+```sql
+SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=' t_order xxx';
 ```
 
 Rather than:
 
-```
-SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=` t_order_1 xxx`;
+```sql
+SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=' t_order_1 xxx';
 ```
 
 Because there may be similar characters besides the table name, the simple character substitute method cannot be used to rewrite SQL.
 Here is another more complex SQL rewrite situation:
 
-```
-SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=` t_order xxx`;
+```sql
+SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
 ```
 
 The SQL above takes table name as the identifier of the field, so it should also be revised with SQL rewrite:
 
-```
-SELECT t_order_1.order_id FROM t_order_1 WHERE t_order_1.order_id=1 AND remarks=` t_order xxx`;
+```sql
+SELECT t_order_1.order_id FROM t_order_1 WHERE t_order_1.order_id=1 AND remarks=' t_order xxx';
 ```
 
 But if there is another name defined in SQL, it is not necessary to revise that, even though that name is the same as the table name. For example:
 
-```
-SELECT t_order.order_id FROM t_order AS t_order WHERE t_order.order_id=1 AND remarks=` t_order xxx`;
+```sql
+SELECT t_order.order_id FROM t_order AS t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
 ```
 
 SQL rewrite only requires to revise its table name:
 
-```
-SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND remarks=` t_order xxx`;
+```sql
+SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
 ```
 
 Index name is another identifier that can be rewritten. 
@@ -88,7 +88,7 @@ It uses logic schema to manage a set of data, so it requires to replace the logi
 
 ShardingSphere still does not support the use of schema in DQL and DML statement, for example:
 
-```
+```sql
 SHOW COLUMNS FROM t_order FROM order_ds;
 ```
 
@@ -103,7 +103,7 @@ Result merging requires the sorting and ranking according to items of `GROUP BY`
 But if the sorting and ranking items are not included in the original SQL, it should be rewritten. 
 Look at the situation where the original SQL has the information required by result merging:
 
-```
+```sql
 SELECT order_id, user_id FROM t_order ORDER BY user_id;
 ```
 
@@ -112,13 +112,13 @@ The SQL above is able to acquire user_id data, so there is no need to add column
 
 If the selected item does not contain the column required by result merging, it will need to add column, as the following SQL:
 
-```
+```sql
 SELECT order_id FROM t_order ORDER BY user_id;
 ```
 
 Since the original SQL does not contain user_id that result merging requires to acquire, the SQL needs to be rewritten by adding columns, and after that, it will be:
 
-```
+```sql
 SELECT order_id, user_id AS ORDER_BY_DERIVED_0 FROM t_order ORDER BY user_id;
 ```
 
@@ -126,14 +126,14 @@ What’s to be mentioned, derived column will only add the missing column rather
 the SQL that includes `*` in SELECT will also selectively add columns according to the meta-data information of tables. 
 Here is a relatively complex SQL derived column case:
 
-```
+```sql
 SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id=i.order_id ORDER BY user_id, order_item_id;
 ```
 
 Suppose only the t_order_item table contains order_item_id column, according to the meta-data information of tables, 
 the user_id in sorting item exists in table t_order as merging result, but order_item_id does not exist in t_order, so it needs to add columns. The SQL after that will be:
 
-```
+```sql
 SELECT o.*, order_item_id AS ORDER_BY_DERIVED_0 FROM t_order o, t_order_item i WHERE o.order_id=i.order_id ORDER BY user_id, order_item_id;
 ```
 
@@ -141,13 +141,13 @@ Another situation of derived column is using AVG aggregation function.
 In distributed situations, it is not right to calculate the average value with avg1 + avg2 + avg3 / 3, and it should be written as (sum1 + sum2 + sum3) / (count1 + count2 + count3). 
 This requires to rewrite the SQL that contains AVG as SUM and COUNT and recalculate the average value in result merging. Such as the following SQL:
 
-```
+```sql
 SELECT AVG(price) FROM t_order WHERE user_id=1;
 ```
 
 Should be rewritten as:
 
-```
+```sql
 SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_ SUM _0 FROM t_order WHERE user_id=1;
 ```
 
@@ -160,14 +160,14 @@ So ShardingSphere provides a generation strategy for distributed auto-increment 
 Distributed auto-increment key generation strategy will be expounded in the following part, here we only explain the content related with SQL rewrite. 
 For example, if the primary key of t_order is order_id, and the original SQL is:
 
-```
+```sql
 INSERT INTO t_order (`field1`, `field2`) VALUES (10, 1);
 ```
 
 It can be seen that the SQL above does not include an auto-increment key, which will be filled by the database itself. 
 After ShardingSphere set an auto-increment key, the SQL will be rewritten as:
 
-```
+```sql
 INSERT INTO t_order (`field1`, `field2`, order_id) VALUES (10, 1, xxxxx);
 ```
 
@@ -176,13 +176,13 @@ Rewritten SQL will add auto-increment key name and its value generated automatic
 If INSERT SQL does not contain the column name of the table, ShardingSphere can also automatically generate auto-increment key by comparing the number of parameter and column in the table meta-information. 
 For example, the original SQL is:
 
-```
+```sql
 INSERT INTO t_order VALUES (10, 1);
 ```
 
 The rewritten SQL only needs to add an auto-increment key in the column where the primary key lays:
 
-```
+```sql
 INSERT INTO t_order VALUES (xxxxx, 10, 1);
 ```
 
@@ -194,7 +194,7 @@ Acquiring pagination data from multiple databases is different from the situatio
 Suppose every 10 pieces of data are divided to be one page, it is not right to take the second page of data, acquire LIMIT 10, 10 under sharding situations, 
 and take out the first 10 pieces of data according to sorting conditions after merging. For example, if the SQL is:
  
-```
+```sql
 SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 ```
 
@@ -225,7 +225,7 @@ though sharding keys that do not exist in current sharding are used in the query
 insert operation has to delete extra sharding keys. 
 Take the following SQL for example:
 
-```
+```sql
 INSERT INTO t_order (order_id, xxx) VALUES (1, 'xxx'), (2, 'xxx'), (3, 'xxx');
 ```
 
@@ -235,7 +235,7 @@ Though only the data that confirms to sharding conditions can be taken out from 
  
 So SQL should be rewritten as:
 
-```
+```sql
 INSERT INTO t_order_0 (order_id, xxx) VALUES (2, 'xxx');
 INSERT INTO t_order_1 (order_id, xxx) VALUES (1, 'xxx'), (3, 'xxx');
 ```
@@ -243,20 +243,20 @@ INSERT INTO t_order_1 (order_id, xxx) VALUES (1, 'xxx'), (3, 'xxx');
 IN query is similar as batch insertion, but IN operation will not lead to wrong data query result. 
 Through rewriting IN query, the query performance can be further improved. Like the following SQL:
 
-```
+```sql
 SELECT * FROM t_order WHERE order_id IN (1, 2, 3);
 ```
 
 Is rewritten as:
 
-```
+```sql
 SELECT * FROM t_order_0 WHERE order_id IN (2);
 SELECT * FROM t_order_1 WHERE order_id IN (1, 3);
 ```
 
 The query performance will be further improved. For now, ShardingSphere has not realized this rewrite strategy, so the current rewrite result is:
 
-```
+```sql
 SELECT * FROM t_order_0 WHERE order_id IN (1, 2, 3);
 SELECT * FROM t_order_1 WHERE order_id IN (1, 2, 3);
 ```
