@@ -39,6 +39,8 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final int startIndex;
     
+    private int stopIndexOfOwner;
+    
     private final String name;
     
     private String owner;
@@ -67,6 +69,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     @Override
     public final void setOwner(final String owner) {
+        stopIndexOfOwner = startIndex + owner.length() - 1;
         this.owner = SQLUtil.getExactlyValue(owner);
         ownerQuoteCharacter = QuoteCharacter.getQuoteCharacter(owner);
     }
