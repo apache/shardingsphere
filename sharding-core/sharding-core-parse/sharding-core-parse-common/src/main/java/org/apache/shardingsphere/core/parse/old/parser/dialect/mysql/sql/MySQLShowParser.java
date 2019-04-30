@@ -150,7 +150,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1;
         String literals = lexerEngine.getCurrentToken().getLiterals();
         if (shardingRule.findTableRule(literals).isPresent() || shardingRule.isBroadcastTable(literals)) {
-            dalStatement.addSQLToken(new TableToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
+            dalStatement.addSQLToken(new TableToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, literals, QuoteCharacter.getQuoteCharacter(literals)));
             dalStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), null));
         }
     }

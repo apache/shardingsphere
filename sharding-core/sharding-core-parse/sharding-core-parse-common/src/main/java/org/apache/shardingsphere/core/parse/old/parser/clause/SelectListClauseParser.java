@@ -175,7 +175,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         } else if (lexerEngine.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
             if (shardingRule.findTableRule(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()) {
-                selectStatement.addSQLToken(new TableToken(position, endPosition - 1, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
+                selectStatement.addSQLToken(new TableToken(position, endPosition - 1, literals, QuoteCharacter.getQuoteCharacter(literals)));
             }
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();
