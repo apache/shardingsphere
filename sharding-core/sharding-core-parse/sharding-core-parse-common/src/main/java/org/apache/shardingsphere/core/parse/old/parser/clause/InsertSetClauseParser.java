@@ -20,11 +20,8 @@ package org.apache.shardingsphere.core.parse.old.parser.clause;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
@@ -43,7 +40,6 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpress
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -76,7 +72,6 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         if (!lexerEngine.skipIfEqual(getCustomizedInsertKeywords())) {
             return;
         }
-        removeUnnecessaryToken(insertStatement);
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         Preconditions.checkState(insertValuesToken.isPresent());
         insertStatement.getSQLTokens().remove(insertValuesToken.get());
@@ -103,16 +98,6 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         InsertValue insertValue = new InsertValue(new LinkedList<SQLExpression>());
         insertStatement.getValues().add(insertValue);
-    }
-    
-    private void removeUnnecessaryToken(final InsertStatement insertStatement) {
-        Iterator<SQLToken> sqlTokens = insertStatement.getSQLTokens().iterator();
-        while (sqlTokens.hasNext()) {
-            SQLToken sqlToken = sqlTokens.next();
-            if (sqlToken instanceof InsertColumnToken || sqlToken instanceof ItemsToken) {
-                sqlTokens.remove();
-            }
-        }
     }
     
     protected abstract Keyword[] getCustomizedInsertKeywords();
