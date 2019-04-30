@@ -23,17 +23,15 @@ import lombok.Getter;
  * Offset token for limit.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class OffsetToken extends SQLToken {
     
     private final int offset;
     
-    private final int stopIndex;
-    
     public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+        super(startIndex, stopIndex);
         this.offset = offset;
     }
 }

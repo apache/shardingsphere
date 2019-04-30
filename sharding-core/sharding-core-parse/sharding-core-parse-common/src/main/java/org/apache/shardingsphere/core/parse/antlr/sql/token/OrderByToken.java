@@ -21,13 +21,11 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
  * Order by token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class OrderByToken extends SQLToken {
     
-    private final int stopIndex;
-    
     public OrderByToken(final int startIndex, final int stopIndex) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+        super(startIndex, stopIndex);
     }
 }

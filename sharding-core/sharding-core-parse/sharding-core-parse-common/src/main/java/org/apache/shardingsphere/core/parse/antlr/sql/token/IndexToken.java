@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * Index token.
  *
  * @author caohao
+ * @author panjuan
  */
 @Getter
 @Setter
