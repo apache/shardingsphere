@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
+package org.apache.shardingsphere.core.parse.filler.tcl;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment;
 
 /**
- * Group by filler.
+ * Auto commit filler for MySQL.
  *
- * @author duhongjun
- * @author panjuan
+ * @author zhangliang
  */
-public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
+public final class MySQLAutoCommitFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setGroupByLastIndex(sqlSegment.getStopIndex());
-        for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {
-            selectStatement.getGroupByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
-        }
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((SetAutoCommitStatement) sqlStatement).setAutoCommit(((AutoCommitSegment) sqlSegment).isAutoCommit());
     }
 }

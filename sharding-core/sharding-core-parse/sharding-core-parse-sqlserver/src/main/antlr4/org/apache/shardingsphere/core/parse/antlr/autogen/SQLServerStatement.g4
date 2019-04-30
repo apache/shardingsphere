@@ -29,7 +29,7 @@ execute
     | truncateTable
     | setTransaction
     | beginTransaction
-    | setAutoCommit
+    | setImplicitTransactions
     | commit
     | rollback
     | savepoint

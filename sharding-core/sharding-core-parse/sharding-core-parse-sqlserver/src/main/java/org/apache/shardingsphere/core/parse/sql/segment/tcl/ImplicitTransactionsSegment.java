@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+package org.apache.shardingsphere.core.parse.sql.segment.tcl;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
-setTransaction
-    : SET TRANSACTION
-    ;
-
-setImplicitTransactions
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
-    ;
-
-implicitTransactionsValue
-    : ON | OFF
-    ;
-
-beginTransaction
-    : BEGIN (TRAN | TRANSACTION)
-    ;
-
-commit
-    : COMMIT 
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVE (TRAN | TRANSACTION)
-    ;
+/**
+ * Implicit transactions segment.
+ * 
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ImplicitTransactionsSegment implements SQLSegment {
+    
+    private final boolean on;
+}

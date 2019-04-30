@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.index;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
 
 /**
- * Group by filler.
+ * Index filler.
  *
  * @author duhongjun
- * @author panjuan
  */
-public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
+public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
     
     @Override
-    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setGroupByLastIndex(sqlSegment.getStopIndex());
-        for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {
-            selectStatement.getGroupByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
+    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
+        IndexToken indexToken = sqlSegment.getToken();
+        if (!sqlStatement.getTables().isEmpty() && null == indexToken.getTableName()) {
+            indexToken.setTableName(sqlStatement.getTables().getSingleTableName());
+        } else {
+            indexToken.setTableName("");
         }
+        sqlStatement.getSQLTokens().add(sqlSegment.getToken());
     }
 }

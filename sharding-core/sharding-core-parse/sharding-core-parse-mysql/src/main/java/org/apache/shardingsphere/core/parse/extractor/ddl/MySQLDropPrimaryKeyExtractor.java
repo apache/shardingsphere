@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.extractor.ddl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 
 import java.util.Map;
 
 /**
- * Order by extractor.
+ * Drop primary key extractor for MySQL.
  *
  * @author duhongjun
  */
-public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
+public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
-        return orderByNode.isPresent() ? Optional.of(new OrderBySegment(orderByItemExtractor.extract(orderByNode.get(), parameterMarkerIndexes))) : Optional.<OrderBySegment>absent();
+    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        return ExtractorUtils.findFirstChildNode(
+                ancestorNode, RuleName.DROP_PRIMARY_KEY_SPECIFICATION).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
     }
 }

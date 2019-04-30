@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.extractor.tcl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Map;
 
 /**
- * Order by extractor.
+ * Set auto commit extractor for MySQL.
  *
- * @author duhongjun
+ * @author maxiaoguang
  */
-public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
+public final class MySQLSetAutoCommitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
-        return orderByNode.isPresent() ? Optional.of(new OrderBySegment(orderByItemExtractor.extract(orderByNode.get(), parameterMarkerIndexes))) : Optional.<OrderBySegment>absent();
+    public Optional<AutoCommitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
+        return autoCommitValueNode.isPresent()
+                ? Optional.of(new AutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<AutoCommitSegment>absent();
     }
 }

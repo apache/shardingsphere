@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.column;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
 
-setTransaction
-    : SET TRANSACTION
-    ;
-
-setImplicitTransactions
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
-    ;
-
-implicitTransactionsValue
-    : ON | OFF
-    ;
-
-beginTransaction
-    : BEGIN (TRAN | TRANSACTION)
-    ;
-
-commit
-    : COMMIT 
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVE (TRAN | TRANSACTION)
-    ;
+/**
+ * Column definition filler.
+ *
+ * @author duhongjun
+ */
+public final class ColumnDefinitionFiller implements SQLSegmentFiller<ColumnDefinitionSegment> {
+    
+    @Override
+    public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(sqlSegment);
+    }
+}

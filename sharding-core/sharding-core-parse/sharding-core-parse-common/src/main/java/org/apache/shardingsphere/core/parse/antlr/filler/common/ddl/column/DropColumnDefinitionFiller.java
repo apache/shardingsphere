@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.column;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 
 /**
- * Group by filler.
+ * Drop column definition filler.
  *
  * @author duhongjun
- * @author panjuan
  */
-public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
+public final class DropColumnDefinitionFiller implements SQLSegmentFiller<DropColumnDefinitionSegment> {
     
     @Override
-    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setGroupByLastIndex(sqlSegment.getStopIndex());
-        for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {
-            selectStatement.getGroupByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
-        }
+    public void fill(final DropColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((AlterTableStatement) sqlStatement).getDroppedColumnNames().add(sqlSegment.getColumnName());
     }
 }

@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.table;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 
-setTransaction
-    : SET TRANSACTION
-    ;
-
-setImplicitTransactions
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
-    ;
-
-implicitTransactionsValue
-    : ON | OFF
-    ;
-
-beginTransaction
-    : BEGIN (TRAN | TRANSACTION)
-    ;
-
-commit
-    : COMMIT 
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVE (TRAN | TRANSACTION)
-    ;
+/**
+ * Rename table filler.
+ *
+ * @author duhongjun
+ */
+public final class RenameTableFiller implements SQLSegmentFiller<RenameTableSegment> {
+    
+    @Override
+    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((AlterTableStatement) sqlStatement).setNewTableName(sqlSegment.getNewTableName());
+    }
+}
