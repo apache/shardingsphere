@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author zhangliang
  */
 @Setter
-public final class OnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment>, ShardingRuleAwareFiller {
+public final class ShardingOnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment>, ShardingRuleAwareFiller {
     
     private ShardingRule shardingRule;
     

@@ -41,12 +41,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert values filler.
+ * Insert values filler for sharding.
  *
  * @author zhangliang
  */
 @Setter
-public final class InsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller {
+public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller {
     
     private ShardingRule shardingRule;
     
