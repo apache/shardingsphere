@@ -18,17 +18,13 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ColumnNameOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
-
-import java.util.List;
 
 /**
  * Order item builder.
@@ -51,8 +47,8 @@ public final class OrderItemBuilder {
         if (orderByItemSegment instanceof IndexOrderByItemSegment) {
             return createOrderItem((IndexOrderByItemSegment) orderByItemSegment);
         }
-        if (orderByItemSegment instanceof ColumnNameOrderByItemSegment) {
-            return createOrderItem(selectStatement, (ColumnNameOrderByItemSegment) orderByItemSegment);
+        if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
+            return createOrderItem(selectStatement, (ColumnOrderByItemSegment) orderByItemSegment);
         }
         if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
             return createOrderItem(selectStatement, (ExpressionOrderByItemSegment) orderByItemSegment);
@@ -64,16 +60,12 @@ public final class OrderItemBuilder {
         return new OrderItem(indexOrderByItemSegment.getColumnIndex(), indexOrderByItemSegment.getOrderDirection(), indexOrderByItemSegment.getNullOrderDirection());
     }
     
-    private OrderItem createOrderItem(final SelectStatement selectStatement, final ColumnNameOrderByItemSegment columnNameOrderByItemSegment) {
-        OrderItem result;
-        String columnName = SQLUtil.getExactlyValue(columnNameOrderByItemSegment.getColumnName());
-        if (columnName.contains(".")) {
-            List<String> values = Splitter.on(".").splitToList(columnName);
-            result = new OrderItem(values.get(0), values.get(1), columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
-        } else {
-            result = new OrderItem(columnName, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
-        }
-        Optional<String> alias = selectStatement.getAlias(columnName);
+    private OrderItem createOrderItem(final SelectStatement selectStatement, final ColumnOrderByItemSegment columnOrderByItemSegment) {
+        Optional<String> owner = columnOrderByItemSegment.getColumn().getOwner();
+        String columnName = columnOrderByItemSegment.getColumn().getName();
+        OrderItem result = owner.isPresent() ? new OrderItem(owner.get(), columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection())
+                : new OrderItem(columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection());
+        Optional<String> alias = selectStatement.getAlias(columnOrderByItemSegment.getColumn().getQualifiedName());
         if (alias.isPresent()) {
             result.setAlias(alias.get());
         }

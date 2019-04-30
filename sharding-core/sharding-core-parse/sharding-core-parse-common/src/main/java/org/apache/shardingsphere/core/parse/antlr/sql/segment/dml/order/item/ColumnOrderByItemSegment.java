@@ -19,20 +19,21 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 
 /**
- * Order by item segment for column name.
+ * Order by item segment for column.
  * 
  * @author zhangliang
  * @author panjuan
  */
 @Getter
-public final class ColumnNameOrderByItemSegment extends OrderByItemSegment {
+public final class ColumnOrderByItemSegment extends OrderByItemSegment {
     
-    private final String columnName;
+    private final ColumnSegment column;
     
-    public ColumnNameOrderByItemSegment(final String columnName, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+    public ColumnOrderByItemSegment(final ColumnSegment column, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(orderDirection, nullOrderDirection);
-        this.columnName = columnName;
+        this.column = column;
     }
 }
