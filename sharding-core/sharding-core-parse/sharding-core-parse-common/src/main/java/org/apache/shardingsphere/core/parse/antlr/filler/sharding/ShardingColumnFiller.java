@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
  *
  * @author duhongjun
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class ShardingColumnFiller implements SQLSegmentFiller<ColumnSegment>, ShardingTableMetaDataAwareFiller {

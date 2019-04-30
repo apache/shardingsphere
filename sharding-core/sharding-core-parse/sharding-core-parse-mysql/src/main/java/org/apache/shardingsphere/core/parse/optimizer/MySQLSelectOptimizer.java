@@ -42,6 +42,7 @@ import java.util.List;
  * Select optimizer for MySQL.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     

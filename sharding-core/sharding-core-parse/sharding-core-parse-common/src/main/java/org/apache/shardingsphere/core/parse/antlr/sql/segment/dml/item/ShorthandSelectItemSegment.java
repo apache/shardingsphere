@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * Shorthand select item segment.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

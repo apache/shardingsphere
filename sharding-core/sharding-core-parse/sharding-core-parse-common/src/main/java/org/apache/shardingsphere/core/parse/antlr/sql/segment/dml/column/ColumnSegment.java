@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  *
  * @author duhongjun
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {

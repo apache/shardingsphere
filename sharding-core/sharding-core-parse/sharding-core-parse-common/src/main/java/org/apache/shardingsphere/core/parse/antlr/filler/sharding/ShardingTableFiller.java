@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>, ShardingRuleAwareFiller {

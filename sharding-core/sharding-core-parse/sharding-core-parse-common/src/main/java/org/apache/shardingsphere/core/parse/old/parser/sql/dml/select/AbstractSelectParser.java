@@ -49,6 +49,7 @@ import java.util.List;
  * Select parser.
  * 
  * @author zhangliang 
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
