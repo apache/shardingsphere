@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.constraint;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 
 /**
- * Column definition filler.
+ * Drop primary key filler.
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionFiller implements SQLSegmentFiller<ColumnDefinitionSegment> {
+public final class DropPrimaryKeyFiller implements SQLSegmentFiller<DropPrimaryKeySegment> {
     
     @Override
-    public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(sqlSegment);
+    public void fill(final DropPrimaryKeySegment sqlSegment, final SQLStatement sqlStatement) {
+        ((AlterTableStatement) sqlStatement).setDropPrimaryKey(true);
     }
 }

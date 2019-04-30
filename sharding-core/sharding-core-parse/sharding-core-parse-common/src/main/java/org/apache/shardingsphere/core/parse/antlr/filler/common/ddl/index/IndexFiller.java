@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.index;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
 
 /**
- * Drop column definition filler.
+ * Index filler.
  *
  * @author duhongjun
  */
-public final class DropColumnDefinitionFiller implements SQLSegmentFiller<DropColumnDefinitionSegment> {
+public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
     
     @Override
-    public void fill(final DropColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((AlterTableStatement) sqlStatement).getDroppedColumnNames().add(sqlSegment.getColumnName());
+    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
+        IndexToken indexToken = sqlSegment.getToken();
+        if (!sqlStatement.getTables().isEmpty() && null == indexToken.getTableName()) {
+            indexToken.setTableName(sqlStatement.getTables().getSingleTableName());
+        } else {
+            indexToken.setTableName("");
+        }
+        sqlStatement.getSQLTokens().add(sqlSegment.getToken());
     }
 }

@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.table;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 
 /**
- * Index filler.
+ * Rename table filler.
  *
  * @author duhongjun
  */
-public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
+public final class RenameTableFiller implements SQLSegmentFiller<RenameTableSegment> {
     
     @Override
-    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement) {
-        IndexToken indexToken = sqlSegment.getToken();
-        if (!sqlStatement.getTables().isEmpty() && null == indexToken.getTableName()) {
-            indexToken.setTableName(sqlStatement.getTables().getSingleTableName());
-        } else {
-            indexToken.setTableName("");
-        }
-        sqlStatement.getSQLTokens().add(sqlSegment.getToken());
+    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((AlterTableStatement) sqlStatement).setNewTableName(sqlSegment.getNewTableName());
     }
 }

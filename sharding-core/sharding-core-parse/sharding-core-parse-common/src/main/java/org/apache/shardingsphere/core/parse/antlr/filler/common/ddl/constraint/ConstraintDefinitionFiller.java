@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.constraint;
 
 import com.google.common.base.Optional;
 import lombok.Setter;

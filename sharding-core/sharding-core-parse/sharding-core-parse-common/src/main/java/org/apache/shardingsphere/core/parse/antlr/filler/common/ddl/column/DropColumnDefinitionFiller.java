@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.alter;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.column;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.table.RenameTableSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 
 /**
- * Rename table filler.
+ * Drop column definition filler.
  *
  * @author duhongjun
  */
-public final class RenameTableFiller implements SQLSegmentFiller<RenameTableSegment> {
+public final class DropColumnDefinitionFiller implements SQLSegmentFiller<DropColumnDefinitionSegment> {
     
     @Override
-    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((AlterTableStatement) sqlStatement).setNewTableName(sqlSegment.getNewTableName());
+    public void fill(final DropColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((AlterTableStatement) sqlStatement).getDroppedColumnNames().add(sqlSegment.getColumnName());
     }
 }
