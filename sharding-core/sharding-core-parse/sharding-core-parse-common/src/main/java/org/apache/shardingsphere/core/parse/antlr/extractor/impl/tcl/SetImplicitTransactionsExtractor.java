@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.SetAutoCommitSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.ImplicitTransactionsSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Map;
@@ -35,9 +35,9 @@ import java.util.Map;
 public final class SetImplicitTransactionsExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SetAutoCommitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<ImplicitTransactionsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.IMPLICIT_TRANSACTIONS_VALUE);
         return autoCommitValueNode.isPresent()
-                ? Optional.of(new SetAutoCommitSegment("ON".equalsIgnoreCase(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<SetAutoCommitSegment>absent();
+                ? Optional.of(new ImplicitTransactionsSegment("ON".equalsIgnoreCase(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<ImplicitTransactionsSegment>absent();
     }
 }

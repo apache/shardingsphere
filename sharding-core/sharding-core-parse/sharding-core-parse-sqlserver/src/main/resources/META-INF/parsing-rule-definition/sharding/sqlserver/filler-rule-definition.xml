@@ -17,7 +17,5 @@
   -->
 
 <filler-rule-definition>
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.ShardingOrPredicateFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.ShowParamSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dal.ShowParamFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.AutoCommitSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.tcl.AutoCommitFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.ImplicitTransactionsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.tcl.ImplicitTransactionsFiller" />
 </filler-rule-definition>

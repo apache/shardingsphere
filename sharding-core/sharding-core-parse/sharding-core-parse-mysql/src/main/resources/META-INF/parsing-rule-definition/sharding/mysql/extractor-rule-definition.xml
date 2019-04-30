@@ -21,5 +21,6 @@
     <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLModifyColumnDefinitionExtractor" />
     <extractor-rule id="changeColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLChangeColumnDefinitionExtractor" />
     <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLDropPrimaryKeyExtractor" />
-    <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.tcl.SetAutoCommitExtractor" />
+    
+    <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.extractor.tcl.MySQLSetAutoCommitExtractor" />
 </extractor-rule-definition>

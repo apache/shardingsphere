@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.tcl;
+package org.apache.shardingsphere.core.parse.extractor.tcl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.SetAutoCommitSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Map;
 
 /**
- * Set auto commit extractor.
+ * Set auto commit extractor for MySQL.
  *
  * @author maxiaoguang
  */
-public final class SetAutoCommitExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLSetAutoCommitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SetAutoCommitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<AutoCommitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
         return autoCommitValueNode.isPresent()
-                ? Optional.of(new SetAutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<SetAutoCommitSegment>absent();
+                ? Optional.of(new AutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<AutoCommitSegment>absent();
     }
 }
