@@ -58,7 +58,8 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
         if (!lexerEngine.skipIfEqual(SQLServerKeyword.TOP)) {
             return;
         }
-        int beginPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int endPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int beginPosition = endPosition;
         if (!lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
             beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         }
@@ -68,7 +69,7 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             rowCountValue = new LimitValue(rowCount, -1, false);
-            selectStatement.addSQLToken(new RowCountToken(beginPosition, rowCount));
+            selectStatement.addSQLToken(new RowCountToken(beginPosition, endPosition - 1, rowCount));
         } else if (sqlExpression instanceof SQLParameterMarkerExpression) {
             rowCountValue = new LimitValue(-1, ((SQLParameterMarkerExpression) sqlExpression).getIndex(), false);
         } else {

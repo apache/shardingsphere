@@ -294,7 +294,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             selectStatement.getLimit().setRowCount(new LimitValue(rowCount, -1, includeRowCount));
-            selectStatement.addSQLToken(new RowCountToken(endPosition - String.valueOf(rowCount).length(), rowCount));
+            selectStatement.addSQLToken(new RowCountToken(endPosition - String.valueOf(rowCount).length(), endPosition - 1, rowCount));
         } else if (sqlExpression instanceof SQLParameterMarkerExpression) {
             selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLParameterMarkerExpression) sqlExpression).getIndex(), includeRowCount));
         }
