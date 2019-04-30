@@ -85,7 +85,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
                 // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndexOfOwner(), owner.get(), selectItemSegment.getOwnerQuoteCharacter(), 0));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndexOfOwner(), owner.get(), selectItemSegment.getOwnerQuoteCharacter()));
             }
         }
     }
