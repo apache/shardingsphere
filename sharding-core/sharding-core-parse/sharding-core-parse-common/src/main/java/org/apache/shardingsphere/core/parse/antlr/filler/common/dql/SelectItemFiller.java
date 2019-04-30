@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.SubquerySegment;
@@ -86,7 +85,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
             Optional<Table> table = selectStatement.getTables().find(owner.get());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
                 // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), owner.get(), QuoteCharacter.getQuoteCharacter(owner.get()), 0));
+                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndexOfOwner(), owner.get(), selectItemSegment.getOwnerQuoteCharacter(), 0));
             }
         }
     }
