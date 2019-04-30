@@ -37,12 +37,9 @@ public final class TableToken extends SQLToken {
     @Getter
     private final QuoteCharacter quoteCharacter;
     
-    private final int ownerLength;
-    
     public TableToken(final int startIndex, final int stopIndex, final String tableName, final QuoteCharacter quoteCharacter, final int ownerLength) {
         super(startIndex, stopIndex);
         this.tableName = SQLUtil.getExactlyValue(tableName);
         this.quoteCharacter = quoteCharacter;
-        this.ownerLength = ownerLength;
     }
 }
