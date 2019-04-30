@@ -209,7 +209,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof EncryptColumnToken) {
                 appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
-                appendRest(sqlBuilder, count, each.getStopIndex());
+                appendRest(sqlBuilder, count, each.getStopIndex() + 1);
             }
             count++;
         }
