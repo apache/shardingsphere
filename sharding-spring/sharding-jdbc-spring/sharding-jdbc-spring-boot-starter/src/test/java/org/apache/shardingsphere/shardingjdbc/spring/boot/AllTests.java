@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import org.apache.shardingsphere.shardingjdbc.spring.boot.type.SpringBootEncryptTest;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.type.SpringBootJndiTest;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.type.SpringBootMasterSlaveTest;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.type.SpringBootShardingTest;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.util.DataSourceUtilTest;
@@ -30,7 +31,8 @@ import org.junit.runners.Suite.SuiteClasses;
         DataSourceUtilTest.class,
         SpringBootMasterSlaveTest.class,
         SpringBootShardingTest.class,
-        SpringBootEncryptTest.class
+        SpringBootEncryptTest.class,
+        SpringBootJndiTest.class
     })
 public final class AllTests {
 }
