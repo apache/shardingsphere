@@ -45,13 +45,4 @@ public final class TableToken extends SQLToken {
         this.quoteCharacter = quoteCharacter;
         this.ownerLength = ownerLength;
     }
-    
-    /**
-     * Get table token length.
-     * 
-     * @return table token length
-     */
-    public int getLength() {
-        return ownerLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
-    }
 }
