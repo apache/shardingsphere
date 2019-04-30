@@ -80,7 +80,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     private final EncryptRuleConfigurationYamlSwapper encryptSwapper = new EncryptRuleConfigurationYamlSwapper();
     
-    private final String jndiName = "jndiName";
+    private final String jndiName = "jndiname";
     
     /**
      * Get data source bean.
