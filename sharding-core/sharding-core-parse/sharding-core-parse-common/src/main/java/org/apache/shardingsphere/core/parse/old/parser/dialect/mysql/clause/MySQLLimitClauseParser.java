@@ -50,7 +50,8 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
             return;
         }
         int valueIndex = -1;
-        int valueBeginPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int valueEndPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int valueBeginPosition = valueEndPosition;
         int value;
         boolean isParameterForValue = false;
         if (lexerEngine.equalAny(Literals.INT)) {
@@ -66,24 +67,25 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         }
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(Symbol.COMMA)) {
-            selectStatement.setLimit(getLimitWithComma(valueIndex, valueBeginPosition, value, isParameterForValue, selectStatement));
+            selectStatement.setLimit(getLimitWithComma(valueIndex, valueBeginPosition, valueEndPosition, value, isParameterForValue, selectStatement));
             return;
         }
         if (lexerEngine.skipIfEqual(MySQLKeyword.OFFSET)) {
-            selectStatement.setLimit(getLimitWithOffset(valueIndex, valueBeginPosition, value, isParameterForValue, selectStatement));
+            selectStatement.setLimit(getLimitWithOffset(valueIndex, valueBeginPosition, valueEndPosition, value, isParameterForValue, selectStatement));
             return;
         }
         if (isParameterForValue) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
-            selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
+            selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, valueEndPosition - 1, value));
         }
         Limit limit = new Limit();
         limit.setRowCount(new LimitValue(value, valueIndex, false));
         selectStatement.setLimit(limit);
     }
     
-    private Limit getLimitWithComma(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
+    private Limit getLimitWithComma(final int index, final int valueBeginPosition, 
+                                    final int valueEndPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
         int rowCountEndPosition = lexerEngine.getCurrentToken().getEndPosition();
         int rowCountBeginPosition = rowCountEndPosition;
         int rowCountValue;
@@ -104,12 +106,12 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (isParameterForValue) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
-            selectStatement.addSQLToken(new OffsetToken(valueBeginPosition, rowCountEndPosition - 1, value));
+            selectStatement.addSQLToken(new OffsetToken(valueBeginPosition, valueEndPosition - 1, value));
         }
         if (isParameterForRowCount) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
-            selectStatement.addSQLToken(new RowCountToken(rowCountBeginPosition, rowCountValue));
+            selectStatement.addSQLToken(new RowCountToken(rowCountBeginPosition, rowCountEndPosition - 1, rowCountValue));
         }
         Limit result = new Limit();
         result.setRowCount(new LimitValue(rowCountValue, rowCountIndex, false));
@@ -117,7 +119,8 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         return result;
     }
     
-    private Limit getLimitWithOffset(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
+    private Limit getLimitWithOffset(final int index, final int valueBeginPosition, 
+                                     final int valueEndPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
         int offsetEndPosition = lexerEngine.getCurrentToken().getEndPosition();
         int offsetBeginPosition = offsetEndPosition;
         int offsetValue = -1;
@@ -142,7 +145,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (isParameterForValue) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
-            selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
+            selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, valueEndPosition - 1, value));
         }
         Limit result = new Limit();
         result.setRowCount(new LimitValue(value, index, false));
