@@ -44,7 +44,7 @@ public final class MySQLXAProperties implements XAProperties {
         result.setProperty("prepStmtCacheSqlLimit", "2048");
         result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
         result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.setProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
+        result.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
         result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
         result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
         result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
