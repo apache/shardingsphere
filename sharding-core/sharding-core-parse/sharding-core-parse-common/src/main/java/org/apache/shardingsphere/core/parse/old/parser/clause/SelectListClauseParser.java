@@ -164,8 +164,9 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     }
     
     private SelectItem parseCommonOrStarSelectItem(final SelectStatement selectStatement) {
+        int endPosition = lexerEngine.getCurrentToken().getEndPosition();
         String literals = lexerEngine.getCurrentToken().getLiterals();
-        int position = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
+        int position = endPosition - literals.length();
         StringBuilder result = new StringBuilder();
         result.append(literals);
         lexerEngine.nextToken();
@@ -174,7 +175,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         } else if (lexerEngine.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
             if (shardingRule.findTableRule(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()) {
-                selectStatement.addSQLToken(new TableToken(position, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
+                selectStatement.addSQLToken(new TableToken(position, endPosition - 1, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
             }
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();

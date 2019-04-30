@@ -73,7 +73,7 @@ public final class UpdateSetItemsClauseParser implements SQLClauseParser {
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             if (updateStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                updateStatement.addSQLToken(new TableToken(beginPosition - literals.length(), literals, QuoteCharacter.getQuoteCharacter(literals), 0));
+                updateStatement.addSQLToken(new TableToken(beginPosition - literals.length(), beginPosition - 1, literals, QuoteCharacter.getQuoteCharacter(literals), 0));
             }
             lexerEngine.nextToken();
         }
