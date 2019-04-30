@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;

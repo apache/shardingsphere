@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.dql;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 
 /**
- * Order by filler.
+ * Group by filler.
  *
  * @author duhongjun
+ * @author panjuan
  */
-public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment> {
+public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
     
     @Override
-    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
-            selectStatement.getOrderByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
+        selectStatement.setGroupByLastIndex(sqlSegment.getGroupByStopIndex());
+        for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {
+            selectStatement.getGroupByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
         }
     }
 }

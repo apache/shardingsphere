@@ -98,7 +98,7 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ComplexExpressionSegment) {
-            throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", columnName);
+            return ((ComplexExpressionSegment) expressionSegment).getSQLExpression(insertStatement.getLogicSQL());
         }
         SQLExpression result = ((SimpleExpressionSegment) expressionSegment).getSQLExpression();
         String tableName = insertStatement.getTables().getSingleTableName();

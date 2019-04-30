@@ -822,8 +822,8 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="77" table-name="t_order" length="7" />
-            <encrypt-column-token start-index-for-placeholder="91" stop-index-for-placeholder="100" start-index-for-literal="91" stop-index-for-literal="100" is-in-where="true">
+            <table-token start-index="78" table-name="t_order" length="7" />
+            <encrypt-column-token start-index-for-placeholder="92" stop-index-for-placeholder="101" start-index-for-literal="92" stop-index-for-literal="101" is-in-where="true">
                <column table-name="t_order" name="status"/>
             </encrypt-column-token>
         </tokens>

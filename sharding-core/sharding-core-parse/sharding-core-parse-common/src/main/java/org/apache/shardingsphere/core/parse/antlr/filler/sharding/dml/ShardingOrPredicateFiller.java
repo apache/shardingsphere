@@ -166,15 +166,14 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     private Optional<String> findTableName(final PredicateSegment predicateSegment, final Tables tables) {
         Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tables.getTableNames());
-        if (tables.isSingleTable() || tables.isSameTable() || 1 == shardingLogicTableNames.size() || shardingRule.isAllBindingTables(shardingLogicTableNames)) {
+        if (tables.isSingleTable() || 1 == shardingLogicTableNames.size() || shardingRule.isAllBindingTables(shardingLogicTableNames)) {
             return Optional.of(tables.getSingleTableName());
         }
         if (predicateSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
-        } else {
-            return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
         }
+        return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
