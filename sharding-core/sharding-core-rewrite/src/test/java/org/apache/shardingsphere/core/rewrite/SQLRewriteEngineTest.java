@@ -284,8 +284,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(33, 34, 2));
-        selectStatement.addSQLToken(new RowCountToken(36, 37, 2));
+        selectStatement.addSQLToken(new OffsetToken(33, 33, 2));
+        selectStatement.addSQLToken(new RowCountToken(36, 36, 2));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
@@ -298,8 +298,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(119, 120, 2));
-        selectStatement.addSQLToken(new RowCountToken(98, 99, 4));
+        selectStatement.addSQLToken(new OffsetToken(119, 119, 2));
+        selectStatement.addSQLToken(new RowCountToken(98, 98, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
@@ -314,8 +314,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(123, 124, 2));
-        selectStatement.addSQLToken(new RowCountToken(26, 27, 4));
+        selectStatement.addSQLToken(new OffsetToken(123, 123, 2));
+        selectStatement.addSQLToken(new RowCountToken(26, 26, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
@@ -333,8 +333,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(33, 34, 2));
-        selectStatement.addSQLToken(new RowCountToken(36, 37, 2));
+        selectStatement.addSQLToken(new OffsetToken(33, 33, 2));
+        selectStatement.addSQLToken(new RowCountToken(36, 36, 2));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
@@ -347,8 +347,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(119, 120, 2));
-        selectStatement.addSQLToken(new RowCountToken(98, 99, 4));
+        selectStatement.addSQLToken(new OffsetToken(119, 119, 2));
+        selectStatement.addSQLToken(new RowCountToken(98, 98, 4));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
@@ -365,8 +365,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(123, 124, 2));
-        selectStatement.addSQLToken(new RowCountToken(26, 27, 4));
+        selectStatement.addSQLToken(new OffsetToken(123, 123, 2));
+        selectStatement.addSQLToken(new RowCountToken(26, 26, 4));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
         routeResult = new SQLRouteResult(selectStatement);
@@ -384,8 +384,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
         selectStatement.addSQLToken(new TableToken(17, 23, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(33, 34, 2));
-        selectStatement.addSQLToken(new RowCountToken(36, 37, 2));
+        selectStatement.addSQLToken(new OffsetToken(33, 33, 2));
+        selectStatement.addSQLToken(new RowCountToken(36, 36, 2));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id FROM table_x x LIMIT 2, 2", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
@@ -398,8 +398,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, 74, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(119, 120, 2));
-        selectStatement.addSQLToken(new RowCountToken(98, 99, 4));
+        selectStatement.addSQLToken(new OffsetToken(119, 119, 2));
+        selectStatement.addSQLToken(new RowCountToken(98, 98, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
@@ -414,8 +414,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, 91, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(123, 124, 2));
-        selectStatement.addSQLToken(new RowCountToken(26, 27, 4));
+        selectStatement.addSQLToken(new OffsetToken(123, 123, 2));
+        selectStatement.addSQLToken(new RowCountToken(26, 26, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
