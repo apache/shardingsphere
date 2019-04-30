@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.JndiInitialContextFactory;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestJndiInitialContextFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,11 +62,11 @@ public class SpringBootJndiTest {
     
     @BeforeClass
     public static void setUpBeforeClass() {
-        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, JndiInitialContextFactory.class.getName());
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, TestJndiInitialContextFactory.class.getName());
         DATASOURCE_0 = createNewDataSource("jndi0");
         DATASOURCE_1 = createNewDataSource("jndi1");
-        JndiInitialContextFactory.bind(JNDI_DATASOURCE_0, DATASOURCE_0);
-        JndiInitialContextFactory.bind(JNDI_DATASOURCE_1, DATASOURCE_1);
+        TestJndiInitialContextFactory.bind(JNDI_DATASOURCE_0, DATASOURCE_0);
+        TestJndiInitialContextFactory.bind(JNDI_DATASOURCE_1, DATASOURCE_1);
     }
     
     private static DataSource createNewDataSource(final String dsName) {
