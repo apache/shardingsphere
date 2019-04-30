@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Group by segment.
@@ -34,9 +33,8 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 @Getter
 public final class GroupBySegment implements SQLSegment {
-
-    private final int groupByStopIndex;
     
-    private final Collection<OrderByItemSegment> groupByItems = new LinkedList<>();
+    private final int stopIndex;
     
+    private final Collection<OrderByItemSegment> groupByItems;
 }

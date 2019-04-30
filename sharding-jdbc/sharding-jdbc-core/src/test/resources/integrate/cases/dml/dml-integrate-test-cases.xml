@@ -25,7 +25,7 @@
        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
-
+    
     <dml-test-case sql-case-id="insert_without_parameters">
         <assertion expected-data-file="insert_for_order_1.xml" />
     </dml-test-case>

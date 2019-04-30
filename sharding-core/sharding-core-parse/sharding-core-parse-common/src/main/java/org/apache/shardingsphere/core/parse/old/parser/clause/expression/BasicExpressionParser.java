@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIdentifierExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -86,7 +86,7 @@ public final class BasicExpressionParser {
     private SQLExpression getExpression(final String literals, final SQLStatement sqlStatement) {
         if (lexerEngine.equalAny(Symbol.QUESTION)) {
             sqlStatement.setParametersIndex(sqlStatement.getParametersIndex() + 1);
-            return new SQLPlaceholderExpression(sqlStatement.getParametersIndex() - 1);
+            return new SQLParameterMarkerExpression(sqlStatement.getParametersIndex() - 1);
         }
         if (lexerEngine.equalAny(Literals.CHARS)) {
             return new SQLTextExpression(literals);

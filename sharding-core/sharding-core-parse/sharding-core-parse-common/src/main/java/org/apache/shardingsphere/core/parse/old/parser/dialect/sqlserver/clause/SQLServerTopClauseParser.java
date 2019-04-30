@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parse.old.parser.dialect.ExpressionParserF
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 
 /**
  * Top clause parser for SQLServer.
@@ -69,8 +69,8 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             rowCountValue = new LimitValue(rowCount, -1, false);
             selectStatement.addSQLToken(new RowCountToken(beginPosition, rowCount));
-        } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-            rowCountValue = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex(), false);
+        } else if (sqlExpression instanceof SQLParameterMarkerExpression) {
+            rowCountValue = new LimitValue(-1, ((SQLParameterMarkerExpression) sqlExpression).getIndex(), false);
         } else {
             throw new SQLParsingException(lexerEngine);
         }

@@ -19,5 +19,5 @@ lexer grammar Comments;
 
 import Symbol;
 
-BLOCK_COMMENT:  SLASH_ ASTERISK_ .*? ASTERISK_ SLASH_ -> channel(HIDDEN);
-INLINE_COMMENT: MINUS_ MINUS_ ~[\r\n]* -> channel(HIDDEN);
+BLOCK_COMMENT:  '/*' .*? '*/' -> channel(HIDDEN);
+INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);

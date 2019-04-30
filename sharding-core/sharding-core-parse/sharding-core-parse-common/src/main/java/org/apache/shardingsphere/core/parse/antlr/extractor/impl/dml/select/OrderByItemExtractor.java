@@ -57,7 +57,7 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
             }
             Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(each, RuleName.COLUMN_NAME);
             if (columnNameNode.isPresent()) {
-                result.add(new ColumnNameOrderByItemSegment(columnNameNode.get().getText(), ((ParserRuleContext) each.getChild(0)).getStart().getStartIndex(), orderDirection, OrderDirection.ASC));
+                result.add(new ColumnNameOrderByItemSegment(columnNameNode.get().getText(), orderDirection, OrderDirection.ASC));
             }
         }
         return result;

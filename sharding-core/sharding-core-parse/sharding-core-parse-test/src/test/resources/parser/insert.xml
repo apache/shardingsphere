@@ -650,6 +650,7 @@
             <and-condition/>
         </or-condition>
     </parser-result>
+    
     <parser-result sql-case-id="insert_with_null_value">
         <tables>
             <table name="t_null_value_test" />

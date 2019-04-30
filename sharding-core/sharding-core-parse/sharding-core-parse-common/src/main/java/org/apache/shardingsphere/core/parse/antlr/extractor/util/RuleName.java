@@ -145,7 +145,9 @@ public enum RuleName {
     
     SHOW_PARAM("ShowParam"),
     
-    AUTO_COMMIT_VALUE("AutoCommitValue");
+    AUTO_COMMIT_VALUE("AutoCommitValue"),
+    
+    IMPLICIT_TRANSACTIONS_VALUE("ImplicitTransactionsValue");
     
     private final String name;
     

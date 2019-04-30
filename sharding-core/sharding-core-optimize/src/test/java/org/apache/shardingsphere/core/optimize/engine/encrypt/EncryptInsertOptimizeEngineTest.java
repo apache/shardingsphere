@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.Inser
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,7 +88,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertValuesToken(34));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
+        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1))));
         return result;
     }
     
@@ -170,7 +170,7 @@ public final class EncryptInsertOptimizeEngineTest {
         result.addSQLToken(new InsertSetToken(40));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
-        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLPlaceholderExpression(0), new SQLPlaceholderExpression(1))));
+        result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1))));
         return result;
     }
 }

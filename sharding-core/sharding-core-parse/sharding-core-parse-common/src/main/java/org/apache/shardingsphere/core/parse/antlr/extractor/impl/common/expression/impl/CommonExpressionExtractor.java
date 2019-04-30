@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.express
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.CommonExpressionSegment;
 
 import java.util.Map;
 

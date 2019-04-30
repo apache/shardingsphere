@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIdentifierExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -120,7 +120,7 @@ public abstract class OrderByClauseParser implements SQLClauseParser {
             }
             return Optional.of(result);
         }
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
+        if (sqlExpression instanceof SQLParameterMarkerExpression) {
             return Optional.absent();
         }
         throw new SQLParsingException(lexerEngine);

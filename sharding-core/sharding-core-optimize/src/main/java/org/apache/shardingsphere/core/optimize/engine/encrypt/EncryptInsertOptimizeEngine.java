@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -119,7 +119,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     
     private void fillInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final Comparable<?> columnValue) {
         if (!parameters.isEmpty()) {
-            unit.addColumnValue(new SQLPlaceholderExpression(parameters.size() - 1));
+            unit.addColumnValue(new SQLParameterMarkerExpression(parameters.size() - 1));
             unit.addColumnParameter(columnValue);
         } else if (columnValue.getClass() == String.class) {
             unit.addColumnValue(new SQLTextExpression(columnValue.toString()));

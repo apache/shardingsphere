@@ -31,11 +31,8 @@ public final class ColumnNameOrderByItemSegment extends OrderByItemSegment {
     
     private final String columnName;
     
-    private final int startIndex;
-    
-    public ColumnNameOrderByItemSegment(final String columnName, final int startIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+    public ColumnNameOrderByItemSegment(final String columnName, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(orderDirection, nullOrderDirection);
         this.columnName = columnName;
-        this.startIndex = startIndex;
     }
 }
