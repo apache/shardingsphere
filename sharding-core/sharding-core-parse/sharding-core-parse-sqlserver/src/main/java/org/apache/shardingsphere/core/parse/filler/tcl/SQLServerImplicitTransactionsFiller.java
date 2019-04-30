@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.tcl;
+package org.apache.shardingsphere.core.parse.filler.tcl;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.ImplicitTransactionsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.tcl.ImplicitTransactionsSegment;
 
 /**
- * Implicit transactions filler.
+ * Implicit transactions filler for SQLServer.
  *
  * @author zhangliang
  */
-public final class ImplicitTransactionsFiller implements SQLSegmentFiller {
+public final class SQLServerImplicitTransactionsFiller implements SQLSegmentFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {

@@ -17,5 +17,5 @@
   -->
 
 <filler-rule-definition>
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.ImplicitTransactionsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.tcl.ImplicitTransactionsFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.tcl.ImplicitTransactionsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.tcl.SQLServerImplicitTransactionsFiller" />
 </filler-rule-definition>

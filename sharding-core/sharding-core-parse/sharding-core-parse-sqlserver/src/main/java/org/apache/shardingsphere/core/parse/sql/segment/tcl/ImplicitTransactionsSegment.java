@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl;
+package org.apache.shardingsphere.core.parse.sql.segment.tcl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 /**
- * Auto commit segment.
+ * Implicit transactions segment.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class AutoCommitSegment implements SQLSegment {
+public final class ImplicitTransactionsSegment implements SQLSegment {
     
-    private final boolean autoCommit;
+    private final boolean on;
 }

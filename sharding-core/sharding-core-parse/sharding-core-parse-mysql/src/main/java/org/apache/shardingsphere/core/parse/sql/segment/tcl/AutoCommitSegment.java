@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.filler.common.tcl;
+package org.apache.shardingsphere.core.parse.sql.segment.tcl;
 
-import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.AutoCommitSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
 
 /**
- * Auto commit filler.
- *
+ * Auto commit segment.
+ * 
  * @author zhangliang
  */
-public final class AutoCommitFiller implements SQLSegmentFiller {
+@RequiredArgsConstructor
+@Getter
+public final class AutoCommitSegment implements SQLSegment {
     
-    @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SetAutoCommitStatement) sqlStatement).setAutoCommit(((AutoCommitSegment) sqlSegment).isAutoCommit());
-    }
+    private final boolean autoCommit;
 }

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.tcl;
+package org.apache.shardingsphere.core.parse.extractor.tcl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.ImplicitTransactionsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.tcl.ImplicitTransactionsSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Map;

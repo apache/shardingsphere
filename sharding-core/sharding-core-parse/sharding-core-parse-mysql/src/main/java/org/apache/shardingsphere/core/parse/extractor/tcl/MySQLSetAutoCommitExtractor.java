@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Map;

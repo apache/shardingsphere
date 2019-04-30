@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.tcl;
+package org.apache.shardingsphere.core.parse.filler.tcl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment;
 
 /**
- * Implicit transactions segment.
- * 
+ * Auto commit filler for MySQL.
+ *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ImplicitTransactionsSegment implements SQLSegment {
+public final class MySQLAutoCommitFiller implements SQLSegmentFiller {
     
-    private final boolean on;
+    @Override
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((SetAutoCommitStatement) sqlStatement).setAutoCommit(((AutoCommitSegment) sqlSegment).isAutoCommit());
+    }
 }
