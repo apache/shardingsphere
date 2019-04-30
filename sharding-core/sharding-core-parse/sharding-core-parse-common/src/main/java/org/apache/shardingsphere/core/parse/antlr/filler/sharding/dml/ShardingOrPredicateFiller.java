@@ -81,7 +81,11 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             AndCondition andCondition = new AndCondition();
             for (PredicateSegment predicate : each.getPredicates()) {
-                Optional<Condition> condition = createCondition(predicate, sqlStatement);
+                Optional<String> tableName = PredicateUtils.findTableName(predicate, sqlStatement, shardingTableMetaData);
+                if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicate.getColumn().getName(), tableName.get())) {
+                    continue;
+                }
+                Optional<Condition> condition = createCondition(predicate, new Column(predicate.getColumn().getName(), tableName.get()));
                 if (condition.isPresent()) {
                     andCondition.getConditions().add(condition.get());
                 }
@@ -95,12 +99,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return result;
     }
     
-    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
-        if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicateSegment.getColumn().getName(), tableName.get())) {
-            return Optional.absent();
-        }
-        Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
+    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isOperatorSupportedWithSharding(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column) : Optional.<Condition>absent();
