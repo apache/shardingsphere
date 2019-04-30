@@ -84,7 +84,8 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
     }
     
     private Limit getLimitWithComma(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
-        int rowCountBeginPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int rowCountEndPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int rowCountBeginPosition = rowCountEndPosition;
         int rowCountValue;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
@@ -103,7 +104,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (isParameterForValue) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
-            selectStatement.addSQLToken(new OffsetToken(valueBeginPosition, value));
+            selectStatement.addSQLToken(new OffsetToken(valueBeginPosition, rowCountEndPosition - 1, value));
         }
         if (isParameterForRowCount) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
@@ -117,7 +118,8 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
     }
     
     private Limit getLimitWithOffset(final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue, final SelectStatement selectStatement) {
-        int offsetBeginPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int offsetEndPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int offsetBeginPosition = offsetEndPosition;
         int offsetValue = -1;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
@@ -135,7 +137,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         if (isParameterForOffset) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);
         } else {
-            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, offsetValue));
+            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, offsetEndPosition - 1, offsetValue));
         }
         if (isParameterForValue) {
             selectStatement.setParametersIndex(selectStatement.getParametersIndex() + 1);

@@ -308,8 +308,8 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         if (sqlExpression instanceof SQLNumberExpression) {
             int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             selectStatement.getLimit().setOffset(new LimitValue(offset, -1, includeOffset));
-            selectStatement.addSQLToken(new OffsetToken(
-                    lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(offset).length() - lexerEngine.getCurrentToken().getLiterals().length(), offset));
+            selectStatement.addSQLToken(new OffsetToken(lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(offset).length() - lexerEngine.getCurrentToken().getLiterals().length(),
+                    lexerEngine.getCurrentToken().getEndPosition() - 1, offset));
         } else if (sqlExpression instanceof SQLParameterMarkerExpression) {
             selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLParameterMarkerExpression) sqlExpression).getIndex(), includeOffset));
         }

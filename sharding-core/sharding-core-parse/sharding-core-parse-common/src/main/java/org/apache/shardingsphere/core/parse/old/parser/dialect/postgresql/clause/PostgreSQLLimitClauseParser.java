@@ -97,7 +97,7 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
         if (lexerEngine.equalAny(Literals.INT, Literals.FLOAT)) {
             offsetValue = NumberUtil.roundHalfUp(lexerEngine.getCurrentToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
-            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, offsetValue));
+            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, offsetValue));
         } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
             offsetIndex = parameterIndex++;
             selectStatement.setParametersIndex(parameterIndex);
