@@ -94,18 +94,5 @@
         <tables>
             <table name="t_encrypt" />
         </tables>
-        <tokens>
-            <encrypt-column-token start-index-for-placeholder="28" stop-index-for-placeholder="49" start-index-for-literal="28" stop-index-for-literal="72" is-in-where="true">
-                <column table-name="t_encrypt" name="mobile"/>
-            </encrypt-column-token>
-        </tokens>
-        <encrypt-condition>
-            <and-condition>
-                <condition column-name="mobile" table-name="t_encrypt" operator="BETWEEN">
-                    <value index="0" literal="13333333333" type="varchar" />
-                    <value index="1" literal="1344444444" type="varchar" />
-                </condition>
-            </and-condition>
-        </encrypt-condition>
     </parser-result>
 </parser-result-sets>

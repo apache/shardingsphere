@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
 import org.apache.shardingsphere.core.parse.antlr.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.integrate.asserts.AntlrParserResultSetLoader;
-import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -104,7 +104,7 @@ public class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsing
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new SQLStatementAssert(new AntlrParsingEngine(execDatabaseType, sql, buildShardingRule(),
+            new EncryptSQLStatementAssert(new AntlrParsingEngine(execDatabaseType, sql, buildShardingRule(),
                     AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
         }
     }
