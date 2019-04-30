@@ -29,8 +29,8 @@ public final class PlaceholderLimitValueSegment extends LimitValueSegment {
     
     private final int parameterIndex;
     
-    public PlaceholderLimitValueSegment(final int parameterIndex, final int beginPosition) {
-        super(beginPosition);
+    public PlaceholderLimitValueSegment(final int parameterIndex, final int startIndex, final int stopIndex) {
+        super(startIndex, stopIndex);
         this.parameterIndex = parameterIndex;
     }
 }
