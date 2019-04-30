@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -57,25 +56,16 @@ public final class Tables {
     }
     
     /**
-     * Judge is same table or not.
-     *
-     * @return is same table or not
-     */
-    public boolean isSameTable() {
-        Set<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (Table each : tables) {
-            tableNames.add(each.getName());
-        }
-        return 1 == tableNames.size();
-    }
-    
-    /**
      * Judge is single table or not.
      * 
      * @return is single table or not
      */
     public boolean isSingleTable() {
-        return 1 == tables.size();
+        Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (Table each : tables) {
+            tableNames.add(each.getName());
+        }
+        return 1 == tableNames.size();
     }
     
     /**

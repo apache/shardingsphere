@@ -47,25 +47,17 @@ public final class TablesTest {
     }
     
     @Test
-    public void assertIsSameTable() {
-        Tables tables = new Tables();
-        tables.add(new Table("table", "tbl_1"));
-        tables.add(new Table("table", "tbl_2"));
-        assertTrue(tables.isSameTable());
-    }
-    
-    @Test
-    public void assertIsNotSameTable() {
-        Tables tables = new Tables();
-        tables.add(new Table("table_1", "tbl_1"));
-        tables.add(new Table("table_2", "tbl_2"));
-        assertFalse(tables.isSameTable());
-    }
-    
-    @Test
     public void assertIsSingleTable() {
         Tables tables = new Tables();
         tables.add(new Table("table", "tbl"));
+        assertTrue(tables.isSingleTable());
+    }
+    
+    @Test
+    public void assertIsSingleTableWithCaseSensitiveNames() {
+        Tables tables = new Tables();
+        tables.add(new Table("table", "tbl"));
+        tables.add(new Table("Table", null));
         assertTrue(tables.isSingleTable());
     }
     
