@@ -172,9 +172,8 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         if (predicateSegment.getColumn().getOwner().isPresent()) {
             Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
-        } else {
-            return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
         }
+        return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
