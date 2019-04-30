@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.bin
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -37,7 +37,7 @@ public final class MySQLComStmtResetExecutor implements CommandExecutor {
     private final MySQLComStmtResetPacket packet;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
-        return Collections.emptyList();
+    public Collection<DatabasePacket> execute() {
+        return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
     }
 }
