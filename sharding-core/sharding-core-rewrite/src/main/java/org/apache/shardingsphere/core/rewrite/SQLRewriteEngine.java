@@ -254,7 +254,7 @@ public final class SQLRewriteEngine {
             encryptInsertOptimizeResultUnit(insertOptimizeResult.getColumnNames(), each);
         }
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertOptimizeResult.getColumnNames(), insertOptimizeResult.getUnits()));
-        appendRest(sqlBuilder, count, originalSQL.length());
+        appendRest(sqlBuilder, count, insertValuesToken.getStopIndex() + 1);
     }
     
     private void appendInsertSetToken(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
