@@ -182,7 +182,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.setParametersIndex(2);
         insertStatement.addSQLToken(new TableToken(12, 18, "table_x", QuoteCharacter.NONE, 0));
-        insertStatement.addSQLToken(new InsertValuesToken(19));
+        insertStatement.addSQLToken(new InsertValuesToken(19, 44));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1), new SQLParameterMarkerExpression(2)};
@@ -203,7 +203,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.setParametersIndex(1);
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.addSQLToken(new InsertValuesToken(21));
+        insertStatement.addSQLToken(new InsertValuesToken(21, 31));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
@@ -223,7 +223,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.addSQLToken(new InsertValuesToken(21));
+        insertStatement.addSQLToken(new InsertValuesToken(21, 32));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
@@ -245,7 +245,7 @@ public final class SQLRewriteEngineTest {
         parameters.add("x");
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.addSQLToken(new InsertValuesToken(21));
+        insertStatement.addSQLToken(new InsertValuesToken(21, 35));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
@@ -264,7 +264,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE, 0));
-        insertStatement.addSQLToken(new InsertValuesToken(21));
+        insertStatement.addSQLToken(new InsertValuesToken(21, 34));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
         Object[] parameters = {"x", 1};
