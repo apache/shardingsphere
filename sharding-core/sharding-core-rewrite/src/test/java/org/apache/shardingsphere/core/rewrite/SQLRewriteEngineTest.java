@@ -431,7 +431,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new OrderItem("x", "name", OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.addSQLToken(new TableToken(25, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OrderByToken(61));
+        selectStatement.addSQLToken(new OrderByToken(61, 61));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
