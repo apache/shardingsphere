@@ -24,8 +24,6 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFil
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.dml.PredicateUtils;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -36,14 +34,11 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Or predicate filler for encrypt.
@@ -98,12 +93,11 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            PredicateCompareRightValue predicateCompareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return "=".equals(predicateCompareRightValue.getOperator()) || "<>".equals(predicateCompareRightValue.getOperator()) || "!=".equals(predicateCompareRightValue.getOperator())
-                    ? createEqualCondition(predicateCompareRightValue, column) : Optional.<Condition>absent();
+            PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
+            return isOperatorSupportedWithEncrypt(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column);
+            return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column);
         }
         return Optional.absent();
     }
@@ -114,21 +108,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         return encryptorEngine.getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent();
     }
     
-    private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column) {
-        return expressionSegment.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new Condition(column, ((SimpleExpressionSegment) expressionSegment.getExpression()).getSQLExpression())) : Optional.<Condition>absent();
-    }
-    
-    private Optional<Condition> createInCondition(final PredicateInRightValue expressionSegment, final Column column) {
-        List<SQLExpression> sqlExpressions = new LinkedList<>();
-        for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-            if (!(each instanceof SimpleExpressionSegment)) {
-                sqlExpressions.clear();
-                break;
-            } else {
-                sqlExpressions.add(((SimpleExpressionSegment) each).getSQLExpression());
-            }
-        }
-        return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
+    private boolean isOperatorSupportedWithEncrypt(final String operator) {
+        return "=".equals(operator) || "<>".equals(operator) || "!=".equals(operator);
     }
 }

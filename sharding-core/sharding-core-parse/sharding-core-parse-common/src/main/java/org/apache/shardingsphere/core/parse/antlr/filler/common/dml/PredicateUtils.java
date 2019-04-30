@@ -18,18 +18,32 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Predicate utils.
  *
  * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PredicateUtils {
     
     /**
@@ -74,5 +88,51 @@ public final class PredicateUtils {
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * Create condition of compare operator.
+     * 
+     * @param compareRightValue right value of compare operator
+     * @param column column
+     * @return condition
+     */
+    public static Optional<Condition> createCompareCondition(final PredicateCompareRightValue compareRightValue, final Column column) {
+        return compareRightValue.getExpression() instanceof SimpleExpressionSegment
+                ? Optional.of(new Condition(column, ((SimpleExpressionSegment) compareRightValue.getExpression()).getSQLExpression())) : Optional.<Condition>absent();
+    }
+    
+    /**
+     * Create condition of IN operator.
+     *
+     * @param inRightValue right value of IN operator
+     * @param column column
+     * @return condition
+     */
+    public static Optional<Condition> createInCondition(final PredicateInRightValue inRightValue, final Column column) {
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
+            if (!(each instanceof SimpleExpressionSegment)) {
+                sqlExpressions.clear();
+                break;
+            } else {
+                sqlExpressions.add(((SimpleExpressionSegment) each).getSQLExpression());
+            }
+        }
+        return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
+    }
+    
+    /**
+     * Create condition of BETWEEN ... AND ... operator.
+     * 
+     * @param betweenRightValue right value of BETWEEN operator
+     * @param column column
+     * @return condition
+     */
+    public static Optional<Condition> createBetweenCondition(final PredicateBetweenRightValue betweenRightValue, final Column column) {
+        return betweenRightValue.getBetweenExpression() instanceof SimpleExpressionSegment && betweenRightValue.getAndExpression() instanceof SimpleExpressionSegment
+                ? Optional.of(new Condition(column,
+                ((SimpleExpressionSegment) betweenRightValue.getBetweenExpression()).getSQLExpression(), ((SimpleExpressionSegment) betweenRightValue.getAndExpression()).getSQLExpression()))
+                : Optional.<Condition>absent();
     }
 }
