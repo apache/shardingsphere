@@ -17,9 +17,9 @@
   -->
 
 <extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.MySQLAddColumnDefinitionExtractor" />
-    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.MySQLModifyColumnDefinitionExtractor" />
-    <extractor-rule id="changeColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.MySQLChangeColumnDefinitionExtractor" />
-    <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.MySQLDropPrimaryKeyExtractor" />
+    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLAddColumnDefinitionExtractor" />
+    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLModifyColumnDefinitionExtractor" />
+    <extractor-rule id="changeColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLChangeColumnDefinitionExtractor" />
+    <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLDropPrimaryKeyExtractor" />
     <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.tcl.SetAutoCommitExtractor" />
 </extractor-rule-definition>

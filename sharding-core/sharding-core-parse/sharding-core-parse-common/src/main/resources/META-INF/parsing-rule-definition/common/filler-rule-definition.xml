@@ -26,6 +26,7 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.RenameColumnSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.column.RenameColumnDefinitionFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.DropColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.column.DropColumnDefinitionFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.constraint.DropPrimaryKeySegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.constraint.DropPrimaryKeyFiller" />
+    
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.InsertColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.SelectItemsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.WhereSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.WhereFiller" />

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.extractor;
+package org.apache.shardingsphere.core.parse.extractor.ddl;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
