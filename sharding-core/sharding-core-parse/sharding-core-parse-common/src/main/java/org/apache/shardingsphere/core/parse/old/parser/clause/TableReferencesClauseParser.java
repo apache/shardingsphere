@@ -97,7 +97,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         int skippedSchemaNameLength = 0;
         lexerEngine.nextToken();
         if (sqlStatement instanceof InsertStatement) {
-            sqlStatement.addSQLToken(new InsertValuesToken(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length()));
+            sqlStatement.addSQLToken(new InsertValuesToken(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length(), sqlStatement.getLogicSQL().length() - 1));
         }
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             skippedSchemaNameLength = literals.length() + Symbol.DOT.getLiterals().length();
