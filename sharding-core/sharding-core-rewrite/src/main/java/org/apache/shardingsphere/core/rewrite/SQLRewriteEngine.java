@@ -292,8 +292,7 @@ public final class SQLRewriteEngine {
         } else {
             sqlBuilder.appendLiterals(String.valueOf(limit.isNeedRewriteRowCount(databaseType) ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount()));
         }
-        int startIndex = rowCountToken.getStartIndex() + String.valueOf(rowCountToken.getRowCount()).length();
-        appendRest(sqlBuilder, count, startIndex);
+        appendRest(sqlBuilder, count, rowCountToken.getStopIndex() + 1);
     }
     
     private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
