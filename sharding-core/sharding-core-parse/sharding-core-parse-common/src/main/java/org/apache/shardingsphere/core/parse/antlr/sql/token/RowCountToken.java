@@ -29,8 +29,8 @@ public final class RowCountToken extends SQLToken {
     
     private final int rowCount;
     
-    public RowCountToken(final int startIndex, final int rowCount) {
-        super(startIndex);
+    public RowCountToken(final int startIndex, final int stopIndex, final int rowCount) {
+        super(startIndex, stopIndex);
         this.rowCount = rowCount;
     }
 }
