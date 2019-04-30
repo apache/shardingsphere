@@ -61,16 +61,17 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
-                    Optional<String> tableName = PredicateUtils.findTableName(predicate, sqlStatement, shardingTableMetaData);
-                    if (tableName.isPresent() && isNeedEncrypt(predicate, tableName.get())) {
-                        fill(predicate, tableName.get(), sqlStatement);
-                    }
+                    fill(predicate, sqlStatement);
                 }
             }
         }
     }
-    
-    private void fill(final PredicateSegment predicateSegment, final String tableName, final SQLStatement sqlStatement) {
+
+    private void fill(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
+        if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
+            return;
+        }
         AndCondition andCondition;
         if (sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().isEmpty()) {
             andCondition = new AndCondition();
@@ -78,20 +79,15 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         } else {
             andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
         }
-        Optional<Condition> condition = createCondition(predicateSegment, sqlStatement);
+        Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
+        Optional<Condition> condition = createCondition(predicateSegment, column);
         if (condition.isPresent()) {
             andCondition.getConditions().add(condition.get());
-            sqlStatement.getSQLTokens().add(
-                    new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), new Column(predicateSegment.getColumn().getName(), tableName), true));
+            sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), column, true));
         }
     }
-    
-    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
-        if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
-            return Optional.absent();
-        }
-        Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
+
+    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isOperatorSupportedWithEncrypt(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column) : Optional.<Condition>absent();
