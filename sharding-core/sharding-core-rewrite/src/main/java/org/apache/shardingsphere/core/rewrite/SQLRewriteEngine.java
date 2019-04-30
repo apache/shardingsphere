@@ -203,7 +203,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof OffsetToken) {
                 appendLimitOffsetToken(sqlBuilder, (OffsetToken) each, count, isRewrite);
             } else if (each instanceof OrderByToken) {
-                appendOrderByToken(sqlBuilder, count, isRewrite);
+                appendOrderByToken(sqlBuilder, (OrderByToken) each, count, isRewrite);
             } else if (each instanceof AggregationDistinctToken) {
                 appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) each, count, isRewrite);
             } else if (each instanceof EncryptColumnToken) {
@@ -300,7 +300,7 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, offsetToken.getStopIndex() + 1);
     }
     
-    private void appendOrderByToken(final SQLBuilder sqlBuilder, final int count, final boolean isRewrite) {
+    private void appendOrderByToken(final SQLBuilder sqlBuilder, final OrderByToken orderByToken, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         if (isRewrite) {
             StringBuilder orderByLiterals = new StringBuilder();
@@ -319,7 +319,7 @@ public final class SQLRewriteEngine {
             orderByLiterals.append(" ");
             sqlBuilder.appendLiterals(orderByLiterals.toString());
         }
-        appendRest(sqlBuilder, count, selectStatement.getGroupByLastIndex() + 1);
+        appendRest(sqlBuilder, count, orderByToken.getStopIndex() + 1);
     }
     
     private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
@@ -497,7 +497,7 @@ public final class SQLRewriteEngine {
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
         int stopPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(startIndex, stopPosition));
+        sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
     }
     
     /**
