@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.EncryptOrPredicateFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -33,17 +34,13 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.valu
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -105,7 +102,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     }
     
     private Optional<Condition> createShardingCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
+        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
         if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicateSegment.getColumn().getName(), tableName.get())) {
             return Optional.absent();
         }
@@ -146,42 +143,5 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
                 ? Optional.of(new Condition(column, 
                 ((SimpleExpressionSegment) expressionSegment.getBetweenExpression()).getSQLExpression(), ((SimpleExpressionSegment) expressionSegment.getAndExpression()).getSQLExpression()))
                 : Optional.<Condition>absent();
-    }
-    
-    // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private Optional<String> findTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof SelectStatement)) {
-            return Optional.of(sqlStatement.getTables().getSingleTableName());
-        }
-        SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
-        while (null != currentSelectStatement.getParentStatement()) {
-            currentSelectStatement = currentSelectStatement.getParentStatement();
-            Optional<String> tableName = findTableName(predicateSegment, currentSelectStatement.getTables());
-            if (tableName.isPresent()) {
-                return tableName;
-            }
-        }
-        return findTableName(predicateSegment, currentSelectStatement.getTables());
-    }
-    
-    private Optional<String> findTableName(final PredicateSegment predicateSegment, final Tables tables) {
-        Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tables.getTableNames());
-        if (tables.isSingleTable() || 1 == shardingLogicTableNames.size() || shardingRule.isAllBindingTables(shardingLogicTableNames)) {
-            return Optional.of(tables.getSingleTableName());
-        }
-        if (predicateSegment.getColumn().getOwner().isPresent()) {
-            Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
-            return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
-        }
-        return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
-    }
-    
-    private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
-        for (String each : tables.getTableNames()) {
-            if (shardingTableMetaData.containsColumn(each, columnName)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
     }
 }

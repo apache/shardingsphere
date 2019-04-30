@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
@@ -31,13 +32,10 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.Pred
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
@@ -68,7 +66,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
-                    Optional<String> tableName = findTableName(predicate, sqlStatement);
+                    Optional<String> tableName = PredicateUtils.findTableName(predicate, sqlStatement, shardingTableMetaData);
                     if (tableName.isPresent() && isNeedEncrypt(predicate, tableName.get())) {
                         fill(predicate, tableName.get(), sqlStatement);
                     }
@@ -94,7 +92,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     }
     
     private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
+        Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
         if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
             return Optional.absent();
         }
@@ -132,38 +130,5 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             }
         }
         return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
-    }
-    
-    // TODO hongjun: find table from parent select statement, should find table in subquery level only
-    private Optional<String> findTableName(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof SelectStatement)) {
-            return Optional.of(sqlStatement.getTables().getSingleTableName());
-        }
-        SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
-        while (null != currentSelectStatement.getParentStatement()) {
-            currentSelectStatement = currentSelectStatement.getParentStatement();
-            Optional<String> tableName = findTableName(predicateSegment, currentSelectStatement.getTables());
-            if (tableName.isPresent()) {
-                return tableName;
-            }
-        }
-        return findTableName(predicateSegment, currentSelectStatement.getTables());
-    }
-    
-    private Optional<String> findTableName(final PredicateSegment predicateSegment, final Tables tables) {
-        if (predicateSegment.getColumn().getOwner().isPresent()) {
-            Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
-            return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
-        }
-        return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables);
-    }
-    
-    private Optional<String> findTableNameFromMetaData(final String columnName, final Tables tables) {
-        for (String each : tables.getTableNames()) {
-            if (shardingTableMetaData.containsColumn(each, columnName)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
     }
 }
