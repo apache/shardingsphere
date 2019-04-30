@@ -55,6 +55,10 @@ columnNames
     : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
 
+tableNames
+    : tableName (COMMA_ tableName)*
+    ;
+
 exprs
     : expr (COMMA_ expr)*
     ;

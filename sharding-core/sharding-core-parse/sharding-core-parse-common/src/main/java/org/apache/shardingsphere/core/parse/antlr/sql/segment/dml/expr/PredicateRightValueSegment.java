@@ -18,22 +18,11 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 
 /**
- * SQL right value expression segment.
+ * Predicate right value segment.
  * 
- * @author duhongjun
+ * @author zhanglaing
  */
-public interface SQLRightValueExpressionSegment extends SQLSegment {
-    
-    /**
-     * Build condition.
-     *
-     *  @param column column
-     *  @param sql SQL
-     * @return condition
-     */
-    Condition buildCondition(Column column, String sql);
+public interface PredicateRightValueSegment extends SQLSegment {
 }

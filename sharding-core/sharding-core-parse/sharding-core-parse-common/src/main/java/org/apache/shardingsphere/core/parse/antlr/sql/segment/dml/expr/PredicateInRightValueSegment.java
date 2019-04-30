@@ -19,24 +19,17 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
+
+import java.util.Collection;
 
 /**
- * Compare value expression segment.
- * 
+ * Predicate in right value segment.
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class CompareValueExpressionSegment implements SQLRightValueExpressionSegment {
+public final class PredicateInRightValueSegment implements PredicateRightValueSegment {
     
-    private final ExpressionSegment expression;
-    
-    private final String compareOperator;
-
-    @Override
-    public Condition buildCondition(final Column column, final String sql) {
-        return new Condition(column, compareOperator, expression.getSQLExpression(sql));
-    }
+    private final Collection<ExpressionSegment> sqlExpressions;
 }

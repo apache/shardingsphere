@@ -25,10 +25,10 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.BetweenValueExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.CompareValueExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.InValueExpressionSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateBetweenRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateCompareRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateInRightValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -112,14 +112,14 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
-        if (predicateSegment.getExpression() instanceof CompareValueExpressionSegment) {
-            return createEqualCondition((CompareValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValueSegment) {
+            return createEqualCondition((PredicateCompareRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
-        if (predicateSegment.getExpression() instanceof InValueExpressionSegment) {
-            return createInCondition((InValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateInRightValueSegment) {
+            return createInCondition((PredicateInRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
-        if (predicateSegment.getExpression() instanceof BetweenValueExpressionSegment) {
-            return createBetweenCondition((BetweenValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValueSegment) {
+            return createBetweenCondition((PredicateBetweenRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
     }
@@ -128,12 +128,12 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator) || ShardingOperator.BETWEEN.name().equals(operator);
     }
     
-    private Optional<Condition> createEqualCondition(final CompareValueExpressionSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createEqualCondition(final PredicateCompareRightValueSegment expressionSegment, final Column column, final String sql) {
         SQLExpression sqlExpression = expressionSegment.getExpression().getSQLExpression(sql);
         return isShardingExpressionType(sqlExpression) ? Optional.of(new Condition(column, sqlExpression)) : Optional.<Condition>absent();
     }
     
-    private Optional<Condition> createInCondition(final InValueExpressionSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createInCondition(final PredicateInRightValueSegment expressionSegment, final Column column, final String sql) {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
             SQLExpression sqlExpression = each.getSQLExpression(sql);
@@ -147,7 +147,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
     }
     
-    private Optional<Condition> createBetweenCondition(final BetweenValueExpressionSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createBetweenCondition(final PredicateBetweenRightValueSegment expressionSegment, final Column column, final String sql) {
         SQLExpression betweenExpression = expressionSegment.getBetweenExpression().getSQLExpression(sql);
         SQLExpression andExpression = expressionSegment.getAndExpression().getSQLExpression(sql);
         return isShardingExpressionType(betweenExpression) && isShardingExpressionType(andExpression)
@@ -162,7 +162,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         Collection<Integer> stopIndexes = new HashSet<>();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                if (!(predicate.getExpression() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
+                if (!(predicate.getRightValue() instanceof ColumnSegment) && stopIndexes.add(predicate.getStopIndex())) {
                     Optional<String> tableName = findTableName(predicate, sqlStatement);
                     if (tableName.isPresent()) {
                         fillEncryptCondition(predicate.getColumn().getName(), tableName.get(), predicate, sqlStatement);
@@ -199,11 +199,11 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
-        if (predicateSegment.getExpression() instanceof CompareValueExpressionSegment) {
-            return createEqualCondition((CompareValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValueSegment) {
+            return createEqualCondition((PredicateCompareRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
-        if (predicateSegment.getExpression() instanceof InValueExpressionSegment) {
-            return createInCondition((InValueExpressionSegment) predicateSegment.getExpression(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateInRightValueSegment) {
+            return createInCondition((PredicateInRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
         }
         return Optional.absent();
     }
