@@ -64,7 +64,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
      * @return or condition
      */
     public OrCondition buildCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        OrCondition result = fillShardingConditions(sqlSegment, sqlStatement);
+        OrCondition result = createOrCondition(sqlSegment, sqlStatement);
         createEncryptOrPredicateFiller().fill(sqlSegment, sqlStatement);
         return result;
     }
@@ -76,12 +76,12 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return result;
     }
     
-    private OrCondition fillShardingConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+    private OrCondition createOrCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         OrCondition result = new OrCondition();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             AndCondition andCondition = new AndCondition();
             for (PredicateSegment predicate : each.getPredicates()) {
-                Optional<Condition> condition = createShardingCondition(predicate, sqlStatement);
+                Optional<Condition> condition = createCondition(predicate, sqlStatement);
                 if (condition.isPresent()) {
                     andCondition.getConditions().add(condition.get());
                 }
@@ -95,15 +95,15 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return result;
     }
     
-    private Optional<Condition> createShardingCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
+    private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
         Optional<String> tableName = PredicateUtils.findTableName(predicateSegment, sqlStatement, shardingTableMetaData);
         if (!tableName.isPresent() || !shardingRule.isShardingColumn(predicateSegment.getColumn().getName(), tableName.get())) {
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
-            PredicateCompareRightValue predicateCompareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return "=".equals(predicateCompareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(predicateCompareRightValue, column) : Optional.<Condition>absent();
+            PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
+            return isOperatorSupportedWithSharding(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column) : Optional.<Condition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
             return PredicateUtils.createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column);
@@ -112,5 +112,9 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
             return PredicateUtils.createBetweenCondition((PredicateBetweenRightValue) predicateSegment.getRightValue(), column);
         }
         return Optional.absent();
+    }
+    
+    private boolean isOperatorSupportedWithSharding(final String operator) {
+        return "=".equals(operator);
     }
 }
