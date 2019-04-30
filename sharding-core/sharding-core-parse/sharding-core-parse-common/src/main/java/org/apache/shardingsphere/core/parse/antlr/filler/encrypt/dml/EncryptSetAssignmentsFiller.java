@@ -63,7 +63,7 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
-        insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex()));
+        insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex(), insertStatement.getLogicSQL().length() - 1));
     }
     
     private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final String sql) {
