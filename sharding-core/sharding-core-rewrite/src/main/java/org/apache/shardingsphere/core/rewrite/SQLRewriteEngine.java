@@ -217,8 +217,7 @@ public final class SQLRewriteEngine {
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count) {
         sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getQuoteCharacter()));
-        int startIndex = tableToken.getStartIndex() + tableToken.getLength();
-        appendRest(sqlBuilder, count, startIndex);
+        appendRest(sqlBuilder, count, tableToken.getStopIndex() + 1);
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
