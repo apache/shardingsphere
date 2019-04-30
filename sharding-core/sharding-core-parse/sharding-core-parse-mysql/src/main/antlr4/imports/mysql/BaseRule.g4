@@ -38,7 +38,7 @@ stringLiterals
     ;
 
 numberLiterals
-   : NUMBER_
+   : MINUS_? NUMBER_
    ;
 
 dateTimeLiterals
@@ -163,7 +163,7 @@ bitExpr
     | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
     | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
     | bitExpr PLUS_ bitExpr
-    | bitExpr MINUS_? bitExpr
+    | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr DIV bitExpr
