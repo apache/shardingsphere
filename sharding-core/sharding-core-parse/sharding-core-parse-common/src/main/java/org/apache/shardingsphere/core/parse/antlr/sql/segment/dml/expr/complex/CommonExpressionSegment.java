@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 
 /**
- * Predicate segment.
+ * Common expression segment.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class PredicateSegment implements SQLSegment {
+public final class CommonExpressionSegment implements ComplexExpressionSegment {
     
-    private final ColumnSegment column;
-    
-    private final PredicateRightValue rightValue;
+    private final int startIndex;
     
     private final int stopIndex;
+    
+    @Override
+    public SQLExpression getSQLExpression(final String sql) {
+        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
+    }
 }

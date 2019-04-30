@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 /**
- * Predicate compare right value segment.
- * 
- * @author duhongjun
+ * Simple expression segment.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class PredicateCompareRightValueSegment implements PredicateRightValueSegment {
+public interface SimpleExpressionSegment extends ExpressionSegment {
     
-    private final ExpressionSegment expression;
-    
-    private final String compareOperator;
+    /**
+     * Get SQL expression.
+     *
+     * @return SQL expression
+     */
+    SQLExpression getSQLExpression();
 }

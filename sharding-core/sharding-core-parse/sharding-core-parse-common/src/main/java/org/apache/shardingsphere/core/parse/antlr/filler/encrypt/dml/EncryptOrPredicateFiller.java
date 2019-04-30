@@ -19,31 +19,28 @@ package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateCompareRightValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.PredicateInRightValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -62,6 +59,9 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     
     private ShardingTableMetaData shardingTableMetaData;
     
+    @Deprecated // TODO should use encryptRule, to be refactored
+    private ShardingEncryptorEngine encryptorEngine;
+    
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         Collection<Integer> stopIndexes = new HashSet<>();
@@ -69,8 +69,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
                     Optional<String> tableName = findTableName(predicate, sqlStatement);
-                    // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
-                    if (tableName.isPresent() && encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicate.getColumn().getName()).isPresent()) {
+                    if (tableName.isPresent() && isNeedEncrypt(predicate, tableName.get())) {
                         fill(predicate, tableName.get(), sqlStatement);
                     }
                 }
@@ -95,48 +94,44 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     }
     
     private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final SQLStatement sqlStatement) {
-        if (!isEncryptCondition(predicateSegment.getOperator())) {
-            return Optional.absent();
-        }
         Optional<String> tableName = findTableName(predicateSegment, sqlStatement);
-        if (!tableName.isPresent() || !encryptRule.getEncryptorEngine().getShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()) {
+        if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
             return Optional.absent();
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
-        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValueSegment) {
-            return createEqualCondition((PredicateCompareRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
+            PredicateCompareRightValue predicateCompareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
+            return "=".equals(predicateCompareRightValue.getOperator()) || "<>".equals(predicateCompareRightValue.getOperator()) || "!=".equals(predicateCompareRightValue.getOperator())
+                    ? createEqualCondition(predicateCompareRightValue, column) : Optional.<Condition>absent();
         }
-        if (predicateSegment.getRightValue() instanceof PredicateInRightValueSegment) {
-            return createInCondition((PredicateInRightValueSegment) predicateSegment.getRightValue(), column, sqlStatement.getLogicSQL());
+        if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
+            return createInCondition((PredicateInRightValue) predicateSegment.getRightValue(), column);
         }
         return Optional.absent();
     }
     
-    private boolean isEncryptCondition(final String operator) {
-        return Symbol.EQ.getLiterals().equals(operator) || ShardingOperator.IN.name().equals(operator);
+    private boolean isNeedEncrypt(final PredicateSegment predicate, final String tableName) {
+        // TODO panjuan: spilt EncryptRule and EncryptorEngine, cannot pass EncryptorEngine to parse module
+        encryptorEngine = null == encryptorEngine ? encryptRule.getEncryptorEngine() : encryptorEngine;
+        return encryptorEngine.getShardingEncryptor(tableName, predicate.getColumn().getName()).isPresent();
     }
     
-    private Optional<Condition> createEqualCondition(final PredicateCompareRightValueSegment expressionSegment, final Column column, final String sql) {
-        SQLExpression sqlExpression = expressionSegment.getExpression().getSQLExpression(sql);
-        return isEncryptExpressionType(sqlExpression) ? Optional.of(new Condition(column, sqlExpression)) : Optional.<Condition>absent();
+    private Optional<Condition> createEqualCondition(final PredicateCompareRightValue expressionSegment, final Column column) {
+        return expressionSegment.getExpression() instanceof SimpleExpressionSegment
+                ? Optional.of(new Condition(column, ((SimpleExpressionSegment) expressionSegment.getExpression()).getSQLExpression())) : Optional.<Condition>absent();
     }
     
-    private Optional<Condition> createInCondition(final PredicateInRightValueSegment expressionSegment, final Column column, final String sql) {
+    private Optional<Condition> createInCondition(final PredicateInRightValue expressionSegment, final Column column) {
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-            SQLExpression sqlExpression = each.getSQLExpression(sql);
-            if (!isEncryptExpressionType(sqlExpression)) {
+            if (!(each instanceof SimpleExpressionSegment)) {
                 sqlExpressions.clear();
                 break;
             } else {
-                sqlExpressions.add(sqlExpression);
+                sqlExpressions.add(((SimpleExpressionSegment) each).getSQLExpression());
             }
         }
         return sqlExpressions.isEmpty() ? Optional.<Condition>absent() : Optional.of(new Condition(column, sqlExpressions));
-    }
-    
-    private boolean isEncryptExpressionType(final SQLExpression sqlExpression) {
-        return sqlExpression instanceof SQLPlaceholderExpression || sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression;
     }
     
     // TODO hongjun: find table from parent select statement, should find table in subquery level only

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.DataNode;
 
@@ -86,7 +86,7 @@ public abstract class InsertOptimizeResultUnit {
      */
     public final void setColumnValue(final String columnName, final Object columnValue) {
         SQLExpression sqlExpression = values[getColumnIndex(columnName)];
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
+        if (sqlExpression instanceof SQLParameterMarkerExpression) {
             parameters[getParameterIndex(sqlExpression)] = columnValue;
         } else {
             SQLExpression columnExpression = String.class == columnValue.getClass() ? new SQLTextExpression(String.valueOf(columnValue)) : new SQLNumberExpression((Number) columnValue);
@@ -103,7 +103,7 @@ public abstract class InsertOptimizeResultUnit {
         for (SQLExpression each : values) {
             if (sqlExpression == each) {
                 return result;
-            } else if (each instanceof SQLPlaceholderExpression) {
+            } else if (each instanceof SQLParameterMarkerExpression) {
                 result++;
             }
         }
@@ -118,7 +118,7 @@ public abstract class InsertOptimizeResultUnit {
      */
     public final Object getColumnValue(final String columnName) {
         SQLExpression sqlExpression = values[getColumnIndex(columnName)];
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
+        if (sqlExpression instanceof SQLParameterMarkerExpression) {
             return parameters[getParameterIndex(sqlExpression)];
         } else if (sqlExpression instanceof SQLTextExpression) {
             return ((SQLTextExpression) sqlExpression).getText();
@@ -129,7 +129,7 @@ public abstract class InsertOptimizeResultUnit {
     
     protected final String getColumnSQLExpressionValue(final int columnValueIndex) {
         SQLExpression sqlExpression = values[columnValueIndex];
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
+        if (sqlExpression instanceof SQLParameterMarkerExpression) {
             return "?";
         } else if (sqlExpression instanceof SQLTextExpression) {
             return String.format("'%s'", ((SQLTextExpression) sqlExpression).getText());

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -72,7 +72,7 @@ public final class GeneratedKeyTest {
     
     @Test
     public void assertGetGenerateKeyWhenFind() {
-        insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLPlaceholderExpression(0))));
+        insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLParameterMarkerExpression(0))));
         insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLNumberExpression(100))));
         insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLTextExpression("value"))));
         insertStatement.getValues().add(new InsertValue(Collections.<SQLExpression>singletonList(new SQLIgnoreExpression("ignored value"))));

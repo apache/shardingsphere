@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.parse.old.parser.dialect.ExpressionParserF
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -111,7 +111,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
             for (String each : columnNames) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
                 if (shardingRule.isShardingColumn(each, tableName)) {
-                    if (!(sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression || sqlExpression instanceof SQLPlaceholderExpression)) {
+                    if (!(sqlExpression instanceof SQLNumberExpression || sqlExpression instanceof SQLTextExpression || sqlExpression instanceof SQLParameterMarkerExpression)) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", each);
                     }
                     andCondition.getConditions().add(new Condition(new Column(each, tableName), sqlExpression));

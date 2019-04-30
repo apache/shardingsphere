@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
 /**
- * Predicate in right value segment.
- *
+ * Literal expression segment.
+ * 
  * @author duhongjun
+ * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class PredicateInRightValueSegment implements PredicateRightValueSegment {
+public final class LiteralExpressionSegment implements SimpleExpressionSegment {
     
-    private final Collection<ExpressionSegment> sqlExpressions;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final Object literals;
+    
+    @Override
+    public SQLExpression getSQLExpression() {
+        return literals instanceof Number ? new SQLNumberExpression((Number) literals) : new SQLTextExpression(literals.toString());
+    } 
 }

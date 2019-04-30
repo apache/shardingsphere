@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.old.parser.expression;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Predicate between right value segment.
+ * Parameter marker expression.
  *
- * @author duhongjun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class PredicateBetweenRightValueSegment implements PredicateRightValueSegment {
+public final class SQLParameterMarkerExpression implements SQLExpression {
     
-    private final ExpressionSegment betweenExpression;
-    
-    private final ExpressionSegment andExpression;
+    private final int index;
 }

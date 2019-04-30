@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * Common expression segment.
+ * Predicate right value for compare operator.
  * 
- * @author zhangliang
+ * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class CommonExpressionSegment implements ExpressionSegment {
+public final class PredicateCompareRightValue implements PredicateRightValue {
     
-    private final int startIndex;
+    private final String operator;
     
-    private final int stopIndex;
-    
-    @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
-    }
+    private final ExpressionSegment expression;
 }

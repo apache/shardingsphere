@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -77,8 +77,8 @@ public final class GeneratedKey {
             if (null == result) {
                 result = new GeneratedKey(generateKeyColumnName);
             }
-            if (each instanceof SQLPlaceholderExpression) {
-                result.getGeneratedKeys().add((Comparable<?>) parameters.get(((SQLPlaceholderExpression) each).getIndex()));
+            if (each instanceof SQLParameterMarkerExpression) {
+                result.getGeneratedKeys().add((Comparable<?>) parameters.get(((SQLParameterMarkerExpression) each).getIndex()));
             } else if (each instanceof SQLNumberExpression) {
                 result.getGeneratedKeys().add((Comparable<?>) ((SQLNumberExpression) each).getNumber());
             } else if (each instanceof SQLTextExpression) {

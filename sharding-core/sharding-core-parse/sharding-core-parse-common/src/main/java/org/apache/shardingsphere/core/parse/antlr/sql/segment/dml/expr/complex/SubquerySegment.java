@@ -15,45 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
 /**
- * Literal expression segment.
+ * Subquery expression segment.
  * 
  * @author duhongjun
- * @author panjuan
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class LiteralExpressionSegment implements ExpressionSegment {
+public final class SubquerySegment implements SelectItemSegment, ComplexExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
-    
-    private final Object literals;
-    
+
     @Override
     public SQLExpression getSQLExpression(final String sql) {
-        if (literals instanceof Number) {
-            return new SQLNumberExpression((Number) literals);
-        }
-        if (literals instanceof String) {
-            return new SQLTextExpression(literals.toString());
-        }
-        String value = sql.substring(startIndex, stopIndex + 1);
-        if (DefaultKeyword.NULL.name().equalsIgnoreCase(value)) {
-            return new SQLNumberExpression(null);
-        }
-        return new SQLIgnoreExpression(value);
-    } 
+        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
+    }
 }

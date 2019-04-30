@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 
 /**
- * Subquery expression segment.
- * 
- * @author duhongjun
+ * Parameter marker expression segment.
+ *
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SubquerySegment implements SelectItemSegment, ExpressionSegment {
+@Getter
+public final class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
     
     private final int startIndex;
     
-    @Getter
     private final int stopIndex;
-
+    
+    private final int parameterMarkerIndex;
+    
     @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
-    }
+    public SQLExpression getSQLExpression() {
+        return new SQLParameterMarkerExpression(parameterMarkerIndex);
+    } 
 }

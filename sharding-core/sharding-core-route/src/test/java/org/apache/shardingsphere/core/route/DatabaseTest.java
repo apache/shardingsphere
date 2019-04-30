@@ -25,6 +25,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.route.fixture.HintShardingAlgorithmFixture;
@@ -42,6 +43,7 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DatabaseTest {
     
@@ -107,14 +109,16 @@ public final class DatabaseTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         ShardingRule rule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         String originSQL = "select city_id from user where city_id in (?,?) limit 5,10";
+        ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
+        when(shardingMetaData.getTable()).thenReturn(mock(ShardingTableMetaData.class));
         SQLRouteResult actual = new PreparedStatementRoutingEngine(
-                originSQL, rule, mock(ShardingMetaData.class), DatabaseType.MySQL, new ParsingResultCache()).route(Lists.<Object>newArrayList(13, 173));
+                originSQL, rule, shardingMetaData, DatabaseType.MySQL, new ParsingResultCache()).route(Lists.<Object>newArrayList(13, 173));
         SelectStatement selectStatement = (SelectStatement) actual.getSqlStatement();
         assertThat(selectStatement.getLimit().getOffsetValue(), is(5));
         assertThat(selectStatement.getLimit().getRowCountValue(), is(10));
         assertThat(actual.getRoutingResult().getTableUnits().getTableUnits().size(), is(1));
         originSQL = "select city_id from user where city_id in (?,?) limit 5,10";
-        actual = new PreparedStatementRoutingEngine(originSQL, rule, mock(ShardingMetaData.class), DatabaseType.MySQL, new ParsingResultCache()).route(Lists.<Object>newArrayList(89, 84));
+        actual = new PreparedStatementRoutingEngine(originSQL, rule, shardingMetaData, DatabaseType.MySQL, new ParsingResultCache()).route(Lists.<Object>newArrayList(89, 84));
         selectStatement = (SelectStatement) actual.getSqlStatement();
         assertThat(selectStatement.getLimit().getOffsetValue(), is(5));
         assertThat(selectStatement.getLimit().getRowCountValue(), is(10));

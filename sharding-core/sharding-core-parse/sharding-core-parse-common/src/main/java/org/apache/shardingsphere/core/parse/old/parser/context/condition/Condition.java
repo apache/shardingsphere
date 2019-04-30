@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
 import java.util.LinkedHashMap;
@@ -98,8 +98,8 @@ public class Condition {
     }
     
     private void init(final SQLExpression sqlExpression, final int position) {
-        if (sqlExpression instanceof SQLPlaceholderExpression) {
-            positionIndexMap.put(position, ((SQLPlaceholderExpression) sqlExpression).getIndex());
+        if (sqlExpression instanceof SQLParameterMarkerExpression) {
+            positionIndexMap.put(position, ((SQLParameterMarkerExpression) sqlExpression).getIndex());
         } else if (sqlExpression instanceof SQLTextExpression) {
             positionValueMap.put(position, ((SQLTextExpression) sqlExpression).getText());
         } else if (sqlExpression instanceof SQLNumberExpression) {

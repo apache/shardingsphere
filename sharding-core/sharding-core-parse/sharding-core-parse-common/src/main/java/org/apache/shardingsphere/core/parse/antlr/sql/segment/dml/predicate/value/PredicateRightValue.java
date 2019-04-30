@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.expression;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value;
 
 /**
- * Placeholder expression.
- *
- * @author zhangliang
+ * Predicate right value.
+ * 
+ * @author zhanglaing
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLPlaceholderExpression implements SQLExpression {
-    
-    private final int index;
+public interface PredicateRightValue {
 }

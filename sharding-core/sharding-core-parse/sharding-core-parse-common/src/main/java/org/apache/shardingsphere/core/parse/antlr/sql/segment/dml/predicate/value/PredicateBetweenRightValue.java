@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 
 /**
- * Predicate right value segment.
- * 
- * @author zhanglaing
+ * Predicate right value for BETWEEN ... AND ... operator.
+ *
+ * @author duhongjun
  */
-public interface PredicateRightValueSegment extends SQLSegment {
+@RequiredArgsConstructor
+@Getter
+public final class PredicateBetweenRightValue implements PredicateRightValue {
+    
+    private final ExpressionSegment betweenExpression;
+    
+    private final ExpressionSegment andExpression;
 }
