@@ -284,7 +284,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
         selectStatement.addSQLToken(new TableToken(17, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(33, 2));
+        selectStatement.addSQLToken(new OffsetToken(33, 36, 2));
         selectStatement.addSQLToken(new RowCountToken(36, 2));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -298,7 +298,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(119, 2));
+        selectStatement.addSQLToken(new OffsetToken(119, 119, 2));
         selectStatement.addSQLToken(new RowCountToken(98, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -314,7 +314,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(123, 2));
+        selectStatement.addSQLToken(new OffsetToken(123, 123, 2));
         selectStatement.addSQLToken(new RowCountToken(26, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -333,7 +333,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.addSQLToken(new TableToken(17, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(33, 2));
+        selectStatement.addSQLToken(new OffsetToken(33, 36, 2));
         selectStatement.addSQLToken(new RowCountToken(36, 2));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -347,7 +347,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(119, 2));
+        selectStatement.addSQLToken(new OffsetToken(119, 119, 2));
         selectStatement.addSQLToken(new RowCountToken(98, 4));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
@@ -365,7 +365,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(123, 2));
+        selectStatement.addSQLToken(new OffsetToken(123, 123, 2));
         selectStatement.addSQLToken(new RowCountToken(26, 4));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getGroupByItems().add(new OrderItem("x", "id", OrderDirection.DESC, OrderDirection.ASC));
@@ -384,7 +384,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
         selectStatement.addSQLToken(new TableToken(17, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(33, 2));
+        selectStatement.addSQLToken(new OffsetToken(33, 36, 2));
         selectStatement.addSQLToken(new RowCountToken(36, 2));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -398,7 +398,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(119, 2));
+        selectStatement.addSQLToken(new OffsetToken(119, 119, 2));
         selectStatement.addSQLToken(new RowCountToken(98, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -414,7 +414,7 @@ public final class SQLRewriteEngineTest {
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, "table_x", QuoteCharacter.NONE, 0));
-        selectStatement.addSQLToken(new OffsetToken(123, 2));
+        selectStatement.addSQLToken(new OffsetToken(123, 123, 2));
         selectStatement.addSQLToken(new RowCountToken(26, 4));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
