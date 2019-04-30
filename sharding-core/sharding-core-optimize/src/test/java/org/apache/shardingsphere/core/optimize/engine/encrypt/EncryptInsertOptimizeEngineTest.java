@@ -139,7 +139,7 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_encrypt", null));
         result.addSQLToken(new TableToken(12, 20, "t_encrypt", QuoteCharacter.NONE, 0));
-        result.addSQLToken(new InsertSetToken(34));
+        result.addSQLToken(new InsertSetToken(12, 20));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
         result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
@@ -167,7 +167,7 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_query_encrypt", null));
         result.addSQLToken(new TableToken(12, 26, "t_query_encrypt", QuoteCharacter.NONE, 0));
-        result.addSQLToken(new InsertSetToken(40));
+        result.addSQLToken(new InsertSetToken(12, 27));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
         result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1))));
