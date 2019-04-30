@@ -297,8 +297,7 @@ public final class SQLRewriteEngine {
     
     private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
         sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetToken.getOffset()));
-        int startIndex = offsetToken.getStartIndex() + String.valueOf(offsetToken.getOffset()).length();
-        appendRest(sqlBuilder, count, startIndex);
+        appendRest(sqlBuilder, count, offsetToken.getStopIndex() + 1);
     }
     
     private void appendOrderByToken(final SQLBuilder sqlBuilder, final int count, final boolean isRewrite) {
