@@ -246,7 +246,7 @@ public final class SQLRewriteEngine {
                 sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
             }
         }
-        appendRest(sqlBuilder, count, itemsToken.getStartIndex());
+        appendRest(sqlBuilder, count, itemsToken.getStopIndex());
     }
     
     private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
