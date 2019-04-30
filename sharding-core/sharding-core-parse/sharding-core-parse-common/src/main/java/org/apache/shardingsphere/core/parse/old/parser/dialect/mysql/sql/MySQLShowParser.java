@@ -95,7 +95,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             lexerEngine.nextToken();
-            result.addSQLToken(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
+            result.addSQLToken(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1));
             lexerEngine.nextToken();
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.LIKE)) {
@@ -109,7 +109,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         if (lexerEngine.equalAny(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
             lexerEngine.nextToken();
-            result.addSQLToken(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition()));
+            result.addSQLToken(new RemoveToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1));
             lexerEngine.nextToken();
         }
         if (lexerEngine.skipIfEqual(DefaultKeyword.LIKE)) {
