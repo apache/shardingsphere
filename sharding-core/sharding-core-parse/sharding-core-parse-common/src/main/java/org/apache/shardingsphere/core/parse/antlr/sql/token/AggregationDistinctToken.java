@@ -28,15 +28,12 @@ import lombok.Getter;
 @Getter
 public final class AggregationDistinctToken extends SQLToken {
     
-    private final int stopIndex;
-    
     private String columnName;
     
     private Optional<String> alias;
     
     public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final Optional<String> alias) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+        super(startIndex, stopIndex);
         this.columnName = columnName;
         this.alias = alias;
     }

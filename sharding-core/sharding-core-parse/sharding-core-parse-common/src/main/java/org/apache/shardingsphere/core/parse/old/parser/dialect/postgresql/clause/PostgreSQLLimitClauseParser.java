@@ -69,14 +69,15 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
         int parameterIndex = selectStatement.getParametersIndex();
         int rowCountValue = -1;
         int rowCountIndex = -1;
-        int valueBeginPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int valueEndPosition = lexerEngine.getCurrentToken().getEndPosition();
+        int valueBeginPosition = valueEndPosition;
         if (lexerEngine.equalAny(DefaultKeyword.ALL)) {
             lexerEngine.nextToken();
         } else {
             if (lexerEngine.equalAny(Literals.INT, Literals.FLOAT)) {
                 rowCountValue = NumberUtil.roundHalfUp(lexerEngine.getCurrentToken().getLiterals());
                 valueBeginPosition = valueBeginPosition - (rowCountValue + "").length();
-                selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, rowCountValue));
+                selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, valueEndPosition - 1, rowCountValue));
             } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
                 rowCountIndex = parameterIndex++;
                 selectStatement.setParametersIndex(parameterIndex);
@@ -97,7 +98,7 @@ public final class PostgreSQLLimitClauseParser implements SQLClauseParser {
         if (lexerEngine.equalAny(Literals.INT, Literals.FLOAT)) {
             offsetValue = NumberUtil.roundHalfUp(lexerEngine.getCurrentToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
-            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, offsetValue));
+            selectStatement.addSQLToken(new OffsetToken(offsetBeginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, offsetValue));
         } else if (lexerEngine.equalAny(Symbol.QUESTION)) {
             offsetIndex = parameterIndex++;
             selectStatement.setParametersIndex(parameterIndex);

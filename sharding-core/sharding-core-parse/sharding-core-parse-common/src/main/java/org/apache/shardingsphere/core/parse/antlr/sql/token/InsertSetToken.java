@@ -21,10 +21,11 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
  * Insert set token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class InsertSetToken extends SQLToken {
     
-    public InsertSetToken(final int startIndex) {
-        super(startIndex);
+    public InsertSetToken(final int startIndex, final int stopIndex) {
+        super(startIndex, stopIndex);
     }
 }

@@ -26,19 +26,17 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * Index token.
  *
  * @author caohao
+ * @author panjuan
  */
 @Getter
 @Setter
 @ToString
 public final class IndexToken extends SQLToken {
     
-    private final int stopIndex;
-    
     private String tableName;
     
     public IndexToken(final int startIndex, final int stopIndex) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+        super(startIndex, stopIndex);
     }
     
     public IndexToken(final int startIndex, final int stopIndex, final String tableName) {

@@ -42,6 +42,7 @@ import java.util.List;
  * Select optimizer for MySQL.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     
@@ -173,7 +174,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     private void appendDerivedOrderBy(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
-            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
+            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1, selectStatement.getGroupByLastIndex() + 1));
         }
     }
     

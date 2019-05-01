@@ -50,7 +50,7 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
         if (offsetSegment instanceof LiteralLimitValueSegment) {
             int value = ((LiteralLimitValueSegment) offsetSegment).getValue();
             selectStatement.getLimit().setOffset(new LimitValue(value, -1, false));
-            selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), value));
+            selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), offsetSegment.getStopIndex(), value));
         } else {
             selectStatement.getLimit().setOffset(new LimitValue(-1, ((PlaceholderLimitValueSegment) offsetSegment).getParameterIndex(), false));
         }
@@ -60,7 +60,7 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
         if (rowCountSegment instanceof LiteralLimitValueSegment) {
             int value = ((LiteralLimitValueSegment) rowCountSegment).getValue();
             selectStatement.getLimit().setRowCount(new LimitValue(value, -1, false));
-            selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getStartIndex(), value));
+            selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getStartIndex(), rowCountSegment.getStopIndex(), value));
         } else {
             selectStatement.getLimit().setRowCount(new LimitValue(-1, ((PlaceholderLimitValueSegment) rowCountSegment).getParameterIndex(), false));
         }

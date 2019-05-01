@@ -30,10 +30,7 @@ import lombok.ToString;
 @ToString
 public final class RemoveToken extends SQLToken {
     
-    private final int stopIndex;
-    
     public RemoveToken(final int startIndex, final int stopIndex) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+        super(startIndex, stopIndex);
     }
 }

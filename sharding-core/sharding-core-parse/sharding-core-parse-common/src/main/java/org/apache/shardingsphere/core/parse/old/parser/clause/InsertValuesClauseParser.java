@@ -90,7 +90,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         Preconditions.checkState(insertValuesToken.isPresent());
         insertStatement.getSQLTokens().remove(insertValuesToken.get());
-        insertStatement.addSQLToken(new InsertValuesToken(insertValuesToken.get().getStartIndex()));
+        insertStatement.addSQLToken(new InsertValuesToken(insertValuesToken.get().getStartIndex(), insertStatement.getLogicSQL().length() - 1));
         do {
             lexerEngine.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();

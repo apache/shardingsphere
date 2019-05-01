@@ -29,8 +29,8 @@ public final class LiteralLimitValueSegment extends LimitValueSegment {
     
     private final int value;
     
-    public LiteralLimitValueSegment(final int value, final int beginPosition) {
-        super(beginPosition);
+    public LiteralLimitValueSegment(final int value, final int startIndex, final int stopIndex) {
+        super(startIndex, stopIndex);
         this.value = value;
     }
 }

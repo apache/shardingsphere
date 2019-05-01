@@ -49,18 +49,22 @@ public abstract class AbstractInsertParser implements SQLParser {
     
     private final AbstractInsertClauseParserFacade insertClauseParserFacade;
     
-    public AbstractInsertParser(
-            final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
+    private final String sql;
+    
+    public AbstractInsertParser(final ShardingRule shardingRule, 
+                                final String sql, final ShardingTableMetaData shardingTableMetaData, final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
         this.shardingRule = shardingRule;
         this.shardingTableMetaData = shardingTableMetaData;
         this.lexerEngine = lexerEngine;
         this.insertClauseParserFacade = insertClauseParserFacade;
+        this.sql = sql;
     }
     
     @Override
     public final DMLStatement parse() {
         lexerEngine.nextToken();
         InsertStatement result = new InsertStatement();
+        result.setLogicSQL(sql);
         insertClauseParserFacade.getInsertIntoClauseParser().parse(result);
         insertClauseParserFacade.getInsertColumnsClauseParser().parse(result, shardingTableMetaData);
         if (lexerEngine.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {

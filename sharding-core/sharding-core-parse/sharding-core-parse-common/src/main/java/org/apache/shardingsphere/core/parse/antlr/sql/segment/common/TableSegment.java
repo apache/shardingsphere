@@ -38,6 +38,8 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     
     private final int startIndex;
     
+    private final int stopIndex;
+    
     private final String name;
     
     private final QuoteCharacter quoteCharacter;
@@ -48,12 +50,13 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     
     private String alias;
     
-    public TableSegment(final int startIndex, final String name) {
-        this(startIndex, name, QuoteCharacter.getQuoteCharacter(name));
+    public TableSegment(final int startIndex, final int stopIndex, final String name) {
+        this(startIndex, stopIndex, name, QuoteCharacter.getQuoteCharacter(name));
     }
     
-    public TableSegment(final int startIndex, final String name, final QuoteCharacter quoteCharacter) {
+    private TableSegment(final int startIndex, final int stopIndex, final String name, final QuoteCharacter quoteCharacter) {
         this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         this.name = SQLUtil.getExactlyValue(name);
         this.quoteCharacter = quoteCharacter;
     }

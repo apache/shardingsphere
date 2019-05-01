@@ -49,6 +49,7 @@ import java.util.List;
  * Select parser.
  * 
  * @author zhangliang 
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
@@ -238,7 +239,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     private void appendDerivedOrderBy(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
-            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
+            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1, selectStatement.getGroupByLastIndex() + 1));
         }
     }
 }

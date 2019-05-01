@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>, ShardingRuleAwareFiller {
@@ -44,7 +45,7 @@ public final class ShardingTableFiller implements SQLSegmentFiller<TableSegment>
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement) {
         if (isTableInShardingRule(sqlSegment.getName()) || !(sqlStatement instanceof SelectStatement)) {
             sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias().orNull()));
-            sqlStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), sqlSegment.getName(), sqlSegment.getQuoteCharacter(), sqlSegment.getOwnerLength()));
+            sqlStatement.getSQLTokens().add(new TableToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlSegment.getName(), sqlSegment.getQuoteCharacter()));
         }
         if (sqlStatement instanceof DMLStatement && !sqlStatement.getTables().isSingleTable()) {
             throw new SQLParsingUnsupportedException("Cannot support Multiple-Table.");

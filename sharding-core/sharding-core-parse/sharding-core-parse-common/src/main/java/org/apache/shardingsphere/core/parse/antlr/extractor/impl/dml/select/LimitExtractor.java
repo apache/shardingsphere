@@ -35,6 +35,7 @@ import java.util.Map;
  * Limit extractor.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     
@@ -53,8 +54,12 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private LimitValueSegment createLimitValueSegment(final Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap, final ParserRuleContext limitValueNode) {
-        return Symbol.QUESTION.getLiterals().equals(limitValueNode.getText()) 
-                ? new PlaceholderLimitValueSegment(placeholderAndNodeIndexMap.get(limitValueNode.getChild(0)), ((ParserRuleContext) limitValueNode.getChild(0)).getStart().getStartIndex())
-                : new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(limitValueNode.getText(), 10).intValue(), limitValueNode.getStart().getStartIndex());
+        if (Symbol.QUESTION.getLiterals().equals(limitValueNode.getText())) {
+            ParserRuleContext placeholderLimitValueNode = (ParserRuleContext) limitValueNode.getChild(0);
+            return new PlaceholderLimitValueSegment(placeholderAndNodeIndexMap.get(placeholderLimitValueNode), 
+                    placeholderLimitValueNode.getStart().getStartIndex(), placeholderLimitValueNode.getStart().getStopIndex());
+    
+        }
+        return new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(limitValueNode.getText(), 10).intValue(), limitValueNode.getStart().getStartIndex(), limitValueNode.getStart().getStopIndex());
     }
 }

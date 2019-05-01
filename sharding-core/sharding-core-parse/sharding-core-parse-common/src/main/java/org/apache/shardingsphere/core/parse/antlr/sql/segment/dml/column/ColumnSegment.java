@@ -33,11 +33,14 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  *
  * @author duhongjun
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
     
     private final int startIndex;
+    
+    private int stopIndexOfOwner;
     
     private final String name;
     
@@ -67,6 +70,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     @Override
     public final void setOwner(final String owner) {
+        stopIndexOfOwner = startIndex + owner.length() - 1;
         this.owner = SQLUtil.getExactlyValue(owner);
         ownerQuoteCharacter = QuoteCharacter.getQuoteCharacter(owner);
     }

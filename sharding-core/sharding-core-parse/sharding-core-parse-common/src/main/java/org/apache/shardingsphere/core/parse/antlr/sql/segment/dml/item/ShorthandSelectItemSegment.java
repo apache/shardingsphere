@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
@@ -27,6 +30,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * Shorthand select item segment.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -34,7 +38,12 @@ public final class ShorthandSelectItemSegment implements SelectItemSegment, Owne
     
     private final int startIndex;
     
+    private int stopIndexOfOwner;
+    
     private String owner;
+    
+    @Setter(AccessLevel.PROTECTED)
+    private QuoteCharacter ownerQuoteCharacter = QuoteCharacter.NONE;
     
     @Override
     public Optional<String> getOwner() {
@@ -43,6 +52,8 @@ public final class ShorthandSelectItemSegment implements SelectItemSegment, Owne
     
     @Override
     public void setOwner(final String owner) {
+        stopIndexOfOwner = startIndex + owner.length() - 1;
         this.owner = SQLUtil.getExactlyValue(owner);
+        ownerQuoteCharacter = QuoteCharacter.getQuoteCharacter(owner);
     }
 }

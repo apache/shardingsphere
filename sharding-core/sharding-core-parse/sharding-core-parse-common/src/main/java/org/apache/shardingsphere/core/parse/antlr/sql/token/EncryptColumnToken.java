@@ -30,15 +30,12 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 @ToString
 public final class EncryptColumnToken extends SQLToken {
     
-    private final int stopIndex;
-    
     private final Column column;
     
     private final boolean isInWhere;
     
     public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+        super(startIndex, stopIndex);
         this.column = column;
         this.isInWhere = isInWhere;
     }

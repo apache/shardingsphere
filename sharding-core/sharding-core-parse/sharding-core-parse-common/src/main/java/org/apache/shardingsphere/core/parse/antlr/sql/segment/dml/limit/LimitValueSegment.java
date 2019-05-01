@@ -25,10 +25,13 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
  * Limit value segment.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 public abstract class LimitValueSegment implements SQLSegment {
     
     private final int startIndex;
+    
+    private final int stopIndex;
 }

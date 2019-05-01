@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  */
 public final class PostgreSQLInsertParser extends AbstractInsertParser {
     
-    public PostgreSQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
-        super(shardingRule, shardingTableMetaData, lexerEngine, new PostgreSQLInsertClauseParserFacade(shardingRule, lexerEngine));
+    public PostgreSQLInsertParser(final ShardingRule shardingRule, final String sql, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, sql, shardingTableMetaData, lexerEngine, new PostgreSQLInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }
