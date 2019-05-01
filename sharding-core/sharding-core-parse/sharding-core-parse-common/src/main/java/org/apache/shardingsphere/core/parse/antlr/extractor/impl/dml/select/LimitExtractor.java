@@ -50,26 +50,30 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         if (!limitNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> rowCountNode = ExtractorUtils.findFirstChildNode(limitNode.get(), RuleName.LIMIT_ROW_COUNT);
+        LimitValueSegment rowCount = getRowCount(limitNode.get(), parameterMarkerIndexes);
+        Optional<LimitValueSegment> offset = getOffset(limitNode.get(), parameterMarkerIndexes);
+        return offset.isPresent() ? Optional.of(new LimitSegment(rowCount, offset.get())) : Optional.of(new LimitSegment(rowCount));
+    }
+    
+    private LimitValueSegment getRowCount(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> rowCountNode = ExtractorUtils.findFirstChildNode(limitNode, RuleName.LIMIT_ROW_COUNT);
         Preconditions.checkState(rowCountNode.isPresent());
-        LimitValueSegment rowCount = extractLimitValue(rowCountNode.get(), parameterMarkerIndexes);
-        Optional<ParserRuleContext> offsetNode = ExtractorUtils.findFirstChildNode(limitNode.get(), RuleName.LIMIT_OFFSET);
-        if (offsetNode.isPresent()) {
-            LimitValueSegment offset = extractLimitValue(offsetNode.get(), parameterMarkerIndexes);
-            return Optional.of(new LimitSegment(rowCount, offset));
-        }
-        return Optional.of(new LimitSegment(rowCount));
+        return extractLimitValue(rowCountNode.get(), parameterMarkerIndexes);
+    }
+    
+    private Optional<LimitValueSegment> getOffset(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> offsetNode = ExtractorUtils.findFirstChildNode(limitNode, RuleName.LIMIT_OFFSET);
+        return offsetNode.isPresent() ? Optional.of(extractLimitValue(offsetNode.get(), parameterMarkerIndexes)) : Optional.<LimitValueSegment>absent();
     }
     
     private LimitValueSegment extractLimitValue(final ParserRuleContext limitValueNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParameterMarkerExpressionSegment> parameterMarkerExpressionSegment = parameterMarkerExpressionExtractor.extract(limitValueNode, parameterMarkerIndexes);
-        if (parameterMarkerExpressionSegment.isPresent()) {
-            return new PlaceholderLimitValueSegment(parameterMarkerExpressionSegment.get().getParameterMarkerIndex(), 
-                    limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
+        Optional<ParameterMarkerExpressionSegment> parameterMarkerExpression = parameterMarkerExpressionExtractor.extract(limitValueNode, parameterMarkerIndexes);
+        if (parameterMarkerExpression.isPresent()) {
+            return new PlaceholderLimitValueSegment(parameterMarkerExpression.get().getParameterMarkerIndex(), limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
         }
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(limitValueNode, RuleName.NUMBER_LITERALS);
         Preconditions.checkState(numberLiteralsNode.isPresent());
-        return new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue(), 
-                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
+        return new LiteralLimitValueSegment(
+                NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue(), limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
     }
 }
