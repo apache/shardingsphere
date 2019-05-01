@@ -187,10 +187,14 @@ havingClause
     ;
 
 limitClause
-    : LIMIT (rangeItem_ (COMMA_ rangeItem_)? | rangeItem_ OFFSET rangeItem_)
+    : LIMIT ((limitOffset COMMA_)? limitRowCount | limitRowCount OFFSET limitOffset)
     ;
 
-rangeItem_
+limitRowCount
+    : numberLiterals | parameterMarker
+    ;
+    
+limitOffset
     : numberLiterals | parameterMarker
     ;
 

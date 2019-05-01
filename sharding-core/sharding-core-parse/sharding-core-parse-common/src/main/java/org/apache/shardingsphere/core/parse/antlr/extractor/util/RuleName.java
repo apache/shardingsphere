@@ -139,7 +139,9 @@ public enum RuleName {
     
     LIMIT_CLAUSE("LimitClause"),
     
-    RANGE_CLAUSE("RangeClause"),
+    LIMIT_ROW_COUNT("LimitRowCount"),
+    
+    LIMIT_OFFSET("LimitOffset"),
     
     SUBQUERY("Subquery"),
     

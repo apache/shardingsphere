@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.expression.impl.ParameterMarkerExpressionExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.Map;
@@ -36,8 +38,11 @@ import java.util.Map;
  *
  * @author duhongjun
  * @author panjuan
+ * @author zhangliang
  */
 public final class LimitExtractor implements OptionalSQLSegmentExtractor {
+    
+    private final ParameterMarkerExpressionExtractor parameterMarkerExpressionExtractor = new ParameterMarkerExpressionExtractor();
     
     @Override
     public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
@@ -45,21 +50,26 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         if (!limitNode.isPresent()) {
             return Optional.absent();
         }
-        LimitValueSegment firstLimitValue = createLimitValueSegment(parameterMarkerIndexes, (ParserRuleContext) limitNode.get().getChild(1));
-        if (limitNode.get().getChildCount() >= 4) {
-            LimitValueSegment rowCountLimitValue = createLimitValueSegment(parameterMarkerIndexes, (ParserRuleContext) limitNode.get().getChild(3));
-            return Optional.of(new LimitSegment(rowCountLimitValue, firstLimitValue));
+        Optional<ParserRuleContext> rowCountNode = ExtractorUtils.findFirstChildNode(limitNode.get(), RuleName.LIMIT_ROW_COUNT);
+        Preconditions.checkState(rowCountNode.isPresent());
+        LimitValueSegment rowCount = extractLimitValue(rowCountNode.get(), parameterMarkerIndexes);
+        Optional<ParserRuleContext> offsetNode = ExtractorUtils.findFirstChildNode(limitNode.get(), RuleName.LIMIT_OFFSET);
+        if (offsetNode.isPresent()) {
+            LimitValueSegment offset = extractLimitValue(offsetNode.get(), parameterMarkerIndexes);
+            return Optional.of(new LimitSegment(rowCount, offset));
         }
-        return Optional.of(new LimitSegment(firstLimitValue));
+        return Optional.of(new LimitSegment(rowCount));
     }
     
-    private LimitValueSegment createLimitValueSegment(final Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap, final ParserRuleContext limitValueNode) {
-        if (Symbol.QUESTION.getLiterals().equals(limitValueNode.getText())) {
-            ParserRuleContext placeholderLimitValueNode = (ParserRuleContext) limitValueNode.getChild(0);
-            return new PlaceholderLimitValueSegment(placeholderAndNodeIndexMap.get(placeholderLimitValueNode), 
-                    placeholderLimitValueNode.getStart().getStartIndex(), placeholderLimitValueNode.getStart().getStopIndex());
-    
+    private LimitValueSegment extractLimitValue(final ParserRuleContext limitValueNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParameterMarkerExpressionSegment> parameterMarkerExpressionSegment = parameterMarkerExpressionExtractor.extract(limitValueNode, parameterMarkerIndexes);
+        if (parameterMarkerExpressionSegment.isPresent()) {
+            return new PlaceholderLimitValueSegment(parameterMarkerExpressionSegment.get().getParameterMarkerIndex(), 
+                    limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
         }
-        return new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(limitValueNode.getText(), 10).intValue(), limitValueNode.getStart().getStartIndex(), limitValueNode.getStart().getStopIndex());
+        Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(limitValueNode, RuleName.NUMBER_LITERALS);
+        Preconditions.checkState(numberLiteralsNode.isPresent());
+        return new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue(), 
+                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
     }
 }
