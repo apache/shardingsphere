@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.Placehol
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,22 +45,12 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         if (!limitNode.isPresent()) {
             return Optional.absent();
         }
-        Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap = getPlaceholderAndNodeIndexMap(ancestorNode);
-        LimitValueSegment firstLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) limitNode.get().getChild(1));
+        LimitValueSegment firstLimitValue = createLimitValueSegment(parameterMarkerIndexes, (ParserRuleContext) limitNode.get().getChild(1));
         if (limitNode.get().getChildCount() >= 4) {
-            LimitValueSegment rowCountLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) limitNode.get().getChild(3));
+            LimitValueSegment rowCountLimitValue = createLimitValueSegment(parameterMarkerIndexes, (ParserRuleContext) limitNode.get().getChild(3));
             return Optional.of(new LimitSegment(rowCountLimitValue, firstLimitValue));
         }
         return Optional.of(new LimitSegment(firstLimitValue));
-    }
-    
-    private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final ParserRuleContext ancestorNode) {
-        Map<ParserRuleContext, Integer> result = new HashMap<>();
-        int index = 0;
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.PARAMETER_MARKER)) {
-            result.put(each, index++);
-        }
-        return result;
     }
     
     private LimitValueSegment createLimitValueSegment(final Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap, final ParserRuleContext limitValueNode) {
