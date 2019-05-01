@@ -178,7 +178,7 @@ whereClause
     : WHERE expr
     ;
 
-groupByClause 
+groupByClause
     : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
     ;
 

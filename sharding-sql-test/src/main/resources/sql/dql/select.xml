@@ -59,7 +59,7 @@
     <sql-case id="select_escape_with_single_quota" value="SELECT * FROM t_order where status='\''" db-types="MySQL" />
     <sql-case id="select_escape_with_double_quota" value="SELECT * FROM t_order where status=&quot;\&quot;&quot;" db-types="MySQL" />
     <sql-case id="select_with_block_comment" value="SELECT * /* this is &#x000D;&#x000A; block comment */ FROM /* this is another &#x000A; block comment */ t_order where status='1'" db-types="MySQL" />
-    <sql-case id="select_with_single_comment" value="SELECT * -- this is an line comment &#x000D;&#x000A; FROM --this is another line comment &#x000A; t_order where status='1'" db-types="MySQL" />
+    <sql-case id="select_with_single_comment" value="SELECT * -- this is an line comment &#x000D;&#x000A; FROM -- this is another line comment &#x000A; t_order where status='1'" db-types="MySQL" />
     <sql-case id="select_alias_as_single_quote_string" value="SELECT status as 'status' FROM t_order" />
     <sql-case id="select_alias_as_string_double_quote" value="SELECT status as &quot;status&quot; FROM t_order" />
     <sql-case id="select_special_function_nested" value="SELECT sum(if(status=0, 1, 0)) FROM t_order" />

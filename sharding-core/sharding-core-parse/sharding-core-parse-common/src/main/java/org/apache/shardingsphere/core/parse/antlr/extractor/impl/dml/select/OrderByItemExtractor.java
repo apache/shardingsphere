@@ -21,9 +21,11 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ColumnNameOrderByItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item.OrderByItemSegment;
@@ -40,6 +42,8 @@ import java.util.Map;
  */
 public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor {
     
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
+    
     @Override
     public Collection<OrderByItemSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Collection<OrderByItemSegment> result = new LinkedList<>();
@@ -55,9 +59,9 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
                 result.add(new ExpressionOrderByItemSegment(expressionNode.get().getText(), orderDirection, OrderDirection.ASC));
                 continue;
             }
-            Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(each, RuleName.COLUMN_NAME);
-            if (columnNameNode.isPresent()) {
-                result.add(new ColumnNameOrderByItemSegment(columnNameNode.get().getText(), ((ParserRuleContext) each.getChild(0)).getStart().getStartIndex(), orderDirection, OrderDirection.ASC));
+            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
+            if (columnSegment.isPresent()) {
+                result.add(new ColumnOrderByItemSegment(columnSegment.get(), orderDirection, OrderDirection.ASC));
             }
         }
         return result;

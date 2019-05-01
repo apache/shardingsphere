@@ -67,7 +67,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
         config.addDataSourceProperty("useLocalSessionState", Boolean.TRUE.toString());
         config.addDataSourceProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        config.addDataSourceProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
+        config.addDataSourceProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
         config.addDataSourceProperty("cacheServerConfiguration", Boolean.TRUE.toString());
         config.addDataSourceProperty("elideSetAutoCommits", Boolean.TRUE.toString());
         config.addDataSourceProperty("maintainTimeStats", Boolean.FALSE.toString());
