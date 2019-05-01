@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  */
 public final class MySQLInsertParser extends AbstractInsertParser {
     
-    public MySQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
-        super(shardingRule, shardingTableMetaData, lexerEngine, new MySQLInsertClauseParserFacade(shardingRule, lexerEngine));
+    public MySQLInsertParser(final ShardingRule shardingRule, final String sql, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, sql, shardingTableMetaData, lexerEngine, new MySQLInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

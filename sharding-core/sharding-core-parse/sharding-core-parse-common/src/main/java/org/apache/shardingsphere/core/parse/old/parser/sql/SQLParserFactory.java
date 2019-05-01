@@ -80,7 +80,7 @@ public final class SQLParserFactory {
             if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
                 return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
             }
-            return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
+            return getDMLParser(dbType, sql, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (MySQLKeyword.REPLACE == tokenType) {
             if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
@@ -134,10 +134,10 @@ public final class SQLParserFactory {
     }
     
     private static SQLParser getDMLParser(
-            final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+            final DatabaseType dbType, final String sql, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
         switch ((DefaultKeyword) tokenType) {
             case INSERT:
-                return InsertParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData);
+                return InsertParserFactory.newInstance(dbType, sql, shardingRule, lexerEngine, shardingTableMetaData);
             case UPDATE:
                 return UpdateParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case DELETE:
