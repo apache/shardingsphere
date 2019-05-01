@@ -20,17 +20,17 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
 import lombok.Getter;
 
 /**
- * Limit value segment for placeholder.
+ * Limit value segment for number literal.
  * 
  * @author zhangliang
  */
 @Getter
-public final class PlaceholderLimitValueSegment extends LimitValueSegment {
+public final class NumberLiteralLimitValueSegment extends LimitValueSegment {
     
-    private final int parameterIndex;
+    private final int value;
     
-    public PlaceholderLimitValueSegment(final int parameterIndex, final int startIndex, final int stopIndex) {
+    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final int value) {
         super(startIndex, stopIndex);
-        this.parameterIndex = parameterIndex;
+        this.value = value;
     }
 }

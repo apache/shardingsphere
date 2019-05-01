@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
@@ -47,22 +47,22 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     }
     
     private void setOffset(final LimitValueSegment offsetSegment, final SelectStatement selectStatement) {
-        if (offsetSegment instanceof LiteralLimitValueSegment) {
-            int value = ((LiteralLimitValueSegment) offsetSegment).getValue();
+        if (offsetSegment instanceof NumberLiteralLimitValueSegment) {
+            int value = ((NumberLiteralLimitValueSegment) offsetSegment).getValue();
             selectStatement.getLimit().setOffset(new LimitValue(value, -1, false));
             selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), offsetSegment.getStopIndex(), value));
         } else {
-            selectStatement.getLimit().setOffset(new LimitValue(-1, ((PlaceholderLimitValueSegment) offsetSegment).getParameterIndex(), false));
+            selectStatement.getLimit().setOffset(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) offsetSegment).getParameterIndex(), false));
         }
     }
     
     private void setRowCount(final LimitValueSegment rowCountSegment, final SelectStatement selectStatement) {
-        if (rowCountSegment instanceof LiteralLimitValueSegment) {
-            int value = ((LiteralLimitValueSegment) rowCountSegment).getValue();
+        if (rowCountSegment instanceof NumberLiteralLimitValueSegment) {
+            int value = ((NumberLiteralLimitValueSegment) rowCountSegment).getValue();
             selectStatement.getLimit().setRowCount(new LimitValue(value, -1, false));
             selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getStartIndex(), rowCountSegment.getStopIndex(), value));
         } else {
-            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((PlaceholderLimitValueSegment) rowCountSegment).getParameterIndex(), false));
+            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) rowCountSegment).getParameterIndex(), false));
         }
     }
 }

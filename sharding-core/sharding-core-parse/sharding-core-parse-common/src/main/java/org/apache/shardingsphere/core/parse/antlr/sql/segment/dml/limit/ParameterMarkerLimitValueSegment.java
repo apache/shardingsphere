@@ -20,17 +20,17 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
 import lombok.Getter;
 
 /**
- * Limit value segment for literal.
+ * Limit value segment for parameter marker.
  * 
  * @author zhangliang
  */
 @Getter
-public final class LiteralLimitValueSegment extends LimitValueSegment {
+public final class ParameterMarkerLimitValueSegment extends LimitValueSegment {
     
-    private final int value;
+    private final int parameterIndex;
     
-    public LiteralLimitValueSegment(final int value, final int startIndex, final int stopIndex) {
+    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex) {
         super(startIndex, stopIndex);
-        this.value = value;
+        this.parameterIndex = parameterIndex;
     }
 }

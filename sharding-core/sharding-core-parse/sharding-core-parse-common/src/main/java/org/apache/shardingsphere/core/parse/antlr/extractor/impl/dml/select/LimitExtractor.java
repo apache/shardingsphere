@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.util.NumberUtil;
 
 import java.util.Map;
@@ -69,11 +69,11 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     private LimitValueSegment extractLimitValue(final ParserRuleContext limitValueNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParameterMarkerExpressionSegment> parameterMarkerExpression = parameterMarkerExpressionExtractor.extract(limitValueNode, parameterMarkerIndexes);
         if (parameterMarkerExpression.isPresent()) {
-            return new PlaceholderLimitValueSegment(parameterMarkerExpression.get().getParameterMarkerIndex(), limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
+            return new ParameterMarkerLimitValueSegment(limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), parameterMarkerExpression.get().getParameterMarkerIndex());
         }
         Optional<ParserRuleContext> numberLiteralsNode = ExtractorUtils.findFirstChildNode(limitValueNode, RuleName.NUMBER_LITERALS);
         Preconditions.checkState(numberLiteralsNode.isPresent());
-        return new LiteralLimitValueSegment(
-                NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue(), limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex());
+        return new NumberLiteralLimitValueSegment(
+                limitValueNode.getStart().getStartIndex(), limitValueNode.getStop().getStopIndex(), NumberUtil.getExactlyNumber(numberLiteralsNode.get().getText(), 10).intValue());
     }
 }
