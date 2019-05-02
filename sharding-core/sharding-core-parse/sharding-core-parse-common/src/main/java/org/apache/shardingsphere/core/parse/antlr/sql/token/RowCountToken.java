@@ -18,19 +18,24 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 
 /**
  * Row count token for limit.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
-public final class RowCountToken extends SQLToken {
+public final class RowCountToken extends SQLToken implements Substitutable {
     
     private final int rowCount;
     
+    private final int stopIndex;
+    
     public RowCountToken(final int startIndex, final int stopIndex, final int rowCount) {
-        super(startIndex, stopIndex);
+        super(startIndex);
         this.rowCount = rowCount;
+        this.stopIndex = stopIndex;
     }
 }

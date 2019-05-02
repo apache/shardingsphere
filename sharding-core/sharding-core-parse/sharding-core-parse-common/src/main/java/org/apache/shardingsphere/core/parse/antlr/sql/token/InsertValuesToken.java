@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
+
 /**
  * Insert values token.
  *
  * @author maxiaoguang
  * @author panjuan
  */
-public final class InsertValuesToken extends SQLToken {
+@Getter
+public final class InsertValuesToken extends SQLToken implements Substitutable {
+    
+    private final int stopIndex;
     
     public InsertValuesToken(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex);
+        super(startIndex);
+        this.stopIndex = stopIndex;
     }
 }
