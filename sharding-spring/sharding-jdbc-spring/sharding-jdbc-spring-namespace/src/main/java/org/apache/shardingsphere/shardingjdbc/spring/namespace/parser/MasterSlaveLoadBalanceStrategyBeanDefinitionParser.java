@@ -29,11 +29,11 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Load balance bean parser for spring namespace.
+ * Master slave load balance strategy bean parser for spring namespace.
  *®
  * @author zhaojun
  */
-public final class LoadBalanceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

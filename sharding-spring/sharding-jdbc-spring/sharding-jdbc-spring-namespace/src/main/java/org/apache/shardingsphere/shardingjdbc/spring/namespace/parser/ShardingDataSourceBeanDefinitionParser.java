@@ -136,18 +136,15 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         factory.addConstructorArgValue(masterSlaveElement.getAttribute(ID_ATTRIBUTE));
         factory.addConstructorArgValue(masterSlaveElement.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseSlaveDataSourcesRef(masterSlaveElement));
-        parseMasterSlaveRuleLoadBalanceAlgorithm(masterSlaveElement, factory);
+        parseMasterSlaveRuleLoadBalanceConfiguration(masterSlaveElement, factory);
         return factory.getBeanDefinition();
     }
     
-    private void parseMasterSlaveRuleLoadBalanceAlgorithm(final Element masterSlaveElement, final BeanDefinitionBuilder factory) {
-        // TODO process LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE
-//        String loadBalanceAlgorithmRef = masterSlaveElement.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE);
-//        if (!Strings.isNullOrEmpty(loadBalanceAlgorithmRef)) {
-//            factory.addConstructorArgReference(loadBalanceAlgorithmRef);
-//        } else {
-//            factory.addConstructorArgValue(new MasterSlaveLoadBalanceAlgorithmServiceLoader().newService());
-//        }
+    private void parseMasterSlaveRuleLoadBalanceConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
+        String loadBalanceStrategyConfiguration = tableElement.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(loadBalanceStrategyConfiguration)) {
+            factory.addPropertyReference("loadBalanceStrategyConfiguration", loadBalanceStrategyConfiguration);
+        }
     }
     
     private Collection<String> parseSlaveDataSourcesRef(final Element element) {
