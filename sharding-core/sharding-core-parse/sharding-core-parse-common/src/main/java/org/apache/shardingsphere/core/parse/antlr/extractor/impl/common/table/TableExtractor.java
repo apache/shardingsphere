@@ -54,7 +54,7 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
             tableName = nodeText;
             owner = Optional.absent();
         }
-        TableSegment result = new TableSegment(tableNameNode.get().getStart().getStartIndex(), tableNameNode.get().getStart().getStopIndex(), tableName);
+        TableSegment result = new TableSegment(tableNameNode.get().getStart().getStartIndex(), tableNameNode.get().getStop().getStopIndex(), tableName);
         if (owner.isPresent()) {
             result.setOwner(owner.get());
         }

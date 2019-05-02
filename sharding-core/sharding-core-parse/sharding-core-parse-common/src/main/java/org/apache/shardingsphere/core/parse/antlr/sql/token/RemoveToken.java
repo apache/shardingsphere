@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 
 /**
  * Remove token.
@@ -28,9 +29,12 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-public final class RemoveToken extends SQLToken {
+public final class RemoveToken extends SQLToken implements Substitutable {
+    
+    private final int stopIndex;
     
     public RemoveToken(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex);
+        super(startIndex);
+        this.stopIndex = stopIndex;
     }
 }

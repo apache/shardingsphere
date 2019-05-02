@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.Attachable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.List;
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public final class ItemsToken extends SQLToken {
+public final class ItemsToken extends SQLToken implements Attachable {
     
     @Setter
     private boolean isFirstOfItemsSpecial;
@@ -42,6 +43,6 @@ public final class ItemsToken extends SQLToken {
     private final List<String> items = new LinkedList<>();
     
     public ItemsToken(final int startIndex) {
-        super(startIndex, startIndex - 1);
+        super(startIndex);
     }
 }

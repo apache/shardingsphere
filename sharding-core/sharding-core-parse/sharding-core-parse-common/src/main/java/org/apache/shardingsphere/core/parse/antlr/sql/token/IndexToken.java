@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -31,12 +32,15 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Getter
 @Setter
 @ToString
-public final class IndexToken extends SQLToken {
+public final class IndexToken extends SQLToken implements Substitutable {
     
     private String tableName;
     
+    private final int stopIndex;
+    
     public IndexToken(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex);
+        super(startIndex);
+        this.stopIndex = stopIndex;
     }
     
     public IndexToken(final int startIndex, final int stopIndex, final String tableName) {

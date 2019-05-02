@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
-
-import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
+package org.apache.shardingsphere.core.parse.antlr.sql;
 
 /**
- * Insert values token.
+ * Substitute available.
  *
- * @author maxiaoguang
  * @author panjuan
  */
-@Getter
-public final class InsertValuesToken extends SQLToken implements Substitutable {
+public interface Substitutable {
     
-    private final int stopIndex;
+    /**
+     * Get start index.
+     * 
+     * @return start index
+     */
+    int getStartIndex();
     
-    public InsertValuesToken(final int startIndex, final int stopIndex) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-    }
+    /**
+     * Get stop index.
+     * 
+     * @return stop index
+     */
+    int getStopIndex();
 }
