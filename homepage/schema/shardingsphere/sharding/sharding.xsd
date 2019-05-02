@@ -121,7 +121,7 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-
+    
     <xsd:element name="master-slave-rules">
         <xsd:complexType>
             <xsd:sequence>
@@ -135,6 +135,13 @@
             <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
             <xsd:attribute name="slave-data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="strategy-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="load-balance-algorithm">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" />
+            <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="key-generator">
