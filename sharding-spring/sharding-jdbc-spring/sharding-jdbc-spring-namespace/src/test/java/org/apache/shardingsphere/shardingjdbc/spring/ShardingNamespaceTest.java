@@ -40,7 +40,6 @@ import org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableS
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -126,8 +125,6 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     @Test
-    @Ignore
-    // TODO process LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE
     public void assertMasterSlaveShardingDataSourceByUserStrategy() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("masterSlaveShardingDataSourceByUserStrategy");
         assertNotNull(dataSourceMap.get("dbtbl_0_master"));
