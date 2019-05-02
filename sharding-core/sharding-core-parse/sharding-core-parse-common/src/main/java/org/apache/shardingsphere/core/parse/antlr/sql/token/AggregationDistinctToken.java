@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 
 /**
  * Aggregation distinct token.
@@ -26,15 +27,18 @@ import lombok.Getter;
  * @author panjuan
  */
 @Getter
-public final class AggregationDistinctToken extends SQLToken {
+public final class AggregationDistinctToken extends SQLToken implements Substitutable {
     
     private String columnName;
     
     private Optional<String> alias;
     
+    private final int stopIndex;
+    
     public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final Optional<String> alias) {
-        super(startIndex, stopIndex);
+        super(startIndex);
         this.columnName = columnName;
         this.alias = alias;
+        this.stopIndex = stopIndex;
     }
 }
