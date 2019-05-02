@@ -24,5 +24,10 @@ package org.apache.shardingsphere.core.parse.antlr.sql;
  */
 public interface Attachable {
     
-    
+    /**
+     * Get start index.
+     *
+     * @return start index
+     */
+    int getStartIndex();
 }
