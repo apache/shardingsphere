@@ -26,7 +26,6 @@
 
     <import resource="../datasource/masterSlaveDataSource.xml" />
 
-    <bean id="randomLoadBalanceAlgorithm" class="org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
     <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
     <bean id="rangeModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
@@ -39,6 +38,7 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
+    <sharding:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM"/>
     <sharding:key-generator id="keyGenerator" type="INCREMENT" column="order_id" />
 
     <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">

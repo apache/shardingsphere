@@ -140,10 +140,10 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         return factory.getBeanDefinition();
     }
     
-    private void parseMasterSlaveRuleLoadBalanceConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String loadBalanceStrategyConfiguration = tableElement.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE);
+    private void parseMasterSlaveRuleLoadBalanceConfiguration(final Element masterSlaveElement, final BeanDefinitionBuilder factory) {
+        String loadBalanceStrategyConfiguration = masterSlaveElement.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(loadBalanceStrategyConfiguration)) {
-            factory.addPropertyReference("loadBalanceStrategyConfiguration", loadBalanceStrategyConfiguration);
+            factory.addConstructorArgReference(loadBalanceStrategyConfiguration);
         }
     }
     

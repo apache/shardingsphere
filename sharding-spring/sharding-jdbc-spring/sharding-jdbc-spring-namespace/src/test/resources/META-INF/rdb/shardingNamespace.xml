@@ -32,7 +32,6 @@
     <bean id="rangeModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableShardingAlgorithm" />
     <bean id="defaultComplexKeysShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
     <bean id="defaultHintShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm" />
-    <bean id="randomLoadBalanceAlgorithm" class="org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     
     <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" range-algorithm-ref="rangeModuloTableShardingAlgorithm" />
@@ -43,6 +42,7 @@
     
     <sharding:key-generator id="defaultKeyGenerator" type="INCREMENT" column="id" />
     <sharding:key-generator id="orderKeyGenerator" type="INCREMENT" column="order_id" />
+    <sharding:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>

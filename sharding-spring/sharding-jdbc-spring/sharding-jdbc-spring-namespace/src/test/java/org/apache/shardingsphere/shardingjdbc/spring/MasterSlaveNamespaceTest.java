@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlave
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -52,12 +51,10 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     @Test
-    @Ignore
-    // TODO process LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE
     public void assertRefMasterSlaveDataSource() {
         MasterSlaveLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", MasterSlaveLoadBalanceAlgorithm.class);
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
-        assertTrue(masterSlaveRule.getLoadBalanceAlgorithm() == randomLoadBalanceAlgorithm);
+        assertThat(masterSlaveRule.getLoadBalanceAlgorithm(), is(randomLoadBalanceAlgorithm));
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
