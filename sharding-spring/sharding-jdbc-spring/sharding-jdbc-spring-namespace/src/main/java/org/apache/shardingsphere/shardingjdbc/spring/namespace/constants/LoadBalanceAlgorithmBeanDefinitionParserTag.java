@@ -26,7 +26,7 @@ public class LoadBalanceAlgorithmBeanDefinitionParserTag {
     
     public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
     
-    public static final String LOAD_BALANCE_ALGORITHM_TYPE_ATRRIBUTE = "type";
+    public static final String ALGORITHM_TYPE_ATTRIBUTE = "type";
     
-    public static final String LOAD_BALANCE_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
 }
