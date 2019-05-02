@@ -30,6 +30,8 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.parse.antlr.sql.Attachable;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
@@ -493,6 +495,10 @@ public final class SQLRewriteEngine {
         Optional<String> result = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName());
         Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
         return result.get();
+    }
+    
+    private int getStopIndex(final SQLToken sqlToken) {
+        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
