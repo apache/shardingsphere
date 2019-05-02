@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
+import org.apache.shardingsphere.core.parse.antlr.sql.Attachable;
+
 /**
  * Order by token.
  *
  * @author zhangliang
  * @author panjuan
  */
-public final class OrderByToken extends SQLToken {
+public final class OrderByToken extends SQLToken implements Attachable {
     
-    public OrderByToken(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex);
+    public OrderByToken(final int startIndex) {
+        super(startIndex);
     }
 }
