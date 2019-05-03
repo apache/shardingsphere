@@ -50,18 +50,18 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         if (!limitNode.isPresent()) {
             return Optional.absent();
         }
-        LimitValueSegment rowCount = getRowCount(limitNode.get(), parameterMarkerIndexes);
-        Optional<LimitValueSegment> offset = getOffset(limitNode.get(), parameterMarkerIndexes);
+        LimitValueSegment rowCount = extractRowCount(limitNode.get(), parameterMarkerIndexes);
+        Optional<LimitValueSegment> offset = extractOffset(limitNode.get(), parameterMarkerIndexes);
         return offset.isPresent() ? Optional.of(new LimitSegment(rowCount, offset.get())) : Optional.of(new LimitSegment(rowCount));
     }
     
-    private LimitValueSegment getRowCount(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    private LimitValueSegment extractRowCount(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> rowCountNode = ExtractorUtils.findFirstChildNode(limitNode, RuleName.LIMIT_ROW_COUNT);
         Preconditions.checkState(rowCountNode.isPresent());
         return extractLimitValue(rowCountNode.get(), parameterMarkerIndexes);
     }
     
-    private Optional<LimitValueSegment> getOffset(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    private Optional<LimitValueSegment> extractOffset(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> offsetNode = ExtractorUtils.findFirstChildNode(limitNode, RuleName.LIMIT_OFFSET);
         return offsetNode.isPresent() ? Optional.of(extractLimitValue(offsetNode.get(), parameterMarkerIndexes)) : Optional.<LimitValueSegment>absent();
     }
