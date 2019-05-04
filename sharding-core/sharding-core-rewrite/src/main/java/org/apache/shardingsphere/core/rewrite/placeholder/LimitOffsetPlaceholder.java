@@ -29,12 +29,15 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class LimitOffsetPlaceholder implements ShardingPlaceholder {
     
-    private final String logicSchemaName;
-    
-    private final String logicTableName;
+    private final int offset;
     
     @Override
     public String toString() {
-        return logicSchemaName;
+        return String.valueOf(offset);
+    }
+    
+    @Override
+    public String getLogicTableName() {
+        return "";
     }
 }
