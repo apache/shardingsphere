@@ -39,6 +39,14 @@ onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
+replace
+    : REPLACE replaceSpecification_? INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause)
+    ;
+
+replaceSpecification_
+    : LOW_PRIORITY | DELAYED
+    ;
+
 update
     : UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause?
     ;

@@ -22,6 +22,7 @@ import Keyword, Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLS
 execute
     : (select
     | insert
+    | replace
     | update
     | delete
     | createTable
