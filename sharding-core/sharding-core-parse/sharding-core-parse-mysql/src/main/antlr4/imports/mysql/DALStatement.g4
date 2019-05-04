@@ -22,3 +22,7 @@ import Symbol, Keyword, Literals, BaseRule;
 use
     : USE schemaName
     ;
+
+desc
+    : (DESC | DESCRIBE) tableName
+    ;

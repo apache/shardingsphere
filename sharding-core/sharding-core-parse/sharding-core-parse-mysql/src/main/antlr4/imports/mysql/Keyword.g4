@@ -1366,3 +1366,7 @@ VAR_SAMP
 VARIANCE
     : V A R I A N C E
     ;
+
+DESCRIBE
+    : D E S C R I B E
+    ;
