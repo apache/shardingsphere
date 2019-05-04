@@ -195,7 +195,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof IndexToken) {
                 appendIndexPlaceholder(sqlBuilder, (IndexToken) each, count);
             } else if (each instanceof SelectItemsToken) {
-                appendItemsToken(sqlBuilder, (SelectItemsToken) each, count, isRewrite);
+                appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof InsertSetToken) {
@@ -238,7 +238,7 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, indexToken.getStopIndex() + 1);
     }
     
-    private void appendItemsToken(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count, final boolean isRewrite) {
+    private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count, final boolean isRewrite) {
         boolean isRewriteItem = isRewrite || sqlStatement instanceof InsertStatement;
         if (isRewriteItem) {
             SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder(selectItemsToken.isFirstOfItemsSpecial());
