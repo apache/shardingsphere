@@ -15,31 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.sql;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.common;
 
-import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.old.parser.sql.dal.use.AbstractUseParser;
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Use parser for MySQL.
+ * Schema segment.
  *
  * @author zhangliang
  */
-public final class MySQLUseParser extends AbstractUseParser {
+@Getter
+public final class SchemaSegment implements SQLSegment {
     
-    private final LexerEngine lexerEngine;
+    private final int startIndex;
     
-    public MySQLUseParser(final LexerEngine lexerEngine) {
-        this.lexerEngine = lexerEngine;
-    }
+    private final int stopIndex;
     
-    @Override
-    public UseStatement parse() {
-        lexerEngine.nextToken();
-        UseStatement result = new UseStatement();
-        result.setSchema(lexerEngine.getCurrentToken().getLiterals());
-        return result;
-        
+    private final String name;
+    
+    private final QuoteCharacter quoteCharacter;
+    
+    public SchemaSegment(final int startIndex, final int stopIndex, final String name) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.name = SQLUtil.getExactlyValue(name);
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
 }

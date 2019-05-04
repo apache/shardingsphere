@@ -15,38 +15,24 @@
  * limitations under the License.
  */
 
-grammar MySQLStatement;
+package org.apache.shardingsphere.core.parse.antlr.filler.common.dal;
 
-import Keyword, Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.SchemaSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
 
-execute
-    : (select
-    | insert
-    | replace
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | setTransaction
-    | beginTransaction
-    | setAutoCommit
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | renameUser
-    | createRole
-    | dropRole
-    | setRole
-    | setPassword
-    | use
-    )SEMI_? 
-    ;
+/**
+ * Schema filler.
+ *
+ * @author zhangliang
+ */
+public final class SchemaFiller implements SQLSegmentFiller<SchemaSegment> {
+    
+    @Override
+    public void fill(final SchemaSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof UseStatement) {
+            ((UseStatement) sqlStatement).setSchema(sqlSegment.getName());
+        }
+    }
+}

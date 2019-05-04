@@ -99,6 +99,10 @@ unreservedWord_
     | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
+schemaName
+    : identifier_
+    ;
+
 tableName
     : (identifier_ DOT_)? identifier_
     ;

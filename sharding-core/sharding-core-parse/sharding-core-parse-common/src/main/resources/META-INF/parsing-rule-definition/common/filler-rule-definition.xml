@@ -33,4 +33,6 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.GroupByFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.OrderBySegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.OrderByFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dml.LimitFiller" />
+
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.segment.common.SchemaSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dal.SchemaFiller" />
 </filler-rule-definition>

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class UseStatement extends DALStatement {
     
-    private final String schema;
+    private String schema;
 }

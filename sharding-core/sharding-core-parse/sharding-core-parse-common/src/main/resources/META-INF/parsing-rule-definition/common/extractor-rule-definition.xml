@@ -17,6 +17,7 @@
   -->
 
 <extractor-rule-definition>
+    <extractor-rule id="schema" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.schema.SchemaExtractor" />
     <extractor-rule id="table" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TableExtractor" />
     <extractor-rule id="tables" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.table.TablesExtractor" />
     <extractor-rule id="index" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.index.IndexExtractor" />

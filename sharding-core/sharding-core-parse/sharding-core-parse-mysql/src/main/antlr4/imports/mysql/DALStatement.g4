@@ -15,38 +15,10 @@
  * limitations under the License.
  */
 
-grammar MySQLStatement;
+grammar DALStatement;
 
-import Keyword, Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Keyword, Literals, BaseRule;
 
-execute
-    : (select
-    | insert
-    | replace
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | setTransaction
-    | beginTransaction
-    | setAutoCommit
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | renameUser
-    | createRole
-    | dropRole
-    | setRole
-    | setPassword
-    | use
-    )SEMI_? 
+use
+    : USE schemaName
     ;
