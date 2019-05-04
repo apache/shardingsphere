@@ -64,6 +64,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlac
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
@@ -203,7 +204,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof RowCountToken) {
                 appendLimitRowCount(sqlBuilder, (RowCountToken) each, count, isRewrite);
             } else if (each instanceof OffsetToken) {
-                appendLimitOffsetToken(sqlBuilder, (OffsetToken) each, count, isRewrite);
+                appendLimitOffsetPlaceholder(sqlBuilder, (OffsetToken) each, count, isRewrite);
             } else if (each instanceof OrderByToken) {
                 appendOrderByToken(sqlBuilder, (OrderByToken) each, count, isRewrite);
             } else if (each instanceof AggregationDistinctToken) {
@@ -300,9 +301,8 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, getStopIndex(rowCountToken));
     }
     
-    private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
-        sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetToken.getOffset()));
-        
+    private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
+        sqlBuilder.appendPlaceholder(new LimitOffsetPlaceholder(isRewrite ? 0 : offsetToken.getOffset()));
         appendRest(sqlBuilder, count, getStopIndex(offsetToken));
     }
     
