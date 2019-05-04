@@ -33,7 +33,7 @@ public final class RowCountPlaceholder implements ShardingPlaceholder {
     
     @Override
     public String toString() {
-        return "";
+        return String.valueOf(rowCount);
     }
     
     @Override
