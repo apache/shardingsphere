@@ -249,6 +249,7 @@ public final class SQLRewriteEngine {
                     return SQLUtil.getOriginalValue(input, databaseType);
                 }
             }));
+            sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
         }
         appendRest(sqlBuilder, count, getStopIndex(selectItemsToken));
     }
@@ -301,6 +302,7 @@ public final class SQLRewriteEngine {
     
     private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
         sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetToken.getOffset()));
+        
         appendRest(sqlBuilder, count, getStopIndex(offsetToken));
     }
     
