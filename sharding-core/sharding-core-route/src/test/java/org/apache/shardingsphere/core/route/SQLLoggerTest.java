@@ -60,7 +60,7 @@ public final class SQLLoggerTest {
     }
 
     @Test
-    public void assertlogSQLShard() {
+    public void assertLogSQLShard() {
         SQLLogger.logSQL(sql, false, null, routeUnits);
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
@@ -72,7 +72,7 @@ public final class SQLLoggerTest {
     }
 
     @Test
-    public void assertlogSQLShardSimple() {
+    public void assertLogSQLShardSimple() {
         SQLLogger.logSQL(sql, true, null, routeUnits);
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
@@ -82,7 +82,7 @@ public final class SQLLoggerTest {
     }
 
     @Test
-    public void assertlogSQLMasterSlave() {
+    public void assertLogSQLMasterSlave() {
         SQLLogger.logSQL(sql, dataSourceNames);
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: master-slave", new Object[]{});
