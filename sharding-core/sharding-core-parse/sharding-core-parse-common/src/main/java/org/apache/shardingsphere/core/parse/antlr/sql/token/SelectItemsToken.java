@@ -35,14 +35,14 @@ import java.util.List;
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public final class ItemsToken extends SQLToken implements Attachable {
+public final class SelectItemsToken extends SQLToken implements Attachable {
     
     @Setter
     private boolean isFirstOfItemsSpecial;
     
     private final List<String> items = new LinkedList<>();
     
-    public ItemsToken(final int startIndex) {
+    public SelectItemsToken(final int startIndex) {
         super(startIndex);
     }
 }

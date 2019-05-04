@@ -33,11 +33,11 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
@@ -153,9 +153,9 @@ public final class SQLRewriteEngineTest {
     @Test
     public void assertRewriteForOrderByAndGroupByDerivedColumns() {
         selectStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
-        ItemsToken itemsToken = new ItemsToken(12);
-        itemsToken.getItems().addAll(Arrays.asList("x.id as GROUP_BY_DERIVED_0", "x.name as ORDER_BY_DERIVED_0"));
-        selectStatement.addSQLToken(itemsToken);
+        SelectItemsToken selectItemsToken = new SelectItemsToken(12);
+        selectItemsToken.getItems().addAll(Arrays.asList("x.id as GROUP_BY_DERIVED_0", "x.name as ORDER_BY_DERIVED_0"));
+        selectStatement.addSQLToken(selectItemsToken);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
@@ -167,9 +167,9 @@ public final class SQLRewriteEngineTest {
     @Test
     public void assertRewriteForAggregationDerivedColumns() {
         selectStatement.addSQLToken(new TableToken(23, 29, "table_x", QuoteCharacter.NONE));
-        ItemsToken itemsToken = new ItemsToken(17);
-        itemsToken.getItems().addAll(Arrays.asList("COUNT(x.age) as AVG_DERIVED_COUNT_0", "SUM(x.age) as AVG_DERIVED_SUM_0"));
-        selectStatement.addSQLToken(itemsToken);
+        SelectItemsToken selectItemsToken = new SelectItemsToken(17);
+        selectItemsToken.getItems().addAll(Arrays.asList("COUNT(x.age) as AVG_DERIVED_COUNT_0", "SUM(x.age) as AVG_DERIVED_SUM_0"));
+        selectStatement.addSQLToken(selectItemsToken);
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT AVG(x.age) FROM table_x x", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
@@ -54,20 +54,20 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
-        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListStopIndex() + 1 + " ".length());
-        appendAvgDerivedColumns(itemsToken, selectStatement);
+        SelectItemsToken selectItemsToken = new SelectItemsToken(selectStatement.getSelectListStopIndex() + 1 + " ".length());
+        appendAvgDerivedColumns(selectItemsToken, selectStatement);
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
+            appendDerivedOrderColumns(selectItemsToken, selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
         }
         if (!selectStatement.getGroupByItems().isEmpty()) {
-            appendDerivedGroupColumns(itemsToken, selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
+            appendDerivedGroupColumns(selectItemsToken, selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
         }
-        if (!itemsToken.getItems().isEmpty()) {
-            selectStatement.addSQLToken(itemsToken);
+        if (!selectItemsToken.getItems().isEmpty()) {
+            selectStatement.addSQLToken(selectItemsToken);
         }
     }
     
-    private void appendAvgDerivedColumns(final ItemsToken itemsToken, final SelectStatement selectStatement) {
+    private void appendAvgDerivedColumns(final SelectItemsToken selectItemsToken, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (SelectItem each : selectStatement.getItems()) {
             if (!isAverageSelectItem(each)) {
@@ -82,8 +82,8 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO replace avg to constant, avoid calculate useless avg
             if (!(avgItem instanceof AggregationDistinctSelectItem)) {
-                itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
-                itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
+                selectItemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
+                selectItemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
             }
             derivedColumnOffset++;
         }
@@ -93,24 +93,24 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         return each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType();
     }
     
-    private void appendDerivedOrderColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void appendDerivedOrderColumns(final SelectItemsToken selectItemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(alias);
-                itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
+                selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
     }
     
-    private void appendDerivedGroupColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void appendDerivedGroupColumns(final SelectItemsToken selectItemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(alias);
-                itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
+                selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
     }

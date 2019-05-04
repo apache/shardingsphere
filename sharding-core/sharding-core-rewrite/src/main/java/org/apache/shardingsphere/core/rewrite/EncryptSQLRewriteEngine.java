@@ -34,9 +34,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RemoveToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
@@ -132,8 +132,8 @@ public final class EncryptSQLRewriteEngine {
         int count = 0;
         sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
-            if (each instanceof ItemsToken) {
-                appendItemsToken(sqlBuilder, (ItemsToken) each, count);
+            if (each instanceof SelectItemsToken) {
+                appendItemsToken(sqlBuilder, (SelectItemsToken) each, count);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof InsertSetToken) {
@@ -147,19 +147,19 @@ public final class EncryptSQLRewriteEngine {
         }
     }
     
-    private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count) {
+    private void appendItemsToken(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count) {
         if (!(sqlStatement instanceof InsertStatement)) {
             return;
         }
-        for (int i = 0; i < itemsToken.getItems().size(); i++) {
-            if (itemsToken.isFirstOfItemsSpecial() && 0 == i) {
-                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
+        for (int i = 0; i < selectItemsToken.getItems().size(); i++) {
+            if (selectItemsToken.isFirstOfItemsSpecial() && 0 == i) {
+                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(selectItemsToken.getItems().get(i), databaseType));
             } else {
                 sqlBuilder.appendLiterals(", ");
-                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
+                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(selectItemsToken.getItems().get(i), databaseType));
             }
         }
-        appendRest(sqlBuilder, count, getStopIndex(itemsToken));
+        appendRest(sqlBuilder, count, getStopIndex(selectItemsToken));
     }
     
     private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {

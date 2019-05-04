@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedItemsToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
@@ -32,33 +32,33 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Items token assert.
+ * Select items token assert.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class ItemsTokenAssert {
+final class SelectItemsTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertItemsToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
-        Optional<ItemsToken> itemsToken = getItemsToken(actual);
+    void assertSelectItemsToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
+        Optional<SelectItemsToken> itemsToken = getSelectItemsToken(actual);
         if (itemsToken.isPresent()) {
-            assertItemsToken(itemsToken.get(), expected.getItemsToken());
+            assertSelectItemsToken(itemsToken.get(), expected.getItemsToken());
         } else {
-            assertNull(assertMessage.getFullAssertMessage("Items token should not exist: "), expected.getItemsToken());
+            assertNull(assertMessage.getFullAssertMessage("Select items token should not exist: "), expected.getItemsToken());
         }
     }
     
-    private void assertItemsToken(final ItemsToken actual, final ExpectedItemsToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Items token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
-        assertThat(assertMessage.getFullAssertMessage("Items token items assertion error: "), actual.getItems(), is(expected.getItems()));
+    private void assertSelectItemsToken(final SelectItemsToken actual, final ExpectedItemsToken expected) {
+        assertThat(assertMessage.getFullAssertMessage("Select items token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Select items token items assertion error: "), actual.getItems(), is(expected.getItems()));
     }
     
-    private Optional<ItemsToken> getItemsToken(final Collection<SQLToken> actual) {
+    private Optional<SelectItemsToken> getSelectItemsToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
-            if (each instanceof ItemsToken) {
-                return Optional.of((ItemsToken) each);
+            if (each instanceof SelectItemsToken) {
+                return Optional.of((SelectItemsToken) each);
             }
         }
         return Optional.absent();

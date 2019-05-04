@@ -25,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.ItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Assist;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
@@ -129,16 +129,16 @@ public abstract class AbstractSelectParser implements SQLParser {
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {
         // TODO last position (index + 1) and one space, it is different with new parser engine
-        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListStopIndex());
-        appendAvgDerivedColumns(itemsToken, selectStatement);
-        appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), selectStatement);
-        appendDerivedGroupColumns(itemsToken, selectStatement.getGroupByItems(), selectStatement);
-        if (!itemsToken.getItems().isEmpty()) {
-            selectStatement.addSQLToken(itemsToken);
+        SelectItemsToken selectItemsToken = new SelectItemsToken(selectStatement.getSelectListStopIndex());
+        appendAvgDerivedColumns(selectItemsToken, selectStatement);
+        appendDerivedOrderColumns(selectItemsToken, selectStatement.getOrderByItems(), selectStatement);
+        appendDerivedGroupColumns(selectItemsToken, selectStatement.getGroupByItems(), selectStatement);
+        if (!selectItemsToken.getItems().isEmpty()) {
+            selectStatement.addSQLToken(selectItemsToken);
         }
     }
     
-    private void appendAvgDerivedColumns(final ItemsToken itemsToken, final SelectStatement selectStatement) {
+    private void appendAvgDerivedColumns(final SelectItemsToken selectItemsToken, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (SelectItem each : selectStatement.getItems()) {
             if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getType()) {
@@ -152,30 +152,30 @@ public abstract class AbstractSelectParser implements SQLParser {
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO replace avg to constant, avoid calculate useless avg
-            itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
-            itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
+            selectItemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
+            selectItemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
             derivedColumnOffset++;
         }
     }
     
-    private void appendDerivedOrderColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement) {
+    private void appendDerivedOrderColumns(final SelectItemsToken selectItemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(alias);
-                itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
+                selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
     }
     
-    private void appendDerivedGroupColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement) {
+    private void appendDerivedGroupColumns(final SelectItemsToken selectItemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
                 each.setAlias(alias);
-                itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
+                selectItemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
     }
