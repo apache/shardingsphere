@@ -19,10 +19,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        ">
 
     <import resource="../datasource/masterSlaveDataSource.xml" />
 
@@ -38,8 +42,8 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
-    <sharding:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM"/>
     <sharding:key-generator id="keyGenerator" type="INCREMENT" column="order_id" />
+    <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM"/>
 
     <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">
         <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="keyGenerator">

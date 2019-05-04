@@ -26,8 +26,8 @@
                         ">
     <import resource="../datasource/masterSlaveDataSource.xml" />
     
-    <bean id="randomLoadBalanceAlgorithm" class="org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
-    <bean id="roundRobinLoadBalanceAlgorithm" class="org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm" />
+    <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
+    <master-slave:load-balance-algorithm id="roundRobinLoadBalanceAlgorithm" type="ROUND_ROBIN" />
     
     <master-slave:data-source id="defaultMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" >
         <master-slave:props>

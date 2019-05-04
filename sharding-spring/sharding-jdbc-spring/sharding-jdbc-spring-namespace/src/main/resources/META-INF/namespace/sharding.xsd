@@ -137,13 +137,6 @@
             <xsd:attribute name="strategy-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="load-balance-algorithm">
-        <xsd:complexType>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="type" type="xsd:string" />
-            <xsd:attribute name="props-ref" type="xsd:string" />
-        </xsd:complexType>
-    </xsd:element>
     <xsd:element name="key-generator">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
