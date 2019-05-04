@@ -65,6 +65,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -196,9 +197,9 @@ public final class SQLRewriteEngine {
             } else if (each instanceof SelectItemsToken) {
                 appendItemsToken(sqlBuilder, (SelectItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
-                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
+                appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof InsertSetToken) {
-                appendInsertSetToken(sqlBuilder, (InsertSetToken) each, count, optimizeResult.getInsertOptimizeResult().get());
+                appendInsertSetPlaceholder(sqlBuilder, (InsertSetToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof RowCountToken) {
                 appendLimitRowCount(sqlBuilder, (RowCountToken) each, count, isRewrite);
             } else if (each instanceof OffsetToken) {
@@ -239,18 +240,20 @@ public final class SQLRewriteEngine {
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count, final boolean isRewrite) {
         boolean isRewriteItem = isRewrite || sqlStatement instanceof InsertStatement;
-        for (int i = 0; i < selectItemsToken.getItems().size() && isRewriteItem; i++) {
-            if (selectItemsToken.isFirstOfItemsSpecial() && 0 == i) {
-                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(selectItemsToken.getItems().get(i), databaseType));
-            } else {
-                sqlBuilder.appendLiterals(", ");
-                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(selectItemsToken.getItems().get(i), databaseType));
-            }
+        if (isRewriteItem) {
+            SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder(selectItemsToken.isFirstOfItemsSpecial());
+            selectItemsPlaceholder.getItems().addAll(Lists.transform(selectItemsToken.getItems(), new Function<String, String>() {
+                
+                @Override
+                public String apply(final String input) {
+                    return SQLUtil.getOriginalValue(input, databaseType);
+                }
+            }));
         }
         appendRest(sqlBuilder, count, getStopIndex(selectItemsToken));
     }
     
-    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
+    private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             encryptInsertOptimizeResultUnit(insertOptimizeResult.getColumnNames(), each);
         }
@@ -258,7 +261,7 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, getStopIndex(insertValuesToken));
     }
     
-    private void appendInsertSetToken(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
+    private void appendInsertSetPlaceholder(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             encryptInsertOptimizeResultUnit(insertOptimizeResult.getColumnNames(), each);
         }
