@@ -29,10 +29,4 @@ import lombok.NoArgsConstructor;
 public final class MasterSlaveDataSourceBeanDefinitionParserTag {
     
     public static final String ROOT_TAG = "data-source";
-    
-    public static final String MASTER_DATA_SOURCE_NAME_ATTRIBUTE = "master-data-source-name";
-    
-    public static final String SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE = "slave-data-source-names";
-    
-    public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "strategy-ref";
 }
