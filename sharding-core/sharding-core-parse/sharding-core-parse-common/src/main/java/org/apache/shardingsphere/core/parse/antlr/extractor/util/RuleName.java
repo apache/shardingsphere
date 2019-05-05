@@ -151,7 +151,11 @@ public enum RuleName {
     
     AUTO_COMMIT_VALUE("AutoCommitValue"),
     
-    IMPLICIT_TRANSACTIONS_VALUE("ImplicitTransactionsValue");
+    IMPLICIT_TRANSACTIONS_VALUE("ImplicitTransactionsValue"),
+    
+    SHOW_LIKE("ShowLike"),
+    
+    FROM_SCHEMA("FromSchema");
     
     private final String name;
     

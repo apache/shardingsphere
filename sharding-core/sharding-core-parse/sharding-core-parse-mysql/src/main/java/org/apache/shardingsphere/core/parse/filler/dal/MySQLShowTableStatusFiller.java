@@ -19,16 +19,20 @@ package org.apache.shardingsphere.core.parse.filler.dal;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowDatabasesSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.RemoveToken;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTableStatusSegment;
 
 /**
- * Show databases filler for MySQL.
+ * Show table status filler for MySQL.
  *
  * @author zhangliang
  */
-public final class MySQLShowDatabasesFiller implements SQLSegmentFiller<ShowDatabasesSegment> {
+public final class MySQLShowTableStatusFiller implements SQLSegmentFiller<ShowTableStatusSegment> {
     
     @Override
-    public void fill(final ShowDatabasesSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final ShowTableStatusSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (-1 != sqlSegment.getFromTableStartIndex()) {
+            sqlStatement.addSQLToken(new RemoveToken(sqlSegment.getFromTableStartIndex(), sqlSegment.getTableStopIndex()));
+        }
     }
 }

@@ -28,5 +28,49 @@ desc
     ;
 
 showDatabases
-    : SHOW (DATABASES | SCHEMAS) (LIKE stringLiterals | WHERE expr)?
+    : SHOW (DATABASES | SCHEMAS) (showLike | showWhereClause_)?
+    ;
+
+showTables
+    : SHOW EXTENDED? FULL? TABLES fromSchema? (showLike | showWhereClause_)?
+    ;
+
+showTableStatus
+    : SHOW TABLE STATUS fromSchema? (showLike | showWhereClause_)?
+    ;
+
+showColumns
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable_ fromSchema? (showLike | showWhereClause_)?
+    ;
+
+showIndex
+    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable_ fromSchema? showWhereClause_?
+    ;
+
+showCreateTable
+    : SHOW CREATE TABLE tableName
+    ;
+
+showOther
+    : SHOW
+    ;
+
+fromSchema
+    : (FROM | IN) schemaName
+    ;
+
+fromTable_
+    : (FROM | IN) tableName
+    ;
+
+showLike
+    : LIKE stringLiterals
+    ;
+
+showWhereClause_
+    : WHERE expr
+    ;
+
+setVariable
+    : SET
     ;

@@ -1374,3 +1374,19 @@ DESCRIBE
 SCHEMAS
     : S C H E M A S
     ;
+
+EXTENDED
+    : E X T E N D E D
+    ;
+
+STATUS
+    : S T A T U S
+    ;
+
+FIELDS
+    : F I E L D S
+    ;
+
+INDEXES
+    : I N D E X E S
+    ;

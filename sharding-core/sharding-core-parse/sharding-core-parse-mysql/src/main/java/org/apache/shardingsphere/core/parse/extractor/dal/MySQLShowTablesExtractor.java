@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.common.schema;
+package org.apache.shardingsphere.core.parse.extractor.dal;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.SchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTablesSegment;
 
 import java.util.Map;
 
 /**
- * Schema extractor.
- *
+ * Show tables extractor for MySQL.
+ * 
  * @author zhangliang
  */
-public final class SchemaExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLShowTablesExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SchemaSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> schemaNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SCHEMA_NAME);
-        return schemaNode.isPresent() ? Optional.of(new SchemaSegment(schemaNode.get().getStart().getStartIndex(), schemaNode.get().getStop().getStopIndex(), schemaNode.get().getText()))
-                : Optional.<SchemaSegment>absent();
+    public Optional<ShowTablesSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> fromSchemaNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.FROM_SCHEMA);
+        return Optional.of(fromSchemaNode.isPresent()
+                ? new ShowTablesSegment(fromSchemaNode.get().getStart().getStartIndex(), fromSchemaNode.get().getStop().getStopIndex()) : new ShowTablesSegment());
     }
 }

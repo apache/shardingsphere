@@ -29,11 +29,11 @@ import lombok.ToString;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 @EqualsAndHashCode
 @ToString
 public final class Table {
     
-    @Getter
     private final String name;
     
     private final String alias;

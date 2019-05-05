@@ -50,5 +50,12 @@ execute
     | use
     | desc
     | showDatabases
-    )SEMI_? 
+    | showTables
+    | showTableStatus
+    | showColumns
+    | showIndex
+    | showCreateTable
+    | showOther
+    | setVariable
+    ) SEMI_?
     ;

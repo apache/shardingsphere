@@ -20,6 +20,9 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dal;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowColumnsStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowIndexStatement;
 import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
 
 /**
@@ -33,6 +36,8 @@ public final class SchemaFiller implements SQLSegmentFiller<SchemaSegment> {
     public void fill(final SchemaSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof UseStatement) {
             ((UseStatement) sqlStatement).setSchema(sqlSegment.getName());
+        } else if (sqlStatement instanceof ShowColumnsStatement || sqlStatement instanceof ShowIndexStatement) {
+            sqlStatement.addSQLToken(new SchemaToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlStatement.getTables().getSingleTableName()));
         }
     }
 }
