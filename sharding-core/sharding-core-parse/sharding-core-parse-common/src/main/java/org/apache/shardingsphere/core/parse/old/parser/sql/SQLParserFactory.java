@@ -22,17 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
-import org.apache.shardingsphere.core.parse.old.parser.sql.dal.set.SetParserFactory;
 import org.apache.shardingsphere.core.parse.old.parser.sql.dml.delete.DeleteParserFactory;
 import org.apache.shardingsphere.core.parse.old.parser.sql.dml.insert.InsertParserFactory;
 import org.apache.shardingsphere.core.parse.old.parser.sql.dml.select.SelectParserFactory;
@@ -56,7 +51,7 @@ public final class SQLParserFactory {
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine
-     * @param shardingTableMetaData sharding metadata
+     * @param shardingTableMetaData sharding table metadata
      * @param sql SQL to parse
      * @return SQL parser
      */
@@ -73,31 +68,11 @@ public final class SQLParserFactory {
         if (DMLStatement.isDML(tokenType)) {
             return getDMLParser(dbType, sql, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
         }
-        if (TCLStatement.isTCL(tokenType)) {
-            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-        }
-        if (DALStatement.isDAL(tokenType)) {
-            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-        }
-        lexerEngine.nextToken();
-        TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
-        if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
-            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-        }
-        if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
-            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-        }
-        if (TCLStatement.isTCLUnsafe(dbType, tokenType, lexerEngine)) {
-            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-        }
-        if (DefaultKeyword.SET.equals(tokenType)) {
-            return SetParserFactory.newInstance();
-        }
-        throw new SQLParsingUnsupportedException(tokenType);
+        return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
     }
     
     /**
-     * Create Encrypt SQL parser.
+     * Create encrypt SQL parser.
      * 
      * @param dbType db type
      * @param encryptRule encrypt rule
