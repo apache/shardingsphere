@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Keyword, Symbol, Literals;
+import Keyword, PostgreSQLKeyword, Symbol, Literals;
 
 parameterMarker
     : QUESTION_

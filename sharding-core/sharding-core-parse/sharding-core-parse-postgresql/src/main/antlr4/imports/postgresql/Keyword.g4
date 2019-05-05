@@ -23,100 +23,224 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
-ALL
-    : A L L
+SELECT
+    : S E L E C T
     ;
 
-AND
-    : A N D
+INSERT
+    : I N S E R T
     ;
 
-ANY
-    : A N Y
+UPDATE
+    : U P D A T E
     ;
 
-ASC
-    : A S C
+DELETE
+    : D E L E T E
     ;
 
-ADMIN
-    : A D M I N
+CREATE
+    : C R E A T E
     ;
 
-BETWEEN
-    : B E T W E E N
+ALTER
+    : A L T E R
     ;
 
-BINARY
-    : B I N A R Y
+DROP
+    : D R O P
     ;
 
-BY
-    : B Y
+TRUNCATE
+    : T R U N C A T E
     ;
 
-DATE
-    : D A T E
+GRANT
+    : G R A N T
     ;
 
-DESC
-    : D E S C
+REVOKE
+    : R E V O K E
     ;
 
-DISTINCT
-    : D I S T I N C T
+ADD
+    : A D D
     ;
 
-ESCAPE
-    : E S C A P E
+SET
+    : S E T
     ;
 
-EXISTS
-    : E X I S T S
+TABLE
+    : T A B L E
     ;
 
-EXCLUDE
-    : E X C L U D E
+COLUMN
+    : C O L U M N
     ;
 
-FALSE
-    : F A L S E
+INDEX
+    : I N D E X
     ;
 
-FROM
-    : F R O M
+CONSTRAINT
+    : C O N S T R A I N T
     ;
 
-GROUP
-    : G R O U P
+PRIMARY
+    : P R I M A R Y
     ;
 
-HAVING
-    : H A V I N G
+UNIQUE
+    : U N I Q U E
     ;
 
-IN
-    : I N
-    ;
-
-IS
-    : I S
+FOREIGN
+    : F O R E I G N
     ;
 
 KEY
     : K E Y
     ;
 
-LIKE
-    : L I K E
+POSITION
+    : P O S I T I O N
     ;
 
-LIMIT
-    : L I M I T
+PRECISION
+    : P R E C I S I O N
     ;
 
-MOD
-    : M O D
+FUNCTION
+    : F U N C T I O N
+    ;
+
+TRIGGER
+    : T R I G G E R
+    ;
+
+PROCEDURE
+    : P R O C E D U R E
+    ;
+
+VIEW
+    : V I E W
+    ;
+
+INTO
+    : I N T O
+    ;
+
+VALUES
+    : V A L U E S
+    ;
+
+WITH
+    : W I T H
+    ;
+
+UNION
+    : U N I O N
+    ;
+
+DISTINCT
+    : D I S T I N C T
+    ;
+
+CASE
+    : C A S E
+    ;
+
+WHEN
+    : W H E N
+    ;
+
+CAST
+    : C A S T
+    ;
+
+TRIM
+    : T R I M
+    ;
+
+SUBSTRING
+    : S U B S T R I N G
+    ;
+
+FROM
+    : F R O M
+    ;
+
+JOIN
+    : J O I N
+    ;
+
+FULL
+    : F U L L
+    ;
+
+INNER
+    : I N N E R
+    ;
+
+OUTER
+    : O U T E R
+    ;
+
+LEFT
+    : L E F T
+    ;
+
+RIGHT
+    : R I G H T
+    ;
+
+USING
+    : U S I N G
+    ;
+
+WHERE
+    : W H E R E
+    ;
+
+AS
+    : A S
+    ;
+
+ON
+    : O N
+    ;
+
+IF
+    : I F
+    ;
+
+ELSE
+    : E L S E
+    ;
+
+THEN
+    : T H E N
+    ;
+
+FOR
+    : F O R
+    ;
+
+TO
+    : T O
+    ;
+
+AND
+    : A N D
+    ;
+
+OR
+    : O R
+    ;
+
+IS
+    : I S
     ;
 
 NOT
@@ -127,32 +251,112 @@ NULL
     : N U L L
     ;
 
-OFFSET
-    : O F F S E T
+TRUE
+    : T R U E
     ;
 
-OR
-    : O R
+FALSE
+    : F A L S E
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
+
+BETWEEN
+    : B E T W E E N
+    ;
+
+IN
+    : I N
+    ;
+
+ALL
+    : A L L
+    ;
+
+ANY
+    : A N Y
+    ;
+
+LIKE
+    : L I K E
     ;
 
 ORDER
     : O R D E R
     ;
 
-PARTITION
-    : P A R T I T I O N
+GROUP
+    : G R O U P
     ;
 
-PRIMARY
-    : P R I M A R Y
+BY
+    : B Y
     ;
 
-ROW
-    : R O W
+ASC
+    : A S C
     ;
 
-SET
-    : S E T
+DESC
+    : D E S C
+    ;
+
+HAVING
+    : H A V I N G
+    ;
+
+LIMIT
+    : L I M I T
+    ;
+
+OFFSET
+    : O F F S E T
+    ;
+
+BEGIN
+    : B E G I N
+    ;
+
+COMMIT
+    : C O M M I T
+    ;
+
+ROLLBACK
+    : R O L L B A C K
+    ;
+
+SAVEPOINT
+    : S A V E P O I N T
+    ;
+
+BOOLEAN
+    : B O O L E A N
+    ;
+
+DOUBLE
+    : D O U B L E
+    ;
+
+CHAR
+    : C H A R
+    ;
+
+CHARACTER
+    : C H A R A C T E R
+    ;
+
+ARRAY
+    : A R R A Y
+    ;
+
+INTERVAL
+    : I N T E R V A L
+    ;
+
+DATE
+    : D A T E
     ;
 
 TIME
@@ -163,614 +367,82 @@ TIMESTAMP
     : T I M E S T A M P
     ;
 
-TRUE
-    : T R U E
+LOCALTIME
+    : L O C A L T I M E
     ;
 
-UNION
-    : U N I O N
-    ;
-
-UNKNOWN
-    : U N K N O W N
-    ;
-
-WHERE
-    : W H E R E
-    ;
-
-WITH
-    : W I T H
-    ;
-
-ADD
-    : A D D
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-ALWAYS
-    : A L W A Y S
-    ;
-
-AS
-    : A S
-    ;
-
-CASCADE
-    : C A S C A D E
-    ;
-
-CHECK
-    : C H E C K
-    ;
-
-COLUMN
-    : C O L U M N
-    ;
-
-COMMIT
-    : C O M M I T
-    ;
-
-CONSTRAINT
-    : C O N S T R A I N T
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-CURRENT
-    : C U R R E N T
-    ;
-
-DAY
-    : D A Y
-    ;
-
-DEFAULT
-    : D E F A U L T
-    ;
-
-DELETE
-    : D E L E T E
-    ;
-
-DISABLE
-    : D I S A B L E
-    ;
-
-DROP
-    : D R O P
-    ;
-
-ENABLE
-    : E N A B L E
-    ;
-
-FOR
-    : F O R
-    ;
-
-FOREIGN
-    : F O R E I G N
-    ;
-
-FUNCTION
-    : F U N C T I O N
-    ;
-
-GENERATED
-    : G E N E R A T E D
-    ;
-
-GRANT
-    : G R A N T
-    ;
-
-INDEX
-    : I N D E X
-    ;
-
-ISOLATION
-    : I S O L A T I O N
-    ;
-
-LEVEL
-    : L E V E L
-    ;
-
-NO
-    : N O
-    ;
-
-ON
-    : O N
-    ;
-
-OPTION
-    : O P T I O N
-    ;
-
-PRIVILEGES
-    : P R I V I L E G E S
-    ;
-
-READ
-    : R E A D
-    ;
-
-REFERENCES
-    : R E F E R E N C E S
-    ;
-
-REVOKE
-    : R E V O K E
-    ;
-
-ROLE
-    : R O L E
-    ;
-
-ROLLBACK
-    : R O L L B A C K
-    ;
-
-ROWS
-    : R O W S
-    ;
-
-START
-    : S T A R T
-    ;
-
-TABLE
-    : T A B L E
-    ;
-
-TO
-    : T O
-    ;
-
-TRANSACTION
-    : T R A N S A C T I O N
-    ;
-
-TRUNCATE
-    : T R U N C A T E
-    ;
-
-UNIQUE
-    : U N I Q U E
-    ;
-
-USER
-    : U S E R
+LOCALTIMESTAMP
+    : L O C A L T I M E S T A M P
     ;
 
 YEAR
     : Y E A R
     ;
 
-ACTION
-    : A C T I O N
-    ;
-
-ARRAY
-    : A R R A Y
-    ;
-
-BEGIN
-    : B E G I N
-    ;
-
-CACHE
-    : C A C H E
-    ;
-
-CAST
-    : C A S T
-    ;
-
-CHARACTERISTICS
-    : C H A R A C T E R I S T I C S
-    ;
-
-CLUSTER
-    : C L U S T E R
-    ;
-
-COLLATE
-    : C O L L A T E
-    ;
-
-COMMENTS
-    : C O M M E N T S
-    ;
-
-CONCURRENTLY
-    : C O N C U R R E N T L Y
-    ;
-
-CONNECT
-    : C O N N E C T
-    ;
-
-CONSTRAINTS
-    : C O N S T R A I N T S
-    ;
-
-CURRENT_TIMESTAMP
-    : C U R R E N T UL_ T I M E S T A M P
-    ;
-
-CURRENT_USER
-    : C U R R E N T UL_ U S E R
-    ;
-
-CYCLE
-    : C Y C L E
-    ;
-
-DATA
-    : D A T A
-    ;
-
-DATABASE
-    : D A T A B A S E
-    ;
-
-DEFAULTS
-    : D E F A U L T S
-    ;
-
-DEFERRABLE
-    : D E F E R R A B L E
-    ;
-
-DEFERRED
-    : D E F E R R E D
-    ;
-
-DEPENDS
-    : D E P E N D S
-    ;
-
-DOMAIN
-    : D O M A I N
-    ;
-
-EXCLUDING
-    : E X C L U D I N G
-    ;
-
-EXECUTE
-    : E X E C U T E
-    ;
-
-EXTENDED
-    : E X T E N D E D
-    ;
-
-EXTENSION
-    : E X T E N S I O N
-    ;
-
-EXTERNAL
-    : E X T E R N A L
-    ;
-
-EXTRACT
-    : E X T R A C T
-    ;
-
-FILTER
-    : F I L T E R
-    ;
-
-FIRST
-    : F I R S T
-    ;
-
-FOLLOWING
-    : F O L L O W I N G
-    ;
-
-FORCE
-    : F O R C E
-    ;
-
-FULL
-    : F U L L
-    ;
-
-GLOBAL
-    : G L O B A L
-    ;
-
-HOUR
-    : H O U R
-    ;
-
-IDENTITY
-    : I D E N T I T Y
-    ;
-
-IF
-    : I F
-    ;
-
-IMMEDIATE
-    : I M M E D I A T E
-    ;
-
-INCLUDING
-    : I N C L U D I N G
-    ;
-
-INCREMENT
-    : I N C R E M E N T
-    ;
-
-INDEXES
-    : I N D E X E S
-    ;
-
-INHERIT
-    : I N H E R I T
-    ;
-
-INHERITS
-    : I N H E R I T S
-    ;
-
-INITIALLY
-    : I N I T I A L L Y
-    ;
-
-INCLUDE
-    : I N C L U D E
-    ;
-
-INSERT
-    : I N S E R T
-    ;
-
-LANGUAGE
-    : L A N G U A G E
-    ;
-
-LARGE
-    : L A R G E
-    ;
-
-LAST
-    : L A S T
-    ;
-
-LOCAL
-    : L O C A L
-    ;
-
-LOGGED
-    : L O G G E D
-    ;
-
-MAIN
-    : M A I N
-    ;
-
-MATCH
-    : M A T C H
-    ;
-
-MAXVALUE
-    : M A X V A L U E
-    ;
-
-MINVALUE
-    : M I N V A L U E
-    ;
-
-MINUTE
-    : M I N U T E
+QUARTER
+    : Q U A R T E R
     ;
 
 MONTH
     : M O N T H
     ;
 
-NOTHING
-    : N O T H I N G
+WEEK
+    : W E E K
     ;
 
-NULLS
-    : N U L L S
+DAY
+    : D A Y
     ;
 
-OBJECT
-    : O B J E C T
+HOUR
+    : H O U R
     ;
 
-OF
-    : O F
-    ;
-
-OIDS
-    : O I D S
-    ;
-
-ONLY
-    : O N L Y
-    ;
-
-OVER
-    : O V E R
-    ;
-
-OWNED
-    : O W N E D
-    ;
-
-OWNER
-    : O W N E R
-    ;
-
-PARTIAL
-    : P A R T I A L
-    ;
-
-PLAIN
-    : P L A I N
-    ;
-
-PRECEDING
-    : P R E C E D I N G
-    ;
-
-PROCEDURE
-    : P R O C E D U R E
-    ;
-
-RANGE
-    : R A N G E
-    ;
-
-RENAME
-    : R E N A M E
-    ;
-
-REPLICA
-    : R E P L I C A
-    ;
-
-RESET
-    : R E S E T
-    ;
-
-RESTART
-    : R E S T A R T
-    ;
-
-RESTRICT
-    : R E S T R I C T
-    ;
-
-ROUTINE
-    : R O U T I N E
-    ;
-
-RULE
-    : R U L E
-    ;
-
-SAVEPOINT
-    : S A V E P O I N T
-    ;
-
-SCHEMA
-    : S C H E M A
+MINUTE
+    : M I N U T E
     ;
 
 SECOND
     : S E C O N D
     ;
 
-SECURITY
-    : S E C U R I T Y
+MICROSECOND
+    : M I C R O S E C O N D
     ;
 
-SELECT
-    : S E L E C T
+MAX
+    : M A X
     ;
 
-SEQUENCE
-    : S E Q U E N C E
+MIN
+    : M I N
+    ;
+    
+SUM
+    : S U M
     ;
 
-SESSION
-    : S E S S I O N
+COUNT
+    : C O U N T
     ;
 
-SESSION_USER
-    : S E S S I O N UL_ U S E R
+AVG
+    : A V G
     ;
 
-SHOW
-    : S H O W
+DEFAULT
+    : D E F A U L T
     ;
 
-SIMPLE
-    : S I M P L E
+CURRENT
+    : C U R R E N T
     ;
 
-STATISTICS
-    : S T A T I S T I C S
+ENABLE
+    : E N A B L E
     ;
 
-STORAGE
-    : S T O R A G E
-    ;
-
-TABLESPACE
-    : T A B L E S P A C E
-    ;
-
-TEMP
-    : T E M P
-    ;
-
-TEMPORARY
-    : T E M P O R A R Y
-    ;
-
-TRIGGER
-    : T R I G G E R
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-UNBOUNDED
-    : U N B O U N D E D
-    ;
-
-UNLOGGED
-    : U N L O G G E D
-    ;
-
-UPDATE
-    : U P D A T E
-    ;
-
-USAGE
-    : U S A G E
-    ;
-
-USING
-    : U S I N G
-    ;
-
-VALID
-    : V A L I D
-    ;
-
-VALIDATE
-    : V A L I D A T E
-    ;
-
-WITHIN
-    : W I T H I N
-    ;
-
-WITHOUT
-    : W I T H O U T
-    ;
-
-ZONE
-    : Z O N E
+DISABLE
+    : D I S A B L E
     ;

@@ -347,6 +347,10 @@ CHARACTER
     : C H A R A C T E R
     ;
 
+ARRAY
+    : A R R A Y
+    ;
+
 INTERVAL
     : I N T E R V A L
     ;
@@ -425,6 +429,14 @@ COUNT
 
 AVG
     : A V G
+    ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+
+CURRENT
+    : C U R R E N T
     ;
 
 ENABLE

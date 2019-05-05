@@ -259,14 +259,6 @@ COMMITTED
     : C O M M I T T E D
     ;
 
-CURRENT
-    : C U R R E N T
-    ;
-
-DEFAULT
-    : D E F A U L T
-    ;
-
 LEVEL
     : L E V E L
     ;
@@ -674,6 +666,7 @@ SLAVE
 SPATIAL
     : S P A T I A L
     ;
+
 
 ZEROFILL
     : Z E R O F I L L
