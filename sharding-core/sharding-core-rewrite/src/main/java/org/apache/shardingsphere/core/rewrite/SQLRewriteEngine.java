@@ -207,7 +207,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof OffsetToken) {
                 appendLimitOffsetPlaceholder(sqlBuilder, (OffsetToken) each, count, isRewrite);
             } else if (each instanceof OrderByToken) {
-                appendOrderByToken(sqlBuilder, (OrderByToken) each, count, isRewrite);
+                appendOrderByPlaceholder(sqlBuilder, (OrderByToken) each, count, isRewrite);
             } else if (each instanceof AggregationDistinctToken) {
                 appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) each, count, isRewrite);
             } else if (each instanceof EncryptColumnToken) {
@@ -309,7 +309,7 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, getStopIndex(offsetToken));
     }
     
-    private void appendOrderByToken(final SQLBuilder sqlBuilder, final OrderByToken orderByToken, final int count, final boolean isRewrite) {
+    private void appendOrderByPlaceholder(final SQLBuilder sqlBuilder, final OrderByToken orderByToken, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
         if (isRewrite) {
