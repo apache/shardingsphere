@@ -18,20 +18,29 @@
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Index placeholder for rewrite.
  *
  * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class IndexPlaceholder implements ShardingPlaceholder {
     
     private final String logicIndexName;
     
     private final String logicTableName;
+    
+    private final QuoteCharacter quoteCharacter;
+    
+    public IndexPlaceholder(final String logicIndexLiteral, final String logicTableName) {
+        logicIndexName = SQLUtil.getExactlyValue(logicIndexLiteral);
+        this.logicTableName = logicTableName;
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(logicIndexLiteral);
+    }
     
     @Override
     public String toString() {
