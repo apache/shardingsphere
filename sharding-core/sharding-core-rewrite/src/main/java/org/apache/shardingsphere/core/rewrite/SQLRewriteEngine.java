@@ -48,7 +48,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
@@ -66,6 +65,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.OrderByPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
@@ -311,22 +311,14 @@ public final class SQLRewriteEngine {
     
     private void appendOrderByToken(final SQLBuilder sqlBuilder, final OrderByToken orderByToken, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
         if (isRewrite) {
-            StringBuilder orderByLiterals = new StringBuilder();
-            orderByLiterals.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
-            int i = 0;
             for (OrderItem each : selectStatement.getOrderByItems()) {
-                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex())
-                    : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
-                if (0 == i) {
-                    orderByLiterals.append(columnLabel).append(" ").append(each.getOrderDirection().name());
-                } else {
-                    orderByLiterals.append(",").append(columnLabel).append(" ").append(each.getOrderDirection().name());
-                }
-                i++;
+                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
+                orderByPlaceholder.getColumnLabels().add(columnLabel);
+                orderByPlaceholder.getOrderDirections().add(each.getOrderDirection());
             }
-            orderByLiterals.append(" ");
-            sqlBuilder.appendLiterals(orderByLiterals.toString());
+            sqlBuilder.appendPlaceholder(orderByPlaceholder);
         }
         appendRest(sqlBuilder, count, getStopIndex(orderByToken));
     }
