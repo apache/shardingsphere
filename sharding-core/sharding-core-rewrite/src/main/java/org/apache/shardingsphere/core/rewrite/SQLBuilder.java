@@ -174,17 +174,11 @@ public final class SQLBuilder {
     }
     
     private void appendIndexPlaceholder(final IndexPlaceholder placeholder, final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(placeholder.getLogicIndexName());
-        if (!Strings.isNullOrEmpty(actualTableName)) {
-            if ('`' == stringBuilder.charAt(stringBuilder.length() - 1)) { 
-                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-                stringBuilder.append("_");
-                stringBuilder.append(actualTableName);
-                stringBuilder.append("`"); 
-            } else { 
-                stringBuilder.append("_");
-                stringBuilder.append(actualTableName); 
-            }
+        if (Strings.isNullOrEmpty(actualTableName)) {
+            stringBuilder.append(placeholder.getQuoteCharacter().getStartDelimiter()).append(placeholder.getLogicIndexName()).append(placeholder.getQuoteCharacter().getEndDelimiter());
+        } else {
+            stringBuilder.append(placeholder.getQuoteCharacter().getStartDelimiter())
+                    .append(placeholder.getLogicIndexName()).append("_").append(actualTableName).append(placeholder.getQuoteCharacter().getEndDelimiter());
         }
     }
     
