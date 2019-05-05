@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Row count placeholder for rewrite.
+ * Limit row count placeholder for rewrite.
  *
  * @author panjuan
  */
