@@ -49,6 +49,7 @@ public final class InsertOptimizeResult {
      *
      * @param columnValues column values
      * @param columnParameters column parameters
+     * @param startIndexOfAppendedParameters start index of appended parameters
      */
     public void addUnit(final SQLExpression[] columnValues, final Object[] columnParameters, final int startIndexOfAppendedParameters) {
         if (type == InsertType.VALUES) {
