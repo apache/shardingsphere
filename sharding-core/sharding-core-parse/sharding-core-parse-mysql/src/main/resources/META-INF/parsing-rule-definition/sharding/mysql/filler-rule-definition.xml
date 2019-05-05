@@ -20,7 +20,6 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment" filler-class="org.apache.shardingsphere.core.parse.filler.tcl.MySQLAutoCommitFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.ShowParamSegment" filler-class="org.apache.shardingsphere.core.parse.antlr.filler.common.dal.ShowParamFiller" />
     
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowDatabasesSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowDatabasesFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTablesSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowTablesFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTableStatusSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowTableStatusFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowLikeFiller" />
