@@ -147,20 +147,12 @@ PRIMARY
     : P R I M A R Y
     ;
 
-REGEXP
-    : R E G E X P
-    ;
-
 ROW
     : R O W
     ;
 
 SET
     : S E T
-    ;
-
-SOUNDS
-    : S O U N D S
     ;
 
 TIME
@@ -189,10 +181,6 @@ WHERE
 
 WITH
     : W I T H
-    ;
-
-XOR
-    : X O R
     ;
 
 ADD
@@ -379,14 +367,6 @@ BEGIN
     : B E G I N
     ;
 
-BRIN
-    : B R I N
-    ;
-
-BTREE
-    : B T R E E
-    ;
-
 CACHE
     : C A C H E
     ;
@@ -507,20 +487,8 @@ FULL
     : F U L L
     ;
 
-GIN
-    : G I N
-    ;
-
-GIST
-    : G I S T
-    ;
-
 GLOBAL
     : G L O B A L
-    ;
-
-HASH
-    : H A S H
     ;
 
 HOUR
@@ -603,12 +571,12 @@ MAXVALUE
     : M A X V A L U E
     ;
 
-MINUTE
-    : M I N U T E
-    ;
-
 MINVALUE
     : M I N V A L U E
+    ;
+
+MINUTE
+    : M I N U T E
     ;
 
 MONTH
@@ -737,10 +705,6 @@ SHOW
 
 SIMPLE
     : S I M P L E
-    ;
-
-SPGIST
-    : S P G I S T
     ;
 
 STATISTICS

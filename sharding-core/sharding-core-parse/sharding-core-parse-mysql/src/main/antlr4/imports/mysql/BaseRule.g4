@@ -62,10 +62,6 @@ nullValueLiterals
     : NULL
     ;
 
-characterSetName_
-    : IDENTIFIER_
-    ;
-
 identifier_
     : IDENTIFIER_ | unreservedWord_
     ;
@@ -122,6 +118,10 @@ tableNames
 
 indexName
     : identifier_
+    ;
+
+characterSetName_
+    : IDENTIFIER_
     ;
 
 expr

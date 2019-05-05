@@ -36,7 +36,7 @@ setClause
     ;
 
 timeZoneType
-    : NUMBER_ | LOCAL | DEFAULT
+    : numberLiterals | LOCAL | DEFAULT
     ;
 
 resetParam

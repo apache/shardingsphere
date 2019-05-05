@@ -19,6 +19,58 @@ grammar BaseRule;
 
 import Keyword, Symbol, Literals;
 
+parameterMarker
+    : QUESTION_
+    ;
+
+literals
+    : stringLiterals
+    | numberLiterals
+    | booleanLiterals
+    | nullValueLiterals
+    ;
+
+stringLiterals
+    : STRING_
+    ;
+
+numberLiterals
+   : MINUS_? NUMBER_
+   ;
+    
+booleanLiterals
+    : TRUE | FALSE
+    ;
+
+nullValueLiterals
+    : NULL
+    ;
+
+identifier_
+    : IDENTIFIER_ | unreservedWord_
+    ;
+
+unreservedWord_
+    : ADMIN | ESCAPE | EXCLUDE | KEY | PARTITION | SET | UNKNOWN 
+    | ADD | ALTER | ALWAYS | CASCADE | COMMIT | CURRENT | DAY 
+    | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX 
+    | ISOLATION | LEVEL | OPTION | PRIVILEGES | READ | REVOKE | ROLE 
+    | ROLLBACK | ROWS | START | TRANSACTION | TRUNCATE | YEAR | ACTION 
+    | BEGIN | CACHE | CHARACTERISTICS | CLUSTER | COMMENTS | CONSTRAINTS | CYCLE 
+    | DATA | DATABASE | DEFAULTS | DEFERRED | DEPENDS | DOMAIN | EXCLUDING 
+    | EXECUTE | EXTENDED | EXTENSION | EXTERNAL | EXTRACT | FILTER 
+    | FIRST | FOLLOWING | FORCE | GLOBAL | HOUR | IDENTITY | IF | IMMEDIATE 
+    | INCLUDING | INCREMENT | INDEXES | INHERIT | INHERITS | INCLUDE | INSERT 
+    | LANGUAGE | LARGE | LAST | LOCAL | LOGGED | MAIN | MATCH 
+    | MAXVALUE | MINVALUE | MINUTE | MONTH | NOTHING | NULLS | OBJECT
+    | OF | OIDS | OVER | OWNED | OWNER | PARTIAL | PLAIN
+    | PRECEDING | PROCEDURE | RANGE | RENAME | REPLICA | RESET | RESTART
+    | RESTRICT | ROUTINE | RULE | SAVEPOINT | SCHEMA | SECOND | SECURITY
+    | SEQUENCE | SESSION | SHOW | SIMPLE | STATISTICS | STORAGE | TABLESPACE
+    | TEMP | TEMPORARY | TRIGGER | TYPE | UNBOUNDED | UNLOGGED | UPDATE
+    | USAGE | VALID | VALIDATE | WITHIN | WITHOUT | ZONE
+    ;
+
 schemaName
     : IDENTIFIER_
     ;
@@ -70,7 +122,6 @@ exprList
 expr
     : expr AND expr
     | expr AND_ expr
-    | expr XOR expr
     | LP_ expr RP_
     | NOT expr
     | NOT_ expr
@@ -105,9 +156,7 @@ predicate
     : bitExpr NOT? IN subquery
     | bitExpr NOT? IN LP_ simpleExpr (COMMA_ simpleExpr)* RP_
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
-    | bitExpr SOUNDS LIKE simpleExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
-    | bitExpr NOT? REGEXP simpleExpr
     | bitExpr
     ;
 
