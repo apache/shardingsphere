@@ -58,7 +58,7 @@ public abstract class InsertOptimizeResultUnit {
      * @param sqlExpression SQL expression
      */
     public final void addColumnValue(final SQLExpression sqlExpression) {
-        values[getCurrentIndex(values)] = sqlExpression;
+        values[getCurrentIndex(values, 0)] = sqlExpression;
     }
     
     /**
@@ -67,12 +67,12 @@ public abstract class InsertOptimizeResultUnit {
      * @param parameter parameter
      */
     public final void addColumnParameter(final Object parameter) {
-        parameters[getCurrentParameterIndex()] = parameter;
+        parameters[getCurrentIndex(values, startIndexOfGeneratedParameters)] = parameter;
     }
     
-    private int getCurrentParameterIndex() {
-        for (int i = startIndexOfGeneratedParameters; i < parameters.length; i++) {
-            if (null == parameters[i]) {
+    private int getCurrentIndex(final Object[] array, final int startIndex) {
+        for (int i = startIndex; i < array.length; i++) {
+            if (null == array[i]) {
                 return i;
             }
         }
