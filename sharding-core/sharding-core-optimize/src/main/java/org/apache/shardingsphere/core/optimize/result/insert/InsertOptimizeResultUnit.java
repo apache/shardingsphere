@@ -67,7 +67,7 @@ public abstract class InsertOptimizeResultUnit {
      * @param parameter parameter
      */
     public final void addColumnParameter(final Object parameter) {
-        parameters[getCurrentIndex(values, startIndexOfAppendedParameters)] = parameter;
+        parameters[getCurrentIndex(parameters, startIndexOfAppendedParameters)] = parameter;
     }
     
     private int getCurrentIndex(final Object[] array, final int startIndex) {
