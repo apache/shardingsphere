@@ -203,7 +203,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof InsertSetToken) {
                 appendInsertSetPlaceholder(sqlBuilder, (InsertSetToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof RowCountToken) {
-                appendLimitRowCount(sqlBuilder, (RowCountToken) each, count, isRewrite);
+                appendLimitRowCountPlaceholder(sqlBuilder, (RowCountToken) each, count, isRewrite);
             } else if (each instanceof OffsetToken) {
                 appendLimitOffsetPlaceholder(sqlBuilder, (OffsetToken) each, count, isRewrite);
             } else if (each instanceof OrderByToken) {
@@ -289,7 +289,7 @@ public final class SQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
-    private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
+    private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         sqlBuilder.appendPlaceholder(new RowCountPlaceholder(getRowCount(rowCountToken, isRewrite, selectStatement, sqlRouteResult.getLimit())));
         appendRest(sqlBuilder, count, getStopIndex(rowCountToken));
