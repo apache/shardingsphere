@@ -47,6 +47,10 @@ showIndex
     : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable_ fromSchema? showWhereClause_?
     ;
 
+showCreateTable
+    : SHOW CREATE TABLE tableName
+    ;
+
 fromSchema
     : (FROM | IN) schemaName
     ;

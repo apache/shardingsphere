@@ -54,5 +54,6 @@ execute
     | showTableStatus
     | showColumns
     | showIndex
+    | showCreateTable
     )SEMI_?
     ;
