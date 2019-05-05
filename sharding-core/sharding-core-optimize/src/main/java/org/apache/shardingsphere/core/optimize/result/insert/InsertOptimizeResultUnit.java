@@ -64,7 +64,7 @@ public abstract class InsertOptimizeResultUnit {
     /**
      * Add column parameter.
      *
-     * @param parameter parameter 
+     * @param parameter parameter
      */
     public final void addColumnParameter(final Object parameter) {
         parameters[getCurrentParameterIndex()] = parameter;
@@ -76,6 +76,7 @@ public abstract class InsertOptimizeResultUnit {
                 return i;
             }
         }
+        throw new ShardingException("Index Out Of Bounds For InsertOptimizeResultUnit.");
     }
     
     /**
