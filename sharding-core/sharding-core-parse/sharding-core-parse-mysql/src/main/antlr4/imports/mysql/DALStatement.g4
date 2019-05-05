@@ -28,5 +28,25 @@ desc
     ;
 
 showDatabases
-    : SHOW (DATABASES | SCHEMAS) (LIKE stringLiterals | WHERE expr)?
+    : SHOW (DATABASES | SCHEMAS) (showLikeClause_ | showWhereClause_)?
+    ;
+
+showTables
+    : SHOW showTablesSpecification_ TABLES fromSchema? (showLikeClause_ | showWhereClause_)?
+    ;
+
+showTablesSpecification_
+    : EXTENDED? FULL?
+    ;
+
+fromSchema
+    : (FROM | IN) schemaName
+    ;
+
+showLikeClause_
+    : LIKE stringLiterals
+    ;
+
+showWhereClause_
+    : WHERE expr
     ;

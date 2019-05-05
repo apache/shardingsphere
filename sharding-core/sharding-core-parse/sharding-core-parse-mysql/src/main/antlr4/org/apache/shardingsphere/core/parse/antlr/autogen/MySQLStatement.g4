@@ -50,5 +50,6 @@ execute
     | use
     | desc
     | showDatabases
+    | showTables
     )SEMI_? 
     ;

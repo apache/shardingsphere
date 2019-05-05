@@ -1374,3 +1374,7 @@ DESCRIBE
 SCHEMAS
     : S C H E M A S
     ;
+
+EXTENDED
+    : E X T E N D E D
+    ;

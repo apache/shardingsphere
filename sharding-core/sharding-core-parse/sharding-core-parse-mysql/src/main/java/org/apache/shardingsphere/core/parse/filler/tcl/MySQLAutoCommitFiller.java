@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.filler.tcl;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment;
@@ -28,10 +27,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.tcl.AutoCommitSegment;
  *
  * @author zhangliang
  */
-public final class MySQLAutoCommitFiller implements SQLSegmentFiller {
+public final class MySQLAutoCommitFiller implements SQLSegmentFiller<AutoCommitSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SetAutoCommitStatement) sqlStatement).setAutoCommit(((AutoCommitSegment) sqlSegment).isAutoCommit());
+    public void fill(final AutoCommitSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((SetAutoCommitStatement) sqlStatement).setAutoCommit(sqlSegment.isAutoCommit());
     }
 }

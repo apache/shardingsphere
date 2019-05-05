@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.dal;
+package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
-import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowDatabasesSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 /**
- * Show databases filler for MySQL.
- *
+ * Show tables segment.
+ * 
  * @author zhangliang
  */
-public final class MySQLShowDatabasesFiller implements SQLSegmentFiller<ShowDatabasesSegment> {
+@RequiredArgsConstructor
+@Getter
+public final class ShowTablesSegment implements SQLSegment {
     
-    @Override
-    public void fill(final ShowDatabasesSegment sqlSegment, final SQLStatement sqlStatement) {
+    private final int fromTableStartIndex;
+    
+    private final int tableStopIndex;
+    
+    public ShowTablesSegment() {
+        fromTableStartIndex = -1;
+        tableStopIndex = -1;
     }
 }
