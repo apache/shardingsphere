@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
@@ -58,29 +57,21 @@ public final class SQLParserFactory {
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine
      * @param shardingTableMetaData sharding metadata
-     * @param sql sql to parse
+     * @param sql SQL to parse
      * @return SQL parser
      */
     public static SQLParser newInstance(
             final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData, final String sql) {
+        if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
+            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+        }
         lexerEngine.nextToken();
         TokenType tokenType = lexerEngine.getCurrentToken().getType();
         if (DQLStatement.isDQL(tokenType)) {
-            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
-                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-            }
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (DMLStatement.isDML(tokenType)) {
-            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
-                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-            }
             return getDMLParser(dbType, sql, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
-        }
-        if (MySQLKeyword.REPLACE == tokenType) {
-            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
-                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-            }
         }
         if (TCLStatement.isTCL(tokenType)) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
@@ -100,9 +91,6 @@ public final class SQLParserFactory {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DefaultKeyword.SET.equals(tokenType)) {
-            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
-                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-            }
             return SetParserFactory.newInstance();
         }
         throw new SQLParsingUnsupportedException(tokenType);
