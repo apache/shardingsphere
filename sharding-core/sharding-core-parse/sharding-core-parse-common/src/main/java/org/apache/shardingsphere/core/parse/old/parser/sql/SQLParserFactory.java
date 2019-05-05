@@ -100,6 +100,9 @@ public final class SQLParserFactory {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DefaultKeyword.SET.equals(tokenType)) {
+            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
+                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+            }
             return SetParserFactory.newInstance();
         }
         throw new SQLParsingUnsupportedException(tokenType);

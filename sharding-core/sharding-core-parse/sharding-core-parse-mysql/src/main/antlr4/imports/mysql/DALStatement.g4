@@ -70,3 +70,7 @@ showLike
 showWhereClause_
     : WHERE expr
     ;
+
+setVariable
+    : SET
+    ;

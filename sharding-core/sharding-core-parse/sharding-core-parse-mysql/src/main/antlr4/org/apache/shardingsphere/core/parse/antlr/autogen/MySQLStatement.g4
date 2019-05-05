@@ -56,5 +56,6 @@ execute
     | showIndex
     | showCreateTable
     | showOther
-    )SEMI_?
+    | setVariable
+    ) SEMI_?
     ;
