@@ -298,10 +298,15 @@ public final class SQLRewriteEngine {
     private int getRowCount(final RowCountToken rowCountToken, final boolean isRewrite, final SelectStatement selectStatement, final Limit limit) {
         if (!isRewrite) {
             return rowCountToken.getRowCount();
-        } else if ((!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems()) {
+        } 
+        if (isMaxRowCount(selectStatement)) {
             return Integer.MAX_VALUE;
         }
         return limit.isNeedRewriteRowCount(databaseType) ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount();
+    }
+    
+    private boolean isMaxRowCount(final SelectStatement selectStatement) {
+        return (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
     }
     
     private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
