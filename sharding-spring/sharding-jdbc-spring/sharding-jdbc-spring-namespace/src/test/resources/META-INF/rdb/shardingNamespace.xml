@@ -18,12 +18,17 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:bean="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                        ">
     <import resource="datasource/dataSource.xml" />
     <import resource="datasource/masterSlaveDataSource.xml" />
 
@@ -42,7 +47,7 @@
     
     <sharding:key-generator id="defaultKeyGenerator" type="INCREMENT" column="id" />
     <sharding:key-generator id="orderKeyGenerator" type="INCREMENT" column="order_id" />
-    <sharding:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
+    <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
@@ -84,11 +89,11 @@
     </sharding:data-source>
     
     <sharding:data-source id="shardingRuleWithAttributesDataSource">
-        <sharding:sharding-rule 
-            data-source-names="dbtbl_0,dbtbl_1" 
-            default-data-source-name="dbtbl_0" 
-            default-database-strategy-ref="standardStrategy" 
-            default-table-strategy-ref="inlineStrategy" 
+        <sharding:sharding-rule
+            data-source-names="dbtbl_0,dbtbl_1"
+            default-data-source-name="dbtbl_0"
+            default-database-strategy-ref="standardStrategy"
+            default-table-strategy-ref="inlineStrategy"
             default-key-generator-ref="defaultKeyGenerator">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />

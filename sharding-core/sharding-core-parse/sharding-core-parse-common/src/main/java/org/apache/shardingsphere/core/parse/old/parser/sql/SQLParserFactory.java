@@ -97,6 +97,9 @@ public final class SQLParserFactory {
             if (DefaultKeyword.USE == tokenType) {
                 return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
             }
+            if (DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType) {
+                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+            }
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
         lexerEngine.nextToken();

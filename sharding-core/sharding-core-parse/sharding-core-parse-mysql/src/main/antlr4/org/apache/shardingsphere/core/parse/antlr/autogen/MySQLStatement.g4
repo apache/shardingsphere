@@ -48,5 +48,6 @@ execute
     | setRole
     | setPassword
     | use
+    | desc
     )SEMI_? 
     ;

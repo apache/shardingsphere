@@ -93,7 +93,8 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         return each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType();
     }
     
-    private void appendDerivedOrderColumns(final SelectItemsToken selectItemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void appendDerivedOrderColumns(final SelectItemsToken selectItemsToken, 
+                                           final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
@@ -104,7 +105,8 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         }
     }
     
-    private void appendDerivedGroupColumns(final SelectItemsToken selectItemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void appendDerivedGroupColumns(final SelectItemsToken selectItemsToken, 
+                                           final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         int derivedColumnOffset = 0;
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {

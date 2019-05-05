@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.antlr.sql;
 
 /**
- * Attach avaliable.
+ * Attach available.
  *
  * @author panjuan
  */

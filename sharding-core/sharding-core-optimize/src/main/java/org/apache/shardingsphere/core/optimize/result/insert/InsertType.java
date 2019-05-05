@@ -22,7 +22,7 @@ package org.apache.shardingsphere.core.optimize.result.insert;
  *
  * @author zhangliang
  */
-public enum  InsertType {
+public enum InsertType {
     
     VALUES, SET
 }
