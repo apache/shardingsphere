@@ -48,6 +48,8 @@ public abstract class InsertOptimizeResultUnit {
     
     private final Object[] parameters;
     
+    private final int startIndexOfGeneratedParameters;
+    
     private final List<DataNode> dataNodes = new LinkedList<>();
     
     /**
@@ -65,17 +67,15 @@ public abstract class InsertOptimizeResultUnit {
      * @param parameter parameter 
      */
     public final void addColumnParameter(final Object parameter) {
-        parameters[getCurrentIndex(parameters)] = parameter;
+        parameters[getCurrentParameterIndex()] = parameter;
     }
     
-    private int getCurrentIndex(final Object[] array) {
-        int count = 0;
-        for (Object each : array) {
-            if (null != each) {
-                count++;
+    private int getCurrentParameterIndex() {
+        for (int i = startIndexOfGeneratedParameters; i < parameters.length; i++) {
+            if (null == parameters[i]) {
+                return i;
             }
         }
-        return count;
     }
     
     /**
