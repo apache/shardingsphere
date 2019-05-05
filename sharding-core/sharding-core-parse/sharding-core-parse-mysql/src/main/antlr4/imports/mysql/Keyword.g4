@@ -1378,3 +1378,7 @@ SCHEMAS
 EXTENDED
     : E X T E N D E D
     ;
+
+STATUS
+    : S T A T U S
+    ;

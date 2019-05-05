@@ -22,5 +22,6 @@
     
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowDatabasesSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowDatabasesFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTablesSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowTablesFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTableStatusSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowTableStatusFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment" filler-class="org.apache.shardingsphere.core.parse.filler.dal.MySQLShowLikeFiller" />
 </filler-rule-definition>

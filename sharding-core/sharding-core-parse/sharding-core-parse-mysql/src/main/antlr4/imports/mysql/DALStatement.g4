@@ -32,11 +32,11 @@ showDatabases
     ;
 
 showTables
-    : SHOW showTablesSpecification_ TABLES fromSchema? (showLike | showWhereClause_)?
+    : SHOW EXTENDED? FULL? TABLES fromSchema? (showLike | showWhereClause_)?
     ;
 
-showTablesSpecification_
-    : EXTENDED? FULL?
+showTableStatus
+    : SHOW TABLE STATUS fromSchema? (showLike | showWhereClause_)?
     ;
 
 fromSchema

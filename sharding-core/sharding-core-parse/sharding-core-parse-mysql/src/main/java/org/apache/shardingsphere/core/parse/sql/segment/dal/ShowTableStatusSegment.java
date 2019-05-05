@@ -15,42 +15,27 @@
  * limitations under the License.
  */
 
-grammar MySQLStatement;
+package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
-import Keyword, Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
-execute
-    : (select
-    | insert
-    | replace
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | setTransaction
-    | beginTransaction
-    | setAutoCommit
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | renameUser
-    | createRole
-    | dropRole
-    | setRole
-    | setPassword
-    | use
-    | desc
-    | showDatabases
-    | showTables
-    | showTableStatus
-    )SEMI_?
-    ;
+/**
+ * Show table status segment.
+ * 
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShowTableStatusSegment implements SQLSegment {
+    
+    private final int fromTableStartIndex;
+    
+    private final int tableStopIndex;
+    
+    public ShowTableStatusSegment() {
+        fromTableStartIndex = -1;
+        tableStopIndex = -1;
+    }
+}
