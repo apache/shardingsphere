@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,13 +29,12 @@ import java.util.List;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class OrderByPlaceholder implements ShardingPlaceholder {
     
-    private final List<String> columnLabels;
+    private final List<String> columnLabels = new LinkedList<>();
     
-    private final List<OrderDirection> orderDirections;
+    private final List<OrderDirection> orderDirections = new LinkedList<>();
     
     @Override
     public String toString() {
