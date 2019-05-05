@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-grammar DALStatement;
+package org.apache.shardingsphere.core.parse.extractor.dal;
 
-import Symbol, Keyword, Literals, BaseRule;
+import com.google.common.base.Optional;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowDatabasesSegment;
 
-use
-    : USE schemaName
-    ;
+import java.util.Map;
 
-desc
-    : (DESC | DESCRIBE) tableName
-    ;
-
-showDatabases
-    : SHOW (DATABASES | SCHEMAS) (LIKE stringLiterals | WHERE expr)?
-    ;
+/**
+ * Show databases extractor for MySQL.
+ * 
+ * @author zhangliang
+ */
+public final class MySQLShowDatabasesExtractor implements OptionalSQLSegmentExtractor {
+    
+    @Override
+    public Optional<ShowDatabasesSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        return Optional.of(new ShowDatabasesSegment());
+    }
+}

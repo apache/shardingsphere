@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-grammar DALStatement;
+package org.apache.shardingsphere.core.parse.filler.dal;
 
-import Symbol, Keyword, Literals, BaseRule;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 
-use
-    : USE schemaName
-    ;
-
-desc
-    : (DESC | DESCRIBE) tableName
-    ;
-
-showDatabases
-    : SHOW (DATABASES | SCHEMAS) (LIKE stringLiterals | WHERE expr)?
-    ;
+/**
+ * Show databases filler for MySQL.
+ *
+ * @author zhangliang
+ */
+public final class MySQLShowDatabasesFiller implements SQLSegmentFiller {
+    
+    @Override
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement) {
+    }
+}

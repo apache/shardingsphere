@@ -49,5 +49,6 @@ execute
     | setPassword
     | use
     | desc
+    | showDatabases
     )SEMI_? 
     ;

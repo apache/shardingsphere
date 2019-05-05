@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-grammar DALStatement;
+package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
-import Symbol, Keyword, Literals, BaseRule;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
-use
-    : USE schemaName
-    ;
-
-desc
-    : (DESC | DESCRIBE) tableName
-    ;
-
-showDatabases
-    : SHOW (DATABASES | SCHEMAS) (LIKE stringLiterals | WHERE expr)?
-    ;
+/**
+ * Show databases segment.
+ * 
+ * @author zhangliang
+ */
+public final class ShowDatabasesSegment implements SQLSegment {
+}

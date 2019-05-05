@@ -1370,3 +1370,7 @@ VARIANCE
 DESCRIBE
     : D E S C R I B E
     ;
+
+SCHEMAS
+    : S C H E M A S
+    ;

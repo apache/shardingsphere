@@ -23,4 +23,5 @@
     <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.MySQLDropPrimaryKeyExtractor" />
     
     <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.extractor.tcl.MySQLSetAutoCommitExtractor" />
+    <extractor-rule id="showDatabases" extractor-class="org.apache.shardingsphere.core.parse.extractor.dal.MySQLShowDatabasesExtractor" />
 </extractor-rule-definition>
