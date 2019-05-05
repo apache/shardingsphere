@@ -1382,3 +1382,8 @@ EXTENDED
 STATUS
     : S T A T U S
     ;
+
+FIELDS
+    : F I E L D S
+    ;
+

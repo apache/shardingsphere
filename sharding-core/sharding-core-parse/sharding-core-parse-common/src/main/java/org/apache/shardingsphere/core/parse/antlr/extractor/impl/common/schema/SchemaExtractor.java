@@ -36,7 +36,7 @@ public final class SchemaExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<SchemaSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> schemaNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SCHEMA_NAME);
-        return schemaNode.isPresent()
-                ? Optional.of(new SchemaSegment(ancestorNode.getStart().getStartIndex(), ancestorNode.getStop().getStopIndex(), ancestorNode.getText())) : Optional.<SchemaSegment>absent();
+        return schemaNode.isPresent() ? Optional.of(new SchemaSegment(schemaNode.get().getStart().getStartIndex(), schemaNode.get().getStop().getStopIndex(), schemaNode.get().getText()))
+                : Optional.<SchemaSegment>absent();
     }
 }

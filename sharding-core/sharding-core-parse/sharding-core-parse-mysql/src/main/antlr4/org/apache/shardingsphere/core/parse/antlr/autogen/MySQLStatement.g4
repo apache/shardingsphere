@@ -52,5 +52,6 @@ execute
     | showDatabases
     | showTables
     | showTableStatus
+    | showColumns
     )SEMI_?
     ;

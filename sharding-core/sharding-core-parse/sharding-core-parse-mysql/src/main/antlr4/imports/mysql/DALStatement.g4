@@ -39,8 +39,16 @@ showTableStatus
     : SHOW TABLE STATUS fromSchema? (showLike | showWhereClause_)?
     ;
 
+showColumns
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable_ fromSchema? (showLike | showWhereClause_)?
+    ;
+
 fromSchema
     : (FROM | IN) schemaName
+    ;
+
+fromTable_
+    : (FROM | IN) tableName
     ;
 
 showLike
