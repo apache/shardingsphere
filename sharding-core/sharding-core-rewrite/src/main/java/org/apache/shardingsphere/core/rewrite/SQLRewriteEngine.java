@@ -65,6 +65,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.RowCountPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
@@ -290,15 +291,17 @@ public final class SQLRewriteEngine {
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        Limit limit = sqlRouteResult.getLimit();
-        if (!isRewrite) {
-            sqlBuilder.appendLiterals(String.valueOf(rowCountToken.getRowCount()));
-        } else if ((!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems()) {
-            sqlBuilder.appendLiterals(String.valueOf(Integer.MAX_VALUE));
-        } else {
-            sqlBuilder.appendLiterals(String.valueOf(limit.isNeedRewriteRowCount(databaseType) ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount()));
-        }
+        sqlBuilder.appendPlaceholder(new RowCountPlaceholder(getRowCount(rowCountToken, isRewrite, selectStatement, sqlRouteResult.getLimit())));
         appendRest(sqlBuilder, count, getStopIndex(rowCountToken));
+    }
+    
+    private int getRowCount(final RowCountToken rowCountToken, final boolean isRewrite, final SelectStatement selectStatement, final Limit limit) {
+        if (!isRewrite) {
+            return rowCountToken.getRowCount();
+        } else if ((!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems()) {
+            return Integer.MAX_VALUE;
+        }
+        return limit.isNeedRewriteRowCount(databaseType) ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount();
     }
     
     private void appendLimitOffsetPlaceholder(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final boolean isRewrite) {
