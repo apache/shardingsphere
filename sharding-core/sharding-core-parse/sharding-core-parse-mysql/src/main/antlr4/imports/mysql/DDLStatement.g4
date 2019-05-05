@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 createTable
     : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
