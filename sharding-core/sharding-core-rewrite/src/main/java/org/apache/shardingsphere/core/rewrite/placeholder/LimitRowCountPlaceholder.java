@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RowCountPlaceholder implements ShardingPlaceholder {
+public final class LimitRowCountPlaceholder implements ShardingPlaceholder {
     
     private final int rowCount;
     

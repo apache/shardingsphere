@@ -65,7 +65,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.RowCountPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
@@ -291,7 +291,7 @@ public final class SQLRewriteEngine {
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        sqlBuilder.appendPlaceholder(new RowCountPlaceholder(getRowCount(rowCountToken, isRewrite, selectStatement, sqlRouteResult.getLimit())));
+        sqlBuilder.appendPlaceholder(new LimitRowCountPlaceholder(getRowCount(rowCountToken, isRewrite, selectStatement, sqlRouteResult.getLimit())));
         appendRest(sqlBuilder, count, getStopIndex(rowCountToken));
     }
     
