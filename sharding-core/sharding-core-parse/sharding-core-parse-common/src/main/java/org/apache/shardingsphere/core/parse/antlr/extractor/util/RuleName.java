@@ -153,6 +153,8 @@ public enum RuleName {
     
     IMPLICIT_TRANSACTIONS_VALUE("ImplicitTransactionsValue"),
     
+    SHOW_LIKE("ShowLike"),
+    
     FROM_SCHEMA("FromSchema");
     
     private final String name;

@@ -18,25 +18,31 @@
 package org.apache.shardingsphere.core.parse.extractor.dal;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTablesSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowLikeSegment;
 
 import java.util.Map;
 
 /**
- * Show tables extractor for MySQL.
+ * Show like extractor for MySQL.
  * 
  * @author zhangliang
  */
-public final class MySQLShowTablesExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLShowLikeExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ShowTablesSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> fromSchemaNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.FROM_SCHEMA);
-        return Optional.of(fromSchemaNode.isPresent()
-                ? new ShowTablesSegment(fromSchemaNode.get().getStart().getStartIndex(), fromSchemaNode.get().getStop().getStopIndex()) : new ShowTablesSegment());
+    public Optional<ShowLikeSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> showLikeNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_LIKE);
+        if (!showLikeNode.isPresent()) {
+            return Optional.absent();
+        }
+        Optional<ParserRuleContext> stringLiteralsNode = ExtractorUtils.findFirstChildNode(showLikeNode.get(), RuleName.STRING_LITERALS);
+        Preconditions.checkState(stringLiteralsNode.isPresent());
+        String pattern = stringLiteralsNode.get().getText().substring(1, stringLiteralsNode.get().getText().length() - 1);
+        return Optional.of(new ShowLikeSegment(stringLiteralsNode.get().getStart().getStartIndex() + 1, stringLiteralsNode.get().getStop().getStopIndex() - 1, pattern));
     }
 }

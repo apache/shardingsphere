@@ -28,11 +28,11 @@ desc
     ;
 
 showDatabases
-    : SHOW (DATABASES | SCHEMAS) (showLikeClause_ | showWhereClause_)?
+    : SHOW (DATABASES | SCHEMAS) (showLike | showWhereClause_)?
     ;
 
 showTables
-    : SHOW showTablesSpecification_ TABLES fromSchema? (showLikeClause_ | showWhereClause_)?
+    : SHOW showTablesSpecification_ TABLES fromSchema? (showLike | showWhereClause_)?
     ;
 
 showTablesSpecification_
@@ -43,7 +43,7 @@ fromSchema
     : (FROM | IN) schemaName
     ;
 
-showLikeClause_
+showLike
     : LIKE stringLiterals
     ;
 

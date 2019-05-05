@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.table;
+package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
 /**
- * Table.
+ * Show like segment.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class Table {
+public final class ShowLikeSegment implements SQLSegment {
     
-    private final String name;
+    private final int startIndex;
     
-    private final String alias;
+    private final int stopIndex;
     
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
+    private final String pattern;
 }
