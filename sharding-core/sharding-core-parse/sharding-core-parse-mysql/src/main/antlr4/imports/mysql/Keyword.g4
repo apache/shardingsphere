@@ -103,10 +103,26 @@ KEY
     : K E Y
     ;
 
+POSITION
+    : P O S I T I O N
+    ;
+
+PRECISION
+    : P R E C I S I O N
+    ;
+
 FUNCTION
     : F U N C T I O N
     ;
-    
+
+TRIGGER
+    : T R I G G E R
+    ;
+
+PROCEDURE
+    : P R O C E D U R E
+    ;
+
 VIEW
     : V I E W
     ;
@@ -114,7 +130,7 @@ VIEW
 INTO
     : I N T O
     ;
-    
+
 VALUES
     : V A L U E S
     ;
@@ -137,6 +153,18 @@ CASE
 
 WHEN
     : W H E N
+    ;
+
+CAST
+    : C A S T
+    ;
+
+TRIM
+    : T R I M
+    ;
+
+SUBSTRING
+    : S U B S T R I N G
     ;
 
 FROM
@@ -189,6 +217,10 @@ IF
 
 ELSE
     : E L S E
+    ;
+
+THEN
+    : T H E N
     ;
 
 FOR
@@ -299,36 +331,24 @@ SAVEPOINT
     : S A V E P O I N T
     ;
 
-MAX
-    : M A X
-    ;
-
-MIN
-    : M I N
-    ;
-    
-SUM
-    : S U M
-    ;
-
-COUNT
-    : C O U N T
-    ;
-
-AVG
-    : A V G
-    ;
-
 BOOLEAN
     : B O O L E A N
     ;
 
-ENABLE
-    : E N A B L E
+DOUBLE
+    : D O U B L E
     ;
 
-DISABLE
-    : D I S A B L E
+CHAR
+    : C H A R
+    ;
+
+CHARACTER
+    : C H A R A C T E R
+    ;
+
+INTERVAL
+    : I N T E R V A L
     ;
 
 DATE
@@ -341,6 +361,14 @@ TIME
 
 TIMESTAMP
     : T I M E S T A M P
+    ;
+
+LOCALTIME
+    : L O C A L T I M E
+    ;
+
+LOCALTIMESTAMP
+    : L O C A L T I M E S T A M P
     ;
 
 YEAR
@@ -377,4 +405,32 @@ SECOND
 
 MICROSECOND
     : M I C R O S E C O N D
+    ;
+
+MAX
+    : M A X
+    ;
+
+MIN
+    : M I N
+    ;
+    
+SUM
+    : S U M
+    ;
+
+COUNT
+    : C O U N T
+    ;
+
+AVG
+    : A V G
+    ;
+
+ENABLE
+    : E N A B L E
+    ;
+
+DISABLE
+    : D I S A B L E
     ;

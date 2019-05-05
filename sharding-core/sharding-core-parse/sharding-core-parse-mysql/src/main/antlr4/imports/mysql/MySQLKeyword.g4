@@ -19,52 +19,140 @@ lexer grammar MySQLKeyword;
 
 import Alphabet;
 
-YEAR_MONTH
-    : D A Y UL_ M O N T H
+USE
+    : U S E
     ;
 
-DAY_HOUR
-    : D A Y UL_ H O U R
+DESCRIBE
+    : D E S C R I B E
     ;
 
-DAY_MINUTE
-    : D A Y UL_ M I N U T E
+SHOW
+    : S H O W
     ;
 
-DAY_SECOND
-    : D A Y UL_ S E C O N D
+DATABASES
+    : D A T A B A S E S
     ;
 
-DAY_MICROSECOND
-    : D A Y UL_ M I C R O S E C O N D
+SCHEMAS
+    : S C H E M A S
     ;
 
-HOUR_MINUTE
-    : H O U R UL_ M I N U T E
+TABLES
+    : T A B L E S
     ;
 
-HOUR_SECOND
-    : H O U R UL_ S E C O N D
+TABLESPACE
+    : T A B L E S P A C E
     ;
 
-HOUR_MICROSECOND
-    : H O U R UL_ M I C R O S E C O N D
+COLUMNS
+    : C O L U M N S
     ;
 
-MINUTE_SECOND
-    : M I N U T E UL_ S E C O N D
+FIELDS
+    : F I E L D S
     ;
 
-MINUTE_MICROSECOND
-    : M I N U T E UL_ M I C R O S E C O N D
+INDEXES
+    : I N D E X E S
     ;
 
-SECOND_MICROSECOND
-    : S E C O N D UL_ M I C R O S E C O N D
+STATUS
+    : S T A T U S
     ;
 
-MAXVALUE
-    : M A X V A L U E
+REPLACE
+    : R E P L A C E
+    ;
+
+MODIFY
+    : M O D I F Y
+    ;
+
+DISTINCTROW
+    : D I S T I N C T R O W
+    ;
+
+VALUE
+    : V A L U E
+    ;
+
+DUPLICATE
+    : D U P L I C A T E
+    ;
+
+FIRST
+    : F I R S T
+    ;
+
+LAST
+    : L A S T
+    ;
+
+AFTER
+    : A F T E R
+    ;
+
+OJ
+    : O J
+    ;
+
+WINDOW
+    : W I N D O W
+    ;
+
+MOD
+    : M O D
+    ;
+
+DIV
+    : D I V
+    ;
+
+XOR
+    : X O R
+    ;
+
+REGEXP
+    : R E G E X P
+    ;
+
+RLIKE
+    : R L I K E
+    ;
+
+ACCOUNT
+    : A C C O U N T
+    ;
+
+USER
+    : U S E R
+    ;
+
+ROLE
+    : R O L E
+    ;
+
+START
+    : S T A R T
+    ;
+
+TRANSACTION
+    : T R A N S A C T I O N
+    ;
+
+ROW
+    : R O W
+    ;
+
+ROWS
+    : R O W S
+    ;
+
+WITHOUT
+    : W I T H O U T
     ;
 
 BINARY
@@ -79,32 +167,72 @@ GENERATED
     : G E N E R A T E D
     ;
 
-MOD
-    : M O D
-    ;
-
-DIV
-    : D I V
-    ;
-
 PARTITION
     : P A R T I T I O N
     ;
 
-REGEXP
-    : R E G E X P
+SUBPARTITION
+    : S U B P A R T I T I O N
     ;
 
-RLIKE
-    : R L I K E
+STORAGE
+    : S T O R A G E
+    ;
+
+STORED
+    : S T O R E D
+    ;
+
+SUPER
+    : S U P E R
+    ;
+
+SUBSTR
+    : S U B S T R
+    ;
+
+TEMPORARY
+    : T E M P O R A R Y
+    ;
+
+THAN
+    : T H A N
+    ;
+
+TRAILING
+    : T R A I L I N G
+    ;
+
+UNBOUNDED
+    : U N B O U N D E D
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;
+
+UNSIGNED
+    : U N S I G N E D
+    ;
+
+UPGRADE
+    : U P G R A D E
+    ;
+
+USAGE
+    : U S A G E
+    ;
+ 
+VALIDATION
+    : V A L I D A T I O N
+    ;
+
+VIRTUAL
+    : V I R T U A L
     ;
 
 ROLLUP
     : R O L L U P
-    ;
-
-ROW
-    : R O W
     ;
 
 SOUNDS
@@ -113,10 +241,6 @@ SOUNDS
 
 UNKNOWN
     : U N K N O W N
-    ;
-
-XOR
-    : X O R
     ;
 
 ALWAYS
@@ -167,40 +291,16 @@ READ
     : R E A D
     ;
 
+WRITE
+    : W R I T E
+    ;
+
 REFERENCES
     : R E F E R E N C E S
     ;
 
-ROLE
-    : R O L E
-    ;
-
-ROWS
-    : R O W S
-    ;
-
-START
-    : S T A R T
-    ;
-
-TRANSACTION
-    : T R A N S A C T I O N
-    ;
-
-USER
-    : U S E R
-    ;
-
-ACCOUNT
-    : A C C O U N T
-    ;
-
 ACTION
     : A C T I O N
-    ;
-
-AFTER
-    : A F T E R
     ;
 
 ALGORITHM
@@ -211,24 +311,12 @@ ANALYZE
     : A N A L Y Z E
     ;
 
-AUDIT_ADMIN
-    : A U D I T UL_ A D M I N
-    ;
-
-AUTO_INCREMENT
-    : A U T O UL_ I N C R E M E N T
-    ;
-
 AUTOCOMMIT
     : A U T O C O M M I T
     ;
 
-AVG_ROW_LENGTH
-    : A V G UL_ R O W UL_ L E N G T H
-    ;
-
-BINLOG_ADMIN
-    : B I N L O G UL_ A D M I N
+MAXVALUE
+    : M A X V A L U E
     ;
 
 BOTH
@@ -239,24 +327,12 @@ BTREE
     : B T R E E
     ;
 
-CAST
-    : C A S T
-    ;
-
 CHAIN
     : C H A I N
     ;
 
 CHANGE
     : C H A N G E
-    ;
-
-CHAR
-    : C H A R
-    ;
-
-CHARACTER
-    : C H A R A C T E R
     ;
 
 CHARSET
@@ -283,14 +359,6 @@ COLLATE
     : C O L L A T E
     ;
 
-COLUMNS
-    : C O L U M N S
-    ;
-
-COLUMN_FORMAT
-    : C O L U M N UL_ F O R M A T
-    ;
-
 COMMENT
     : C O M M E N T
     ;
@@ -311,10 +379,6 @@ CONNECTION
     : C O N N E C T I O N
     ;
 
-CONNECTION_ADMIN
-    : C O N N E C T I O N UL_ A D M I N
-    ;
-
 CONSISTENT
     : C O N S I S T E N T
     ;
@@ -331,24 +395,12 @@ CROSS
     : C R O S S
     ;
 
-CURRENT_TIMESTAMP
-    : C U R R E N T UL_ T I M E S T A M P
-    ;
-
 DATA
     : D A T A
     ;
 
-DATABASES
-    : D A T A B A S E S
-    ;
-
 DELAYED
     : D E L A Y E D
-    ;
-
-DELAY_KEY_WRITE
-    : D E L A Y UL_ K E Y UL_ W R I T E
     ;
 
 DIRECTORY
@@ -363,28 +415,12 @@ DISK
     : D I S K
     ;
 
-DISTINCTROW
-    : D I S T I N C T R O W
-    ;
-
-DOUBLE
-    : D O U B L E
-    ;
-
-DUPLICATE
-    : D U P L I C A T E
-    ;
-
 DYNAMIC
     : D Y N A M I C
     ;
 
 ENCRYPTION
     : E N C R Y P T I O N
-    ;
-
-ENCRYPTION_KEY_ADMIN
-    : E N C R Y P T I O N UL_ K E Y UL_ A D M I N
     ;
 
 END
@@ -423,18 +459,6 @@ FILE
     : F I L E
     ;
 
-FIREWALL_ADMIN
-    : F I R E W A L L UL_ A D M I N
-    ;
-
-FIREWALL_USER
-    : F I R E W A L L UL_ U S E R
-    ;
-
-FIRST
-    : F I R S T
-    ;
-
 FIXED
     : F I X E D
     ;
@@ -455,16 +479,8 @@ GLOBAL
     : G L O B A L
     ;
 
-GROUP_REPLICATION_ADMIN
-    : G R O U P UL_ R E P L I C A T I O N UL_ A D M I N
-    ;
-
 HASH
     : H A S H
-    ;
-
-HIGH_PRIORITY
-    : H I G H UL_ P R I O R I T Y
     ;
 
 IDENTIFIED
@@ -483,24 +499,8 @@ INPLACE
     : I N P L A C E
     ;
 
-INSERT_METHOD
-    : I N S E R T UL_ M E T H O D
-    ;
-
-INTERVAL
-    : I N T E R V A L
-    ;
-
 KEYS
     : K E Y S
-    ;
-
-KEY_BLOCK_SIZE
-    : K E Y UL_ B L O C K UL_ S I Z E
-    ;
-
-LAST
-    : L A S T
     ;
 
 LEADING
@@ -515,40 +515,16 @@ LINEAR
     : L I N E A R
     ;
 
-LOCALTIME
-    : L O C A L T I M E
-    ;
-
-LOCALTIMESTAMP
-    : L O C A L T I M E S T A M P
-    ;
-
 LOCK
     : L O C K
-    ;
-
-LOW_PRIORITY
-    : L O W UL_ P R I O R I T Y
     ;
 
 MATCH
     : M A T C H
     ;
 
-MAX_ROWS
-    : M A X UL_ R O W S
-    ;
-
 MEMORY
     : M E M O R Y
-    ;
-
-MIN_ROWS
-    : M I N UL_ R O W S
-    ;
-
-MODIFY
-    : M O D I F Y
     ;
 
 NATURAL
@@ -579,10 +555,6 @@ OVER
     : O V E R
     ;
 
-PACK_KEYS
-    : P A C K UL_ K E Y S
-    ;
-
 PARSER
     : P A R S E R
     ;
@@ -599,24 +571,8 @@ PERSIST
     : P E R S I S T
     ;
 
-PERSIST_ONLY
-    : P E R S I S T UL_ O N L Y
-    ;
-
-POSITION
-    : P O S I T I O N
-    ;
-
 PRECEDING
     : P R E C E D I N G
-    ;
-
-PRECISION
-    : P R E C I S I O N
-    ;
-
-PROCEDURE
-    : P R O C E D U R E
     ;
 
 PROCESS
@@ -671,16 +627,8 @@ REPAIR
     : R E P A I R
     ;
 
-REPLACE
-    : R E P L A C E
-    ;
-
 REPLICATION
     : R E P L I C A T I O N
-    ;
-
-REPLICATION_SLAVE_ADMIN
-    : R E P L I C A T I O N UL_ S L A V E UL_ A D M I N
     ;
 
 REQUIRE
@@ -695,16 +643,8 @@ REVERSE
     : R E V E R S E
     ;
 
-ROLE_ADMIN
-    : R O L E UL_ A D M I N
-    ;
-
 ROUTINE
     : R O U T I N E
-    ;
-
-ROW_FORMAT
-    : R O W UL_ F O R M A T
     ;
 
 SEPARATOR
@@ -715,16 +655,8 @@ SESSION
     : S E S S I O N
     ;
 
-SET_USER_ID
-    : S E T UL_ U S E R UL_ I D
-    ;
-
 SHARED
     : S H A R E D
-    ;
-
-SHOW
-    : S H O W
     ;
 
 SHUTDOWN
@@ -743,12 +675,68 @@ SPATIAL
     : S P A T I A L
     ;
 
-SQLDML
-    : S Q L D M L
+ZEROFILL
+    : Z E R O F I L L
     ;
 
-SQLDQL
-    : S Q L D Q L
+VISIBLE
+    : V I S I B L E
+    ;
+
+INVISIBLE
+    : I N V I S I B L E
+    ;
+
+INSTANT
+    : I N S T A N T
+    ;
+
+ENFORCED
+    : E N F O R C E D
+    ;
+
+AGAINST
+    : A G A I N S T
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+MODE
+    : M O D E
+    ;
+
+QUERY
+    : Q U E R Y
+    ;
+
+EXTENDED
+    : E X T E N D E D
+    ;
+
+EXPANSION
+    : E X P A N S I O N
+    ;
+
+VARIANCE
+    : V A R I A N C E
+    ;
+
+MAX_ROWS
+    : M A X UL_ R O W S
+    ;
+
+MIN_ROWS
+    : M I N UL_ R O W S
+    ;
+
+HIGH_PRIORITY
+    : H I G H UL_ P R I O R I T Y
+    ;
+
+LOW_PRIORITY
+    : L O W UL_ P R I O R I T Y
     ;
 
 SQL_BIG_RESULT
@@ -775,10 +763,6 @@ SQL_SMALL_RESULT
     : S Q L UL_ S M A L L UL_ R E S U L T
     ;
 
-SSL
-    : S S L
-    ;
-
 STATS_AUTO_RECALC
     : S T A T S UL_ A U T O UL_ R E C A L C
     ;
@@ -791,168 +775,64 @@ STATS_SAMPLE_PAGES
     : S T A T S UL_ S A M P L E UL_ P A G E S
     ;
 
-STORAGE
-    : S T O R A G E
+ROLE_ADMIN
+    : R O L E UL_ A D M I N
     ;
 
-STORED
-    : S T O R E D
+ROW_FORMAT
+    : R O W UL_ F O R M A T
+    ;
+
+SET_USER_ID
+    : S E T UL_ U S E R UL_ I D
+    ;
+
+REPLICATION_SLAVE_ADMIN
+    : R E P L I C A T I O N UL_ S L A V E UL_ A D M I N
+    ;
+
+GROUP_REPLICATION_ADMIN
+    : G R O U P UL_ R E P L I C A T I O N UL_ A D M I N
     ;
 
 STRAIGHT_JOIN
     : S T R A I G H T UL_ J O I N
     ;
 
-SUBPARTITION
-    : S U B P A R T I T I O N
-    ;
-
-SUPER
-    : S U P E R
-    ;
-
-SUBSTR
-    : S U B S T R
-    ;
-
-SUBSTRING
-    : S U B S T R I N G
-    ;
-
-SYSTEM_VARIABLES_ADMIN
-    : S Y S T E M UL_ V A R I A B L E S UL_ A D M I N
-    ;
-
-TABLES
-    : T A B L E S
-    ;
-
-TABLESPACE
-    : T A B L E S P A C E
-    ;
-
-TEMPORARY
-    : T E M P O R A R Y
-    ;
-
-THAN
-    : T H A N
-    ;
-
-THEN
-    : T H E N
-    ;
-
-TRAILING
-    : T R A I L I N G
-    ;
-
-TRIGGER
-    : T R I G G E R
-    ;
-
-TRIM
-    : T R I M
-    ;
-
-UNBOUNDED
-    : U N B O U N D E D
-    ;
-
-UNLOCK
-    : U N L O C K
-    ;
-
-UNSIGNED
-    : U N S I G N E D
-    ;
-
-UPGRADE
-    : U P G R A D E
-    ;
-
-USAGE
-    : U S A G E
-    ;
-    
-USE
-    : U S E
-    ;
-
-VALIDATION
-    : V A L I D A T I O N
-    ;
-
-VALUE
-    : V A L U E
-    ;
-
-VERSION_TOKEN_ADMIN
-    : V E R S I O N UL_ T O K E N UL_ A D M I N
-    ;
-
-VIRTUAL
-    : V I R T U A L
-    ;
-
 WEIGHT_STRING
     : W E I G H T UL_ S T R I N G
     ;
 
-WINDOW
-    : W I N D O W
+COLUMN_FORMAT
+    : C O L U M N UL_ F O R M A T
     ;
 
-WITHOUT
-    : W I T H O U T
+CONNECTION_ADMIN
+    : C O N N E C T I O N UL_ A D M I N
     ;
 
-WRITE
-    : W R I T E
+FIREWALL_ADMIN
+    : F I R E W A L L UL_ A D M I N
     ;
 
-ZEROFILL
-    : Z E R O F I L L
+FIREWALL_USER
+    : F I R E W A L L UL_ U S E R
     ;
 
-VISIBLE
-    : V I S I B L E
+INSERT_METHOD
+    : I N S E R T UL_ M E T H O D
     ;
 
-INVISIBLE
-    : I N V I S I B L E
+KEY_BLOCK_SIZE
+    : K E Y UL_ B L O C K UL_ S I Z E
     ;
 
-INSTANT
-    : I N S T A N T
+PACK_KEYS
+    : P A C K UL_ K E Y S
     ;
 
-ENFORCED
-    : E N F O R C E D
-    ;
-
-OJ
-    : O J
-    ;
-
-AGAINST
-    : A G A I N S T
-    ;
-
-LANGUAGE
-    : L A N G U A G E
-    ;
-
-MODE
-    : M O D E
-    ;
-
-QUERY
-    : Q U E R Y
-    ;
-
-EXPANSION
-    : E X P A N S I O N
+PERSIST_ONLY
+    : P E R S I S T UL_ O N L Y
     ;
 
 BIT_AND
@@ -1003,30 +883,82 @@ VAR_SAMP
     : V A R UL_ S A M P
     ;
 
-VARIANCE
-    : V A R I A N C E
+AUDIT_ADMIN
+    : A U D I T UL_ A D M I N
     ;
 
-DESCRIBE
-    : D E S C R I B E
+AUTO_INCREMENT
+    : A U T O UL_ I N C R E M E N T
     ;
 
-SCHEMAS
-    : S C H E M A S
+AVG_ROW_LENGTH
+    : A V G UL_ R O W UL_ L E N G T H
     ;
 
-EXTENDED
-    : E X T E N D E D
+BINLOG_ADMIN
+    : B I N L O G UL_ A D M I N
+    ;
+    
+DELAY_KEY_WRITE
+    : D E L A Y UL_ K E Y UL_ W R I T E
     ;
 
-STATUS
-    : S T A T U S
+ENCRYPTION_KEY_ADMIN
+    : E N C R Y P T I O N UL_ K E Y UL_ A D M I N
+    ;
+    
+SYSTEM_VARIABLES_ADMIN
+    : S Y S T E M UL_ V A R I A B L E S UL_ A D M I N
     ;
 
-FIELDS
-    : F I E L D S
+VERSION_TOKEN_ADMIN
+    : V E R S I O N UL_ T O K E N UL_ A D M I N
     ;
 
-INDEXES
-    : I N D E X E S
+CURRENT_TIMESTAMP
+    : C U R R E N T UL_ T I M E S T A M P
+    ;
+
+YEAR_MONTH
+    : D A Y UL_ M O N T H
+    ;
+
+DAY_HOUR
+    : D A Y UL_ H O U R
+    ;
+
+DAY_MINUTE
+    : D A Y UL_ M I N U T E
+    ;
+
+DAY_SECOND
+    : D A Y UL_ S E C O N D
+    ;
+
+DAY_MICROSECOND
+    : D A Y UL_ M I C R O S E C O N D
+    ;
+
+HOUR_MINUTE
+    : H O U R UL_ M I N U T E
+    ;
+
+HOUR_SECOND
+    : H O U R UL_ S E C O N D
+    ;
+
+HOUR_MICROSECOND
+    : H O U R UL_ M I C R O S E C O N D
+    ;
+
+MINUTE_SECOND
+    : M I N U T E UL_ S E C O N D
+    ;
+
+MINUTE_MICROSECOND
+    : M I N U T E UL_ M I C R O S E C O N D
+    ;
+
+SECOND_MICROSECOND
+    : S E C O N D UL_ M I C R O S E C O N D
     ;
