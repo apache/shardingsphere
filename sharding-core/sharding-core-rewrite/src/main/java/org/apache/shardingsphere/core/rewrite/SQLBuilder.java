@@ -176,8 +176,15 @@ public final class SQLBuilder {
     private void appendIndexPlaceholder(final IndexPlaceholder placeholder, final String actualTableName, final StringBuilder stringBuilder) {
         stringBuilder.append(placeholder.getLogicIndexName());
         if (!Strings.isNullOrEmpty(actualTableName)) {
-            stringBuilder.append("_");
-            stringBuilder.append(actualTableName);
+            if ('`' == stringBuilder.charAt(stringBuilder.length() - 1)) {
+        		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                stringBuilder.append("_");
+                stringBuilder.append(actualTableName);
+                stringBuilder.append("`");
+        	} else {
+        		stringBuilder.append("_");
+                stringBuilder.append(actualTableName);
+        	}
         }
     }
     
