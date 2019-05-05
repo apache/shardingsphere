@@ -51,6 +51,10 @@ showCreateTable
     : SHOW CREATE TABLE tableName
     ;
 
+showOther
+    : SHOW
+    ;
+
 fromSchema
     : (FROM | IN) schemaName
     ;
