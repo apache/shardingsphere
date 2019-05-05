@@ -48,6 +48,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.EncryptUpdateItemColum
 import org.apache.shardingsphere.core.rewrite.placeholder.EncryptWhereColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -133,11 +134,11 @@ public final class EncryptSQLRewriteEngine {
         sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
             if (each instanceof SelectItemsToken) {
-                appendItemsToken(sqlBuilder, (SelectItemsToken) each, count);
+                appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) each, count);
             } else if (each instanceof InsertValuesToken) {
-                appendInsertValuesToken(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
+                appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof InsertSetToken) {
-                appendInsertSetToken(sqlBuilder, (InsertSetToken) each, count, optimizeResult.getInsertOptimizeResult().get());
+                appendInsertSetPlaceholder(sqlBuilder, (InsertSetToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof EncryptColumnToken) {
                 appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
@@ -147,22 +148,22 @@ public final class EncryptSQLRewriteEngine {
         }
     }
     
-    private void appendItemsToken(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count) {
-        if (!(sqlStatement instanceof InsertStatement)) {
-            return;
-        }
-        for (int i = 0; i < selectItemsToken.getItems().size(); i++) {
-            if (selectItemsToken.isFirstOfItemsSpecial() && 0 == i) {
-                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(selectItemsToken.getItems().get(i), databaseType));
-            } else {
-                sqlBuilder.appendLiterals(", ");
-                sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(selectItemsToken.getItems().get(i), databaseType));
-            }
+    private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count) {
+        if (sqlStatement instanceof InsertStatement) {
+            SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder(selectItemsToken.isFirstOfItemsSpecial());
+            selectItemsPlaceholder.getItems().addAll(Lists.transform(selectItemsToken.getItems(), new Function<String, String>() {
+        
+                @Override
+                public String apply(final String input) {
+                    return SQLUtil.getOriginalValue(input, databaseType);
+                }
+            }));
+            sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
         }
         appendRest(sqlBuilder, count, getStopIndex(selectItemsToken));
     }
     
-    private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
+    private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             encryptInsertOptimizeResult(insertOptimizeResult.getColumnNames(), each);
         }
@@ -171,7 +172,7 @@ public final class EncryptSQLRewriteEngine {
         appendRest(sqlBuilder, count, getStopIndex(insertValuesToken));
     }
     
-    private void appendInsertSetToken(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
+    private void appendInsertSetPlaceholder(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             encryptInsertOptimizeResult(insertOptimizeResult.getColumnNames(), each);
         }
