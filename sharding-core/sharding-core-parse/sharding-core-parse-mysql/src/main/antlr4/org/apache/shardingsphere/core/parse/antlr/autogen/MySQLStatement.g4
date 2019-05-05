@@ -53,5 +53,6 @@ execute
     | showTables
     | showTableStatus
     | showColumns
+    | showIndex
     )SEMI_?
     ;

@@ -43,6 +43,10 @@ showColumns
     : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable_ fromSchema? (showLike | showWhereClause_)?
     ;
 
+showIndex
+    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable_ fromSchema? showWhereClause_?
+    ;
+
 fromSchema
     : (FROM | IN) schemaName
     ;

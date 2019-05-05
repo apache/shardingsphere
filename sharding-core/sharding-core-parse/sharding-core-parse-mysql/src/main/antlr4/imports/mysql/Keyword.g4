@@ -1387,3 +1387,6 @@ FIELDS
     : F I E L D S
     ;
 
+INDEXES
+    : I N D E X E S
+    ;
