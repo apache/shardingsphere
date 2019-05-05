@@ -39,7 +39,7 @@ public final class InsertOptimizeResultTest {
     public void assertAddUnitWithSet() {
         SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
         Object[] parameters = {"parameter"};
-        setInsertOptimizeResult.addUnit(expressions, parameters);
+        setInsertOptimizeResult.addUnit(expressions, parameters, 1);
         assertThat(setInsertOptimizeResult.getColumnNames().size(), is(3));
         assertThat(setInsertOptimizeResult.getType(), is(InsertType.SET));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getValues(), is(expressions));
@@ -58,7 +58,7 @@ public final class InsertOptimizeResultTest {
     public void assertAddUnitWithValues() {
         SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
         Object[] parameters = {"parameter"};
-        valuesInsertOptimizeResult.addUnit(expressions, parameters);
+        valuesInsertOptimizeResult.addUnit(expressions, parameters, 1);
         assertThat(valuesInsertOptimizeResult.getUnits().get(0).toString(), is("(1, ?, 'test')"));
     }
 }

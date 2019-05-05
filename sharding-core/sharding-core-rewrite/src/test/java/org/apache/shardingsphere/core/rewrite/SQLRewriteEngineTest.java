@@ -186,7 +186,7 @@ public final class SQLRewriteEngineTest {
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1), new SQLParameterMarkerExpression(2)};
-        insertOptimizeResult.addUnit(sqlExpressions, parameters);
+        insertOptimizeResult.addUnit(sqlExpressions, parameters, 3);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
@@ -207,7 +207,7 @@ public final class SQLRewriteEngineTest {
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
-        insertOptimizeResult.addUnit(sqlExpressions, parameters);
+        insertOptimizeResult.addUnit(sqlExpressions, parameters, 2);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
@@ -226,7 +226,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(new InsertValuesToken(21, 32));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
-        insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
+        insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
@@ -248,7 +248,7 @@ public final class SQLRewriteEngineTest {
         insertStatement.addSQLToken(new InsertValuesToken(21, 35));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
-        insertOptimizeResult.addUnit(sqlExpressions, new Object[0]);
+        insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
@@ -268,7 +268,7 @@ public final class SQLRewriteEngineTest {
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
         Object[] parameters = {"x", 1};
-        insertOptimizeResult.addUnit(sqlExpressions, parameters);
+        insertOptimizeResult.addUnit(sqlExpressions, parameters, 2);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         TableUnit tableUnit = new TableUnit("db0");
         tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
