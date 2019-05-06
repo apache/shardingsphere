@@ -52,11 +52,11 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertSetAutoCommit() throws SQLException {
+    public void assertSetAutoCommitForLocal() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             assertTrue(actual.getAutoCommit());
-            actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
+            actual.setAutoCommit(false);
             assertFalse(actual.getAutoCommit());
             Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
             assertThat(cachedConnections.size(), is(1));
