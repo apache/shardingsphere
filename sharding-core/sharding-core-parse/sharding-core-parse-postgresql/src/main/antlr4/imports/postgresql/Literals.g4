@@ -19,8 +19,9 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
-IDENTIFIER_ 
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+IDENTIFIER_
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    |  '`' ~'`'+ '`'
     ;
 
 STRING_ 
@@ -29,7 +30,7 @@ STRING_
     ;
 
 NUMBER_
-    : MINUS_? INT_? DOT_? INT_ (E [+\-]? INT_)?
+    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
     ;
 
 HEX_DIGIT_

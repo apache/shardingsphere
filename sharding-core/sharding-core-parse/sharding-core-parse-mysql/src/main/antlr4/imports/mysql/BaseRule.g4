@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, Literals;
+import Symbol, Keyword, MySQLKeyword, Literals;
 
 parameterMarker
     : QUESTION_
@@ -60,10 +60,6 @@ booleanLiterals
 
 nullValueLiterals
     : NULL
-    ;
-
-characterSetName_
-    : IDENTIFIER_
     ;
 
 identifier_
@@ -122,6 +118,10 @@ tableNames
 
 indexName
     : identifier_
+    ;
+
+characterSetName_
+    : IDENTIFIER_
     ;
 
 expr
