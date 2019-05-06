@@ -38,7 +38,7 @@ public abstract class AbstractShardingTransactionManagerFixture implements Shard
     
     @Override
     public final boolean isInTransaction() {
-        return true;
+        return invocations.contains(TransactionOperationType.BEGIN);
     }
     
     @Override

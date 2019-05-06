@@ -197,8 +197,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         this.autoCommit = autoCommit;
         if (TransactionType.LOCAL == transactionType) {
             setAutoCommitForLocalTransaction(autoCommit);
-        } else if (!autoCommit) {
-            shardingTransactionManager.begin();
+        } else {
+            setAutoCommitForShardingTransaction(autoCommit);
         }
     }
     
@@ -211,6 +211,28 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 connection.setAutoCommit(autoCommit);
             }
         });
+    }
+    
+    private void setAutoCommitForShardingTransaction(final boolean autoCommit) throws SQLException {
+        if (autoCommit && !shardingTransactionManager.isInTransaction() || !autoCommit && shardingTransactionManager.isInTransaction()) {
+            return;
+        }
+        if (autoCommit && shardingTransactionManager.isInTransaction()) {
+            shardingTransactionManager.commit();
+            return;
+        }
+        if (!autoCommit && !shardingTransactionManager.isInTransaction()) {
+            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{true});
+            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+        
+                @Override
+                public void execute(final Connection connection) throws SQLException {
+                    connection.close();
+                }
+            });
+            cachedConnections.clear();
+            shardingTransactionManager.begin();
+        }
     }
     
     @Override
