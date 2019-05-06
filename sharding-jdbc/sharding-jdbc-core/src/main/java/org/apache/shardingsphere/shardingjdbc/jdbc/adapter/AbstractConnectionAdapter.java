@@ -85,6 +85,12 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         shardingTransactionManager = shardingTransactionManagerEngine.getTransactionManager(transactionType);
     }
     
+    protected AbstractConnectionAdapter() {
+        rootInvokeHook.start();
+        this.transactionType = TransactionType.LOCAL;
+        shardingTransactionManager = null;
+    }
+    
     /**
      * Get database connection.
      *
@@ -189,14 +195,12 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
-        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
+        if (TransactionType.LOCAL == transactionType) {
             setAutoCommitForLocalTransaction(autoCommit);
         } else if (!autoCommit) {
             shardingTransactionManager.begin();
         }
     }
-    
-    protected abstract boolean isOnlyLocalTransactionValid();
     
     private void setAutoCommitForLocalTransaction(final boolean autoCommit) throws SQLException {
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
@@ -211,7 +215,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void commit() throws SQLException {
-        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
+        if (TransactionType.LOCAL == transactionType) {
             commitForLocalTransaction();
         } else {
             shardingTransactionManager.commit();
@@ -230,7 +234,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void rollback() throws SQLException {
-        if (TransactionType.LOCAL == transactionType || isOnlyLocalTransactionValid()) {
+        if (TransactionType.LOCAL == transactionType) {
             rollbackForLocalTransaction();
         } else {
             shardingTransactionManager.rollback();

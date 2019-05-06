@@ -89,7 +89,7 @@ public final class MasterSlaveDataSourceTest {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(
                 "ds", "masterDataSource", Collections.singletonList("slaveDataSource"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
         try {
-            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, new Properties())).getDatabaseType();
+            MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, new Properties());
         } finally {
             verify(masterConnection).close();
             verify(slaveConnection).close();
@@ -137,6 +137,6 @@ public final class MasterSlaveDataSourceTest {
         MasterSlaveConnection connection = masterSlaveDataSource.getConnection();
         assertNotNull(connection.getDataSourceMap());
         assertThat(connection.getDataSourceMap().values().size(), is(2));
-        assertThat(connection.getTransactionType(), is(TransactionType.XA));
+        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
     }
 }
