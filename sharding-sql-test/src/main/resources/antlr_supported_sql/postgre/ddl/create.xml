@@ -27,7 +27,7 @@
         column2 VARCHAR(10),
         column3 VARCHAR(10)
     )"     />
-    <sql-case id="create_table_with_back_quota" value="CREATE TABLE `t_order` (`order_id` INTEGER, `user_id` INTEGER, `status` VARCHAR(10), `column1` VARCHAR(10), `column2` VARCHAR(10), `column3` VARCHAR(10))" />
+    <sql-case id="create_table_with_double_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; INTEGER, &quot;user_id&quot; INTEGER, &quot;status&quot; VARCHAR(10), &quot;column1&quot; VARCHAR(10), &quot;column2&quot; VARCHAR(10), &quot;column3&quot; VARCHAR(10))" />
     <sql-case id="create_local_temporary_table" value="CREATE LOCAL TEMPORARY TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
     <sql-case id="create_unlogged_table" value="CREATE UNLOGGED TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
     <sql-case id="create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" />
@@ -61,7 +61,7 @@
         idx_order_id
     ON
         t_order (order_id)    " />
-    <sql-case id="create_index_with_back_quota" value="CREATE INDEX `idx_order_id` ON `t_order` (`order_id`)" />
+    <sql-case id="create_index_with_double_quota" value="CREATE INDEX &quot;idx_order_id&quot; ON &quot;t_order&quot; (&quot;order_id&quot;)" />
     <sql-case id="create_composite_index" value="CREATE INDEX idx_order_id_user_id_status ON t_order (order_id, user_id, status)" />
     <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX uk_order_id ON t_order (order_id)" />
     <sql-case id="create_index_concurrently" value="CREATE INDEX CONCURRENTLY idx_order_id ON t_order (order_id)" />

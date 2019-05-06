@@ -57,7 +57,7 @@ nullValueLiterals
     ;
 
 identifier_
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | DQ_ IDENTIFIER_ DQ_ | unreservedWord_
     ;
 
 unreservedWord_
