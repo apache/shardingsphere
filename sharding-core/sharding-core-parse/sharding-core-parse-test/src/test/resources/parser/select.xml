@@ -882,4 +882,12 @@
             <table-token start-index="14" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
+    <parser-result sql-case-id="select_with_interval_function">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="41" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>
