@@ -9,7 +9,7 @@ chapter = true
 
 ShardingSphere的发布版包括源码包及其对应的二进制包。由于下载内容分布在镜像服务器上，所以下载后应该进行GPG或SHA-512校验，以此来保证内容没有被篡改。
 
-| 版本 | 发布日期 | 源码下载 | Sharding-JDBC 二进制文件下载 | Sharding-Proxy 二进制文件下载 |
+| 版本 | 发布日期 | 源码下载 | Sharding-JDBC下载 | Sharding-Proxy下载 |
 | --------- | ------------ | --------------------------- | ----------------------------- | ------------------------------ |
 | 4.0.0-RC1 | 2019 Apr 21  | [source](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-src.zip) ([asc](https://www.apache.org/dist/incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-src.zip.asc) [sha512](https://www.apache.org/dist/incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-src.zip.sha512)) | [binary](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz) ([asc](https://www.apache.org/dist/incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.asc) [sha512](https://www.apache.org/dist/incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-jdbc-bin.tar.gz.sha512))   | [binary](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz) ([asc](https://www.apache.org/dist/incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.asc) [sha512](https://www.apache.org/dist/incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz.sha512))    |
 
