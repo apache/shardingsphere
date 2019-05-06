@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 createTable
     : CREATE TABLE tableName fileTableClause_ createDefinitionClause_
@@ -36,11 +36,11 @@ alterIndex
     ;
 
 dropTable
-    : DROP TABLE tableExistClause_ tableNames
+    : DROP TABLE ifExist_? tableNames
     ;
 
 dropIndex
-    : DROP INDEX indexExistClause_ indexName ON tableName
+    : DROP INDEX ifExist_? indexName ON tableName
     ;
 
 truncateTable
@@ -340,7 +340,7 @@ alterDrop
     ;
 
 alterTableDropConstraint
-    : CONSTRAINT? tableExistClause_? dropConstraintName (COMMA_ dropConstraintName)*
+    : CONSTRAINT? ifExist_? dropConstraintName (COMMA_ dropConstraintName)*
     ;
 
 dropConstraintName
@@ -360,11 +360,11 @@ onOffOption_
     ;
 
 dropColumnSpecification
-    : COLUMN columnExistClause_? columnName (COMMA_ columnName)*
+    : COLUMN ifExist_? columnName (COMMA_ columnName)*
     ;
 
 dropIndexSpecification
-    : INDEX indexExistClause_ indexName (COMMA_ indexName)*
+    : INDEX ifExist_? indexName (COMMA_ indexName)*
     ;
 
 alterCheckConstraint 
@@ -438,14 +438,6 @@ onHistoryTableClause
     : LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ onOffOption_)? RP_
     ;
 
-tableExistClause_
-    : (IF EXISTS)?
-    ;
-
-indexExistClause_
-    : (IF EXISTS)?
-    ;
-
-columnExistClause_
-    : (IF EXISTS)?
+ifExist_
+    : IF EXISTS
     ;
