@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, Literals;
+import Symbol, Keyword, OracleKeyword, Literals;
 
 schemaName
     : IDENTIFIER_
