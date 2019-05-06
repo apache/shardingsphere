@@ -22,7 +22,7 @@ If companies intend to implement their own APM systems, they only need to implem
 Its disadvantage is that OpenTracing protocol is not stable in its development, does not have relatively new versions, and is too neutral to be a strong support as native ones do to customized products.
 
 The second way is to use SkyWalking's automatic monitor agent. 
-ShardingSphere team cooperates with [SkyWalking](http://skywalking.io/) team and has realized the automatic monitor agent of `ShardingSphere` to automatically send relevant application performance data to `SkyWalking`.
+ShardingSphere team cooperates with [SkyWalking](http://shardingsphere.apache.org/) team and has realized the automatic monitor agent of `ShardingSphere` to automatically send relevant application performance data to `SkyWalking`.
 
 ## Usage
 
@@ -58,7 +58,7 @@ Call initialization method.
 
 ### Use SkyWalking's Automatic Agent
 
-Please refer to [SkyWalking Manual](https://github.com/apache/incubator-skywalking/blob/5.x/docs/en/Quick-start.md).
+Please refer to [SkyWalking Manual](https://github.com/apache/skywalking/blob/5.x/docs/en/Quick-start.md).
 
 ## Result Demonstration
 

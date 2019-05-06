@@ -17,7 +17,7 @@ ShardingSphere并不负责如何采集、存储以及展示应用性能监控的
 缺点是OpenTracing协议发展并不稳定，较新的版本实现者较少，且协议本身过于中立，对于个性化的相关产品的实现不如原生支持强大。
 
 第二种方式是使用SkyWalking的自动探针。
-[ShardingSphere](https://shardingsphere.apache.org)团队与[SkyWalking](http://skywalking.io)团队共同合作，在`SkyWalking`中实现了`ShardingSphere`自动探针，可以将相关的应用性能数据自动发送到`SkyWalking`中。
+[ShardingSphere](https://shardingsphere.apache.org)团队与[SkyWalking](https://skywalking.apache.org)团队共同合作，在`SkyWalking`中实现了`ShardingSphere`自动探针，可以将相关的应用性能数据自动发送到`SkyWalking`中。
 
 ## 使用方法
 
@@ -47,7 +47,7 @@ ShardingSphere并不负责如何采集、存储以及展示应用性能监控的
 
 ### 使用SkyWalking自动探针
 
-请参考[SkyWalking部署手册](https://github.com/apache/incubator-skywalking/blob/5.x/docs/cn/Quick-start-CN.md)。
+请参考[SkyWalking部署手册](https://github.com/apache/skywalking/blob/5.x/docs/cn/Quick-start-CN.md)。
 
 ## 效果展示
 
