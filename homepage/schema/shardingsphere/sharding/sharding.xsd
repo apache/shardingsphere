@@ -121,7 +121,7 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-
+    
     <xsd:element name="master-slave-rules">
         <xsd:complexType>
             <xsd:sequence>
