@@ -67,11 +67,19 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertIgnoreAutoCommitForXA() throws SQLException {
+    public void assertSkipAutoCommitForXA() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(true);
-            assertFalse(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
+            assertFalse(actual.getShardingTransactionManager().isInTransaction());
+        }
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(false);
+            assertTrue(actual.getShardingTransactionManager().isInTransaction());
+            assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
+            actual.setAutoCommit(false);
+            assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
         }
     }
     
