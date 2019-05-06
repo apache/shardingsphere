@@ -27,7 +27,6 @@ import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.routing.type.TableUnits;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +44,6 @@ import java.util.Set;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class CartesianRoutingEngine implements RoutingEngine {
     
     private final Collection<RoutingResult> routingResults;
@@ -58,7 +56,6 @@ public final class CartesianRoutingEngine implements RoutingEngine {
             List<Set<RoutingTable>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
             result.getTableUnits().getTableUnits().addAll(getTableUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)).getTableUnits());
         }
-        log.trace("cartesian tables sharding result: {}", result);
         return result;
     }
     

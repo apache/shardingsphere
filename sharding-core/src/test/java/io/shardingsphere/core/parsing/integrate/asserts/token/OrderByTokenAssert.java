@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.test.sql.SQLCaseType;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -38,13 +38,13 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-class OrderByTokenAssert {
+final class OrderByTokenAssert {
     
     private final SQLCaseType sqlCaseType;
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertOrderByToken(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertOrderByToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         Optional<OrderByToken> orderByToken = getOrderByToken(actual);
         if (orderByToken.isPresent()) {
             assertOrderByToken(orderByToken.get(), expected.getOrderByToken());
@@ -61,7 +61,7 @@ class OrderByTokenAssert {
         }
     }
     
-    private Optional<OrderByToken> getOrderByToken(final List<SQLToken> actual) {
+    private Optional<OrderByToken> getOrderByToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof OrderByToken) {
                 return Optional.of((OrderByToken) each);

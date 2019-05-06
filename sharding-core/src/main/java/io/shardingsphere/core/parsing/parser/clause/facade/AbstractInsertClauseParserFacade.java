@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.clause.facade;
 
 import io.shardingsphere.core.parsing.parser.clause.InsertColumnsClauseParser;
+import io.shardingsphere.core.parsing.parser.clause.InsertDuplicateKeyUpdateClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.InsertIntoClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.InsertSetClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.InsertValuesClauseParser;
@@ -40,4 +41,6 @@ public abstract class AbstractInsertClauseParserFacade {
     private final InsertValuesClauseParser insertValuesClauseParser;
     
     private final InsertSetClauseParser insertSetClauseParser;
+    
+    private final InsertDuplicateKeyUpdateClauseParser insertDuplicateKeyUpdateClauseParser;
 }

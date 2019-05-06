@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.parser.dialect.oracle.clause;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 
@@ -46,5 +47,10 @@ public final class OracleWhereClauseParser extends WhereClauseParser {
             }
         }
         return "rownum".equalsIgnoreCase(columnLabel) || columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());
+    }
+    
+    @Override
+    protected Keyword[] getCustomizedOtherConditionOperators() {
+        return new Keyword[0];
     }
 }

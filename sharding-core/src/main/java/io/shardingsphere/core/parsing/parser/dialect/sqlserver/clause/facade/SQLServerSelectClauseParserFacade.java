@@ -18,10 +18,9 @@
 package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.GroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.HavingClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerGroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerOrderByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerSelectListClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerSelectRestClauseParser;
@@ -37,8 +36,8 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class SQLServerSelectClauseParserFacade extends AbstractSelectClauseParserFacade {
     
     public SQLServerSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new DistinctClauseParser(lexerEngine), new SQLServerSelectListClauseParser(shardingRule, lexerEngine),
-                new SQLServerTableReferencesClauseParser(shardingRule, lexerEngine), new SQLServerWhereClauseParser(lexerEngine), new GroupByClauseParser(lexerEngine),
+        super(new SQLServerSelectListClauseParser(shardingRule, lexerEngine),
+                new SQLServerTableReferencesClauseParser(shardingRule, lexerEngine), new SQLServerWhereClauseParser(lexerEngine), new SQLServerGroupByClauseParser(lexerEngine),
                 new HavingClauseParser(lexerEngine), new SQLServerOrderByClauseParser(lexerEngine), new SQLServerSelectRestClauseParser(lexerEngine));
     }
 }

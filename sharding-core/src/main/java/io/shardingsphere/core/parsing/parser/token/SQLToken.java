@@ -17,17 +17,22 @@
 
 package io.shardingsphere.core.parsing.parser.token;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * SQL Token.
  *
  * @author zhangliang
  */
-public interface SQLToken {
+@RequiredArgsConstructor
+@Getter
+public abstract class SQLToken implements Comparable<SQLToken> {
     
-    /**
-     * Get begin position.
-     * 
-     * @return begin position
-     */
-    int getBeginPosition();
+    private final int beginPosition;
+    
+    @Override
+    public final int compareTo(final SQLToken sqlToken) {
+        return beginPosition - sqlToken.getBeginPosition();
+    }
 }

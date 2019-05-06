@@ -18,9 +18,9 @@
 package io.shardingsphere.core.routing.strategy.complex;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.util.StringUtil;
 import lombok.Getter;

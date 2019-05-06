@@ -19,16 +19,18 @@ package io.shardingsphere.core.routing.type.standard;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
-import io.shardingsphere.core.hint.ShardingKey;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import io.shardingsphere.core.routing.strategy.ShardingStrategy;
+import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
+import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
@@ -46,6 +48,7 @@ import java.util.List;
  * 
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class StandardRoutingEngine implements RoutingEngine {
@@ -55,39 +58,117 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private final String logicTableName;
     
     private final ShardingConditions shardingConditions;
-    
+   
     @Override
     public RoutingResult route() {
-        TableRule tableRule = shardingRule.getTableRule(logicTableName);
-        Collection<String> databaseShardingColumns = shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns();
-        Collection<String> tableShardingColumns = shardingRule.getTableShardingStrategy(tableRule).getShardingColumns();
-        Collection<DataNode> routedDataNodes = new LinkedHashSet<>();
-        if (HintManagerHolder.isUseShardingHint()) {
-            List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint(databaseShardingColumns);
-            List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint(tableShardingColumns);
-            Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
-            for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-                if (each instanceof InsertShardingCondition) {
-                    ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-                }
-            }
-            routedDataNodes.addAll(dataNodes);
-        } else {
-            if (shardingConditions.getShardingConditions().isEmpty()) {
-                routedDataNodes.addAll(route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList()));
-            } else {
-                for (ShardingCondition each : shardingConditions.getShardingConditions()) {
-                    List<ShardingValue> databaseShardingValues = getShardingValues(databaseShardingColumns, each);
-                    List<ShardingValue> tableShardingValues = getShardingValues(tableShardingColumns, each);
-                    Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
-                    routedDataNodes.addAll(dataNodes);
-                    if (each instanceof InsertShardingCondition) {
-                        ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
-                    }
-                }
+        return generateRoutingResult(getDataNodes(shardingRule.getTableRuleByLogicTableName(logicTableName)));
+    }
+    
+    private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {
+        RoutingResult result = new RoutingResult();
+        for (DataNode each : routedDataNodes) {
+            TableUnit tableUnit = new TableUnit(each.getDataSourceName());
+            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
+            result.getTableUnits().getTableUnits().add(tableUnit);
+        }
+        return result;
+    }
+    
+    private Collection<DataNode> getDataNodes(final TableRule tableRule) {
+        if (isRoutingByHint(tableRule)) {
+            return routeByHint(tableRule);
+        }
+        if (isRoutingByShardingConditions(tableRule)) {
+            return routeByShardingConditions(tableRule);
+        }
+        return routeByMixedConditions(tableRule);
+    }
+    
+    private boolean isRoutingByHint(final TableRule tableRule) {
+        return shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
+    }
+    
+    private Collection<DataNode> routeByHint(final TableRule tableRule) {
+        return route(tableRule, getDatabaseShardingValuesFromHint(), getTableShardingValuesFromHint());
+    }
+    
+    private boolean isRoutingByShardingConditions(final TableRule tableRule) {
+        return !(shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy || shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy);
+    }
+    
+    private Collection<DataNode> routeByShardingConditions(final TableRule tableRule) {
+        return shardingConditions.getShardingConditions().isEmpty() ? route(tableRule, Collections.<ShardingValue>emptyList(), Collections.<ShardingValue>emptyList())
+                : routeByShardingConditionsWithCondition(tableRule);
+    }
+    
+    private Collection<DataNode> routeByShardingConditionsWithCondition(final TableRule tableRule) {
+        Collection<DataNode> result = new LinkedList<>();
+        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+            Collection<DataNode> dataNodes = route(tableRule, getShardingValuesFromShardingConditions(shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
+                    getShardingValuesFromShardingConditions(shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
+            reviseShardingConditions(each, dataNodes);
+            result.addAll(dataNodes);
+        }
+        return result;
+    }
+    
+    private Collection<DataNode> routeByMixedConditions(final TableRule tableRule) {
+        return shardingConditions.getShardingConditions().isEmpty() ? routeByMixedConditionsWithHint(tableRule) : routeByMixedConditionsWithCondition(tableRule);
+    }
+    
+    private Collection<DataNode> routeByMixedConditionsWithCondition(final TableRule tableRule) {
+        Collection<DataNode> result = new LinkedList<>();
+        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+            Collection<DataNode> dataNodes = route(tableRule, getDatabaseShardingValues(tableRule, each), getTableShardingValues(tableRule, each));
+            reviseShardingConditions(each, dataNodes);
+            result.addAll(dataNodes);
+        }
+        return result;
+    }
+    
+    private Collection<DataNode> routeByMixedConditionsWithHint(final TableRule tableRule) {
+        if (shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy) {
+            return route(tableRule, getDatabaseShardingValuesFromHint(), Collections.<ShardingValue>emptyList());
+        }
+        return route(tableRule, Collections.<ShardingValue>emptyList(), getTableShardingValuesFromHint());
+    }
+    
+    private List<ShardingValue> getDatabaseShardingValues(final TableRule tableRule, final ShardingCondition shardingCondition) {
+        ShardingStrategy dataBaseShardingStrategy = shardingRule.getDatabaseShardingStrategy(tableRule);
+        return isGettingShardingValuesFromHint(dataBaseShardingStrategy)
+                ? getDatabaseShardingValuesFromHint() : getShardingValuesFromShardingConditions(dataBaseShardingStrategy.getShardingColumns(), shardingCondition);
+    }
+    
+    private List<ShardingValue> getTableShardingValues(final TableRule tableRule, final ShardingCondition shardingCondition) {
+        ShardingStrategy tableShardingStrategy = shardingRule.getTableShardingStrategy(tableRule);
+        return isGettingShardingValuesFromHint(tableShardingStrategy)
+                ? getTableShardingValuesFromHint() : getShardingValuesFromShardingConditions(tableShardingStrategy.getShardingColumns(), shardingCondition);
+    }
+    
+    private boolean isGettingShardingValuesFromHint(final ShardingStrategy shardingStrategy) {
+        return shardingStrategy instanceof HintShardingStrategy;
+    }
+    
+    private List<ShardingValue> getDatabaseShardingValuesFromHint() {
+        Optional<ShardingValue> shardingValueOptional = HintManagerHolder.getDatabaseShardingValue(logicTableName);
+        return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<ShardingValue>emptyList();
+    }
+    
+    private List<ShardingValue> getTableShardingValuesFromHint() {
+        Optional<ShardingValue> shardingValueOptional = HintManagerHolder.getTableShardingValue(logicTableName);
+        return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<ShardingValue>emptyList();
+    }
+    
+    private List<ShardingValue> getShardingValuesFromShardingConditions(final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {
+        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
+        for (ShardingValue each : shardingCondition.getShardingValues()) {
+            Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
+            if ((logicTableName.equals(each.getLogicTableName()) || bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName)) 
+                    && shardingColumns.contains(each.getColumnName())) {
+                result.add(each);
             }
         }
-        return generateRoutingResult(routedDataNodes);
+        return result;
     }
     
     private Collection<DataNode> route(final TableRule tableRule, final List<ShardingValue> databaseShardingValues, final List<ShardingValue> tableShardingValues) {
@@ -95,38 +176,6 @@ public final class StandardRoutingEngine implements RoutingEngine {
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedDataSources) {
             result.addAll(routeTables(tableRule, each, tableShardingValues));
-        }
-        return result;
-    }
-    
-    private List<ShardingValue> getDatabaseShardingValuesFromHint(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-        for (String each : shardingColumns) {
-            Optional<ShardingValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(logicTableName, each));
-            if (shardingValue.isPresent()) {
-                result.add(shardingValue.get());
-            }
-        }
-        return result;
-    }
-    
-    private List<ShardingValue> getTableShardingValuesFromHint(final Collection<String> shardingColumns) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-        for (String each : shardingColumns) {
-            Optional<ShardingValue> shardingValue = HintManagerHolder.getTableShardingValue(new ShardingKey(logicTableName, each));
-            if (shardingValue.isPresent()) {
-                result.add(shardingValue.get());
-            }
-        }
-        return result;
-    }
-    
-    private List<ShardingValue> getShardingValues(final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {
-        List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
-        for (ShardingValue each : shardingCondition.getShardingValues()) {
-            if (logicTableName.equals(each.getLogicTableName()) && shardingColumns.contains(each.getColumnName())) {
-                result.add(each);
-            }
         }
         return result;
     }
@@ -153,13 +202,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {
-        RoutingResult result = new RoutingResult();
-        for (DataNode each : routedDataNodes) {
-            TableUnit tableUnit = new TableUnit(each.getDataSourceName());
-            tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
-            result.getTableUnits().getTableUnits().add(tableUnit);
+    private void reviseShardingConditions(final ShardingCondition each, final Collection<DataNode> dataNodes) {
+        if (each instanceof InsertShardingCondition) {
+            ((InsertShardingCondition) each).getDataNodes().addAll(dataNodes);
         }
-        return result;
     }
 }

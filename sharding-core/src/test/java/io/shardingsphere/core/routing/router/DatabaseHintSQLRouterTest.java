@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.routing.router;
 
-import io.shardingsphere.core.api.HintManager;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.HintManager;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -68,7 +68,7 @@ public final class DatabaseHintSQLRouterTest {
 
     @Test
     public void assertRoute() {
-        hintManager.addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, 1);
+        hintManager.addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, 1);
         assertNotNull(databaseHintSQLRouter.route("select t from table t", Collections.emptyList(), new DQLStatement()));
     }
 }

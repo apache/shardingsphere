@@ -21,8 +21,9 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * Parsing result cache.
@@ -34,7 +35,7 @@ public final class ParsingResultCache {
     
     private static final ParsingResultCache INSTANCE = new ParsingResultCache();
     
-    private volatile Map<String, SQLStatement> cache = new WeakHashMap<>(65535, 1);
+    private final Map<String, SoftReference<SQLStatement>> cache = new HashMap<>(65535, 1);
     
     /**
      * Get parsing result cache instance.
@@ -52,7 +53,7 @@ public final class ParsingResultCache {
      * @param sqlStatement SQL statement
      */
     public void put(final String sql, final SQLStatement sqlStatement) {
-        cache.put(sql, sqlStatement);
+        cache.put(sql, new SoftReference<>(sqlStatement));
     }
     
     /**
@@ -62,7 +63,8 @@ public final class ParsingResultCache {
      * @return SQL statement
      */
     public SQLStatement getSQLStatement(final String sql) {
-        return cache.get(sql);
+        SoftReference<SQLStatement> result = cache.get(sql);
+        return null == result ? null : result.get();
     }
     
     /**

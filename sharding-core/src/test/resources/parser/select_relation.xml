@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectWithInnerJoinAndRelatedWithTableAlias" parameters="1000">
+    <parser-result sql-case-id="select_inner_join_related_with_alias" parameters="1000">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i" />
@@ -18,7 +18,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithInnerJoinAndRelatedWithTableName" parameters="1000">
+    <parser-result sql-case-id="select_inner_join_related_with_name" parameters="1000">
         <tables>
             <table name="t_order" />
             <table name="t_order_item" />
@@ -40,7 +40,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithJoinUsing" parameters="1000">
+    <parser-result sql-case-id="select_join_using" parameters="1000">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i"/>

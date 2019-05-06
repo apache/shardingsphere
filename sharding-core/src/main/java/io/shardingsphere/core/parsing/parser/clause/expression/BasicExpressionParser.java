@@ -111,6 +111,10 @@ public final class BasicExpressionParser {
             skipRestCompositeExpression(sqlStatement);
             return true;
         }
+        if ((Literals.INT == lexerEngine.getCurrentToken().getType() || Literals.FLOAT == lexerEngine.getCurrentToken().getType()) && lexerEngine.getCurrentToken().getLiterals().startsWith("-")) {
+            lexerEngine.nextToken();
+            return true;
+        }
         return false;
     }
     
@@ -127,7 +131,7 @@ public final class BasicExpressionParser {
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
         if (sqlStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(propertyExpr.getOwner().getName()))) {
-            sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), 0, owner));
+            sqlStatement.addSQLToken(new TableToken(beginPosition - owner.length(), 0, owner));
         }
     }
 }

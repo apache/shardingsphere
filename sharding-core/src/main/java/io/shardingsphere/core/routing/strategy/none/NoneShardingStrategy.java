@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.routing.strategy.none;
 
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import lombok.Getter;
 

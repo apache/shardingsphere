@@ -17,20 +17,24 @@
 
 package io.shardingsphere.core.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Sharding constant.
  * 
  * @author zhangliang
  */
-public interface ShardingConstant {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingConstant {
     
     /**
      * Logic database schema name.
      * 
      * <p>
-     * Sharding-Sphere just have one logic database table.
+     * ShardingSphere just have one logic database table.
      * Default: sharding_db
      * </p>
      */
-    String LOGIC_SCHEMA_NAME = "sharding_db";
+    public static final String LOGIC_SCHEMA_NAME = "logic_db";
 }

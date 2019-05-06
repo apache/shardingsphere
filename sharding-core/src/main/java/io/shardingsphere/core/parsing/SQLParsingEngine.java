@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
@@ -42,7 +42,7 @@ public final class SQLParsingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingMetaData shardingMetaData;
+    private final ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Parse SQL.
@@ -56,8 +56,7 @@ public final class SQLParsingEngine {
             return cachedSQLStatement.get();
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
-        lexerEngine.nextToken();
-        SQLStatement result = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingMetaData).parse();
+        SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData, sql).parse();
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
         }

@@ -17,17 +17,14 @@
 
 package io.shardingsphere.core.parsing.parser.token;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Generated key token.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class GeneratedKeyToken implements SQLToken {
+public final class GeneratedKeyToken extends SQLToken {
     
-    private final int beginPosition;
+    public GeneratedKeyToken(final int beginPosition) {
+        super(beginPosition);
+    }
 }

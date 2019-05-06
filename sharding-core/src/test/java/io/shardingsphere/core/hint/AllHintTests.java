@@ -19,8 +19,9 @@ package io.shardingsphere.core.hint;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(HintManagerHolderTest.class)
-public class AllHintTests {
+@SuiteClasses(HintManagerHolderTest.class)
+public final class AllHintTests {
 }

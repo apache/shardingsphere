@@ -21,7 +21,7 @@ import io.shardingsphere.core.keygen.KeyGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class IncrementKeyGenerator implements KeyGenerator {
+public final class IncrementKeyGenerator implements KeyGenerator {
     
     private final AtomicInteger count = new AtomicInteger();
     

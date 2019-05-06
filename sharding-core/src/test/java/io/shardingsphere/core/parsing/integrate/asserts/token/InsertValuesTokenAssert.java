@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -41,7 +41,7 @@ final class InsertValuesTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertInsertValuesToken(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertInsertValuesToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         Optional<InsertValuesToken> insertValuesToken = getInsertValuesToken(actual);
         if (insertValuesToken.isPresent()) {
             assertInsertValuesToken(insertValuesToken.get(), expected.getInsertValuesToken());
@@ -55,7 +55,7 @@ final class InsertValuesTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Insert values table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
     }
     
-    private Optional<InsertValuesToken> getInsertValuesToken(final List<SQLToken> actual) {
+    private Optional<InsertValuesToken> getInsertValuesToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof InsertValuesToken) {
                 return Optional.of((InsertValuesToken) each);

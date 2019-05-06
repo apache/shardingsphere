@@ -134,7 +134,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), String.format("Can't find columnLabel: %s", columnLabel));
+        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), "Can't find columnLabel: %s", columnLabel);
         return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }
     
@@ -145,7 +145,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), String.format("Can't find columnLabel: %s", columnLabel));
+        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), "Can't find columnLabel: %s", columnLabel);
         return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }
 }

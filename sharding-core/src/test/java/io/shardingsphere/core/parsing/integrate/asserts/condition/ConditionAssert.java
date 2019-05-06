@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -85,13 +86,10 @@ public final class ConditionAssert {
         }
     }
     
+    @SneakyThrows
     private Object getField(final Object actual, final String fieldName) {
-        try {
-            Field field = actual.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(actual);
-        } catch (final ReflectiveOperationException ex) {
-            throw new RuntimeException(ex);
-        }
+        Field field = actual.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(actual);
     }
 }

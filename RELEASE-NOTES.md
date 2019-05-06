@@ -1,106 +1,199 @@
+## 3.1.0
+
+### API Changes
+
+1. Adjust persist structure for orchestration's registry center.
+1. Adjust Sharding-JDBC configuration API.
+
+### New Features
+
+1. XA Transaction available.
+1. All SQL 100% compatible if route to single data node (MySQL Only).
+1. DISTINCT SQL syntax available.
+1. Broadcast table available.
+1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
+
+###  Change Logs
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+
 ## 3.0.0
 
 ### Milestones
 
-1. Sharding-Proxy launch. Support the use of Sharding-Sphere in the form of database to support for MySQL CLI and GUI client
+1. Sharding-Proxy launch. Support the use of ShardingSphere in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
 
-1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) Support batch INSERT statements
-1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) Support OR statement
+#### Core
+
+1. [ISSUE #290](https://github.com/sharding-sphere/sharding-sphere/issues/290) Support batch INSERT
+1. [ISSUE #501](https://github.com/sharding-sphere/sharding-sphere/issues/501) Support OR
+1. [ISSUE #980](https://github.com/sharding-sphere/sharding-sphere/issues/980) Support DCL
+1. [ISSUE #1111](https://github.com/sharding-sphere/sharding-sphere/issues/1111) Support MySQL DAL
+
+#### Sharding-Proxy
+
+1. [ISSUE #902](https://github.com/sharding-sphere/sharding-sphere/issues/902) Support XA transaction
+1. [ISSUE #916](https://github.com/sharding-sphere/sharding-sphere/issues/916) Support authorization
+1. [ISSUE #936](https://github.com/sharding-sphere/sharding-sphere/issues/936) Support registry center
+1. [ISSUE #1046](https://github.com/sharding-sphere/sharding-sphere/issues/1046) Support multiple logic databases
 
 ### Enhancements
 
-1. [ISSUE #608](https://github.com/sharding-sphere/sharding-sphere/issues/608) Support the USE statement of MySQL
-1. [ISSUE #609](https://github.com/sharding-sphere/sharding-sphere/issues/609) Support the SHOW statement of MySQL
-1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) Optimize the DQL that does not contain a table name
-1. [ISSUE #611](https://github.com/sharding-sphere/sharding-sphere/issues/611) Support the DESC statement of MySQL
-1. [ISSUE #652](https://github.com/sharding-sphere/sharding-sphere/issues/652) Support Spring Boot Starter 2.x
-1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Support caching parsing results of SQL to improve performance
-1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) Support $->{..} as mark for inline expression 
-1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support Spring bean namespace to inject key generator objects
-1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support Spring bean namespace to inject sharding algorithm objects
-1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement primary key of INSERT statements without column names
+#### Core
+
+1. [ISSUE #373](https://github.com/sharding-sphere/sharding-sphere/issues/373) Support `order by ?`
+1. [ISSUE #610](https://github.com/sharding-sphere/sharding-sphere/issues/610) Route unicast for DQL without table
+1. [ISSUE #701](https://github.com/sharding-sphere/sharding-sphere/issues/701) Caching parsed results to improve performance
+1. [ISSUE #773](https://github.com/sharding-sphere/sharding-sphere/issues/773) Support sharding and autoincrement key of INSERT without column names
+1. [ISSUE #935](https://github.com/sharding-sphere/sharding-sphere/issues/935) Use `YAML` instead of `JSON` to store configurations in registry center
+1. [ISSUE #1004](https://github.com/sharding-sphere/sharding-sphere/issues/1004) Properties can configure for Sharding and Master-slave independent
+1. [ISSUE #1205](https://github.com/sharding-sphere/sharding-sphere/issues/1205) Execute engine enhancement
+
+#### Sharding-JDBC
+
+1. [ISSUE #652](https://github.com/sharding-sphere/sharding-sphere/issues/652) Support `Spring Boot Starter` 2.X
+1. [ISSUE #702](https://github.com/sharding-sphere/sharding-sphere/issues/702) Support `$->{..}` for inline expression 
+1. [ISSUE #719](https://github.com/sharding-sphere/sharding-sphere/issues/719) Support inject key generator objects by spring namespace
+1. [ISSUE #720](https://github.com/sharding-sphere/sharding-sphere/issues/720) Support inject sharding algorithm objects by spring namespace
+
+#### Sharding-Opentracing
+
+1. [ISSUE #1172](https://github.com/sharding-sphere/sharding-sphere/issues/1172) Opentracing enhancement
+
+### API changes
+
+1. [ISSUE #1153](https://github.com/sharding-sphere/sharding-sphere/issues/1153) Adjust the maven artifactId for Orchestration module
+1. [ISSUE #1203](https://github.com/sharding-sphere/sharding-sphere/issues/1203) Adjust Spring namespace xsd for Sharding and Master-slave
+1. [ISSUE #1289](https://github.com/sharding-sphere/sharding-sphere/issues/1289) Adjust Hint API
+1. [ISSUE #1302](https://github.com/sharding-sphere/sharding-sphere/issues/1302) Refine package structure
+1. [ISSUE #1305](https://github.com/sharding-sphere/sharding-sphere/issues/1305) Deprecated and remove sharding-jdbc-transaction-parent module
+1. [ISSUE #1382](https://github.com/sharding-sphere/sharding-sphere/issues/1328) Remove type configuration in Orchestration module
 
 ### Bug Fixes
 
+#### Core
+
+1. [ISSUE #569](https://github.com/sharding-sphere/sharding-sphere/issues/569) Failed to parse SQL for Oracle when ROWNUM is not at end
 1. [ISSUE #628](https://github.com/sharding-sphere/sharding-sphere/issues/628) Support data type jsonb for PostgreSQL
+1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in `SELECT ITEMS` correspond to the real column names of `GROUP BY` or `ORDER BY`, there is no need to generate derived columns
+1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) `NOT IN` parse exception
+1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) Endless loop for bad SQL like `SELECT * FROM table WHERE id IN ()`
+1. [ISSUE #919](https://github.com/sharding-sphere/sharding-sphere/issues/919) Inline expression with groovy may cause memory leak
+1. [ISSUE #993](https://github.com/sharding-sphere/sharding-sphere/issues/993) Fail to parsing PostgreSQL due to the quotation
+1. [ISSUE #1015](https://github.com/sharding-sphere/sharding-sphere/issues/1015) Support SQL like `SELECT id, COUNT(*) FROM table GROUP BY 1,2`
+1. [ISSUE #1120](https://github.com/sharding-sphere/sharding-sphere/issues/1120) Derived columns of `GROUP BY / ORDER BY` appear in query result
+1. [ISSUE #1186](https://github.com/sharding-sphere/sharding-sphere/issues/1186) Dead lock may occur on MEMORY_STRICTLY mode when get connection on concurrency environment
+1. [ISSUE #1265](https://github.com/sharding-sphere/sharding-sphere/issues/1265) RoundRobinMasterSlaveLoadBalanceAlgorithm throw an ArrayIndexOutOfBoundsException when AtomicInteger overflow
+
+#### Sharding-JDBC
+
+1. [ISSUE #372](https://github.com/sharding-sphere/sharding-sphere/issues/372) Reuse PreparedStatement cause cache of route result do not clean
 1. [ISSUE #629](https://github.com/sharding-sphere/sharding-sphere/issues/629) Support transaction isolation on JDBC
-1. [ISSUE #646](https://github.com/sharding-sphere/sharding-sphere/issues/646) When aliases in SELECT ITEMS correspond to the real column names of GROUP BY or ORDER BY, there is no need to add columns
-1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using Round-robin load-balance algorithm in Mybatis
-1. [ISSUE #806](https://github.com/sharding-sphere/sharding-sphere/issues/806) SQL parse error with `NOT IN`
-1. [ISSUE #827](https://github.com/sharding-sphere/sharding-sphere/issues/827) Fix endless loop for bad SQL like `SELECT * FROM table WHERE id IN ()`
+1. [ISSUE #735](https://github.com/sharding-sphere/sharding-sphere/issues/735) Unexpected slave datasource routing result when using `Round-robin` load-balance algorithm in Mybatis
+1. [ISSUE #1011](https://github.com/sharding-sphere/sharding-sphere/issues/1011) Can't resolve placeholder in `Spring Boot YAML` configuration
 
 ## 2.0.3
 
-### Enhancements
+### New Features
+
+#### Core
 
 1. [ISSUE #600](https://github.com/sharding-sphere/sharding-sphere/issues/600) Support TCL
 
 ### Bug Fixes
 
-1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) The slave database does not need to execute the DDL statement for read-write separation 
-1. [ISSUE #540](https://github.com/sharding-sphere/sharding-sphere/issues/540) Support SQLs that the alias is the keyword
-1. [ISSUE #577](https://github.com/sharding-sphere/sharding-sphere/issues/577) Support newline for YAML configuration
+#### Core
+
+1. [ISSUE #540](https://github.com/sharding-sphere/sharding-sphere/issues/540) Support SQL that alias is the keyword
+1. [ISSUE #577](https://github.com/sharding-sphere/sharding-sphere/issues/577) Support new line for `YAML` configuration
+
+#### Sharding-JDBC
+
+1. [ISSUE #522](https://github.com/sharding-sphere/sharding-sphere/issues/522) Slave database does not need to execute the DDL for read-write splitting
+
 
 ## 2.0.2
 
 ### Enhancements
 
-1. [ISSUE #475](https://github.com/sharding-sphere/sharding-sphere/issues/475) Support CREATE INDEX
-1. [ISSUE #525](https://github.com/sharding-sphere/sharding-sphere/issues/525) Support DROP INDEX
+#### Core
+
+1. [ISSUE #475](https://github.com/sharding-sphere/sharding-sphere/issues/475) Support `CREATE INDEX`
+1. [ISSUE #525](https://github.com/sharding-sphere/sharding-sphere/issues/525) Support `DROP INDEX`
 
 ### Bug Fixes
 
-1. [ISSUE #520](https://github.com/sharding-sphere/sharding-sphere/issues/520) When the partition table is introduced, the exception type is no longer DuplicateKeyException when the unique key conflict occurs
-1. [ISSUE #521](https://github.com/sharding-sphere/sharding-sphere/issues/521) ShardingProperties is invalid in YAML configuration
+#### Core
+
+1. [ISSUE #521](https://github.com/sharding-sphere/sharding-sphere/issues/521) `ShardingProperties` is invalid in `YAML` configuration
 1. [ISSUE #529](https://github.com/sharding-sphere/sharding-sphere/issues/529) Table name capitalization cannot be queried
-1. [ISSUE #541](https://github.com/sharding-sphere/sharding-sphere/issues/541) Can't parse IS NOT NULL
-1. [ISSUE #557](https://github.com/sharding-sphere/sharding-sphere/issues/557) When GroupBy and OrderBy aliases are inconsistent, stream merging should be used
-1. [ISSUE #559](https://github.com/sharding-sphere/sharding-sphere/issues/559) Support parsing numbers beginning with minus and decimal (e.g. -.12).
-1. [ISSUE #567](https://github.com/sharding-sphere/sharding-sphere/issues/567) MySQL adds an escape character when columns are added to prevent errors caused by using keywords as column names or aliases
+1. [ISSUE #541](https://github.com/sharding-sphere/sharding-sphere/issues/541) `IS NOT NULL` parse error
+1. [ISSUE #557](https://github.com/sharding-sphere/sharding-sphere/issues/557) When `GROUP BY` and `ORDER BY` aliases are inconsistent, stream merging should be used
+1. [ISSUE #559](https://github.com/sharding-sphere/sharding-sphere/issues/559) Support parsing numbers beginning with minus and decimal (e.g. `-.12`)
+1. [ISSUE #567](https://github.com/sharding-sphere/sharding-sphere/issues/567) Add escape char for derived columns or alias when using MySQL
+
+#### Sharding-JDBC
+
+1. [ISSUE #520](https://github.com/sharding-sphere/sharding-sphere/issues/520) Exception is no longer `DuplicateKeyException` when the unique key conflict
+
 
 ## 2.0.1
 
 ### Enhancements
 
-1. [ISSUE #489](https://github.com/sharding-sphere/sharding-sphere/issues/489) SpringName uses RuntimeBeanReference to prevent the creation of InnerBean
+#### Core
+
+1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Using `rownum` greater than or equal to or less than or equal to the result of paging is incorrect in Oracle
 1. [ISSUE #496](https://github.com/sharding-sphere/sharding-sphere/issues/496) Logical table names in sharding configuration can be case sensitive
-1. [ISSUE #497](https://github.com/sharding-sphere/sharding-sphere/issues/497) The registry center closes gracefully
+1. [ISSUE #497](https://github.com/sharding-sphere/sharding-sphere/issues/497) Close registry center gracefully
 
 ### Bug Fixes
 
-1. [ISSUE #490](https://github.com/sharding-sphere/sharding-sphere/issues/490) Oracle using rownum greater than or equal to or less than or equal to the result of paging is incorrect
-1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) Can't close connection by ResultSet.getStatement().getConnection().close()
+#### Sharding-JDBC
+
+1. [ISSUE #489](https://github.com/sharding-sphere/sharding-sphere/issues/489) Uses `RuntimeBeanReference` to prevent the creation of `InnerBean` on spring namespace
+1. [ISSUE #491](https://github.com/sharding-sphere/sharding-sphere/issues/491) Can't close connection by `ResultSet.getStatement().getConnection().close()`
+
 
 ## 2.0.0
 
 ### Milestones
 
-1. API adjust. Brand new Maven coordinate name, package name and spring namespace name. Simplify and enhance API configuration, inline expression full configuration support
-1. Support spring-boot-starter of sharding-jdbc
-1. Dynamic configuration. Zookeeper and etcd can be used as registry to dynamically modify data sources and sharding configurations
-1. Data governance. Fusing database access procedures to access databases and disable access to slave databases
+1. API adjust. Brand new groupId and artifactId for `Maven`, package name and spring namespace name. Simplify and enhance API configuration, inline expression fully configuration support
+1. Support `spring-boot-starter` of `Sharding-JDBC`
+1. Dynamic configuration. `ZooKeeper` and `etcd` can be used as registry to dynamically modify data sources and sharding configurations
+1. Database orchestration. Fusing database access procedures to access databases and disable access to slave databases
 1. ConfigMap support. Predefined metadata can be obtained in the sharding and read-write separation strategy
-1. Tracking system support. You can view the invocation chain of sharding-jdbc through sky-walking and other Opentracing based APM systems
+1. Tracking system support. You can view the invocation chain of `Sharding-JDBC` through `sky-walking` and other `Opentracing` based APM systems
 
 ### Enhancements
 
-1. [ISSUE #386](https://github.com/sharding-sphere/sharding-sphere/issues/386) Support for SELECT 1, a SQL that does not contain table names
-1. [ISSUE #407](https://github.com/sharding-sphere/sharding-sphere/issues/407) Sharding-jdbc's spring-boot-starter compatibility uses two ways of attribute configuration: minus sign and hump
+#### Core
+
+1. [ISSUE #386](https://github.com/sharding-sphere/sharding-sphere/issues/386) Support SQL that does not contain table names, such as `SELECT 1`
+
+#### Sharding-JDBC
+
+1. [ISSUE #407](https://github.com/sharding-sphere/sharding-sphere/issues/407) Support Hyphen properties for `sharding-jdbc-spring-boot-starter`
 1. [ISSUE #424](https://github.com/sharding-sphere/sharding-sphere/issues/424) Providing SQL overall execution events
 
 ### Bug Fixes
 
+#### Core
+
 1. [ISSUE #387](https://github.com/sharding-sphere/sharding-sphere/issues/387) Prevent errors from keywords process when '`' exists in function + column name
+1. [ISSUE #419](https://github.com/sharding-sphere/sharding-sphere/issues/419) When SQL is rewritten, it does not determine whether alias is a keyword without the escape character, which results in SQL exception
+1. [ISSUE #464](https://github.com/sharding-sphere/sharding-sphere/issues/464) SQL if the varchar type is not closed due to the absence of matching single quotes, and the next varchar in SQL is the wrong SQL of Chinese characters, it will lead to higher use of CPU
+
+#### Sharding-JDBC
+
 1. [ISSUE #394](https://github.com/sharding-sphere/sharding-sphere/issues/394) Can't only close statement
 1. [ISSUE #398](https://github.com/sharding-sphere/sharding-sphere/issues/398) Use Hint routing to shield case sensitivity 
 1. [ISSUE #404](https://github.com/sharding-sphere/sharding-sphere/issues/404) Sharding-jdbc's spring-boot-starter does not support HikariDataSource
-1. [ISSUE #419](https://github.com/sharding-sphere/sharding-sphere/issues/419) When SQL is rewritten, it does not determine whether alias is a keyword without the escape character, which results in SQL exception
-1. [ISSUE #436](https://github.com/sharding-sphere/sharding-sphere/issues/436) Read-write separation, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same slave library
+1. [ISSUE #436](https://github.com/sharding-sphere/sharding-sphere/issues/436) Read-write splitting, when the RoundRobin algorithm is configured from the database and MyBatis is used, it can only be routed to the same slave library
 1. [ISSUE #452](https://github.com/sharding-sphere/sharding-sphere/issues/452) Sharding of DDL statements to more than one table causes a connection leak
-1. [ISSUE #453](https://github.com/sharding-sphere/sharding-sphere/issues/453) Orchestration datasource name is conflict with Druid datasource name
-1. [ISSUE #464](https://github.com/sharding-sphere/sharding-sphere/issues/464) SQL if the varchar type is not closed due to the absence of matching single quotes, and the next varchar in SQL is the wrong SQL of Chinese characters, it will lead to higher use of CPU
 1. [ISSUE #472](https://github.com/sharding-sphere/sharding-sphere/issues/472) Before Connection executes createStatement, it calls getMetaData first and then setAutoCommit can not take effective connection to the database that was created later
 
 ## 1.5.4.1

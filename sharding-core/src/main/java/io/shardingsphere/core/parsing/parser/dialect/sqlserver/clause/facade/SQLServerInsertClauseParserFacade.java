@@ -19,10 +19,11 @@ package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.facade;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.InsertColumnsClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.InsertSetClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.InsertValuesClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerInsertDuplicateKeyUpdateClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerInsertIntoClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerInsertSetClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerInsertValuesClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -34,6 +35,7 @@ public final class SQLServerInsertClauseParserFacade extends AbstractInsertClaus
     
     public SQLServerInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(new SQLServerInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
-                new InsertValuesClauseParser(shardingRule, lexerEngine), new InsertSetClauseParser(shardingRule, lexerEngine));
+                new SQLServerInsertValuesClauseParser(shardingRule, lexerEngine), new SQLServerInsertSetClauseParser(shardingRule, lexerEngine), 
+                new SQLServerInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }
 }

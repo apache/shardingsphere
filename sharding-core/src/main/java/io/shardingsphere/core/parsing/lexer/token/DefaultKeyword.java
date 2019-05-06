@@ -44,6 +44,7 @@ public enum DefaultKeyword implements Keyword {
     OF,
     IF,
     ON,
+    OFF,
     FOR,
     WHILE,
     DO,
@@ -86,6 +87,9 @@ public enum DefaultKeyword implements Keyword {
     DISABLE,
     VALIDATE,
     USER,
+    ROLE,
+    LOGIN,
+    DENY,
     IDENTIFIED,
     
     /*
@@ -105,6 +109,7 @@ public enum DefaultKeyword implements Keyword {
     INSERT,
     INTO,
     VALUES,
+    DUPLICATE,
     
     /*
     Update
@@ -152,7 +157,10 @@ public enum DefaultKeyword implements Keyword {
     COMMIT,
     ROLLBACK,
     SAVEPOINT,
-    BEGIN, 
+    BEGIN,
+    TRANSACTION,
+    AUTOCOMMIT,
+    IMPLICIT_TRANSACTIONS,
     
     /*
     Other Command

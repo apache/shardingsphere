@@ -19,12 +19,11 @@ package io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.HavingClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.SelectRestClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleDistinctClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleGroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleOrderByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleSelectListClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleSelectRestClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleTableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleWhereClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -37,8 +36,8 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class OracleSelectClauseParserFacade extends AbstractSelectClauseParserFacade {
     
     public OracleSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new OracleDistinctClauseParser(lexerEngine), new OracleSelectListClauseParser(shardingRule, lexerEngine),
+        super(new OracleSelectListClauseParser(shardingRule, lexerEngine),
                 new OracleTableReferencesClauseParser(shardingRule, lexerEngine), new OracleWhereClauseParser(lexerEngine), new OracleGroupByClauseParser(lexerEngine),
-                new HavingClauseParser(lexerEngine), new OracleOrderByClauseParser(lexerEngine), new SelectRestClauseParser(lexerEngine));
+                new HavingClauseParser(lexerEngine), new OracleOrderByClauseParser(lexerEngine), new OracleSelectRestClauseParser(lexerEngine));
     }
 }

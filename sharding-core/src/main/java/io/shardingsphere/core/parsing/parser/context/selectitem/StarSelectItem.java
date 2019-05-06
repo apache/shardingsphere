@@ -18,10 +18,12 @@
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -29,17 +31,27 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
 public final class StarSelectItem implements SelectItem {
     
-    private final Optional<String> owner;
+    private String owner;
     
     @Override
     public String getExpression() {
-        return owner.isPresent() ? owner.get() + "." + Symbol.STAR.getLiterals() : Symbol.STAR.getLiterals();
+        return Strings.isNullOrEmpty(owner) ? Symbol.STAR.getLiterals() : owner + "." + Symbol.STAR.getLiterals();
+    }
+    
+    /**
+     * Get owner.
+     * 
+     * @return owner
+     */
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
     }
     
     @Override

@@ -25,9 +25,10 @@ import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexerTe
 import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerLexerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         CharTypeTest.class,
         TokenizerTest.class,
         LexerTest.class,
@@ -36,5 +37,5 @@ import org.junit.runners.Suite;
         SQLServerLexerTest.class,
         PostgreSQLLexerTest.class
     })
-public class AllLexerTests {
+public final class AllLexerTests {
 }

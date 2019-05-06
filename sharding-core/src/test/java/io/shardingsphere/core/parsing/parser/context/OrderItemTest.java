@@ -17,11 +17,12 @@
 
 package io.shardingsphere.core.parsing.parser.context;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -31,13 +32,14 @@ public final class OrderItemTest {
     
     @Test
     public void assertGetColumnLabelWithoutAlias() {
-        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent());
+        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
         assertThat(actualOrderItem.getColumnLabel(), is("column_name"));
     }
     
     @Test
     public void assertGetColumnLabelWithAlias() {
-        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.of("column_alias"));
+        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
+        actualOrderItem.setAlias("column_alias");
         assertThat(actualOrderItem.getColumnLabel(), is("column_alias"));
     }
     
@@ -55,14 +57,16 @@ public final class OrderItemTest {
     
     @Test
     public void assertGetColumnLabelWithOutOwner() {
-        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.of("column_alias"));
-        assertThat(actualOrderItem.getQualifiedName().get(), is("column_name"));
+        OrderItem actualOrderItem = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
+        actualOrderItem.setAlias("column_alias");
+        assertThat(actualOrderItem.getQualifiedName().orNull(), is("column_name"));
     }
     
     @Test
     public void assertGetColumnLabelWithOwner() {
-        OrderItem actualOrderItem = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.of("column_alias"));
-        assertThat(actualOrderItem.getQualifiedName().get(), is("tbl.column_name"));
+        OrderItem actualOrderItem = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
+        actualOrderItem.setAlias("column_alias");
+        assertThat(actualOrderItem.getQualifiedName().orNull(), is("tbl.column_name"));
     }
     
     @SuppressWarnings("ObjectEqualsNull")
@@ -83,14 +87,19 @@ public final class OrderItemTest {
     
     @Test
     public void assertEqualsWithSameColumnLabel() {
-        assertTrue(new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.of("column_alias"))
-                .equals(new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.of("column_alias"))));
+        OrderItem orderItem1 = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
+        orderItem1.setAlias("column_alias");
+        OrderItem orderItem2 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
+        orderItem2.setAlias("column_alias");
+        assertThat(orderItem1, is(orderItem2));
     }
     
     @Test
     public void assertEqualsWithSameQualifiedName() {
-        assertTrue(new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.of("column_alias"))
-                .equals(new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent())));
+        OrderItem orderItem1 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
+        orderItem1.setAlias("column_alias");
+        OrderItem orderItem2 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
+        assertThat(orderItem1, is(orderItem2));
     }
     
     @Test
@@ -100,7 +109,9 @@ public final class OrderItemTest {
     
     @Test
     public void assertNotEquals() {
-        assertFalse(new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.of("column_alias"))
-                .equals(new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent())));
+        OrderItem orderItem1 = new OrderItem("tbl", "column_name", OrderDirection.ASC, OrderDirection.ASC);
+        orderItem1.setAlias("column_alias");
+        OrderItem orderItem2 = new OrderItem("column_name", OrderDirection.ASC, OrderDirection.ASC);
+        assertThat(orderItem1, not(orderItem2));
     }
 }

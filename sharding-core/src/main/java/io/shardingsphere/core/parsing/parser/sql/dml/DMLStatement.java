@@ -18,8 +18,14 @@
 package io.shardingsphere.core.parsing.parser.sql.dml;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * DML statement.
@@ -29,7 +35,19 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class DMLStatement extends AbstractSQLStatement {
     
+    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.INSERT, DefaultKeyword.UPDATE, DefaultKeyword.DELETE);
+    
     public DMLStatement() {
         super(SQLType.DML);
+    }
+    
+    /**
+     * Is DML statement.
+     *
+     * @param tokenType token type
+     * @return is DML or not
+     */
+    public static boolean isDML(final TokenType tokenType) {
+        return STATEMENT_PREFIX.contains(tokenType);
     }
 }

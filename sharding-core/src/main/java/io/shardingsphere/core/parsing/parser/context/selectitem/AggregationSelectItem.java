@@ -38,7 +38,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class AggregationSelectItem implements SelectItem {
+public class AggregationSelectItem implements SelectItem {
     
     private final AggregationType type;
     

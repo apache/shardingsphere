@@ -17,8 +17,9 @@
 
 package io.shardingsphere.core.util;
 
+import com.google.common.base.Joiner;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,27 +32,39 @@ import java.util.Collection;
  * @author zhangliang
  * @author maxiaoguang
  */
-@Slf4j(topic = "Sharding-Sphere-SQL")
+@Slf4j(topic = "ShardingSphere-SQL")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLLogger {
     
     /**
-     * Print SQL log.
+     * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
      * @param sqlStatement SQL statement
-     * @param sqlExecutionUnits SQL execution units
+     * @param routeUnits route units
      */
-    public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<SQLExecutionUnit> sqlExecutionUnits) {
+    public static void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) {
+        log("Rule Type: sharding");
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatement);
-        for (SQLExecutionUnit each : sqlExecutionUnits) {
+        for (RouteUnit each : routeUnits) {
             if (each.getSqlUnit().getParameterSets().get(0).isEmpty()) {
-                log("Actual SQL: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql());
+                log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
             } else {
-                log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameterSets());
+                log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameterSets());
             }
         }
+    }
+    
+    /**
+     * Print SQL log for master slave rule.
+     *
+     * @param logicSQL logic SQL
+     * @param dataSourceNames data source names
+     */
+    public static void logSQL(final String logicSQL, final Collection<String> dataSourceNames) {
+        log("Rule Type: master-slave");
+        log("SQL: {} ::: DataSources: {}", logicSQL, Joiner.on(",").join(dataSourceNames));
     }
     
     private static void log(final String pattern, final Object... arguments) {

@@ -35,6 +35,11 @@ public final class MySQLInsertIntoClauseParser extends InsertIntoClauseParser {
     }
     
     @Override
+    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
+        return new Keyword[0];
+    }
+    
+    @Override
     protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
         return new Keyword[] {MySQLKeyword.PARTITION};
     }

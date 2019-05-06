@@ -22,12 +22,10 @@ import io.shardingsphere.core.parsing.lexer.token.Literals;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.lexer.token.Token;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class TokenizerTest {
     
@@ -119,7 +117,7 @@ public final class TokenizerTest {
     private void assertScanVariable(final String sql, final String literals) {
         String formatSql = String.format(sql, literals);
         Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, formatSql.indexOf("@"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanVariable(), new Token(Literals.VARIABLE, literals, formatSql.indexOf("WHERE") - 1)));
+        assertToken(tokenizer.scanVariable(), new Token(Literals.VARIABLE, literals, formatSql.indexOf("WHERE") - 1));
     }
     
     @Test
@@ -148,30 +146,36 @@ public final class TokenizerTest {
     private void assertScanNumber(final String sql, final String literals, final TokenType type) {
         String formatSql = String.format(sql, literals);
         Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, sql.indexOf("=") + 1);
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanNumber(), new Token(type, literals, formatSql.length())));
+        assertToken(tokenizer.scanNumber(), new Token(type, literals, formatSql.length()));
     }
     
     private void assertScanHexDecimal(final String sql, final String literals, final TokenType type) {
         String formatSql = String.format(sql, literals);
         Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, sql.indexOf("=") + 1);
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanHexDecimal(), new Token(type, literals, formatSql.length())));
+        assertToken(tokenizer.scanHexDecimal(), new Token(type, literals, formatSql.length()));
     }
     
     @Test
     public void assertScanNChars() {
         String sql = "SELECT * FROM ORDER, XX_TABLE AS `table` WHERE YY=N'xx' And group =-1 GROUP BY YY";
         Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("ORDER"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "ORDER", sql.indexOf(","))));
+        assertToken(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "ORDER", sql.indexOf(",")));
         tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("GROUP"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(DefaultKeyword.GROUP, "GROUP", sql.indexOf("BY") - 1)));
+        assertToken(tokenizer.scanIdentifier(), new Token(DefaultKeyword.GROUP, "GROUP", sql.indexOf("BY") - 1));
         tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("`"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "`table`", sql.indexOf("WHERE") - 1)));
+        assertToken(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "`table`", sql.indexOf("WHERE") - 1));
         tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("YY"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "YY", sql.indexOf("="))));
+        assertToken(tokenizer.scanIdentifier(), new Token(Literals.IDENTIFIER, "YY", sql.indexOf("=")));
         tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("=-"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanSymbol(), new Token(Symbol.EQ, "=", sql.indexOf("=-") + 1)));
+        assertToken(tokenizer.scanSymbol(), new Token(Symbol.EQ, "=", sql.indexOf("=-") + 1));
         tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("'"));
-        assertTrue(EqualsBuilder.reflectionEquals(tokenizer.scanChars(), new Token(Literals.CHARS, "xx", sql.indexOf("And") - 1)));
+        assertToken(tokenizer.scanChars(), new Token(Literals.CHARS, "xx", sql.indexOf("And") - 1));
+    }
+    
+    private void assertToken(final Token actual, final Token expected) {
+        assertThat(actual.getType(), is(expected.getType()));
+        assertThat(actual.getLiterals(), is(expected.getLiterals()));
+        assertThat(actual.getEndPosition(), is(expected.getEndPosition()));
     }
     
     @Test(expected = UnterminatedCharException.class)

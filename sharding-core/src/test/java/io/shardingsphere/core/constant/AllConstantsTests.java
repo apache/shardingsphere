@@ -19,12 +19,13 @@ package io.shardingsphere.core.constant;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         DatabaseTypeTest.class,
         ShardingPropertiesConstantTest.class,
         ShardingPropertiesTest.class
     })
-public class AllConstantsTests {
+public final class AllConstantsTests {
 }

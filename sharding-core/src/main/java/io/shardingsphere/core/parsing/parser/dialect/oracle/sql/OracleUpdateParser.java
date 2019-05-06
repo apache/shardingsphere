@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade.OracleUpdateClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.update.AbstractUpdateParser;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -27,9 +28,19 @@ import io.shardingsphere.core.rule.ShardingRule;
  * 
  * @author zhangliang 
  */
-public class OracleUpdateParser extends AbstractUpdateParser {
+public final class OracleUpdateParser extends AbstractUpdateParser {
     
     public OracleUpdateParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new OracleUpdateClauseParserFacade(shardingRule, lexerEngine));
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenUpdateAndTable() {
+        return new Keyword[0];
+    }
+    
+    @Override
+    protected Keyword[] getUnsupportedKeywordsBetweenUpdateAndTable() {
+        return new Keyword[0];
     }
 }

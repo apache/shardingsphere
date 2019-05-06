@@ -18,7 +18,6 @@
 package io.shardingsphere.core.merger.dql.groupby.aggregation;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class AccumulationAggregationUnit implements AggregationUnit {
     
     private BigDecimal result;
@@ -43,7 +41,6 @@ public final class AccumulationAggregationUnit implements AggregationUnit {
             result = new BigDecimal("0");
         }
         result = result.add(new BigDecimal(values.get(0).toString()));
-        log.trace("Accumulation result: {}", result.toString());
     }
     
     @Override

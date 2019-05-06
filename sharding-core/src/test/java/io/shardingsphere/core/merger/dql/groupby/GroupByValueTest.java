@@ -19,7 +19,7 @@ package io.shardingsphere.core.merger.dql.groupby;
 
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,8 +31,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)

@@ -19,7 +19,7 @@ package io.shardingsphere.core.merger.dql.orderby;
 
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

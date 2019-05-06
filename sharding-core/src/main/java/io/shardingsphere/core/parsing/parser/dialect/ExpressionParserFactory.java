@@ -43,6 +43,8 @@ public final class ExpressionParserFactory {
      */
     public static AliasExpressionParser createAliasExpressionParser(final LexerEngine lexerEngine) {
         switch (lexerEngine.getDatabaseType()) {
+            case H2:
+                return new MySQLAliasExpressionParser(lexerEngine);
             case MySQL:
                 return new MySQLAliasExpressionParser(lexerEngine);
             case Oracle:

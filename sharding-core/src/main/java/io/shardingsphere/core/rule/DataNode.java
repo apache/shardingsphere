@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.rule;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -28,12 +28,11 @@ import java.util.List;
 
 /**
  * Sharding data unit node.
- * 
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
 public final class DataNode {
     
@@ -45,7 +44,7 @@ public final class DataNode {
     
     /**
      * Constructs a data node with well-formatted string.
-     * 
+     *
      * @param dataNode string of data node. use {@code .} to split data source name and table name.
      */
     public DataNode(final String dataNode) {
@@ -59,5 +58,23 @@ public final class DataNode {
     
     private static boolean isValidDataNode(final String dataNodeStr) {
         return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).splitToList(dataNodeStr).size();
+    }
+    
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (null == object || getClass() != object.getClass()) {
+            return false;
+        }
+        DataNode dataNode = (DataNode) object;
+        return Objects.equal(this.dataSourceName.toUpperCase(), dataNode.dataSourceName.toUpperCase())
+            && Objects.equal(this.tableName.toUpperCase(), dataNode.tableName.toUpperCase());
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase());
     }
 }

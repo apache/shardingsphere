@@ -19,9 +19,9 @@ package io.shardingsphere.core.parsing.parser.context.condition;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;

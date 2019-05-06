@@ -18,7 +18,7 @@
 package io.shardingsphere.core.exception;
 
 /**
- * Base exception.
+ * Sharding exception.
  * 
  * @author zhangliang
  */

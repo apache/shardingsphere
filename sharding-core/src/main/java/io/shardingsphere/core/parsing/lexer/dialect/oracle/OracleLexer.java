@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.lexer.dialect.oracle;
 
 import io.shardingsphere.core.parsing.lexer.Lexer;
+import io.shardingsphere.core.parsing.lexer.analyzer.CharType;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
 /**
@@ -36,5 +37,15 @@ public final class OracleLexer extends Lexer {
     @Override
     protected boolean isHintBegin() {
         return '/' == getCurrentChar(0) && '*' == getCurrentChar(1) && '+' == getCurrentChar(2);
+    }
+    
+    @Override
+    protected boolean isIdentifierBegin(final char ch) {
+        return CharType.isAlphabet(ch) || '\"' == ch || '_' == ch || '$' == ch;
+    }
+    
+    @Override
+    protected boolean isCharsBegin() {
+        return '\'' == getCurrentChar(0);
     }
 }

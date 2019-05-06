@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import io.shardingsphere.core.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.junit.Test;

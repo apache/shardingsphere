@@ -18,12 +18,15 @@
 package io.shardingsphere.core.merger.dal.show;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;
+import io.shardingsphere.core.metadata.table.ColumnMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,10 +35,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +53,8 @@ public final class ShowCreateTableMergedResultTest {
     
     private ResultSet resultSet;
     
+    private ShardingTableMetaData shardingTableMetaData;
+    
     @Before
     public void setUp() throws SQLException {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
@@ -56,7 +64,9 @@ public final class ShowCreateTableMergedResultTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRule = new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
-    
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        tableMetaDataMap.put("table", new TableMetaData(Collections.<ColumnMetaData>emptyList()));
+        shardingTableMetaData = new ShardingTableMetaData(tableMetaDataMap);
         resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
@@ -73,7 +83,7 @@ public final class ShowCreateTableMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, new ArrayList<QueryResult>());
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, new ArrayList<QueryResult>(), shardingTableMetaData);
         assertFalse(showCreateTableMergedResult.next());
     }
     
@@ -88,7 +98,7 @@ public final class ShowCreateTableMergedResultTest {
             + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
             + "  PRIMARY KEY (`id`)\n"
             + ") ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults, shardingTableMetaData);
         assertTrue(showCreateTableMergedResult.next());
     }
     
@@ -103,14 +113,7 @@ public final class ShowCreateTableMergedResultTest {
             + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
             + "  PRIMARY KEY (`id`)\n"
             + ") ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
+        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults, shardingTableMetaData);
         assertTrue(showCreateTableMergedResult.next());
-    }
-    
-    @Test
-    public void assertNextForTableRuleIsNotPresent() throws SQLException {
-        when(resultSet.getObject(1)).thenReturn("table_3");
-        ShowCreateTableMergedResult showCreateTableMergedResult = new ShowCreateTableMergedResult(shardingRule, queryResults);
-        assertFalse(showCreateTableMergedResult.next());
     }
 }

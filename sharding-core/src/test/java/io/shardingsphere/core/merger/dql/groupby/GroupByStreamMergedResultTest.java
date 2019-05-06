@@ -20,12 +20,13 @@ package io.shardingsphere.core.merger.dql.groupby;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.AggregationType;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.DQLMergeEngine;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.junit.Before;
@@ -97,14 +98,14 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);
@@ -146,7 +147,7 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

@@ -17,19 +17,13 @@
 
 package io.shardingsphere.core.merger.dal.show;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.dql.common.MemoryMergedResult;
 import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
-import io.shardingsphere.core.parsing.SQLParsingEngine;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,58 +32,20 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public final class ShowCreateTableMergedResult extends MemoryMergedResult {
+public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
     
     private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(2, 1);
-    
-    private final ShardingRule shardingRule;
-    
-    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     static {
         LABEL_AND_INDEX_MAP.put("Table", 1);
         LABEL_AND_INDEX_MAP.put("Create Table", 2);
     }
     
-    public ShowCreateTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults) throws SQLException {
-        super(LABEL_AND_INDEX_MAP);
-        this.shardingRule = shardingRule;
-        memoryResultSetRows = init(queryResults);
+    public ShowCreateTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingTableMetaData shardingTableMetaData) throws SQLException {
+        super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, shardingTableMetaData);
     }
     
-    private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryQueryResultRow> result = new LinkedList<>();
-        for (QueryResult each : queryResults) {
-            while (each.next()) {
-                MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
-                String tableName = memoryResultSetRow.getCell(1).toString();
-                Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(tableName);
-                if (tableRule.isPresent()) {
-                    String logicTableName = tableRule.get().getLogicTable();
-                    memoryResultSetRow.setCell(1, logicTableName);
-                    String createTableDDL = memoryResultSetRow.getCell(2).toString();
-                    SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, createTableDDL, shardingRule, null);
-                    String actualTableName = sqlParsingEngine.parse(true).getTables().getSingleTableName();
-                    if (actualTableName.startsWith("`")) {
-                        logicTableName = "`" + logicTableName + "`";
-                    }
-                    memoryResultSetRow.setCell(2, createTableDDL.replaceFirst(actualTableName, logicTableName));
-                    result.add(memoryResultSetRow);
-                }
-            }
-        }
-        if (!result.isEmpty()) {
-            setCurrentResultSetRow(result.get(0));
-        }
-        return result.iterator();
-    }
-    
-    @Override
-    public boolean next() {
-        if (memoryResultSetRows.hasNext()) {
-            setCurrentResultSetRow(memoryResultSetRows.next());
-            return true;
-        }
-        return false;
+    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName) {
+        memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(actualTableName, logicTableName));
     }
 }

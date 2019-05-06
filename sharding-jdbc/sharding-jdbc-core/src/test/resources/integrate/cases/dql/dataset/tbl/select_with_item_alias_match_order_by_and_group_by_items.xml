@@ -1,0 +1,7 @@
+<dataset>
+    <metadata>
+        <column name="uid" />
+    </metadata>
+    <row values="10" />
+    <row values="11" />
+</dataset>

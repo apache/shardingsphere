@@ -23,6 +23,8 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Literals;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -30,9 +32,10 @@ import lombok.RequiredArgsConstructor;
  * Alias expression parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public class AliasExpressionParser {
+public abstract class AliasExpressionParser {
     
     private final LexerEngine lexerEngine;
     
@@ -43,25 +46,30 @@ public class AliasExpressionParser {
      */
     public Optional<String> parseSelectItemAlias() {
         if (lexerEngine.skipIfEqual(DefaultKeyword.AS)) {
-            return parseWithAs();
+            return parseWithAs(null, false, null);
         }
         if (lexerEngine.equalAny(getDefaultAvailableKeywordsForSelectItemAlias()) || lexerEngine.equalAny(getCustomizedAvailableKeywordsForSelectItemAlias())) {
-            return parseAlias();
+            return parseAlias(null, false, null);
         }
         return Optional.absent();
     }
     
-    private Optional<String> parseWithAs() {
+    private Optional<String> parseWithAs(final SQLStatement sqlStatement, final boolean setTableToken, final String tableName) {
         if (lexerEngine.equalAny(Symbol.values())) {
             return Optional.absent();
         }
-        return parseAlias();
+        return parseAlias(sqlStatement, setTableToken, tableName);
     }
     
-    private Optional<String> parseAlias() {
-        String result = SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals());
+    private Optional<String> parseAlias(final SQLStatement sqlStatement, final boolean setTableToken, final String tableName) {
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        String literals = lexerEngine.getCurrentToken().getLiterals();
+        String alias = SQLUtil.getExactlyValue(literals);
+        if (setTableToken && alias.equals(tableName)) {
+            sqlStatement.addSQLToken(new TableToken(beginPosition, 0, literals));
+        }
         lexerEngine.nextToken();
-        return Optional.of(result);
+        return Optional.of(SQLUtil.getExactlyValue(literals));
     }
     
     private TokenType[] getDefaultAvailableKeywordsForSelectItemAlias() {
@@ -73,21 +81,29 @@ public class AliasExpressionParser {
         };
     }
     
-    protected TokenType[] getCustomizedAvailableKeywordsForSelectItemAlias() {
-        return new TokenType[0];
+    protected abstract TokenType[] getCustomizedAvailableKeywordsForSelectItemAlias();
+    
+    /**
+     * Parse alias for table.
+     */
+    public void parseTableAlias() {
+        parseTableAlias(null, false, null);
     }
     
     /**
      * Parse alias for table.
      *
+     * @param sqlStatement SQL statement
+     * @param setTableToken is add table token
+     * @param tableName table name
      * @return alias for table
      */
-    public Optional<String> parseTableAlias() {
+    public Optional<String> parseTableAlias(final SQLStatement sqlStatement, final boolean setTableToken, final String tableName) {
         if (lexerEngine.skipIfEqual(DefaultKeyword.AS)) {
-            return parseWithAs();
+            return parseWithAs(sqlStatement, setTableToken, tableName);
         }
         if (lexerEngine.equalAny(getDefaultAvailableKeywordsForTableAlias()) || lexerEngine.equalAny(getCustomizedAvailableKeywordsForTableAlias())) {
-            return parseAlias();
+            return parseAlias(sqlStatement, setTableToken, tableName);
         }
         return Optional.absent();
     }
@@ -103,7 +119,5 @@ public class AliasExpressionParser {
         };
     }
     
-    protected TokenType[] getCustomizedAvailableKeywordsForTableAlias() {
-        return new TokenType[0];
-    }
+    protected abstract TokenType[] getCustomizedAvailableKeywordsForTableAlias();
 }

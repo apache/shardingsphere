@@ -18,13 +18,26 @@
 package io.shardingsphere.core.routing;
 
 import io.shardingsphere.core.routing.router.DatabaseHintSQLRouterTest;
+import io.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngineTest;
+import io.shardingsphere.core.routing.type.broadcast.TableBroadcastRoutingEngineTest;
+import io.shardingsphere.core.routing.type.defaultdb.DefaultDatabaseRoutingEngineTest;
+import io.shardingsphere.core.routing.type.hint.DatabaseHintRoutingEngineTest;
+import io.shardingsphere.core.routing.type.ignore.IgnoreRoutingEngineTest;
+import io.shardingsphere.core.routing.type.standard.StandardRoutingEngineTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         DatabaseTest.class,
-        DatabaseHintSQLRouterTest.class
+        DatabaseHintSQLRouterTest.class,
+        DatabaseBroadcastRoutingEngineTest.class,
+        TableBroadcastRoutingEngineTest.class,
+        DefaultDatabaseRoutingEngineTest.class,
+        DatabaseHintRoutingEngineTest.class,
+        IgnoreRoutingEngineTest.class,
+        StandardRoutingEngineTest.class
 })
-public class AllRoutingTests {
+public final class AllRoutingTests {
 }

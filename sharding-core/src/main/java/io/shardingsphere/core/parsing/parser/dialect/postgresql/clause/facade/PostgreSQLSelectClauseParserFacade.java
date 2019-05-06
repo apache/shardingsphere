@@ -17,17 +17,15 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.GroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.HavingClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.SelectListClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLGroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLOrderByClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLSelectListClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLSelectRestClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLTableReferencesClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLWhereClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -38,9 +36,9 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class PostgreSQLSelectClauseParserFacade extends AbstractSelectClauseParserFacade {
     
     public PostgreSQLSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new DistinctClauseParser(lexerEngine), new SelectListClauseParser(shardingRule, lexerEngine),
+        super(new PostgreSQLSelectListClauseParser(shardingRule, lexerEngine),
                 new PostgreSQLTableReferencesClauseParser(shardingRule, lexerEngine), 
-                new WhereClauseParser(DatabaseType.PostgreSQL, lexerEngine), new GroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), 
+                new PostgreSQLWhereClauseParser(lexerEngine), new PostgreSQLGroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), 
                 new PostgreSQLOrderByClauseParser(lexerEngine), new PostgreSQLSelectRestClauseParser(lexerEngine));
     }
 }

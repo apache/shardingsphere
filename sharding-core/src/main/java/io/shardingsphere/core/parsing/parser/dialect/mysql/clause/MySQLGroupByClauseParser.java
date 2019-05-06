@@ -35,6 +35,11 @@ public final class MySQLGroupByClauseParser extends GroupByClauseParser {
     }
     
     @Override
+    protected Keyword[] getUnsupportedKeywordBeforeGroupByItem() {
+        return new Keyword[0];
+    }
+    
+    @Override
     protected Keyword[] getSkippedKeywordAfterGroupBy() {
         return new Keyword[] {DefaultKeyword.WITH, MySQLKeyword.ROLLUP};
     }

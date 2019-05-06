@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.junit.Test;

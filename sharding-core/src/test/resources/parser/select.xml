@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectOne" />
+    <parser-result sql-case-id="select_constant_without_table" />
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTable" parameters="1">
+    <parser-result sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
+        <tables>
+            <table name="t_order" alias="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="22" original-literals="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -14,7 +33,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForExclamationEqual" parameters="1">
+    <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -26,19 +45,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForNotIn" parameters="100000 100001">
-        <tables>
-            <table name="t_order_item" />
-        </tables>
-        <tokens>
-            <table-token begin-position="14" original-literals="t_order_item" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
-    </parser-result>
-
-    <parser-result sql-case-id="assertSelectNotEqualsWithSingleTableForNotBetween" parameters="100000 100001">
+    <parser-result sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -50,7 +57,19 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectEqualsWithSingleTable" parameters="1 1">
+    <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order_item" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_equal_with_single_table" parameters="1, 1">
         <tables>
             <table name="t_order" />
         </tables>
@@ -68,9 +87,8 @@
             </and-condition>
         </or-condition>
     </parser-result>
-
-    <!-- // TODO 这里可优化，将两个字段AND = 替换为永false, 目前因为condition是map，同样的column会覆盖 -->
-    <parser-result sql-case-id="assertSelectEqualsWithSameShardingColumns" parameters="1 2">
+    
+    <parser-result sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <tables>
             <table name="t_order" />
         </tables>
@@ -89,7 +107,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectBetweenWithSingleTable" parameters="1 10 2 5">
+    <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
         <tables>
             <table name="t_order" />
         </tables>
@@ -114,7 +132,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectInWithSingleTable" parameters="1 2 3 9 10">
+    <parser-result sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
         <tables>
             <table name="t_order" />
         </tables>
@@ -140,8 +158,7 @@
         </order-by-columns>
     </parser-result>
     
-    <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入, 目前因为condition是map，同样的column会覆盖 -->
-    <parser-result sql-case-id="assertSelectInWithSameShardingColumns" parameters="100 1001 1001 1002">
+    <parser-result sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
         <tables>
             <table name="t_order" />
         </tables>
@@ -151,7 +168,7 @@
         <or-condition>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="100" type="int" />
+                    <value index="0" literal="1000" type="int" />
                     <value index="1" literal="1001" type="int" />
                 </condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
@@ -165,43 +182,12 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectIterator" parameters="1 2">
-        <tables>
-            <table name="t_order_item" alias="t"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="t_order_item" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="item_id" table-name="t_order_item" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectNoShardingTable">
-        <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectLikeWithCount" parameters="'init' 1 2 9 10">
+    <parser-result sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-token begin-position="37" original-literals="`t_order`" />
+            <table-token begin-position="37" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -215,12 +201,14 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -246,7 +234,7 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
+    <parser-result sql-case-id="select_full_route_with_binding_tables">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
@@ -255,24 +243,12 @@
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="select_full_route_for_upper_case_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
             <table name="T_ORDER" alias="o"/>
             <table name="T_order_item" alias="i"/>
@@ -298,14 +274,14 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithUpperCaseBindingTableAndConfigTable" parameters="1 2 9 10 'init'">
+    <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="T_ORDER" alias="o"/>
-            <table name="T_order_item" alias="i"/>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="34" original-literals="T_ORDER" />
-            <table-token begin-position="49" original-literals="T_order_item" />
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -324,14 +300,14 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithBindingTable" parameters="1 2 9 10">
+    <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="36" original-literals="t_order" />
-            <table-token begin-position="47" original-literals="t_order_item" />
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -345,19 +321,19 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
-        </aggregation-select-items>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
+        </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithBindingTableWithJoin" parameters="1 2 9 10">
+    <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o"/>
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="36" original-literals="t_order" />
-            <table-token begin-position="51" original-literals="t_order_item" />
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -371,12 +347,38 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
-        </aggregation-select-items>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
+        </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectAliasWithKeyword" parameters="1">
+    <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
+        <tables>
+            <table name="t_order" alias="o"/>
+            <table name="t_order_item" alias="i"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="16" original-literals="t_order" />
+            <table-token begin-position="31" original-literals="t_order_item" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+        <order-by-columns>
+            <order-by-column owner="i" name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" />
         </tables>
@@ -392,7 +394,7 @@
         </or-condition>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectWithJoinForceIndex" parameters="1000">
+    <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i"/>
@@ -410,22 +412,46 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectEqualsWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}' 100 200 1">
+    
+    <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
         <tables>
-            <table name="t_place" />
+            <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
-                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
                     <value index="3" literal="1" type="int" />
                 </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="4" literal="2" type="int" />
+                </condition>
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectInWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}' '{&quot;rule3&quot;:&quot;null3&quot;}' 100 200 1">
+    
+    <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="4" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="5" literal="2" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_place" />
         </tables>
@@ -440,19 +466,296 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    <parser-result sql-case-id="assertSelectBetweenWithJsonAnGeo" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}' '{&quot;rule3&quot;:&quot;null3&quot;}' 100 200 1">
+    
+    <parser-result sql-case-id="select_with_double_quotes" parameters="1">
         <tables>
-            <table name="t_place" />
+            <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="14" original-literals="t_place" />
+            <table-token begin-position="14" original-literals="&quot;t_order_item&quot;" />
         </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_new_id" table-name="t_place" operator="EQUAL">
-                    <value index="4" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_single_column" >
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>item_id</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token begin-position="29" original-literals="t_order_item" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_multi_column" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>order_id</distinct-column>
+                    <distinct-column>user_id</distinct-column>
+                    <distinct-column>status</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token begin-position="47" original-literals="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_star" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token begin-position="23" original-literals="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_sum" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="s" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="37" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="SUM(DISTINCT order_id)" column-name="order_id" alias="s" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="select_distinct_with_count" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="39" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
+        </tokens>
+    </parser-result>
+        
+    <parser-result sql-case-id="select_distinct_with_avg" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="AVG" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0">
+                    <derived-column type="COUNT" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_COUNT_0" />
+                    <derived-column type="SUM" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_SUM_0" />
+                </aggregation-select-item>
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="35" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="AVG(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_count_sum" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="61" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+            <aggregation-distinct-token begin-position="33" original-literals="SUM(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+        </tokens>
+    </parser-result>
+    
+     <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
+         <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="order_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+        <tokens>
+            <table-token begin-position="49" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="17" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_count_group_by" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="order_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+        <tokens>
+            <table-token begin-position="49" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_function" >
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>item_id</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token begin-position="30" original-literals="t_order_item" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_count_calculation" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-column="user_id + order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="49" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT user_id + order_id)" column-name="user_id + order_id" alias="c" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_distinct_with_aggregation_functions" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+                <aggregation-select-item type="COUNT" inner-expression="(order_id)" distinct-column="order_id"  />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="77" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="SUM(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+            <aggregation-distinct-token begin-position="30" original-literals="count(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_schema" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" skipped-schema-name-length = "4" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_escape_with_single_quota" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_escape_with_double_quota" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_block_comment" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="83" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_single_comment" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="77" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_alias_as_single_quote_string">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="31" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_alias_as_string_double_quote">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="31" original-literals="t_order" />
+        </tokens>
     </parser-result>
 </parser-result-sets>

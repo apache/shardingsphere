@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.lexer.dialect.sqlserver;
 
 import io.shardingsphere.core.parsing.lexer.Lexer;
+import io.shardingsphere.core.parsing.lexer.analyzer.CharType;
 import io.shardingsphere.core.parsing.lexer.analyzer.Dictionary;
 
 /**
@@ -46,5 +47,10 @@ public final class SQLServerLexer extends Lexer {
     @Override
     protected boolean isSupportNChars() {
         return true;
+    }
+    
+    @Override
+    protected boolean isIdentifierBegin(final char ch) {
+        return CharType.isAlphabet(ch) || '[' == ch || '_' == ch || '$' == ch;
     }
 }

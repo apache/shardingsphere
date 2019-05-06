@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade.MySQLInsertClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.AbstractInsertParser;
@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  */
 public final class MySQLInsertParser extends AbstractInsertParser {
     
-    public MySQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        super(shardingRule, shardingMetaData, lexerEngine, new MySQLInsertClauseParserFacade(shardingRule, lexerEngine));
+    public MySQLInsertParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, shardingTableMetaData, lexerEngine, new MySQLInsertClauseParserFacade(shardingRule, lexerEngine));
     }
 }

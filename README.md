@@ -1,97 +1,117 @@
-# [Sharding-Sphere - Distributed database middleware ecosphere](http://shardingsphere.io/)
+# [ShardingSphere - Distributed Database Middleware Ecosphere](http://shardingsphere.io/)
+
+Official website: http://shardingsphere.io/
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 [![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg)](https://github.com/sharding-sphere/sharding-sphere/releases)
+[![Stargazers over time](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere.svg)](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere)
 
+[![Total Lines](https://tokei.rs/b1/github/sharding-sphere/sharding-sphere?category=lines)](https://github.com/sharding-sphere/sharding-sphere)
 [![Build Status](https://api.travis-ci.org/sharding-sphere/sharding-sphere.png?branch=master)](https://travis-ci.org/sharding-sphere/sharding-sphere)
-[![Coverage Status](https://codecov.io/github/sharding-sphere/sharding-sphere/coverage.svg?branch=master)](https://codecov.io/github/sharding-sphere/sharding-sphere?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/sharding-sphere/sharding-sphere/badge.svg?branch=dev)](https://coveralls.io/github/sharding-sphere/sharding-sphere?branch=dev)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
+[![snyk](https://snyk.io/test/github/sharding-sphere/sharding-sphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/sharding-sphere/sharding-sphere?targetFile=pom.xml)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
 ## Document
 
-[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingsphere.io/document/en/)
+[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](http://shardingsphere.io/document/current/en/)
 [![Roadmap](https://img.shields.io/badge/roadmap-English-blue.svg)](ROADMAP.md)
 
-[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingsphere.io/document/cn/)
+[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](http://shardingsphere.io/document/current/cn/)
 
 ## Overview
 
-Sharding-Sphere is an open-sourced distributed database middleware solution suite, which is composite by Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar. Those 3 projects provide consistent features which include data sharding, read-write splitting, orchestration and B.A.S.E transaction. They can suitable for various scenario.
+ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 3 independent products, Sharding-JDBC, Sharding-Proxy & Sharding-Sidecar (todo). 
+They all provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native. 
 
-Sharding-Sphere is a Relational Database Middleware which reuse capacity of original databases (such as: compute, storage), but make best simplicity and efficiency on distribute environment. Sharding-Sphere do not want implement a new database.
-It can cooperate with NoSQL and NewSQL. NoSQL and NewSQL are good exploration for technology, they are care about what’s going to change. There is another theory which is care about what’s not going to change. Relational Database still is the biggest percentage of market share, it is difficult to estimate trendy in future. So we are focus about how to enhance with Relational Database now.
+Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
+As the cornerstone of many enterprises, relational database still takes a huge market share. 
+Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
-![Sharding-Sphere Score](http://ovfotjrsi.bkt.clouddn.com/sphere_scope_en.png)
+![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_en.png)
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.shardingjdbc/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc)
 
-Use JDBC connect databases without redirect cost for java application, best performance for production.
+Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
+With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
-* ORM compatible. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
-* Connection-pool compatible. DBCP, C3P0, BoneCP, Druid supported.
-* Multi SQL-based databases compatible. Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL right now.
+* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
+* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
+* Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
 
-![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.M1.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz)
+[![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
-It is a database proxy. Deploy as a stateless server, support MySQL protocol for now.
+Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
+Friendlier to DBA, the MySQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL protocol to operate data.
 
-* Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
-* Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
+* Totally transparent to applications, it can be used directly as MySQL.
+* Applicable to any kind of compatible of client end that is compatible of MySQL protocol.
 
-![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar(TBD)
 
-It can mesh interactions between applications and databases, must run in Kubernetes or Mesos environment.
-It is a centre-less solution, can support any languages, we call it as `Database Mesh`.
+Sharding-Sidecar (TBD) defines itself as a cloud native database agent of Kubernetes or Mesos environment, in charge of all the access to database in the form of DaemonSet. 
+Through a decentralized and zero-cost solution, it provides a mesh layer interacting with database, i.e., Database Mesh, also referred to as database grid.
 
-Database Mesh is focused on how to connect the distributed data-access-layer and databases together. It pays more attention on interaction, which means the messy interaction among the applications and databases will be effectively orchestrate. By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly.
+Database Mesh emphasizes on how to connect distributed database access application with the database. 
+Focusing on interaction, it effectively organizes the interaction between messy applications and database. 
+The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. 
+They are all governed by mesh layer.
 
-![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief.png)
+![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
 
-|                        | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
-| ---------------------- | --------------- | ---------------- | ------------------ |
-| Database               | Any             | MySQL            | MySQL              |
-| Connections Cost       | More            | Less             | More               |
-| Heterogeneous Language | Java Only       | Any              | Any                |
-| Performance            | Low loss        | High loss        | Low loss           |
-| Centre-less            | Yes             | No               | No                 |
-| Static Entry           | No              | Yes              | No                 |
+|                         | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
+| ----------------------- | --------------- | -------------------- | ------------------ |
+| Database                | Any             | MySQL                | MySQL              |
+| Connections Cost Number | High            | Low                  | High               |
+| Heterogeneous Language  | Java Only       | Any                  | Any                |
+| Performance             | Low loss        | Relatively High loss | Low loss           |
+| Decentralization        | Yes             | No                   | No                 |
+| Static Entry            | No              | Yes                  | No                 |
+
+### Hybrid Architecture
+
+Sharding-JDBC adopts decentralized architecture, applicable to high-performance light-weight OLTP application developed with Java; 
+Sharding-Proxy provides static entry and heterogeneous language support, applicable for OLAP application and the sharding databases management and operation situation.
+
+ShardingSphere is an ecosphere consists of multiple endpoints together.
+Through mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by one registry center, ShardingSphere can build application system applicable to all kinds of situations. 
+Architects can adjust the system architecture to the most applicable one to current business more freely.
+
+![ShardingSphere Hybrid Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
 
 ## Features
 
-### Data sharding
+### Data Sharding
 
-* Both databases and tables sharding.
-* Aggregation functions, GROUP BY, ORDER BY, LIMIT, OR, and JOIN DQL supported.
-* DML, DDL, TCL and database administrator command supported.
-* Sharding operator `=`, `BETWEEN` and `IN` supported.
-* Sharding algorithm customization and inline expression supported.
-* Force route by hint.
-* Distributed sequence.
+* Database sharding & Table sharding
+* Read-write splitting
+* Distributed primary key
 
-### Read-write splitting
+### Distributed Transaction (Doing)
 
-* Multiple slaves replica. 
-* Data consistency guarantee in same thread.
-* Mix read-write splitting and data sharding.
-* Force route by hint.
+* XA transaction
+* BASE transaction
 
-### BASE Transaction
+### Database Orchestration
 
-* Best efforts delivery transaction.
-* Try confirm cancel transaction (TBD).
+* Dynamic configuration
+* Fusing & Disabling
+* Tracing
+* Elastic scaling out (Planing)
 
-### Orchestration
+## Roadmap
 
-* Configuration center, can refresh dynamically.
-* Circuit breaker.
-* Open tracing supported.
+![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)

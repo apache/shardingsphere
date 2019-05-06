@@ -53,28 +53,28 @@ public final class DALMergeEngineTest {
     @Test
     public void assertMergeForShowDatabasesStatement() throws SQLException {
         DALStatement dalStatement = new ShowDatabasesStatement();
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowDatabasesMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowShowTablesStatement() throws SQLException {
         DALStatement dalStatement = new ShowTablesStatement();
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowTablesMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowCreateTableStatement() throws SQLException {
         DALStatement dalStatement = new ShowCreateTableStatement();
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowCreateTableMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowOtherStatement() throws SQLException {
         DALStatement dalStatement = new ShowOtherStatement();
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, dalStatement, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowOtherMergedResult.class));
     }
 }

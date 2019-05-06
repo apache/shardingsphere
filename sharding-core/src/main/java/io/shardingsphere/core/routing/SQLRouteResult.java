@@ -17,14 +17,13 @@
 
 package io.shardingsphere.core.routing;
 
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * SQL route result.
@@ -41,14 +40,9 @@ public final class SQLRouteResult {
     
     private final GeneratedKey generatedKey;
     
-    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
-
-    /**
-     * whether SQLRouteResult can refresh table metadata.
-     *
-     * @return boolean
-     */
-    public boolean canRefreshMetaData() {
-        return SQLType.DDL.equals(sqlStatement.getType()) && !sqlStatement.getTables().isEmpty();
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    
+    public SQLRouteResult(final SQLStatement sqlStatement) {
+        this(sqlStatement, null);
     }
 }

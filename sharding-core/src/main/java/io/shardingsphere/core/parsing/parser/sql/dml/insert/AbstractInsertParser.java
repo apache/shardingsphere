@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.parser.sql.dml.insert;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -44,17 +44,17 @@ public abstract class AbstractInsertParser implements SQLParser {
     private final ShardingRule shardingRule;
     
     @Getter(AccessLevel.PROTECTED)
-    private final ShardingMetaData shardingMetaData;
+    private final ShardingTableMetaData shardingTableMetaData;
     
     @Getter(AccessLevel.PROTECTED)
     private final LexerEngine lexerEngine;
     
     private final AbstractInsertClauseParserFacade insertClauseParserFacade;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData,
-                                final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
+    public AbstractInsertParser(
+            final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final LexerEngine lexerEngine, final AbstractInsertClauseParserFacade insertClauseParserFacade) {
         this.shardingRule = shardingRule;
-        this.shardingMetaData = shardingMetaData;
+        this.shardingTableMetaData = shardingTableMetaData;
         this.lexerEngine = lexerEngine;
         this.insertClauseParserFacade = insertClauseParserFacade;
     }
@@ -64,12 +64,13 @@ public abstract class AbstractInsertParser implements SQLParser {
         lexerEngine.nextToken();
         InsertStatement result = new InsertStatement();
         insertClauseParserFacade.getInsertIntoClauseParser().parse(result);
-        insertClauseParserFacade.getInsertColumnsClauseParser().parse(result, shardingMetaData);
+        insertClauseParserFacade.getInsertColumnsClauseParser().parse(result, shardingTableMetaData);
         if (lexerEngine.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot INSERT SELECT");
         }
-        insertClauseParserFacade.getInsertValuesClauseParser().parse(result, shardingMetaData);
+        insertClauseParserFacade.getInsertValuesClauseParser().parse(result);
         insertClauseParserFacade.getInsertSetClauseParser().parse(result);
+        insertClauseParserFacade.getInsertDuplicateKeyUpdateClauseParser().parse(result);
         processGeneratedKey(result);
         return result;
     }
@@ -80,12 +81,14 @@ public abstract class AbstractInsertParser implements SQLParser {
         if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
             return;
         }
-        if (!insertStatement.getItemsTokens().isEmpty()) {
-            insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
-        } else {
-            ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
-            columnsToken.getItems().add(generateKeyColumn.get().getName());
-            insertStatement.getSqlTokens().add(columnsToken);
+        if (DefaultKeyword.VALUES.equals(insertStatement.getInsertValues().getInsertValues().get(0).getType())) {
+            if (!insertStatement.getItemsTokens().isEmpty()) {
+                insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
+            } else {
+                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
+                columnsToken.getItems().add(generateKeyColumn.get().getName());
+                insertStatement.addSQLToken(columnsToken);
+            }
         }
     }
 }

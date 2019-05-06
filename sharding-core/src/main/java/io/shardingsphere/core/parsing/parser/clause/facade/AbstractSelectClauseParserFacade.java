@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.clause.facade;
 
-import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.GroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.HavingClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.OrderByClauseParser;
@@ -36,8 +35,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public abstract class AbstractSelectClauseParserFacade {
-    
-    private final DistinctClauseParser distinctClauseParser;
     
     private final SelectListClauseParser selectListClauseParser;
     

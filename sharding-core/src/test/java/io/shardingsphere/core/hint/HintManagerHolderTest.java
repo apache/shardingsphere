@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.hint;
 
-import io.shardingsphere.core.api.HintManager;
+import io.shardingsphere.api.HintManager;
 import org.junit.After;
 import org.junit.Test;
 
@@ -40,41 +40,37 @@ public final class HintManagerHolderTest {
     }
     
     @Test
-    public void assertsUseShardingHintWithoutAddShardingColumns() {
-        assertFalse(HintManagerHolder.isUseShardingHint());
-    }
-    
-    @Test
     public void assertsUseShardingHintWithoutSetHintManager() {
         hintManager.close();
-        assertFalse(HintManagerHolder.isUseShardingHint());
     }
     
     @Test
     public void assertsUseShardingHintWithAddShardingColumns() {
-        hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
-        assertTrue(HintManagerHolder.isUseShardingHint());
+        hintManager.addDatabaseShardingValue("logicTable", 1);
     }
     
     @Test
     public void assertGetDatabaseShardingValue() {
-        hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
-        assertTrue(HintManagerHolder.getDatabaseShardingValue(new ShardingKey("logicTable", "shardingColumn")).isPresent());
-        assertTrue(HintManagerHolder.isUseShardingHint());
+        hintManager.addDatabaseShardingValue("logicTable", 1);
+        assertTrue(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
     }
     
     @Test
     public void assertGetTableShardingValue() {
-        hintManager.addTableShardingValue("logicTable", "shardingColumn", 1);
-        assertTrue(HintManagerHolder.getTableShardingValue(new ShardingKey("logicTable", "shardingColumn")).isPresent());
-        assertTrue(HintManagerHolder.isUseShardingHint());
+        hintManager.addTableShardingValue("logicTable", 1);
+        assertTrue(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
     }
     
     @Test
     public void assertIsMasterRouteOnlyWithoutSet() {
         hintManager.close();
         assertFalse(HintManagerHolder.isMasterRouteOnly());
-        assertFalse(HintManagerHolder.isUseShardingHint());
+    }
+
+    @Test
+    public void assertIsDatabaseShardingOnly() {
+        hintManager.setDatabaseShardingValue("1");
+        assertTrue(HintManagerHolder.isDatabaseShardingOnly());
     }
     
     @Test
@@ -87,14 +83,15 @@ public final class HintManagerHolderTest {
     public void assertIsMasterRouteOnly() {
         hintManager.setMasterRouteOnly();
         assertTrue(HintManagerHolder.isMasterRouteOnly());
-        assertFalse(HintManagerHolder.isUseShardingHint());
+        hintManager.close();
+        assertFalse(HintManagerHolder.isMasterRouteOnly());
     }
     
     @Test
     public void assertClear() {
-        hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
+        hintManager.addDatabaseShardingValue("logicTable", 1);
         hintManager.close();
-        assertFalse(HintManagerHolder.getDatabaseShardingValue(new ShardingKey("logicTable", "shardingColumn")).isPresent());
+        assertFalse(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
     }
     
     @Test

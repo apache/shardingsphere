@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.constant;
 
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

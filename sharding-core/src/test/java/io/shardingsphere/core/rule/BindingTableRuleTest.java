@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.rule;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 

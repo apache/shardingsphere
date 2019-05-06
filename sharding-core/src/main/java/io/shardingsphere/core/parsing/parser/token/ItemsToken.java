@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -31,15 +30,16 @@ import java.util.List;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public final class ItemsToken implements SQLToken {
-    
-    private final int beginPosition;
+public final class ItemsToken extends SQLToken {
     
     @Setter
     private boolean isFirstOfItemsSpecial;
     
     private final List<String> items = new LinkedList<>();
+    
+    public ItemsToken(final int beginPosition) {
+        super(beginPosition);
+    }
 }

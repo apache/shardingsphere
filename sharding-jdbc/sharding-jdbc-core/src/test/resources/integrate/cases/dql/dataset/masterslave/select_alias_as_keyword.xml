@@ -1,0 +1,6 @@
+<dataset>
+    <metadata>
+        <column name="password" />
+    </metadata>
+    <row values="100001" />
+</dataset>

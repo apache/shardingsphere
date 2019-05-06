@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
-    <sql-case id="assertDropTable" value="DROP TABLE t_log" />
-    <sql-case id="assertDropTableIfExists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL,PostgreSQL,SQLServer" />
-    <sql-case id="assertDropTemporaryTable" value="DROP TEMPORARY TABLE IF EXISTS t_temp_log" db-types="MySQL" />
-    <sql-case id="assertDropTableRestrict" value="DROP TABLE t_log RESTRICT" db-types="MySQL,PostgreSQL" />
-    <sql-case id="assertDropTableCascade" value="DROP TABLE t_log CASCADE" db-types="MySQL,PostgreSQL" />
-    <sql-case id="assertDropTableCascadeConstraintsAndPurge" value="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" db-types="Oracle" />
-    <sql-case id="assertDropIndex" value="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer" />
-    <sql-case id="assertDropIndexWithoutOn" value="DROP INDEX t_log_index" db-types="PostgreSQL,Oracle" />
-    <sql-case id="assertDropIndexIfExists" value="DROP INDEX IF EXISTS t_order_index" db-types="PostgreSQL" />
-
+    <sql-case id="drop_table" value="DROP TABLE t_log" />
+    <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL,PostgreSQL,SQLServer" />
+    <sql-case id="drop_temporary_table_if_exists" value="DROP TEMPORARY TABLE IF EXISTS t_temp_log" db-types="MySQL" />
+    <sql-case id="drop_table_restrict" value="DROP TABLE t_log RESTRICT" db-types="MySQL,PostgreSQL" />
+    <sql-case id="drop_table_cascade" value="DROP TABLE t_log CASCADE" db-types="MySQL,PostgreSQL" />
+    <sql-case id="drop_table_cascade_constraints_and_purge" value="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" db-types="Oracle" />
+    <sql-case id="drop_index" value="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer" />
+    <sql-case id="drop_index_without_on" value="DROP INDEX order_index" db-types="PostgreSQL,Oracle" />
+    <sql-case id="drop_index_if_exists" value="DROP INDEX IF EXISTS order_index" db-types="PostgreSQL" />
 </sql-cases>

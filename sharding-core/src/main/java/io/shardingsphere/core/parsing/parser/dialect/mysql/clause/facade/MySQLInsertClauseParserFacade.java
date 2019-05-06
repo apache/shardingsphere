@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.InsertColumnsClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLInsertDuplicateKeyUpdateClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLInsertIntoClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLInsertSetClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLInsertValuesClauseParser;
@@ -34,6 +35,7 @@ public final class MySQLInsertClauseParserFacade extends AbstractInsertClausePar
     
     public MySQLInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(new MySQLInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
-                new MySQLInsertValuesClauseParser(shardingRule, lexerEngine), new MySQLInsertSetClauseParser(shardingRule, lexerEngine));
+                new MySQLInsertValuesClauseParser(shardingRule, lexerEngine), new MySQLInsertSetClauseParser(shardingRule, lexerEngine),
+                new MySQLInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }
 }

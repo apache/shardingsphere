@@ -29,6 +29,7 @@ import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionPa
 import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
@@ -44,6 +45,7 @@ import java.util.List;
  * Table references clause parser.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 public class TableReferencesClauseParser implements SQLClauseParser {
     
@@ -74,7 +76,13 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             parseTableReference(sqlStatement, isSingleTableOnly);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
     }
-    
+
+    /**
+     * Parse table references.
+     *
+     * @param sqlStatement SQL statement
+     * @param isSingleTableOnly is parse single table only
+     */
     protected void parseTableReference(final SQLStatement sqlStatement, final boolean isSingleTableOnly) {
         parseTableFactor(sqlStatement, isSingleTableOnly);
     }
@@ -87,21 +95,24 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             skippedSchemaNameLength = literals.length() + Symbol.DOT.getLiterals().length();
             literals = lexerEngine.getCurrentToken().getLiterals();
+            lexerEngine.nextToken();
         }
         String tableName = SQLUtil.getExactlyValue(literals);
         if (Strings.isNullOrEmpty(tableName)) {
             return;
         }
-        Optional<String> alias = aliasExpressionParser.parseTableAlias();
-        if (isSingleTableOnly || shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
+        if (isSingleTableOnly || shardingRule.findTableRuleByLogicTable(tableName).isPresent()
+                || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
-            sqlStatement.getTables().add(new Table(tableName, alias));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+            sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
+        } else {
+            aliasExpressionParser.parseTableAlias();
         }
         parseForceIndex(tableName, sqlStatement);
         parseJoinTable(sqlStatement);
         if (isSingleTableOnly && !sqlStatement.getTables().isSingleTable()) {
-            throw new UnsupportedOperationException("Cannot support Multiple-Table.");
+            throw new SQLParsingUnsupportedException("Cannot support Multiple-Table.");
         }
     }
     
@@ -115,7 +126,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 Preconditions.checkState(!Symbol.RIGHT_PAREN.getLiterals().equals(literals), "There is an error in the vicinity of the force index syntax.");
                 if (shardingRule.isLogicIndex(literals, tableName)) {
                     int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
-                    sqlStatement.getSqlTokens().add(new IndexToken(beginPosition, literals, tableName));
+                    sqlStatement.addSQLToken(new IndexToken(beginPosition, literals, tableName));
                 }
                 lexerEngine.nextToken();
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
@@ -126,7 +137,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     private void parseJoinTable(final SQLStatement sqlStatement) {
         while (parseJoinType()) {
             if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
-                throw new UnsupportedOperationException("Cannot support sub query for join table.");
+                throw new SQLParsingUnsupportedException("Cannot support sub query for join table.");
             }
             parseTableFactor(sqlStatement, false);
             parseJoinCondition(sqlStatement);
@@ -145,7 +156,12 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         lexerEngine.skipAll(joinTypeKeywordArrays);
         return true;
     }
-    
+
+    /**
+     * Get keywords for join type.
+     *
+     * @return new Keyword object array
+     */
     protected Keyword[] getKeywordsForJoinType() {
         return new Keyword[0];
     }
@@ -177,7 +193,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             literals = lexerEngine.getCurrentToken().getLiterals();
             lexerEngine.nextToken();
         }
-        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
         sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
     }
 }

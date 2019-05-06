@@ -19,11 +19,10 @@ package io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.HavingClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.OrderByClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.SelectListClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLDistinctClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLGroupByClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLOrderByClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLSelectListClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLSelectRestClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLTableReferencesClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLWhereClauseParser;
@@ -37,8 +36,8 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class MySQLSelectClauseParserFacade extends AbstractSelectClauseParserFacade {
     
     public MySQLSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new MySQLDistinctClauseParser(lexerEngine), new SelectListClauseParser(shardingRule, lexerEngine),
+        super(new MySQLSelectListClauseParser(shardingRule, lexerEngine),
                 new MySQLTableReferencesClauseParser(shardingRule, lexerEngine), new MySQLWhereClauseParser(lexerEngine), new MySQLGroupByClauseParser(lexerEngine),
-                new HavingClauseParser(lexerEngine), new OrderByClauseParser(lexerEngine), new MySQLSelectRestClauseParser(lexerEngine));
+                new HavingClauseParser(lexerEngine), new MySQLOrderByClauseParser(lexerEngine), new MySQLSelectRestClauseParser(lexerEngine));
     }
 }

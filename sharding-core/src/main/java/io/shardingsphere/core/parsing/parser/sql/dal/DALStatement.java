@@ -18,8 +18,17 @@
 package io.shardingsphere.core.parsing.parser.sql.dal;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
+import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * DAL statement.
@@ -29,7 +38,35 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class DALStatement extends AbstractSQLStatement {
     
+    private static final Collection<Keyword> SINGLE_TOKEN_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.USE, DefaultKeyword.DESC, MySQLKeyword.DESCRIBE, MySQLKeyword.SHOW, 
+            PostgreSQLKeyword.SHOW, PostgreSQLKeyword.RESET);
+
+    private static final Collection<Keyword> DUAL_TOKEN_PRIMARY_STATEMENT_PREFIX = Collections.<Keyword>singletonList(DefaultKeyword.SET);
+
+    private static final Collection<Keyword> DUAL_TOKEN_NOT_SECONDARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.ROLE, DefaultKeyword.TRANSACTION, PostgreSQLKeyword.CONSTRAINTS);
+    
     public DALStatement() {
         super(SQLType.DAL);
+    }
+    
+    /**
+     * Is DAL statement.
+     * 
+     * @param tokenType token type
+     * @return is DAL or not
+     */
+    public static boolean isDAL(final TokenType tokenType) {
+        return SINGLE_TOKEN_STATEMENT_PREFIX.contains(tokenType);
+    }
+
+    /**
+     * Is DAL statement.
+     *
+     * @param primaryTokenType primary token type
+     * @param secondaryTokenType secondary token type
+     * @return is DAL or not
+     */
+    public static boolean isDAL(final TokenType primaryTokenType, final TokenType secondaryTokenType) {
+        return DUAL_TOKEN_PRIMARY_STATEMENT_PREFIX.contains(primaryTokenType) && !DUAL_TOKEN_NOT_SECONDARY_STATEMENT_PREFIX.contains(secondaryTokenType);
     }
 }

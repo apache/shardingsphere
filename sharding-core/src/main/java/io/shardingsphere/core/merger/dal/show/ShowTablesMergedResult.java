@@ -17,75 +17,42 @@
 
 package io.shardingsphere.core.merger.dal.show;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.merger.dql.common.MemoryMergedResult;
-import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Merged result for show tables.
  *
  * @author zhangliang
+ * @author panjuan
  */
-public final class ShowTablesMergedResult extends MemoryMergedResult {
+public final class ShowTablesMergedResult extends LogicTablesMergedResult {
     
     private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(1, 1);
     
-    private final ShardingRule shardingRule;
-    
-    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
-    
-    private final Set<String> tableNames = new HashSet<>();
-    
     static {
-        LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1); 
+        LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1);
     }
     
-    public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults) throws SQLException {
-        super(LABEL_AND_INDEX_MAP);
-        this.shardingRule = shardingRule;
-        memoryResultSetRows = init(queryResults);
+    public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final ShardingTableMetaData shardingTableMetaData) throws SQLException {
+        super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, shardingTableMetaData);
     }
     
-    private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryQueryResultRow> result = new LinkedList<>();
-        for (QueryResult each : queryResults) {
-            while (each.next()) {
-                MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
-                String actualTableName = memoryResultSetRow.getCell(1).toString();
-                Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
-                if (!tableRule.isPresent()) {
-                    result.add(memoryResultSetRow);
-                } else if (tableNames.add(tableRule.get().getLogicTable())) {
-                    memoryResultSetRow.setCell(1, tableRule.get().getLogicTable());
-                    result.add(memoryResultSetRow);
-                }
-            }
-        }
-        if (!result.isEmpty()) {
-            setCurrentResultSetRow(result.get(0));
-        }
-        return result.iterator();
-    }
-    
-    @Override
-    public boolean next() {
-        if (memoryResultSetRows.hasNext()) {
-            setCurrentResultSetRow(memoryResultSetRows.next());
-            return true;
-        }
-        return false;
+    /**
+     * Reset column label.
+     * 
+     * @param schema schema 
+     */
+    public void resetColumnLabel(final String schema) {
+        Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
+        labelAndIndexMap.put(schema, 1);
+        resetLabelAndIndexMap(labelAndIndexMap);
     }
 }
