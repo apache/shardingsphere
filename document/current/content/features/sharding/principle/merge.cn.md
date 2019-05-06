@@ -46,7 +46,7 @@ ShardingSphere在对排序的查询进行归并时，将每个结果集的当前
 
 ![排序归并示例2](https://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_2.png)
 
-可以看到，对于每个数据结果集中的数据有序，而多数据结果集整体无序的情况下，ShardingSphere无需将所有的数据都加在至内存即可排序。
+可以看到，对于每个数据结果集中的数据有序，而多数据结果集整体无序的情况下，ShardingSphere无需将所有的数据都加载至内存即可排序。
 它使用的是流式归并的方式，每次next仅获取唯一正确的一条数据，极大的节省了内存的消耗。
 
 从另一个角度来说，ShardingSphere的排序归并，是在维护数据结果集的纵轴和横轴这两个维度的有序性。
