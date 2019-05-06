@@ -77,7 +77,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             Object[] currentParameters = createCurrentParameters(parametersCount, insertValue);
             parametersCount = parametersCount + insertValue.getParametersCount();
             ShardingCondition shardingCondition = createShardingCondition(andConditions.get(i));
-            insertOptimizeResult.addUnit(currentColumnValues, currentParameters);
+            insertOptimizeResult.addUnit(currentColumnValues, currentParameters, insertValue.getParametersCount());
             if (isNeededToAppendGeneratedKey()) {
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
                 fillWithGeneratedKeyName(insertOptimizeResult);

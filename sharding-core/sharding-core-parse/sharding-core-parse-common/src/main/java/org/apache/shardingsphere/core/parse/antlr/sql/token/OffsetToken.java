@@ -18,19 +18,24 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 
 /**
  * Offset token for limit.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
-public final class OffsetToken extends SQLToken {
+public final class OffsetToken extends SQLToken implements Substitutable {
     
     private final int offset;
     
-    public OffsetToken(final int startIndex, final int offset) {
+    private final int stopIndex;
+    
+    public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
         super(startIndex);
         this.offset = offset;
+        this.stopIndex = stopIndex;
     }
 }

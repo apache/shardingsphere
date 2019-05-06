@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RuleName {
     
+    SCHEMA_NAME("SchemaName"),
+    
     TABLE_NAME("TableName"),
     
     COLUMN_DEFINITION("ColumnDefinition"),
@@ -141,7 +143,9 @@ public enum RuleName {
     
     LIMIT_CLAUSE("LimitClause"),
     
-    RANGE_CLAUSE("RangeClause"),
+    LIMIT_ROW_COUNT("LimitRowCount"),
+    
+    LIMIT_OFFSET("LimitOffset"),
     
     SUBQUERY("Subquery"),
     
@@ -149,7 +153,11 @@ public enum RuleName {
     
     AUTO_COMMIT_VALUE("AutoCommitValue"),
     
-    IMPLICIT_TRANSACTIONS_VALUE("ImplicitTransactionsValue");
+    IMPLICIT_TRANSACTIONS_VALUE("ImplicitTransactionsValue"),
+    
+    SHOW_LIKE("ShowLike"),
+    
+    FROM_SCHEMA("FromSchema");
     
     private final String name;
     

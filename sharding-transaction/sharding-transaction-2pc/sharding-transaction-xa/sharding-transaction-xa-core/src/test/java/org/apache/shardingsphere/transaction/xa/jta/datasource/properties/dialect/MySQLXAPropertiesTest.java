@@ -41,7 +41,7 @@ public final class MySQLXAPropertiesTest {
         assertThat(actual.getProperty("prepStmtCacheSqlLimit"), is("2048"));
         assertThat(actual.getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
-        assertThat(actual.getProperty("cacheResultSetMetadata"), is(Boolean.TRUE.toString()));
+        assertThat(actual.getProperty("cacheResultSetMetadata"), is(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));

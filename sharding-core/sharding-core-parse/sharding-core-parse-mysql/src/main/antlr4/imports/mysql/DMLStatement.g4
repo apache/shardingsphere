@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 insert
     : INSERT insertSpecification_ INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
@@ -37,6 +37,14 @@ insertSelectClause
 
 onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
+    ;
+
+replace
+    : REPLACE replaceSpecification_? INTO? tableName partitionNames_? (insertValuesClause | setAssignmentsClause | insertSelectClause)
+    ;
+
+replaceSpecification_
+    : LOW_PRIORITY | DELAYED
     ;
 
 update
@@ -187,10 +195,14 @@ havingClause
     ;
 
 limitClause
-    : LIMIT (rangeItem_ (COMMA_ rangeItem_)? | rangeItem_ OFFSET rangeItem_)
+    : LIMIT ((limitOffset COMMA_)? limitRowCount | limitRowCount OFFSET limitOffset)
     ;
 
-rangeItem_
+limitRowCount
+    : numberLiterals | parameterMarker
+    ;
+    
+limitOffset
     : numberLiterals | parameterMarker
     ;
 

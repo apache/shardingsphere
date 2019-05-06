@@ -48,6 +48,8 @@ public abstract class InsertOptimizeResultUnit {
     
     private final Object[] parameters;
     
+    private final int startIndexOfAppendedParameters;
+    
     private final List<DataNode> dataNodes = new LinkedList<>();
     
     /**
@@ -56,26 +58,25 @@ public abstract class InsertOptimizeResultUnit {
      * @param sqlExpression SQL expression
      */
     public final void addColumnValue(final SQLExpression sqlExpression) {
-        values[getCurrentIndex(values)] = sqlExpression;
+        values[getCurrentIndex(values, 0)] = sqlExpression;
     }
     
     /**
      * Add column parameter.
      *
-     * @param parameter parameter 
+     * @param parameter parameter
      */
     public final void addColumnParameter(final Object parameter) {
-        parameters[getCurrentIndex(parameters)] = parameter;
+        parameters[getCurrentIndex(parameters, startIndexOfAppendedParameters)] = parameter;
     }
     
-    private int getCurrentIndex(final Object[] array) {
-        int count = 0;
-        for (Object each : array) {
-            if (null != each) {
-                count++;
+    private int getCurrentIndex(final Object[] array, final int startIndex) {
+        for (int i = startIndex; i < array.length; i++) {
+            if (null == array[i]) {
+                return i;
             }
         }
-        return count;
+        throw new ShardingException("Index Out Of Bounds For InsertOptimizeResultUnit.");
     }
     
     /**

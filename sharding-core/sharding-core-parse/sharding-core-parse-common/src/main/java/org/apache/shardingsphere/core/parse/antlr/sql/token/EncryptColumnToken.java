@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 
 /**
@@ -28,18 +29,18 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
  */
 @Getter
 @ToString
-public final class EncryptColumnToken extends SQLToken {
-    
-    private final int stopIndex;
+public final class EncryptColumnToken extends SQLToken implements Substitutable {
     
     private final Column column;
     
     private final boolean isInWhere;
     
+    private final int stopIndex;
+    
     public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
         super(startIndex);
-        this.stopIndex = stopIndex;
         this.column = column;
         this.isInWhere = isInWhere;
+        this.stopIndex = stopIndex;
     }
 }

@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
-
-import lombok.Getter;
+package org.apache.shardingsphere.shardingjdbc.spring.namespace.constants;
 
 /**
- * Limit value segment for placeholder.
- * 
- * @author zhangliang
+ * Load balance algorithm bean definition parser tag.
+ *
+ * @author zhaojun
  */
-@Getter
-public final class PlaceholderLimitValueSegment extends LimitValueSegment {
+public class LoadBalanceAlgorithmBeanDefinitionParserTag {
     
-    private final int parameterIndex;
+    public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
     
-    public PlaceholderLimitValueSegment(final int parameterIndex, final int beginPosition) {
-        super(beginPosition);
-        this.parameterIndex = parameterIndex;
-    }
+    public static final String ALGORITHM_TYPE_ATTRIBUTE = "type";
+    
+    public static final String ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
 }

@@ -15,33 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Select items token.
+ * Select items placeholder for rewrite.
  *
- * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
-@ToString
-@EqualsAndHashCode(callSuper = true)
-public final class ItemsToken extends SQLToken {
+public final class SelectItemsPlaceholder implements ShardingPlaceholder {
     
-    @Setter
-    private boolean isFirstOfItemsSpecial;
+    private final boolean isFirstOfItemsSpecial;
     
     private final List<String> items = new LinkedList<>();
     
-    public ItemsToken(final int startIndex) {
-        super(startIndex);
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < items.size(); i++) {
+            if (isFirstOfItemsSpecial && 0 == i) {
+                result.append(items.get(i));
+            } else {
+                result.append(", ");
+                result.append(items.get(i));
+            }
+        }
+        return result.toString();
+    }
+    
+    @Override
+    public String getLogicTableName() {
+        return "";
     }
 }

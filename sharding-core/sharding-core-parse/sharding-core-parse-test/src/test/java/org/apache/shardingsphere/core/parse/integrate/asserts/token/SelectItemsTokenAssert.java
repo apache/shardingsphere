@@ -19,12 +19,11 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.GeneratedKeyToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedGeneratedKeyToken;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedItemsToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.Collection;
 
@@ -33,38 +32,33 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Generated key token assert.
+ * Select items token assert.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class GeneratedKeyTokenAssert {
-    
-    private final SQLCaseType sqlCaseType;
+final class SelectItemsTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertGeneratedKeyToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
-        Optional<GeneratedKeyToken> generatedKeyToken = getGeneratedKeyToken(actual);
-        if (generatedKeyToken.isPresent()) {
-            assertGeneratedKeyToken(generatedKeyToken.get(), expected.getGeneratedKeyToken());
+    void assertSelectItemsToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
+        Optional<SelectItemsToken> itemsToken = getSelectItemsToken(actual);
+        if (itemsToken.isPresent()) {
+            assertSelectItemsToken(itemsToken.get(), expected.getItemsToken());
         } else {
-            assertNull(assertMessage.getFullAssertMessage("Generated key token should not exist: "), expected.getGeneratedKeyToken());
+            assertNull(assertMessage.getFullAssertMessage("Select items token should not exist: "), expected.getItemsToken());
         }
     }
     
-    private void assertGeneratedKeyToken(final GeneratedKeyToken actual, final ExpectedGeneratedKeyToken expected) {
-        if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("Generated key token begin position assertion error: "), actual.getStartIndex(), is(expected.getPlaceholderBeginPosition()));
-        } else {
-            assertThat(assertMessage.getFullAssertMessage("Generated key token begin position assertion error: "), actual.getStartIndex(), is(expected.getLiteralBeginPosition()));
-        }
+    private void assertSelectItemsToken(final SelectItemsToken actual, final ExpectedItemsToken expected) {
+        assertThat(assertMessage.getFullAssertMessage("Select items token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Select items token items assertion error: "), actual.getItems(), is(expected.getItems()));
     }
     
-    private Optional<GeneratedKeyToken> getGeneratedKeyToken(final Collection<SQLToken> actual) {
+    private Optional<SelectItemsToken> getSelectItemsToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
-            if (each instanceof GeneratedKeyToken) {
-                return Optional.of((GeneratedKeyToken) each);
+            if (each instanceof SelectItemsToken) {
+                return Optional.of((SelectItemsToken) each);
             }
         }
         return Optional.absent();

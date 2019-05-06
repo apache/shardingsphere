@@ -30,8 +30,8 @@ import java.util.Collection;
  */
 public final class SetAssignmentOptimizeResult extends InsertOptimizeResultUnit {
     
-    public SetAssignmentOptimizeResult(final Collection<String> columnNames, final SQLExpression[] values, final Object[] parameters) {
-        super(columnNames, values, parameters);
+    public SetAssignmentOptimizeResult(final Collection<String> columnNames, final SQLExpression[] values, final Object[] parameters, final int startIndexOfAppendedParameters) {
+        super(columnNames, values, parameters, startIndexOfAppendedParameters);
     }
     
     @Override

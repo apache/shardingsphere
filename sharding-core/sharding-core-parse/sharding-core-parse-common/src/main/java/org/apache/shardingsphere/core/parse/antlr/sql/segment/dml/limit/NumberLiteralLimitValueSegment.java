@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
+
+import lombok.Getter;
 
 /**
- * Generated key token.
- *
+ * Limit value segment for number literal.
+ * 
  * @author zhangliang
  */
-public final class GeneratedKeyToken extends SQLToken {
+@Getter
+public final class NumberLiteralLimitValueSegment extends LimitValueSegment {
     
-    public GeneratedKeyToken(final int startIndex) {
-        super(startIndex);
+    private final int value;
+    
+    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final int value) {
+        super(startIndex, stopIndex);
+        this.value = value;
     }
 }

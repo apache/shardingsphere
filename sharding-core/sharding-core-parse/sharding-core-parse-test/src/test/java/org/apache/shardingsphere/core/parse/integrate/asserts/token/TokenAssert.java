@@ -38,9 +38,7 @@ public final class TokenAssert {
     
     private final IndexTokenAssert indexTokenAssert;
     
-    private final ItemsTokenAssert itemsTokenAssert;
-    
-    private final GeneratedKeyTokenAssert generatedKeyTokenAssert;
+    private final SelectItemsTokenAssert itemsTokenAssert;
     
     private final InsertValuesTokenAssert insertValuesTokenAssert;
     
@@ -60,8 +58,7 @@ public final class TokenAssert {
         tableTokenAssert = new TableTokenAssert(assertMessage);
         schemaTokenAssert = new SchemaTokenAssert(assertMessage);
         indexTokenAssert = new IndexTokenAssert(assertMessage);
-        itemsTokenAssert = new ItemsTokenAssert(assertMessage);
-        generatedKeyTokenAssert = new GeneratedKeyTokenAssert(sqlCaseType, assertMessage);
+        itemsTokenAssert = new SelectItemsTokenAssert(assertMessage);
         insertValuesTokenAssert = new InsertValuesTokenAssert(assertMessage);
         orderByTokenAssert = new OrderByTokenAssert(sqlCaseType, assertMessage);
         offsetTokenAssert = new OffsetTokenAssert(sqlCaseType, assertMessage);
@@ -81,8 +78,7 @@ public final class TokenAssert {
         tableTokenAssert.assertTableTokens(actual, expected);
         schemaTokenAssert.assertSchemaTokens(actual, expected);
         indexTokenAssert.assertIndexToken(actual, expected);
-        itemsTokenAssert.assertItemsToken(actual, expected);
-        generatedKeyTokenAssert.assertGeneratedKeyToken(actual, expected);
+        itemsTokenAssert.assertSelectItemsToken(actual, expected);
         insertValuesTokenAssert.assertInsertValuesToken(actual, expected);
         orderByTokenAssert.assertOrderByToken(actual, expected);
         offsetTokenAssert.assertOffsetToken(actual, expected);

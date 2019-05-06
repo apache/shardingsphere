@@ -40,7 +40,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.jndi.JndiObjectFactoryBean;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -78,6 +80,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     private final EncryptRuleConfigurationYamlSwapper encryptSwapper = new EncryptRuleConfigurationYamlSwapper();
     
+    private final String jndiName = "jndiName";
+    
     /**
      * Get data source bean.
      *
@@ -103,6 +107,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));
             } catch (final ReflectiveOperationException ex) {
                 throw new ShardingException("Can't find datasource type!", ex);
+            } catch (final NamingException namingEx) {
+                throw new ShardingException("Can't find JNDI datasource!", namingEx);
             }
         }
     }
@@ -115,9 +121,21 @@ public class SpringBootConfiguration implements EnvironmentAware {
     }
     
     @SuppressWarnings("unchecked")
-    private DataSource getDataSource(final Environment environment, final String prefix, final String dataSourceName) throws ReflectiveOperationException {
+    private DataSource getDataSource(final Environment environment, final String prefix, final String dataSourceName) throws ReflectiveOperationException, NamingException {
         Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + dataSourceName.trim(), Map.class);
         Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
+        if (dataSourceProps.containsKey(jndiName)) {
+            return getJndiDataSource(dataSourceProps.get(jndiName).toString());
+        }
         return DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+    }
+    
+    private DataSource getJndiDataSource(final String jndiName) throws NamingException {
+        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+        bean.setResourceRef(true);
+        bean.setJndiName(jndiName);
+        bean.setProxyInterface(DataSource.class);
+        bean.afterPropertiesSet();
+        return (DataSource) bean.getObject();
     }
 }

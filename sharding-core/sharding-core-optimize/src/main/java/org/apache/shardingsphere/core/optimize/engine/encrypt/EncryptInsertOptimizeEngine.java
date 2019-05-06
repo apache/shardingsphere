@@ -61,7 +61,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
             SQLExpression[] currentColumnValues = createCurrentColumnValues(each);
             Object[] currentParameters = createCurrentParameters(parametersCount, each);
             parametersCount = parametersCount + each.getParametersCount();
-            insertOptimizeResult.addUnit(currentColumnValues, currentParameters);
+            insertOptimizeResult.addUnit(currentColumnValues, currentParameters, each.getParametersCount());
             if (isNeededToAppendQueryAssistedColumn()) {
                 fillWithQueryAssistedColumn(insertOptimizeResult, insertOptimizeResultIndex);
             }

@@ -19,25 +19,27 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Schema token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @ToString
-public final class SchemaToken extends SQLToken {
+public final class SchemaToken extends SQLToken implements Substitutable {
+    
+    private final String tableName;
     
     @Getter
     private final int stopIndex;
     
-    private final String tableName;
-    
     public SchemaToken(final int startIndex, final int stopIndex, final String tableName) {
         super(startIndex);
-        this.stopIndex = stopIndex;
         this.tableName = tableName;
+        this.stopIndex = stopIndex;
     }
     
     /**

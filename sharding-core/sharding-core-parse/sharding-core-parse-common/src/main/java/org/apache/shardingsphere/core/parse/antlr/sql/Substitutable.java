@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
-
-import lombok.Getter;
-import lombok.ToString;
+package org.apache.shardingsphere.core.parse.antlr.sql;
 
 /**
- * Symbol token.
+ * Substitute available.
  *
  * @author panjuan
  */
-@Getter
-@ToString
-public final class InsertColumnToken extends SQLToken {
+public interface Substitutable {
     
-    private final String columnName;
+    /**
+     * Get start index.
+     * 
+     * @return start index
+     */
+    int getStartIndex();
     
-    public InsertColumnToken(final int startIndex, final String columnName) {
-        super(startIndex);
-        this.columnName = columnName;
-    }
+    /**
+     * Get stop index.
+     * 
+     * @return stop index
+     */
+    int getStopIndex();
 }

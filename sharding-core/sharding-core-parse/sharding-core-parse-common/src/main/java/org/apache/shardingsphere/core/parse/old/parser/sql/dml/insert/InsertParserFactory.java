@@ -41,22 +41,24 @@ public final class InsertParserFactory {
      * Create insert parser instance.
      *
      * @param dbType database type
+     * @param sql sql
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine
      * @param shardingTableMetaData sharding meta data
      * @return insert parser instance
      */
-    public static AbstractInsertParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+    public static AbstractInsertParser newInstance(
+            final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
+                return new MySQLInsertParser(shardingRule, sql, lexerEngine, shardingTableMetaData);
             case Oracle:
-                return new OracleInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
+                return new OracleInsertParser(shardingRule, sql, lexerEngine, shardingTableMetaData);
             case SQLServer:
-                return new SQLServerInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
+                return new SQLServerInsertParser(shardingRule, sql, lexerEngine, shardingTableMetaData);
             case PostgreSQL:
-                return new PostgreSQLInsertParser(shardingRule, lexerEngine, shardingTableMetaData);
+                return new PostgreSQLInsertParser(shardingRule, sql, lexerEngine, shardingTableMetaData);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

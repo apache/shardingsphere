@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, Literals, BaseRule;
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 setTransaction
     : SET (GLOBAL | SESSION)? TRANSACTION

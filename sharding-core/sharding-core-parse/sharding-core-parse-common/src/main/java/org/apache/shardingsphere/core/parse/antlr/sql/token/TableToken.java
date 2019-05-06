@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
@@ -28,30 +29,20 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 @ToString
-public final class TableToken extends SQLToken {
+public final class TableToken extends SQLToken implements Substitutable {
     
-    @Getter
     private final String tableName;
     
-    @Getter
+    private final int stopIndex;
+    
     private final QuoteCharacter quoteCharacter;
     
-    private final int ownerLength;
-    
-    public TableToken(final int startIndex, final String tableName, final QuoteCharacter quoteCharacter, final int ownerLength) {
+    public TableToken(final int startIndex, final int stopIndex, final String tableName, final QuoteCharacter quoteCharacter) {
         super(startIndex);
         this.tableName = SQLUtil.getExactlyValue(tableName);
         this.quoteCharacter = quoteCharacter;
-        this.ownerLength = ownerLength;
-    }
-    
-    /**
-     * Get table token length.
-     * 
-     * @return table token length
-     */
-    public int getLength() {
-        return ownerLength + tableName.length() + quoteCharacter.getStartDelimiter().length() + quoteCharacter.getEndDelimiter().length();
+        this.stopIndex = stopIndex;
     }
 }

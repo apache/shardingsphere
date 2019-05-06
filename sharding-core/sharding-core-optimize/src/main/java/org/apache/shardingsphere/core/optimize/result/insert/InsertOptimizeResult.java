@@ -49,12 +49,13 @@ public final class InsertOptimizeResult {
      *
      * @param columnValues column values
      * @param columnParameters column parameters
+     * @param startIndexOfAppendedParameters start index of appended parameters
      */
-    public void addUnit(final SQLExpression[] columnValues, final Object[] columnParameters) {
+    public void addUnit(final SQLExpression[] columnValues, final Object[] columnParameters, final int startIndexOfAppendedParameters) {
         if (type == InsertType.VALUES) {
-            this.units.add(new ColumnValueOptimizeResult(columnNames, columnValues, columnParameters));
+            this.units.add(new ColumnValueOptimizeResult(columnNames, columnValues, columnParameters, startIndexOfAppendedParameters));
         } else {
-            this.units.add(new SetAssignmentOptimizeResult(columnNames, columnValues, columnParameters));
+            this.units.add(new SetAssignmentOptimizeResult(columnNames, columnValues, columnParameters, startIndexOfAppendedParameters));
         }
     }
 }

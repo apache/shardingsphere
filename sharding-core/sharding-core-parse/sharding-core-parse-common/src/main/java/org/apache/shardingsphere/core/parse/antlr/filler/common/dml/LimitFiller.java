@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LiteralLimitValueSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.PlaceholderLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
@@ -40,29 +40,29 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setLimit(new Limit());
+        fillRowCount(sqlSegment.getRowCount(), selectStatement);
         if (sqlSegment.getOffset().isPresent()) {
-            setOffset(sqlSegment.getOffset().get(), selectStatement);
-        }
-        setRowCount(sqlSegment.getRowCount(), selectStatement);
-    }
-    
-    private void setOffset(final LimitValueSegment offsetSegment, final SelectStatement selectStatement) {
-        if (offsetSegment instanceof LiteralLimitValueSegment) {
-            int value = ((LiteralLimitValueSegment) offsetSegment).getValue();
-            selectStatement.getLimit().setOffset(new LimitValue(value, -1, false));
-            selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), value));
-        } else {
-            selectStatement.getLimit().setOffset(new LimitValue(-1, ((PlaceholderLimitValueSegment) offsetSegment).getParameterIndex(), false));
+            fillOffset(sqlSegment.getOffset().get(), selectStatement);
         }
     }
     
-    private void setRowCount(final LimitValueSegment rowCountSegment, final SelectStatement selectStatement) {
-        if (rowCountSegment instanceof LiteralLimitValueSegment) {
-            int value = ((LiteralLimitValueSegment) rowCountSegment).getValue();
+    private void fillRowCount(final LimitValueSegment rowCountSegment, final SelectStatement selectStatement) {
+        if (rowCountSegment instanceof NumberLiteralLimitValueSegment) {
+            int value = ((NumberLiteralLimitValueSegment) rowCountSegment).getValue();
             selectStatement.getLimit().setRowCount(new LimitValue(value, -1, false));
-            selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getStartIndex(), value));
+            selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getStartIndex(), rowCountSegment.getStopIndex(), value));
         } else {
-            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((PlaceholderLimitValueSegment) rowCountSegment).getParameterIndex(), false));
+            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) rowCountSegment).getParameterIndex(), false));
+        }
+    }
+    
+    private void fillOffset(final LimitValueSegment offsetSegment, final SelectStatement selectStatement) {
+        if (offsetSegment instanceof NumberLiteralLimitValueSegment) {
+            int value = ((NumberLiteralLimitValueSegment) offsetSegment).getValue();
+            selectStatement.getLimit().setOffset(new LimitValue(value, -1, false));
+            selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getStartIndex(), offsetSegment.getStopIndex(), value));
+        } else {
+            selectStatement.getLimit().setOffset(new LimitValue(-1, ((ParameterMarkerLimitValueSegment) offsetSegment).getParameterIndex(), false));
         }
     }
 }

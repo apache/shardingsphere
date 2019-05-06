@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.item;
+package org.apache.shardingsphere.core.parse.filler.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.RemoveToken;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTableStatusSegment;
 
 /**
- * Order by item segment for column name.
- * 
+ * Show table status filler for MySQL.
+ *
  * @author zhangliang
- * @author panjuan
  */
-@Getter
-public final class ColumnNameOrderByItemSegment extends OrderByItemSegment {
+public final class MySQLShowTableStatusFiller implements SQLSegmentFiller<ShowTableStatusSegment> {
     
-    private final String columnName;
-    
-    public ColumnNameOrderByItemSegment(final String columnName, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        super(orderDirection, nullOrderDirection);
-        this.columnName = columnName;
+    @Override
+    public void fill(final ShowTableStatusSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (-1 != sqlSegment.getFromTableStartIndex()) {
+            sqlStatement.addSQLToken(new RemoveToken(sqlSegment.getFromTableStartIndex(), sqlSegment.getTableStopIndex()));
+        }
     }
 }

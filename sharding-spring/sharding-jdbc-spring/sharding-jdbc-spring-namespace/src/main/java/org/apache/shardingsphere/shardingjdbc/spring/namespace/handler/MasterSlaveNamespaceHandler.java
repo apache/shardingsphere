@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.handler;
 
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.LoadBalanceAlgorithmBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.MasterSlaveDataSourceBeanDefinitionParser;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -30,6 +32,7 @@ public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
+        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new MasterSlaveDataSourceBeanDefinitionParser());
     }
 }
