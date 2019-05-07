@@ -15,33 +15,9 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLStatement;
+lexer grammar Comments;
 
-import Keyword, Symbol, Comments, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol;
 
-execute
-    : (createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | setTransaction
-    | beginTransaction
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | show
-    | setParam
-    | resetParam
-    ) SEMI_?
-    ;
+BLOCK_COMMENT:  '/*' .*? '*/' -> channel(HIDDEN);
+INLINE_COMMENT: '-- ' ('\r'? '\n' | EOF) -> channel(HIDDEN);
