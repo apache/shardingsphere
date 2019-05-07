@@ -18,24 +18,44 @@
 package org.apache.shardingsphere.core.parse.old.parser.context.condition;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+
+import java.util.List;
 
 /**
  * Column.
  *
  * @author zhangliang
  * @author caohao
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
 public final class Column {
     
+    private static final String DELIMITER = ".";
+    
     private final String name;
     
     private final String tableName;
+    
+    public Column(final String column) {
+        if (!isValidColumn(column)) {
+            throw new ShardingConfigurationException("Invalid format for column: '%s'", column);
+        }
+        List<String> segments = Splitter.on(DELIMITER).splitToList(column);
+        tableName = segments.get(0);
+        name = segments.get(1);
+    }
+    
+    private static boolean isValidColumn(final String columnNodeStr) {
+        return columnNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).splitToList(columnNodeStr).size();
+    }
     
     @Override
     public boolean equals(final Object obj) {
