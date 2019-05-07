@@ -15,37 +15,18 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLStatement;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby;
 
-import Symbol, Comments, DDLStatement, DMLStatement, TCLStatement, DCLStatement, DALStatement;
+import org.apache.shardingsphere.core.constant.OrderDirection;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | setTransaction
-    | beginTransaction
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | show
-    | setParam
-    | resetParam
-    ) SEMI_?
-    ;
+/**
+ * Order by extractor for DESC null order direction.
+ *
+ * @author zhangliang
+ */
+public final class DescNullOrderDirectionOrderByExtractor extends OrderByExtractor {
+    
+    public DescNullOrderDirectionOrderByExtractor() {
+        super(new OrderByItemExtractor(OrderDirection.DESC));
+    }
+}

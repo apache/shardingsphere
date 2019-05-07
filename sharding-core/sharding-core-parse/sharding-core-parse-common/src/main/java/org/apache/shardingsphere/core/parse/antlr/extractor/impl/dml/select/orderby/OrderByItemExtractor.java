@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.CollectionSQLSegmentExtractor;
@@ -40,7 +41,10 @@ import java.util.Map;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor {
+    
+    private final OrderDirection nullOrderDirection;
     
     private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
@@ -51,17 +55,17 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
             OrderDirection orderDirection = 2 == each.getChildCount() && OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(1).getText()) ? OrderDirection.DESC : OrderDirection.ASC;
             Optional<ParserRuleContext> indexNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER_LITERALS);
             if (indexNode.isPresent()) {
-                result.add(new IndexOrderByItemSegment(NumberUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, OrderDirection.ASC));
+                result.add(new IndexOrderByItemSegment(NumberUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, nullOrderDirection));
                 continue;
             }
             Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(each, RuleName.EXPR);
             if (expressionNode.isPresent()) {
-                result.add(new ExpressionOrderByItemSegment(expressionNode.get().getText(), orderDirection, OrderDirection.ASC));
+                result.add(new ExpressionOrderByItemSegment(expressionNode.get().getText(), orderDirection, nullOrderDirection));
                 continue;
             }
             Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
             if (columnSegment.isPresent()) {
-                result.add(new ColumnOrderByItemSegment(columnSegment.get(), orderDirection, OrderDirection.ASC));
+                result.add(new ColumnOrderByItemSegment(columnSegment.get(), orderDirection, nullOrderDirection));
             }
         }
         return result;
