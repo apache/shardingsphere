@@ -474,3 +474,7 @@ ZONE
 OF
     : O F
     ;
+
+UESCAPE
+    : U E S C A P E
+    ; 

@@ -33,7 +33,7 @@ literals
     ;
 
 stringLiterals
-    : STRING_
+    : unicodeEscapes_? STRING_ uescape_?
     ;
 
 numberLiterals
@@ -57,13 +57,26 @@ nullValueLiterals
     ;
 
 identifier_
-    : IDENTIFIER_ | DQ_ IDENTIFIER_ DQ_ | unreservedWord_
+    : quotedIdentifier_ | IDENTIFIER_ |  unreservedWord_ 
     ;
 
+quotedIdentifier_
+    : unicodeEscapes_? DQ_ IDENTIFIER_ DQ_ uescape_?
+    ;
+
+unicodeEscapes_
+    : ('U' | 'u') AMPERSAND_
+    ;
+
+// TODO need investigte, UESCAPE cannot work
+uescape_
+    : UESCAPE SQ_ . SQ_
+    ;
+    
 unreservedWord_
     : ADMIN | ESCAPE | EXCLUDE | KEY | PARTITION | SET | UNKNOWN 
     | ADD | ALTER | ALWAYS | CASCADE | COMMIT | CURRENT | DAY 
-    | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX 
+    | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX
     | ISOLATION | LEVEL | OPTION | PRIVILEGES | READ | REVOKE | ROLE 
     | ROLLBACK | ROWS | START | TRANSACTION | TRUNCATE | YEAR | ACTION 
     | BEGIN | CACHE | CHARACTERISTICS | CLUSTER | COMMENTS | CONSTRAINTS | CYCLE 

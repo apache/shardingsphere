@@ -319,6 +319,16 @@
         </tokens>
     </parser-result>
     
+    <parser-result sql-case-id="create_index_with_double_quota_and_uescape">
+        <tables>
+            <table name="u&amp;t_order" />
+        </tables>
+        <tokens>
+            <index-token start-index="13" stop-index="29" table-name="u&amp;t_order"/>
+            <table-token start-index="34" table-name="u&amp;t_order" length="9" />
+        </tokens>
+    </parser-result>
+    
     <parser-result sql-case-id="create_composite_index">
         <tables>
             <table name="t_order" />
