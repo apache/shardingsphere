@@ -33,11 +33,11 @@ literals
     ;
 
 stringLiterals
-    : unicodeEscapes_? STRING_ uescape_?
+    : unicodeEscapes_? STRING_ literalsType_? uescape_?
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_
+   : MINUS_? NUMBER_ literalsType_?
    ;
 
 hexadecimalLiterals
@@ -54,6 +54,10 @@ booleanLiterals
 
 nullValueLiterals
     : NULL
+    ;
+
+literalsType_
+    : COLON_ COLON_ IDENTIFIER_
     ;
 
 identifier_
