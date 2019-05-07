@@ -20,10 +20,15 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,4 +50,18 @@ public final class UpdateStatement extends DMLStatement {
     private int whereParameterStartIndex;
     
     private int whereParameterEndIndex;
+    
+    public Comparable<?> getColumnValue(final Column column, final List<Object> parameters) {
+        SQLExpression sqlExpression = assignments.get(column);
+        if (sqlExpression instanceof SQLParameterMarkerExpression) {
+            return parameters.get(((SQLParameterMarkerExpression) sqlExpression).getIndex()).toString();
+        }
+        if (sqlExpression instanceof SQLTextExpression) {
+            return ((SQLTextExpression) sqlExpression).getText();
+        }
+        if (sqlExpression instanceof SQLNumberExpression) {
+            return (Comparable) ((SQLNumberExpression) sqlExpression).getNumber();
+        }
+       throw new ShardingException("Can not find column value by %s.", column);
+    }
 }
