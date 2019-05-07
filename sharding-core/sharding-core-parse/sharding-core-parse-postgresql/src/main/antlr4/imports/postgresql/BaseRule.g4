@@ -20,7 +20,7 @@ grammar BaseRule;
 import Keyword, PostgreSQLKeyword, Symbol, Literals;
 
 parameterMarker
-    : QUESTION_
+    : QUESTION_ literalsType_?
     ;
 
 literals
@@ -248,8 +248,7 @@ frameBetween_
     ;
 
 specialFunction_
-    : windowFunction_ | castFunction_  
-    | charFunction_
+    : windowFunction_ | castFunction_  | charFunction_
     ;
 
 castFunction_
