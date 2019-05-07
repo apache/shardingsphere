@@ -94,7 +94,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private InsertOptimizeResult createInsertOptimizeResult() {
         InsertType type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? InsertType.VALUES : InsertType.SET;
-        return new InsertOptimizeResult(type, insertStatement.getColumnNames());
+        return new InsertOptimizeResult(type, insertStatement.getColumnOriginNames());
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {

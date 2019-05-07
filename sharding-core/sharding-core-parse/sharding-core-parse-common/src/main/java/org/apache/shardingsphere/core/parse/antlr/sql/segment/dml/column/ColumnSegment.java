@@ -44,6 +44,8 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final String name;
     
+    private final String originName;
+    
     private String owner;
     
     @Setter(AccessLevel.PROTECTED)
@@ -51,6 +53,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     public ColumnSegment(final int startIndex, final String name) {
         this.startIndex = startIndex;
+        this.originName = name;
         this.name = SQLUtil.getExactlyValue(name);
     }
     

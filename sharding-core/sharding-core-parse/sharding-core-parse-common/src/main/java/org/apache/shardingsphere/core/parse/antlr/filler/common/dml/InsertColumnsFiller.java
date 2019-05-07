@@ -53,13 +53,13 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
     private void fillFromMetaData(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
         for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
-            insertStatement.getColumnNames().add(each);
+            insertStatement.addColumnName(each);
         }
     }
     
     private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
         for (ColumnSegment each : sqlSegment.getColumns()) {
-            insertStatement.getColumnNames().add(each.getName());
+            insertStatement.addColumnName(each.getOriginName());
         }
     }
 }

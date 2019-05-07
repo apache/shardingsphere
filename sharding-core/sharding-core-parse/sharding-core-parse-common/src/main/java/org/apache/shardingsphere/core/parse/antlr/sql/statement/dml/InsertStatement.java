@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,5 +39,17 @@ public final class InsertStatement extends DMLStatement {
     
     private final Collection<String> columnNames = new LinkedList<>();
     
+    private final Collection<String> columnOriginNames = new LinkedList<>();
+    
     private final List<InsertValue> values = new LinkedList<>();
+    
+    /**
+     * Add column name.
+     *
+     * @param columnName Column Name
+     */
+    public void addColumnName(final String columnName) {
+        columnOriginNames.add(columnName);
+        columnNames.add(SQLUtil.getExactlyValue(columnName));
+    }
 }
