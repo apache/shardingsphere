@@ -48,7 +48,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
@@ -345,21 +344,20 @@ public final class SQLRewriteEngine {
     }
     
     private EncryptWhereColumnPlaceholder getEncryptColumnPlaceholderFromConditions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
-        Column column = encryptColumnToken.getColumn();
-        List<Comparable<?>> encryptColumnValues = encryptValues(column, encryptCondition.getConditionValues(parameters));
+        ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+        List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parameters));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
-        Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName());
-        return new EncryptWhereColumnPlaceholder(column.getTableName(), assistedColumnName.isPresent() ? assistedColumnName.get() : column.getName(),
+        Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
+        return new EncryptWhereColumnPlaceholder(columnNode.getTableName(), assistedColumnName.isPresent() ? assistedColumnName.get() : columnNode.getColumnName(),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
-    private List<Comparable<?>> encryptValues(final Column column, final List<Comparable<?>> columnValues) {
+    private List<Comparable<?>> encryptValues(final ColumnNode columnNode, final List<Comparable<?>> columnValues) {
         ShardingEncryptorEngine shardingEncryptorEngine = shardingRule.getShardingEncryptorEngine();
-        Optional<ShardingEncryptor> shardingEncryptor = shardingEncryptorEngine.getShardingEncryptor(column.getTableName(), column.getName());
+        Optional<ShardingEncryptor> shardingEncryptor = shardingEncryptorEngine.getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
         if (!shardingEncryptor.isPresent()) {
             return columnValues;
         }
-        ColumnNode columnNode = new ColumnNode(column.getTableName(), column.getName());
         return shardingEncryptor instanceof ShardingQueryAssistedEncryptor
                 ? shardingEncryptorEngine.getEncryptAssistedColumnValues(columnNode, columnValues) : shardingEncryptorEngine.getEncryptColumnValues(columnNode, columnValues);
     }
