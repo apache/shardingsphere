@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
@@ -168,20 +167,6 @@ public final class ShardingEncryptorEngine {
                 return String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
             }
         });
-    }
-    
-    /**
-     * Get encrypt column name.
-     * 
-     * @param columnNode column node
-     * @return encrypt column name
-     */
-    public String getEncryptColumnName(final ColumnNode columnNode) {
-        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
-        if (!shardingEncryptor.isPresent()) {
-            throw new ShardingException("Can not find Sharding Encryptor by %s.", columnNode);
-        }
-        return shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor ? getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName()).get() : columnNode.getColumnName();
     }
     
     /**
