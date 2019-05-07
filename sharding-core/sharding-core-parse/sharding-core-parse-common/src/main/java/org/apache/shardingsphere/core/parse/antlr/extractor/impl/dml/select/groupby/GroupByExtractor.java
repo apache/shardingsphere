@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.groupby;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby.OrderByItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.order.GroupBySegment;
@@ -31,13 +33,15 @@ import java.util.Map;
  *
  * @author duhongjun
  * @author panjuan
+ * @author zhangliang
  */
-public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
+@RequiredArgsConstructor
+public abstract class GroupByExtractor implements OptionalSQLSegmentExtractor {
     
-    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
+    private final OrderByItemExtractor orderByItemExtractor;
     
     @Override
-    public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public final Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> groupByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
         return groupByNode.isPresent() ? Optional.of(new GroupBySegment(groupByNode.get().getStop().getStopIndex(), orderByItemExtractor.extract(groupByNode.get(), parameterMarkerIndexes)))
                 : Optional.<GroupBySegment>absent();
