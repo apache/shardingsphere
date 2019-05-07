@@ -37,18 +37,15 @@ public final class InsertNamesAndValuesAssert {
     
     private final AssignmentAssert assignmentAssert;
     
-    private final SQLCaseType sqlCaseType;
-    
     public InsertNamesAndValuesAssert(final SQLStatementAssertMessage assertMessage, final SQLCaseType sqlCaseType) {
         this.assertMessage = assertMessage;
-        this.sqlCaseType = sqlCaseType;
         this.assignmentAssert = new AssignmentAssert(assertMessage, sqlCaseType);
     }
     
     /**
      * Assert insert names and values.
      *
-     * @param actual   actual insert statement
+     * @param actual actual insert statement
      * @param expected expected insert names and values
      */
     public void assertInsertNamesAndValues(final InsertStatement actual, final ExpectedInsertColumnsAndValues expected) {

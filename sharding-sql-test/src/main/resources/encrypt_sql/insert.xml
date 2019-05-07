@@ -17,7 +17,6 @@
   -->
 
 <sql-cases db-types="MySQL">
-
     <sql-case id="insert_without_encrypt_column" value="INSERT INTO t_encrypt(id, status) VALUES(?,?)" />
     <sql-case id="insert_with_encrypt_column" value="INSERT INTO t_encrypt VALUES(?,?,?,?)" />
     <sql-case id="insert_with_encrypt_column_in_function" value="INSERT INTO t_encrypt VALUES(?,upper(?),?,?)" />

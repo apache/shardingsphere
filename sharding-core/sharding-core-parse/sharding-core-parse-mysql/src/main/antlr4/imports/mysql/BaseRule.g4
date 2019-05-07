@@ -129,7 +129,7 @@ expr
     | expr XOR expr
     | notOperator_ expr
     | LP_ expr RP_
-    | booleanPrimary
+    | booleanPrimary_
     ;
 
 logicalOperator
@@ -140,11 +140,11 @@ notOperator_
     : NOT | NOT_
     ;
 
-booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator predicate
-    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+booleanPrimary_
+    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary_ SAFE_EQ_ predicate
+    | booleanPrimary_ comparisonOperator predicate
+    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 

@@ -133,7 +133,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         assertRoute(sql, parameters);
     }
     
-    @Test()
+    @Test
     public void assertSubqueryForAggregation() {
         String sql = "select count(*) from t_order where c.user_id = (select user_id from t_order where user_id =?) ";
         List<Object> parameters = new LinkedList<>();
@@ -141,7 +141,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         assertRoute(sql, parameters);
     }
     
-    @Test()
+    @Test
     public void assertSubqueryForBinding() {
         String sql = "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ";
         List<Object> parameters = new LinkedList<>();

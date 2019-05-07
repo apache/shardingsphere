@@ -22,5 +22,4 @@
     <sql-case id="select_with_two_different_encrypt_column" value="SELECT id, name,mobile from t_encrypt where name = ? and mobile = ?" />
     <sql-case id="select_with_encrypt_column_in_function" value="SELECT id, name,mobile from t_encrypt where name = ? or upper(name) = ?" />
     <sql-case id="select_with_all_encrypt_column_in_function" value="SELECT id, name,mobile from t_encrypt where lower(name) = ? or upper(name) = ?" />
-<!-- -->
 </sql-cases>

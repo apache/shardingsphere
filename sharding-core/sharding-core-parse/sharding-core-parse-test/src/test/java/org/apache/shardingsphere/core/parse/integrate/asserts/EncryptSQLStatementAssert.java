@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.integrate.asserts;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.integrate.asserts.condition.ConditionAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.core.parse.integrate.asserts.table.TableAssert;
@@ -28,13 +27,10 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 /**
  * SQL statement assert.
  *
- * @author zhangliang
+ * @author duhongjun
  */
 public final class EncryptSQLStatementAssert {
     
@@ -75,9 +71,5 @@ public final class EncryptSQLStatementAssert {
         if (actual instanceof InsertStatement) {
             insertNamesAndValuesAssert.assertInsertNamesAndValues((InsertStatement) actual, expected.getInsertColumnsAndValues());
         }
-    }
-   
-    private void assertTCLStatement(final TCLStatement actual) {
-        assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
     }
 }

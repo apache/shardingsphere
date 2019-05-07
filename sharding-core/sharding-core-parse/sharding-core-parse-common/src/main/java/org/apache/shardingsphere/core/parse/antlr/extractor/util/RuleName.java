@@ -137,8 +137,6 @@ public enum RuleName {
     
     COMPARISON_OPERATOR("ComparisonOperator"),
     
-    BOOLEAN_PRIMARY("BooleanPrimary"),
-    
     PREDICATE("Predicate"),
     
     LIMIT_CLAUSE("LimitClause"),
