@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.core.strategy.encrypt;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -122,5 +127,33 @@ public final class ShardingEncryptorEngine {
             result.addAll(each.getEncryptTableNames());
         }
         return result;
+    }
+    
+    public List<Comparable<?>> encryptValues(final ColumnNode columnNode, final List<Comparable<?>> columnValues) {
+        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
+        if (!shardingEncryptor.isPresent()) {
+            return columnValues;
+        }
+        
+    }
+    
+    private List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
+        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+            
+            @Override
+            public Comparable<?> apply(final Comparable<?> input) {
+                return shardingEncryptor.queryAssistedEncrypt(input.toString());
+            }
+        });
+    }
+    
+    private List<Comparable<?>> getEncryptColumnValues(final ShardingEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
+        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+            
+            @Override
+            public Comparable<?> apply(final Comparable<?> input) {
+                return String.valueOf(shardingEncryptor.encrypt(input.toString()));
+            }
+        });
     }
 }
