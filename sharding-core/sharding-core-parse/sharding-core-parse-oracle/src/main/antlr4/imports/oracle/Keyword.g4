@@ -195,6 +195,10 @@ RIGHT
     : R I G H T
     ;
 
+CROSS
+    : C R O S S
+    ;
+
 USING
     : U S I N G
     ;

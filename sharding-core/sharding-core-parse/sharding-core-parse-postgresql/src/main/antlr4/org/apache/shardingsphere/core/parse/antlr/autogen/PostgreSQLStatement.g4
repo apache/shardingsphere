@@ -20,7 +20,12 @@ grammar PostgreSQLStatement;
 import Symbol, Comments, DDLStatement, TCLStatement, DCLStatement, DALStatement;
 
 execute
-    : (createIndex
+    : (select
+    | insert
+    | replace
+    | update
+    | delete
+    | createIndex
     | alterIndex
     | dropIndex
     | createTable

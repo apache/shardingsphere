@@ -383,10 +383,6 @@ COPY
     : C O P Y
     ;
 
-CROSS
-    : C R O S S
-    ;
-
 DATA
     : D A T A
     ;
