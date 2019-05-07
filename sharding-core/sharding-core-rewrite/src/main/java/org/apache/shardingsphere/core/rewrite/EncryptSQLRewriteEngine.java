@@ -36,7 +36,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RemoveToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
@@ -287,42 +286,31 @@ public final class EncryptSQLRewriteEngine {
         if (encryptAssistedColumnValues.isEmpty()) {
             return;
         }
-        if (!isUsingParameters(encryptColumnToken)) {
+        if (!isUsingParameter(encryptColumnToken)) {
             return;
         }
-        appendedIndexAndParameters.put(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
-    }
-    
-    private boolean isUsingParameters(final EncryptColumnToken encryptColumnToken) {
-        return ((UpdateStatement) sqlStatement).getAssignments().get(encryptColumnToken.getColumn()) instanceof SQLParameterMarkerExpression;
-    }
-    
-    private int getEncryptAssistedParameterIndex(final EncryptColumnToken encryptColumnToken) {
-        return getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1;
+        appendedIndexAndParameters.put(getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1, encryptAssistedColumnValues.get(0));
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
-        if (isUsingParameters(encryptColumnToken)) {
+        if (isUsingParameter(encryptColumnToken)) {
             return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         }
-        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
                                                                                      final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
-        if (isUsingParameters(encryptColumnToken)) {
-            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), getEncryptAssistedColumnName(encryptColumnToken));
+        String assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        if (isUsingParameter(encryptColumnToken)) {
+            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), assistedColumnName);
         }
-        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getEncryptAssistedColumnName(encryptColumnToken), encryptAssistedColumnValues.get(0));
+        return new EncryptUpdateItemColumnPlaceholder(
+                encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
     }
     
-    private String getEncryptAssistedColumnName(final EncryptColumnToken encryptColumnToken) {
-        Column column = encryptColumnToken.getColumn();
-        Optional<String> result = encryptRule.getEncryptorEngine().getAssistedQueryColumn(column.getTableName(), column.getName());
-        Preconditions.checkArgument(result.isPresent(), "Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
-        return result.get();
+    private boolean isUsingParameter(final EncryptColumnToken encryptColumnToken) {
+        return ((UpdateStatement) sqlStatement).isSQLParameterMarkerExpression(encryptColumnToken.getColumn());
     }
     
     private int getStopIndex(final SQLToken sqlToken) {
