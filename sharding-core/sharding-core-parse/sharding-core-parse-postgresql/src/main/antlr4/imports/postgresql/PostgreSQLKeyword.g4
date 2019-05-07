@@ -470,3 +470,15 @@ WITHOUT
 ZONE
     : Z O N E
     ;
+
+OF
+    : O F
+    ;
+
+UESCAPE
+    : U E S C A P E
+    ;
+
+GROUPS
+    : G R O U P S
+    ;

@@ -302,7 +302,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL
     ;
 
 matchExpression_

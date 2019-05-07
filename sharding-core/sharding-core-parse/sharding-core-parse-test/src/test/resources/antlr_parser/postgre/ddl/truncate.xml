@@ -35,12 +35,12 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="truncate_table_with_back_quota">
+    <parser-result sql-case-id="truncate_table_with_double_quota">
         <tables>
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="15" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+            <table-token start-index="15" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
         </tokens>
     </parser-result>
     

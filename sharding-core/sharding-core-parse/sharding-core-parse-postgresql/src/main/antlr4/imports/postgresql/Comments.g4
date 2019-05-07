@@ -15,34 +15,9 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+lexer grammar Comments;
 
-import Symbol, Keyword, SQLServerKeyword, Literals;
+import Symbol;
 
-setTransaction
-    : SET TRANSACTION
-    ;
-
-setImplicitTransactions
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
-    ;
-
-implicitTransactionsValue
-    : ON | OFF
-    ;
-
-beginTransaction
-    : BEGIN (TRAN | TRANSACTION)
-    ;
-
-commit
-    : COMMIT 
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVE (TRAN | TRANSACTION)
-    ;
+BLOCK_COMMENT:  '/*' .*? '*/' -> channel(HIDDEN);
+INLINE_COMMENT: '-- ' ('\r'? '\n' | EOF) -> channel(HIDDEN);

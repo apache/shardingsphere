@@ -26,18 +26,28 @@ parameterMarker
 literals
     : stringLiterals
     | numberLiterals
+    | hexadecimalLiterals
+    | bitValueLiterals
     | booleanLiterals
     | nullValueLiterals
     ;
 
 stringLiterals
-    : STRING_
+    : unicodeEscapes_? STRING_ uescape_?
     ;
 
 numberLiterals
    : MINUS_? NUMBER_
    ;
-    
+
+hexadecimalLiterals
+    : HEX_DIGIT_
+    ;
+
+bitValueLiterals
+    : BIT_NUM_
+    ;
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -47,13 +57,26 @@ nullValueLiterals
     ;
 
 identifier_
-    : IDENTIFIER_ | unreservedWord_
+    : quotedIdentifier_ | IDENTIFIER_ |  unreservedWord_ 
     ;
 
+quotedIdentifier_
+    : unicodeEscapes_? DQ_ IDENTIFIER_ DQ_ uescape_?
+    ;
+
+unicodeEscapes_
+    : ('U' | 'u') AMPERSAND_
+    ;
+
+// TODO need investigte, UESCAPE cannot work
+uescape_
+    : UESCAPE SQ_ . SQ_
+    ;
+    
 unreservedWord_
     : ADMIN | ESCAPE | EXCLUDE | KEY | PARTITION | SET | UNKNOWN 
     | ADD | ALTER | ALWAYS | CASCADE | COMMIT | CURRENT | DAY 
-    | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX 
+    | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX
     | ISOLATION | LEVEL | OPTION | PRIVILEGES | READ | REVOKE | ROLE 
     | ROLLBACK | ROWS | START | TRANSACTION | TRUNCATE | YEAR | ACTION 
     | BEGIN | CACHE | CHARACTERISTICS | CLUSTER | COMMENTS | CONSTRAINTS | CYCLE 
@@ -68,15 +91,15 @@ unreservedWord_
     | RESTRICT | ROUTINE | RULE | SAVEPOINT | SCHEMA | SECOND | SECURITY
     | SEQUENCE | SESSION | SHOW | SIMPLE | STATISTICS | STORAGE | TABLESPACE
     | TEMP | TEMPORARY | TRIGGER | TYPE | UNBOUNDED | UNLOGGED | UPDATE
-    | USAGE | VALID | VALIDATE | WITHIN | WITHOUT | ZONE
+    | USAGE | VALID | VALIDATE | WITHIN | WITHOUT | ZONE | GROUPS
     ;
 
 schemaName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 tableName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 tableNames
@@ -84,7 +107,7 @@ tableNames
     ;
 
 columnName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 columnNames
@@ -92,71 +115,54 @@ columnNames
     ;
 
 collationName
-    : STRING_ | IDENTIFIER_
+    : STRING_ | identifier_
     ;
 
 indexName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 alias
-    : IDENTIFIER_
-    ;
-
-dataTypeLength
-    : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
+    : identifier_
     ;
 
 primaryKey
     : PRIMARY? KEY
     ;
 
-exprs
-    : expr (COMMA_ expr)*
-    ;
-
-exprList
-    : LP_ exprs RP_
-    ;
-
+// TODO comb expr
 expr
-    : expr AND expr
-    | expr AND_ expr
+    : expr logicalOperator expr
+    | notOperator_ expr
     | LP_ expr RP_
-    | NOT expr
-    | NOT_ expr
-    | expr OR expr
-    | expr OR_ expr
-    | booleanPrimary
-    | exprRecursive
+    | booleanPrimary_
     ;
 
-exprRecursive
-    : matchNone
+logicalOperator
+    : OR | OR_ | AND | AND_
     ;
 
-booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
-    | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator predicate
-    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+notOperator_
+    : NOT | NOT_
+    ;
+
+booleanPrimary_
+    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary_ SAFE_EQ_ predicate
+    | booleanPrimary_ comparisonOperator predicate
+    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
 comparisonOperator
-    : EQ_
-    | GTE_
-    | GT_
-    | LTE_
-    | LT_
-    | NEQ_
+    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr (COMMA_ simpleExpr)* RP_
-    | bitExpr NOT? BETWEEN simpleExpr AND predicate
-    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
+    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
+    | bitExpr NOT? BETWEEN bitExpr AND predicate
+    | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
     | bitExpr
     ;
 
@@ -169,222 +175,142 @@ bitExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
-    | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpr
-    | bitExpr MINUS_ intervalExpr
     | simpleExpr
     ;
 
 simpleExpr
     : functionCall
-    | literal
+    | parameterMarker
+    | literals
     | columnName
-    | simpleExpr collateClause
-    //| param_marker
-    | variable
-    | simpleExpr AND_ simpleExpr
-    | PLUS_ simpleExpr
-    | MINUS_ simpleExpr
-    | TILDE_ simpleExpr
-    | NOT_ simpleExpr
-    | BINARY simpleExpr
-    | exprList
-    | ROW exprList
-    | subquery
-    | EXISTS subquery
-    // | (identifier_ expr)
-    //| match_expr
-    | caseExpress
-    | intervalExpr
-    | privateExprOfDb
+    | simpleExpr COLLATE (STRING_ | identifier_)
+    | simpleExpr OR_ simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | ROW? LP_ expr (COMMA_ expr)* RP_
+    | EXISTS? subquery
+    | LBE_ identifier_ expr RBE_
+    | caseExpression_
     ;
 
 functionCall
-    : IDENTIFIER_ LP_ distinct? (exprs | ASTERISK_)? RP_
+    : aggregationFunction | specialFunction_ | regularFunction_ 
+    ;
+
+aggregationFunction
+    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ filterClause_?
+    ;
+
+aggregationFunctionName_
+    : MAX | MIN | SUM | COUNT | AVG
     ;
 
 distinct
     : DISTINCT
     ;
 
-intervalExpr
-    : matchNone
+filterClause_
+    : FILTER LP_ WHERE expr RP_
     ;
 
-caseExpress
-    : matchNone
+windowFunction_
+    : identifier_ LP_ expr (COMMA_ expr)* RP_ filterClause_ OVER identifier_? windowDefinition_
     ;
 
-privateExprOfDb
-    : aggregateExpression
-    | windowFunction
-    | arrayConstructorWithCast
-    | (TIMESTAMP (WITH TIME ZONE)? STRING_)
-    | extractFromFunction
+windowDefinition_
+    : pratitionClause_? orderByClause? frameClause_?
     ;
 
-variable
-    : matchNone
+pratitionClause_
+    : PARTITION BY expr (COMMA_ expr)*
     ;
 
-literal
-    : question
-    | number
-    | TRUE
-    | FALSE
-    | NULL
-    | LBE_ IDENTIFIER_ STRING_ RBE_
-    | HEX_DIGIT_
-    | string
-    | IDENTIFIER_ STRING_ collateClause?
-    | (DATE | TIME | TIMESTAMP) STRING_
-    | IDENTIFIER_? BIT_NUM_ collateClause?
+frameClause_
+    : (RANGE | ROWS | GROUPS) (frameStart_ | frameBetween_)
     ;
 
-question
-    : QUESTION_
+frameStart_
+    : CURRENT ROW | UNBOUNDED PRECEDING | UNBOUNDED FOLLOWING | expr PRECEDING | expr FOLLOWING
     ;
 
-number
-   : NUMBER_
-   ;
+frameEnd_
+    : frameStart_
+    ;
 
-string
-    : STRING_
+frameBetween_
+    : BETWEEN frameStart_ AND frameEnd_
+    ;
+
+specialFunction_
+    : windowFunction_ | castFunction_  
+    | charFunction_
+    ;
+
+castFunction_
+    : CAST LP_ expr AS dataType RP_
+    ;
+
+charFunction_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    ;
+
+regularFunction_
+    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    ;
+
+regularFunctionName_
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL
+    ;
+
+caseExpression_
+    : CASE simpleExpr? caseWhen_+ caseElse_? END
+    ;
+
+caseWhen_
+    : WHEN expr THEN expr
+    ;
+
+caseElse_
+    : ELSE expr
     ;
 
 subquery
-    : matchNone
-    ;
-
-collateClause
-    : COLLATE collationName
+    : 'Default does not match anything'
     ;
 
 orderByClause
-    : ORDER BY expr (ASC | DESC | USING operator)? (NULLS (FIRST | LAST))?
+    : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
 
 orderByItem
-    : (columnName | number | expr) (ASC | DESC)?
-    ;
-
-asterisk
-    : ASTERISK_
+    : (columnName | numberLiterals | expr) (ASC | DESC)?
     ;
 
 dataType
-    : dataTypeName_ intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | IDENTIFIER_
+    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
 dataTypeName_
-    : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
+    : identifier_ identifier_?
     ;
 
-intervalFields
-    : intervalField (TO intervalField)?
+dataTypeLength
+    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
-intervalField
-    : YEAR
-    | MONTH
-    | DAY
-    | HOUR
-    | MINUTE
-    | SECOND
+characterSet_
+    : (CHARACTER | CHAR) SET EQ_? ignoredIdentifier_
     ;
 
-pgExpr
-    : castExpr | collateExpr | expr
-    ;
-
-aggregateExpression
-    : IDENTIFIER_ (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
-    ;
-
-filterClause
-    : FILTER LP_ WHERE booleanPrimary RP_
-    ;
-
-asteriskWithParen
-    : LP_ ASTERISK_ RP_
-    ;
-
-windowFunction
-    : IDENTIFIER_ (exprList | asteriskWithParen) filterClause? windowFunctionWithClause
-    ;
-
-windowFunctionWithClause
-    : OVER (IDENTIFIER_ | LP_ windowDefinition RP_)
-    ;
-
-windowDefinition
-    : IDENTIFIER_? (PARTITION BY exprs)? (orderByClause (COMMA_ orderByClause)*)? frameClause?
-    ;
-
-operator
-    : SAFE_EQ_
-    | EQ_
-    | NEQ_
-    | GT_
-    | GTE_
-    | LT_
-    | LTE_
-    | AND_
-    | OR_
-    | NOT_
-    ;
-
-frameClause
-    : (RANGE | ROWS) frameStart | (RANGE | ROWS) BETWEEN frameStart AND frameEnd
-    ;
-
-frameStart
-    : UNBOUNDED PRECEDING
-    | NUMBER_ PRECEDING
-    | CURRENT ROW
-    | NUMBER_ FOLLOWING
-    | UNBOUNDED FOLLOWING
-    ;
-
-frameEnd
-    : frameStart
-    ;
-
-castExpr
-    : CAST LP_ expr AS dataType RP_ | expr COLON_ COLON_ dataType
-    ;
-
-castExprWithCOLON_
-    : COLON_ COLON_ dataType(LBT_ RBT_)*
-    ;
-
-collateExpr
-    : expr COLLATE expr
-    ;
-
-arrayConstructorWithCast
-    : arrayConstructor castExprWithCOLON_? | ARRAY LBT_ RBT_ castExprWithCOLON_
-    ;
-
-arrayConstructor
-    : ARRAY LBT_ exprs RBT_ | ARRAY LBT_ arrayConstructor (COMMA_ arrayConstructor)* RBT_
-    ;
-
-extractFromFunction
-    : EXTRACT LP_ IDENTIFIER_ FROM IDENTIFIER_ RP_
+collateClause_
+    : COLLATE EQ_? (STRING_ | ignoredIdentifier_)
     ;
 
 ignoredIdentifier_
-    : IDENTIFIER_
+    : identifier_ (DOT_ identifier_)?
     ;
 
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
-    ;
-
-matchNone
-    : 'Default does not match anything'
     ;
