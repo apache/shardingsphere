@@ -129,6 +129,13 @@ public final class ShardingEncryptorEngine {
         return result;
     }
     
+    /**
+     * Encrypt values.
+     * 
+     * @param columnNode column node
+     * @param columnValues column values
+     * @return encrypted values
+     */
     public List<Comparable<?>> encryptValues(final ColumnNode columnNode, final List<Comparable<?>> columnValues) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
         if (!shardingEncryptor.isPresent()) {
