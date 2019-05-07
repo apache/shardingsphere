@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
+import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
@@ -42,5 +43,19 @@ public final class EncryptColumnToken extends SQLToken implements Substitutable 
         this.column = column;
         this.isInWhere = isInWhere;
         this.stopIndex = stopIndex;
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj || null != obj && getClass() == obj.getClass() && isEqual((EncryptColumnToken) obj);
+    }
+    
+    private boolean isEqual(final EncryptColumnToken encryptColumnToken) {
+        return this.getColumn().equals(encryptColumnToken.getColumn()) && this.isInWhere() == encryptColumnToken.isInWhere();
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(column, isInWhere);
     }
 }
