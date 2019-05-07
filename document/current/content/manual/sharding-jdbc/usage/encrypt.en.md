@@ -100,6 +100,20 @@ spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.
 spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
 ```
 
+#### Rule Configuration Based on Spring Boot + JNDI
+
+If you plan to use Sharding-JDBC in Application Server(such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
+For example:
+```properties
+spring.shardingsphere.datasource.name=ds
+
+spring.shardingsphere.datasource.ds.jndi-name=java:comp/env/jdbc/ds
+
+spring.shardingsphere.encrypt.encryptors.order_encrypt.type=aes
+spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
+spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
+```
+
 ### Rule Configuration Based on Spring Name Space
 
 ```xml
