@@ -160,6 +160,24 @@ spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 spring.shardingsphere.props.sql.show=true
 ```
 
+#### 基于Spring boot + JNDI的规则配置
+
+如果您计划使用`Spring boot + JNDI`的方式，在应用容器（如Tomcat）中使用Sharding-JDBC时，可使用`spring.shardingsphere.datasource.${datasourceName}.jndiName`来代替数据源的一系列配置。
+如：
+```properties
+spring.shardingsphere.datasource.names=master,slave0,slave1
+
+spring.shardingsphere.datasource.master.jndi-name=java:comp/env/jdbc/master
+spring.shardingsphere.datasource.slave0.jndi-name=jdbc/slave0
+spring.shardingsphere.datasource.slave1.jndi-name=jdbc/slave1
+
+spring.shardingsphere.masterslave.name=ms
+spring.shardingsphere.masterslave.master-data-source-name=master
+spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
+
+spring.shardingsphere.props.sql.show=true
+```
+
 ### 基于Spring命名空间的规则配置
 
 ```xml
