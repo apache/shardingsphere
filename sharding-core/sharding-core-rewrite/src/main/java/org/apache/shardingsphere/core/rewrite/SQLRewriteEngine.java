@@ -350,7 +350,7 @@ public final class SQLRewriteEngine {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         List<Comparable<?>> encryptColumnValues = shardingRule.getShardingEncryptorEngine().encryptValues(columnNode, encryptCondition.getConditionValues(parameters));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
-        return new EncryptWhereColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getFinalEncryptColumnName(encryptColumnToken),
+        return new EncryptWhereColumnPlaceholder(columnNode.getTableName(), getFinalEncryptColumnName(encryptColumnToken),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
