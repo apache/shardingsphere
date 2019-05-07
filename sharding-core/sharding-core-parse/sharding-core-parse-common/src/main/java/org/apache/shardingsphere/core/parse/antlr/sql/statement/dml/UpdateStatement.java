@@ -51,6 +51,13 @@ public final class UpdateStatement extends DMLStatement {
     
     private int whereParameterEndIndex;
     
+    /**
+     * Get column value.
+     * 
+     * @param column column
+     * @param parameters parameters
+     * @return column value
+     */
     public Comparable<?> getColumnValue(final Column column, final List<Object> parameters) {
         SQLExpression sqlExpression = assignments.get(column);
         if (sqlExpression instanceof SQLParameterMarkerExpression) {
@@ -62,6 +69,6 @@ public final class UpdateStatement extends DMLStatement {
         if (sqlExpression instanceof SQLNumberExpression) {
             return (Comparable) ((SQLNumberExpression) sqlExpression).getNumber();
         }
-       throw new ShardingException("Can not find column value by %s.", column);
+        throw new ShardingException("Can not find column value by %s.", column);
     }
 }
