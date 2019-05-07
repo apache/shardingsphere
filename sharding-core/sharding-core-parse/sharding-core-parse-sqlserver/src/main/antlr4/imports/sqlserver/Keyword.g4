@@ -171,6 +171,10 @@ FROM
     : F R O M
     ;
 
+NATURAL
+    : N A T U R A L
+    ;
+
 JOIN
     : J O I N
     ;

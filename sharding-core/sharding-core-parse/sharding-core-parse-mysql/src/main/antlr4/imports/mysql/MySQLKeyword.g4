@@ -515,10 +515,6 @@ MEMORY
     : M E M O R Y
     ;
 
-NATURAL
-    : N A T U R A L
-    ;
-
 NONE
     : N O N E
     ;
