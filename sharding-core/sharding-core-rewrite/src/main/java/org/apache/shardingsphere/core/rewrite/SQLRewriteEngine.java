@@ -75,6 +75,7 @@ import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingTable;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
+import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
@@ -346,16 +347,11 @@ public final class SQLRewriteEngine {
     }
     
     private EncryptWhereColumnPlaceholder getEncryptColumnPlaceholderFromConditions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
-        List<Comparable<?>> encryptColumnValues = getFinalEncryptColumnValues(encryptColumnToken, encryptCondition.getConditionValues(parameters));
+        ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+        List<Comparable<?>> encryptColumnValues = shardingRule.getShardingEncryptorEngine().encryptValues(columnNode, encryptCondition.getConditionValues(parameters));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
         return new EncryptWhereColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getFinalEncryptColumnName(encryptColumnToken),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
-    }
-    
-    private List<Comparable<?>> getFinalEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> originalColumnValues) {
-        ShardingEncryptor shardingEncryptor = getShardingEncryptor(encryptColumnToken);
-        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor
-                ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor, originalColumnValues) : getEncryptColumnValues(shardingEncryptor, originalColumnValues);
     }
     
     private ShardingEncryptor getShardingEncryptor(final EncryptColumnToken encryptColumnToken) {
