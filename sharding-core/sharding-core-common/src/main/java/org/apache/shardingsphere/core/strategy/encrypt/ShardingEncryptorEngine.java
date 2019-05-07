@@ -134,7 +134,8 @@ public final class ShardingEncryptorEngine {
         if (!shardingEncryptor.isPresent()) {
             return columnValues;
         }
-        
+        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor
+                ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor.get(), columnValues) : getEncryptColumnValues(shardingEncryptor.get(), columnValues);
     }
     
     private List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
