@@ -349,7 +349,10 @@ public final class SQLRewriteEngine {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parameters));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
-        return new EncryptWhereColumnPlaceholder(columnNode.getTableName(), shardingRule.getShardingEncryptorEngine().getEncryptColumnName(columnNode),
+        ShardingEncryptorEngine shardingEncryptorEngine = shardingRule.getShardingEncryptorEngine();
+        String encryptColumnName = shardingEncryptorEngine.isUsingShardingQueryAssistedEncryptor(columnNode) 
+                ? shardingEncryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName()).get() : columnNode.getColumnName();
+        return new EncryptWhereColumnPlaceholder(columnNode.getTableName(), encryptColumnName,
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
@@ -401,17 +404,14 @@ public final class SQLRewriteEngine {
     }
     
     private void appendIndexAndParameters(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptAssistedColumnValues) {
+        UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
         if (encryptAssistedColumnValues.isEmpty()) {
             return;
         }
-        if (!isUsingParameters(encryptColumnToken)) {
+        if (!updateStatement.isSQLParameterMarkerExpression(encryptColumnToken.getColumn())) {
             return;
         }
         appendedIndexAndParameters.put(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
-    }
-    
-    private boolean isUsingParameters(final EncryptColumnToken encryptColumnToken) {
-        return ((UpdateStatement) sqlStatement).getAssignments().get(encryptColumnToken.getColumn()) instanceof SQLParameterMarkerExpression;
     }
     
     private int getEncryptAssistedParameterIndex(final EncryptColumnToken encryptColumnToken) {
@@ -419,11 +419,11 @@ public final class SQLRewriteEngine {
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
+        
         if (isUsingParameters(encryptColumnToken)) {
             return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         }
-        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next());
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
@@ -432,7 +432,7 @@ public final class SQLRewriteEngine {
             return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), getEncryptAssistedColumnName(encryptColumnToken));
         }
         return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
-                getPositionValues(Collections.singletonList(0), encryptColumnValues).values().iterator().next(), getEncryptAssistedColumnName(encryptColumnToken), encryptAssistedColumnValues.get(0));
+                encryptColumnValues.get(0), getEncryptAssistedColumnName(encryptColumnToken), encryptAssistedColumnValues.get(0));
     }
     
     private String getEncryptAssistedColumnName(final EncryptColumnToken encryptColumnToken) {
