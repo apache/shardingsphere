@@ -354,11 +354,7 @@ public final class SQLRewriteEngine {
     
     private List<Comparable<?>> encryptValues(final ColumnNode columnNode, final List<Comparable<?>> columnValues) {
         ShardingEncryptorEngine shardingEncryptorEngine = shardingRule.getShardingEncryptorEngine();
-        Optional<ShardingEncryptor> shardingEncryptor = shardingEncryptorEngine.getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
-        if (!shardingEncryptor.isPresent()) {
-            return columnValues;
-        }
-        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor
+        return shardingEncryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName()).isPresent() 
                 ? shardingEncryptorEngine.getEncryptAssistedColumnValues(columnNode, columnValues) : shardingEncryptorEngine.getEncryptColumnValues(columnNode, columnValues);
     }
     
