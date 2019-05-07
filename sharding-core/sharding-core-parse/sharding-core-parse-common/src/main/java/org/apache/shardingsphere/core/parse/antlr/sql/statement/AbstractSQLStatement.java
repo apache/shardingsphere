@@ -84,7 +84,13 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         return sqlTokens;
     }
     
-    private Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
+    /**
+     * Get encrypt condition.
+     * 
+     * @param encryptColumnToken encrypt column token
+     * @return encrypt condition
+     */
+    public Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
         List<Condition> conditions = encryptConditions.getOrCondition().findConditions(encryptColumnToken.getColumn());
         if (0 == conditions.size()) {
             return Optional.absent();
