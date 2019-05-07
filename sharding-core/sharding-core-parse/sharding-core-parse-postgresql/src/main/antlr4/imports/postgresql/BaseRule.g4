@@ -92,6 +92,7 @@ unreservedWord_
     | SEQUENCE | SESSION | SHOW | SIMPLE | STATISTICS | STORAGE | TABLESPACE
     | TEMP | TEMPORARY | TRIGGER | TYPE | UNBOUNDED | UNLOGGED | UPDATE
     | USAGE | VALID | VALIDATE | WITHIN | WITHOUT | ZONE | GROUPS
+    | RECURSIVE
     ;
 
 schemaName
@@ -260,11 +261,11 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression_
-    : CASE simpleExpr? caseWhen_+ caseElse_? END
+    : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 
 caseWhen_

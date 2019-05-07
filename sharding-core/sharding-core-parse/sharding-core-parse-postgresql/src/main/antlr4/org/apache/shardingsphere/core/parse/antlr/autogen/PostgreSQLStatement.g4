@@ -17,12 +17,11 @@
 
 grammar PostgreSQLStatement;
 
-import Symbol, Comments, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Comments, DDLStatement, DMLStatement, TCLStatement, DCLStatement, DALStatement;
 
 execute
     : (select
     | insert
-    | replace
     | update
     | delete
     | createIndex
