@@ -350,7 +350,7 @@ public final class SQLRewriteEngine {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         List<Comparable<?>> encryptColumnValues = shardingRule.getShardingEncryptorEngine().encryptValues(columnNode, encryptCondition.getConditionValues(parameters));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
-        return new EncryptWhereColumnPlaceholder(columnNode.getTableName(), getFinalEncryptColumnName(encryptColumnToken),
+        return new EncryptWhereColumnPlaceholder(columnNode.getTableName(), shardingRule.getShardingEncryptorEngine().getEncryptColumnName(columnNode),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
@@ -384,10 +384,6 @@ public final class SQLRewriteEngine {
                 parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
             }
         }
-    }
-    
-    private String getFinalEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
-        return getShardingEncryptor(encryptColumnToken) instanceof ShardingQueryAssistedEncryptor ? getEncryptAssistedColumnName(encryptColumnToken) : encryptColumnToken.getColumn().getName();
     }
     
     private Map<Integer, Comparable<?>> getPositionValues(final Collection<Integer> valuePositions, final List<Comparable<?>> encryptColumnValues) {
