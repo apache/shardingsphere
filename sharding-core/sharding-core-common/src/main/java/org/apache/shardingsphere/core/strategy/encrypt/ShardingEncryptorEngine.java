@@ -172,7 +172,7 @@ public final class ShardingEncryptorEngine {
      * @param columnNode column node
      * @return encrypt column name
      */
-    private String getEncryptColumnName(final ColumnNode columnNode) {
+    public String getEncryptColumnName(final ColumnNode columnNode) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
         if (!shardingEncryptor.isPresent()) {
             throw new ShardingException("Can not find Sharding Encryptor by %s.", columnNode);
