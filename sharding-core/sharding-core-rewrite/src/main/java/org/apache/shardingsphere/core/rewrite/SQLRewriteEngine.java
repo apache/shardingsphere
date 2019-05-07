@@ -48,7 +48,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
@@ -404,11 +403,10 @@ public final class SQLRewriteEngine {
     }
     
     private void appendIndexAndParameters(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptAssistedColumnValues) {
-        UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
         if (encryptAssistedColumnValues.isEmpty()) {
             return;
         }
-        if (!updateStatement.isSQLParameterMarkerExpression(encryptColumnToken.getColumn())) {
+        if (!isUsingParameter(encryptColumnToken)) {
             return;
         }
         appendedIndexAndParameters.put(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
@@ -420,7 +418,7 @@ public final class SQLRewriteEngine {
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
         
-        if (isUsingParameters(encryptColumnToken)) {
+        if (isUsingParameter(encryptColumnToken)) {
             return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         }
         return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
@@ -430,11 +428,16 @@ public final class SQLRewriteEngine {
                                                                                      final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName()).get();
-        if (isUsingParameters(encryptColumnToken)) {
+        
+        if (isUsingParameter(encryptColumnToken)) {
             return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), assistedColumnName);
         }
         return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(),
                 encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
+    }
+    
+    private boolean isUsingParameter(final EncryptColumnToken encryptColumnToken) {
+        return ((UpdateStatement) sqlStatement).isSQLParameterMarkerExpression(encryptColumnToken.getColumn());
     }
     
     private int getStopIndex(final SQLToken sqlToken) {
