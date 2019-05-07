@@ -100,7 +100,7 @@ schemaName
     ;
 
 tableName
-    : identifier_
+    : (identifier_ DOT_)? identifier_
     ;
 
 tableNames
@@ -108,7 +108,7 @@ tableNames
     ;
 
 columnName
-    : identifier_
+    : (identifier_ DOT_)? identifier_
     ;
 
 columnNames

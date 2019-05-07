@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.optimizer;
+package org.apache.shardingsphere.core.parse.antlr.optimizer.select;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -39,12 +39,12 @@ import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 import java.util.List;
 
 /**
- * Select optimizer for MySQL.
+ * Select optimizer.
  *
  * @author duhongjun
  * @author panjuan
  */
-public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
+public final class SelectOptimizer implements SQLStatementOptimizer {
     
     @Override
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
