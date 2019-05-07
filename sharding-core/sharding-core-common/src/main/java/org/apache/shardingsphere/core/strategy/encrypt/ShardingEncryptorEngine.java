@@ -166,6 +166,12 @@ public final class ShardingEncryptorEngine {
         });
     }
     
+    /**
+     * Get encrypt column name.
+     * 
+     * @param columnNode column node
+     * @return encrypt column name
+     */
     private String getEncryptColumnName(final ColumnNode columnNode) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
         if (!shardingEncryptor.isPresent()) {
