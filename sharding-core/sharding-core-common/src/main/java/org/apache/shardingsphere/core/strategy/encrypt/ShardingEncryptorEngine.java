@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.strategy.encrypt;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
@@ -139,9 +140,7 @@ public final class ShardingEncryptorEngine {
      */
     public List<Comparable<?>> getEncryptAssistedColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
         final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
-        if (!(shardingEncryptor.isPresent() && shardingEncryptor instanceof ShardingQueryAssistedEncryptor)) {
-            throw new ShardingException("Can not find ShardingQueryAssistedEncryptor by %s.", columnNode);
-        }
+        Preconditions.checkArgument(shardingEncryptor.isPresent() && shardingEncryptor instanceof ShardingQueryAssistedEncryptor, String.format("Can not find ShardingQueryAssistedEncryptor by %s.", columnNode));
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
@@ -154,16 +153,18 @@ public final class ShardingEncryptorEngine {
     /**
      * get encrypt column values.
      * 
-     * @param shardingEncryptor sharding encryptor
+     * @param columnNode column node
      * @param originalColumnValues original column values
      * @return encrypt column values
      */
-    private List<Comparable<?>> getEncryptColumnValues(final ShardingEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
+    private List<Comparable<?>> getEncryptColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
+        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
+        Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingEncryptor by %s.", columnNode));
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
             public Comparable<?> apply(final Comparable<?> input) {
-                return String.valueOf(shardingEncryptor.encrypt(input.toString()));
+                return String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
             }
         });
     }
