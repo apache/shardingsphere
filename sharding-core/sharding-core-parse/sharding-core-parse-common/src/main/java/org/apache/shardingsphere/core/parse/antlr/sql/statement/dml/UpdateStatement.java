@@ -35,6 +35,7 @@ import java.util.Map;
  * Update statement.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @ToString(callSuper = true)
 @Getter
