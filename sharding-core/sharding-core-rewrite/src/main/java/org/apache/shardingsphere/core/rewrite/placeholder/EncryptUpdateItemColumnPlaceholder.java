@@ -47,31 +47,16 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final Comparable<?> columnValue) {
-        this.logicTableName = logicTableName;
-        this.columnName = columnName;
-        this.columnValue = columnValue;
-        this.assistedColumnName = null;
-        this.assistedColumnValue = null;
-        parameterMarkerIndex = -1;
+        this(logicTableName, columnName, columnValue, null, null, -1);
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final String assistedColumnName) {
-        this.logicTableName = logicTableName;
-        this.columnName = columnName;
-        columnValue = null;
-        this.assistedColumnName = assistedColumnName;
-        assistedColumnValue = null;
-        parameterMarkerIndex = 0;
+        this(logicTableName, columnName, null, assistedColumnName, null, 0);
     }
     
     public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName,
                                               final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
-        this.logicTableName = logicTableName;
-        this.columnName = columnName;
-        this.columnValue = columnValue;
-        this.assistedColumnName = assistedColumnName;
-        this.assistedColumnValue = assistedColumnValue;
-        parameterMarkerIndex = -1;
+        this(logicTableName, columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
     }
     
     @Override
