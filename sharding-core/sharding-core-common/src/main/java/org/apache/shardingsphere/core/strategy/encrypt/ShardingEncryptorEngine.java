@@ -133,16 +133,20 @@ public final class ShardingEncryptorEngine {
     /**
      * Get encrypt assisted column values.
      * 
-     * @param shardingEncryptor sharding encryptor
+     * @param columnNode column node
      * @param originalColumnValues original column values
      * @return assisted column values
      */
-    public List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
+    public List<Comparable<?>> getEncryptAssistedColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
+        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
+        if (!(shardingEncryptor.isPresent() && shardingEncryptor instanceof ShardingQueryAssistedEncryptor)) {
+            throw new ShardingException("Can not find ShardingQueryAssistedEncryptor by %s.", columnNode);
+        }
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
             public Comparable<?> apply(final Comparable<?> input) {
-                return shardingEncryptor.queryAssistedEncrypt(input.toString());
+                return ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(input.toString());
             }
         });
     }
