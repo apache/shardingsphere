@@ -219,30 +219,6 @@ public final class EncryptSQLRewriteEngine {
                 ? encryptorEngine.getEncryptAssistedColumnValues(columnNode, columnValues) : encryptorEngine.getEncryptColumnValues(columnNode, columnValues);
     }
     
-    private ShardingEncryptor getShardingEncryptor(final EncryptColumnToken encryptColumnToken) {
-        return encryptRule.getEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
-    }
-    
-    private List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
-        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
-            
-            @Override
-            public Comparable<?> apply(final Comparable<?> input) {
-                return shardingEncryptor.queryAssistedEncrypt(input.toString());
-            }
-        });
-    }
-    
-    private List<Comparable<?>> getEncryptColumnValues(final ShardingEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
-        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
-            
-            @Override
-            public Comparable<?> apply(final Comparable<?> input) {
-                return String.valueOf(shardingEncryptor.encrypt(input.toString()));
-            }
-        });
-    }
-    
     private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
