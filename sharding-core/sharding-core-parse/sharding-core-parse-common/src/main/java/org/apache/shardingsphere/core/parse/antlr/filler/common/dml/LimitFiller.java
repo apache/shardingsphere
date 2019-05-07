@@ -40,7 +40,9 @@ public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setLimit(new Limit());
-        fillRowCount(sqlSegment.getRowCount(), selectStatement);
+        if (sqlSegment.getRowCount().isPresent()) {
+            fillRowCount(sqlSegment.getRowCount().get(), selectStatement);
+        }
         if (sqlSegment.getOffset().isPresent()) {
             fillOffset(sqlSegment.getOffset().get(), selectStatement);
         }

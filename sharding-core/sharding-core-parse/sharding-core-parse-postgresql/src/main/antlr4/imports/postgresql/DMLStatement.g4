@@ -149,15 +149,23 @@ havingClause
     : HAVING expr
     ;
 
-// TODO limitRowCount can be null on PG
 limitClause
-    : (LIMIT (ALL | limitRowCount)) (OFFSET limitOffset (ROW | ROWS)?)?
+    : limitRowCountSyntax_ limitOffsetSyntax_?
+    | limitOffsetSyntax_ limitRowCountSyntax_?
+    ;
+
+limitRowCountSyntax_
+    : LIMIT (ALL | limitRowCount)
     ;
 
 limitRowCount
     : numberLiterals | parameterMarker
     ;
-    
+
+limitOffsetSyntax_
+    : OFFSET limitOffset (ROW | ROWS)?
+    ;
+
 limitOffset
     : numberLiterals | parameterMarker
     ;
