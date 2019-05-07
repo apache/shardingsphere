@@ -131,22 +131,13 @@ public final class ShardingEncryptorEngine {
     }
     
     /**
-     * Encrypt values.
+     * Get encrypt assisted column values.
      * 
-     * @param columnNode column node
-     * @param columnValues column values
-     * @return encrypted values
+     * @param shardingEncryptor sharding encryptor
+     * @param originalColumnValues original column values
+     * @return assisted column values
      */
-    public List<Comparable<?>> encryptValues(final ColumnNode columnNode, final List<Comparable<?>> columnValues) {
-        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
-        if (!shardingEncryptor.isPresent()) {
-            return columnValues;
-        }
-        return shardingEncryptor instanceof ShardingQueryAssistedEncryptor
-                ? getEncryptAssistedColumnValues((ShardingQueryAssistedEncryptor) shardingEncryptor.get(), columnValues) : getEncryptColumnValues(shardingEncryptor.get(), columnValues);
-    }
-    
-    private List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
+    public List<Comparable<?>> getEncryptAssistedColumnValues(final ShardingQueryAssistedEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
@@ -156,6 +147,13 @@ public final class ShardingEncryptorEngine {
         });
     }
     
+    /**
+     * get encrypt column values.
+     * 
+     * @param shardingEncryptor sharding encryptor
+     * @param originalColumnValues original column values
+     * @return encrypt column values
+     */
     private List<Comparable<?>> getEncryptColumnValues(final ShardingEncryptor shardingEncryptor, final List<Comparable<?>> originalColumnValues) {
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
