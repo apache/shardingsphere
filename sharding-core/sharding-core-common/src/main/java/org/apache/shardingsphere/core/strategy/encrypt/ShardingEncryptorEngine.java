@@ -158,7 +158,7 @@ public final class ShardingEncryptorEngine {
      * @param originalColumnValues original column values
      * @return encrypt column values
      */
-    private List<Comparable<?>> getEncryptColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
+    public List<Comparable<?>> getEncryptColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
         final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
         Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingEncryptor by %s.", columnNode));
         return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
