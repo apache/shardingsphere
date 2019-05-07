@@ -26,6 +26,8 @@ parameterMarker
 literals
     : stringLiterals
     | numberLiterals
+    | hexadecimalLiterals
+    | bitValueLiterals
     | booleanLiterals
     | nullValueLiterals
     ;
@@ -37,7 +39,15 @@ stringLiterals
 numberLiterals
    : MINUS_? NUMBER_
    ;
-    
+
+hexadecimalLiterals
+    : HEX_DIGIT_
+    ;
+
+bitValueLiterals
+    : BIT_NUM_
+    ;
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -47,7 +57,7 @@ nullValueLiterals
     ;
 
 identifier_
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | DQ_ IDENTIFIER_ DQ_ | unreservedWord_
     ;
 
 unreservedWord_
@@ -72,11 +82,11 @@ unreservedWord_
     ;
 
 schemaName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 tableName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 tableNames
@@ -84,7 +94,7 @@ tableNames
     ;
 
 columnName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 columnNames
@@ -92,15 +102,15 @@ columnNames
     ;
 
 collationName
-    : STRING_ | IDENTIFIER_
+    : STRING_ | identifier_
     ;
 
 indexName
-    : IDENTIFIER_
+    : identifier_
     ;
 
 alias
-    : IDENTIFIER_
+    : identifier_
     ;
 
 dataTypeLength
@@ -136,7 +146,7 @@ exprRecursive
     ;
 
 booleanPrimary
-    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -144,12 +154,7 @@ booleanPrimary
     ;
 
 comparisonOperator
-    : EQ_
-    | GTE_
-    | GT_
-    | LTE_
-    | LT_
-    | NEQ_
+    : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
 predicate
@@ -179,10 +184,10 @@ bitExpr
 
 simpleExpr
     : functionCall
-    | literal
+    | parameterMarker
+    | literals
     | columnName
     | simpleExpr collateClause
-    //| param_marker
     | variable
     | simpleExpr AND_ simpleExpr
     | PLUS_ simpleExpr
@@ -194,15 +199,13 @@ simpleExpr
     | ROW exprList
     | subquery
     | EXISTS subquery
-    // | (identifier_ expr)
-    //| match_expr
     | caseExpress
     | intervalExpr
     | privateExprOfDb
     ;
 
 functionCall
-    : IDENTIFIER_ LP_ distinct? (exprs | ASTERISK_)? RP_
+    : identifier_ LP_ distinct? (exprs | ASTERISK_)? RP_
     ;
 
 distinct
@@ -229,28 +232,6 @@ variable
     : matchNone
     ;
 
-literal
-    : question
-    | number
-    | TRUE
-    | FALSE
-    | NULL
-    | LBE_ IDENTIFIER_ STRING_ RBE_
-    | HEX_DIGIT_
-    | string
-    | IDENTIFIER_ STRING_ collateClause?
-    | (DATE | TIME | TIMESTAMP) STRING_
-    | IDENTIFIER_? BIT_NUM_ collateClause?
-    ;
-
-question
-    : QUESTION_
-    ;
-
-number
-   : NUMBER_
-   ;
-
 string
     : STRING_
     ;
@@ -268,7 +249,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | number | expr) (ASC | DESC)?
+    : (columnName | numberLiterals | expr) (ASC | DESC)?
     ;
 
 asterisk
@@ -276,11 +257,11 @@ asterisk
     ;
 
 dataType
-    : dataTypeName_ intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | IDENTIFIER_
+    : dataTypeName_ intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | identifier_
     ;
 
 dataTypeName_
-    : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
+    : identifier_ identifier_ | identifier_
     ;
 
 intervalFields
@@ -301,7 +282,7 @@ pgExpr
     ;
 
 aggregateExpression
-    : IDENTIFIER_ (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
+    : identifier_ (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
     ;
 
 filterClause
@@ -313,15 +294,15 @@ asteriskWithParen
     ;
 
 windowFunction
-    : IDENTIFIER_ (exprList | asteriskWithParen) filterClause? windowFunctionWithClause
+    : identifier_ (exprList | asteriskWithParen) filterClause? windowFunctionWithClause
     ;
 
 windowFunctionWithClause
-    : OVER (IDENTIFIER_ | LP_ windowDefinition RP_)
+    : OVER (identifier_ | LP_ windowDefinition RP_)
     ;
 
 windowDefinition
-    : IDENTIFIER_? (PARTITION BY exprs)? (orderByClause (COMMA_ orderByClause)*)? frameClause?
+    : identifier_? (PARTITION BY exprs)? (orderByClause (COMMA_ orderByClause)*)? frameClause?
     ;
 
 operator
@@ -374,11 +355,11 @@ arrayConstructor
     ;
 
 extractFromFunction
-    : EXTRACT LP_ IDENTIFIER_ FROM IDENTIFIER_ RP_
+    : EXTRACT LP_ identifier_ FROM identifier_ RP_
     ;
 
 ignoredIdentifier_
-    : IDENTIFIER_
+    : identifier_
     ;
 
 ignoredIdentifiers_

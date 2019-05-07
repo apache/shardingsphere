@@ -470,3 +470,7 @@ WITHOUT
 ZONE
     : Z O N E
     ;
+
+OF
+    : O F
+    ;

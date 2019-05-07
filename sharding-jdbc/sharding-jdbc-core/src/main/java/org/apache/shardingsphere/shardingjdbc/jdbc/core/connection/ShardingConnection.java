@@ -103,9 +103,4 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
-    
-    @Override
-    protected boolean isOnlyLocalTransactionValid() {
-        return false;
-    }
 }

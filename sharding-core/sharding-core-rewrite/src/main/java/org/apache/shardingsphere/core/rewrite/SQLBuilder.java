@@ -114,6 +114,8 @@ public final class SQLBuilder {
                 appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
             } else if (each instanceof InsertValuesPlaceholder) {
                 appendInsertValuesPlaceholder(tableUnit, (InsertValuesPlaceholder) each, insertParameters, result);
+            } else if (each instanceof InsertSetPlaceholder) {
+                appendInsertSetPlaceholder(tableUnit, (InsertSetPlaceholder) each, insertParameters, result);
             } else {
                 result.append(each);
             }

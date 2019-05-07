@@ -35,12 +35,12 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="drop_table_with_back_quota">
+    <parser-result sql-case-id="drop_table_with_double_quota">
         <tables>
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="11" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+            <table-token start-index="11" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
         </tokens>
     </parser-result>
     
@@ -76,7 +76,7 @@
         </tokens>
     </parser-result>
 
-    <parser-result sql-case-id="drop_index_with_back_quota">
+    <parser-result sql-case-id="drop_index_with_double_quota">
         <tokens>
             <index-token start-index="11" stop-index="24" table-name=""/>
         </tokens>
