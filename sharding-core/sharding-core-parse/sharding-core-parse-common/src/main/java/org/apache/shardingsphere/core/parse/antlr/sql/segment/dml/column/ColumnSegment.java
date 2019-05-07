@@ -44,7 +44,8 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final String name;
     
-    private final String originName;
+    @Setter(AccessLevel.PROTECTED)
+    private QuoteCharacter nameQuoteCharacter = QuoteCharacter.NONE;
     
     private String owner;
     
@@ -53,8 +54,8 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     public ColumnSegment(final int startIndex, final String name) {
         this.startIndex = startIndex;
-        this.originName = name;
         this.name = SQLUtil.getExactlyValue(name);
+        this.nameQuoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
     
     /**

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
@@ -59,7 +60,12 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
     
     private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
         for (ColumnSegment each : sqlSegment.getColumns()) {
-            insertStatement.addColumnName(each.getOriginName());
+            insertStatement.getColumnNames().add(each.getName());
+            if (QuoteCharacter.NONE != each.getNameQuoteCharacter()) {
+                insertStatement.getColumnOriginNames().add(each.getNameQuoteCharacter().getStartDelimiter() + each.getName() + each.getNameQuoteCharacter().getEndDelimiter());
+            } else {
+                insertStatement.getColumnOriginNames().add(each.getName());
+            }
         }
     }
 }
