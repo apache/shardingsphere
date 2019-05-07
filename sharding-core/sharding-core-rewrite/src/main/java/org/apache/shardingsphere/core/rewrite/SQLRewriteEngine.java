@@ -408,11 +408,7 @@ public final class SQLRewriteEngine {
         if (!isUsingParameter(encryptColumnToken)) {
             return;
         }
-        appendedIndexAndParameters.put(getEncryptAssistedParameterIndex(encryptColumnToken), encryptAssistedColumnValues.get(0));
-    }
-    
-    private int getEncryptAssistedParameterIndex(final EncryptColumnToken encryptColumnToken) {
-        return getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1;
+        appendedIndexAndParameters.put(getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1, encryptAssistedColumnValues.get(0));
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
