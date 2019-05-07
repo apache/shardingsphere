@@ -168,15 +168,4 @@ public final class ShardingEncryptorEngine {
             }
         });
     }
-    
-    /**
-     * Is using sharding query assisted encryptor.
-     * 
-     * @param columnNode column node
-     * @return use sharding query assisted encryptor or not
-     */
-    public boolean isUsingShardingQueryAssistedEncryptor(final ColumnNode columnNode) {
-        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
-        return shardingEncryptor.isPresent() && shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor;
-    }
 }
