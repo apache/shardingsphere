@@ -171,6 +171,10 @@ FROM
     : F R O M
     ;
 
+NATURAL
+    : N A T U R A L
+    ;
+
 JOIN
     : J O I N
     ;
@@ -193,6 +197,10 @@ LEFT
 
 RIGHT
     : R I G H T
+    ;
+
+CROSS
+    : C R O S S
     ;
 
 USING

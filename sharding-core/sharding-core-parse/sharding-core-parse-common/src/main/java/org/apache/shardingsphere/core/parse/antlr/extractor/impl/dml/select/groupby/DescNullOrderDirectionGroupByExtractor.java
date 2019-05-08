@@ -15,29 +15,19 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.groupby;
 
-import Symbol, DDLStatement, TCLStatement, DCLStatement;
+import org.apache.shardingsphere.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby.OrderByItemExtractor;
 
-execute
-    : (createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    ) SEMI_?
-    ;
+/**
+ * Group by extractor for DESC null order direction.
+ *
+ * @author zhangliang
+ */
+public final class DescNullOrderDirectionGroupByExtractor extends GroupByExtractor {
+    
+    public DescNullOrderDirectionGroupByExtractor() {
+        super(new OrderByItemExtractor(OrderDirection.DESC));
+    }
+}

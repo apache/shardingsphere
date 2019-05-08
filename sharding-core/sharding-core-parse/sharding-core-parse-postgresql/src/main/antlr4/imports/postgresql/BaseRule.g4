@@ -20,7 +20,7 @@ grammar BaseRule;
 import Keyword, PostgreSQLKeyword, Symbol, Literals;
 
 parameterMarker
-    : QUESTION_
+    : QUESTION_ literalsType_?
     ;
 
 literals
@@ -33,11 +33,11 @@ literals
     ;
 
 stringLiterals
-    : unicodeEscapes_? STRING_ uescape_?
+    : unicodeEscapes_? STRING_ literalsType_? uescape_?
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_
+   : MINUS_? NUMBER_ literalsType_?
    ;
 
 hexadecimalLiterals
@@ -54,6 +54,10 @@ booleanLiterals
 
 nullValueLiterals
     : NULL
+    ;
+
+literalsType_
+    : COLON_ COLON_ IDENTIFIER_
     ;
 
 identifier_
@@ -92,6 +96,7 @@ unreservedWord_
     | SEQUENCE | SESSION | SHOW | SIMPLE | STATISTICS | STORAGE | TABLESPACE
     | TEMP | TEMPORARY | TRIGGER | TYPE | UNBOUNDED | UNLOGGED | UPDATE
     | USAGE | VALID | VALIDATE | WITHIN | WITHOUT | ZONE | GROUPS
+    | RECURSIVE
     ;
 
 schemaName
@@ -99,7 +104,7 @@ schemaName
     ;
 
 tableName
-    : identifier_
+    : (identifier_ DOT_)? identifier_
     ;
 
 tableNames
@@ -107,7 +112,7 @@ tableNames
     ;
 
 columnName
-    : identifier_
+    : (identifier_ DOT_)? identifier_
     ;
 
 columnNames
@@ -243,8 +248,7 @@ frameBetween_
     ;
 
 specialFunction_
-    : windowFunction_ | castFunction_  
-    | charFunction_
+    : windowFunction_ | castFunction_  | charFunction_
     ;
 
 castFunction_
@@ -260,11 +264,11 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression_
-    : CASE simpleExpr? caseWhen_+ caseElse_? END
+    : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 
 caseWhen_

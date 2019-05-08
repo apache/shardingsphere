@@ -24,7 +24,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditions;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 
@@ -79,5 +82,34 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     public final List<SQLToken> getSQLTokens() {
         Collections.sort(sqlTokens);
         return sqlTokens;
+    }
+    
+    /**
+     * Get encrypt condition.
+     * 
+     * @param encryptColumnToken encrypt column token
+     * @return encrypt condition
+     */
+    public Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
+        List<Condition> conditions = encryptConditions.getOrCondition().findConditions(encryptColumnToken.getColumn());
+        if (0 == conditions.size()) {
+            return Optional.absent();
+        }
+        if (1 == conditions.size()) {
+            return Optional.of(conditions.iterator().next());
+        }
+        return Optional.of(conditions.get(getEncryptConditionIndex(encryptColumnToken)));
+    }
+    
+    private int getEncryptConditionIndex(final EncryptColumnToken encryptColumnToken) {
+        int result = 0;
+        for (SQLToken each : sqlTokens) {
+            if (each.equals(encryptColumnToken)) {
+                return result;
+            } else if (each instanceof EncryptColumnToken) {
+                result++;
+            }
+        }
+        throw new ShardingException("Index Out Of Bounds For sqlTokens.");
     }
 }

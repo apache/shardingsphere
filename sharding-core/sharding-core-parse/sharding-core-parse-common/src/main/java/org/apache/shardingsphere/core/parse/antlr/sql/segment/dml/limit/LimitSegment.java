@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 
@@ -28,15 +27,19 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-@Getter
 public final class LimitSegment implements SQLSegment {
     
     private final LimitValueSegment rowCount;
     
     private final LimitValueSegment offset;
     
-    public LimitSegment(final LimitValueSegment rowCount) {
-        this(rowCount, null);
+    /**
+     * Get row count.
+     *
+     * @return row count
+     */
+    public Optional<LimitValueSegment> getRowCount() {
+        return Optional.fromNullable(rowCount);
     }
     
     /**

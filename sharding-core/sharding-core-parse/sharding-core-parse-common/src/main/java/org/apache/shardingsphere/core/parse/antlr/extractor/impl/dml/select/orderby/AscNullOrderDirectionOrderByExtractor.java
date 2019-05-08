@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby;
 
-import Symbol, DDLStatement, TCLStatement, DCLStatement;
+import org.apache.shardingsphere.core.constant.OrderDirection;
 
-execute
-    : (createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    ) SEMI_?
-    ;
+/**
+ * Order by extractor for ASC null order direction.
+ *
+ * @author zhangliang
+ */
+public final class AscNullOrderDirectionOrderByExtractor extends OrderByExtractor {
+    
+    public AscNullOrderDirectionOrderByExtractor() {
+        super(new OrderByItemExtractor(OrderDirection.ASC));
+    }
+}

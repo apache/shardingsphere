@@ -17,10 +17,14 @@
 
 grammar PostgreSQLStatement;
 
-import Keyword, Symbol, Comments, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Comments, DDLStatement, DMLStatement, TCLStatement, DCLStatement, DALStatement;
 
 execute
-    : (createIndex
+    : (select
+    | insert
+    | update
+    | delete
+    | createIndex
     | alterIndex
     | dropIndex
     | createTable

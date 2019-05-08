@@ -17,15 +17,21 @@
 
 package org.apache.shardingsphere.core.strategy.encrypt;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -122,5 +128,44 @@ public final class ShardingEncryptorEngine {
             result.addAll(each.getEncryptTableNames());
         }
         return result;
+    }
+    
+    /**
+     * Get encrypt assisted column values.
+     * 
+     * @param columnNode column node
+     * @param originalColumnValues original column values
+     * @return assisted column values
+     */
+    public List<Comparable<?>> getEncryptAssistedColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
+        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
+        Preconditions.checkArgument(shardingEncryptor.isPresent() && shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor,
+                String.format("Can not find ShardingQueryAssistedEncryptor by %s.", columnNode));
+        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+            
+            @Override
+            public Comparable<?> apply(final Comparable<?> input) {
+                return ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(input.toString());
+            }
+        });
+    }
+    
+    /**
+     * get encrypt column values.
+     * 
+     * @param columnNode column node
+     * @param originalColumnValues original column values
+     * @return encrypt column values
+     */
+    public List<Comparable<?>> getEncryptColumnValues(final ColumnNode columnNode, final List<Comparable<?>> originalColumnValues) {
+        final Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptor(columnNode.getTableName(), columnNode.getColumnName());
+        Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingEncryptor by %s.", columnNode));
+        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+            
+            @Override
+            public Comparable<?> apply(final Comparable<?> input) {
+                return String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
+            }
+        });
     }
 }

@@ -17,7 +17,7 @@
 
 grammar SQLServerStatement;
 
-import Keyword, Symbol, DDLStatement, TCLStatement, DCLStatement;
+import Symbol, DDLStatement, TCLStatement, DCLStatement;
 
 execute
     : (createIndex

@@ -553,7 +553,7 @@
         <!--</or-condition>-->
     <!--</parser-result>-->
     
-    <parser-result sql-case-id="insert_with_geography" parameters="7, 200, 100, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
+    <parser-result sql-case-id="insert_with_geography" parameters="7, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
         <tables>
             <table name="t_place" />
         </tables>

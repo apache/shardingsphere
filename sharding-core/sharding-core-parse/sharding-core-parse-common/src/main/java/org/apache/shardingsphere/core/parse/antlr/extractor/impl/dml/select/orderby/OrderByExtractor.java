@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
+package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
@@ -30,13 +31,15 @@ import java.util.Map;
  * Order by extractor.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
+@RequiredArgsConstructor
+public abstract class OrderByExtractor implements OptionalSQLSegmentExtractor {
     
-    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
+    private final OrderByItemExtractor orderByItemExtractor;
     
     @Override
-    public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public final Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
         return orderByNode.isPresent() ? Optional.of(new OrderBySegment(orderByItemExtractor.extract(orderByNode.get(), parameterMarkerIndexes))) : Optional.<OrderBySegment>absent();
     }

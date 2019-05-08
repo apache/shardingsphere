@@ -42,7 +42,7 @@
     <sql-case id="insert_on_duplicate_key_update" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_with_multiple_values" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" />
     <!--<sql-case id="insert_on_duplicate_key_update_with_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE t_order.status = VALUES(t_order.status)" db-types="MySQL" />-->
-    <sql-case id="insert_with_geography" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (?, ?, ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), ?::jsonb)" db-types="PostgreSQL" />
+    <sql-case id="insert_with_geography" value="INSERT INTO t_place(user_new_id, guid, start_point,rule) VALUES (?, ?, ST_GeographyFromText('SRID=4326;POINT(100 200)'), ?::jsonb)" db-types="PostgreSQL" />
     <sql-case id="insert_with_one_auto_increment_column" value="INSERT INTO t_auto_increment_table VALUES()" db-types="MySQL" />
     <sql-case id="insert_with_double_value" value="INSERT INTO t_double_test(col1) VALUES(1.22)" db-types="MySQL" />
     <sql-case id="insert_with_null_value" value="INSERT INTO t_null_value_test(col1) VALUES(null)" db-types="MySQL" />

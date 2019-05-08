@@ -383,10 +383,6 @@ COPY
     : C O P Y
     ;
 
-CROSS
-    : C R O S S
-    ;
-
 DATA
     : D A T A
     ;
@@ -517,10 +513,6 @@ MATCH
 
 MEMORY
     : M E M O R Y
-    ;
-
-NATURAL
-    : N A T U R A L
     ;
 
 NONE
