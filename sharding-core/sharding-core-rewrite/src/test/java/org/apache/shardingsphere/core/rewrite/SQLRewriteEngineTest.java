@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
@@ -254,6 +255,26 @@ public final class SQLRewriteEngineTest {
                 DatabaseType.MySQL, routeResult, Collections.emptyList(), new OptimizeResult(insertOptimizeResult));
         assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(), 
                 is("INSERT INTO `table_1` (name, id) VALUES (10, 1) ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+    }
+    
+    @Test
+    public void assertRewriteForDuplicateKeyWithSetWithoutParameter() {
+        insertStatement.getColumnNames().add("name");
+        insertStatement.getColumnNames().add("id");
+        insertStatement.getTables().add(new Table("table_x", null));
+        insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
+        insertStatement.addSQLToken(new InsertSetToken(22, 43));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.SET, Arrays.asList("name", "id"));
+        SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
+        insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
+        insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
+        TableUnit tableUnit = new TableUnit("db0");
+        tableUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routeResult = new SQLRouteResult(insertStatement);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "INSERT INTO `table_x` set name = 'a', id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)",
+                DatabaseType.MySQL, routeResult, Collections.emptyList(), new OptimizeResult(insertOptimizeResult));
+        assertThat(rewriteEngine.rewrite(false).toSQL(tableUnit, tableTokens, null, shardingDataSourceMetaData).getSql(),
+                is("INSERT INTO `table_1` SET name = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
     
     @Test
