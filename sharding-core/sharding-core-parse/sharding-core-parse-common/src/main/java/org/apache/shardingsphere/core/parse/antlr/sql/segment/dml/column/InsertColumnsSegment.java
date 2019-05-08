@@ -27,6 +27,7 @@ import java.util.Collection;
  * Insert columns segment.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
