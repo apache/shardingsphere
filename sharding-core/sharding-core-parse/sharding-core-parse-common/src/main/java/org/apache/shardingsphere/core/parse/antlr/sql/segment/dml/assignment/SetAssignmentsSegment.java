@@ -34,5 +34,7 @@ public final class SetAssignmentsSegment implements SQLSegment {
     
     private final int startIndex;
     
+    private final int stopIndex;
+    
     private final Collection<AssignmentSegment> assignments;
 }
