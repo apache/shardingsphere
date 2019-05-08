@@ -212,6 +212,29 @@ spring.shardingsphere.orchestration.registry.namespace=orchestration-spring-boot
 spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
 ```
 
+### JNDI
+In the above configuration example, all datasource configurations can be replaced with JNDI, such as `Data Sharding`:
+```properties
+spring.shardingsphere.datasource.names=ds0,ds1
+
+spring.shardingsphere.datasource.ds0.jndi-name=java:comp/env/jdbc/ds0
+spring.shardingsphere.datasource.ds1.jndi-name=jdbc/ds1
+
+spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
+spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
+spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
+spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
+spring.shardingsphere.sharding.broadcast-tables=t_config
+
+spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=user_id
+spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
+```
+
 ## Configuration Item Explanation
 
 ### Data Sharding

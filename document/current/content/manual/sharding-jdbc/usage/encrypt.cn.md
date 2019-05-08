@@ -101,6 +101,20 @@ spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.
 spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
 ```
 
+#### 基于Spring boot + JNDI的规则配置
+
+如果您计划使用`Spring boot + JNDI`的方式，在应用容器（如Tomcat）中使用Sharding-JDBC时，可使用`spring.shardingsphere.datasource.${datasourceName}.jndiName`来代替数据源的一系列配置。
+如：
+```properties
+spring.shardingsphere.datasource.name=ds
+
+spring.shardingsphere.datasource.ds.jndi-name=java:comp/env/jdbc/ds
+
+spring.shardingsphere.encrypt.encryptors.order_encrypt.type=aes
+spring.shardingsphere.encrypt.encryptors.order_encrypt.qualifiedColumns=t_order.user_id
+spring.shardingsphere.encrypt.encryptors.order_encrypt.props.aes.key.value=123456
+```
+
 ### 基于Spring命名空间的规则配置
 
 ```xml

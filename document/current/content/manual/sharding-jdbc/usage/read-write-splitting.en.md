@@ -161,6 +161,24 @@ spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 spring.shardingsphere.props.sql.show=true
 ```
 
+#### Rule Configuration Based on Spring Boot + JNDI
+
+If you plan to use Sharding-JDBC in Application Server(such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
+For example:
+```properties
+spring.shardingsphere.datasource.names=master,slave0,slave1
+
+spring.shardingsphere.datasource.master.jndi-name=java:comp/env/jdbc/master
+spring.shardingsphere.datasource.slave0.jndi-name=jdbc/slave0
+spring.shardingsphere.datasource.slave1.jndi-name=jdbc/slave1
+
+spring.shardingsphere.masterslave.name=ms
+spring.shardingsphere.masterslave.master-data-source-name=master
+spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
+
+spring.shardingsphere.props.sql.show=true
+```
+
 ### Rule Configuration Based on Spring Name Space
 
 ```xml
