@@ -75,7 +75,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         Preconditions.checkState(insertValuesToken.isPresent());
         insertStatement.getSQLTokens().remove(insertValuesToken.get());
-        insertStatement.addSQLToken(new InsertSetToken(insertValuesToken.get().getStartIndex(), insertStatement.getLogicSQL().length() - 1));
+        insertStatement.addSQLToken(new InsertSetToken(insertValuesToken.get().getStartIndex(), insertValuesToken.get().getStopIndex()));
         do {
             SQLExpression left = basicExpressionParser.parse(insertStatement);
             Column column = null;

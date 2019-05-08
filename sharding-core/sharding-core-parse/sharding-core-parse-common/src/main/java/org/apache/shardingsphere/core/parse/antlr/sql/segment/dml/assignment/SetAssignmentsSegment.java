@@ -27,12 +27,15 @@ import java.util.Collection;
  * Set assignments segment.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 public final class SetAssignmentsSegment implements SQLSegment {
     
     private final int startIndex;
+    
+    private final int stopIndex;
     
     private final Collection<AssignmentSegment> assignments;
 }

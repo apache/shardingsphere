@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
  * Insert columns filler.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, ShardingTableMetaDataAwareFiller {
@@ -46,7 +47,7 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
             }
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlStatement.getLogicSQL().length() - 1));
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
     }
     

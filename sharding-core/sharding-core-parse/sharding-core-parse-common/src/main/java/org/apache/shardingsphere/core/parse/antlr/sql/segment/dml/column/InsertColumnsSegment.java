@@ -27,12 +27,15 @@ import java.util.Collection;
  * Insert columns segment.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 public final class InsertColumnsSegment implements SQLSegment {
     
     private final int startIndex;
+    
+    private final int stopIndex;
     
     private final Collection<ColumnSegment> columns;
 }
