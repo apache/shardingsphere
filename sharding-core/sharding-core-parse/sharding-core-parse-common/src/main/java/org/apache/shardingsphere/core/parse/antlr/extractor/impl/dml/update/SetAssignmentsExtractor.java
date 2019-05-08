@@ -51,6 +51,6 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
                 assignmentSegments.add(assignmentSegment.get());
             }
         }
-        return Optional.of(new SetAssignmentsSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), assignmentSegments));
+        return Optional.of(new SetAssignmentsSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), setAssignmentsClauseNode.get().getStop().getStopIndex(), assignmentSegments));
     }
 }
