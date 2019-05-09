@@ -60,7 +60,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendLiterals("table_x");
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT table_x.id FROM table_x"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap()).getSql(), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT table_x.id FROM table_x"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap()).getSql(), is("SELECT table_x.id FROM table_x"));
     }
     
     @Test
@@ -84,7 +84,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT table_x_1.id FROM table_x_1"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SELECT table_x_1.id FROM table_x_1"));
     }
     
     @Test
@@ -95,7 +95,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ('column')");
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON table_x ('column')"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap()).getSql(), is("CREATE INDEX index_name ON table_x ('column')"));
     }
     
     @Test
@@ -108,7 +108,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('column')"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("CREATE INDEX index_name_table_x_1 ON table_x_1 ('column')"));
     }
     
     @Test(expected = ShardingException.class)
@@ -118,8 +118,8 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals("ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("dx", "table_x"));
-        sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), createShardingRule(), null);
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("dx", "table_x", createShardingRule(), null));
+        sqlBuilder.toSQL(null, Collections.<String, String>emptyMap());
     }
     
     @Test
@@ -129,12 +129,12 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds0", "table_0"));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds0", "table_0", createShardingRule(), shardingDataSourceMetaData));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
 //        ShardingDataSourceMetaData shardingDataSourceMetaData = Mockito.mock(ShardingDataSourceMetaData.class);
 //        Mockito.when(shardingDataSourceMetaData.getActualSchemaName(Mockito.anyString())).thenReturn("actual_db");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SHOW CREATE TABLE table_1 ON actual_db"));
     }
     
     @Test
@@ -145,7 +145,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.BACK_QUOTE));
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT `table_x`.id FROM `table_x`"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap()).getSql(), is("SELECT `table_x`.id FROM `table_x`"));
     }
     
     @Test
@@ -158,7 +158,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.BACK_QUOTE));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT `table_x_1`.id FROM `table_x_1`"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SELECT `table_x_1`.id FROM `table_x_1`"));
     }
     
     @Test
@@ -169,7 +169,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.BACK_QUOTE));
         sqlBuilder.appendLiterals(" ('column')");
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON `table_x` ('column')"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap()).getSql(), is("CREATE INDEX index_name ON `table_x` ('column')"));
     }
     
     @Test
@@ -182,7 +182,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON `table_x_1` ('column')"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("CREATE INDEX index_name_table_x_1 ON `table_x_1` ('column')"));
     }
     
     @Test
@@ -192,10 +192,10 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.BACK_QUOTE));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0", createShardingRule(), shardingDataSourceMetaData));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE `table_1` ON actual_db"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SHOW CREATE TABLE `table_1` ON actual_db"));
     }
     
     @Test
@@ -206,7 +206,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.QUOTE));
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT \"table_x\".id FROM \"table_x\""));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap()).getSql(), is("SELECT \"table_x\".id FROM \"table_x\""));
     }
     
     @Test
@@ -219,7 +219,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.QUOTE));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT \"table_x_1\".id FROM \"table_x_1\""));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SELECT \"table_x_1\".id FROM \"table_x_1\""));
     }
     
     @Test
@@ -230,7 +230,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.QUOTE));
         sqlBuilder.appendLiterals(" ('column')");
-        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON \"table_x\" ('column')"));
+        assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap()).getSql(), is("CREATE INDEX index_name ON \"table_x\" ('column')"));
     }
     
     @Test
@@ -243,7 +243,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("CREATE INDEX index_name_table_x_1 ON \"table_x_1\" ('column')"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("CREATE INDEX index_name_table_x_1 ON \"table_x_1\" ('column')"));
     }
     
     @Test
@@ -253,16 +253,15 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.QUOTE));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0", createShardingRule(), shardingDataSourceMetaData));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_0", "table_1");
-        assertThat(sqlBuilder.toSQL(null, tableTokens, createShardingRule(), shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE \"table_1\" ON actual_db"));
+        assertThat(sqlBuilder.toSQL(null, tableTokens).getSql(), is("SHOW CREATE TABLE \"table_1\" ON actual_db"));
     }
     
     @Test
     public void assertShardingPlaceholderToString() {
         assertThat(new IndexPlaceholder("index_name", "table_x").toString(), is("index_name"));
-        assertThat(new SchemaPlaceholder("schema_name", "table_x").toString(), is("schema_name"));
         assertThat(new TablePlaceholder("table_name", QuoteCharacter.BACK_QUOTE).toString(), is("`table_name`"));
     }
     
