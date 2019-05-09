@@ -704,9 +704,10 @@ public final class SQLRewriteEngineTest {
     public void assertTableTokenWithSchemaForInsert() {
         insertStatement.addSQLToken(new TableToken(12, 30, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(insertStatement);
+        routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, 
                 "INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
-        assertThat(rewriteEngine.rewrite(false).toSQL(
+        assertThat(rewriteEngine.rewrite().toSQL(
                 null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("INSERT INTO table_1 (order_id, user_id, status) values (1, 1, 'OK')"));
     }
     
@@ -778,9 +779,10 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
+        routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, routeResult, new LinkedList<>(), null);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("SELECT id FROM table_z WHERE id IN ('encryptValue', 'encryptValue')"));
     }
     
@@ -802,9 +804,10 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
+        routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", DatabaseType.MySQL, routeResult, parameters, null);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = 'encryptValue'"));
+        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = 'encryptValue'"));
         assertThat(parameters.get(0), is((Object) "encryptValue"));
         assertThat(parameters.get(1), is((Object) "encryptValue"));
     }
@@ -821,9 +824,10 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLParameterMarkerExpression(0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
+        routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_k WHERE id=? AND name=?", DatabaseType.MySQL, routeResult, parameters, null);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
+        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
         assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
     }
     
@@ -839,9 +843,10 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
+        routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, routeResult, new LinkedList<>(), null);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("SELECT id FROM table_k WHERE query_id IN ('assistedEncryptValue', 'assistedEncryptValue')"));
     }
     
@@ -855,9 +860,10 @@ public final class SQLRewriteEngineTest {
         updateStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
         routeResult = new SQLRouteResult(updateStatement);
+        routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, routeResult, Collections.emptyList(), null);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("UPDATE table_z SET id = 'encryptValue' WHERE id = 'encryptValue'"));
     }
     
@@ -874,9 +880,10 @@ public final class SQLRewriteEngineTest {
         updateStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
         updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLParameterMarkerExpression(1)));
         routeResult = new SQLRouteResult(updateStatement);
+        routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, routeResult, parameters, null);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
                 is("UPDATE table_k SET id = ?, query_id = ? WHERE query_id BETWEEN 'assistedEncryptValue' AND ?"));
         assertThat(parameters.get(0), is((Object) "encryptValue"));
         assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
