@@ -17,28 +17,33 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.reset;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
-import java.util.Collections;
 
-/**
- * COM_STMT_RESET command executor for MySQL.
- *
- * @author zhaojun
- */
-@RequiredArgsConstructor
-public final class MySQLComStmtResetExecutor implements CommandExecutor {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+@RunWith(MockitoJUnitRunner.class)
+public class MySQLComStmtResetExecutorTest {
     
-    private final MySQLComStmtResetPacket packet;
+    @Mock
+    private MySQLComStmtResetPacket packet;
     
-    @Override
-    public Collection<DatabasePacket> execute() {
-        // TODO we should implement the stmt reset after supporting COM_STMT_SEND_LONG_DATA
-        return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
+    private MySQLComStmtResetExecutor mySQLComStmtResetExecutor;
+    
+    @Test
+    public void assertExecute() {
+        mySQLComStmtResetExecutor = new MySQLComStmtResetExecutor(packet);
+        Collection<DatabasePacket> actual = mySQLComStmtResetExecutor.execute();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
     }
 }
