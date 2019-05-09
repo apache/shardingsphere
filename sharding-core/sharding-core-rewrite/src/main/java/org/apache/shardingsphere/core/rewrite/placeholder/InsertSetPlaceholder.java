@@ -34,7 +34,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertSetPlaceholder implements ShardingPlaceholder {
+public final class InsertSetPlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicTableName;
     
@@ -42,6 +42,7 @@ public final class InsertSetPlaceholder implements ShardingPlaceholder {
     
     private final List<InsertOptimizeResultUnit> units;
     
+    @Override
     public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
         StringBuilder result = new StringBuilder();
         result.append("SET ");

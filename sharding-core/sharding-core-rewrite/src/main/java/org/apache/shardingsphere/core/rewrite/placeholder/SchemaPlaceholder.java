@@ -34,7 +34,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaPlaceholder implements ShardingPlaceholder {
+public final class SchemaPlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicSchemaName;
     
@@ -49,6 +49,7 @@ public final class SchemaPlaceholder implements ShardingPlaceholder {
         return logicSchemaName;
     }
     
+    @Override
     public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
         if (Strings.isNullOrEmpty(logicTableName)) {
             return logicTableName;

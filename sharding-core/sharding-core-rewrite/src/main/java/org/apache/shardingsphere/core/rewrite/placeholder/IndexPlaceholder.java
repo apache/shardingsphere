@@ -32,7 +32,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-public final class IndexPlaceholder implements ShardingPlaceholder {
+public final class IndexPlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicIndexName;
     
@@ -51,6 +51,7 @@ public final class IndexPlaceholder implements ShardingPlaceholder {
         return logicIndexName;
     }
     
+    @Override
     public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
         StringBuilder result = new StringBuilder();
         result.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);

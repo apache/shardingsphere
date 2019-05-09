@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TablePlaceholder implements ShardingPlaceholder {
+public final class TablePlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicTableName;
     
@@ -44,8 +44,9 @@ public final class TablePlaceholder implements ShardingPlaceholder {
         return Joiner.on("").join(quoteCharacter.getStartDelimiter(), logicTableName, quoteCharacter.getEndDelimiter());
     }
     
-    public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
-        String actualTableName = logicAndActualTableMap.get(logicTableName);
+    @Override
+    public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
+        String actualTableName = logicAndActualTables.get(logicTableName);
         actualTableName = null == actualTableName ? logicTableName : actualTableName;
         return Joiner.on("").join(quoteCharacter.getStartDelimiter(), actualTableName, quoteCharacter.getEndDelimiter());
     }
