@@ -124,8 +124,8 @@ public final class SQLRewriteEngine {
      * @param sqlRouteResult SQL route result
      * @param parameters parameters
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule,
-                            final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingDataSourceMetaData dataSourceMetaData) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, 
+                            final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingDataSourceMetaData dataSourceMetaData) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -180,7 +180,8 @@ public final class SQLRewriteEngine {
     private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
         StringBuilder stringBuilder = new StringBuilder();
         int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
-        stringBuilder.append(originalSQL.substring(0, firstSelectItemStartIndex)).append("DISTINCT ").append(originalSQL.substring(firstSelectItemStartIndex, sqlStatement.getSQLTokens().get(0).getStartIndex()));
+        stringBuilder.append(originalSQL.substring(0, firstSelectItemStartIndex)).append("DISTINCT ")
+                .append(originalSQL.substring(firstSelectItemStartIndex, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         sqlBuilder.appendLiterals(stringBuilder.toString());
     }
     
