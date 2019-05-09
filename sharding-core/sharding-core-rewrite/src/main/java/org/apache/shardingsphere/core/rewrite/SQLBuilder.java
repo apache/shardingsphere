@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
@@ -97,27 +97,35 @@ public final class SQLBuilder {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
-            if (!(each instanceof ShardingPlaceholder)) {
-                result.append(each);
-                continue;
-            }
-            String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
-            String actualTableName = logicAndActualTables.get(logicTableName);
-            if (each instanceof TablePlaceholder) {
-                appendTablePlaceholder((TablePlaceholder) each, actualTableName, result);
-            } else if (each instanceof SchemaPlaceholder) {
-                appendSchemaPlaceholder((SchemaPlaceholder) each, result);
-            } else if (each instanceof IndexPlaceholder) {
-                appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
-            } else if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(tableUnit, (InsertValuesPlaceholder) each, insertParameters, result);
-            } else if (each instanceof InsertSetPlaceholder) {
-                appendInsertSetPlaceholder(tableUnit, (InsertSetPlaceholder) each, insertParameters, result);
+            if (each instanceof Alterable) {
+                result.append(((Alterable) each).toString(tableUnit, logicAndActualTables));
             } else {
                 result.append(each);
             }
+            insertParameters.addAll(getInsertParameters(each, tableUnit));
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
+    }
+    
+    private List<Object> getInsertParameters(final Object target, final TableUnit tableUnit) {
+        List<Object> result = new LinkedList<>();
+        if (target instanceof InsertSetPlaceholder) {
+            InsertSetPlaceholder setPlaceholder = (InsertSetPlaceholder) target;
+            addInsertParameters(tableUnit, setPlaceholder.getUnits(), result);
+        }
+        if (target instanceof InsertValuesPlaceholder) {
+            InsertValuesPlaceholder valuesPlaceholder = (InsertValuesPlaceholder) target;
+            addInsertParameters(tableUnit, valuesPlaceholder.getUnits(), result);
+        }
+        return result;
+    }
+    
+    private void addInsertParameters(final TableUnit tableUnit, final List<InsertOptimizeResultUnit> units, final List<Object> insertParameters) {
+        for (InsertOptimizeResultUnit each : units) {
+            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
+                insertParameters.addAll(Arrays.asList(each.getParameters()));
+            }
+        }
     }
     
     /**
@@ -153,7 +161,7 @@ public final class SQLBuilder {
                 continue;
             }
             if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(null, (InsertValuesPlaceholder) each, insertParameters, result);
+                addInsertParameters(null, (InsertValuesPlaceholder) each, insertParameters, result);
             } else if (each instanceof InsertSetPlaceholder) {
                 appendInsertSetPlaceholder(null, (InsertSetPlaceholder) each, insertParameters, result);
             } else {
@@ -180,15 +188,7 @@ public final class SQLBuilder {
         }
     }
     
-    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final InsertValuesPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append(" (").append(Joiner.on(", ").join(placeholder.getColumnNames())).append(") VALUES ");
-        for (InsertOptimizeResultUnit each : placeholder.getUnits()) {
-            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
-                appendInsertOptimizeResult(each, insertParameters, stringBuilder);
-            }
-        }
-        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-    }
+    
     
     private void appendInsertSetPlaceholder(final TableUnit tableUnit, final InsertSetPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         stringBuilder.append("SET ");
@@ -202,7 +202,6 @@ public final class SQLBuilder {
     
     private void appendInsertOptimizeResult(final InsertOptimizeResultUnit unit, final List<Object> insertParameters, final StringBuilder stringBuilder) {
         stringBuilder.append(unit).append(", ");
-        insertParameters.addAll(Arrays.asList(unit.getParameters()));
     }
     
     private boolean isToAppendInsertOptimizeResult(final TableUnit tableUnit, final InsertOptimizeResultUnit unit) {
