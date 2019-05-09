@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.reset;
+package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLComStmtResetExecutorTest {
+public class MySQLComStmtResetPacketTest {
     
     @Mock
-    private MySQLComStmtResetPacket packet;
+    private MySQLPacketPayload payload;
     
     @Test
-    public void assertExecute() {
-        MySQLComStmtResetExecutor mySQLComStmtResetExecutor = new MySQLComStmtResetExecutor(packet);
-        Collection<DatabasePacket> actual = mySQLComStmtResetExecutor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
+    public void assertGetStatementId() {
+        new MySQLComStmtResetPacket(payload);
+        verify(payload).readInt4();
     }
 }
