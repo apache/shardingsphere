@@ -85,7 +85,7 @@ public final class MasterSlaveSQLRewriteEngine {
     
     private void appendSchemaPlaceholder(final String sql, final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
         String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), null));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), null, null, null));
         int endPosition = sqlTokens.size() - 1 == count ? sql.length() : sqlTokens.get(count + 1).getStartIndex();
         sqlBuilder.appendLiterals(sql.substring(schemaToken.getStopIndex() + 1, endPosition));
     }

@@ -105,7 +105,7 @@ public abstract class BaseShardingEngine {
         SQLBuilder sqlBuilder = rewriteEngine.rewrite();
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, metaData.getDataSource())));
+            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
         }
         return result;
     }
