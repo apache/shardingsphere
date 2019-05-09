@@ -4,24 +4,21 @@ title = "SQL"
 weight = 1
 +++
 
-Since the syntax of SQL is flexible and complex and query situations of distributed databases and stand-alone databases are not identical with each other, SQLs incompatible with stand-alone databases are hard to avoid.
+Since the SQL syntax is flexible and complex and distributed databases and stand-alone databases do not have identical query sceanrios, SQLs incompatible with stand-alone databases are hard to avoid.
 
-To try to avoid traps for users, this document has listed identified available SQL types and unavailable SQL types.
+This document has listed identified supported SQL types and unsupported SQL types, trying to avoid traps for users.
 
-It is inevitably to have some SQLs that have not been listed yet, welcome to supplement for that. 
-We will also try to support those unavailable SQLs in future versions.
+It is inevitably to have some unlisted SQLs, welcome to supplement for that. We will also try to support those unavailable SQLs in future versions.
 
-## Available SQL
+## Supported SQL
 
 ### Route to single data node
 
-- 100% compatible（MySQL only, other database dialect is doing).
+- 100% compatible（MySQL only, we are completing other databases).
 
-### Route to multiple data nodes or database beside MySQL
+### Route to multiple data nodes or non-MySQL database
 
-Fully available for DQL, DML, DDL, DCL, TCL and some DAL for MySQL. 
-Available for pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN(cannot support cross database). 
-Here is an example of a most complex kind of DQL:
+Fully support DQL, DML, DDL, DCL, TCL and some DAL for MySQL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DQL:
 
 - Main SELECT
 
@@ -49,22 +46,20 @@ tbl_name [AS] alias] [index_hint_list] |
 table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
 ```
 
-## Unavailable SQL
+## Unsupported SQL
 
-### Route to multiple data nodes or database beside MySQL
+### Route to multiple data nodes or non-MySQL database
 
-Unavailable for redundant parentheses, CASE WHEN, HAVING and UNION (ALL) and partly available for sub-query.
+Do not support redundant parentheses, CASE WHEN, HAVING and UNION (ALL) and partly available sub-query.
 
-Available for not only sub-query of pagination (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for detail), but also sub-query with equivalent pattern. 
-No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. 
-Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
+Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
-For example, the following sub-query is available for ShardingSphere:
+For example, the following sub-query is available:
 
 ```sql
 SELECT COUNT(*) FROM (SELECT * FROM t_order o)
 ```
- 
+
 The following sub-query is unavailable:
 
 ```sql
@@ -73,13 +68,13 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 To be simple, through sub-query, non-functional requirements are available in most cases, such as pagination, sum count and so on; but functional requirements are unavailable for now.
 
-Due to the restriction of merger, sub-query that contains aggregate function is unavailable for now.
+Due to the restriction of merger, sub-query that contains aggregation function is unavailable for now.
 
-SQL that contains schema is unavailable, for the concept of ShardingSphere is to use multiple data source as one data source, so all the SQL visits are based on one logic schema.
+Do not support SQL that contains schema, for the concept of ShardingSphere is to use multiple data source as one data source, so all the SQL visits are based on one logic schema.
 
 ## Example
 
-### Available SQL
+### Supported SQL
 
 | SQL                                                                                         | Necessary conditions                    |
 | ------------------------------------------------------------------------------------------- | --------------------------------------- |
@@ -103,25 +98,25 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
 
-### Unavailable SQL
+### Unsupported SQL
 
-| SQL                                                                                         |  The reason of unavailability      |
-| ------------------------------------------------------------------------------------------- |----------------------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                  | VALUES clause does not support operation expression|
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                   |
-| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                      |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                             |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                              |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                          |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses              |
-| SELECT * FROM ds.tbl_name1                                                                  | Contain schema(Supported if MySQL) |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | See `DISTINCT` availability detail |
+| SQL                                                          | Reason                                              |
+| ------------------------------------------------------------ | --------------------------------------------------- |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)   | VALUES clause does not support operation expression |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | INSERT .. SELECT                                    |
+| INSERT INTO tbl_name SET col1 = ?                            | INSERT .. SET                                       |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ? | HAVING                                              |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2        | UNION                                               |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2    | UNION ALL                                           |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)          | Redundant parentheses (MySQL is already available)  |
+| SELECT * FROM ds.tbl_name1                                   | Contain schema                                      |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name           | See `DISTINCT` availability detail                  |
 
-## DISTINCT Availability Detail
+## DISTINCT Availability Explanation
 
-### Available SQL
+### Supported SQL
 
-| SQL                                                                                         | 所需条件                             |
+| SQL                                                                                         | Conditions                    |
 | ------------------------------------------------------------------------------------------- | ----------------------------------- |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
 | SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
@@ -138,8 +133,8 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               | MySQL                               |
 | SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | MySQL                               |
 
-### Unavailable SQL
+### Unsupported SQL
 
-| SQL                                                                                         | Unavailable reason                                                            |
-| ------------------------------------------------------------------------------------------- |------------------------------------------------------------------------------ |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Use normal aggregate function and DISTINCT aggregate function in the same time|
+| SQL                                                | Reason                                                       |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name | Use normal aggregation function and DISTINCT aggregation function in the same time |
