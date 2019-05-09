@@ -170,49 +170,4 @@ public final class SQLBuilder {
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), parameters) : new SQLUnit(result.toString(), insertParameters);
     }
-    
-    private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(null == actualTableName ? tablePlaceholder : new TablePlaceholder(actualTableName, tablePlaceholder.getQuoteCharacter()));
-    }
-    
-    private void appendSchemaPlaceholder(final SchemaPlaceholder schemaPlaceholder, final StringBuilder stringBuilder) {
-        stringBuilder.append(schemaPlaceholder.toString());
-    }
-    
-    private void appendIndexPlaceholder(final IndexPlaceholder placeholder, final String actualTableName, final StringBuilder stringBuilder) {
-        if (Strings.isNullOrEmpty(actualTableName)) {
-            stringBuilder.append(placeholder.getQuoteCharacter().getStartDelimiter()).append(placeholder.getLogicIndexName()).append(placeholder.getQuoteCharacter().getEndDelimiter());
-        } else {
-            stringBuilder.append(placeholder.getQuoteCharacter().getStartDelimiter())
-                    .append(placeholder.getLogicIndexName()).append("_").append(actualTableName).append(placeholder.getQuoteCharacter().getEndDelimiter());
-        }
-    }
-    
-    
-    
-    private void appendInsertSetPlaceholder(final TableUnit tableUnit, final InsertSetPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append("SET ");
-        for (InsertOptimizeResultUnit each : placeholder.getUnits()) {
-            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
-                appendInsertOptimizeResult(each, insertParameters, stringBuilder);
-            }
-        }
-        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-    }
-    
-    private void appendInsertOptimizeResult(final InsertOptimizeResultUnit unit, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append(unit).append(", ");
-    }
-    
-    private boolean isToAppendInsertOptimizeResult(final TableUnit tableUnit, final InsertOptimizeResultUnit unit) {
-        if (unit.getDataNodes().isEmpty() || null == tableUnit) {
-            return true;
-        }
-        for (DataNode each : unit.getDataNodes()) {
-            if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
