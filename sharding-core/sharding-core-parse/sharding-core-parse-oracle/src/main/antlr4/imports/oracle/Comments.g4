@@ -15,29 +15,9 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+lexer grammar Comments;
 
-import Symbol, Comments, DDLStatement, TCLStatement, DCLStatement;
+import Symbol;
 
-execute
-    : (createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    ) SEMI_?
-    ;
+BLOCK_COMMENT:  '/*' .*? '*/' -> channel(HIDDEN);
+INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);
