@@ -37,7 +37,9 @@ import org.apache.shardingsphere.shardingproxy.backend.text.transaction.Transact
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Text protocol backend handler factory.
@@ -47,7 +49,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {
     
-    private static final String SET_AUTOCOMMIT_1 = "SET AUTOCOMMIT=1";
+    private static final Set<String> AUTO_COMMIT = new HashSet<>(Arrays.asList("SET AUTOCOMMIT=1", "SET @@SESSION.AUTOCOMMIT = ON"));
     
     private static final List<String> GUI_SQL = Arrays.asList("SET", "SHOW VARIABLES LIKE", "SHOW CHARACTER SET", "SHOW COLLATION");
     
@@ -67,7 +69,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
         }
-        if (sql.toUpperCase().contains(SET_AUTOCOMMIT_1)) {
+        if (AUTO_COMMIT.contains(sql.toUpperCase())) {
             return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();

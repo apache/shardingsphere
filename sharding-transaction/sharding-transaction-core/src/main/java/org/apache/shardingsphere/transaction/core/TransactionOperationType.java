@@ -31,7 +31,7 @@ public enum TransactionOperationType {
     
     /**
      * Get operation type.
-     * 
+     *
      * @param sql SQL
      * @return transaction operation type
      */
@@ -41,6 +41,7 @@ public enum TransactionOperationType {
             case "BEGIN":
             case "START TRANSACTION":
             case "SET AUTOCOMMIT=0":
+            case "SET @@SESSION.AUTOCOMMIT = OFF":
                 return Optional.of(TransactionOperationType.BEGIN);
             case "COMMIT":
                 return Optional.of(TransactionOperationType.COMMIT);
