@@ -25,7 +25,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
@@ -114,7 +113,7 @@ public final class SQLRewriteEngine {
     
     private final OptimizeResult optimizeResult;
     
-    private final ShardingMetaData metaData;
+    private final ShardingDataSourceMetaData dataSourceMetaData;
     
     /**
      * Constructs SQL rewrite engine.
@@ -126,7 +125,7 @@ public final class SQLRewriteEngine {
      * @param parameters parameters
      */
     public SQLRewriteEngine(final ShardingRule shardingRule,
-                            final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingMetaData metaData) {
+                            final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingDataSourceMetaData dataSourceMetaData) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -135,7 +134,7 @@ public final class SQLRewriteEngine {
         this.parameters = parameters;
         appendedIndexAndParameters = new LinkedHashMap<>();
         this.optimizeResult = sqlRouteResult.getOptimizeResult();
-        this.metaData = metaData;
+        this.dataSourceMetaData = dataSourceMetaData;
     }
     
     /**
