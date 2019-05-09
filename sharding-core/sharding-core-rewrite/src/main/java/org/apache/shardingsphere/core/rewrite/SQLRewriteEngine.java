@@ -108,8 +108,6 @@ public final class SQLRewriteEngine {
     
     private final SQLStatement sqlStatement;
     
-    private final List<SQLToken> sqlTokens;
-    
     private final List<Object> parameters;
     
     private final Map<Integer, Object> appendedIndexAndParameters;
@@ -134,7 +132,6 @@ public final class SQLRewriteEngine {
         this.databaseType = databaseType;
         this.sqlRouteResult = sqlRouteResult;
         sqlStatement = sqlRouteResult.getSqlStatement();
-        sqlTokens = sqlRouteResult.getSqlStatement().getSQLTokens();
         this.parameters = parameters;
         appendedIndexAndParameters = new LinkedHashMap<>();
         this.optimizeResult = sqlRouteResult.getOptimizeResult();
@@ -149,7 +146,7 @@ public final class SQLRewriteEngine {
      */
     public SQLBuilder rewrite(final boolean isSingleRouting) {
         SQLBuilder result = new SQLBuilder(parameters);
-        if (sqlTokens.isEmpty()) {
+        if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);
         }
         appendInitialLiterals(!isSingleRouting, result);
@@ -167,12 +164,12 @@ public final class SQLRewriteEngine {
         if (isRewrite && isContainsAggregationDistinctToken()) {
             appendAggregationDistinctLiteral(sqlBuilder);
         } else {
-            sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
+            sqlBuilder.appendLiterals(originalSQL.substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         }
     }
     
     private boolean isContainsAggregationDistinctToken() {
-        return Iterators.tryFind(sqlTokens.iterator(), new Predicate<SQLToken>() {
+        return Iterators.tryFind(sqlStatement.getSQLTokens().iterator(), new Predicate<SQLToken>() {
             
             @Override
             public boolean apply(final SQLToken input) {
@@ -184,13 +181,13 @@ public final class SQLRewriteEngine {
     private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
         StringBuilder stringBuilder = new StringBuilder();
         int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
-        stringBuilder.append(originalSQL.substring(0, firstSelectItemStartIndex)).append("DISTINCT ").append(originalSQL.substring(firstSelectItemStartIndex, sqlTokens.get(0).getStartIndex()));
+        stringBuilder.append(originalSQL.substring(0, firstSelectItemStartIndex)).append("DISTINCT ").append(originalSQL.substring(firstSelectItemStartIndex, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         sqlBuilder.appendLiterals(stringBuilder.toString());
     }
     
     private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder sqlBuilder) {
         int count = 0;
-        for (SQLToken each : sqlTokens) {
+        for (SQLToken each : sqlStatement.getSQLTokens()) {
             if (each instanceof TableToken) {
                 appendTablePlaceholder(sqlBuilder, (TableToken) each, count);
             } else if (each instanceof SchemaToken) {
@@ -437,7 +434,7 @@ public final class SQLRewriteEngine {
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
-        int stopPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
+        int stopPosition = sqlStatement.getSQLTokens().size() - 1 == count ? originalSQL.length() : sqlStatement.getSQLTokens().get(count + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
     }
     
