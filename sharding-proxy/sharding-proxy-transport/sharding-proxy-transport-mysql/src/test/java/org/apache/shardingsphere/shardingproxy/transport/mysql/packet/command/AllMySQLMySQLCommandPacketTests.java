@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol.AllMySQLBinaryProtocolTests;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareMySQLOKPacketTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacketTest;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacketTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacketTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacketTest;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacketTest;
@@ -53,6 +54,7 @@ import org.junit.runners.Suite.SuiteClasses;
         MySQLComQueryPacketTest.class, 
         MySQLComStmtPreparePacketTest.class, 
         MySQLComStmtPrepareMySQLOKPacketTest.class,
+        MySQLComStmtResetPacketTest.class,
         MySQLBinaryResultSetRowPacketTest.class, 
         MySQLComStmtExecutePacketTest.class, 
         MySQLComStmtClosePacketTest.class, 
