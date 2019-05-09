@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.core.route.type.TableUnit;
+
+import java.util.Map;
 
 /**
  * Index placeholder for rewrite.
@@ -45,5 +49,16 @@ public final class IndexPlaceholder implements ShardingPlaceholder {
     @Override
     public String toString() {
         return logicIndexName;
+    }
+    
+    public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);
+        String actualTableName = logicAndActualTableMap.get(logicTableName);
+        if (!Strings.isNullOrEmpty(actualTableName)) {
+            stringBuilder.append("_").append(actualTableName);
+        }
+        stringBuilder.append(quoteCharacter.getEndDelimiter());
+        return stringBuilder.toString();
     }
 }
