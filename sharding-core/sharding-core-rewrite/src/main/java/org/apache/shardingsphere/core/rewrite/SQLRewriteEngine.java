@@ -25,6 +25,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
@@ -115,6 +116,8 @@ public final class SQLRewriteEngine {
     
     private final OptimizeResult optimizeResult;
     
+    private final ShardingMetaData metaData;
+    
     /**
      * Constructs SQL rewrite engine.
      * 
@@ -125,7 +128,7 @@ public final class SQLRewriteEngine {
      * @param parameters parameters
      */
     public SQLRewriteEngine(final ShardingRule shardingRule,
-                            final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final OptimizeResult optimizeResult) {
+                            final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingMetaData metaData) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -134,7 +137,8 @@ public final class SQLRewriteEngine {
         sqlTokens = sqlRouteResult.getSqlStatement().getSQLTokens();
         this.parameters = parameters;
         appendedIndexAndParameters = new LinkedHashMap<>();
-        this.optimizeResult = optimizeResult;
+        this.optimizeResult = sqlRouteResult.getOptimizeResult();
+        this.metaData = metaData;
     }
     
     /**
@@ -178,10 +182,10 @@ public final class SQLRewriteEngine {
     }
     
     private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
+        StringBuilder stringBuilder = new StringBuilder();
         int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(0, firstSelectItemStartIndex));
-        sqlBuilder.appendLiterals("DISTINCT ");
-        sqlBuilder.appendLiterals(originalSQL.substring(firstSelectItemStartIndex, sqlTokens.get(0).getStartIndex()));
+        stringBuilder.append(originalSQL.substring(0, firstSelectItemStartIndex)).append("DISTINCT ").append(originalSQL.substring(firstSelectItemStartIndex, sqlTokens.get(0).getStartIndex()));
+        sqlBuilder.appendLiterals(stringBuilder.toString());
     }
     
     private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder sqlBuilder) {
