@@ -223,7 +223,7 @@ public final class SQLRewriteEngine {
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
         String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase()));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase(), shardingRule, dataSourceMetaData));
         appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
@@ -442,11 +442,10 @@ public final class SQLRewriteEngine {
      * 
      * @param tableUnit route table unit
      * @param sqlBuilder SQL builder
-     * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
+    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit));
     }
    
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {

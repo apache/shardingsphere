@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,11 +91,9 @@ public final class SQLBuilder {
      *
      * @param tableUnit table unit
      * @param logicAndActualTableMap logic and actual map
-     * @param shardingRule sharding rule
-     * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
@@ -109,7 +106,7 @@ public final class SQLBuilder {
             if (each instanceof TablePlaceholder) {
                 appendTablePlaceholder((TablePlaceholder) each, actualTableName, result);
             } else if (each instanceof SchemaPlaceholder) {
-                appendSchemaPlaceholder(shardingRule, shardingDataSourceMetaData, actualTableName, result);
+                appendSchemaPlaceholder((SchemaPlaceholder) each, result);
             } else if (each instanceof IndexPlaceholder) {
                 appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
             } else if (each instanceof InsertValuesPlaceholder) {
@@ -170,9 +167,8 @@ public final class SQLBuilder {
         stringBuilder.append(null == actualTableName ? tablePlaceholder : new TablePlaceholder(actualTableName, tablePlaceholder.getQuoteCharacter()));
     }
     
-    private void appendSchemaPlaceholder(final ShardingRule shardingRule, 
-                                         final ShardingDataSourceMetaData shardingDataSourceMetaData, final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceName(actualTableName)).getSchemaName());
+    private void appendSchemaPlaceholder(final SchemaPlaceholder schemaPlaceholder, final StringBuilder stringBuilder) {
+        stringBuilder.append(schemaPlaceholder.toString());
     }
     
     private void appendIndexPlaceholder(final IndexPlaceholder placeholder, final String actualTableName, final StringBuilder stringBuilder) {
