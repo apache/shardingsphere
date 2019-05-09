@@ -97,7 +97,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         lexerEngine.nextToken();
         if (sqlStatement instanceof InsertStatement) {
             sqlStatement.addSQLToken(
-                    new InsertValuesToken(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length(), sqlStatement.getLogicSQL().length() - 1));
+                    new InsertValuesToken(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length(), lexerEngine.getCurrentToken().getEndPosition() - 1));
         }
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             literals = lexerEngine.getCurrentToken().getLiterals();
