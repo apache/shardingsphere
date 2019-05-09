@@ -47,11 +47,6 @@ public final class IndexPlaceholder implements ShardingPlaceholder, Alterable {
     }
     
     @Override
-    public String toString() {
-        return logicIndexName;
-    }
-    
-    @Override
     public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);

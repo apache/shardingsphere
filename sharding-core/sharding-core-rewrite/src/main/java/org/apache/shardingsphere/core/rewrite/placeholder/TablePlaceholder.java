@@ -40,11 +40,6 @@ public final class TablePlaceholder implements ShardingPlaceholder, Alterable {
     private final QuoteCharacter quoteCharacter;
     
     @Override
-    public String toString() {
-        return Joiner.on("").join(quoteCharacter.getStartDelimiter(), logicTableName, quoteCharacter.getEndDelimiter());
-    }
-    
-    @Override
     public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
         String actualTableName = logicAndActualTables.get(logicTableName);
         actualTableName = null == actualTableName ? logicTableName : actualTableName;

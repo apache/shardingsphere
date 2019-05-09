@@ -45,11 +45,6 @@ public final class SchemaPlaceholder implements ShardingPlaceholder, Alterable {
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
     @Override
-    public String toString() {
-        return logicSchemaName;
-    }
-    
-    @Override
     public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
         if (Strings.isNullOrEmpty(logicTableName)) {
             return logicTableName;
