@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
-import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -128,6 +125,18 @@ public final class SQLBuilder {
         }
     }
     
+    private boolean isToAppendInsertOptimizeResult(final TableUnit tableUnit, final InsertOptimizeResultUnit unit) {
+        if (unit.getDataNodes().isEmpty() || null == tableUnit) {
+            return true;
+        }
+        for (DataNode each : unit.getDataNodes()) {
+            if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Convert to SQL unit.
      * 
@@ -156,18 +165,13 @@ public final class SQLBuilder {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
-            if (!(each instanceof ShardingPlaceholder)) {
-                result.append(each);
-                continue;
-            }
-            if (each instanceof InsertValuesPlaceholder) {
-                addInsertParameters(null, (InsertValuesPlaceholder) each, insertParameters, result);
-            } else if (each instanceof InsertSetPlaceholder) {
-                appendInsertSetPlaceholder(null, (InsertSetPlaceholder) each, insertParameters, result);
+            if (each instanceof Alterable) {
+                result.append(((Alterable) each).toString(null, Collections.<String, String>emptyMap()));
             } else {
                 result.append(each);
             }
+            insertParameters.addAll(getInsertParameters(each, null));
         }
-        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), parameters) : new SQLUnit(result.toString(), insertParameters);
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
 }
