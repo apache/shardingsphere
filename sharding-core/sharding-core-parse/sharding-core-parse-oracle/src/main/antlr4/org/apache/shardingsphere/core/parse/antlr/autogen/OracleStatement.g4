@@ -17,10 +17,14 @@
 
 grammar OracleStatement;
 
-import Symbol, Comments, DDLStatement, TCLStatement, DCLStatement;
+import Symbol, Comments, DDLStatement, DMLStatement, TCLStatement, DCLStatement;
 
 execute
-    : (createTable
+    : (select
+    | insert
+    | update
+    | delete
+    | createTable
     | alterTable
     | dropTable
     | truncateTable
