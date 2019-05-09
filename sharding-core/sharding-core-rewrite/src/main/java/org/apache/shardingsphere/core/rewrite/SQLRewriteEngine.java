@@ -140,16 +140,15 @@ public final class SQLRewriteEngine {
     /**
      * rewrite SQL.
      *
-     * @param isSingleRouting is rewrite
      * @return SQL builder
      */
-    public SQLBuilder rewrite(final boolean isSingleRouting) {
+    public SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder(parameters);
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);
         }
-        appendInitialLiterals(!isSingleRouting, result);
-        appendTokensAndPlaceholders(!isSingleRouting, result);
+        appendInitialLiterals(!sqlRouteResult.getRoutingResult().isSingleRouting(), result);
+        appendTokensAndPlaceholders(!sqlRouteResult.getRoutingResult().isSingleRouting(), result);
         reviseParameters();
         return result;
     }
