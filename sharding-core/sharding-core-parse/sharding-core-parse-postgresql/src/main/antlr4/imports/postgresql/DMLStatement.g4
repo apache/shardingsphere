@@ -32,7 +32,7 @@ insertSelectClause
     ;
 
 update
-    : UPDATE  updateSpecification_? tableReferences setAssignmentsClause whereClause?
+    : UPDATE updateSpecification_? tableReferences setAssignmentsClause whereClause?
     ;
 
 updateSpecification_

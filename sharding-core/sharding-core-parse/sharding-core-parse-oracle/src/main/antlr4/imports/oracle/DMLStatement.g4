@@ -32,7 +32,7 @@ insertSelectClause
     ;
 
 update
-    : UPDATE  updateSpecification_? tableReferences setAssignmentsClause whereClause?
+    : UPDATE updateSpecification_? tableReferences setAssignmentsClause whereClause?
     ;
 
 updateSpecification_
@@ -65,7 +65,7 @@ deleteSpecification_
     ;
 
 singleTableClause_
-    : FROM tableName (AS? alias)?
+    : FROM? LP_? tableName RP_? (AS? alias)?
     ;
 
 multipleTablesClause_
