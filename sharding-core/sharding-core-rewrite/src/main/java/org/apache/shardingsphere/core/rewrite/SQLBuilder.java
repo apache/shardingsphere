@@ -86,6 +86,44 @@ public final class SQLBuilder {
     /**
      * Convert to SQL unit.
      *
+     * @param masterSlaveRule master slave rule
+     * @param shardingDataSourceMetaData sharding data source meta data
+     * @return SQL
+     */
+    public String toSQL(final MasterSlaveRule masterSlaveRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        StringBuilder result = new StringBuilder();
+        for (Object each : segments) {
+            if (each instanceof SchemaPlaceholder) {
+                result.append(shardingDataSourceMetaData.getActualDataSourceMetaData(masterSlaveRule.getMasterDataSourceName()).getSchemaName());
+            } else {
+                result.append(each);
+            }
+        }
+        return result.toString();
+    }
+    
+    /**
+     * Convert to SQL unit.
+     *
+     * @return SQL unit
+     */
+    public SQLUnit toSQL() {
+        StringBuilder result = new StringBuilder();
+        List<Object> insertParameters = new LinkedList<>();
+        for (Object each : segments) {
+            if (each instanceof Alterable) {
+                result.append(((Alterable) each).toString(null, Collections.<String, String>emptyMap()));
+            } else {
+                result.append(each);
+            }
+            insertParameters.addAll(getInsertParameters(each, null));
+        }
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
+    }
+    
+    /**
+     * Convert to SQL unit.
+     *
      * @param tableUnit table unit
      * @param logicAndActualTables logic and actual map
      * @return SQL unit
@@ -135,43 +173,5 @@ public final class SQLBuilder {
             }
         }
         return false;
-    }
-    
-    /**
-     * Convert to SQL unit.
-     * 
-     * @param masterSlaveRule master slave rule
-     * @param shardingDataSourceMetaData sharding data source meta data
-     * @return SQL
-     */
-    public String toSQL(final MasterSlaveRule masterSlaveRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        StringBuilder result = new StringBuilder();
-        for (Object each : segments) {
-            if (each instanceof SchemaPlaceholder) {
-                result.append(shardingDataSourceMetaData.getActualDataSourceMetaData(masterSlaveRule.getMasterDataSourceName()).getSchemaName());
-            } else {
-                result.append(each);
-            }
-        }
-        return result.toString();
-    }
-    
-    /**
-     * Convert to SQL unit.
-     *
-     * @return SQL unit
-     */
-    public SQLUnit toSQL() {
-        StringBuilder result = new StringBuilder();
-        List<Object> insertParameters = new LinkedList<>();
-        for (Object each : segments) {
-            if (each instanceof Alterable) {
-                result.append(((Alterable) each).toString(null, Collections.<String, String>emptyMap()));
-            } else {
-                result.append(each);
-            }
-            insertParameters.addAll(getInsertParameters(each, null));
-        }
-        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
 }
