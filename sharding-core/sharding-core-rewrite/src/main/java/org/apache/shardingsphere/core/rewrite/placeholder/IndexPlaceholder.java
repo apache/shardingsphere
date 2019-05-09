@@ -52,10 +52,10 @@ public final class IndexPlaceholder implements ShardingPlaceholder, Alterable {
     }
     
     @Override
-    public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
+    public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);
-        String actualTableName = logicAndActualTableMap.get(logicTableName);
+        String actualTableName = logicAndActualTables.get(logicTableName);
         if (!Strings.isNullOrEmpty(actualTableName)) {
             result.append("_").append(actualTableName);
         }

@@ -90,10 +90,10 @@ public final class SQLBuilder {
      * Convert to SQL unit.
      *
      * @param tableUnit table unit
-     * @param logicAndActualTableMap logic and actual map
+     * @param logicAndActualTables logic and actual map
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
@@ -102,7 +102,7 @@ public final class SQLBuilder {
                 continue;
             }
             String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
-            String actualTableName = logicAndActualTableMap.get(logicTableName);
+            String actualTableName = logicAndActualTables.get(logicTableName);
             if (each instanceof TablePlaceholder) {
                 appendTablePlaceholder((TablePlaceholder) each, actualTableName, result);
             } else if (each instanceof SchemaPlaceholder) {
