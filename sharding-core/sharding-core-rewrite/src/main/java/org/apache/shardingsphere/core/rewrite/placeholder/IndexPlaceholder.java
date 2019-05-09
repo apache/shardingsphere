@@ -52,13 +52,13 @@ public final class IndexPlaceholder implements ShardingPlaceholder {
     }
     
     public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);
+        StringBuilder result = new StringBuilder();
+        result.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);
         String actualTableName = logicAndActualTableMap.get(logicTableName);
         if (!Strings.isNullOrEmpty(actualTableName)) {
-            stringBuilder.append("_").append(actualTableName);
+            result.append("_").append(actualTableName);
         }
-        stringBuilder.append(quoteCharacter.getEndDelimiter());
-        return stringBuilder.toString();
+        result.append(quoteCharacter.getEndDelimiter());
+        return result.toString();
     }
 }
