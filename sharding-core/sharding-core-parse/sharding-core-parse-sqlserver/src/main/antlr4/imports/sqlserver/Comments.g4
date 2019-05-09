@@ -15,35 +15,9 @@
  * limitations under the License.
  */
 
-grammar SQLServerStatement;
+lexer grammar Comments;
 
-import Symbol, Comments, DDLStatement, TCLStatement, DCLStatement;
+import Symbol;
 
-execute
-    : (createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | setTransaction
-    | beginTransaction
-    | setImplicitTransactions
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | deny
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | createLogin
-    | dropLogin
-    | alterLogin
-    ) SEMI_?
-    ;
+BLOCK_COMMENT:  '/*' .*? '*/' -> channel(HIDDEN);
+INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);
