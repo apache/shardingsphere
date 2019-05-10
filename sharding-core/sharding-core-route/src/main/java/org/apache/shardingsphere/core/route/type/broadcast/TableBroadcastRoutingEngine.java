@@ -54,7 +54,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
         for (String each : getLogicTableNames()) {
-            result.getTableUnits().getTableUnits().addAll(getAllTableUnits(each));
+            result.getRoutingUnits().getTableUnits().addAll(getAllTableUnits(each));
         }
         return result;
     }

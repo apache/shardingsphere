@@ -27,7 +27,7 @@ import lombok.Getter;
 @Getter
 public class RoutingResult {
     
-    private final TableUnits tableUnits = new TableUnits();
+    private final RoutingUnits routingUnits = new RoutingUnits();
     
     /**
      * Judge is route for single database and table only or not.
@@ -35,6 +35,6 @@ public class RoutingResult {
      * @return is route for single database and table only or not
      */
     public boolean isSingleRouting() {
-        return 1 == tableUnits.getTableUnits().size();
+        return 1 == routingUnits.getTableUnits().size();
     }
 }

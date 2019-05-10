@@ -108,7 +108,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             result.setLimit(getProcessedLimit(parameters, (SelectStatement) sqlStatement));
         }
         if (needMerge) {
-            Preconditions.checkState(1 == routingResult.getTableUnits().getTableUnits().size(), "Must have one sharding with subquery.");
+            Preconditions.checkState(1 == routingResult.getRoutingUnits().getTableUnits().size(), "Must have one sharding with subquery.");
         }
         result.setRoutingResult(routingResult);
         result.setOptimizeResult(optimizeResult);

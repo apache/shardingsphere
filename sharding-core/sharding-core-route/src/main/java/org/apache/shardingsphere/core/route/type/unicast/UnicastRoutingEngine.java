@@ -57,15 +57,15 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             }
             TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
             tableUnit.getRoutingTables().addAll(routingTables);
-            result.getTableUnits().getTableUnits().add(tableUnit);
+            result.getRoutingUnits().getTableUnits().add(tableUnit);
         } else if (logicTables.isEmpty()) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
+            result.getRoutingUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
             TableUnit tableUnit = new TableUnit(dataNode.getDataSourceName());
             tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, dataNode.getTableName()));
-            result.getTableUnits().getTableUnits().add(tableUnit);
+            result.getRoutingUnits().getTableUnits().add(tableUnit);
         } else {
             List<RoutingTable> routingTables = new ArrayList<>(logicTables.size());
             Set<String> availableDatasourceNames = null;
@@ -90,7 +90,7 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             }
             TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
             tableUnit.getRoutingTables().addAll(routingTables);
-            result.getTableUnits().getTableUnits().add(tableUnit);
+            result.getRoutingUnits().getTableUnits().add(tableUnit);
         }
         return result;
     }

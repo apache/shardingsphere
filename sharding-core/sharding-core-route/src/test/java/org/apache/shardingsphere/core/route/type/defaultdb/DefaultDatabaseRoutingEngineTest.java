@@ -49,9 +49,9 @@ public final class DefaultDatabaseRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = defaultDatabaseRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_0"));
         assertThat(tableUnitList.get(0).getRoutingTables().size(), is(2));
         assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order"));

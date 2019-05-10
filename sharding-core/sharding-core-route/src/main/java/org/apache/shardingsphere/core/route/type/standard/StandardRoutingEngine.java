@@ -76,7 +76,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         for (DataNode each : routedDataNodes) {
             TableUnit tableUnit = new TableUnit(each.getDataSourceName());
             tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
-            result.getTableUnits().getTableUnits().add(tableUnit);
+            result.getRoutingUnits().getTableUnits().add(tableUnit);
         }
         return result;
     }

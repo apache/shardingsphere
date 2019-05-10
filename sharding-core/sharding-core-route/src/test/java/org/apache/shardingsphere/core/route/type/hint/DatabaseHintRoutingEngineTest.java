@@ -63,9 +63,9 @@ public final class DatabaseHintRoutingEngineTest {
     public void assertRoute() {
         hintManager.setDatabaseShardingValue(1);
         RoutingResult routingResult = databaseHintRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_1"));
     }
 }

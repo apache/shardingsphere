@@ -50,7 +50,7 @@ public class AbstractSQLRouteTest {
         ShardingMetaData shardingMetaData = new ShardingMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData());
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, shardingMetaData, DatabaseType.MySQL, new ParsingResultCache());
         SQLRouteResult result = engine.route(parameters);
-        assertThat(result.getRoutingResult().getTableUnits().getTableUnits().size(), is(1));
+        assertThat(result.getRoutingResult().getRoutingUnits().getTableUnits().size(), is(1));
         return result;
     }
     

@@ -73,9 +73,9 @@ public final class ComplexRoutingEngineTest {
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(
                 mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new OptimizeResult(new ShardingConditions(shardingConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds1"));
         assertThat(tableUnitList.get(0).getRoutingTables().size(), is(1));
         assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order_1"));
@@ -94,9 +94,9 @@ public final class ComplexRoutingEngineTest {
         ComplexRoutingEngine complexRoutingEngine = 
                 new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_config"), new OptimizeResult(new ShardingConditions(shardingConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds1"));
         assertThat(tableUnitList.get(0).getRoutingTables().size(), is(1));
         assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order_1"));

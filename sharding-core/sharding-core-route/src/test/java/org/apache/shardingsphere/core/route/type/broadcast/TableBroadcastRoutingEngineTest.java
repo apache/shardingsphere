@@ -60,7 +60,7 @@ public final class TableBroadcastRoutingEngineTest {
     @Test
     public void assertTableUnitsForDQLStatement() {
         RoutingResult routingResult = createDQLStatementRoutingResult();
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(0));
+        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(0));
     }
     
     @Test
@@ -76,7 +76,7 @@ public final class TableBroadcastRoutingEngineTest {
     @Test
     public void assertTableUnitsForDDLStatement() {
         RoutingResult routingResult = createDDLStatementRoutingResult();
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(6));
+        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(6));
     }
     
     private RoutingResult createDQLStatementRoutingResult() {

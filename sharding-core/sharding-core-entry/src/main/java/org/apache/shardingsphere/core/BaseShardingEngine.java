@@ -94,7 +94,7 @@ public abstract class BaseShardingEngine {
     
     private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
+        for (TableUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits().getTableUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sql, parameters)));
         }
         return result;
@@ -104,7 +104,7 @@ public abstract class BaseShardingEngine {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters, metaData.getDataSource());
         SQLBuilder sqlBuilder = rewriteEngine.rewrite();
         Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
+        for (TableUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits().getTableUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
         }
         return result;

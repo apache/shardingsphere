@@ -49,7 +49,7 @@ public final class DefaultDatabaseRoutingEngine implements RoutingEngine {
         }
         TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName());
         tableUnit.getRoutingTables().addAll(routingTables);
-        result.getTableUnits().getTableUnits().add(tableUnit);
+        result.getRoutingUnits().getTableUnits().add(tableUnit);
         return result;
     }
 }
