@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 
 /**
- * Subquery expression segment.
+ * Subquery segment.
  * 
  * @author duhongjun
  */

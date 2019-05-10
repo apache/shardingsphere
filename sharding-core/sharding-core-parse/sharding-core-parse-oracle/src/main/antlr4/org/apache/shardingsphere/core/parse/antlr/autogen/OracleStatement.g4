@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import Symbol, Comments, DDLStatement, DMLStatement, TCLStatement, DCLStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
 
 execute
     : (select
