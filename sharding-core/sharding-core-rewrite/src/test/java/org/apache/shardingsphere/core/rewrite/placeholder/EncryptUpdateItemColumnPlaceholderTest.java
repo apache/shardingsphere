@@ -28,27 +28,26 @@ public class EncryptUpdateItemColumnPlaceholderTest {
     
     @Test
     public void assertToStringWithPlaceholderWithoutAssistedColumn() {
-        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x");
+        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("column_x");
         assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = ?"));
     }
     
     @Test
     public void assertToStringWithoutPlaceholderWithoutAssistedColumn() {
-        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x", 1);
+        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("column_x", 1);
         assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = 1"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithAssistedColumn() {
-        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x", "column_assist");
+        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("column_x", "column_assist");
         assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = ?, column_assist = ?"));
     }
     
     @Test
     public void assertToStringWithoutPlaceholderWithAssistedColumn() {
-        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("table_x", "column_x", "a", "column_assist", 1);
+        encryptUpdateItemColumnPlaceholder = new EncryptUpdateItemColumnPlaceholder("column_x", "a", "column_assist", 1);
         assertThat(encryptUpdateItemColumnPlaceholder.toString(), is("column_x = 'a', column_assist = 1"));
-        assertThat(encryptUpdateItemColumnPlaceholder.getLogicTableName(), is("table_x"));
         assertThat(encryptUpdateItemColumnPlaceholder.getColumnName(), is("column_x"));
         assertThat(encryptUpdateItemColumnPlaceholder.getAssistedColumnName(), is("column_assist"));
         assertThat(encryptUpdateItemColumnPlaceholder.getColumnValue(), is((Comparable) "a"));
