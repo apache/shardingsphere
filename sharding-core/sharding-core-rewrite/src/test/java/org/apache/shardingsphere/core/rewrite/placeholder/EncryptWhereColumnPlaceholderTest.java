@@ -41,9 +41,8 @@ public class EncryptWhereColumnPlaceholderTest {
     public void assertToStringWithoutPlaceholderWithEqual() {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x = 'a'"));
-        assertThat(encryptWhereColumnPlaceholder.getLogicTableName(), is("table_x"));
         assertThat(encryptWhereColumnPlaceholder.getColumnName(), is("column_x"));
         assertThat(encryptWhereColumnPlaceholder.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(encryptWhereColumnPlaceholder.getIndexValues(), is(indexValues));
@@ -52,7 +51,7 @@ public class EncryptWhereColumnPlaceholderTest {
     
     @Test
     public void assertToStringWithPlaceholderWithEqual() {
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x = ?"));
     }
     
@@ -61,7 +60,7 @@ public class EncryptWhereColumnPlaceholderTest {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.BETWEEN);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.BETWEEN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN 'a' AND 'b'"));
     }
     
@@ -69,7 +68,7 @@ public class EncryptWhereColumnPlaceholderTest {
     public void assertToStringWithFirstPlaceholderWithBetween() {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.singletonList(1), ShardingOperator.BETWEEN);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", indexValues, Collections.singletonList(1), ShardingOperator.BETWEEN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN 'a' AND ?"));
     }
     
@@ -77,13 +76,13 @@ public class EncryptWhereColumnPlaceholderTest {
     public void assertToStringWithSecondPlaceholderWithBetween() {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.singletonList(0), ShardingOperator.BETWEEN);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", indexValues, Collections.singletonList(0), ShardingOperator.BETWEEN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN ? AND 'a'"));
     }
     
     @Test
     public void assertToStringWithTwoPlaceholderWithBetween() {
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Lists.newArrayList(0, 1), ShardingOperator.BETWEEN);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", Collections.<Integer, Comparable<?>>emptyMap(), Lists.newArrayList(0, 1), ShardingOperator.BETWEEN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x BETWEEN ? AND ?"));
     }
     
@@ -92,13 +91,13 @@ public class EncryptWhereColumnPlaceholderTest {
         Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x IN ('a', 'b')"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithIn() {
-        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("table_x", "column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        encryptWhereColumnPlaceholder = new EncryptWhereColumnPlaceholder("column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
         assertThat(encryptWhereColumnPlaceholder.toString(), is("column_x IN (?)"));
     }
 }
