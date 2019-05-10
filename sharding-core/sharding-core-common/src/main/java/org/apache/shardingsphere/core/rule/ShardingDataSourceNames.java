@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -53,8 +53,9 @@ public final class ShardingDataSourceNames {
             result.removeAll(each.getSlaveDataSourceNames());
             result.add(each.getName());
         }
-        if (!Strings.isNullOrEmpty(shardingRuleConfig.getDefaultDataSourceName())) {
-            result.remove(shardingRuleConfig.getDefaultDataSourceName());
+        Optional<String> defaultDataSourceName = Optional.fromNullable(shardingRuleConfig.getDefaultDataSourceName());
+        if (defaultDataSourceName.isPresent()) {
+            result.remove(defaultDataSourceName.get());
         }
         return result;
     }
@@ -65,7 +66,7 @@ public final class ShardingDataSourceNames {
      * @return default data source name
      */
     public String getDefaultDataSourceName() {
-        return 1 == dataSourceNames.size() ? dataSourceNames.iterator().next() : shardingRuleConfig.getDefaultDataSourceName();
+        return Optional.fromNullable(shardingRuleConfig.getDefaultDataSourceName()).or(dataSourceNames.iterator().next());
     }
     
     /**
