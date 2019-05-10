@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 insert
     : INSERT INTO tableName (AS? alias)? (insertValuesClause | insertSelectClause)
@@ -65,7 +65,7 @@ deleteSpecification_
     ;
 
 singleTableClause_
-    : FROM tableName (AS? alias)?
+    : FROM? LP_? tableName RP_? (AS? alias)?
     ;
 
 multipleTablesClause_
@@ -85,7 +85,7 @@ unionClause_
     ;
 
 selectClause
-    : SELECT duplicateSpecification? selectItems fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
+    : SELECT duplicateSpecification? selectItems fromClause? whereClause? groupByClause? havingClause? orderByClause?
     ;
 
 duplicateSpecification
@@ -147,27 +147,6 @@ groupByClause
 
 havingClause
     : HAVING expr
-    ;
-
-limitClause
-    : limitRowCountSyntax_ limitOffsetSyntax_?
-    | limitOffsetSyntax_ limitRowCountSyntax_?
-    ;
-
-limitRowCountSyntax_
-    : LIMIT (ALL | limitRowCount)
-    ;
-
-limitRowCount
-    : numberLiterals | parameterMarker
-    ;
-
-limitOffsetSyntax_
-    : OFFSET limitOffset (ROW | ROWS)?
-    ;
-
-limitOffset
-    : numberLiterals | parameterMarker
     ;
 
 subquery

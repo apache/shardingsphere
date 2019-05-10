@@ -60,19 +60,31 @@ public final class TextProtocolBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstance() {
+    public void assertNewTransactionInstance() {
         String sql = "BEGIN";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        sql = "START TRANSACTION";
+        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        sql = "SET AUTOCOMMIT=0";
+        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        sql = "SET @@SESSION.AUTOCOMMIT = OFF";
+        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewTransactionBackendHandlerInstanceOfCommitOperate() {
-        String sql = "SET AUTOCOMMIT=1";
         ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
         when(stateHandler.isInTransaction()).thenReturn(true);
+        String sql = "SET AUTOCOMMIT=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+        sql = "SET @@SESSION.AUTOCOMMIT = ON";
+        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
