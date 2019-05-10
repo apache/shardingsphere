@@ -15,37 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close;
+package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 
 /**
- * COM_STMT_CLOSE command packet for MySQL.
+ * COM_STMT_RESET command packet for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-close.html">COM_STMT_CLOSE</a>
+ * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-reset.html">COM_STMT_RESET</a>
  *
- * @author zhangyonglun
+ * @author zhaojun
  */
 @Getter
-@ToString
-public final class MySQLComStmtClosePacket extends MySQLCommandPacket {
+public class MySQLComStmtResetPacket extends MySQLCommandPacket {
     
     private final int statementId;
     
-    public MySQLComStmtClosePacket(final MySQLPacketPayload payload) {
-        super(MySQLCommandPacketType.COM_STMT_CLOSE);
+    public MySQLComStmtResetPacket(final MySQLPacketPayload payload) {
+        super(MySQLCommandPacketType.COM_STMT_RESET);
         statementId = payload.readInt4();
-    }
-    
-    /**
-     * Remove cached statement.
-     */
-    public void removeCachedStatement() {
-        MySQLBinaryStatementRegistry.getInstance().remove(statementId);
     }
 }

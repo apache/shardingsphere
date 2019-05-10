@@ -64,7 +64,7 @@
             </and-condition>
         </encrypt-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="delete_with_special_character_without_sharding_value">
         <tables>
             <table name="t_order" />
@@ -83,7 +83,7 @@
             </and-condition>
         </encrypt-condition>
     </parser-result>
-
+    
     <parser-result sql-case-id="delete_with_special_comments_return_without_sharding_value">
         <tables>
             <table name="t_order" />
@@ -92,7 +92,7 @@
             <table-token start-index="33" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="delete_with_special_comments_returning_without_sharding_value">
         <tables>
             <table name="t_order" />

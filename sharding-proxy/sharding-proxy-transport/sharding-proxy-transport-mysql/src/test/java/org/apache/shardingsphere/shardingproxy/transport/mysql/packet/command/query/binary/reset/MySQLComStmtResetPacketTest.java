@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset;
 
-import Symbol, Comments, DDLStatement, DMLStatement, TCLStatement, DCLStatement;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    ) SEMI_?
-    ;
+import static org.mockito.Mockito.verify;
+
+@RunWith(MockitoJUnitRunner.class)
+public class MySQLComStmtResetPacketTest {
+    
+    @Mock
+    private MySQLPacketPayload payload;
+    
+    @Test
+    public void assertGetStatementId() {
+        new MySQLComStmtResetPacket(payload);
+        verify(payload).readInt4();
+    }
+}
