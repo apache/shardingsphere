@@ -261,8 +261,8 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertShardingPlaceholderToString() {
-        assertThat(new IndexPlaceholder("index_name", "table_x").toString(), is("index_name"));
-        assertThat(new TablePlaceholder("table_name", QuoteCharacter.BACK_QUOTE).toString(), is("`table_name`"));
+        assertThat(new IndexPlaceholder("index_name", "table_x").toString(null, Collections.<String, String>emptyMap()), is("index_name"));
+        assertThat(new TablePlaceholder("table_name", QuoteCharacter.BACK_QUOTE).toString(null, Collections.<String, String>emptyMap()), is("`table_name`"));
     }
     
     private ShardingRule createShardingRule() {
