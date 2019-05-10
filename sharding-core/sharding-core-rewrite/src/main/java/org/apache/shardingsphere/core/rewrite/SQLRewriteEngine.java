@@ -69,7 +69,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.RoutingTable;
+import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ColumnNode;
@@ -449,7 +449,7 @@ public final class SQLRewriteEngine {
    
     private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {
         Map<String, String> result = new HashMap<>();
-        for (RoutingTable each : routingUnit.getRoutingTables()) {
+        for (TableUnit each : routingUnit.getTableUnits()) {
             String logicTableName = each.getLogicTableName().toLowerCase();
             result.put(logicTableName, each.getActualTableName());
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
@@ -460,12 +460,12 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private Map<String, String> getBindingTableTokens(final String dataSourceName, final RoutingTable routingTable, final BindingTableRule bindingTableRule) {
+    private Map<String, String> getBindingTableTokens(final String dataSourceName, final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
         Map<String, String> result = new HashMap<>();
         for (String each : sqlStatement.getTables().getTableNames()) {
             String tableName = each.toLowerCase();
-            if (!tableName.equals(routingTable.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, routingTable.getActualTableName()));
+            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
+                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
             }
         }
         return result;

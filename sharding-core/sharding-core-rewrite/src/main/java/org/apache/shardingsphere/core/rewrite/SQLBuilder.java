@@ -168,7 +168,7 @@ public final class SQLBuilder {
             return true;
         }
         for (DataNode each : unit.getDataNodes()) {
-            if (routingUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
+            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
         }

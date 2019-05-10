@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Routing table.
+ * Routing table unit.
  * 
  * @author maxiaoguang
  */
@@ -31,7 +31,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class RoutingTable {
+public final class TableUnit {
     
     private final String logicTableName;
     

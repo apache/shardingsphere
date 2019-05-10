@@ -52,8 +52,8 @@ import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpre
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingTable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
@@ -195,7 +195,7 @@ public final class SQLRewriteEngineTest {
         insertOptimizeResult.addUnit(sqlExpressions, parameters, 3);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
@@ -218,7 +218,7 @@ public final class SQLRewriteEngineTest {
         insertOptimizeResult.addUnit(sqlExpressions, parameters, 2);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
@@ -239,7 +239,7 @@ public final class SQLRewriteEngineTest {
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
@@ -260,7 +260,7 @@ public final class SQLRewriteEngineTest {
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setRoutingResult(new RoutingResult());
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
@@ -282,7 +282,7 @@ public final class SQLRewriteEngineTest {
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
         routeResult.setRoutingResult(new RoutingResult());
@@ -307,7 +307,7 @@ public final class SQLRewriteEngineTest {
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
         routeResult.setRoutingResult(new RoutingResult());
@@ -329,7 +329,7 @@ public final class SQLRewriteEngineTest {
         insertOptimizeResult.addUnit(sqlExpressions, parameters, 2);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_1"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_1"));
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
         routeResult.setRoutingResult(new RoutingResult());
@@ -536,7 +536,7 @@ public final class SQLRewriteEngineTest {
                 new SQLRewriteEngine(shardingRule, "SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?", DatabaseType.MySQL, routeResult, parameters, null);
         SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite();
         RoutingUnit routingUnit = new RoutingUnit("db0");
-        routingUnit.getRoutingTables().add(new RoutingTable("table_x", "table_x"));
+        routingUnit.getTableUnits().add(new TableUnit("table_x", "table_x"));
         assertThat(sqlRewriteEngine.generateSQL(routingUnit, sqlBuilder).getSql(), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
     }
     

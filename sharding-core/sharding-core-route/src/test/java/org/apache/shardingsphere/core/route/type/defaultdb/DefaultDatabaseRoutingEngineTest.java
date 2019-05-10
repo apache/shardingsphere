@@ -53,10 +53,10 @@ public final class DefaultDatabaseRoutingEngineTest {
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getRoutingUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_0"));
-        assertThat(tableUnitList.get(0).getRoutingTables().size(), is(2));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(1).getActualTableName(), is("t_order_item"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(1).getLogicTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getTableUnits().size(), is(2));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getActualTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getLogicTableName(), is("t_order_item"));
     }
 }

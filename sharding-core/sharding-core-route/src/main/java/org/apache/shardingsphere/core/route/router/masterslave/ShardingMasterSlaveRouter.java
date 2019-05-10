@@ -67,7 +67,7 @@ public final class ShardingMasterSlaveRouter {
                 actualDataSourceName = masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
                         masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
             }
-            toBeAdded.add(createNewTableUnit(actualDataSourceName, each));
+            toBeAdded.add(createNewRoutingUnit(actualDataSourceName, each));
         }
         sqlRouteResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
         sqlRouteResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
@@ -77,9 +77,9 @@ public final class ShardingMasterSlaveRouter {
         return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
     }
     
-    private RoutingUnit createNewTableUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {
+    private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {
         RoutingUnit result = new RoutingUnit(actualDataSourceName, originalTableUnit.getDataSourceName());
-        result.getRoutingTables().addAll(originalTableUnit.getRoutingTables());
+        result.getTableUnits().addAll(originalTableUnit.getTableUnits());
         return result;
     }
 }

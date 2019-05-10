@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingTable;
+import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -75,7 +75,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         RoutingResult result = new RoutingResult();
         for (DataNode each : routedDataNodes) {
             RoutingUnit routingUnit = new RoutingUnit(each.getDataSourceName());
-            routingUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));
+            routingUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
             result.getRoutingUnits().add(routingUnit);
         }
         return result;
