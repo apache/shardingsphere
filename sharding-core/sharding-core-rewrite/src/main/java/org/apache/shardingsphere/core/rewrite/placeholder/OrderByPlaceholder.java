@@ -50,9 +50,4 @@ public final class OrderByPlaceholder implements ShardingPlaceholder {
         result.append(" ");
         return result.toString();
     }
-    
-    @Override
-    public String getLogicTableName() {
-        return "";
-    }
 }

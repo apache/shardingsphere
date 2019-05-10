@@ -30,8 +30,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceholder {
     
-    private final String logicTableName;
-    
     private final String columnName;
     
     private final Comparable<?> columnValue;
