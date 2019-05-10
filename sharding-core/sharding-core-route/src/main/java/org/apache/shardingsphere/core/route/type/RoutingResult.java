@@ -37,7 +37,7 @@ import java.util.Set;
 @Getter
 public class RoutingResult {
     
-    private final Collection<TableUnit> routingUnits = new LinkedHashSet<>();
+    private final Collection<RoutingUnit> routingUnits = new LinkedHashSet<>();
     
     /**
      * Judge is route for single database and table only or not.
@@ -55,7 +55,7 @@ public class RoutingResult {
      */
     public Collection<String> getDataSourceNames() {
         Collection<String> result = new HashSet<>(routingUnits.size(), 1);
-        for (TableUnit each : routingUnits) {
+        for (RoutingUnit each : routingUnits) {
             result.add(each.getDataSourceName());
         }
         return result;
@@ -69,7 +69,7 @@ public class RoutingResult {
      * @return routing table
      */
     public Optional<RoutingTable> getRoutingTable(final String dataSourceName, final String actualTableName) {
-        for (TableUnit each : routingUnits) {
+        for (RoutingUnit each : routingUnits) {
             Optional<RoutingTable> result = each.getRoutingTable(dataSourceName, actualTableName);
             if (result.isPresent()) {
                 return result;
@@ -101,7 +101,7 @@ public class RoutingResult {
     
     private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
         Set<String> result = new HashSet<>(routingUnits.size(), 1);
-        for (TableUnit each : routingUnits) {
+        for (RoutingUnit each : routingUnits) {
             result.addAll(each.getActualTableNames(dataSourceName, logicTableName));
         }
         return result;
@@ -126,7 +126,7 @@ public class RoutingResult {
     
     private Set<String> getLogicTableNames(final String dataSourceName) {
         Set<String> result = new HashSet<>(routingUnits.size(), 1);
-        for (TableUnit each : routingUnits) {
+        for (RoutingUnit each : routingUnits) {
             if (each.getDataSourceName().equalsIgnoreCase(dataSourceName)) {
                 result.addAll(each.getLogicTableNames(dataSourceName));
             }

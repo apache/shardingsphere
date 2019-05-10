@@ -39,7 +39,7 @@ import java.util.Set;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class TableUnit {
+public final class RoutingUnit {
     
     private final String dataSourceName;
     
@@ -47,7 +47,7 @@ public final class TableUnit {
     
     private final List<RoutingTable> routingTables = new LinkedList<>();
     
-    public TableUnit(final String dataSourceName) {
+    public RoutingUnit(final String dataSourceName) {
         this.dataSourceName = dataSourceName;
         masterSlaveLogicDataSourceName = dataSourceName;
     }

@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingTable;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -117,12 +117,12 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
     
-    private Collection<TableUnit> getTableUnits(final String dataSource, final Set<List<RoutingTable>> cartesianRoutingTableGroups) {
-        Collection<TableUnit> result = new LinkedHashSet<>();
+    private Collection<RoutingUnit> getTableUnits(final String dataSource, final Set<List<RoutingTable>> cartesianRoutingTableGroups) {
+        Collection<RoutingUnit> result = new LinkedHashSet<>();
         for (List<RoutingTable> each : cartesianRoutingTableGroups) {
-            TableUnit tableUnit = new TableUnit(dataSource);
-            tableUnit.getRoutingTables().addAll(each);
-            result.add(tableUnit);
+            RoutingUnit routingUnit = new RoutingUnit(dataSource);
+            routingUnit.getRoutingTables().addAll(each);
+            result.add(routingUnit);
         }
         return result;
     }

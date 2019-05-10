@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.ArrayList;
@@ -52,9 +52,9 @@ public final class ShardingMasterSlaveRouter {
     }
     
     private void route(final MasterSlaveRule masterSlaveRule, final SQLRouteResult sqlRouteResult) {
-        Collection<TableUnit> toBeRemoved = new LinkedList<>();
-        Collection<TableUnit> toBeAdded = new LinkedList<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
+        Collection<RoutingUnit> toBeRemoved = new LinkedList<>();
+        Collection<RoutingUnit> toBeAdded = new LinkedList<>();
+        for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
                 continue;
             }
@@ -77,8 +77,8 @@ public final class ShardingMasterSlaveRouter {
         return SQLType.DQL != sqlType || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
     }
     
-    private TableUnit createNewTableUnit(final String actualDataSourceName, final TableUnit originalTableUnit) {
-        TableUnit result = new TableUnit(actualDataSourceName, originalTableUnit.getDataSourceName());
+    private RoutingUnit createNewTableUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {
+        RoutingUnit result = new RoutingUnit(actualDataSourceName, originalTableUnit.getDataSourceName());
         result.getRoutingTables().addAll(originalTableUnit.getRoutingTables());
         return result;
     }

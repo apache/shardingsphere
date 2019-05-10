@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholde
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
@@ -124,51 +124,51 @@ public final class SQLBuilder {
     /**
      * Convert to SQL unit.
      *
-     * @param tableUnit table unit
+     * @param routingUnit routing unit
      * @param logicAndActualTables logic and actual map
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
+    public SQLUnit toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
             if (each instanceof Alterable) {
-                result.append(((Alterable) each).toString(tableUnit, logicAndActualTables));
+                result.append(((Alterable) each).toString(routingUnit, logicAndActualTables));
             } else {
                 result.append(each);
             }
-            insertParameters.addAll(getInsertParameters(each, tableUnit));
+            insertParameters.addAll(getInsertParameters(each, routingUnit));
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
     
-    private List<Object> getInsertParameters(final Object target, final TableUnit tableUnit) {
+    private List<Object> getInsertParameters(final Object target, final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
         if (target instanceof InsertSetPlaceholder) {
             InsertSetPlaceholder setPlaceholder = (InsertSetPlaceholder) target;
-            addInsertParameters(tableUnit, setPlaceholder.getUnits(), result);
+            addInsertParameters(routingUnit, setPlaceholder.getUnits(), result);
         }
         if (target instanceof InsertValuesPlaceholder) {
             InsertValuesPlaceholder valuesPlaceholder = (InsertValuesPlaceholder) target;
-            addInsertParameters(tableUnit, valuesPlaceholder.getUnits(), result);
+            addInsertParameters(routingUnit, valuesPlaceholder.getUnits(), result);
         }
         return result;
     }
     
-    private void addInsertParameters(final TableUnit tableUnit, final List<InsertOptimizeResultUnit> units, final List<Object> insertParameters) {
+    private void addInsertParameters(final RoutingUnit routingUnit, final List<InsertOptimizeResultUnit> units, final List<Object> insertParameters) {
         for (InsertOptimizeResultUnit each : units) {
-            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
+            if (isToAppendInsertOptimizeResult(routingUnit, each)) {
                 insertParameters.addAll(Arrays.asList(each.getParameters()));
             }
         }
     }
     
-    private boolean isToAppendInsertOptimizeResult(final TableUnit tableUnit, final InsertOptimizeResultUnit unit) {
-        if (unit.getDataNodes().isEmpty() || null == tableUnit) {
+    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertOptimizeResultUnit unit) {
+        if (unit.getDataNodes().isEmpty() || null == routingUnit) {
             return true;
         }
         for (DataNode each : unit.getDataNodes()) {
-            if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
+            if (routingUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
         }

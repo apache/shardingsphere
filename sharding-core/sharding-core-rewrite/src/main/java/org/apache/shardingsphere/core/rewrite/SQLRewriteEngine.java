@@ -70,7 +70,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingTable;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -439,22 +439,22 @@ public final class SQLRewriteEngine {
     /**
      * Generate SQL string.
      * 
-     * @param tableUnit route table unit
+     * @param routingUnit routing unit
      * @param sqlBuilder SQL builder
      * @return SQL unit
      */
-    public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit));
+    public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
     }
    
-    private Map<String, String> getTableTokens(final TableUnit tableUnit) {
+    private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {
         Map<String, String> result = new HashMap<>();
-        for (RoutingTable each : tableUnit.getRoutingTables()) {
+        for (RoutingTable each : routingUnit.getRoutingTables()) {
             String logicTableName = each.getLogicTableName().toLowerCase();
             result.put(logicTableName, each.getActualTableName());
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
             if (bindingTableRule.isPresent()) {
-                result.putAll(getBindingTableTokens(tableUnit.getMasterSlaveLogicDataSourceName(), each, bindingTableRule.get()));
+                result.putAll(getBindingTableTokens(routingUnit.getMasterSlaveLogicDataSourceName(), each, bindingTableRule.get()));
             }
         }
         return result;
