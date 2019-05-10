@@ -52,7 +52,7 @@ public abstract class BaseShardingEngineTest {
     protected final SQLRouteResult createSQLRouteResult() {
         SQLRouteResult result = new SQLRouteResult(new SelectStatement());
         RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().getTableUnits().add(new TableUnit("ds"));
+        routingResult.getRoutingUnits().add(new TableUnit("ds"));
         result.setRoutingResult(routingResult);
         return result;
     }

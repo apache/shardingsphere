@@ -54,7 +54,7 @@ public final class ShardingMasterSlaveRouter {
     private void route(final MasterSlaveRule masterSlaveRule, final SQLRouteResult sqlRouteResult) {
         Collection<TableUnit> toBeRemoved = new LinkedList<>();
         Collection<TableUnit> toBeAdded = new LinkedList<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits().getTableUnits()) {
+        for (TableUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
                 continue;
             }
@@ -69,8 +69,8 @@ public final class ShardingMasterSlaveRouter {
             }
             toBeAdded.add(createNewTableUnit(actualDataSourceName, each));
         }
-        sqlRouteResult.getRoutingResult().getRoutingUnits().getTableUnits().removeAll(toBeRemoved);
-        sqlRouteResult.getRoutingResult().getRoutingUnits().getTableUnits().addAll(toBeAdded);
+        sqlRouteResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
+        sqlRouteResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
     }
     
     private boolean isMasterRoute(final SQLType sqlType) {

@@ -26,12 +26,12 @@ import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingTable;
 import org.apache.shardingsphere.core.route.type.TableUnit;
-import org.apache.shardingsphere.core.route.type.RoutingUnits;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,7 +54,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<RoutingTable>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
-            result.getRoutingUnits().getTableUnits().addAll(getTableUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)).getTableUnits());
+            result.getRoutingUnits().addAll(getTableUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
         }
         return result;
     }
@@ -63,7 +63,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         Collection<String> intersectionDataSources = getIntersectionDataSources();
         Map<String, Set<String>> result = new HashMap<>(routingResults.size());
         for (RoutingResult each : routingResults) {
-            for (Entry<String, Set<String>> entry : each.getRoutingUnits().getDataSourceLogicTablesMap(intersectionDataSources).entrySet()) {
+            for (Entry<String, Set<String>> entry : each.getDataSourceLogicTablesMap(intersectionDataSources).entrySet()) {
                 if (result.containsKey(entry.getKey())) {
                     result.get(entry.getKey()).addAll(entry.getValue());
                 } else {
@@ -78,9 +78,9 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         Collection<String> result = new HashSet<>();
         for (RoutingResult each : routingResults) {
             if (result.isEmpty()) {
-                result.addAll(each.getRoutingUnits().getDataSourceNames());
+                result.addAll(each.getDataSourceNames());
             }
-            result.retainAll(each.getRoutingUnits().getDataSourceNames());
+            result.retainAll(each.getDataSourceNames());
         }
         return result;
     }
@@ -88,7 +88,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
     private List<Set<String>> getActualTableGroups(final String dataSource, final Set<String> logicTables) {
         List<Set<String>> result = new ArrayList<>(logicTables.size());
         for (RoutingResult each : routingResults) {
-            result.addAll(each.getRoutingUnits().getActualTableNameGroups(dataSource, logicTables));
+            result.addAll(each.getActualTableNameGroups(dataSource, logicTables));
         }
         return result;
     }
@@ -109,7 +109,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
     
     private RoutingTable findRoutingTable(final String dataSource, final String actualTable) {
         for (RoutingResult each : routingResults) {
-            Optional<RoutingTable> result = each.getRoutingUnits().getRoutingTable(dataSource, actualTable);
+            Optional<RoutingTable> result = each.getRoutingTable(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();
             }
@@ -117,12 +117,12 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
     
-    private RoutingUnits getTableUnits(final String dataSource, final Set<List<RoutingTable>> cartesianRoutingTableGroups) {
-        RoutingUnits result = new RoutingUnits();
+    private Collection<TableUnit> getTableUnits(final String dataSource, final Set<List<RoutingTable>> cartesianRoutingTableGroups) {
+        Collection<TableUnit> result = new LinkedHashSet<>();
         for (List<RoutingTable> each : cartesianRoutingTableGroups) {
             TableUnit tableUnit = new TableUnit(dataSource);
             tableUnit.getRoutingTables().addAll(each);
-            result.getTableUnits().add(tableUnit);
+            result.add(tableUnit);
         }
         return result;
     }

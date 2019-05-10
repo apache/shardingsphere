@@ -41,7 +41,7 @@ public final class InstanceBroadcastRoutingEngine implements RoutingEngine {
         RoutingResult result = new RoutingResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
             if (shardingDataSourceMetaData.getAllInstanceDataSourceNames().contains(each)) {
-                result.getRoutingUnits().getTableUnits().add(new TableUnit(each));
+                result.getRoutingUnits().add(new TableUnit(each));
             }
         }
         return result;

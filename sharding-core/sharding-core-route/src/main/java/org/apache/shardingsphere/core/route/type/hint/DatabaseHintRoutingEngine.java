@@ -53,7 +53,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         RoutingResult result = new RoutingResult();
         for (String each : routingDataSources) {
-            result.getRoutingUnits().getTableUnits().add(new TableUnit(each));
+            result.getRoutingUnits().add(new TableUnit(each));
         }
         return result;
     }

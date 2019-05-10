@@ -66,9 +66,9 @@ public final class StandardRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = standardRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits().getTableUnits());
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getRoutingTables().size(), is(1));
         assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order_1"));

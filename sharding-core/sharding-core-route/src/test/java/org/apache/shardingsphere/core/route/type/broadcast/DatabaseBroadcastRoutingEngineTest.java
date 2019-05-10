@@ -48,9 +48,9 @@ public final class DatabaseBroadcastRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = databaseBroadcastRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits().getTableUnits());
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRoutingUnits().getTableUnits().size(), is(2));
+        assertThat(routingResult.getRoutingUnits().size(), is(2));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
         assertThat(tableUnitList.get(1).getDataSourceName(), is("ds1"));
     }

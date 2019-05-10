@@ -38,7 +38,7 @@ public final class DatabaseBroadcastRoutingEngine implements RoutingEngine {
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
-            result.getRoutingUnits().getTableUnits().add(new TableUnit(each));
+            result.getRoutingUnits().add(new TableUnit(each));
         }
         return result;
     }
