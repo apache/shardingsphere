@@ -21,13 +21,7 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
  * Sharding placeholder for rewrite.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public interface ShardingPlaceholder {
-    
-    /**
-     * Get logic table name.
-     * 
-     * @return logic table name
-     */
-    String getLogicTableName();
 }

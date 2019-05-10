@@ -41,6 +41,7 @@ import java.util.List;
  * Base sharding engine.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public abstract class BaseShardingEngine {
@@ -100,11 +101,11 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters, sqlRouteResult.getOptimizeResult());
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(sqlRouteResult.getRoutingResult().isSingleRouting());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters, metaData.getDataSource());
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite();
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, metaData.getDataSource())));
+            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
         }
         return result;
     }

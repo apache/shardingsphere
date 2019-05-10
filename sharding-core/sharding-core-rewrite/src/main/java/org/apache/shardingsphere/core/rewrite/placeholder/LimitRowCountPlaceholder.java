@@ -35,9 +35,4 @@ public final class LimitRowCountPlaceholder implements ShardingPlaceholder {
     public String toString() {
         return String.valueOf(rowCount);
     }
-    
-    @Override
-    public String getLogicTableName() {
-        return "";
-    }
 }

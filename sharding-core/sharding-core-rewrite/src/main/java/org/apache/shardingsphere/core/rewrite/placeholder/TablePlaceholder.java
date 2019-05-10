@@ -21,6 +21,9 @@ import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.route.type.TableUnit;
+
+import java.util.Map;
 
 /**
  * Table placeholder for rewrite.
@@ -30,14 +33,16 @@ import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TablePlaceholder implements ShardingPlaceholder {
+public final class TablePlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicTableName;
     
     private final QuoteCharacter quoteCharacter;
     
     @Override
-    public String toString() {
-        return Joiner.on("").join(quoteCharacter.getStartDelimiter(), logicTableName, quoteCharacter.getEndDelimiter());
+    public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
+        String actualTableName = logicAndActualTables.get(logicTableName);
+        actualTableName = null == actualTableName ? logicTableName : actualTableName;
+        return Joiner.on("").join(quoteCharacter.getStartDelimiter(), actualTableName, quoteCharacter.getEndDelimiter());
     }
 }

@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.route.type.TableUnit;
+
+import java.util.Map;
 
 /**
- * Aggregation distinct placeholder for rewrite.
+ * Alter available.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public final class AggregationDistinctPlaceholder implements ShardingPlaceholder {
+public interface Alterable {
     
-    private final String columnName;
-    
-    private final Optional<String> alias;
-    
-    @Override
-    public String toString() {
-        return alias.isPresent() ? columnName + " AS " + alias.get() : columnName;
-    }
+    /**
+     * To string.
+     * 
+     * @param tableUnit table unit 
+     * @param logicAndActualTables logic and actual tables
+     * @return literal
+     */
+    String toString(TableUnit tableUnit, Map<String, String> logicAndActualTables);
 }

@@ -35,9 +35,4 @@ public final class LimitOffsetPlaceholder implements ShardingPlaceholder {
     public String toString() {
         return String.valueOf(offset);
     }
-    
-    @Override
-    public String getLogicTableName() {
-        return "";
-    }
 }
