@@ -74,11 +74,15 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode) {
-        ParserRuleContext result = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
-        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findSingleNodeFromFirstDescendant(result, RuleName.SUBQUERY);
+        Optional<ParserRuleContext> tableReferencesNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
+        if (!tableReferencesNode.isPresent()) {
+            return ancestorNode;
+        }
+        ParserRuleContext result = tableReferencesNode.get();
+        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findSingleNodeFromFirstDescendant(tableReferencesNode.get(), RuleName.SUBQUERY);
         if (subqueryNode.isPresent()) {
             result = findMainQueryNode(subqueryNode.get());
         }
-        return result;
+        return result.getParent().getParent();
     }
 }
