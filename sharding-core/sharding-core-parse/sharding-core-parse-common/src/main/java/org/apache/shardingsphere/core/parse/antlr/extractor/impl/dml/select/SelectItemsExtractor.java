@@ -80,9 +80,11 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
         }
         ParserRuleContext result = tableReferencesNode.get();
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findSingleNodeFromFirstDescendant(tableReferencesNode.get(), RuleName.SUBQUERY);
+        boolean isFromRecursiveInMethod = false;
         if (subqueryNode.isPresent()) {
+            isFromRecursiveInMethod = true;
             result = findMainQueryNode(subqueryNode.get(), true);
         }
-        return isFromRecursive ? result : ancestorNode;
+        return isFromRecursive || isFromRecursiveInMethod ? result : ancestorNode;
     }
 }
