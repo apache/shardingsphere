@@ -43,6 +43,10 @@ REGEXP
     : R E G E X P
     ;
 
+TOP
+    : T O P
+    ;
+
 ROW
     : R O W
     ;
@@ -537,4 +541,8 @@ LOCK_ESCALATION
 
 DROP_EXISTING
     : D R O P UL_ E X I S T I N G
+    ;
+
+ROW_NUMBER
+    : R O W UL_ N U M B E R
     ;

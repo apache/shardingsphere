@@ -89,7 +89,11 @@ selectItems
     ;
 
 selectItem
-    : (columnName | expr) (AS? alias)? | qualifiedShorthand
+    : (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    ;
+
+top
+    : TOP LP_? expr RP_? ROW_NUMBER LP_ RP_ LP_ orderByClause RP_ 
     ;
 
 alias
