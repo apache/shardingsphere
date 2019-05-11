@@ -93,7 +93,7 @@ selectItem
     ;
 
 top
-    : TOP LP_? expr RP_? ROW_NUMBER LP_ RP_ LP_ orderByClause RP_ 
+    : TOP LP_? expr RP_? ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ 
     ;
 
 alias
