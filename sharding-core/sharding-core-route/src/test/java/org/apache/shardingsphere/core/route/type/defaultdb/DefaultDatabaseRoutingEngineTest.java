@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.defaultdb;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,14 +49,14 @@ public final class DefaultDatabaseRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = defaultDatabaseRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_0"));
-        assertThat(tableUnitList.get(0).getRoutingTables().size(), is(2));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(1).getActualTableName(), is("t_order_item"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(1).getLogicTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getTableUnits().size(), is(2));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getActualTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getLogicTableName(), is("t_order_item"));
     }
 }

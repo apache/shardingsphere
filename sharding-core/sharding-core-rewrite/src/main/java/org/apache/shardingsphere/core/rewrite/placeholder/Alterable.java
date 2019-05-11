@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Map;
 
@@ -31,9 +31,9 @@ public interface Alterable {
     /**
      * To string.
      * 
-     * @param tableUnit table unit 
+     * @param routingUnit routing unit
      * @param logicAndActualTables logic and actual tables
      * @return literal
      */
-    String toString(TableUnit tableUnit, Map<String, String> logicAndActualTables);
+    String toString(RoutingUnit routingUnit, Map<String, String> logicAndActualTables);
 }

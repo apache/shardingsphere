@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public final class IndexPlaceholder implements ShardingPlaceholder, Alterable {
     }
     
     @Override
-    public String toString(final TableUnit tableUnit, final Map<String, String> logicAndActualTables) {
+    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(quoteCharacter.getStartDelimiter()).append(logicIndexName);
         String actualTableName = logicAndActualTables.get(logicTableName);
