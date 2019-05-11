@@ -50,7 +50,7 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
-        postExtractInternal(sqlStatement);
+        addSubqueryCondition(sqlStatement);
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
@@ -180,10 +180,12 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
         }
     }
     
-    private void postExtractInternal(final SQLStatement sqlStatement) {
+    private void addSubqueryCondition(final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         for (OrCondition each : selectStatement.getSubqueryConditions()) {
-            selectStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
+            if (!selectStatement.getRouteConditions().getOrCondition().getAndConditions().containsAll(each.getAndConditions())) {
+                selectStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
+            }
         }
     }
 }

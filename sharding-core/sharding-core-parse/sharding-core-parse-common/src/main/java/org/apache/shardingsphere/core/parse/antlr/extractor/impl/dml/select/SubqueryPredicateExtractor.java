@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.PredicateExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.SubqueryPredicateSegment;
 
 import java.util.Collection;
@@ -42,7 +43,10 @@ public final class SubqueryPredicateExtractor implements OptionalSQLSegmentExtra
         Collection<ParserRuleContext> subqueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
         SubqueryPredicateSegment result = new SubqueryPredicateSegment();
         for (ParserRuleContext each : subqueryNodes) {
-            predicateExtractor.extract(each, parameterMarkerIndexes);
+            Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(each, parameterMarkerIndexes);
+            if (orPredicateSegment.isPresent()) {
+                result.getOrPredicates().add(orPredicateSegment.get());
+            }
         }
         return Optional.of(result);
     }
