@@ -40,7 +40,7 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
+        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(findMainQueryNode(ancestorNode), RuleName.SELECT_ITEMS);
         SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
@@ -71,5 +71,14 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> duplicateSpecificationNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.DUPLICATE_SPECIFICATION);
         return duplicateSpecificationNode.isPresent()
                 && (duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCT") || duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCTROW"));
+    }
+    
+    private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode) {
+        ParserRuleContext result = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
+        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findSingleNodeFromFirstDescendant(result, RuleName.SUBQUERY);
+        if (subqueryNode.isPresent()) {
+            result = findMainQueryNode(subqueryNode.get());
+        }
+        return result;
     }
 }
