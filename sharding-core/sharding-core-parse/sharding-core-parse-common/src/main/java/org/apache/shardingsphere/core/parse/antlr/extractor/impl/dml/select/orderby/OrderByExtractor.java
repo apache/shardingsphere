@@ -40,22 +40,19 @@ public abstract class OrderByExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public final Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(findMainQueryNode(ancestorNode, false), RuleName.ORDER_BY_CLAUSE);
+        Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(findMainQueryNode(ancestorNode), RuleName.ORDER_BY_CLAUSE);
         return orderByNode.isPresent() ? Optional.of(new OrderBySegment(orderByItemExtractor.extract(orderByNode.get(), parameterMarkerIndexes))) : Optional.<OrderBySegment>absent();
     }
     
-    private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode, final boolean isFromRecursive) {
+    private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> tableReferencesNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
         if (!tableReferencesNode.isPresent()) {
             return ancestorNode;
         }
-        ParserRuleContext result = tableReferencesNode.get();
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findSingleNodeFromFirstDescendant(tableReferencesNode.get(), RuleName.SUBQUERY);
-        boolean isFromRecursiveInMethod = false;
         if (subqueryNode.isPresent()) {
-            isFromRecursiveInMethod = true;
-            result = findMainQueryNode(subqueryNode.get(), true);
+            return findMainQueryNode(subqueryNode.get());
         }
-        return isFromRecursive || isFromRecursiveInMethod ? result : ancestorNode;
+        return ancestorNode;
     }
 }

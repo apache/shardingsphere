@@ -17,7 +17,7 @@
 
 grammar PostgreSQLStatement;
 
-import Symbol, Comments, DDLStatement, DMLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement;
 
 execute
     : (select

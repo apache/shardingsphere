@@ -40,7 +40,7 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(findMainQueryNode(ancestorNode, false), RuleName.SELECT_ITEMS);
+        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(findMainQueryNode(ancestorNode), RuleName.SELECT_ITEMS);
         SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
@@ -73,18 +73,15 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
                 && (duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCT") || duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCTROW"));
     }
     
-    private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode, final boolean isFromRecursive) {
+    private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> tableReferencesNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
         if (!tableReferencesNode.isPresent()) {
             return ancestorNode;
         }
-        ParserRuleContext result = tableReferencesNode.get();
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findSingleNodeFromFirstDescendant(tableReferencesNode.get(), RuleName.SUBQUERY);
-        boolean isFromRecursiveInMethod = false;
         if (subqueryNode.isPresent()) {
-            isFromRecursiveInMethod = true;
-            result = findMainQueryNode(subqueryNode.get(), true);
+            return findMainQueryNode(subqueryNode.get());
         }
-        return isFromRecursive || isFromRecursiveInMethod ? result : ancestorNode;
+        return ancestorNode;
     }
 }
