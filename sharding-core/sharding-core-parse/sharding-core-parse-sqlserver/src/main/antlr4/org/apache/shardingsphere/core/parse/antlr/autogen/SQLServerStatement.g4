@@ -20,7 +20,11 @@ grammar SQLServerStatement;
 import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
 
 execute
-    : (createIndex
+    : (select
+    | insert
+    | update
+    | delete
+    | createIndex
     | alterIndex
     | dropIndex
     | createTable
