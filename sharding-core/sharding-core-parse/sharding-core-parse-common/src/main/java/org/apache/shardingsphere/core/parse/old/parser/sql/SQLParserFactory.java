@@ -57,7 +57,7 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(
             final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData, final String sql) {
-        if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType || DatabaseType.PostgreSQL == dbType) {
+        if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType || DatabaseType.PostgreSQL == dbType || DatabaseType.Oracle == dbType) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         lexerEngine.nextToken();
@@ -81,7 +81,7 @@ public final class SQLParserFactory {
      * @return sql parser
      */
     public static SQLParser newInstance(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData, final String sql) {
-        if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType || DatabaseType.PostgreSQL == dbType) {
+        if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType || DatabaseType.PostgreSQL == dbType || DatabaseType.Oracle == dbType) {
             return new AntlrParsingEngine(dbType, sql, encryptRule, shardingTableMetaData);
         }
         throw new SQLParsingUnsupportedException(String.format("Can not support %s", dbType)); 
