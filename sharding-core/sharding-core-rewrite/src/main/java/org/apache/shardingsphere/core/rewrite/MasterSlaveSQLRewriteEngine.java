@@ -25,6 +25,8 @@ import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SQL rewrite engine for master slave rule.
@@ -79,7 +81,15 @@ public final class MasterSlaveSQLRewriteEngine {
             }
             count++;
         }
-        return result.toSQL(masterSlaveRule, dataSourceMetaData);
+        return result.toSQL(getTableTokens());
+    }
+    
+    private Map<String, String> getTableTokens() {
+        Map<String, String> result = new HashMap<>();
+        for (String each : sqlStatement.getTables().getTableNames()) {
+            result.put(each.toLowerCase(), each.toLowerCase());
+        }
+        return result;
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
