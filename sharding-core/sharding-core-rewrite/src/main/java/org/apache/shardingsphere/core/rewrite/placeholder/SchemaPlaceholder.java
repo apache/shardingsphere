@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.route.type.TableUnit;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public final class SchemaPlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicTableName;
     
-    private final ShardingRule shardingRule;
+    private final BaseRule baseRule;
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
@@ -49,6 +49,6 @@ public final class SchemaPlaceholder implements ShardingPlaceholder, Alterable {
         if (Strings.isNullOrEmpty(logicTableName)) {
             return logicTableName;
         }
-        return dataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceName(logicAndActualTables.get(logicTableName))).getSchemaName();
+        return dataSourceMetaData.getActualDataSourceMetaData(baseRule.getActualDataSourceName(logicAndActualTables.get(logicTableName))).getSchemaName();
     }
 }
