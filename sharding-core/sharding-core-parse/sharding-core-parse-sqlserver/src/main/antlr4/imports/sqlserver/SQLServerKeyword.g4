@@ -39,8 +39,8 @@ PARTITION
     : P A R T I T I O N
     ;
 
-REGEXP
-    : R E G E X P
+PARTITIONS
+    : P A R T I T I O N S
     ;
 
 TOP
@@ -53,10 +53,6 @@ ROW
 
 ROWS
     : R O W S
-    ;
-
-SOUNDS
-    : S O U N D S
     ;
 
 UNKNOWN
@@ -77,10 +73,6 @@ CASCADE
 
 CHECK
     : C H E C K
-    ;
-
-CURRENT
-    : C U R R E N T
     ;
 
 GENERATED
@@ -139,6 +131,10 @@ CLUSTERED
     : C L U S T E R E D
     ;
 
+NONCLUSTERED
+    : N O N C L U S T E R E D
+    ;
+
 COLLATE
     : C O L L A T E
     ;
@@ -159,8 +155,24 @@ DATABASE
     : D A T A B A S E
     ;
 
+YEARS
+    : Y E A R S
+    ;
+
+MONTHS
+    : M O N T H S
+    ;
+
+WEEKS
+    : W E E K S
+    ;
+  
 DAYS
     : D A Y S
+    ;
+
+MINUTES
+    : M I N U T E S
     ;
 
 DENY
@@ -199,6 +211,10 @@ FILETABLE
     : F I L E T A B L E
     ;
 
+FILLFACTOR
+    : F I L L F A C T O R
+    ;
+
 FOLLOWING
     : F O L L O W I N G
     ;
@@ -219,6 +235,14 @@ INBOUND
     : I N B O U N D
     ;
 
+OUTBOUND
+    : O U T B O U N D
+    ;
+
+UNBOUNDED
+    : U N B O U N D E D
+    ;
+
 INFINITE
     : I N F I N I T E
     ;
@@ -235,24 +259,12 @@ MAXDOP
     : M A X D O P
     ;
 
-MINUTES
-    : M I N U T E S
-    ;
-
-MONTHS
-    : M O N T H S
-    ;
-
 MOVE
     : M O V E
     ;
 
 NOCHECK
     : N O C H E C K
-    ;
-
-NONCLUSTERED
-    : N O N C L U S T E R E D
     ;
 
 NONE
@@ -271,20 +283,12 @@ ONLINE
     : O N L I N E
     ;
 
-OUTBOUND
-    : O U T B O U N D
-    ;
-
 OVER
     : O V E R
     ;
 
 PAGE
     : P A G E
-    ;
-
-PARTITIONS
-    : P A R T I T I O N S
     ;
 
 PAUSED
@@ -357,18 +361,6 @@ TRAN
 
 TRANCOUNT
     : T R A N C O U N T
-    ;
-
-UNBOUNDED
-    : U N B O U N D E D
-    ;
-
-WEEKS
-    : W E E K S
-    ;
-
-YEARS
-    : Y E A R S
     ;
 
 ZONE
@@ -517,10 +509,6 @@ FILETABLE_PRIMARY_KEY_CONSTRAINT_NAME
 
 FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME
     : F I L E T A B L E UL_ S T R E A M I D UL_ U N I Q U E UL_ C O N S T R A I N T UL_ N A M E
-    ;
-
-FILLFACTOR
-    : F I L L F A C T O R
     ;
 
 FILTER_PREDICATE
