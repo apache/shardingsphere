@@ -46,6 +46,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
@@ -301,5 +302,15 @@ public final class EncryptSQLRewriteEngine {
         for (Entry<Integer, Object> entry : appendedIndexAndParameters.entrySet()) {
             parameters.add(entry.getKey(), entry.getValue());
         }
+    }
+    
+    /**
+     * Generate SQL string.
+     *
+     * @param sqlBuilder SQL builder
+     * @return SQL unit
+     */
+    public SQLUnit generateSQL(final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL();
     }
 }

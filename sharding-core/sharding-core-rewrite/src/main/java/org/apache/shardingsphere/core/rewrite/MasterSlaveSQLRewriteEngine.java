@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SQL rewrite engine for master slave rule.
@@ -41,9 +42,9 @@ public final class MasterSlaveSQLRewriteEngine {
     
     private final String originalSQL;
     
-    private final List<SQLToken> sqlTokens;
+    private final SQLStatement sqlStatement;
     
-    private final ShardingMetaData metaData;
+    private final ShardingDataSourceMetaData dataSourceMetaData;
     
     /**
      * Constructs master slave SQL rewrite engine.
@@ -51,13 +52,13 @@ public final class MasterSlaveSQLRewriteEngine {
      * @param masterSlaveRule master slave rule
      * @param originalSQL original SQL
      * @param sqlStatement SQL statement
-     * @param metaData meta data
+     * @param dataSourceMetaData datasource meta data
      */
-    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingMetaData metaData) {
+    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingDataSourceMetaData dataSourceMetaData) {
         this.masterSlaveRule = masterSlaveRule;
         this.originalSQL = originalSQL;
-        sqlTokens = sqlStatement.getSQLTokens();
-        this.metaData = metaData;
+        this.sqlStatement = sqlStatement;
+        this.dataSourceMetaData = dataSourceMetaData;
     }
     
     /**
@@ -65,28 +66,55 @@ public final class MasterSlaveSQLRewriteEngine {
      * 
      * @return SQL
      */
-    public String rewrite() {
-        if (sqlTokens.isEmpty()) {
-            return originalSQL;
+    public SQLBuilder rewrite() {
+        SQLBuilder result = new SQLBuilder();
+        if (sqlStatement.getSQLTokens().isEmpty()) {
+            return appendOriginalLiterals(result);
         }
-        SQLBuilder result = new SQLBuilder(Collections.emptyList());
         int count = 0;
-        for (SQLToken each : sqlTokens) {
+        for (SQLToken each : sqlStatement.getSQLTokens()) {
             if (0 == count) {
                 result.appendLiterals(originalSQL.substring(0, each.getStartIndex()));
             }
             if (each instanceof SchemaToken) {
-                appendSchemaPlaceholder(originalSQL, result, (SchemaToken) each, count);
+                appendSchemaPlaceholder(result, (SchemaToken) each, count);
             }
             count++;
         }
-        return result.toSQL(masterSlaveRule, metaData.getDataSource());
+        return result;
     }
     
-    private void appendSchemaPlaceholder(final String sql, final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
+    private SQLBuilder appendOriginalLiterals(final SQLBuilder sqlBuilder) {
+        sqlBuilder.appendLiterals(originalSQL);
+        return sqlBuilder;
+    }
+    
+    private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
         String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), null, null, null));
-        int endPosition = sqlTokens.size() - 1 == count ? sql.length() : sqlTokens.get(count + 1).getStartIndex();
-        sqlBuilder.appendLiterals(sql.substring(schemaToken.getStopIndex() + 1, endPosition));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase(), masterSlaveRule, dataSourceMetaData));
+        appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
+    }
+    
+    private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
+        int stopPosition = sqlStatement.getSQLTokens().size() - 1 == count ? originalSQL.length() : sqlStatement.getSQLTokens().get(count + 1).getStartIndex();
+        sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
+    }
+    
+    /**
+     * Generate SQL string.
+     *
+     * @param sqlBuilder SQL builder
+     * @return SQL unit
+     */
+    public SQLUnit generateSQL(final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL(getTableTokens());
+    }
+    
+    private Map<String, String> getTableTokens() {
+        Map<String, String> result = new HashMap<>();
+        for (String each : sqlStatement.getTables().getTableNames()) {
+            result.put(each.toLowerCase(), each.toLowerCase());
+        }
+        return result;
     }
 }

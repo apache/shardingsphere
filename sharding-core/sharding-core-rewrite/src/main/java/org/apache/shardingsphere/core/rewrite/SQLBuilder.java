@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,20 +83,19 @@ public final class SQLBuilder {
     /**
      * Convert to SQL unit.
      *
-     * @param masterSlaveRule master slave rule
-     * @param shardingDataSourceMetaData sharding data source meta data
-     * @return SQL
+     * @param logicAndActualTables logic and actual tables
+     * @return SQL unit
      */
-    public String toSQL(final MasterSlaveRule masterSlaveRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    public SQLUnit toSQL(final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            if (each instanceof SchemaPlaceholder) {
-                result.append(shardingDataSourceMetaData.getActualDataSourceMetaData(masterSlaveRule.getMasterDataSourceName()).getSchemaName());
+            if (each instanceof Alterable) {
+                result.append(((Alterable) each).toString(null, logicAndActualTables));
             } else {
                 result.append(each);
             }
         }
-        return result.toString();
+        return new SQLUnit(result.toString(), Collections.emptyList());
     }
     
     /**

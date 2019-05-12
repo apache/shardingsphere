@@ -32,7 +32,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-public class MasterSlaveRule {
+public class MasterSlaveRule implements BaseRule {
     
     private final String name;
     
@@ -75,5 +75,10 @@ public class MasterSlaveRule {
      */
     public boolean containDataSourceName(final String dataSourceName) {
         return masterDataSourceName.equals(dataSourceName) || slaveDataSourceNames.contains(dataSourceName);
+    }
+    
+    @Override
+    public String getActualDataSourceName(final String actualTableName) {
+        return masterDataSourceName;
     }
 }
