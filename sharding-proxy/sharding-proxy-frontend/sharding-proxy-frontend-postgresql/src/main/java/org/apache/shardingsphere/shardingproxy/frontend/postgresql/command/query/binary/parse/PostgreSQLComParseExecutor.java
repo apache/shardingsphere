@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.parse;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.SQLParsingEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -58,10 +58,10 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
-        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
+        SQLParseEngine sqlParseEngine = new SQLParseEngine(
                 DatabaseType.PostgreSQL, packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         if (!packet.getSql().isEmpty()) {
-            SQLStatement sqlStatement = sqlParsingEngine.parse(true);
+            SQLStatement sqlStatement = sqlParseEngine.parse(true);
             int parametersIndex = sqlStatement.getParametersIndex();
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), parametersIndex, packet.getBinaryStatementParameterTypes());
         }

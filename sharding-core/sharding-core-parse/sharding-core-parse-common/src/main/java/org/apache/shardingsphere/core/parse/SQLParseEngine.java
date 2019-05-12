@@ -27,12 +27,12 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * SQL parsing engine.
+ * SQL parse engine.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SQLParsingEngine {
+public final class SQLParseEngine {
     
     private final DatabaseType dbType;
     
@@ -48,7 +48,7 @@ public final class SQLParsingEngine {
      * Parse SQL.
      *
      * @param useCache use cache or not
-     * @return parsed SQL statement
+     * @return SQL statement
      */
     public SQLStatement parse(final boolean useCache) {
         Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache);
