@@ -84,9 +84,9 @@ public final class SQLBuilder {
      * Convert to SQL unit.
      *
      * @param logicAndActualTables logic and actual tables
-     * @return SQL
+     * @return SQL unit
      */
-    public String toSQL(final Map<String, String> logicAndActualTables) {
+    public SQLUnit toSQL(final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
             if (each instanceof Alterable) {
@@ -95,7 +95,7 @@ public final class SQLBuilder {
                 result.append(each);
             }
         }
-        return result.toString();
+        return new SQLUnit(result.toString(), Collections.emptyList());
     }
     
     /**

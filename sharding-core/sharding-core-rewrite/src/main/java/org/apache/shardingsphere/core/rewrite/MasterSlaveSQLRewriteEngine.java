@@ -22,9 +22,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,11 +66,11 @@ public final class MasterSlaveSQLRewriteEngine {
      * 
      * @return SQL
      */
-    public String rewrite() {
+    public SQLBuilder rewrite() {
+        SQLBuilder result = new SQLBuilder();
         if (sqlStatement.getSQLTokens().isEmpty()) {
-            return originalSQL;
+            return appendOriginalLiterals(result);
         }
-        SQLBuilder result = new SQLBuilder(Collections.emptyList());
         int count = 0;
         for (SQLToken each : sqlStatement.getSQLTokens()) {
             if (0 == count) {
@@ -81,15 +81,12 @@ public final class MasterSlaveSQLRewriteEngine {
             }
             count++;
         }
-        return result.toSQL(getTableTokens());
+        return result;
     }
     
-    private Map<String, String> getTableTokens() {
-        Map<String, String> result = new HashMap<>();
-        for (String each : sqlStatement.getTables().getTableNames()) {
-            result.put(each.toLowerCase(), each.toLowerCase());
-        }
-        return result;
+    private SQLBuilder appendOriginalLiterals(final SQLBuilder sqlBuilder) {
+        sqlBuilder.appendLiterals(originalSQL);
+        return sqlBuilder;
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
@@ -101,5 +98,23 @@ public final class MasterSlaveSQLRewriteEngine {
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
         int stopPosition = sqlStatement.getSQLTokens().size() - 1 == count ? originalSQL.length() : sqlStatement.getSQLTokens().get(count + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
+    }
+    
+    /**
+     * Generate SQL string.
+     *
+     * @param sqlBuilder SQL builder
+     * @return SQL unit
+     */
+    public SQLUnit generateSQL(final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL(getTableTokens());
+    }
+    
+    private Map<String, String> getTableTokens() {
+        Map<String, String> result = new HashMap<>();
+        for (String each : sqlStatement.getTables().getTableNames()) {
+            result.put(each.toLowerCase(), each.toLowerCase());
+        }
+        return result;
     }
 }
