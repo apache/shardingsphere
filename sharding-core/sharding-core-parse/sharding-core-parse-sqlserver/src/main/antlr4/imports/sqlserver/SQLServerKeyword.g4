@@ -367,6 +367,322 @@ ZONE
     : Z O N E
     ;
 
+EXECUTE
+    : E X E C U T E
+    ;
+
+SESSION
+    : S E S S I O N
+    ;
+
+CONNECT
+    : C O N N E C T
+    ;
+
+CONNECTION
+    : C O N N E C T I O N
+    ;
+
+CATALOG
+    : C A T A L O G
+    ;
+
+CONTROL
+    : C O N T R O L
+    ;
+
+TAKE
+    : T A K E
+    ;
+
+OWNERSHIP
+    : O W N E R S H I P
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
+APPLICATION
+    : A P P L I C A T I O N
+    ;
+
+ASSEMBLY
+    : A S S E M B L Y
+    ;
+
+SYMMETRIC
+    : S Y M M E T R I C
+    ;
+
+ASYMMETRIC
+    : A S Y M M E T R I C
+    ;
+
+SERVER
+    : S E R V E R
+    ;
+
+RECEIVE
+    : R E C E I V E
+    ;
+
+CHANGE
+    : C H A N G E
+    ;
+
+TRACE
+    : T R A C E
+    ;
+
+TRACKING
+    : T R A C K I N G
+    ;
+
+RESOURCES
+    : R E S O U R C E S
+    ;
+
+SETTINGS
+    : S E T T I N G S
+    ;
+
+STATE
+    : S T A T E
+    ;
+
+AVAILABILITY
+    : A V A I L A B I L I T Y
+    ;
+
+CREDENTIAL
+    : C R E D E N T I A L
+    ;
+
+ENDPOINT
+    : E N D P O I N T
+    ;
+
+EVENT
+    : E V E N T
+    ;
+
+NOTIFICATION
+    : N O T I F I C A T I O N
+    ;
+
+LINKED
+    : L I N K E D
+    ;
+
+AUDIT
+    : A U D I T
+    ;
+
+DDL
+    : D D L
+    ;
+
+SQL
+    : S Q L
+    ;
+
+XML
+    : X M L
+    ;
+
+IMPERSONATE
+    : I M P E R S O N A T E
+    ;
+
+SECURABLES
+    : S E C U R A B L E S
+    ;
+
+AUTHENTICATE
+    : A U T H E N T I C A T E
+    ;
+
+EXTERNAL
+    : E X T E R N A L
+    ;
+
+ACCESS
+    : A C C E S S
+    ;
+
+ADMINISTER
+    : A D M I N I S T E R
+    ;
+
+BULK
+    : B U L K
+    ;
+
+OPERATIONS
+    : O P E R A T I O N S
+    ;
+
+UNSAFE
+    : U N S A F E
+    ;
+
+SHUTDOWN
+    : S H U T D O W N
+    ;
+
+SCOPED
+    : S C O P E D
+    ;
+
+CONFIGURATION
+    : C O N F I G U R A T I O N
+    ;
+
+DATASPACE
+    : D A T A S P A C E
+    ;
+
+SERVICE
+    : S E R V I C E
+    ;
+
+CERTIFICATE
+    : C E R T I F I C A T E
+    ;
+
+CONTRACT
+    : C O N T R A C T
+    ;
+
+ENCRYPTION
+    : E N C R Y P T I O N
+    ;
+
+MASTER
+    : M A S T E R
+    ;
+
+DATA
+    : D A T A
+    ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+FILE
+    : F I L E
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+LIBRARY
+    : L I B R A R Y
+    ;
+
+FULLTEXT
+    : F U L L T E X T
+    ;
+
+MASK
+    : M A S K
+    ;
+
+UNMASK
+    : U N M A S K
+    ;
+
+MESSAGE
+    : M E S S A G E
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+REMOTE
+    : R E M O T E
+    ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+ROUTE
+    : R O U T E
+    ;
+
+SECURITY
+    : S E C U R I T Y
+    ;
+
+POLICY
+    : P O L I C Y
+    ;
+
+AGGREGATE
+    : A G G R E G A T E
+    ;
+
+QUEUE
+    : Q U E U E
+    ;
+
+RULE
+    : R U L E
+    ;
+
+SYNONYM
+    : S Y N O N Y M
+    ;
+
+COLLECTION
+    : C O L L E C T I O N
+    ;
+
+SCRIPT
+    : S C R I P T
+    ;
+
+KILL
+    : K I L L
+    ;
+
+BACKUP
+    : B A C K U P
+    ;
+
+LOG
+    : L O G
+    ;
+
+SHOWPLAN
+    : S H O W P L A N
+    ;
+
+SUBSCRIBE
+    : S U B S C R I B E
+    ;
+
+QUERY
+    : Q U E R Y 
+    ;
+
+NOTIFICATIONS
+    : N O T I F I C A T I O N S 
+    ;
+
+CHECKPOINT
+    : C H E C K P O I N T
+    ;
+
+SEQUENCE
+    : S E Q U E N C E
+    ;
+
 ABORT_AFTER_WAIT
     : A B O R T UL_ A F T E R UL_ W A I T
     ;
