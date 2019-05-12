@@ -23,8 +23,6 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
-import org.apache.shardingsphere.core.parse.old.lexer.LexerEngineFactory;
 import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParserFactory;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -57,8 +55,7 @@ public final class SQLParsingEngine {
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
-        LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
-        SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData, sql).parse();
+        SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, shardingTableMetaData, sql).parse();
         if (useCache) {
             parsingResultCache.put(sql, result);
         }

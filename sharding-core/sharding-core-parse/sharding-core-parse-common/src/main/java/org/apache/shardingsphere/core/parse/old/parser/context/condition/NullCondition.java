@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.sql.dal.set;
-
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.SetStatement;
-import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParser;
+package org.apache.shardingsphere.core.parse.old.parser.context.condition;
 
 /**
- * Set parser.
+ * No sharding condition.
  *
  * @author maxiaoguang
  */
-public final class SetParser implements SQLParser {
-    
-    @Override
-    public SetStatement parse() {
-        return new SetStatement();
-    }
+public final class NullCondition extends Condition {
 }

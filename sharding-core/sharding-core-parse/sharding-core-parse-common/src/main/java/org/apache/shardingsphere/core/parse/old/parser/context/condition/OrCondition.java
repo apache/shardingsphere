@@ -22,7 +22,6 @@ import com.google.common.collect.Collections2;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.old.parser.clause.condition.NullCondition;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -39,10 +38,6 @@ import java.util.List;
 public final class OrCondition {
     
     private final List<AndCondition> andConditions = new ArrayList<>();
-    
-    public OrCondition(final Condition condition) {
-        add(condition);
-    }
     
     /**
      * Add condition.
