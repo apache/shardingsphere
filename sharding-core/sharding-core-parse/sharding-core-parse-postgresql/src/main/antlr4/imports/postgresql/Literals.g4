@@ -21,6 +21,7 @@ import Alphabet, Symbol;
 
 IDENTIFIER_
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    |  DQ_ ~'"'+ DQ_
     ;
 
 STRING_ 
