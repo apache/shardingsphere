@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
-import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -41,13 +40,12 @@ public final class SQLParserFactory {
      *
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
-     * @param lexerEngine lexical analysis engine
      * @param shardingTableMetaData sharding table metadata
      * @param sql SQL to parse
      * @return SQL parser
      */
     public static SQLParser newInstance(
-            final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData, final String sql) {
+            final DatabaseType dbType, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData, final String sql) {
         return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
     }
     

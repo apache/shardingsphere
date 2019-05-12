@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.old.parser.context.condition;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.old.parser.clause.condition.NullCondition;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
