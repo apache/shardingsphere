@@ -31,8 +31,8 @@ MOD
     : M O D
     ;
 
-REGEXP
-    : R E G E X P
+XOR
+    : X O R
     ;
 
 ROW
@@ -43,16 +43,8 @@ ROWS
     : R O W S
     ;
 
-SOUNDS
-    : S O U N D S
-    ;
-
 UNKNOWN
     : U N K N O W N
-    ;
-
-XOR
-    : X O R
     ;
 
 ALWAYS
@@ -183,6 +175,10 @@ CACHE
     : C A C H E
     ;
 
+NOCACHE
+    : N O C A C H E
+    ;
+
 CHECKPOINT
     : C H E C K P O I N T
     ;
@@ -197,6 +193,10 @@ CONSTRAINTS
 
 CYCLE
     : C Y C L E
+    ;
+
+NOCYCLE
+    : N O C Y C L E
     ;
 
 DBTIMEZONE
@@ -319,24 +319,12 @@ NEW
     : N E W
     ;
 
-NOCACHE
-    : N O C A C H E
-    ;
-
-NOCYCLE
-    : N O C Y C L E
-    ;
-
 NOORDER
     : N O O R D E R
     ;
 
 NORELY
     : N O R E L Y
-    ;
-
-NOVALIDATE
-    : N O V A L I D A T E
     ;
 
 OF
@@ -437,6 +425,10 @@ UNUSED
 
 VALIDATE
     : V A L I D A T E
+    ;
+
+NOVALIDATE
+    : N O V A L I D A T E
     ;
 
 VALUE
