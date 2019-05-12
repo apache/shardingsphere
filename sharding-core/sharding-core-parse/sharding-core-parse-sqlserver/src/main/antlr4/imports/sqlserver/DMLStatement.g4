@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
+import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 insert
     : INSERT INTO tableName (AS? alias)? (insertValuesClause | insertSelectClause)
@@ -32,11 +32,7 @@ insertSelectClause
     ;
 
 update
-    : UPDATE updateSpecification_? tableReferences setAssignmentsClause whereClause?
-    ;
-
-updateSpecification_
-    : ONLY
+    : UPDATE tableReferences setAssignmentsClause whereClause?
     ;
 
 assignment
@@ -57,11 +53,7 @@ assignmentValue
     ;
 
 delete
-    : DELETE deleteSpecification_? (singleTableClause_ | multipleTablesClause_) whereClause?
-    ;
-
-deleteSpecification_
-    : ONLY
+    : DELETE (singleTableClause_ | multipleTablesClause_) whereClause?
     ;
 
 singleTableClause_
@@ -97,7 +89,11 @@ selectItems
     ;
 
 selectItem
-    : (columnName | expr) (AS? alias)? | qualifiedShorthand
+    : (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    ;
+
+top
+    : TOP LP_? expr RP_? ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ 
     ;
 
 alias

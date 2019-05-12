@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -73,13 +73,13 @@ public final class ComplexRoutingEngineTest {
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(
                 mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_order_item"), new OptimizeResult(new ShardingConditions(shardingConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds1"));
-        assertThat(tableUnitList.get(0).getRoutingTables().size(), is(1));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
     }
     
     @Test
@@ -94,12 +94,12 @@ public final class ComplexRoutingEngineTest {
         ComplexRoutingEngine complexRoutingEngine = 
                 new ComplexRoutingEngine(mock(SQLStatement.class), shardingRule, Arrays.asList("t_order", "t_config"), new OptimizeResult(new ShardingConditions(shardingConditions)));
         RoutingResult routingResult = complexRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds1"));
-        assertThat(tableUnitList.get(0).getRoutingTables().size(), is(1));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
     }
 }

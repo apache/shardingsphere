@@ -18,15 +18,20 @@
 package org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.SelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Select items extractor.
@@ -36,17 +41,27 @@ import java.util.Map;
  */
 public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
     
+    // TODO recognize database type, only oracle and sqlserver can use row number
+    private final Collection<String> rowNumberIdentifiers;
+    
     private final SelectItemExtractor selectItemExtractor = new SelectItemExtractor();
+    
+    public SelectItemsExtractor() {
+        rowNumberIdentifiers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        rowNumberIdentifiers.add("rownum");
+        rowNumberIdentifiers.add("ROW_NUMBER");
+    }
     
     @Override
     public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_ITEMS);
+        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(findMainQueryNode(ancestorNode), RuleName.SELECT_ITEMS);
         SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result, parameterMarkerIndexes);
         }
         setSelectItemSegment(selectItemsNode, result, parameterMarkerIndexes);
+        result.getSelectItems().addAll(extractRowNumberSelectItem(ancestorNode, parameterMarkerIndexes));
         return Optional.of(result);
     }
     
@@ -71,5 +86,30 @@ public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> duplicateSpecificationNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.DUPLICATE_SPECIFICATION);
         return duplicateSpecificationNode.isPresent()
                 && (duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCT") || duplicateSpecificationNode.get().getText().equalsIgnoreCase("DISTINCTROW"));
+    }
+    
+    private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> tableReferencesNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCES);
+        if (!tableReferencesNode.isPresent()) {
+            return ancestorNode;
+        }
+        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findSingleNodeFromFirstDescendant(tableReferencesNode.get(), RuleName.SUBQUERY);
+        if (subqueryNode.isPresent()) {
+            return findMainQueryNode(subqueryNode.get());
+        }
+        return ancestorNode;
+    }
+    
+    private Collection<SelectItemSegment> extractRowNumberSelectItem(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Collection<SelectItemSegment> result = new LinkedList<>();
+        Collection<ParserRuleContext> selectItemNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SELECT_ITEM);
+        for (ParserRuleContext each : selectItemNodes) {
+            Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract(each, parameterMarkerIndexes);
+            Preconditions.checkState(selectItemSegment.isPresent());
+            if (selectItemSegment.get() instanceof ColumnSelectItemSegment && rowNumberIdentifiers.contains(((ColumnSelectItemSegment) selectItemSegment.get()).getName())) {
+                result.add(selectItemSegment.get());
+            }
+        }
+        return result;
     }
 }

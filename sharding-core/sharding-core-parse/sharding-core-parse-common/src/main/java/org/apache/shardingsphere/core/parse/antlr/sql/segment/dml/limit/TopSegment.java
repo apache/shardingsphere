@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.type;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.core.parse.old.parser.context.limit.LimitValue;
 
 /**
- * Routing table.
- * 
- * @author maxiaoguang
+ * Top segment.
+ *
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class RoutingTable {
+public final class TopSegment implements SelectItemSegment {
     
-    private final String logicTableName;
+    private final LimitValue top;
     
-    private final String actualTableName;
+    private final int topStartIndex;
+    
+    private final int topStopIndex;
+    
+    private final String rowNumberAlias;
 }

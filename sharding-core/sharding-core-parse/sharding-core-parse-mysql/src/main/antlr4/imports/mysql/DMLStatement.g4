@@ -157,7 +157,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery columnNames? | LP_ tableReferences RP_
     ;
 
 partitionNames_ 
@@ -215,5 +215,5 @@ windowItem_
     ;
 
 subquery
-    : LP_ unionClause_ RP_
+    : LP_ unionClause_ RP_ AS? alias?
     ;

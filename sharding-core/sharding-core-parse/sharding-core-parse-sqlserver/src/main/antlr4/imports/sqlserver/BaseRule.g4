@@ -231,9 +231,9 @@ subquery
     ;
 
 orderByClause
-    : ORDER BY orderByExpr (COMMA_ orderByExpr)*
+    : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
-    
+
 orderByItem
     : (columnName | numberLiterals | expr) (ASC | DESC)?
     ;
@@ -268,10 +268,6 @@ overClause
 
 partitionByClause
     : PARTITION BY expr (COMMA_ expr)*
-    ;
-
-orderByExpr
-    : expr (COLLATE collationName)? (ASC | DESC)? 
     ;
 
 rowRangeClause 
