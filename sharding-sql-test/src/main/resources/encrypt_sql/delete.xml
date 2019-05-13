@@ -23,5 +23,4 @@
     <sql-case id="delete_with_one_encrypt_column_in_function" value="DELETE FROM t_encrypt WHERE upper(name) = ?" />
     <sql-case id="delete_with_encrypt_column_string_value_in_function" value="DELETE FROM t_encrypt WHERE name = upper('tom')" />
     <sql-case id="delete_with_in_encrypt_column" value="DELETE FROM t_encrypt WHERE name IN(?,?)" />
-    <sql-case id="delete_with_between_encrypt_column" value="DELETE FROM t_encrypt WHERE mobile BETWEEN ? AND ?" />
 </sql-cases>

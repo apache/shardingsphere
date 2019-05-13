@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.common.dml.PredicateUti
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
@@ -88,6 +90,9 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     }
 
     private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
+        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
+            throw new SQLParsingUnsupportedException("The SQL clause 'BETWEEN...AND...' is unsuppored in encrypt rule.");
+        }
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isOperatorSupportedWithEncrypt(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column) : Optional.<Condition>absent();

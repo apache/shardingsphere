@@ -90,9 +90,4 @@
             </and-condition>
         </encrypt-condition>
     </parser-result>
-    <parser-result sql-case-id="delete_with_between_encrypt_column" parameters="'13333333333','1344444444'">
-        <tables>
-            <table name="t_encrypt" />
-        </tables>
-    </parser-result>
 </parser-result-sets>
