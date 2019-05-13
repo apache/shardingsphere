@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
+import org.apache.shardingsphere.core.parse.antlr.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -59,7 +59,7 @@ public final class EncryptSQLParseEngine {
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
-        SQLStatement result = new AntlrParsingEngine(dbType, sql, encryptRule, shardingTableMetaData).parse();
+        SQLStatement result = new SQLParseEngine(dbType, sql, encryptRule, shardingTableMetaData).parse();
         if (useCache) {
             parsingResultCache.put(sql, result);
         }

@@ -27,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
+        SQLParseEngineTest.class,
         IntegrateDDLParsingCompatibleTest.class,
         AllParsingIntegrateTests.class
 })

@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
+import org.apache.shardingsphere.core.parse.antlr.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -55,7 +55,7 @@ public final class ShardingSQLParseEngine {
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
-        SQLStatement result = new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData).parse();
+        SQLStatement result = new SQLParseEngine(dbType, sql, shardingRule, shardingTableMetaData).parse();
         if (useCache) {
             parsingResultCache.put(sql, result);
         }
