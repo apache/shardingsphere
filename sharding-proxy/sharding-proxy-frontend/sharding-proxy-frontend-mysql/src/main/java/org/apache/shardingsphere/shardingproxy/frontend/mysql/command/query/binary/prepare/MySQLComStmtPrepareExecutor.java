@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.core.parse.SQLParsingEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
@@ -64,11 +64,11 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         // TODO we should use none-sharding parsing engine in future.
-        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(
+        SQLParseEngine sqlParseEngine = new SQLParseEngine(
                 LogicSchemas.getInstance().getDatabaseType(), packet.getSql(), getShardingRule(logicSchema), logicSchema.getMetaData().getTable(), logicSchema.getParsingResultCache());
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = sqlParsingEngine.parse(true);
+        SQLStatement sqlStatement = sqlParseEngine.parse(true);
         int parametersIndex = sqlStatement.getParametersIndex();
         result.add(new MySQLComStmtPrepareOKPacket(
                 ++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));

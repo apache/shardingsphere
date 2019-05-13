@@ -61,11 +61,7 @@ literalsType_
     ;
 
 identifier_
-    : quotedIdentifier_ | IDENTIFIER_ |  unreservedWord_ 
-    ;
-
-quotedIdentifier_
-    : unicodeEscapes_? DQ_ IDENTIFIER_ DQ_ uescape_?
+    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord_ 
     ;
 
 unicodeEscapes_

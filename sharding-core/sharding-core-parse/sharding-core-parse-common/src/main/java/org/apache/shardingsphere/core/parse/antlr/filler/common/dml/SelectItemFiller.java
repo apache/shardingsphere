@@ -28,11 +28,14 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Aggregati
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
 import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedAlias;
+import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.CommonSelectItem;
@@ -74,6 +77,9 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         }
         if (sqlSegment instanceof SubquerySegment) {
             fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement);
+        }
+        if (sqlSegment instanceof TopSegment) {
+            fillTopSegment((TopSegment) sqlSegment, selectStatement);
         }
     }
     
@@ -119,5 +125,15 @@ public final class SelectItemFiller implements SQLSegmentFiller {
     
     private void fillSubquerySegment(final SubquerySegment subquerySegment, final SQLStatement sqlStatement) {
         new SubqueryFiller().fill(subquerySegment, sqlStatement);
+    }
+    
+    private void fillTopSegment(final TopSegment topSegment, final SelectStatement selectStatement) {
+        Limit limit = new Limit();
+        limit.setRowCount(topSegment.getTop());
+        selectStatement.setLimit(limit);
+        if (-1 != topSegment.getTop().getValue()) {
+            selectStatement.addSQLToken(new RowCountToken(topSegment.getTopStartIndex(), topSegment.getTopStopIndex(), topSegment.getTop().getValue()));
+        }
+        selectStatement.getItems().add(new CommonSelectItem("rownum", Optional.of(topSegment.getRowNumberAlias())));
     }
 }

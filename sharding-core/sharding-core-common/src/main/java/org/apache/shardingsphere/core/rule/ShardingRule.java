@@ -462,12 +462,7 @@ public class ShardingRule implements BaseRule {
         return Optional.absent();
     }
     
-    /**
-     * Get actual data source name.
-     *
-     * @param actualTableName actual table name
-     * @return actual data source name
-     */
+    @Override
     public String getActualDataSourceName(final String actualTableName) {
         Optional<TableRule> tableRule = findTableRuleByActualTable(actualTableName);
         if (tableRule.isPresent()) {

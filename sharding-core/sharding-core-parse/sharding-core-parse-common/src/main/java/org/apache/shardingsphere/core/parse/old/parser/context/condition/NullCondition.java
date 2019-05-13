@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
+package org.apache.shardingsphere.core.parse.old.parser.context.condition;
 
 /**
- * Subquery segment.
- * 
- * @author duhongjun
+ * No sharding condition.
+ *
+ * @author maxiaoguang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SubquerySegment implements SelectItemSegment, ComplexExpressionSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-
-    @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
-    }
+public final class NullCondition extends Condition {
 }

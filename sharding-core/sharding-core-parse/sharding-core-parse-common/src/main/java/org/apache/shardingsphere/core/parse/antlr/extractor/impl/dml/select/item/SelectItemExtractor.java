@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ExpressionSelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.FunctionSelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.ShorthandSelectItemExtractor;
+import org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.item.impl.TopSelectItemExtractor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
 
 import java.util.Map;
@@ -40,6 +41,8 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     
     private final ColumnSelectItemExtractor columnSelectItemExtractor = new ColumnSelectItemExtractor();
     
+    private final TopSelectItemExtractor topSelectItemExtractor = new TopSelectItemExtractor();
+    
     private final FunctionSelectItemExtractor functionSelectItemSegmentExtractor = new FunctionSelectItemExtractor();
     
     private final ExpressionSelectItemExtractor expressionSelectItemExtractor = new ExpressionSelectItemExtractor();
@@ -50,6 +53,10 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
     public Optional<? extends SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<? extends SelectItemSegment> result;
         result = shorthandSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
+        if (result.isPresent()) {
+            return result;
+        }
+        result = topSelectItemExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (result.isPresent()) {
             return result;
         }

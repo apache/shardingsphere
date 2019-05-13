@@ -155,7 +155,9 @@ public enum RuleName {
     
     SHOW_LIKE("ShowLike"),
     
-    FROM_SCHEMA("FromSchema");
+    FROM_SCHEMA("FromSchema"),
+    
+    TOP("Top");
     
     private final String name;
     

@@ -17,21 +17,14 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,56 +83,19 @@ public final class SQLBuilder {
     /**
      * Convert to SQL unit.
      *
-     * @param tableUnit table unit
-     * @param logicAndActualTableMap logic and actual map
-     * @param shardingRule sharding rule
-     * @param shardingDataSourceMetaData sharding data source meta data
+     * @param logicAndActualTables logic and actual tables
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    public SQLUnit toSQL(final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
-        List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
-            if (!(each instanceof ShardingPlaceholder)) {
-                result.append(each);
-                continue;
-            }
-            String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
-            String actualTableName = logicAndActualTableMap.get(logicTableName);
-            if (each instanceof TablePlaceholder) {
-                appendTablePlaceholder((TablePlaceholder) each, actualTableName, result);
-            } else if (each instanceof SchemaPlaceholder) {
-                appendSchemaPlaceholder(shardingRule, shardingDataSourceMetaData, actualTableName, result);
-            } else if (each instanceof IndexPlaceholder) {
-                appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
-            } else if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(tableUnit, (InsertValuesPlaceholder) each, insertParameters, result);
-            } else if (each instanceof InsertSetPlaceholder) {
-                appendInsertSetPlaceholder(tableUnit, (InsertSetPlaceholder) each, insertParameters, result);
+            if (each instanceof Alterable) {
+                result.append(((Alterable) each).toString(null, logicAndActualTables));
             } else {
                 result.append(each);
             }
         }
-        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
-    }
-    
-    /**
-     * Convert to SQL unit.
-     * 
-     * @param masterSlaveRule master slave rule
-     * @param shardingDataSourceMetaData sharding data source meta data
-     * @return SQL
-     */
-    public String toSQL(final MasterSlaveRule masterSlaveRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        StringBuilder result = new StringBuilder();
-        for (Object each : segments) {
-            if (each instanceof SchemaPlaceholder) {
-                result.append(shardingDataSourceMetaData.getActualDataSourceMetaData(masterSlaveRule.getMasterDataSourceName()).getSchemaName());
-            } else {
-                result.append(each);
-            }
-        }
-        return result.toString();
+        return new SQLUnit(result.toString(), Collections.emptyList());
     }
     
     /**
@@ -151,70 +107,64 @@ public final class SQLBuilder {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
-            if (!(each instanceof ShardingPlaceholder)) {
-                result.append(each);
-                continue;
-            }
-            if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(null, (InsertValuesPlaceholder) each, insertParameters, result);
-            } else if (each instanceof InsertSetPlaceholder) {
-                appendInsertSetPlaceholder(null, (InsertSetPlaceholder) each, insertParameters, result);
+            if (each instanceof Alterable) {
+                result.append(((Alterable) each).toString(null, Collections.<String, String>emptyMap()));
             } else {
                 result.append(each);
             }
+            insertParameters.addAll(getInsertParameters(each, null));
         }
-        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), parameters) : new SQLUnit(result.toString(), insertParameters);
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
     
-    private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(null == actualTableName ? tablePlaceholder : new TablePlaceholder(actualTableName, tablePlaceholder.getQuoteCharacter()));
-    }
-    
-    private void appendSchemaPlaceholder(final ShardingRule shardingRule, 
-                                         final ShardingDataSourceMetaData shardingDataSourceMetaData, final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceName(actualTableName)).getSchemaName());
-    }
-    
-    private void appendIndexPlaceholder(final IndexPlaceholder placeholder, final String actualTableName, final StringBuilder stringBuilder) {
-        if (Strings.isNullOrEmpty(actualTableName)) {
-            stringBuilder.append(placeholder.getQuoteCharacter().getStartDelimiter()).append(placeholder.getLogicIndexName()).append(placeholder.getQuoteCharacter().getEndDelimiter());
-        } else {
-            stringBuilder.append(placeholder.getQuoteCharacter().getStartDelimiter())
-                    .append(placeholder.getLogicIndexName()).append("_").append(actualTableName).append(placeholder.getQuoteCharacter().getEndDelimiter());
+    /**
+     * Convert to SQL unit.
+     *
+     * @param routingUnit routing unit
+     * @param logicAndActualTables logic and actual map
+     * @return SQL unit
+     */
+    public SQLUnit toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        StringBuilder result = new StringBuilder();
+        List<Object> insertParameters = new LinkedList<>();
+        for (Object each : segments) {
+            if (each instanceof Alterable) {
+                result.append(((Alterable) each).toString(routingUnit, logicAndActualTables));
+            } else {
+                result.append(each);
+            }
+            insertParameters.addAll(getInsertParameters(each, routingUnit));
         }
+        return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
     
-    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final InsertValuesPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append(" (").append(Joiner.on(", ").join(placeholder.getColumnNames())).append(") VALUES ");
-        for (InsertOptimizeResultUnit each : placeholder.getUnits()) {
-            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
-                appendInsertOptimizeResult(each, insertParameters, stringBuilder);
+    private List<Object> getInsertParameters(final Object target, final RoutingUnit routingUnit) {
+        List<Object> result = new LinkedList<>();
+        if (target instanceof InsertSetPlaceholder) {
+            InsertSetPlaceholder setPlaceholder = (InsertSetPlaceholder) target;
+            addInsertParameters(routingUnit, setPlaceholder.getUnits(), result);
+        }
+        if (target instanceof InsertValuesPlaceholder) {
+            InsertValuesPlaceholder valuesPlaceholder = (InsertValuesPlaceholder) target;
+            addInsertParameters(routingUnit, valuesPlaceholder.getUnits(), result);
+        }
+        return result;
+    }
+    
+    private void addInsertParameters(final RoutingUnit routingUnit, final List<InsertOptimizeResultUnit> units, final List<Object> insertParameters) {
+        for (InsertOptimizeResultUnit each : units) {
+            if (isToAppendInsertOptimizeResult(routingUnit, each)) {
+                insertParameters.addAll(Arrays.asList(each.getParameters()));
             }
         }
-        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
     }
     
-    private void appendInsertSetPlaceholder(final TableUnit tableUnit, final InsertSetPlaceholder placeholder, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append("SET ");
-        for (InsertOptimizeResultUnit each : placeholder.getUnits()) {
-            if (isToAppendInsertOptimizeResult(tableUnit, each)) {
-                appendInsertOptimizeResult(each, insertParameters, stringBuilder);
-            }
-        }
-        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-    }
-    
-    private void appendInsertOptimizeResult(final InsertOptimizeResultUnit unit, final List<Object> insertParameters, final StringBuilder stringBuilder) {
-        stringBuilder.append(unit).append(", ");
-        insertParameters.addAll(Arrays.asList(unit.getParameters()));
-    }
-    
-    private boolean isToAppendInsertOptimizeResult(final TableUnit tableUnit, final InsertOptimizeResultUnit unit) {
-        if (unit.getDataNodes().isEmpty() || null == tableUnit) {
+    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertOptimizeResultUnit unit) {
+        if (unit.getDataNodes().isEmpty() || null == routingUnit) {
             return true;
         }
         for (DataNode each : unit.getDataNodes()) {
-            if (tableUnit.getRoutingTable(each.getDataSourceName(), each.getTableName()).isPresent()) {
+            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
         }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.SQLParsingEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
@@ -62,7 +62,7 @@ public final class IntegrateSupportedSQLParsingTest extends AbstractBaseIntegrat
         if ("select_with_same_table_name_and_alias".equals(sqlCaseId)) {
             return;
         }
-        new SQLStatementAssert(new SQLParsingEngine(
+        new SQLStatementAssert(new SQLParseEngine(
                 databaseType, sql, getShardingRule(), getShardingTableMetaData(), new ParsingResultCache()).parse(false), sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }

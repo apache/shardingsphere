@@ -46,6 +46,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
@@ -209,7 +210,7 @@ public final class EncryptSQLRewriteEngine {
         List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parameters));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
         Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
-        return new EncryptWhereColumnPlaceholder(columnNode.getTableName(), assistedColumnName.isPresent() ? assistedColumnName.get() : columnNode.getColumnName(),
+        return new EncryptWhereColumnPlaceholder(assistedColumnName.isPresent() ? assistedColumnName.get() : columnNode.getColumnName(),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
@@ -272,17 +273,16 @@ public final class EncryptSQLRewriteEngine {
         if (isUsingParameter(encryptColumnToken)) {
             return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         }
-        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
     }
     
     private EncryptUpdateItemColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
                                                                                      final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         String assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (isUsingParameter(encryptColumnToken)) {
-            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), assistedColumnName);
+            return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getName(), assistedColumnName);
         }
-        return new EncryptUpdateItemColumnPlaceholder(
-                encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
+        return new EncryptUpdateItemColumnPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
     }
     
     private boolean isUsingParameter(final EncryptColumnToken encryptColumnToken) {
@@ -302,5 +302,15 @@ public final class EncryptSQLRewriteEngine {
         for (Entry<Integer, Object> entry : appendedIndexAndParameters.entrySet()) {
             parameters.add(entry.getKey(), entry.getValue());
         }
+    }
+    
+    /**
+     * Generate SQL string.
+     *
+     * @param sqlBuilder SQL builder
+     * @return SQL unit
+     */
+    public SQLUnit generateSQL(final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL();
     }
 }

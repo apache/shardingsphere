@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
+import org.apache.shardingsphere.core.parse.old.parser.context.limit.LimitValue;
 
 /**
- * Subquery segment.
- * 
- * @author duhongjun
+ * Top segment.
+ *
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SubquerySegment implements SelectItemSegment, ComplexExpressionSegment {
+public final class TopSegment implements SelectItemSegment {
     
-    private final int startIndex;
+    private final LimitValue top;
     
-    private final int stopIndex;
-
-    @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
-    }
+    private final int topStartIndex;
+    
+    private final int topStopIndex;
+    
+    private final String rowNumberAlias;
 }

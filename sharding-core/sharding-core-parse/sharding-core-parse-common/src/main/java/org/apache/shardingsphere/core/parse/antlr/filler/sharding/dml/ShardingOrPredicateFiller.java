@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingRuleAwareFi
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.EncryptOrPredicateFiller;
+import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.select.ShardingRowNumberPredicateFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.valu
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
@@ -47,6 +49,8 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 @Setter
 public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
+    private final ShardingRowNumberPredicateFiller shardingRowNumberPredicateFiller = new ShardingRowNumberPredicateFiller();
+    
     private ShardingRule shardingRule;
     
     private ShardingTableMetaData shardingTableMetaData;
@@ -54,6 +58,9 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(buildCondition(sqlSegment, sqlStatement).getAndConditions());
+        if (sqlStatement instanceof SelectStatement) {
+            shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
+        }
     }
     
     /**

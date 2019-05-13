@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -41,6 +41,7 @@ import java.util.List;
  * Base sharding engine.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public abstract class BaseShardingEngine {
@@ -93,18 +94,18 @@ public abstract class BaseShardingEngine {
     
     private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
+        for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sql, parameters)));
         }
         return result;
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters, sqlRouteResult.getOptimizeResult());
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(sqlRouteResult.getRoutingResult().isSingleRouting());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters, metaData.getDataSource());
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite();
         Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (TableUnit each : sqlRouteResult.getRoutingResult().getTableUnits().getTableUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, metaData.getDataSource())));
+        for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
+            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
         }
         return result;
     }

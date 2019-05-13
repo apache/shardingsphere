@@ -39,8 +39,12 @@ PARTITION
     : P A R T I T I O N
     ;
 
-REGEXP
-    : R E G E X P
+PARTITIONS
+    : P A R T I T I O N S
+    ;
+
+TOP
+    : T O P
     ;
 
 ROW
@@ -49,10 +53,6 @@ ROW
 
 ROWS
     : R O W S
-    ;
-
-SOUNDS
-    : S O U N D S
     ;
 
 UNKNOWN
@@ -73,10 +73,6 @@ CASCADE
 
 CHECK
     : C H E C K
-    ;
-
-CURRENT
-    : C U R R E N T
     ;
 
 GENERATED
@@ -135,6 +131,10 @@ CLUSTERED
     : C L U S T E R E D
     ;
 
+NONCLUSTERED
+    : N O N C L U S T E R E D
+    ;
+
 COLLATE
     : C O L L A T E
     ;
@@ -155,8 +155,24 @@ DATABASE
     : D A T A B A S E
     ;
 
+YEARS
+    : Y E A R S
+    ;
+
+MONTHS
+    : M O N T H S
+    ;
+
+WEEKS
+    : W E E K S
+    ;
+  
 DAYS
     : D A Y S
+    ;
+
+MINUTES
+    : M I N U T E S
     ;
 
 DENY
@@ -195,6 +211,10 @@ FILETABLE
     : F I L E T A B L E
     ;
 
+FILLFACTOR
+    : F I L L F A C T O R
+    ;
+
 FOLLOWING
     : F O L L O W I N G
     ;
@@ -215,6 +235,14 @@ INBOUND
     : I N B O U N D
     ;
 
+OUTBOUND
+    : O U T B O U N D
+    ;
+
+UNBOUNDED
+    : U N B O U N D E D
+    ;
+
 INFINITE
     : I N F I N I T E
     ;
@@ -231,24 +259,12 @@ MAXDOP
     : M A X D O P
     ;
 
-MINUTES
-    : M I N U T E S
-    ;
-
-MONTHS
-    : M O N T H S
-    ;
-
 MOVE
     : M O V E
     ;
 
 NOCHECK
     : N O C H E C K
-    ;
-
-NONCLUSTERED
-    : N O N C L U S T E R E D
     ;
 
 NONE
@@ -267,20 +283,12 @@ ONLINE
     : O N L I N E
     ;
 
-OUTBOUND
-    : O U T B O U N D
-    ;
-
 OVER
     : O V E R
     ;
 
 PAGE
     : P A G E
-    ;
-
-PARTITIONS
-    : P A R T I T I O N S
     ;
 
 PAUSED
@@ -355,20 +363,324 @@ TRANCOUNT
     : T R A N C O U N T
     ;
 
-UNBOUNDED
-    : U N B O U N D E D
-    ;
-
-WEEKS
-    : W E E K S
-    ;
-
-YEARS
-    : Y E A R S
-    ;
-
 ZONE
     : Z O N E
+    ;
+
+EXECUTE
+    : E X E C U T E
+    ;
+
+SESSION
+    : S E S S I O N
+    ;
+
+CONNECT
+    : C O N N E C T
+    ;
+
+CONNECTION
+    : C O N N E C T I O N
+    ;
+
+CATALOG
+    : C A T A L O G
+    ;
+
+CONTROL
+    : C O N T R O L
+    ;
+
+TAKE
+    : T A K E
+    ;
+
+OWNERSHIP
+    : O W N E R S H I P
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
+APPLICATION
+    : A P P L I C A T I O N
+    ;
+
+ASSEMBLY
+    : A S S E M B L Y
+    ;
+
+SYMMETRIC
+    : S Y M M E T R I C
+    ;
+
+ASYMMETRIC
+    : A S Y M M E T R I C
+    ;
+
+SERVER
+    : S E R V E R
+    ;
+
+RECEIVE
+    : R E C E I V E
+    ;
+
+CHANGE
+    : C H A N G E
+    ;
+
+TRACE
+    : T R A C E
+    ;
+
+TRACKING
+    : T R A C K I N G
+    ;
+
+RESOURCES
+    : R E S O U R C E S
+    ;
+
+SETTINGS
+    : S E T T I N G S
+    ;
+
+STATE
+    : S T A T E
+    ;
+
+AVAILABILITY
+    : A V A I L A B I L I T Y
+    ;
+
+CREDENTIAL
+    : C R E D E N T I A L
+    ;
+
+ENDPOINT
+    : E N D P O I N T
+    ;
+
+EVENT
+    : E V E N T
+    ;
+
+NOTIFICATION
+    : N O T I F I C A T I O N
+    ;
+
+LINKED
+    : L I N K E D
+    ;
+
+AUDIT
+    : A U D I T
+    ;
+
+DDL
+    : D D L
+    ;
+
+SQL
+    : S Q L
+    ;
+
+XML
+    : X M L
+    ;
+
+IMPERSONATE
+    : I M P E R S O N A T E
+    ;
+
+SECURABLES
+    : S E C U R A B L E S
+    ;
+
+AUTHENTICATE
+    : A U T H E N T I C A T E
+    ;
+
+EXTERNAL
+    : E X T E R N A L
+    ;
+
+ACCESS
+    : A C C E S S
+    ;
+
+ADMINISTER
+    : A D M I N I S T E R
+    ;
+
+BULK
+    : B U L K
+    ;
+
+OPERATIONS
+    : O P E R A T I O N S
+    ;
+
+UNSAFE
+    : U N S A F E
+    ;
+
+SHUTDOWN
+    : S H U T D O W N
+    ;
+
+SCOPED
+    : S C O P E D
+    ;
+
+CONFIGURATION
+    : C O N F I G U R A T I O N
+    ;
+
+DATASPACE
+    : D A T A S P A C E
+    ;
+
+SERVICE
+    : S E R V I C E
+    ;
+
+CERTIFICATE
+    : C E R T I F I C A T E
+    ;
+
+CONTRACT
+    : C O N T R A C T
+    ;
+
+ENCRYPTION
+    : E N C R Y P T I O N
+    ;
+
+MASTER
+    : M A S T E R
+    ;
+
+DATA
+    : D A T A
+    ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+FILE
+    : F I L E
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+LIBRARY
+    : L I B R A R Y
+    ;
+
+FULLTEXT
+    : F U L L T E X T
+    ;
+
+MASK
+    : M A S K
+    ;
+
+UNMASK
+    : U N M A S K
+    ;
+
+MESSAGE
+    : M E S S A G E
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+REMOTE
+    : R E M O T E
+    ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+ROUTE
+    : R O U T E
+    ;
+
+SECURITY
+    : S E C U R I T Y
+    ;
+
+POLICY
+    : P O L I C Y
+    ;
+
+AGGREGATE
+    : A G G R E G A T E
+    ;
+
+QUEUE
+    : Q U E U E
+    ;
+
+RULE
+    : R U L E
+    ;
+
+SYNONYM
+    : S Y N O N Y M
+    ;
+
+COLLECTION
+    : C O L L E C T I O N
+    ;
+
+SCRIPT
+    : S C R I P T
+    ;
+
+KILL
+    : K I L L
+    ;
+
+BACKUP
+    : B A C K U P
+    ;
+
+LOG
+    : L O G
+    ;
+
+SHOWPLAN
+    : S H O W P L A N
+    ;
+
+SUBSCRIBE
+    : S U B S C R I B E
+    ;
+
+QUERY
+    : Q U E R Y 
+    ;
+
+NOTIFICATIONS
+    : N O T I F I C A T I O N S 
+    ;
+
+CHECKPOINT
+    : C H E C K P O I N T
+    ;
+
+SEQUENCE
+    : S E Q U E N C E
     ;
 
 ABORT_AFTER_WAIT
@@ -515,10 +827,6 @@ FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME
     : F I L E T A B L E UL_ S T R E A M I D UL_ U N I Q U E UL_ C O N S T R A I N T UL_ N A M E
     ;
 
-FILLFACTOR
-    : F I L L F A C T O R
-    ;
-
 FILTER_PREDICATE
     : F I L T E R UL_ P R E D I C A T E
     ;
@@ -537,4 +845,8 @@ LOCK_ESCALATION
 
 DROP_EXISTING
     : D R O P UL_ E X I S T I N G
+    ;
+
+ROW_NUMBER
+    : R O W UL_ N U M B E R
     ;

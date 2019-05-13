@@ -30,8 +30,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceholder {
     
-    private final String logicTableName;
-    
     private final String columnName;
     
     private final Comparable<?> columnValue;
@@ -42,21 +40,21 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final int parameterMarkerIndex;
     
-    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName) {
-        this(logicTableName, columnName, null, null, null, 0);
+    public EncryptUpdateItemColumnPlaceholder(final String columnName) {
+        this(columnName, null, null, null, 0);
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final Comparable<?> columnValue) {
-        this(logicTableName, columnName, columnValue, null, null, -1);
+    public EncryptUpdateItemColumnPlaceholder(final String columnName, final Comparable<?> columnValue) {
+        this(columnName, columnValue, null, null, -1);
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName, final String assistedColumnName) {
-        this(logicTableName, columnName, null, assistedColumnName, null, 0);
+    public EncryptUpdateItemColumnPlaceholder(final String columnName, final String assistedColumnName) {
+        this(columnName, null, assistedColumnName, null, 0);
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String logicTableName, final String columnName,
+    public EncryptUpdateItemColumnPlaceholder(final String columnName,
                                               final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
-        this(logicTableName, columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
+        this(columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
     }
     
     @Override

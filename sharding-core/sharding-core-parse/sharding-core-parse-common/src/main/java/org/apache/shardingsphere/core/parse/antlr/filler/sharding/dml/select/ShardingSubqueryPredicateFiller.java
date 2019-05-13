@@ -37,6 +37,8 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 @Setter
 public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<SubqueryPredicateSegment>, ShardingRuleAwareFiller, ShardingTableMetaDataAwareFiller {
     
+    private final ShardingRowNumberPredicateFiller shardingRowNumberPredicateFiller = new ShardingRowNumberPredicateFiller();
+    
     private ShardingRule shardingRule;
     
     private ShardingTableMetaData shardingTableMetaData;
@@ -47,6 +49,7 @@ public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<S
         ShardingOrPredicateFiller shardingOrPredicateFiller = getShardingOrPredicateFiller();
         for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
             selectStatement.getSubqueryConditions().add(shardingOrPredicateFiller.buildCondition(each, sqlStatement));
+            shardingRowNumberPredicateFiller.fill(each, sqlStatement);
         }
     }
     

@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex;
+package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+
+import java.util.Map;
 
 /**
- * Subquery segment.
- * 
- * @author duhongjun
+ * Alter available.
+ *
+ * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public final class SubquerySegment implements SelectItemSegment, ComplexExpressionSegment {
+public interface Alterable {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-
-    @Override
-    public SQLExpression getSQLExpression(final String sql) {
-        return new SQLIgnoreExpression(sql.substring(startIndex, stopIndex + 1));
-    }
+    /**
+     * To string.
+     * 
+     * @param routingUnit routing unit
+     * @param logicAndActualTables logic and actual tables
+     * @return literal
+     */
+    String toString(RoutingUnit routingUnit, Map<String, String> logicAndActualTables);
 }

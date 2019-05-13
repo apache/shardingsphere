@@ -49,9 +49,4 @@ public final class SelectItemsPlaceholder implements ShardingPlaceholder {
         }
         return result.toString();
     }
-    
-    @Override
-    public String getLogicTableName() {
-        return "";
-    }
 }

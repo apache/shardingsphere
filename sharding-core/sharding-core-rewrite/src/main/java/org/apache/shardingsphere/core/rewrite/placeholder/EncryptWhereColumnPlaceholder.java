@@ -34,8 +34,6 @@ import java.util.Map;
 @Getter
 public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder {
     
-    private final String logicTableName;
-    
     private final String columnName;
     
     private final Map<Integer, Comparable<?>> indexValues;

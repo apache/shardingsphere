@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrate
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
 import org.junit.After;
@@ -63,9 +63,9 @@ public final class DatabaseHintRoutingEngineTest {
     public void assertRoute() {
         hintManager.setDatabaseShardingValue(1);
         RoutingResult routingResult = databaseHintRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
+        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
+        assertThat(routingResult.getRoutingUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_1"));
     }
 }
