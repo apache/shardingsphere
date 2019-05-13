@@ -22,13 +22,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Encrypt update item column placeholder for rewrite.
+ * Update item encrypt placeholder for rewrite.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class UpdateItemEncryptColumnPlaceholder implements ShardingPlaceholder {
+public final class UpdateEncryptItemPlaceholder implements ShardingPlaceholder {
     
     private final String columnName;
     
@@ -40,20 +40,20 @@ public final class UpdateItemEncryptColumnPlaceholder implements ShardingPlaceho
     
     private final int parameterMarkerIndex;
     
-    public UpdateItemEncryptColumnPlaceholder(final String columnName) {
+    public UpdateEncryptItemPlaceholder(final String columnName) {
         this(columnName, null, null, null, 0);
     }
     
-    public UpdateItemEncryptColumnPlaceholder(final String columnName, final Comparable<?> columnValue) {
+    public UpdateEncryptItemPlaceholder(final String columnName, final Comparable<?> columnValue) {
         this(columnName, columnValue, null, null, -1);
     }
     
-    public UpdateItemEncryptColumnPlaceholder(final String columnName, final String assistedColumnName) {
+    public UpdateEncryptItemPlaceholder(final String columnName, final String assistedColumnName) {
         this(columnName, null, assistedColumnName, null, 0);
     }
     
-    public UpdateItemEncryptColumnPlaceholder(final String columnName,
-                                              final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
+    public UpdateEncryptItemPlaceholder(final String columnName,
+                                        final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
         this(columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
     }
     
