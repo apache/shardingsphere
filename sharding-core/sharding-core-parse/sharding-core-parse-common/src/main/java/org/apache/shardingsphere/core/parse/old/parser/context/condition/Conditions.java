@@ -54,31 +54,6 @@ public final class Conditions {
     }
     
     /**
-     * Optimize or condition.
-     *
-     */
-    public void optimize() {
-        List<AndCondition> nullConditions = null;
-        for (AndCondition each : orConditions) {
-            if (each.getConditions().iterator().next() instanceof NullCondition) {
-                nullConditions = getNullConditions();
-                break;
-            }
-        }
-        if (null != nullConditions) {
-            orConditions = nullConditions;
-        }
-    }
-    
-    private List<AndCondition> getNullConditions() {
-        List<AndCondition> result = new LinkedList<>();
-        AndCondition andCondition = new AndCondition();
-        andCondition.getConditions().add(new NullCondition());
-        result.add(andCondition);
-        return result;
-    }
-    
-    /**
      * Find conditions by column.
      *
      * @param column column
