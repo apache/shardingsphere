@@ -216,12 +216,11 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {
-        String indexName = originalSQL.substring(indexToken.getStartIndex(), indexToken.getStopIndex() + 1);
         String logicTableName = indexToken.getTableName().toLowerCase();
         if (Strings.isNullOrEmpty(logicTableName)) {
-            logicTableName = shardingRule.getLogicTableName(indexName);
+            logicTableName = shardingRule.getLogicTableName(indexToken.getIndexName());
         }
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexToken.getIndexName(), logicTableName, indexToken.getQuoteCharacter()));
         appendRest(sqlBuilder, count, indexToken.getStopIndex() + 1);
     }
     
