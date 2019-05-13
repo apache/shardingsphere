@@ -183,8 +183,8 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     private void addSubqueryCondition(final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         for (Conditions each : selectStatement.getSubqueryConditions()) {
-            if (!selectStatement.getRouteConditions().getOrCondition().containsAll(each.getOrCondition())) {
-                selectStatement.getRouteConditions().getOrCondition().addAll(each.getOrCondition());
+            if (!selectStatement.getRouteConditions().getOrConditions().containsAll(each.getOrConditions())) {
+                selectStatement.getRouteConditions().getOrConditions().addAll(each.getOrConditions());
             }
         }
     }

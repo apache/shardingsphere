@@ -57,7 +57,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.getRouteConditions().getOrCondition().addAll(buildConditions(sqlSegment, sqlStatement).getOrCondition());
+        sqlStatement.getRouteConditions().getOrConditions().addAll(buildConditions(sqlSegment, sqlStatement).getOrConditions());
         if (sqlStatement instanceof SelectStatement) {
             shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
         }
@@ -98,10 +98,10 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
                 }
             }
             if (andCondition.getConditions().isEmpty()) {
-                result.getOrCondition().clear();
+                result.getOrConditions().clear();
                 return result;
             }
-            result.getOrCondition().add(andCondition);
+            result.getOrConditions().add(andCondition);
         }
         return result;
     }
