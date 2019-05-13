@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.lexer.dialect.oracle;
 
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.lexer.LexerAssert;
 import org.apache.shardingsphere.core.parse.old.lexer.dialect.oracle.OracleLexer;
 import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 public final class OracleLexerTest {

@@ -37,7 +37,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.InsertSetToken;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Iterator;

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingUnsupportedException;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

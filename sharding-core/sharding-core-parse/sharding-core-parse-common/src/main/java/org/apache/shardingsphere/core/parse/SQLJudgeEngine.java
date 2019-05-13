@@ -41,6 +41,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.SchemaToken;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngineFactory;
 import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 
 /**
  * SQL judge engine.

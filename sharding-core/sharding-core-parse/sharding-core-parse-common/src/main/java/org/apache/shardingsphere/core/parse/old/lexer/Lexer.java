@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.parse.old.lexer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.lexer.analyzer.CharType;
 import org.apache.shardingsphere.core.parse.old.lexer.analyzer.Dictionary;
 import org.apache.shardingsphere.core.parse.old.lexer.analyzer.Tokenizer;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Assist;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Token;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 
 /**
  * Lexical analysis.

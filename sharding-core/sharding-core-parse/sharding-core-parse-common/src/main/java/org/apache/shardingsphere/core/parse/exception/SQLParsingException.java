@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.exception;
+package org.apache.shardingsphere.core.parse.exception;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.old.lexer.Lexer;

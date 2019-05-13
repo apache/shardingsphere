@@ -21,6 +21,8 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingUnsupportedException;
 import org.apache.shardingsphere.core.parse.old.lexer.dialect.h2.H2Lexer;
 import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLLexer;
 import org.apache.shardingsphere.core.parse.old.lexer.dialect.oracle.OracleLexer;
@@ -30,8 +32,6 @@ import org.apache.shardingsphere.core.parse.old.lexer.token.Assist;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Token;
 import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
 
 import java.util.Set;
 

@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.ShardingSQLParseEngine;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
