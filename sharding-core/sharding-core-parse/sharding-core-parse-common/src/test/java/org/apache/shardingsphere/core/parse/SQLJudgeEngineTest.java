@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.SetStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.DescribeStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowColumnsStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowCreateTableStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowIndexStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowOtherStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowTableStatusStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowTablesStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.SetStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.DescribeStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowColumnsStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowCreateTableStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowOtherStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowTableStatusStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowTablesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.DQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.tcl.TCLStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

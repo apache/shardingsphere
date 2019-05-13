@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.shardingsphere.core.parse.antlr.autogen.PostgreSQLStatementLexer;
+import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementLexer;
 import org.apache.shardingsphere.core.parse.spi.ShardingParseEngine;
 
 /**

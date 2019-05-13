@@ -24,9 +24,9 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedAnd
 import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedCondition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedOrCondition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedValue;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 
 import java.lang.reflect.Field;
 import java.util.Map;
