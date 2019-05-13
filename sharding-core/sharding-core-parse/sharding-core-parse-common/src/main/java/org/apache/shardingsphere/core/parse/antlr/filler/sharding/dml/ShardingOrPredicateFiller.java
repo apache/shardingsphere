@@ -37,7 +37,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -57,7 +57,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(buildCondition(sqlSegment, sqlStatement).getAndConditions());
+        sqlStatement.getRouteCondition().getOrConditions().addAll(buildConditions(sqlSegment, sqlStatement).getOrConditions());
         if (sqlStatement instanceof SelectStatement) {
             shardingRowNumberPredicateFiller.fill(sqlSegment, sqlStatement);
         }
@@ -70,8 +70,8 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
      * @param sqlStatement SQL statement
      * @return or condition
      */
-    public OrCondition buildCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        OrCondition result = createOrCondition(sqlSegment, sqlStatement);
+    public ParseCondition buildConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        ParseCondition result = createParseCondition(sqlSegment, sqlStatement);
         createEncryptOrPredicateFiller().fill(sqlSegment, sqlStatement);
         return result;
     }
@@ -83,8 +83,8 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return result;
     }
     
-    private OrCondition createOrCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        OrCondition result = new OrCondition();
+    private ParseCondition createParseCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+        ParseCondition result = new ParseCondition();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             AndCondition andCondition = new AndCondition();
             for (PredicateSegment predicate : each.getPredicates()) {
@@ -98,10 +98,10 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
                 }
             }
             if (andCondition.getConditions().isEmpty()) {
-                result.getAndConditions().clear();
+                result.getOrConditions().clear();
                 return result;
             }
-            result.getAndConditions().add(andCondition);
+            result.getOrConditions().add(andCondition);
         }
         return result;
     }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
@@ -26,9 +24,5 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement
  *
  * @author loxp
  */
-@Getter
-@Setter
 public final class ShowStatement extends DALStatement {
-
-    private String name;
 }

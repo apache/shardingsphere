@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 
 import java.util.List;
@@ -49,16 +49,16 @@ public interface SQLStatement {
     /**
      * Get route conditions.
      *
-     * @return conditions
+     * @return parse condition
      */
-    Conditions getRouteConditions();
+    ParseCondition getRouteCondition();
     
     /**
      * Get encrypt conditions.
      *
-     * @return conditions
+     * @return parse condition
      */
-    Conditions getEncryptConditions();
+    ParseCondition getEncryptCondition();
     
     /**
      * Add SQL token.

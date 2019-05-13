@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 
 import java.util.Collections;
@@ -51,9 +51,9 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Tables tables = new Tables();
     
-    private final Conditions routeConditions = new Conditions();
+    private final ParseCondition routeCondition = new ParseCondition();
     
-    private final Conditions encryptConditions = new Conditions();
+    private final ParseCondition encryptCondition = new ParseCondition();
     
     @Getter(AccessLevel.NONE)
     private final List<SQLToken> sqlTokens = new LinkedList<>();
@@ -91,7 +91,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
      * @return encrypt condition
      */
     public Optional<Condition> getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
-        List<Condition> conditions = encryptConditions.getOrCondition().findConditions(encryptColumnToken.getColumn());
+        List<Condition> conditions = encryptCondition.findConditions(encryptColumnToken.getColumn());
         if (0 == conditions.size()) {
             return Optional.absent();
         }
