@@ -48,7 +48,7 @@ public final class ShardingSubqueryPredicateFiller implements SQLSegmentFiller<S
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         ShardingOrPredicateFiller shardingOrPredicateFiller = getShardingOrPredicateFiller();
         for (OrPredicateSegment each : sqlSegment.getOrPredicates()) {
-            selectStatement.getSubqueryConditions().add(shardingOrPredicateFiller.buildCondition(each, sqlStatement));
+            selectStatement.getSubqueryConditions().add(shardingOrPredicateFiller.buildConditions(each, sqlStatement));
             shardingRowNumberPredicateFiller.fill(each, sqlStatement);
         }
     }

@@ -755,8 +755,8 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_z");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLParameterMarkerExpression(0)));
+        selectStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, new SQLParameterMarkerExpression(0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -771,8 +771,8 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_z");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 46, column, true));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLNumberExpression(5)));
+        selectStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLNumberExpression(5)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -787,11 +787,11 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_z");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLNumberExpression(3));
         sqlExpressions.add(new SQLNumberExpression(5));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        selectStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, sqlExpressions));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -810,13 +810,13 @@ public final class SQLRewriteEngineTest {
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 40, column, true));
         selectStatement.addSQLToken(new EncryptColumnToken(45, 50, column, true));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLParameterMarkerExpression(0));
         sqlExpressions.add(new SQLParameterMarkerExpression(1));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
+        selectStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        selectStatement.getEncryptConditions().getOrCondition().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -835,8 +835,8 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_k");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_k", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLParameterMarkerExpression(0)));
+        selectStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, new SQLParameterMarkerExpression(0)));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -851,11 +851,11 @@ public final class SQLRewriteEngineTest {
         Column column = new Column("id", "table_k");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_k", QuoteCharacter.NONE));
         selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
         List<SQLExpression> sqlExpressions = new LinkedList<>();
         sqlExpressions.add(new SQLNumberExpression(3));
         sqlExpressions.add(new SQLNumberExpression(5));
-        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        selectStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, sqlExpressions));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -872,8 +872,8 @@ public final class SQLRewriteEngineTest {
         updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
         updateStatement.getAssignments().put(column, new SQLNumberExpression(1));
         updateStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
-        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
+        updateStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
+        updateStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
         routeResult = new SQLRouteResult(updateStatement);
         routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
@@ -892,8 +892,8 @@ public final class SQLRewriteEngineTest {
         updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
         updateStatement.getAssignments().put(column, new SQLParameterMarkerExpression(0));
         updateStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
-        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
-        updateStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLParameterMarkerExpression(1)));
+        updateStatement.getEncryptConditions().getOrCondition().add(new AndCondition());
+        updateStatement.getEncryptConditions().getOrCondition().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLParameterMarkerExpression(1)));
         routeResult = new SQLRouteResult(updateStatement);
         routeResult.setRoutingResult(new RoutingResult());
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,

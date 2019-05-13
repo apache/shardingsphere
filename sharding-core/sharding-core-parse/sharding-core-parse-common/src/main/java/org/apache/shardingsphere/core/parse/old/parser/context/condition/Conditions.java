@@ -17,8 +17,15 @@
 
 package org.apache.shardingsphere.core.parse.old.parser.context.condition;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Conditions collection.
@@ -28,9 +35,14 @@ import lombok.ToString;
  */
 @Getter
 @ToString
+@RequiredArgsConstructor
 public final class Conditions {
     
-    private final OrCondition orCondition = new OrCondition();
+    private List<AndCondition> orCondition = new ArrayList<>();
+    
+    public Conditions(final Condition condition) {
+        add(condition);
+    }
     
     /**
      * Add condition.
@@ -39,6 +51,54 @@ public final class Conditions {
      */
     public void add(final Condition condition) {
         // TODO self-join has problem, table name maybe use alias
-        orCondition.add(condition);
+        if (orCondition.isEmpty()) {
+            orCondition.add(new AndCondition());
+        }
+        orCondition.iterator().next().getConditions().add(condition);
+    }
+    
+    /**
+     * Optimize or condition.
+     *
+     */
+    public void optimize() {
+        List<AndCondition> nullConditions = null;
+        for (AndCondition each : orCondition) {
+            if (each.getConditions().iterator().next() instanceof NullCondition) {
+                nullConditions = getNullConditions();
+                break;
+            }
+        }
+        if (null != nullConditions) {
+            orCondition = nullConditions;
+        }
+    }
+    
+    private List<AndCondition> getNullConditions() {
+        List<AndCondition> result = new LinkedList<>();
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new NullCondition());
+        result.add(andCondition);
+        return result;
+    }
+    
+    /**
+     * Find conditions by column.
+     *
+     * @param column column
+     * @return conditions
+     */
+    public List<Condition> findConditions(final Column column) {
+        List<Condition> result = new LinkedList<>();
+        for (AndCondition each : orCondition) {
+            result.addAll(Collections2.filter(each.getConditions(), new Predicate<Condition>() {
+                
+                @Override
+                public boolean apply(final Condition input) {
+                    return input.getColumn().equals(column);
+                }
+            }));
+        }
+        return result;
     }
 }
