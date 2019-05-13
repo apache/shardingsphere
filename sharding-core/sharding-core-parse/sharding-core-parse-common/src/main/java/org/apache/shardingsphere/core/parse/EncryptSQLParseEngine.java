@@ -26,11 +26,11 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * SQL parsing engine for encrypt.
+ * SQL parse engine for encrypt.
  *
  * @author panjuan
  */
-public final class EncryptSQLParsingEngine {
+public final class EncryptSQLParseEngine {
     
     private final DatabaseType dbType;
     
@@ -40,7 +40,7 @@ public final class EncryptSQLParsingEngine {
     
     private final ParsingResultCache parsingResultCache;
     
-    public EncryptSQLParsingEngine(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
+    public EncryptSQLParseEngine(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
         this.dbType = dbType;
         this.encryptRule = encryptRule;
         this.shardingTableMetaData = shardingTableMetaData;
