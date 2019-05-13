@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.token.impl;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -29,18 +30,24 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 @ToString
 public final class SchemaToken extends SQLToken implements Substitutable {
     
+    private final String schemaName;
+    
     private final String tableName;
     
-    @Getter
+    private final QuoteCharacter quoteCharacter;
+    
     private final int stopIndex;
     
-    public SchemaToken(final int startIndex, final int stopIndex, final String tableName) {
+    public SchemaToken(final int startIndex, final int stopIndex, final String schemaName, final String tableName) {
         super(startIndex);
+        this.schemaName = SQLUtil.getExactlyValue(schemaName);
         this.tableName = tableName;
         this.stopIndex = stopIndex;
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(schemaName);
     }
     
     /**

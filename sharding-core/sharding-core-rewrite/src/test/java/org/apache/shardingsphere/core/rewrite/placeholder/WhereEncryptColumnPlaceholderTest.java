@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,37 +52,6 @@ public class WhereEncryptColumnPlaceholderTest {
     public void assertToStringWithPlaceholderWithEqual() {
         whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", Collections.<Integer, Comparable<?>>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
         assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x = ?"));
-    }
-    
-    @Test
-    public void assertToStringWithoutPlaceholderWithBetween() {
-        Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
-        indexValues.put(0, "a");
-        indexValues.put(1, "b");
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.BETWEEN);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x BETWEEN 'a' AND 'b'"));
-    }
-    
-    @Test
-    public void assertToStringWithFirstPlaceholderWithBetween() {
-        Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
-        indexValues.put(0, "a");
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", indexValues, Collections.singletonList(1), ShardingOperator.BETWEEN);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x BETWEEN 'a' AND ?"));
-    }
-    
-    @Test
-    public void assertToStringWithSecondPlaceholderWithBetween() {
-        Map<Integer, Comparable<?>> indexValues = new LinkedHashMap<>();
-        indexValues.put(0, "a");
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", indexValues, Collections.singletonList(0), ShardingOperator.BETWEEN);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x BETWEEN ? AND 'a'"));
-    }
-    
-    @Test
-    public void assertToStringWithTwoPlaceholderWithBetween() {
-        whereEncryptColumnPlaceholder = new WhereEncryptColumnPlaceholder("column_x", Collections.<Integer, Comparable<?>>emptyMap(), Lists.newArrayList(0, 1), ShardingOperator.BETWEEN);
-        assertThat(whereEncryptColumnPlaceholder.toString(), is("column_x BETWEEN ? AND ?"));
     }
     
     @Test

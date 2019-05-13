@@ -550,7 +550,7 @@ public final class ShardingSQLRewriteEngineTest {
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_y");
         selectStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new SchemaToken(29, 35, "table_x"));
+        selectStatement.addSQLToken(new SchemaToken(29, 35, "db0", "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -561,7 +561,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 22, "table_x"));
+        selectStatement.addSQLToken(new IndexToken(13, 22, "index_name", "table_x"));
         selectStatement.addSQLToken(new TableToken(27, 33, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -573,7 +573,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 23, ""));
+        selectStatement.addSQLToken(new IndexToken(13, 23, "logic_index", "table_x"));
         selectStatement.addSQLToken(new TableToken(28, 34, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -598,7 +598,7 @@ public final class ShardingSQLRewriteEngineTest {
     @Test
     public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
-        showTablesStatement.addSQLToken(new SchemaToken(31, 43, "table_x"));
+        showTablesStatement.addSQLToken(new SchemaToken(31, 43, "db0", "table_x"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
@@ -772,22 +772,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertSelectBetweenWithShardingEncryptor() {
-        Column column = new Column("id", "table_z");
-        selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new EncryptColumnToken(29, 46, column, true));
-        selectStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        selectStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLNumberExpression(5)));
-        routeResult = new SQLRouteResult(selectStatement);
-        routeResult.setLimit(selectStatement.getLimit());
-        routeResult.setRoutingResult(new RoutingResult());
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule,
-                "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, routeResult, new LinkedList<>(), shardingDataSourceMetaData);
-        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(), 
-                is("SELECT id FROM table_z WHERE id BETWEEN 'encryptValue' AND 'encryptValue'"));
-    }
-    
-    @Test
     public void assertSelectInWithShardingEncryptor() {
         Column column = new Column("id", "table_z");
         selectStatement.addSQLToken(new TableToken(15, 21, "table_z", QuoteCharacter.NONE));
@@ -885,28 +869,5 @@ public final class ShardingSQLRewriteEngineTest {
                 "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
         assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(), 
                 is("UPDATE table_z SET id = 'encryptValue' WHERE id = 'encryptValue'"));
-    }
-    
-    @Test
-    public void assertUpdateWithQueryAssistedShardingEncryptor() {
-        List<Object> parameters = new ArrayList<>(2);
-        parameters.add(1);
-        parameters.add(5);
-        Column column = new Column("id", "table_k");
-        updateStatement.addSQLToken(new TableToken(7, 13, "table_k", QuoteCharacter.NONE));
-        updateStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
-        updateStatement.getAssignments().put(column, new SQLParameterMarkerExpression(0));
-        updateStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
-        updateStatement.getEncryptCondition().getOrConditions().add(new AndCondition());
-        updateStatement.getEncryptCondition().getOrConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLParameterMarkerExpression(1)));
-        routeResult = new SQLRouteResult(updateStatement);
-        routeResult.setRoutingResult(new RoutingResult());
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule,
-                "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, routeResult, parameters, shardingDataSourceMetaData);
-        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(), 
-                is("UPDATE table_k SET id = ?, query_id = ? WHERE query_id BETWEEN 'assistedEncryptValue' AND ?"));
-        assertThat(parameters.get(0), is((Object) "encryptValue"));
-        assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
-        assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
     }
 }

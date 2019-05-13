@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.sql.token.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -35,17 +36,23 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @ToString
 public final class IndexToken extends SQLToken implements Substitutable {
     
-    private String tableName;
+    private final String indexName;
     
     private final int stopIndex;
     
-    public IndexToken(final int startIndex, final int stopIndex) {
+    private String tableName;
+    
+    private final QuoteCharacter quoteCharacter;
+    
+    public IndexToken(final int startIndex, final int stopIndex, final String indexName) {
         super(startIndex);
+        this.indexName = SQLUtil.getExactlyValue(indexName);
         this.stopIndex = stopIndex;
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(indexName);
     }
     
-    public IndexToken(final int startIndex, final int stopIndex, final String tableName) {
-        this(startIndex, stopIndex);
+    public IndexToken(final int startIndex, final int stopIndex, final String indexName, final String tableName) {
+        this(startIndex, stopIndex, indexName);
         this.tableName = tableName;
     }
     

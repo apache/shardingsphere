@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
@@ -40,15 +41,16 @@ public final class SchemaPlaceholder implements ShardingPlaceholder, Alterable {
     
     private final String logicTableName;
     
+    private final QuoteCharacter quoteCharacter;
+    
     private final BaseRule baseRule;
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
     @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        if (Strings.isNullOrEmpty(logicTableName)) {
-            return logicTableName;
-        }
-        return dataSourceMetaData.getActualDataSourceMetaData(baseRule.getActualDataSourceName(logicAndActualTables.get(logicTableName))).getSchemaName();
+        String actualSchemaName = Strings.isNullOrEmpty(logicTableName) 
+                ? logicSchemaName : dataSourceMetaData.getActualDataSourceMetaData(baseRule.getActualDataSourceName(logicAndActualTables.get(logicTableName))).getSchemaName();
+        return quoteCharacter.getStartDelimiter() + actualSchemaName + quoteCharacter.getEndDelimiter();
     }
 }

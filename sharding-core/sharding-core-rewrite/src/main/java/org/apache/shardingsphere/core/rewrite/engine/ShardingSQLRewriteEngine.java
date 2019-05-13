@@ -211,18 +211,17 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase(), shardingRule, dataSourceMetaData));
+        sqlBuilder.appendPlaceholder(
+                new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName().toLowerCase(), schemaToken.getQuoteCharacter(), shardingRule, dataSourceMetaData));
         appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {
-        String indexName = originalSQL.substring(indexToken.getStartIndex(), indexToken.getStopIndex() + 1);
         String logicTableName = indexToken.getTableName().toLowerCase();
         if (Strings.isNullOrEmpty(logicTableName)) {
-            logicTableName = shardingRule.getLogicTableName(indexName);
+            logicTableName = shardingRule.getLogicTableName(indexToken.getIndexName());
         }
-        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
+        sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexToken.getIndexName(), logicTableName, indexToken.getQuoteCharacter()));
         appendRest(sqlBuilder, count, indexToken.getStopIndex() + 1);
     }
     

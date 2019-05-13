@@ -87,7 +87,7 @@ public final class TableBroadcastRoutingEngineTest {
     private RoutingResult createDDLStatementRoutingResult() {
         DDLStatement ddlStatement = new DDLStatement();
         ddlStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
-        ddlStatement.addSQLToken(new IndexToken(13, 25, "t_order"));
+        ddlStatement.addSQLToken(new IndexToken(13, 25, "t_order_index", "t_order"));
         TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, ddlStatement);
         return tableBroadcastRoutingEngine.route();
     }
