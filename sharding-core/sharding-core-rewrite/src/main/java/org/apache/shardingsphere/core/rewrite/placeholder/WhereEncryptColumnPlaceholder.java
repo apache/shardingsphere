@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder {
+public final class WhereEncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private final String columnName;
     
