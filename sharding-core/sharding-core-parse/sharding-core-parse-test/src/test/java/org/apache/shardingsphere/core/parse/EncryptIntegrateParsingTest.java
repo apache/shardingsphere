@@ -17,14 +17,8 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
@@ -47,9 +41,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import com.google.common.base.Preconditions;
-
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -65,7 +63,7 @@ public class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsing
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
+//    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         sqlCasesLoader.switchSQLCase("encrypt_sql");
         parserResultSetLoader.switchResult("encrypt");
@@ -103,8 +101,8 @@ public class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsing
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new EncryptSQLStatementAssert(new EncryptSQLParseEngine(execDatabaseType, buildShardingRule(),
-                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(false, sql), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
+            new EncryptSQLStatementAssert(new EncryptSQLParseEngine(execDatabaseType, buildShardingRule(), AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(false, sql), 
+                    sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
         }
     }
 }
