@@ -47,26 +47,11 @@ public final class WhereEncryptColumnPlaceholder implements ShardingPlaceholder 
         switch (operator) {
             case EQUAL:
                 return parameterMarkerIndexes.isEmpty() ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
-            case BETWEEN:
-                return toStringFromBetween();
             case IN:
                 return toStringFromIn();
             default:
                 throw new ShardingException("Sharding operator is incorrect.");
         }
-    }
-    
-    private String toStringFromBetween() {
-        if (parameterMarkerIndexes.isEmpty()) {
-            return String.format("%s %s '%s' AND '%s'", columnName, operator.name(), indexValues.get(0), indexValues.get(1));
-        }
-        if (2 == parameterMarkerIndexes.size()) {
-            return String.format("%s %s ? AND ?", columnName, operator.name());
-        }
-        if (0 == parameterMarkerIndexes.iterator().next()) {
-            return String.format("%s %s ? AND '%s'", columnName, operator.name(), indexValues.get(0));
-        }
-        return String.format("%s %s '%s' AND ?", columnName, operator.name(), indexValues.get(0));
     }
     
     private String toStringFromIn() {
