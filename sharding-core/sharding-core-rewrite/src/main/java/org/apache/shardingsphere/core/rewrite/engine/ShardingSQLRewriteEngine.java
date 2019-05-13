@@ -211,8 +211,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase(), shardingRule, dataSourceMetaData));
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName().toLowerCase(), shardingRule, dataSourceMetaData));
         appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
