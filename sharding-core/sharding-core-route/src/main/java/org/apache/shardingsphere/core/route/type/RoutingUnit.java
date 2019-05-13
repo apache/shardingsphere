@@ -71,14 +71,13 @@ public final class RoutingUnit {
     /**
      * Get actual tables' names via data source name.
      *
-     * @param dataSourceName data source name
      * @param logicTableName logic table name
      * @return  actual tables' names
      */
-    public Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
+    public Set<String> getActualTableNames(final String logicTableName) {
         Set<String> result = new HashSet<>();
         for (TableUnit each : tableUnits) {
-            if (dataSourceName.equalsIgnoreCase(this.dataSourceName) && logicTableName.equalsIgnoreCase(each.getLogicTableName())) {
+            if (logicTableName.equalsIgnoreCase(each.getLogicTableName())) {
                 result.add(each.getActualTableName());
             }
         }

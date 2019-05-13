@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.old.parser.context.condition;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -28,54 +28,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Or conditions.
+ * Conditions collection.
  *
+ * @author zhangliang
  * @author maxiaoguang
+ * @author zhaojun
  */
-@NoArgsConstructor
 @Getter
 @ToString
-public final class OrCondition {
+@RequiredArgsConstructor
+public final class ParseCondition {
     
-    private final List<AndCondition> andConditions = new ArrayList<>();
-    
-    /**
-     * Add condition.
-     *
-     * @param condition condition
-     */
-    public void add(final Condition condition) {
-        if (andConditions.isEmpty()) {
-            andConditions.add(new AndCondition());
-        }
-        andConditions.get(0).getConditions().add(condition);
-    }
-    
-    /**
-     * Optimize or condition.
-     *
-     * @return or condition
-     */
-    public OrCondition optimize() {
-        for (AndCondition each : andConditions) {
-            if (each.getConditions().get(0) instanceof NullCondition) {
-                OrCondition result = new OrCondition();
-                result.add(new NullCondition());
-                return result;
-            }
-        }
-        return this;
-    }
+    private List<AndCondition> orConditions = new ArrayList<>();
     
     /**
      * Find conditions by column.
-     * 
+     *
      * @param column column
      * @return conditions
      */
     public List<Condition> findConditions(final Column column) {
         List<Condition> result = new LinkedList<>();
-        for (AndCondition each : andConditions) {
+        for (AndCondition each : orConditions) {
             result.addAll(Collections2.filter(each.getConditions(), new Predicate<Condition>() {
                 
                 @Override

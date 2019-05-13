@@ -53,22 +53,4 @@ public final class AndCondition {
         }
         return result;
     }
-    
-    /**
-     * Optimize and condition.
-     *
-     * @return and condition
-     */
-    public AndCondition optimize() {
-        AndCondition result = new AndCondition();
-        for (Condition each : conditions) {
-            if (Condition.class.equals(each.getClass())) {
-                result.getConditions().add(each);
-            }
-        }
-        if (result.getConditions().isEmpty()) {
-            result.getConditions().add(new NullCondition());
-        }
-        return result;
-    }
 }
