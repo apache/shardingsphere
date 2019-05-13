@@ -38,7 +38,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class Conditions {
     
-    private List<AndCondition> orCondition = new ArrayList<>();
+    private List<AndCondition> orConditions = new ArrayList<>();
     
     public Conditions(final Condition condition) {
         add(condition);
@@ -51,10 +51,10 @@ public final class Conditions {
      */
     public void add(final Condition condition) {
         // TODO self-join has problem, table name maybe use alias
-        if (orCondition.isEmpty()) {
-            orCondition.add(new AndCondition());
+        if (orConditions.isEmpty()) {
+            orConditions.add(new AndCondition());
         }
-        orCondition.iterator().next().getConditions().add(condition);
+        orConditions.iterator().next().getConditions().add(condition);
     }
     
     /**
@@ -63,14 +63,14 @@ public final class Conditions {
      */
     public void optimize() {
         List<AndCondition> nullConditions = null;
-        for (AndCondition each : orCondition) {
+        for (AndCondition each : orConditions) {
             if (each.getConditions().iterator().next() instanceof NullCondition) {
                 nullConditions = getNullConditions();
                 break;
             }
         }
         if (null != nullConditions) {
-            orCondition = nullConditions;
+            orConditions = nullConditions;
         }
     }
     
@@ -90,7 +90,7 @@ public final class Conditions {
      */
     public List<Condition> findConditions(final Column column) {
         List<Condition> result = new LinkedList<>();
-        for (AndCondition each : orCondition) {
+        for (AndCondition each : orConditions) {
             result.addAll(Collections2.filter(each.getConditions(), new Predicate<Condition>() {
                 
                 @Override
