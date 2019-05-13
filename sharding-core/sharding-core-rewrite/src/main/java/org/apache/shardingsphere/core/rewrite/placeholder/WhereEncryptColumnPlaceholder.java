@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Encrypt column placeholder for rewrite.
+ * Where encrypt column placeholder for rewrite.
  *
  * @author panjuan
  */
