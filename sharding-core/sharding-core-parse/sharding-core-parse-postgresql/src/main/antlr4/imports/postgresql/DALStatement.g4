@@ -23,20 +23,20 @@ show
     : SHOW (ALL | TRANSACTION ISOLATION LEVEL | identifier_)
     ;
 
-setParam
-    : SET scope? setClause
+set
+    : SET runtimeScope_? (timeZoneClause_ | configurationParameterClause_)
     ;
 
-scope
+runtimeScope_
     : SESSION | LOCAL
     ;
 
-setClause
-    : TIME ZONE timeZoneType | IDENTIFIER_ (TO | EQ_) (STRING_ | DEFAULT)
+timeZoneClause_
+    : TIME ZONE (numberLiterals | LOCAL | DEFAULT)
     ;
 
-timeZoneType
-    : numberLiterals | LOCAL | DEFAULT
+configurationParameterClause_
+    : identifier_ (TO | EQ_) (identifier_ | STRING_ | DEFAULT)
     ;
 
 resetParam
