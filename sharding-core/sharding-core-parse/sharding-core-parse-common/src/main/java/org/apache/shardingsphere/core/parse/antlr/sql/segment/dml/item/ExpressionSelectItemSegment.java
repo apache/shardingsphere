@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**

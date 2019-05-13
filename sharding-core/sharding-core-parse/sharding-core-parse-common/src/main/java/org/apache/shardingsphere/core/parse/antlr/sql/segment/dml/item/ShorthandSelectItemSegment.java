@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**

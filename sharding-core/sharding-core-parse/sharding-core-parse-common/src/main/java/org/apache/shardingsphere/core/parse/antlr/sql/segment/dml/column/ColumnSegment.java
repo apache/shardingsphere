@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.sql.OwnerAvailable;
+import org.apache.shardingsphere.core.parse.antlr.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;

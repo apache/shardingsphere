@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql;
+package org.apache.shardingsphere.core.parse.antlr.sql.segment;
 
 import com.google.common.base.Optional;
 
