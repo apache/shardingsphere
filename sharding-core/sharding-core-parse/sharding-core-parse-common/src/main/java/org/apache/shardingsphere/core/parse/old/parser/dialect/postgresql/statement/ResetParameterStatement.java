@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.state
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
- * Reset param statement.
+ * Reset parameter statement.
  *
  * @author loxp
  */
-public class ResetParamStatement extends DALStatement {
+public final class ResetParameterStatement extends DALStatement {
 }

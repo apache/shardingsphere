@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.ResetParamStatement;
+import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.ResetParameterStatement;
 import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.SetStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
@@ -94,7 +94,7 @@ public final class RoutingEngineFactory {
         if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof UseStatement) {
             return new IgnoreRoutingEngine();
         }
-        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParamStatement) {
+        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         return new UnicastRoutingEngine(shardingRule, tableNames);
