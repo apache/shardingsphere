@@ -32,6 +32,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author zhaojun
  */
 @Getter
 @ToString
@@ -39,19 +40,6 @@ import java.util.List;
 public final class ParseCondition {
     
     private List<AndCondition> orConditions = new ArrayList<>();
-    
-    /**
-     * Add condition.
-     *
-     * @param condition condition
-     */
-    public void add(final Condition condition) {
-        // TODO self-join has problem, table name maybe use alias
-        if (orConditions.isEmpty()) {
-            orConditions.add(new AndCondition());
-        }
-        orConditions.iterator().next().getConditions().add(condition);
-    }
     
     /**
      * Find conditions by column.
