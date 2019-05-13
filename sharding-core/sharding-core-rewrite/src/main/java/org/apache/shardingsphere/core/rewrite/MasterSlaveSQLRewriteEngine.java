@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
@@ -36,6 +37,7 @@ import java.util.Map;
  * @author chenqingyang
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class MasterSlaveSQLRewriteEngine {
     
     private final MasterSlaveRule masterSlaveRule;
@@ -45,21 +47,6 @@ public final class MasterSlaveSQLRewriteEngine {
     private final SQLStatement sqlStatement;
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
-    
-    /**
-     * Constructs master slave SQL rewrite engine.
-     * 
-     * @param masterSlaveRule master slave rule
-     * @param originalSQL original SQL
-     * @param sqlStatement SQL statement
-     * @param dataSourceMetaData datasource meta data
-     */
-    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingDataSourceMetaData dataSourceMetaData) {
-        this.masterSlaveRule = masterSlaveRule;
-        this.originalSQL = originalSQL;
-        this.sqlStatement = sqlStatement;
-        this.dataSourceMetaData = dataSourceMetaData;
-    }
     
     /**
      * Rewrite SQL.
