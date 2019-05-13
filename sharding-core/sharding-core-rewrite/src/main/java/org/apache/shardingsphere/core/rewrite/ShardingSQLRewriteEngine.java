@@ -95,7 +95,7 @@ import java.util.Map.Entry;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingSQLRewriteEngine {
+public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private final ShardingRule shardingRule;
     
@@ -115,15 +115,6 @@ public final class ShardingSQLRewriteEngine {
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
-    /**
-     * Constructs SQL rewrite engine.
-     * 
-     * @param shardingRule databases and tables sharding rule
-     * @param originalSQL original SQL
-     * @param databaseType database type
-     * @param sqlRouteResult SQL route result
-     * @param parameters parameters
-     */
     public ShardingSQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL,
                                     final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingDataSourceMetaData dataSourceMetaData) {
         this.shardingRule = shardingRule;
@@ -137,11 +128,7 @@ public final class ShardingSQLRewriteEngine {
         this.dataSourceMetaData = dataSourceMetaData;
     }
     
-    /**
-     * rewrite SQL.
-     *
-     * @return SQL builder
-     */
+    @Override
     public SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder(parameters);
         if (sqlStatement.getSQLTokens().isEmpty()) {
@@ -436,13 +423,7 @@ public final class ShardingSQLRewriteEngine {
         sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
     }
     
-    /**
-     * Generate SQL string.
-     * 
-     * @param routingUnit routing unit
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
+    @Override
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
         return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
     }
