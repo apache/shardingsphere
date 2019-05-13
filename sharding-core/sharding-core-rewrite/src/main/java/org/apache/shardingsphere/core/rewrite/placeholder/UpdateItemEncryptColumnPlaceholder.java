@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceholder {
+public final class UpdateItemEncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private final String columnName;
     
@@ -40,19 +40,19 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final int parameterMarkerIndex;
     
-    public EncryptUpdateItemColumnPlaceholder(final String columnName) {
+    public UpdateItemEncryptColumnPlaceholder(final String columnName) {
         this(columnName, null, null, null, 0);
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String columnName, final Comparable<?> columnValue) {
+    public UpdateItemEncryptColumnPlaceholder(final String columnName, final Comparable<?> columnValue) {
         this(columnName, columnValue, null, null, -1);
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String columnName, final String assistedColumnName) {
+    public UpdateItemEncryptColumnPlaceholder(final String columnName, final String assistedColumnName) {
         this(columnName, null, assistedColumnName, null, 0);
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String columnName,
+    public UpdateItemEncryptColumnPlaceholder(final String columnName,
                                               final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
         this(columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
     }
