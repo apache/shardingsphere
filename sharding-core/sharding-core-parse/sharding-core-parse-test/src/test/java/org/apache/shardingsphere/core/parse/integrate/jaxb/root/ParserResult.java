@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedOrCondition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.groupby.ExpectedGroupByColumn;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedSelectItems;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.limit.ExpectedLimit;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.meta.ExpectedTableMetaData;
@@ -89,6 +90,9 @@ public final class ParserResult {
     
     @XmlElement(name = "encrypt-condition")
     private ExpectedOrCondition encryptCondition = new ExpectedOrCondition();
+    
+    @XmlElement(name = "insert-columns-and-values")
+    private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();
     
     /**
      * Get parameters.

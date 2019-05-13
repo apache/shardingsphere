@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
@@ -25,26 +32,28 @@ import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.integrate.asserts.AntlrParserResultSetLoader;
-import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.test.sql.AntlrSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import com.google.common.base.Preconditions;
+
+import lombok.RequiredArgsConstructor;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTest {
+public class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
     
@@ -56,11 +65,18 @@ public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTes
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameters(name = "{0} ({2}) -> {1}")
+    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        sqlCasesLoader.switchSQLCase("antlr_supported_sql");
-        parserResultSetLoader.switchResult("antlr_parser");
+        sqlCasesLoader.switchSQLCase("encrypt_sql");
+        parserResultSetLoader.switchResult("encrypt");
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
+    }
+    
+    private static EncryptRule buildShardingRule() throws IOException {
+        URL url = AbstractBaseIntegrateSQLParsingTest.class.getClassLoader().getResource("yaml/encrypt-rule-for-parser.yaml");
+        Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
+        YamlEncryptRuleConfiguration encryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlEncryptRuleConfiguration.class);
+        return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptConfig));
     }
     
     @Test
@@ -79,20 +95,16 @@ public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTes
     }
     
     @Test
-    public void assertSupportedSQL() {
-        ParserResult parserResult = null;
-        try {
-            parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
-        } catch (final Exception ignored) {
-        }
+    public void assertSupportedSQL() throws Exception {
+        ParserResult parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
             DatabaseType execDatabaseType = databaseType;
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new SQLStatementAssert(new SQLParseEngine(execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(),
-                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
+            new EncryptSQLStatementAssert(new EncryptSQLParseEngine(execDatabaseType, buildShardingRule(),
+                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(false, sql), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
         }
     }
 }

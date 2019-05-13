@@ -123,8 +123,8 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         ParserRuleContext booleanPrimaryNode = comparisonOperatorNode.get().getParent();
-        Optional<ParserRuleContext> leftColumnNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) booleanPrimaryNode.getChild(0), RuleName.COLUMN_NAME);
-        Optional<ParserRuleContext> rightColumnNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) booleanPrimaryNode.getChild(2), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> leftColumnNode = ExtractorUtils.findSingleNodeFromFirstDescendant((ParserRuleContext) booleanPrimaryNode.getChild(0), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> rightColumnNode = ExtractorUtils.findSingleNodeFromFirstDescendant((ParserRuleContext) booleanPrimaryNode.getChild(2), RuleName.COLUMN_NAME);
         if (!leftColumnNode.isPresent() && !rightColumnNode.isPresent()) {
             return Optional.absent();
         }

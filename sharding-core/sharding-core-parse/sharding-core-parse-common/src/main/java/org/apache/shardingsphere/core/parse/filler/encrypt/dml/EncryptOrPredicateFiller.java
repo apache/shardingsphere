@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml;
 
-import com.google.common.base.Optional;
-import lombok.Setter;
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingUnsupportedException;
 import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
@@ -30,6 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -37,8 +40,9 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 
-import java.util.Collection;
-import java.util.HashSet;
+import com.google.common.base.Optional;
+
+import lombok.Setter;
 
 /**
  * Or predicate filler for encrypt.
@@ -72,22 +76,25 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         if (!tableName.isPresent() || !isNeedEncrypt(predicateSegment, tableName.get())) {
             return;
         }
-        AndCondition andCondition;
-        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
-            andCondition = new AndCondition();
-            sqlStatement.getEncryptCondition().getOrConditions().add(andCondition);
-        } else {
-            andCondition = sqlStatement.getEncryptCondition().getOrConditions().get(0);
-        }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
         Optional<Condition> condition = createCondition(predicateSegment, column);
         if (condition.isPresent()) {
+            AndCondition andCondition;
+            if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
+                andCondition = new AndCondition();
+                sqlStatement.getEncryptCondition().getOrConditions().add(andCondition);
+            } else {
+                andCondition = sqlStatement.getEncryptCondition().getOrConditions().get(0);
+            }
             andCondition.getConditions().add(condition.get());
             sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), column, true));
         }
     }
 
     private Optional<Condition> createCondition(final PredicateSegment predicateSegment, final Column column) {
+        if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
+            throw new SQLParsingUnsupportedException("The SQL clause 'BETWEEN...AND...' is unsuppored in encrypt rule.");
+        }
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
             return isOperatorSupportedWithEncrypt(compareRightValue.getOperator()) ? PredicateUtils.createCompareCondition(compareRightValue, column) : Optional.<Condition>absent();

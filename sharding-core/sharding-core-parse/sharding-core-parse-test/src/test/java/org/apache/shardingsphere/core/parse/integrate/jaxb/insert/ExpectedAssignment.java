@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.insert;
 
-import org.apache.shardingsphere.core.parse.ddl.IntegrateDDLParsingCompatibleTest;
-import org.apache.shardingsphere.core.parse.integrate.AllParsingIntegrateTests;
-import org.apache.shardingsphere.core.parse.rule.AllRuleTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllRuleTests.class,
-        SQLParseEngineTest.class,
-        IntegrateDDLParsingCompatibleTest.class,
-        AllParsingIntegrateTests.class,
-        EncryptIntegrateParsingTest.class
-})
-public final class AllParseTests {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ExpectedAssignment {
+    
+    @XmlAttribute(name = "type-for-placeholder")
+    private String typeForPlaceholder;
+    
+    @XmlAttribute(name = "text-for-placeholder")
+    private String textForPlaceholder;
+    
+    @XmlAttribute(name = "type-for-literal")
+    private String typeForLiteral;
+    
+    @XmlAttribute(name = "text-for-literal")
+    private String textForLiteral;
 }
