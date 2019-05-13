@@ -550,7 +550,7 @@ public final class ShardingSQLRewriteEngineTest {
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_y");
         selectStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
-        selectStatement.addSQLToken(new SchemaToken(29, 35, "table_x"));
+        selectStatement.addSQLToken(new SchemaToken(29, 35, "db0", "table_x"));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
@@ -598,7 +598,7 @@ public final class ShardingSQLRewriteEngineTest {
     @Test
     public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, 24, "table_x", QuoteCharacter.NONE));
-        showTablesStatement.addSQLToken(new SchemaToken(31, 43, "table_x"));
+        showTablesStatement.addSQLToken(new SchemaToken(31, 43, "db0", "table_x"));
         routeResult = new SQLRouteResult(showTablesStatement);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
