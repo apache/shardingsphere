@@ -40,10 +40,6 @@ public final class Conditions {
     
     private List<AndCondition> orConditions = new ArrayList<>();
     
-    public Conditions(final Condition condition) {
-        add(condition);
-    }
-    
     /**
      * Add condition.
      *
