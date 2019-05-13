@@ -73,7 +73,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         MasterSlaveSQLRewriteEngine sqlRewriteEngine = 
                 new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData().getDataSource());
-        String rewriteSQL = sqlRewriteEngine.generateSQL(sqlRewriteEngine.rewrite()).getSql();
+        String rewriteSQL = sqlRewriteEngine.generateSQL(null, sqlRewriteEngine.rewrite()).getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         for (String each : new MasterSlaveRouter(
                 ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
