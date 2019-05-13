@@ -31,8 +31,9 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
-import org.apache.shardingsphere.core.parse.integrate.asserts.AntlrParserResultSetLoader;
+import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.EncryptSQLStatementAssert;
+import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
@@ -40,12 +41,13 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.test.sql.AntlrSQLCasesLoader;
+import org.apache.shardingsphere.test.sql.EncryptSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.google.common.base.Preconditions;
 
@@ -55,9 +57,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
+    private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesLoader.getInstance();
     
-    private static AntlrParserResultSetLoader parserResultSetLoader = AntlrParserResultSetLoader.getInstance();
+    private static ParserResultSetLoader parserResultSetLoader = EncryptParserResultSetLoader.getInstance();
     
     private final String sqlCaseId;
     
@@ -65,10 +67,8 @@ public class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsing
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        sqlCasesLoader.switchSQLCase("encrypt_sql");
-        parserResultSetLoader.switchResult("encrypt");
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     
