@@ -15,16 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.placeholder;
+package org.apache.shardingsphere.core.rewrite.engine;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        UpdateEncryptItemPlaceholderTest.class,
-        WhereEncryptColumnPlaceholderTest.class
-    })
-public final class AllPlaceholderTests {
+/**
+ * SQL rewrite engine.
+ *
+ * @author panjuan
+ */
+public interface SQLRewriteEngine {
+    
+    /**
+     * rewrite SQL.
+     *
+     * @return SQL builder
+     */
+    SQLBuilder rewrite();
+    
+    /**
+     * Generate SQL string.
+     *
+     * @param routingUnit routing unit
+     * @param sqlBuilder SQL builder
+     * @return SQL unit
+     */
+    SQLUnit generateSQL(RoutingUnit routingUnit, SQLBuilder sqlBuilder);
 }

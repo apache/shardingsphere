@@ -26,13 +26,13 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Encrypt column placeholder for rewrite.
+ * Where encrypt column placeholder for rewrite.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptWhereColumnPlaceholder implements ShardingPlaceholder {
+public final class WhereEncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private final String columnName;
     

@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Encrypt update item column placeholder for rewrite.
+ *update item column placeholder for rewrite.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceholder {
+public final class UpdateEncryptAssistedItemPlaceholder implements ShardingPlaceholder {
     
     private final String columnName;
     
@@ -40,29 +39,17 @@ public final class EncryptUpdateItemColumnPlaceholder implements ShardingPlaceho
     
     private final int parameterMarkerIndex;
     
-    public EncryptUpdateItemColumnPlaceholder(final String columnName) {
-        this(columnName, null, null, null, 0);
-    }
-    
-    public EncryptUpdateItemColumnPlaceholder(final String columnName, final Comparable<?> columnValue) {
-        this(columnName, columnValue, null, null, -1);
-    }
-    
-    public EncryptUpdateItemColumnPlaceholder(final String columnName, final String assistedColumnName) {
+    public UpdateEncryptAssistedItemPlaceholder(final String columnName, final String assistedColumnName) {
         this(columnName, null, assistedColumnName, null, 0);
     }
     
-    public EncryptUpdateItemColumnPlaceholder(final String columnName,
-                                              final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
+    public UpdateEncryptAssistedItemPlaceholder(final String columnName,
+                                                final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
         this(columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
     }
     
     @Override
-    @SuppressWarnings("all")
     public String toString() {
-        if (Strings.isNullOrEmpty(assistedColumnName)) {
-            return -1 != parameterMarkerIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
-        }
         return -1 != parameterMarkerIndex ? String.format("%s = ?, %s = ?", columnName, assistedColumnName) 
                 : String.format("%s = %s, %s = %s", columnName, toStringForColumnValue(columnValue), assistedColumnName, toStringForColumnValue(assistedColumnValue));
     }

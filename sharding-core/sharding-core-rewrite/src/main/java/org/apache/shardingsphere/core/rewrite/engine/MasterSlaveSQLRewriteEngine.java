@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite;
+package org.apache.shardingsphere.core.rewrite.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
+import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.HashMap;
@@ -36,7 +39,8 @@ import java.util.Map;
  * @author chenqingyang
  * @author panjuan
  */
-public final class MasterSlaveSQLRewriteEngine {
+@RequiredArgsConstructor
+public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -46,26 +50,7 @@ public final class MasterSlaveSQLRewriteEngine {
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
-    /**
-     * Constructs master slave SQL rewrite engine.
-     * 
-     * @param masterSlaveRule master slave rule
-     * @param originalSQL original SQL
-     * @param sqlStatement SQL statement
-     * @param dataSourceMetaData datasource meta data
-     */
-    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingDataSourceMetaData dataSourceMetaData) {
-        this.masterSlaveRule = masterSlaveRule;
-        this.originalSQL = originalSQL;
-        this.sqlStatement = sqlStatement;
-        this.dataSourceMetaData = dataSourceMetaData;
-    }
-    
-    /**
-     * Rewrite SQL.
-     * 
-     * @return SQL
-     */
+    @Override
     public SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder();
         if (sqlStatement.getSQLTokens().isEmpty()) {
@@ -100,13 +85,8 @@ public final class MasterSlaveSQLRewriteEngine {
         sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
     }
     
-    /**
-     * Generate SQL string.
-     *
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL(final SQLBuilder sqlBuilder) {
+    @Override
+    public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
         return sqlBuilder.toSQL(getTableTokens());
     }
     

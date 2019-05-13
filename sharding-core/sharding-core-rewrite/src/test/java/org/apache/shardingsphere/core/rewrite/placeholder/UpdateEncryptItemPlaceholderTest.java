@@ -17,14 +17,24 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        UpdateEncryptItemPlaceholderTest.class,
-        WhereEncryptColumnPlaceholderTest.class
-    })
-public final class AllPlaceholderTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class UpdateEncryptItemPlaceholderTest {
+    
+    private UpdateEncryptItemPlaceholder updateEncryptItemPlaceholder;
+    
+    @Test
+    public void assertToStringWithPlaceholderWithoutAssistedColumn() {
+        updateEncryptItemPlaceholder = new UpdateEncryptItemPlaceholder("column_x");
+        assertThat(updateEncryptItemPlaceholder.toString(), is("column_x = ?"));
+    }
+    
+    @Test
+    public void assertToStringWithoutPlaceholderWithoutAssistedColumn() {
+        updateEncryptItemPlaceholder = new UpdateEncryptItemPlaceholder("column_x", 1);
+        assertThat(updateEncryptItemPlaceholder.toString(), is("column_x = 1"));
+    }
 }
