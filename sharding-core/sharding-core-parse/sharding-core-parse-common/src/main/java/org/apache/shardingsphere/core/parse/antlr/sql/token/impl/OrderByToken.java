@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
+
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 
 /**
- * Substitute available.
+ * Order by token.
  *
+ * @author zhangliang
  * @author panjuan
  */
-public interface Substitutable {
+public final class OrderByToken extends SQLToken implements Attachable {
     
-    /**
-     * Get start index.
-     * 
-     * @return start index
-     */
-    int getStartIndex();
-    
-    /**
-     * Get stop index.
-     * 
-     * @return stop index
-     */
-    int getStopIndex();
+    public OrderByToken(final int startIndex) {
+        super(startIndex);
+    }
 }

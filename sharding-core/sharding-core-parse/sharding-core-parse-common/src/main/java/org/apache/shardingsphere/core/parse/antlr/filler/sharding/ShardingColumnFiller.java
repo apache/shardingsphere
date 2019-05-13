@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDa
 import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.TableToken;
 
 /**
  * Column filler for sharding.

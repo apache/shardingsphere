@@ -33,8 +33,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.StarSel
 import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.OrderByToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.SelectItemsToken;
 
 import java.util.List;
 

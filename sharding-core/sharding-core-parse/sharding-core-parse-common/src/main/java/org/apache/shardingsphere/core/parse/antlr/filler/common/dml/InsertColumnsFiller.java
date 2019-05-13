@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.ColumnS
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.InsertValuesToken;
 
 /**
  * Insert columns filler.

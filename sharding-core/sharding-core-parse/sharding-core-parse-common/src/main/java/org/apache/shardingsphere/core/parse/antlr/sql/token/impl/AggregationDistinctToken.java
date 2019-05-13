@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Substitutable;
 
 /**
  * Aggregation distinct token.

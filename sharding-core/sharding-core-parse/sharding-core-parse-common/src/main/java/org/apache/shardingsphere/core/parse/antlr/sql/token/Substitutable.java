@@ -17,32 +17,24 @@
 
 package org.apache.shardingsphere.core.parse.antlr.sql.token;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
-
 /**
- * Table token.
+ * Substitute available.
  *
- * @author zhangliang
  * @author panjuan
  */
-@Getter
-@ToString
-public final class TableToken extends SQLToken implements Substitutable {
+public interface Substitutable {
     
-    private final String tableName;
+    /**
+     * Get start index.
+     * 
+     * @return start index
+     */
+    int getStartIndex();
     
-    private final int stopIndex;
-    
-    private final QuoteCharacter quoteCharacter;
-    
-    public TableToken(final int startIndex, final int stopIndex, final String tableName, final QuoteCharacter quoteCharacter) {
-        super(startIndex);
-        this.tableName = SQLUtil.getExactlyValue(tableName);
-        this.quoteCharacter = quoteCharacter;
-        this.stopIndex = stopIndex;
-    }
+    /**
+     * Get stop index.
+     * 
+     * @return stop index
+     */
+    int getStopIndex();
 }

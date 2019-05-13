@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
+
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Substitutable;
 
 /**
- * Attach available.
+ * Row count token for limit.
  *
+ * @author zhangliang
  * @author panjuan
  */
-public interface Attachable {
+@Getter
+public final class RowCountToken extends SQLToken implements Substitutable {
     
-    /**
-     * Get start index.
-     *
-     * @return start index
-     */
-    int getStartIndex();
+    private final int rowCount;
+    
+    private final int stopIndex;
+    
+    public RowCountToken(final int startIndex, final int stopIndex, final int rowCount) {
+        super(startIndex);
+        this.rowCount = rowCount;
+        this.stopIndex = stopIndex;
+    }
 }

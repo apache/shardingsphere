@@ -31,9 +31,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.Distinc
 import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Table;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.OffsetToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;

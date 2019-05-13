@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegme
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.IndexToken;
 
 import java.util.Map;
 

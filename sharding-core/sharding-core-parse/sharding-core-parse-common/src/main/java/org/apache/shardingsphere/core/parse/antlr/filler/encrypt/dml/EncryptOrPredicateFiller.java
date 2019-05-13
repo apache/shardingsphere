@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.Pred
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 

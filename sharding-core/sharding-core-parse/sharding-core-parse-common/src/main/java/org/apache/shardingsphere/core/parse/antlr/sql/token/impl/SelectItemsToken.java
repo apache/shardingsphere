@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Remove token.
+ * Select items token.
  *
  * @author zhangliang
  * @author panjuan
  */
 @Getter
 @ToString
-public final class RemoveToken extends SQLToken implements Substitutable {
+@EqualsAndHashCode(callSuper = true)
+public final class SelectItemsToken extends SQLToken implements Attachable {
     
-    private final int stopIndex;
+    @Setter
+    private boolean isFirstOfItemsSpecial;
     
-    public RemoveToken(final int startIndex, final int stopIndex) {
+    private final List<String> items = new LinkedList<>();
+    
+    public SelectItemsToken(final int startIndex) {
         super(startIndex);
-        this.stopIndex = stopIndex;
     }
 }

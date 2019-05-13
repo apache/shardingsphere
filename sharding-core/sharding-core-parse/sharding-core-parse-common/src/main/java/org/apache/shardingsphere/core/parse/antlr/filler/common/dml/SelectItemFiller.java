@@ -38,9 +38,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Shorthand
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.RowCountToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.TableToken;
 
 /**
  * Select item filler.

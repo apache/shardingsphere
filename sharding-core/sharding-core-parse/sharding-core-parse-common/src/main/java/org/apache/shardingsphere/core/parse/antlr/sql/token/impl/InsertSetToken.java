@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.Attachable;
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Substitutable;
 
 /**
- * Order by token.
+ * Insert set token.
  *
  * @author zhangliang
  * @author panjuan
  */
-public final class OrderByToken extends SQLToken implements Attachable {
+@Getter
+public final class InsertSetToken extends SQLToken implements Substitutable {
     
-    public OrderByToken(final int startIndex) {
+    private final int stopIndex;
+    
+    public InsertSetToken(final int startIndex, final int stopIndex) {
         super(startIndex);
+        this.stopIndex = stopIndex;
     }
 }

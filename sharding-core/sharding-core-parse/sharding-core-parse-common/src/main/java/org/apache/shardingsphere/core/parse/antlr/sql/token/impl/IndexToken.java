@@ -15,24 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Substitutable;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Insert values token.
+ * Index token.
  *
- * @author maxiaoguang
+ * @author caohao
  * @author panjuan
  */
 @Getter
-public final class InsertValuesToken extends SQLToken implements Substitutable {
+@Setter
+@ToString
+public final class IndexToken extends SQLToken implements Substitutable {
+    
+    private String tableName;
     
     private final int stopIndex;
     
-    public InsertValuesToken(final int startIndex, final int stopIndex) {
+    public IndexToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
+    }
+    
+    public IndexToken(final int startIndex, final int stopIndex, final String tableName) {
+        this(startIndex, stopIndex);
+        this.tableName = tableName;
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    public String getTableName() {
+        return SQLUtil.getExactlyValue(tableName);
     }
 }

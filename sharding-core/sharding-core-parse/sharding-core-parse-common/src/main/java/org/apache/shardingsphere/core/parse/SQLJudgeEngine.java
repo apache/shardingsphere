@@ -40,7 +40,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.SchemaToken;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngineFactory;
 import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;

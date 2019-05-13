@@ -15,27 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Substitutable;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Offset token for limit.
+ * Table token.
  *
  * @author zhangliang
  * @author panjuan
  */
 @Getter
-public final class OffsetToken extends SQLToken implements Substitutable {
+@ToString
+public final class TableToken extends SQLToken implements Substitutable {
     
-    private final int offset;
+    private final String tableName;
     
     private final int stopIndex;
     
-    public OffsetToken(final int startIndex, final int stopIndex, final int offset) {
+    private final QuoteCharacter quoteCharacter;
+    
+    public TableToken(final int startIndex, final int stopIndex, final String tableName, final QuoteCharacter quoteCharacter) {
         super(startIndex);
-        this.offset = offset;
+        this.tableName = SQLUtil.getExactlyValue(tableName);
+        this.quoteCharacter = quoteCharacter;
         this.stopIndex = stopIndex;
     }
 }

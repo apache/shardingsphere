@@ -35,8 +35,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.Si
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

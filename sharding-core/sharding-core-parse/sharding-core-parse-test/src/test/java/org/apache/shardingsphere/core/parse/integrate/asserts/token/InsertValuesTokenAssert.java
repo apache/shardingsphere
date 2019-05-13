@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedInsertValuesToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;

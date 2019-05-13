@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.ddl.index;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.IndexToken;
 
 /**
  * Index filler.

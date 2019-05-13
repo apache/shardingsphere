@@ -15,32 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.token;
+package org.apache.shardingsphere.core.parse.antlr.sql.token.impl;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.Substitutable;
+import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
- * Encrypt column token.
+ * Schema token.
  *
+ * @author zhangliang
  * @author panjuan
  */
-@Getter
 @ToString
-public final class EncryptColumnToken extends SQLToken implements Substitutable {
+public final class SchemaToken extends SQLToken implements Substitutable {
     
-    private final Column column;
+    private final String tableName;
     
-    private final boolean isInWhere;
-    
+    @Getter
     private final int stopIndex;
     
-    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
+    public SchemaToken(final int startIndex, final int stopIndex, final String tableName) {
         super(startIndex);
-        this.column = column;
-        this.isInWhere = isInWhere;
+        this.tableName = tableName;
         this.stopIndex = stopIndex;
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    public String getTableName() {
+        return SQLUtil.getExactlyValue(tableName);
     }
 }

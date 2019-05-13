@@ -27,9 +27,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLPara
 import org.apache.shardingsphere.core.parse.antlr.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.InsertSetToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
 import org.junit.Test;
