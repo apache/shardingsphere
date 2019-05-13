@@ -20,7 +20,7 @@ grammar DALStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
 
 show
-    : SHOW (ALL | IDENTIFIER_ | TRANSACTION ISOLATION LEVEL)
+    : SHOW (ALL | TRANSACTION ISOLATION LEVEL | identifier_)
     ;
 
 setParam
