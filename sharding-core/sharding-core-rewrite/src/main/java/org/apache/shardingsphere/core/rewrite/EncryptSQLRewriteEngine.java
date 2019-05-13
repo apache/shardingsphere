@@ -47,6 +47,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholde
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ColumnNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
@@ -67,7 +68,7 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public final class EncryptSQLRewriteEngine {
+public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     private final EncryptRule encryptRule;
     
@@ -106,11 +107,7 @@ public final class EncryptSQLRewriteEngine {
         this.optimizeResult = optimizeResult;
     }
     
-    /**
-     * rewrite SQL.
-     *
-     * @return SQL builder
-     */
+    @Override
     public SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder(parameters);
         if (sqlTokens.isEmpty()) {
@@ -304,13 +301,8 @@ public final class EncryptSQLRewriteEngine {
         }
     }
     
-    /**
-     * Generate SQL string.
-     *
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL(final SQLBuilder sqlBuilder) {
+    @Override
+    public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
         return sqlBuilder.toSQL();
     }
 }
