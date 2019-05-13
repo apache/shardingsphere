@@ -71,7 +71,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
      * @return or condition
      */
     public ParseCondition buildConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
-        ParseCondition result = createConditions(sqlSegment, sqlStatement);
+        ParseCondition result = createParseCondition(sqlSegment, sqlStatement);
         createEncryptOrPredicateFiller().fill(sqlSegment, sqlStatement);
         return result;
     }
@@ -83,7 +83,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
         return result;
     }
     
-    private ParseCondition createConditions(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
+    private ParseCondition createParseCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         ParseCondition result = new ParseCondition();
         for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
             AndCondition andCondition = new AndCondition();
