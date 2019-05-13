@@ -20,11 +20,11 @@ grammar DCLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (classPrivilegesClause_ | classTypePrivilegesClause_) 
+    : GRANT (classPrivilegesClause_ | classTypePrivilegesClause_ | roleClause_)
     ;
 
 revoke
-    : REVOKE (optionForClause_? classPrivilegesClause_ | classTypePrivilegesClause_)
+    : REVOKE (optionForClause_? classPrivilegesClause_ | classTypePrivilegesClause_ | roleClause_)
     ;
 
 deny
@@ -158,6 +158,10 @@ class_
 
 classType_
     : (LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER) COLON_ COLON_
+    ;
+
+roleClause_
+    : ignoredIdentifiers_
     ;
 
 createUser

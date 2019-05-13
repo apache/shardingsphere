@@ -38,7 +38,7 @@ roleClause_
 optionForClause_
     : (GRANT | ADMIN) OPTION FOR
     ;
-    
+
 privileges_
     : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
