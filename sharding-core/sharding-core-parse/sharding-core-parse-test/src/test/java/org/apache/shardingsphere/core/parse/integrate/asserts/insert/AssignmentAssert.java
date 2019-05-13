@@ -21,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedAssignment;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIdentifierExpression;
+import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLPropertyExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
@@ -56,23 +54,17 @@ public final class AssignmentAssert {
     }
     
     private String getText(final SQLExpression expression) {
-        if (expression instanceof SQLIdentifierExpression) {
-            return ((SQLIdentifierExpression) expression).getName();
+        if (expression instanceof SQLParameterMarkerExpression) {
+            return "" + ((SQLParameterMarkerExpression) expression).getIndex();
         }
-        if (expression instanceof SQLIgnoreExpression) {
-            return ((SQLIgnoreExpression) expression).getExpression();
+        if (expression instanceof SQLTextExpression) {
+            return ((SQLTextExpression) expression).getText();
         }
         if (expression instanceof SQLNumberExpression) {
             return "" + ((SQLNumberExpression) expression).getNumber();
         }
-        if (expression instanceof SQLParameterMarkerExpression) {
-            return "" + ((SQLParameterMarkerExpression) expression).getIndex();
-        }
-        if (expression instanceof SQLPropertyExpression) {
-            return ((SQLPropertyExpression) expression).getOwner() + "." + ((SQLPropertyExpression) expression).getName();
-        }
-        if (expression instanceof SQLTextExpression) {
-            return ((SQLTextExpression) expression).getText();
+        if (expression instanceof SQLIgnoreExpression) {
+            return ((SQLIgnoreExpression) expression).getExpression();
         }
         return "";
     }
