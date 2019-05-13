@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ import java.util.Map;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class MasterSlaveSQLRewriteEngine {
+public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -48,11 +49,7 @@ public final class MasterSlaveSQLRewriteEngine {
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
-    /**
-     * Rewrite SQL.
-     * 
-     * @return SQL
-     */
+    @Override
     public SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder();
         if (sqlStatement.getSQLTokens().isEmpty()) {
@@ -87,13 +84,8 @@ public final class MasterSlaveSQLRewriteEngine {
         sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
     }
     
-    /**
-     * Generate SQL string.
-     *
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL(final SQLBuilder sqlBuilder) {
+    @Override
+    public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
         return sqlBuilder.toSQL(getTableTokens());
     }
     
