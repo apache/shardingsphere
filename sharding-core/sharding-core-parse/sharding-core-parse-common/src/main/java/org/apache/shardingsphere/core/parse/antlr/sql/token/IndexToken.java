@@ -34,17 +34,20 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @ToString
 public final class IndexToken extends SQLToken implements Substitutable {
     
-    private String tableName;
+    private final String indexName;
     
     private final int stopIndex;
     
-    public IndexToken(final int startIndex, final int stopIndex) {
+    private String tableName;
+    
+    public IndexToken(final int startIndex, final int stopIndex, final String indexName) {
         super(startIndex);
+        this.indexName = indexName;
         this.stopIndex = stopIndex;
     }
     
-    public IndexToken(final int startIndex, final int stopIndex, final String tableName) {
-        this(startIndex, stopIndex);
+    public IndexToken(final int startIndex, final int stopIndex, final String indexName, final String tableName) {
+        this(startIndex, stopIndex, indexName);
         this.tableName = tableName;
     }
     
