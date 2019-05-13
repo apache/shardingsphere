@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Encrypt update item column placeholder for rewrite.
+ * Update encrypt item placeholder for rewrite.
  *
  * @author panjuan
  */
