@@ -93,4 +93,18 @@ public class DataSourceGroupBroadcastRoutingEngineTest {
         assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getDataSourceName()));
         assertThat(iterator.next().getDataSourceName(), is("default"));
     }
+    
+    @Test
+    public void assertRouteWithoutDefaultDataSource() {
+        List<List<String>> shards = new LinkedList<>();
+        shards.add(Arrays.asList("ds1", "ds2", "ds3"));
+        shards.add(Arrays.asList("ds1", "ds2", "ds3"));
+        shards.add(Arrays.asList("ds1", "ds2", "ds3"));
+        List<TableRule> tableRules = mockTableRules(shards);
+        when(shardingRule.getTableRules()).thenReturn(tableRules);
+        RoutingResult actual = dataSourceGroupBroadcastRoutingEngine.route();
+        assertThat(actual.getRoutingUnits().size(), is(1));
+        Iterator<RoutingUnit> iterator = actual.getRoutingUnits().iterator();
+        assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getDataSourceName()));
+    }
 }
