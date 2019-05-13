@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.ShardingSQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
