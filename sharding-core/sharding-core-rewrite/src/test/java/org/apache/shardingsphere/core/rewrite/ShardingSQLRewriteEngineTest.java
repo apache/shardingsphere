@@ -178,7 +178,8 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "SELECT AVG(x.age) FROM table_x x", DatabaseType.MySQL, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
+        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "SELECT AVG(x.age) FROM table_x x", 
+                DatabaseType.MySQL, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
         assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(), is(
                 "SELECT AVG(x.age), COUNT(x.age) as AVG_DERIVED_COUNT_0, SUM(x.age) as AVG_DERIVED_SUM_0 FROM table_1 x"));
     }
@@ -365,7 +366,8 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
+        ShardingSQLRewriteEngine rewriteEngine = 
+                new ShardingSQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
                 DatabaseType.Oracle, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
         assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>0"));
@@ -420,7 +422,8 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
         routeResult.setRoutingResult(new RoutingResult());
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
+        ShardingSQLRewriteEngine rewriteEngine = 
+                new ShardingSQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
                 DatabaseType.Oracle, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
         assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=2147483647) t WHERE t.rownum_>0"));
@@ -477,8 +480,9 @@ public final class ShardingSQLRewriteEngineTest {
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         routeResult.setRoutingResult(routingResult);
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
-                DatabaseType.Oracle, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
+        ShardingSQLRewriteEngine rewriteEngine = 
+                new ShardingSQLRewriteEngine(shardingRule, "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_x x) row_ WHERE rownum<=4) t WHERE t.rownum_>2", 
+                        DatabaseType.Oracle, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
         assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(),
                 is("SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT x.id FROM table_1 x) row_ WHERE rownum<=4) t WHERE t.rownum_>2"));
     }

@@ -25,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         SQLBuilderTest.class, 
-        SQLRewriteEngineTest.class,
+        ShardingSQLRewriteEngineTest.class,
         AllPlaceholderTests.class
     })
 public final class AllRewriteTests {
