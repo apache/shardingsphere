@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author zhangliang
  * @author panjuan
  */
+@Getter
 @ToString
 public final class SchemaToken extends SQLToken implements Substitutable {
     
@@ -38,7 +39,6 @@ public final class SchemaToken extends SQLToken implements Substitutable {
     
     private final QuoteCharacter quoteCharacter;
     
-    @Getter
     private final int stopIndex;
     
     public SchemaToken(final int startIndex, final int stopIndex, final String schemaName, final String tableName) {
