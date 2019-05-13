@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.SetStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.broadcast.DataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.InstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.TableBroadcastRoutingEngine;
@@ -100,7 +101,7 @@ public final class RoutingEngineFactory {
         if (!tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
-        return new DatabaseBroadcastRoutingEngine(shardingRule);
+        return new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
 
     private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
