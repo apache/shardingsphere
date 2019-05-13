@@ -97,7 +97,10 @@ public final class RoutingEngineFactory {
         if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        return new UnicastRoutingEngine(shardingRule, tableNames);
+        if (!tableNames.isEmpty()) {
+            return new UnicastRoutingEngine(shardingRule, tableNames);
+        }
+        return new DatabaseBroadcastRoutingEngine(shardingRule);
     }
 
     private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
