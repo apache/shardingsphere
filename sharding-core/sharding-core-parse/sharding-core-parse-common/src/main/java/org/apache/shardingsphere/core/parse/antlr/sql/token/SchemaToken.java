@@ -31,13 +31,16 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @ToString
 public final class SchemaToken extends SQLToken implements Substitutable {
     
+    private final String schemaName;
+    
     private final String tableName;
     
     @Getter
     private final int stopIndex;
     
-    public SchemaToken(final int startIndex, final int stopIndex, final String tableName) {
+    public SchemaToken(final int startIndex, final int stopIndex, final String schemaName, final String tableName) {
         super(startIndex);
+        this.schemaName = schemaName;
         this.tableName = tableName;
         this.stopIndex = stopIndex;
     }
@@ -49,5 +52,14 @@ public final class SchemaToken extends SQLToken implements Substitutable {
      */
     public String getTableName() {
         return SQLUtil.getExactlyValue(tableName);
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @return table name
+     */
+    public String getSchemaName() {
+        return SQLUtil.getExactlyValue(schemaName);
     }
 }
