@@ -46,4 +46,5 @@
     <sql-case id="insert_with_one_auto_increment_column" value="INSERT INTO t_auto_increment_table VALUES()" db-types="MySQL" />
     <sql-case id="insert_with_double_value" value="INSERT INTO t_double_test(col1) VALUES(1.22)" db-types="MySQL" />
     <sql-case id="insert_with_null_value" value="INSERT INTO t_null_value_test(col1) VALUES(null)" db-types="MySQL" />
+    <sql-case id="insert_with_blob_value" value="INSERT INTO t_blob_value_test(col1) VALUES(_BINARY'This is a binary value.')" db-types="MySQL" />
 </sql-cases>

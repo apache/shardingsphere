@@ -947,3 +947,7 @@ MINUTE_MICROSECOND
 SECOND_MICROSECOND
     : S E C O N D UL_ M I C R O S E C O N D
     ;
+
+UL_BINARY
+    : UL_ B I N A R Y
+    ;

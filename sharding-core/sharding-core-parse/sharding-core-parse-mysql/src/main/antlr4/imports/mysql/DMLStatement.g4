@@ -69,7 +69,11 @@ assignmentValues
     ;
 
 assignmentValue
-    : expr | DEFAULT
+    : expr | DEFAULT | blobValue
+    ;
+
+blobValue
+    : UL_BINARY STRING_
     ;
 
 delete
