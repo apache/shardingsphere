@@ -39,5 +39,4 @@ public final class AntlrSQLCasesLoader extends SQLCasesLoader {
     public static AntlrSQLCasesLoader getInstance() {
         return INSTANCE;
     }
-   
 }
