@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.optimize.result.insert;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;

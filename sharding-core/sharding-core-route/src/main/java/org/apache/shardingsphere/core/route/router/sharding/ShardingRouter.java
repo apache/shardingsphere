@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.router.sharding;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.List;

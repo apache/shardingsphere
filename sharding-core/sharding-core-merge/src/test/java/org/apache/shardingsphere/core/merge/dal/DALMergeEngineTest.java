@@ -23,11 +23,11 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowCreateTableStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowOtherStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowTablesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowCreateTableStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowOtherStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowTablesStatement;
 import org.junit.Before;
 import org.junit.Test;
 

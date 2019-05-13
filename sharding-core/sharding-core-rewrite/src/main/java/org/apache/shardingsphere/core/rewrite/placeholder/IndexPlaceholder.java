@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 

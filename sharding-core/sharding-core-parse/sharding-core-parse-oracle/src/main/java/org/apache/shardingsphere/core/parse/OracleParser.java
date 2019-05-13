@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.parse.antlr.autogen.OracleStatementParser;
-import org.apache.shardingsphere.core.parse.antlr.parser.advanced.AdvancedErrorStrategy;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.parser.advanced.AdvancedErrorStrategy;
 
 /**
  * SQL parser for Oracle.

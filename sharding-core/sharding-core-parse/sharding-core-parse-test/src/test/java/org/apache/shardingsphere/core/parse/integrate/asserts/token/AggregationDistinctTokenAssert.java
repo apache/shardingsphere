@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.parse.integrate.asserts.token;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedAggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedTokens;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 
 import java.util.ArrayList;
 import java.util.Collection;
