@@ -21,13 +21,13 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimizer;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
-import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedColumn;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
@@ -182,9 +182,9 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     
     private void addSubqueryCondition(final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (OrCondition each : selectStatement.getSubqueryConditions()) {
-            if (!selectStatement.getRouteConditions().getOrCondition().getAndConditions().containsAll(each.getAndConditions())) {
-                selectStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
+        for (ParseCondition each : selectStatement.getSubqueryParseConditions()) {
+            if (!selectStatement.getRouteCondition().getOrConditions().containsAll(each.getOrConditions())) {
+                selectStatement.getRouteCondition().getOrConditions().addAll(each.getOrConditions());
             }
         }
     }

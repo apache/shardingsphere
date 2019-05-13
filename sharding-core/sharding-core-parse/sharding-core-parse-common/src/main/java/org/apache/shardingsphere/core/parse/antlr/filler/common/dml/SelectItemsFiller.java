@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.DistinctSelectItem;
 
 import java.util.Iterator;
@@ -105,7 +105,7 @@ public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegm
             AggregationSelectItemSegment aggregationSelectItemSegment = (AggregationSelectItemSegment) selectItemSegment;
             Optional<String> alias = aggregationSelectItemSegment.getAlias();
             if (aggregationSelectItemSegment instanceof AggregationDistinctSelectItemSegment && !alias.isPresent()) {
-                ((AggregationSelectItemSegment) selectItemSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
+                ((AggregationSelectItemSegment) selectItemSegment).setAlias(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(offset));
                 return offset + 1;
             }
         }

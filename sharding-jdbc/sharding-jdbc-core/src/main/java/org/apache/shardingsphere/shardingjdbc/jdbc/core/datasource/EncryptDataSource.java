@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.parse.EncryptSQLParsingEngine;
+import org.apache.shardingsphere.core.parse.EncryptSQLParseEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -58,7 +58,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     
     private final DatabaseType databaseType;
     
-    private final EncryptSQLParsingEngine encryptSQLParsingEngine;
+    private final EncryptSQLParseEngine encryptSQLParseEngine;
     
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
@@ -68,7 +68,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
         this.dataSource = dataSource;
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         databaseType = getDatabaseType();
-        encryptSQLParsingEngine = new EncryptSQLParsingEngine(databaseType, encryptRule, createEncryptTableMetaData());
+        encryptSQLParseEngine = new EncryptSQLParseEngine(databaseType, encryptRule, createEncryptTableMetaData());
     }
     
     @SneakyThrows
@@ -122,7 +122,7 @@ public class EncryptDataSource extends AbstractUnsupportedOperationDataSource im
     @Override
     @SneakyThrows
     public EncryptConnection getConnection() {
-        return new EncryptConnection(dataSource.getConnection(), encryptRule, databaseType, encryptSQLParsingEngine);
+        return new EncryptConnection(dataSource.getConnection(), encryptRule, databaseType, encryptSQLParseEngine);
     }
     
     @Override

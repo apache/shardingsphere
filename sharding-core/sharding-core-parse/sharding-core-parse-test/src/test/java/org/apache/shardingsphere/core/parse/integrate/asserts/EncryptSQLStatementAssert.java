@@ -62,7 +62,7 @@ public final class EncryptSQLStatementAssert {
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
         if (DatabaseType.MySQL == databaseType) {
-            conditionAssert.assertOrCondition(actual.getEncryptConditions().getOrCondition(), expected.getEncryptCondition());
+            conditionAssert.assertConditions(actual.getEncryptCondition(), expected.getEncryptCondition());
         }
         if (actual instanceof InsertStatement) {
             insertNamesAndValuesAssert.assertInsertNamesAndValues((InsertStatement) actual, expected.getInsertColumnsAndValues());

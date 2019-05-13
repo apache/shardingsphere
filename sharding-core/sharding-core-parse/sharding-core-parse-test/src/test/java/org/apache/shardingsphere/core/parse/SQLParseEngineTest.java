@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
+import org.apache.shardingsphere.core.parse.antlr.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.antlr.parser.SQLParserFactory;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.integrate.asserts.AntlrParserResultSetLoader;
@@ -45,7 +45,7 @@ import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLParsingTest {
+public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
     
@@ -59,6 +59,8 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
+        sqlCasesLoader.switchSQLCase("antlr_supported_sql");
+        parserResultSetLoader.switchResult("antlr_parser");
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     
@@ -90,7 +92,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new SQLStatementAssert(new AntlrParsingEngine(execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(), 
+            new SQLStatementAssert(new SQLParseEngine(execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(),
                     AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
         }
     }

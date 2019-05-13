@@ -18,55 +18,51 @@
 package org.apache.shardingsphere.core.parse;
 
 import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
+import org.apache.shardingsphere.core.parse.antlr.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Encrypt SQL parsing engine.
+ * SQL parse engine for sharding.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public final class EncryptSQLParsingEngine {
+@RequiredArgsConstructor
+public final class ShardingSQLParseEngine {
     
     private final DatabaseType dbType;
     
-    private final EncryptRule encryptRule;
+    private final String sql;
+    
+    private final ShardingRule shardingRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
     
     private final ParsingResultCache parsingResultCache;
     
-    public EncryptSQLParsingEngine(final DatabaseType dbType, final EncryptRule encryptRule, final ShardingTableMetaData shardingTableMetaData) {
-        this.dbType = dbType;
-        this.encryptRule = encryptRule;
-        this.shardingTableMetaData = shardingTableMetaData;
-        parsingResultCache = new ParsingResultCache();
-    }
-    
     /**
      * Parse SQL.
      *
      * @param useCache use cache or not
-     * @param sql SQL
-     * @return parsed SQL statement
+     * @return SQL statement
      */
-    public SQLStatement parse(final boolean useCache, final String sql) {
-        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache, sql);
+    public SQLStatement parse(final boolean useCache) {
+        Optional<SQLStatement> cachedSQLStatement = getSQLStatementFromCache(useCache);
         if (cachedSQLStatement.isPresent()) {
             return cachedSQLStatement.get();
         }
-        SQLStatement result = new AntlrParsingEngine(dbType, sql, encryptRule, shardingTableMetaData).parse();
+        SQLStatement result = new SQLParseEngine(dbType, sql, shardingRule, shardingTableMetaData).parse();
         if (useCache) {
             parsingResultCache.put(sql, result);
         }
         return result;
     }
     
-    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache, final String sql) {
+    private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
         return useCache ? Optional.fromNullable(parsingResultCache.getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
 }

@@ -22,6 +22,4 @@
     
     <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.groupby.DescNullOrderDirectionGroupByExtractor" />
     <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby.DescNullOrderDirectionOrderByExtractor" />
-    
-    <extractor-rule id="showParam" extractor-class="org.apache.shardingsphere.core.parse.extractor.ShowParamExtractor" />
 </extractor-rule-definition>

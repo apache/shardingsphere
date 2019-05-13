@@ -76,11 +76,11 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
         Optional<Condition> condition = createCondition(predicateSegment, column);
         if (condition.isPresent()) {
             AndCondition andCondition;
-            if (sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().isEmpty()) {
+            if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
                 andCondition = new AndCondition();
-                sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(andCondition);
+                sqlStatement.getEncryptCondition().getOrConditions().add(andCondition);
             } else {
-                andCondition = sqlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0);
+                andCondition = sqlStatement.getEncryptCondition().getOrConditions().get(0);
             }
             andCondition.getConditions().add(condition.get());
             sqlStatement.getSQLTokens().add(new EncryptColumnToken(predicateSegment.getColumn().getStartIndex(), predicateSegment.getStopIndex(), column, true));

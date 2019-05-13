@@ -30,19 +30,18 @@ import org.apache.shardingsphere.core.parse.antlr.rule.registry.ShardingParsingR
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.GeneralSQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.old.parser.sql.SQLParser;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 
 /**
- * SQL parsing engine.
+ * SQL parse engine.
  *
  * @author duhongjun
  * @author zhangliang
  */
-public final class AntlrParsingEngine implements SQLParser {
+public final class SQLParseEngine {
     
     private final ParsingRuleRegistry parsingRuleRegistry;
     
@@ -54,7 +53,7 @@ public final class AntlrParsingEngine implements SQLParser {
     
     private final SQLStatementOptimizerEngine optimizerEngine;
     
-    public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
+    public SQLParseEngine(final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
         parsingRuleRegistry = rule instanceof EncryptRule ? EncryptParsingRuleRegistry.getInstance() : ShardingParsingRuleRegistry.getInstance();
         parserEngine = new SQLParserEngine(parsingRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
@@ -62,7 +61,11 @@ public final class AntlrParsingEngine implements SQLParser {
         optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
     }
     
-    @Override
+    /**
+     * Parse SQL.
+     *
+     * @return SQL statement
+     */
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
         if (!ast.getSQLStatementRule().isPresent() && (parsingRuleRegistry instanceof EncryptParsingRuleRegistry)) {

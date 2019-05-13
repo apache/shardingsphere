@@ -147,8 +147,6 @@ public enum RuleName {
     
     SUBQUERY("Subquery"),
     
-    SHOW_PARAM("ShowParam"),
-    
     AUTO_COMMIT_VALUE("AutoCommitValue"),
     
     IMPLICIT_TRANSACTIONS_VALUE("ImplicitTransactionsValue"),

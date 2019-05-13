@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.antlr.sql.statement.dal;
+package org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
- * Show param segment.
+ * Set statement.
  *
  * @author loxp
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class ShowParamSegment implements SQLSegment {
-    
-    private final String name;
+public final class SetStatement extends DALStatement {
 }

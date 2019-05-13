@@ -90,8 +90,8 @@ public class RoutingResult {
      */
     public List<Set<String>> getActualTableNameGroups(final String dataSourceName, final Set<String> logicTableNames) {
         List<Set<String>> result = new ArrayList<>();
-        for (String logicTableName : logicTableNames) {
-            Set<String> actualTableNames = getActualTableNames(dataSourceName, logicTableName);
+        for (String each : logicTableNames) {
+            Set<String> actualTableNames = getActualTableNames(dataSourceName, each);
             if (!actualTableNames.isEmpty()) {
                 result.add(actualTableNames);
             }
@@ -102,7 +102,9 @@ public class RoutingResult {
     private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
         Set<String> result = new HashSet<>();
         for (RoutingUnit each : routingUnits) {
-            result.addAll(each.getActualTableNames(dataSourceName, logicTableName));
+            if (dataSourceName.equalsIgnoreCase(each.getDataSourceName())) {
+                result.addAll(each.getActualTableNames(logicTableName));
+            }
         }
         return result;
     }
