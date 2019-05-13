@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.result.insert;
 
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
 
 import java.util.ArrayList;
 import java.util.Collection;

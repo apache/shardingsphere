@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.LimitValueSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
@@ -26,8 +28,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.old.parser.context.limit.LimitValue;
 
 /**
  * Limit filler.

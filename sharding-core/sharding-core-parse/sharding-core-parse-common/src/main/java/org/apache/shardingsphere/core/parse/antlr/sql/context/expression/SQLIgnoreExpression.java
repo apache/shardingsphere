@@ -15,42 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.expression;
 
-import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
- * Column.
+ * Ignored expression when SQL parsing.
  *
  * @author zhangliang
- * @author caohao
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class Column {
+public final class SQLIgnoreExpression implements SQLExpression {
     
-    private final String name;
-    
-    private final String tableName;
-    
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (null == obj || getClass() != obj.getClass()) {
-            return false;
-        }
-        Column column = (Column) obj;
-        return Objects.equal(this.name.toUpperCase(), column.name.toUpperCase()) && Objects.equal(this.tableName.toUpperCase(), column.tableName.toUpperCase()); 
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name.toUpperCase(), tableName.toUpperCase()); 
-    } 
+    private final String expression;
 }

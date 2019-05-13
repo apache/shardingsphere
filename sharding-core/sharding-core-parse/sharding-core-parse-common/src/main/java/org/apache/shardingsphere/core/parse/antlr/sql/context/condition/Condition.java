@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.condition;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -25,11 +25,11 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

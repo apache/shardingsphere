@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.expression;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.expression;
 
 /**
  * SQL expression.

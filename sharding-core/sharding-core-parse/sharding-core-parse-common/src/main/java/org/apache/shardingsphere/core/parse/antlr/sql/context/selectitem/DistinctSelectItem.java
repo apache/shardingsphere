@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.selectitem;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;

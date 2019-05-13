@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLParameterMarkerExpression;
 
 /**
  * Parameter marker expression segment.

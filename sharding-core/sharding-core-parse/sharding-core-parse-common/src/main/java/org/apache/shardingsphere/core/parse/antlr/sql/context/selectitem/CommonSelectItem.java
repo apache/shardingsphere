@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.selectitem;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem;
 
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Select item interface.
+ * Common select item.
  *
  * @author zhangliang
  */
-public interface SelectItem {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class CommonSelectItem implements SelectItem {
     
-    /**
-     * Get expression.
-     * 
-     * @return expression
-     */
-    String getExpression();
+    private final String expression;
     
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    Optional<String> getAlias();
+    private final Optional<String> alias;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.orderby;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.orderby;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;

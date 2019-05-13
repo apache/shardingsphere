@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.selectitem;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.table;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
@@ -24,17 +24,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Common select item.
- *
+ * Table.
+ * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class CommonSelectItem implements SelectItem {
+public final class Table {
     
-    private final String expression;
+    private final String name;
     
-    private final Optional<String> alias;
+    private final String alias;
+    
+    /**
+     * Get alias.
+     * 
+     * @return alias
+     */
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
 }

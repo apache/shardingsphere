@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.old.parser.context.limit.LimitValue;
 
 /**
  * Top segment.

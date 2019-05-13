@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.table;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.table;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.result.insert;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

@@ -15,48 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.condition;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Conditions collection.
+ * And conditions.
  *
- * @author zhangliang
  * @author maxiaoguang
- * @author zhaojun
  */
 @Getter
+@EqualsAndHashCode
 @ToString
-@RequiredArgsConstructor
-public final class ParseCondition {
+public final class AndCondition {
     
-    private List<AndCondition> orConditions = new ArrayList<>();
+    private final List<Condition> conditions = new LinkedList<>();
     
     /**
-     * Find conditions by column.
-     *
-     * @param column column
-     * @return conditions
+     * Get conditions map.
+     * 
+     * @return conditions map
      */
-    public List<Condition> findConditions(final Column column) {
-        List<Condition> result = new LinkedList<>();
-        for (AndCondition each : orConditions) {
-            result.addAll(Collections2.filter(each.getConditions(), new Predicate<Condition>() {
-                
-                @Override
-                public boolean apply(final Condition input) {
-                    return input.getColumn().equals(column);
-                }
-            }));
+    public Map<Column, List<Condition>> getConditionsMap() {
+        Map<Column, List<Condition>> result = new LinkedHashMap<>(conditions.size(), 1);
+        for (Condition each : conditions) {
+            if (!result.containsKey(each.getColumn())) {
+                result.put(each.getColumn(), new LinkedList<Condition>());
+            }
+            result.get(each.getColumn()).add(each);
         }
         return result;
     }

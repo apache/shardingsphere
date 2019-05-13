@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.expression;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Optional;
 
 /**
- * Parameter marker expression.
+ * Select item interface.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLParameterMarkerExpression implements SQLExpression {
+public interface SelectItem {
     
-    private final int index;
+    /**
+     * Get expression.
+     * 
+     * @return expression
+     */
+    String getExpression();
+    
+    /**
+     * Get alias.
+     * 
+     * @return alias
+     */
+    Optional<String> getAlias();
 }

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.expression;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.expression;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Number expression.
+ * Text expression.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLNumberExpression implements SQLExpression {
+public final class SQLTextExpression implements SQLExpression {
     
-    private final Number number;
+    private final String text;
 }

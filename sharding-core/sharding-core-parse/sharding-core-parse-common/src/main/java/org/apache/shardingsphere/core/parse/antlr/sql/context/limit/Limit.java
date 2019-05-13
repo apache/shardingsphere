@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.limit;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.limit;
 
 import lombok.Getter;
 import lombok.Setter;

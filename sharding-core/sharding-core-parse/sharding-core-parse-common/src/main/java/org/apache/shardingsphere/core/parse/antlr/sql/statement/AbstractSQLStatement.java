@@ -25,11 +25,11 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Tables;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Tables;
 
 import java.util.Collections;
 import java.util.LinkedList;

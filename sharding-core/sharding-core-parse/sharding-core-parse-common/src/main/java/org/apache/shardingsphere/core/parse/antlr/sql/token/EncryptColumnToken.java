@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.token;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.antlr.sql.Substitutable;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Column;
 
 /**
  * Encrypt column token.

@@ -15,41 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.condition;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.insertvalue;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLParameterMarkerExpression;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * And conditions.
+ * Insert value.
  *
  * @author maxiaoguang
  */
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
-public final class AndCondition {
+public final class InsertValue {
     
-    private final List<Condition> conditions = new LinkedList<>();
+    private final Collection<SQLExpression> assignments;
     
     /**
-     * Get conditions map.
+     * Get parameters count.
      * 
-     * @return conditions map
+     * @return parameters count
      */
-    public Map<Column, List<Condition>> getConditionsMap() {
-        Map<Column, List<Condition>> result = new LinkedHashMap<>(conditions.size(), 1);
-        for (Condition each : conditions) {
-            if (!result.containsKey(each.getColumn())) {
-                result.put(each.getColumn(), new LinkedList<Condition>());
+    public int getParametersCount() {
+        int result = 0;
+        for (SQLExpression each : assignments) {
+            if (each instanceof SQLParameterMarkerExpression) {
+                result++;
             }
-            result.get(each.getColumn()).add(each);
         }
         return result;
     }

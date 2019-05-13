@@ -15,39 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.insertvalue;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.condition;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Insert value.
+ * Conditions collection.
  *
+ * @author zhangliang
  * @author maxiaoguang
+ * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public final class InsertValue {
+@RequiredArgsConstructor
+public final class ParseCondition {
     
-    private final Collection<SQLExpression> assignments;
+    private List<AndCondition> orConditions = new ArrayList<>();
     
     /**
-     * Get parameters count.
-     * 
-     * @return parameters count
+     * Find conditions by column.
+     *
+     * @param column column
+     * @return conditions
      */
-    public int getParametersCount() {
-        int result = 0;
-        for (SQLExpression each : assignments) {
-            if (each instanceof SQLParameterMarkerExpression) {
-                result++;
-            }
+    public List<Condition> findConditions(final Column column) {
+        List<Condition> result = new LinkedList<>();
+        for (AndCondition each : orConditions) {
+            result.addAll(Collections2.filter(each.getConditions(), new Predicate<Condition>() {
+                
+                @Override
+                public boolean apply(final Condition input) {
+                    return input.getColumn().equals(column);
+                }
+            }));
         }
         return result;
     }

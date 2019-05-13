@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.orderby.OrderItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

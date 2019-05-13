@@ -15,35 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.table;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 /**
- * Table.
- * 
+ * Select all item.
+ *
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class Table {
+public final class StarSelectItem implements SelectItem {
     
-    private final String name;
+    private String owner;
     
-    private final String alias;
+    @Override
+    public String getExpression() {
+        return Strings.isNullOrEmpty(owner) ? Symbol.STAR.getLiterals() : owner + "." + Symbol.STAR.getLiterals();
+    }
     
     /**
-     * Get alias.
+     * Get owner.
      * 
-     * @return alias
+     * @return owner
      */
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
+    }
+    
+    @Override
     public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+        return Optional.absent();
     }
 }

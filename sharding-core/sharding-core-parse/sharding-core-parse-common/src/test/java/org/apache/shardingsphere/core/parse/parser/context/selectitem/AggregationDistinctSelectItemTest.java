@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.parser.context.selectitem;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

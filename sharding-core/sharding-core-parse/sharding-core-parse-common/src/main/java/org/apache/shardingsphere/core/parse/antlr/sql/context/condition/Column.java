@@ -15,27 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.limit;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.condition;
 
-import lombok.AllArgsConstructor;
+import com.google.common.base.Objects;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Limit value.
+ * Column.
  *
  * @author zhangliang
+ * @author caohao
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
-public final class LimitValue {
+public final class Column {
     
-    private int value;
+    private final String name;
     
-    private int index;
+    private final String tableName;
     
-    private boolean boundOpened;
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (null == obj || getClass() != obj.getClass()) {
+            return false;
+        }
+        Column column = (Column) obj;
+        return Objects.equal(this.name.toUpperCase(), column.name.toUpperCase()) && Objects.equal(this.tableName.toUpperCase(), column.tableName.toUpperCase()); 
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name.toUpperCase(), tableName.toUpperCase()); 
+    } 
 }

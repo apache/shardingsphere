@@ -24,6 +24,9 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.EncryptRuleAwareFil
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.common.dml.PredicateUtils;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -31,9 +34,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.valu
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.EncryptColumnToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 

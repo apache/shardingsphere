@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.expression;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.expression;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Text expression.
+ * Parameter marker expression.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLTextExpression implements SQLExpression {
+public final class SQLParameterMarkerExpression implements SQLExpression {
     
-    private final String text;
+    private final int index;
 }

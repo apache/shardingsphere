@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.context.selectitem;
+package org.apache.shardingsphere.core.parse.antlr.sql.context.limit;
 
-import com.google.common.base.Optional;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.AggregationType;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Aggregation distinct select item.
+ * Limit value.
  *
- * @author panjuan
+ * @author zhangliang
  */
+@AllArgsConstructor
 @Getter
-public final class AggregationDistinctSelectItem extends AggregationSelectItem {
+@Setter
+@ToString
+public final class LimitValue {
     
-    private final String distinctColumnName;
+    private int value;
     
-    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final Optional<String> alias, final String distinctColumnName) {
-        super(type, innerExpression, alias);
-        this.distinctColumnName = distinctColumnName;
-    }
+    private int index;
     
-    /**
-     * Get distinct column label.
-     *
-     * @return distinct column label
-     */
-    public String getDistinctColumnLabel() {
-        return getAlias().isPresent() ? getAlias().get() : distinctColumnName;
-    }
+    private boolean boundOpened;
 }

@@ -23,18 +23,18 @@ import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.antlr.optimizer.SQLStatementOptimizer;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.ParseCondition;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.DistinctSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.SelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.StarSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.DistinctSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.SelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 
 import java.util.List;
 
