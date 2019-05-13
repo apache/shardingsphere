@@ -40,7 +40,7 @@ import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditi
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
-import org.apache.shardingsphere.core.rewrite.placeholder.UpdateItemEncryptColumnPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.UpdateEncryptItemPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.WhereEncryptColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
@@ -233,7 +233,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         return result;
     }
     
-    private UpdateItemEncryptColumnPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
+    private UpdateEncryptItemPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         ShardingEncryptorEngine encryptorEngine = encryptRule.getEncryptorEngine();
         Comparable<?> originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(encryptColumnToken.getColumn(), parameters);
@@ -266,20 +266,20 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         appendedIndexAndParameters.put(getPositionIndexesFromUpdateItem(encryptColumnToken).values().iterator().next() + 1, encryptAssistedColumnValues.get(0));
     }
     
-    private UpdateItemEncryptColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
+    private UpdateEncryptItemPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> encryptColumnValues) {
         if (isUsingParameter(encryptColumnToken)) {
-            return new UpdateItemEncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
+            return new UpdateEncryptItemPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         }
-        return new UpdateItemEncryptColumnPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
+        return new UpdateEncryptItemPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0));
     }
     
-    private UpdateItemEncryptColumnPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
-                                                                                     final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
+    private UpdateEncryptItemPlaceholder getEncryptUpdateItemColumnPlaceholder(final EncryptColumnToken encryptColumnToken,
+                                                                               final List<Comparable<?>> encryptColumnValues, final List<Comparable<?>> encryptAssistedColumnValues) {
         String assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (isUsingParameter(encryptColumnToken)) {
-            return new UpdateItemEncryptColumnPlaceholder(encryptColumnToken.getColumn().getName(), assistedColumnName);
+            return new UpdateEncryptItemPlaceholder(encryptColumnToken.getColumn().getName(), assistedColumnName);
         }
-        return new UpdateItemEncryptColumnPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
+        return new UpdateEncryptItemPlaceholder(encryptColumnToken.getColumn().getName(), encryptColumnValues.get(0), assistedColumnName, encryptAssistedColumnValues.get(0));
     }
     
     private boolean isUsingParameter(final EncryptColumnToken encryptColumnToken) {
