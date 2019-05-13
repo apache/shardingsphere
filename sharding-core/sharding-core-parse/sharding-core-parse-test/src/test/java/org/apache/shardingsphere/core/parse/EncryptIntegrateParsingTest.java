@@ -104,8 +104,8 @@ public class EncryptIntegrateParsingTest extends AbstractBaseIntegrateSQLParsing
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new EncryptSQLStatementAssert(new AntlrParsingEngine(execDatabaseType, sql, buildShardingRule(),
-                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
+            new EncryptSQLStatementAssert(new EncryptSQLParsingEngine(execDatabaseType, buildShardingRule(),
+                    AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(false, sql), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
         }
     }
 }
