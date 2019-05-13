@@ -27,12 +27,12 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * SQL parse engine.
+ * SQL parse engine for sharding.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SQLParseEngine {
+public final class ShardingSQLParseEngine {
     
     private final DatabaseType dbType;
     

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Encrypt SQL parsing engine.
+ * SQL parsing engine for encrypt.
  *
  * @author panjuan
  */
