@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
@@ -52,21 +51,21 @@ public final class DataSourceGroupBroadcastRoutingEngine implements RoutingEngin
         return result;
     }
     
+    private Collection<Set<String>> getBroadcastDataSourceGroup(final Collection<Set<String>> dataSourceGroup) {
+        Collection<Set<String>> result = new LinkedList<>();
+        for (Set<String> each : dataSourceGroup) {
+            result = getCandidateDataSourceGroup(result, each);
+        }
+        return result;
+    }
+    
     private Collection<Set<String>> getDataSourceGroup() {
         Collection<Set<String>> result = new LinkedList<>();
         for (TableRule each : shardingRule.getTableRules()) {
             result.add(each.getDataNodeGroups().keySet());
         }
         if (null != shardingRule.getShardingDataSourceNames().getDefaultDataSourceName()) {
-            result.add(new HashSet<>(shardingRule.getShardingDataSourceNames().getDataSourceNames()));
-        }
-        return result;
-    }
-    
-    private Collection<Set<String>> getBroadcastDataSourceGroup(final Collection<Set<String>> dataSourceGroup) {
-        Collection<Set<String>> result = new LinkedList<>();
-        for (Set<String> each : dataSourceGroup) {
-            result.addAll(getCandidateDataSourceGroup(result, each));
+            result.add(Sets.newHashSet(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName()));
         }
         return result;
     }
@@ -87,9 +86,9 @@ public final class DataSourceGroupBroadcastRoutingEngine implements RoutingEngin
             } else {
                 result.add(each);
             }
-            if (!hasIntersection) {
-                result.add(compareSet);
-            }
+        }
+        if (!hasIntersection) {
+            result.add(compareSet);
         }
         return result;
     }
