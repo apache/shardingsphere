@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OrderByToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
@@ -182,9 +182,9 @@ public final class SelectOptimizer implements SQLStatementOptimizer {
     
     private void addSubqueryCondition(final SQLStatement sqlStatement) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (Conditions each : selectStatement.getSubqueryConditions()) {
-            if (!selectStatement.getRouteConditions().getOrConditions().containsAll(each.getOrConditions())) {
-                selectStatement.getRouteConditions().getOrConditions().addAll(each.getOrConditions());
+        for (ParseCondition each : selectStatement.getSubqueryParseConditions()) {
+            if (!selectStatement.getRouteCondition().getOrConditions().containsAll(each.getOrConditions())) {
+                selectStatement.getRouteCondition().getOrConditions().addAll(each.getOrConditions());
             }
         }
     }

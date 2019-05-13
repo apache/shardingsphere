@@ -36,7 +36,7 @@ import java.util.List;
 @Getter
 @ToString
 @RequiredArgsConstructor
-public final class Conditions {
+public final class ParseCondition {
     
     private List<AndCondition> orConditions = new ArrayList<>();
     

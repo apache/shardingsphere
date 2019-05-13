@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedOrC
 import org.apache.shardingsphere.core.parse.integrate.jaxb.condition.ExpectedValue;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -50,7 +50,7 @@ public final class ConditionAssert {
      * @param actual actual or condition
      * @param expected expected or condition
      */
-    public void assertConditions(final Conditions actual, final ExpectedOrCondition expected) {
+    public void assertConditions(final ParseCondition actual, final ExpectedOrCondition expected) {
         assertThat(assertMessage.getFullAssertMessage("Or condition size assertion error: "), actual.getOrConditions().size(), is(expected.getAndConditions().size()));
         int count = 0;
         for (ExpectedAndCondition each : expected.getAndConditions()) {

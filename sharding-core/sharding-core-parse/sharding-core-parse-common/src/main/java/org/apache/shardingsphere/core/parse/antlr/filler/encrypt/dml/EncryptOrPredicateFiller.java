@@ -73,11 +73,11 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
             return;
         }
         AndCondition andCondition;
-        if (sqlStatement.getEncryptConditions().getOrConditions().isEmpty()) {
+        if (sqlStatement.getEncryptCondition().getOrConditions().isEmpty()) {
             andCondition = new AndCondition();
-            sqlStatement.getEncryptConditions().getOrConditions().add(andCondition);
+            sqlStatement.getEncryptCondition().getOrConditions().add(andCondition);
         } else {
-            andCondition = sqlStatement.getEncryptConditions().getOrConditions().get(0);
+            andCondition = sqlStatement.getEncryptCondition().getOrConditions().get(0);
         }
         Column column = new Column(predicateSegment.getColumn().getName(), tableName.get());
         Optional<Condition> condition = createCondition(predicateSegment, column);

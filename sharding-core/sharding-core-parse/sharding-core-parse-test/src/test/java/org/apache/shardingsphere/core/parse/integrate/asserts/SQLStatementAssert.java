@@ -100,9 +100,9 @@ public final class SQLStatementAssert {
      */
     public void assertSQLStatement() {
         tableAssert.assertTables(actual.getTables(), expected.getTables());
-        conditionAssert.assertConditions(actual.getRouteConditions(), expected.getOrCondition());
+        conditionAssert.assertConditions(actual.getRouteCondition(), expected.getOrCondition());
         if (DatabaseType.MySQL == databaseType) {
-            conditionAssert.assertConditions(actual.getEncryptConditions(), expected.getEncryptCondition());
+            conditionAssert.assertConditions(actual.getEncryptCondition(), expected.getEncryptCondition());
         }
         tokenAssert.assertTokens(actual.getSQLTokens(), expected.getTokens());
         indexAssert.assertParametersIndex(actual.getParametersIndex(), expected.getParameters().size());

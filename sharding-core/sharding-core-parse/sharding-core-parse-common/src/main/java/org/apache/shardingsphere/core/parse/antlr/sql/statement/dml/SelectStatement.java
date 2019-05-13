@@ -25,7 +25,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.OffsetToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Conditions;
+import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.old.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -75,7 +75,7 @@ public final class SelectStatement extends DQLStatement {
     
     private SelectStatement subqueryStatement;
     
-    private Collection<Conditions> subqueryConditions = new LinkedList<>();
+    private Collection<ParseCondition> subqueryParseConditions = new LinkedList<>();
     
     /**
      * Get alias.
