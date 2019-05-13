@@ -37,7 +37,7 @@ public final class SchemaFiller implements SQLSegmentFiller<SchemaSegment> {
         if (sqlStatement instanceof UseStatement) {
             ((UseStatement) sqlStatement).setSchema(sqlSegment.getName());
         } else if (sqlStatement instanceof ShowColumnsStatement || sqlStatement instanceof ShowIndexStatement) {
-            sqlStatement.addSQLToken(new SchemaToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlStatement.getTables().getSingleTableName()));
+            sqlStatement.addSQLToken(new SchemaToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlSegment.getName(), sqlStatement.getTables().getSingleTableName()));
         }
     }
 }
