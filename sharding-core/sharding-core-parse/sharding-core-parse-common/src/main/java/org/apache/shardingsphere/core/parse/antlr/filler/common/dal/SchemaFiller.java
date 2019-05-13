@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dal;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowColumnsStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowIndexStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowColumnsStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowIndexStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
 
 /**
  * Schema filler.

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.postgresql.statement;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
- * Describe statement.
+ * Reset parameter statement.
  *
- * @author zhangliang
+ * @author loxp
  */
-public final class DescribeStatement extends DALStatement {
+public final class ResetParameterStatement extends DALStatement {
 }

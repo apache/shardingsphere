@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
  * Show columns statement.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public final class ShowColumnsStatement extends DALStatement {
+public final class ShowIndexStatement extends DALStatement {
 }

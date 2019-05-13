@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.postgresql.statement;
 
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
- * Show table status statement.
+ * Show statement.
  *
- * @author zhangliang
+ * @author loxp
  */
-public final class ShowTableStatusStatement extends DALStatement {
+public final class ShowStatement extends DALStatement {
 }

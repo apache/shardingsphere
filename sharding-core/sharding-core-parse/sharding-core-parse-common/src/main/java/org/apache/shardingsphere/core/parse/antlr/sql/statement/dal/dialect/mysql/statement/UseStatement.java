@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement;
+package org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 
 /**
- * Show create table statement.
+ * Use statement.
  *
  * @author zhangliang
  */
-public final class ShowCreateTableStatement extends DALStatement {
+@Getter
+@Setter
+public final class UseStatement extends DALStatement {
+    
+    private String schema;
 }
