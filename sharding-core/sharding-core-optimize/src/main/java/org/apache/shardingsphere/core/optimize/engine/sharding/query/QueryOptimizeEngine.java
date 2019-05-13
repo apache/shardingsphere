@@ -54,8 +54,8 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
     
     @Override
     public OptimizeResult optimize() {
-        List<ShardingCondition> result = new ArrayList<>(conditions.getOrCondition().size());
-        for (AndCondition each : conditions.getOrCondition()) {
+        List<ShardingCondition> result = new ArrayList<>(conditions.getOrConditions().size());
+        for (AndCondition each : conditions.getOrConditions()) {
             result.add(optimize(each.getConditionsMap()));
         }
         return new OptimizeResult(new ShardingConditions(result));
