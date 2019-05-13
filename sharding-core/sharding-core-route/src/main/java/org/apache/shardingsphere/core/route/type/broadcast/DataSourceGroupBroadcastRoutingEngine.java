@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.core.route.type.broadcast;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Data source group broadcast routing engine.
@@ -34,6 +44,57 @@ public final class DataSourceGroupBroadcastRoutingEngine implements RoutingEngin
     
     @Override
     public RoutingResult route() {
-        return null;
+        RoutingResult result = new RoutingResult();
+        Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup());
+        for (Set<String> each : broadcastDataSourceGroup) {
+            result.getRoutingUnits().add(new RoutingUnit(getRandomDataSourceName(each)));
+        }
+        return result;
+    }
+    
+    private Collection<Set<String>> getDataSourceGroup() {
+        Collection<Set<String>> result = new LinkedList<>();
+        for (TableRule each : shardingRule.getTableRules()) {
+            result.add(each.getDataNodeGroups().keySet());
+        }
+        if (null != shardingRule.getShardingDataSourceNames().getDefaultDataSourceName()) {
+            result.add(new HashSet<>(shardingRule.getShardingDataSourceNames().getDataSourceNames()));
+        }
+        return result;
+    }
+    
+    private Collection<Set<String>> getBroadcastDataSourceGroup(final Collection<Set<String>> dataSourceGroup) {
+        Collection<Set<String>> result = new LinkedList<>();
+        for (Set<String> each : dataSourceGroup) {
+            result.addAll(getCandidateDataSourceGroup(result, each));
+        }
+        return result;
+    }
+    
+    private Collection<Set<String>> getCandidateDataSourceGroup(final Collection<Set<String>> dataSourceSetGroup, final Set<String> compareSet) {
+        Collection<Set<String>> result = new LinkedList<>();
+        Set<String> intersectionSet;
+        if (dataSourceSetGroup.isEmpty()) {
+            result.add(compareSet);
+            return result;
+        }
+        boolean hasIntersection = false;
+        for (Set<String> each : dataSourceSetGroup) {
+            intersectionSet = Sets.intersection(each, compareSet);
+            if (!intersectionSet.isEmpty()) {
+                result.add(intersectionSet);
+                hasIntersection = true;
+            } else {
+                result.add(each);
+            }
+            if (!hasIntersection) {
+                result.add(compareSet);
+            }
+        }
+        return result;
+    }
+    
+    private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
+        return Lists.newArrayList(dataSourceNames).get(new Random().nextInt(dataSourceNames.size()));
     }
 }
