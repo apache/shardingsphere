@@ -24,7 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         EncryptUpdateItemColumnPlaceholderTest.class,
-        EncryptWhereColumnPlaceholderTest.class
+        WhereEncryptColumnPlaceholderTest.class
     })
 public final class AllPlaceholderTests {
 }
