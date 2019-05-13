@@ -88,15 +88,6 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     private final OptimizeResult optimizeResult;
     
-    /**
-     * Constructs encrypt SQL rewrite engine.
-     * 
-     * @param encryptRule encrypt rule
-     * @param originalSQL original SQL
-     * @param databaseType database type
-     * @param sqlStatement SQL statement
-     * @param parameters parameters
-     */
     public EncryptSQLRewriteEngine(final EncryptRule encryptRule, 
                                    final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.encryptRule = encryptRule;
