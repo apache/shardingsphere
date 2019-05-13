@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Update encrypt item placeholder for rewrite.
+ *update item column placeholder for rewrite.
  *
  * @author panjuan
  */
@@ -40,14 +39,6 @@ public final class UpdateEncryptAssistedItemPlaceholder implements ShardingPlace
     
     private final int parameterMarkerIndex;
     
-    public UpdateEncryptAssistedItemPlaceholder(final String columnName) {
-        this(columnName, null, null, null, 0);
-    }
-    
-    public UpdateEncryptAssistedItemPlaceholder(final String columnName, final Comparable<?> columnValue) {
-        this(columnName, columnValue, null, null, -1);
-    }
-    
     public UpdateEncryptAssistedItemPlaceholder(final String columnName, final String assistedColumnName) {
         this(columnName, null, assistedColumnName, null, 0);
     }
@@ -59,9 +50,6 @@ public final class UpdateEncryptAssistedItemPlaceholder implements ShardingPlace
     
     @Override
     public String toString() {
-        if (Strings.isNullOrEmpty(assistedColumnName)) {
-            return -1 != parameterMarkerIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
-        }
         return -1 != parameterMarkerIndex ? String.format("%s = ?, %s = ?", columnName, assistedColumnName) 
                 : String.format("%s = %s, %s = %s", columnName, toStringForColumnValue(columnValue), assistedColumnName, toStringForColumnValue(assistedColumnValue));
     }

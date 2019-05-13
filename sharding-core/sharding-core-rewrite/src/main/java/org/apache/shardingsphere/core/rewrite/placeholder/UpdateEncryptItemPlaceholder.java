@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -34,36 +33,19 @@ public final class UpdateEncryptItemPlaceholder implements ShardingPlaceholder {
     
     private final Comparable<?> columnValue;
     
-    private final String assistedColumnName;
-    
-    private final Comparable<?> assistedColumnValue;
-    
     private final int parameterMarkerIndex;
     
     public UpdateEncryptItemPlaceholder(final String columnName) {
-        this(columnName, null, null, null, 0);
+        this(columnName, null, 0);
     }
     
     public UpdateEncryptItemPlaceholder(final String columnName, final Comparable<?> columnValue) {
-        this(columnName, columnValue, null, null, -1);
-    }
-    
-    public UpdateEncryptItemPlaceholder(final String columnName, final String assistedColumnName) {
-        this(columnName, null, assistedColumnName, null, 0);
-    }
-    
-    public UpdateEncryptItemPlaceholder(final String columnName,
-                                        final Comparable<?> columnValue, final String assistedColumnName, final Comparable<?> assistedColumnValue) {
-        this(columnName, columnValue, assistedColumnName, assistedColumnValue, -1);
+        this(columnName, columnValue, -1);
     }
     
     @Override
     public String toString() {
-        if (Strings.isNullOrEmpty(assistedColumnName)) {
-            return -1 != parameterMarkerIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
-        }
-        return -1 != parameterMarkerIndex ? String.format("%s = ?, %s = ?", columnName, assistedColumnName) 
-                : String.format("%s = %s, %s = %s", columnName, toStringForColumnValue(columnValue), assistedColumnName, toStringForColumnValue(assistedColumnValue));
+        return -1 != parameterMarkerIndex ? String.format("%s = ?", columnName) : String.format("%s = %s", columnName, toStringForColumnValue(columnValue));
     }
     
     private String toStringForColumnValue(final Comparable<?> columnValue) {
