@@ -77,7 +77,7 @@ public final class UpdateStatement extends DMLStatement {
      * Is SQL parameter marker expression.
      * 
      * @param column column
-     * @return SQL parameter marker expression or nott
+     * @return SQL parameter marker expression or not
      */
     public boolean isSQLParameterMarkerExpression(final Column column) {
         return assignments.get(column) instanceof SQLParameterMarkerExpression;

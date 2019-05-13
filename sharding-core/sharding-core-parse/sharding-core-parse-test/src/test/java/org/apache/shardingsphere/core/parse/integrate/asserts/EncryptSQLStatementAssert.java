@@ -46,7 +46,8 @@ public final class EncryptSQLStatementAssert {
     
     private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
     
-    public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader, final DatabaseType databaseType) {
+    public EncryptSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, 
+                                     final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader, final DatabaseType databaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
         this.actual = actual;
         expected = parserResultSetLoader.getParserResult(sqlCaseId);

@@ -30,7 +30,7 @@ import java.util.Collection;
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
+public final class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
     
     private static volatile ParsingRuleRegistry instance;
     

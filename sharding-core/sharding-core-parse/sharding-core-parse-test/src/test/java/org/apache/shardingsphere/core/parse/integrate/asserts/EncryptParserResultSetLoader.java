@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.integrate.asserts;
 
 /**
- * Encrypt parser resultset loader.
+ * Encrypt parser result set loader.
  *
  * @author duhongjun
  */

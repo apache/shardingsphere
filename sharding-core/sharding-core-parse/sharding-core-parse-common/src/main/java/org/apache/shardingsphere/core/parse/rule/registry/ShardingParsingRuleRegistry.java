@@ -30,7 +30,7 @@ import java.util.Collection;
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShardingParsingRuleRegistry extends ParsingRuleRegistry {
+public final class ShardingParsingRuleRegistry extends ParsingRuleRegistry {
     
     private static volatile ParsingRuleRegistry instance;
     
