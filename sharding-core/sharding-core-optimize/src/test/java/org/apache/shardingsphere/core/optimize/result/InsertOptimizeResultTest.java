@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.optimize.result;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

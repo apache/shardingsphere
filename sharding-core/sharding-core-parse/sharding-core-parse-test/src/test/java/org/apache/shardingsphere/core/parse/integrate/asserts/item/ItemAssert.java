@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts.item;
 
-import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedSelectItems;
+import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 
 import java.util.Set;
 

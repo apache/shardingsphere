@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
  * Show table status segment.

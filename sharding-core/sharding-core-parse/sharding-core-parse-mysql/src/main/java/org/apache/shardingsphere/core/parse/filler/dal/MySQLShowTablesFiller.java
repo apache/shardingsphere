@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.parse.filler.dal;
 
-import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.RemoveToken;
+import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTablesSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 
 /**
  * Show tables filler for MySQL.

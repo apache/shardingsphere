@@ -17,11 +17,11 @@
   -->
 
 <extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.AddColumnDefinitionExtractor" />
-    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.ModifyColumnDefinitionExtractor" />
+    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.column.AddColumnDefinitionExtractor" />
+    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.column.ModifyColumnDefinitionExtractor" />
     <extractor-rule id="addPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.ddl.SQLServerAddPrimaryKeyExtractor" />
     <extractor-rule id="setImplicitTransactions" extractor-class="org.apache.shardingsphere.core.parse.extractor.tcl.SetImplicitTransactionsExtractor" />
     
-    <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.groupby.DescNullOrderDirectionGroupByExtractor" />
-    <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby.DescNullOrderDirectionOrderByExtractor" />
+    <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.dml.select.groupby.DescNullOrderDirectionGroupByExtractor" />
+    <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.dml.select.orderby.DescNullOrderDirectionOrderByExtractor" />
 </extractor-rule-definition>

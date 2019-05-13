@@ -19,15 +19,15 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.table;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedColumnDefinition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedColumnPosition;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.token.ExpectedUpdateColumnDefinition;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
 import java.util.List;

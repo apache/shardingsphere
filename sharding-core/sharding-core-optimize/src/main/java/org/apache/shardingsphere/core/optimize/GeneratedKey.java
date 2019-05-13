@@ -20,12 +20,12 @@ package org.apache.shardingsphere.core.optimize;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLTextExpression;
-import org.apache.shardingsphere.core.parse.antlr.sql.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;

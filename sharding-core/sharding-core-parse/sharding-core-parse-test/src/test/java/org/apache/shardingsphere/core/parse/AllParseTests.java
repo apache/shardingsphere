@@ -29,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllRuleTests.class,
         SQLParseEngineTest.class,
         IntegrateDDLParsingCompatibleTest.class,
-        AllParsingIntegrateTests.class
+        AllParsingIntegrateTests.class,
+        EncryptIntegrateParsingTest
 })
 public final class AllParseTests {
 }

@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.core.parse.integrate.asserts.insert;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedAssignment;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLIgnoreExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.core.parse.integrate.jaxb.insert.ExpectedAssignment;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public final class AssignmentAssert {
