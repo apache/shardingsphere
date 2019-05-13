@@ -41,6 +41,6 @@ public final class IndexExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private IndexToken getIndexToken(final ParserRuleContext indexNameNode) {
-        return new IndexToken(indexNameNode.getStart().getStartIndex(), indexNameNode.getStop().getStopIndex());
+        return new IndexToken(indexNameNode.getStart().getStartIndex(), indexNameNode.getStop().getStopIndex(), indexNameNode.getText());
     }
 }
