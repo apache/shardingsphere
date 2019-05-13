@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.integrate.asserts.AntlrParserResultSetLoader;
+import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.root.ParserResult;
@@ -48,7 +49,7 @@ public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTes
     
     private static SQLCasesLoader sqlCasesLoader = AntlrSQLCasesLoader.getInstance();
     
-    private static AntlrParserResultSetLoader parserResultSetLoader = AntlrParserResultSetLoader.getInstance();
+    private static ParserResultSetLoader parserResultSetLoader = AntlrParserResultSetLoader.getInstance();
     
     private final String sqlCaseId;
     
@@ -58,8 +59,6 @@ public final class SQLParseEngineTest extends AbstractBaseIntegrateSQLParsingTes
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        sqlCasesLoader.switchSQLCase("antlr_supported_sql");
-        parserResultSetLoader.switchResult("antlr_parser");
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
     

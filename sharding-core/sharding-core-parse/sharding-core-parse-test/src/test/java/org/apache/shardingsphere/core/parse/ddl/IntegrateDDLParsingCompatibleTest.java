@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegra
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         sqlCasesLoader.switchSQLCase("sql/ddl");
         parserResultSetLoader.switchResult("prior_parser_for_antlr");
