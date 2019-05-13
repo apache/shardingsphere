@@ -21,9 +21,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.antlr.rule.registry.ShardingParsingRuleRegistry;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.junit.Test;
 
 /**

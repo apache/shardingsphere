@@ -30,7 +30,7 @@ import org.junit.runners.Suite.SuiteClasses;
         SQLParseEngineTest.class,
         IntegrateDDLParsingCompatibleTest.class,
         AllParsingIntegrateTests.class,
-        EncryptIntegrateParsingTest
+        EncryptIntegrateParsingTest.class
 })
 public final class AllParseTests {
 }
