@@ -46,6 +46,6 @@ execute
     | alterRole
     | show
     | set
-    | resetParam
+    | resetParameter
     ) SEMI_?
     ;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.statement.dml;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.insertvalue.InsertValue;
 
 import java.util.Collection;
 import java.util.LinkedList;

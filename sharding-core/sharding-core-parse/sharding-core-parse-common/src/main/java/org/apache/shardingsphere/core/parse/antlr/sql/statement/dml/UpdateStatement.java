@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLTextExpression;
 
 import java.util.LinkedHashMap;
 import java.util.List;

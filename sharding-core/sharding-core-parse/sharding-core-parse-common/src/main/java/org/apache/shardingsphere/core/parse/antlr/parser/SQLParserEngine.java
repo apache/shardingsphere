@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.EncryptParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.antlr.rule.registry.statement.SQLStatementRule;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingUnsupportedException;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingUnsupportedException;
 
 /**
  * SQL parser engine.

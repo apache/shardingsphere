@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDataAwareFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationSelectItemSegment;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.SelectIte
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.DistinctSelectItem;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;

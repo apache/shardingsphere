@@ -26,6 +26,10 @@ import org.apache.shardingsphere.core.parse.antlr.filler.api.ShardingTableMetaDa
 import org.apache.shardingsphere.core.parse.antlr.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.EncryptOrPredicateFiller;
 import org.apache.shardingsphere.core.parse.antlr.filler.sharding.dml.select.ShardingRowNumberPredicateFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.AndPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.PredicateSegment;
@@ -34,10 +38,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.valu
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

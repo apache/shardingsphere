@@ -39,6 +39,6 @@ configurationParameterClause_
     : identifier_ (TO | EQ_) (identifier_ | STRING_ | DEFAULT)
     ;
 
-resetParam
-    : RESET (ALL | IDENTIFIER_)
+resetParameter
+    : RESET (ALL | identifier_)
     ;

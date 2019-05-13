@@ -22,6 +22,15 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.SetStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.DescribeStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowColumnsStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowCreateTableStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowIndexStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowOtherStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowTableStatusStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.ShowTablesStatement;
+import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DMLStatement;
@@ -31,7 +40,8 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SchemaToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.SchemaToken;
+import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parse.old.lexer.LexerEngineFactory;
 import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;
@@ -40,16 +50,6 @@ import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.DescribeStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowColumnsStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowCreateTableStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowIndexStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowOtherStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowTableStatusStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowTablesStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.old.parser.exception.SQLParsingException;
 
 /**
  * SQL judge engine.

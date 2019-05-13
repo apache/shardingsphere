@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
 
 /**
  * Table filler for encrypt.

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.DQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.IndexToken;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;

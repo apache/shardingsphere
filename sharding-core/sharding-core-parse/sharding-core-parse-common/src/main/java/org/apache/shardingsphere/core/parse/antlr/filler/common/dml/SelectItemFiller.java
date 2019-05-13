@@ -22,6 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.antlr.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.AggregationSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.CommonSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.StarSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
@@ -32,15 +38,9 @@ import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.item.Shorthand
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.CommonSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.RowCountToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.TableToken;
 
 /**
  * Select item filler.

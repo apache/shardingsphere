@@ -21,10 +21,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.DistinctSelectItem;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.item.ExpectedDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.DistinctSelectItem;
-import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.SelectItem;
 
 import java.util.Set;
 

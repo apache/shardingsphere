@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.core.parse.antlr.filler.encrypt.dml.insert;
 
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.antlr.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
 
 import java.util.LinkedList;
 import java.util.List;

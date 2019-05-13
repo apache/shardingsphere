@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.index;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.IndexToken;
+import org.apache.shardingsphere.core.parse.antlr.sql.token.impl.IndexToken;
 
 /**
  * Index segment.
