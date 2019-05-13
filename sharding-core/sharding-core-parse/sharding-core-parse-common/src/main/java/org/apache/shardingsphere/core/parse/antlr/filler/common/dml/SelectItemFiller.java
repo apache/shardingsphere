@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.antlr.filler.common.dml;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.antlr.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.antlr.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.antlr.sql.segment.dml.expr.complex.SubquerySegment;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatem
 import org.apache.shardingsphere.core.parse.antlr.sql.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.RowCountToken;
 import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.old.parser.context.selectitem.AggregationSelectItem;
@@ -117,7 +117,7 @@ public final class SelectItemFiller implements SQLSegmentFiller {
         selectStatement.getItems().add(new AggregationDistinctSelectItem(selectItemSegment.getType(), selectStatement.getLogicSQL().substring(selectItemSegment.getInnerExpressionStartIndex(), 
                 selectItemSegment.getStopIndex() + 1), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
         Optional<String> derivedAlias = Optional.absent();
-        if (DerivedAlias.isDerivedAlias(selectItemSegment.getAlias().get())) {
+        if (DerivedColumn.isDerivedColumn(selectItemSegment.getAlias().get())) {
             derivedAlias = Optional.of(selectItemSegment.getAlias().get());
         }
         selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));

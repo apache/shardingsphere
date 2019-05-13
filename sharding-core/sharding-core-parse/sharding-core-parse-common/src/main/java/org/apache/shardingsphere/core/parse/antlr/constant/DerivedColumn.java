@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.old.parser.constant;
+package org.apache.shardingsphere.core.parse.antlr.constant;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,8 @@ public enum DerivedColumn {
     AVG_COUNT_ALIAS("AVG_DERIVED_COUNT_"), 
     AVG_SUM_ALIAS("AVG_DERIVED_SUM_"), 
     ORDER_BY_ALIAS("ORDER_BY_DERIVED_"), 
-    GROUP_BY_ALIAS("GROUP_BY_DERIVED_");
+    GROUP_BY_ALIAS("GROUP_BY_DERIVED_"),
+    AGGREGATION_DISTINCT_DERIVED("AGGREGATION_DISTINCT_DERIVED_");
     
     private final String pattern;
     
