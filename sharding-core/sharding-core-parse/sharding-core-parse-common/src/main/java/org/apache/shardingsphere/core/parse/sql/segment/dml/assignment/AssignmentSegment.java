@@ -32,6 +32,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 @Getter
 public final class AssignmentSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final ColumnSegment column;
     
     private final ExpressionSegment value;
