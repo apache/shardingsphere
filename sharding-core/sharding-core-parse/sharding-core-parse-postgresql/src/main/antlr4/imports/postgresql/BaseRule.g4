@@ -68,9 +68,8 @@ unicodeEscapes_
     : ('U' | 'u') AMPERSAND_
     ;
 
-// TODO need investigte, UESCAPE cannot work
 uescape_
-    : UESCAPE SQ_ . SQ_
+    : UESCAPE STRING_
     ;
     
 unreservedWord_
