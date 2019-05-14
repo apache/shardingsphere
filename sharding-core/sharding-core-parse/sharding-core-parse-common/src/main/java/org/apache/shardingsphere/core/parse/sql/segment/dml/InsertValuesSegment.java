@@ -34,5 +34,9 @@ import java.util.Collection;
 @Getter
 public final class InsertValuesSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final Collection<ExpressionSegment> values;
 }

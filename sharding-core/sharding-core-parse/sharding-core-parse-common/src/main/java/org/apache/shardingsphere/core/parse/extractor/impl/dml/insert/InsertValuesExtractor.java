@@ -48,7 +48,7 @@ public final class InsertValuesExtractor implements CollectionSQLSegmentExtracto
         }
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(insertValuesClauseNode.get(), RuleName.ASSIGNMENT_VALUES)) {
-            result.add(new InsertValuesSegment(extractExpressionSegments(each, parameterMarkerIndexes)));
+            result.add(new InsertValuesSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), extractExpressionSegments(each, parameterMarkerIndexes)));
         }
         return result;
     }
