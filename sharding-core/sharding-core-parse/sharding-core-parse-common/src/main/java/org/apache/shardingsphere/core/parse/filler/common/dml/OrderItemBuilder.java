@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.filler.common.dml;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -61,9 +62,9 @@ public final class OrderItemBuilder {
     }
     
     private OrderItem createOrderItem(final SelectStatement selectStatement, final ColumnOrderByItemSegment columnOrderByItemSegment) {
-        Optional<String> owner = columnOrderByItemSegment.getColumn().getOwner();
+        Optional<TableSegment> owner = columnOrderByItemSegment.getColumn().getOwner();
         String columnName = columnOrderByItemSegment.getColumn().getName();
-        OrderItem result = owner.isPresent() ? new OrderItem(owner.get(), columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection())
+        OrderItem result = owner.isPresent() ? new OrderItem(owner.get().getName(), columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection())
                 : new OrderItem(columnName, columnOrderByItemSegment.getOrderDirection(), columnOrderByItemSegment.getNullOrderDirection());
         Optional<String> alias = selectStatement.getAlias(columnOrderByItemSegment.getColumn().getQualifiedName());
         if (alias.isPresent()) {

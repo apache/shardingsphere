@@ -75,7 +75,7 @@ public final class PredicateUtils {
             return Optional.of(tables.getSingleTableName());
         }
         if (predicateSegment.getColumn().getOwner().isPresent()) {
-            Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get());
+            Optional<Table> table = tables.find(predicateSegment.getColumn().getOwner().get().getName());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
         return findTableNameFromMetaData(predicateSegment.getColumn().getName(), tables, shardingTableMetaData);

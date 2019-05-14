@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
@@ -44,7 +45,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final String name;
     
-    private String owner;
+    private TableSegment owner;
     
     @Setter(AccessLevel.PROTECTED)
     private QuoteCharacter ownerQuoteCharacter = QuoteCharacter.NONE;
@@ -60,18 +61,18 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
      * @return qualified name
      */
     public final String getQualifiedName() {
-        return null == owner ? name : owner + Symbol.DOT.getLiterals() + name;
+        return null == owner ? name : owner.getName() + Symbol.DOT.getLiterals() + name;
     }
     
     @Override
-    public final Optional<String> getOwner() {
+    public final Optional<TableSegment> getOwner() {
         return Optional.fromNullable(owner);
     }
     
     @Override
-    public final void setOwner(final String owner) {
-        stopIndexOfOwner = startIndex + owner.length() - 1;
-        this.owner = SQLUtil.getExactlyValue(owner);
-        ownerQuoteCharacter = QuoteCharacter.getQuoteCharacter(owner);
+    public final void setOwner(final SQLSegment owner) {
+        this.owner = (TableSegment) owner;
+        ownerQuoteCharacter = this.owner.getQuoteCharacter();
+        stopIndexOfOwner = startIndex + this.owner.getName().length() + this.owner.getQuoteCharacter().getStartDelimiter().length() + this.owner.getQuoteCharacter().getEndDelimiter().length() - 1;
     }
 }
