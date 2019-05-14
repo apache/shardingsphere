@@ -27,6 +27,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RuleName {
     
+    OWNER("Owner"),
+    
+    NAME("Name"),
+    
     SCHEMA_NAME("SchemaName"),
     
     TABLE_NAME("TableName"),
