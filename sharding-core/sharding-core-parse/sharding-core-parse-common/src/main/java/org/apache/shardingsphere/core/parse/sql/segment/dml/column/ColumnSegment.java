@@ -41,8 +41,6 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final int startIndex;
     
-    private int stopIndexOfOwner;
-    
     private final String name;
     
     private TableSegment owner;
@@ -73,6 +71,5 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     public final void setOwner(final SQLSegment owner) {
         this.owner = (TableSegment) owner;
         ownerQuoteCharacter = this.owner.getQuoteCharacter();
-        stopIndexOfOwner = startIndex + this.owner.getName().length() + this.owner.getQuoteCharacter().getStartDelimiter().length() + this.owner.getQuoteCharacter().getEndDelimiter().length() - 1;
     }
 }

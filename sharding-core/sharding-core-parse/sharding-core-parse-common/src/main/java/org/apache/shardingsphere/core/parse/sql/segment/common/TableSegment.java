@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author zhangliang
  */
 @Getter
-public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
+public final class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable {
     
     private final int startIndex;
     
@@ -55,22 +55,22 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     }
     
     @Override
-    public final Optional<SchemaSegment> getOwner() {
+    public Optional<SchemaSegment> getOwner() {
         return Optional.fromNullable(owner);
     }
     
     @Override
-    public final void setOwner(final SQLSegment owner) {
+    public void setOwner(final SQLSegment owner) {
         this.owner = (SchemaSegment) owner;
     }
     
     @Override
-    public final Optional<String> getAlias() {
+    public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
     }
     
     @Override
-    public final void setAlias(final String alias) {
+    public void setAlias(final String alias) {
         this.alias = SQLUtil.getExactlyValue(alias);
     }
 }
