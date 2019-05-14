@@ -45,6 +45,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -65,7 +66,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
     private final DatabaseType databaseType;
     
     private final ParsingResultCache parsingResultCache;
-        
+    
+    private final List<Comparable<?>> generatedKeys = new LinkedList<>();
+    
     private final ParsingHook parsingHook = new SPIParsingHook();
     
     @Override
@@ -89,6 +92,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
                 ? GeneratedKey.getGenerateKey(shardingRule, parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         SQLRouteResult result = new SQLRouteResult(sqlStatement, generatedKey.orNull());
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, generatedKey.orNull()).optimize();
+        if (generatedKey.isPresent()) {
+            setGeneratedKeys(result, generatedKey.get());
+        }
         boolean needMerge = false;
         if (sqlStatement instanceof SelectStatement) {
             needMerge = isNeedMergeShardingValues((SelectStatement) sqlStatement);
@@ -107,6 +113,12 @@ public final class ParsingSQLRouter implements ShardingRouter {
         result.setRoutingResult(routingResult);
         result.setOptimizeResult(optimizeResult);
         return result;
+    }
+    
+    private void setGeneratedKeys(final SQLRouteResult sqlRouteResult, final GeneratedKey generatedKey) {
+        generatedKeys.addAll(generatedKey.getGeneratedKeys());
+        sqlRouteResult.getGeneratedKey().getGeneratedKeys().clear();
+        sqlRouteResult.getGeneratedKey().getGeneratedKeys().addAll(generatedKeys);
     }
     
     private boolean isNeedMergeShardingValues(final SelectStatement selectStatement) {
