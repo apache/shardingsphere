@@ -31,6 +31,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 @Getter
 public abstract class OrderByItemSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final OrderDirection orderDirection;
     
     private final OrderDirection nullOrderDirection;
