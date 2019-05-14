@@ -32,5 +32,9 @@ import java.util.Collection;
 @Getter
 public final class OnDuplicateKeyColumnsSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final Collection<ColumnSegment> columns;
 }

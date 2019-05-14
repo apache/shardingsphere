@@ -45,7 +45,8 @@ public final class OnDuplicateKeyColumnsExtractor implements OptionalSQLSegmentE
         if (!onDuplicateKeyClauseNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new OnDuplicateKeyColumnsSegment(extractColumnSegments(onDuplicateKeyClauseNode.get(), parameterMarkerIndexes)));
+        return Optional.of(new OnDuplicateKeyColumnsSegment(onDuplicateKeyClauseNode.get().getStart().getStartIndex(), onDuplicateKeyClauseNode.get().getStop().getStopIndex(), 
+                extractColumnSegments(onDuplicateKeyClauseNode.get(), parameterMarkerIndexes)));
     }
     
     private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext onDuplicateKeyClauseNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
