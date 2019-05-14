@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 /**
- * SQL rewrite engine.
+ * Base SQL rewrite engine.
  *
  * @author panjuan
  */
