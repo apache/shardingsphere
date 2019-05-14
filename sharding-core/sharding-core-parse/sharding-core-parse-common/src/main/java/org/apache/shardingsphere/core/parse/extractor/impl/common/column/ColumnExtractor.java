@@ -23,6 +23,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 
 import java.util.Map;
@@ -47,7 +48,8 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
         }
         Preconditions.checkState(3 == columnNode.getChildCount());
         ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getChild(2).getText());
-        result.setOwner(columnNode.getChild(0).getText());
+        ParserRuleContext ownerNode = (ParserRuleContext) columnNode.getChild(0);
+        result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerNode.getText()));
         return result;
     }
 }

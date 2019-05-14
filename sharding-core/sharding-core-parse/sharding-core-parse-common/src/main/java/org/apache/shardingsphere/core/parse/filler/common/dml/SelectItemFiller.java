@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectI
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.StarSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
@@ -85,13 +86,14 @@ public final class SelectItemFiller implements SQLSegmentFiller {
     
     private void fillShorthandSelectItemSegment(final ShorthandSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.setContainStar(true);
-        Optional<String> owner = selectItemSegment.getOwner();
-        selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
+        Optional<TableSegment> owner = selectItemSegment.getOwner();
+        selectStatement.getItems().add(new StarSelectItem(owner.isPresent() ? owner.get().getName() : null));
         if (owner.isPresent()) {
-            Optional<Table> table = selectStatement.getTables().find(owner.get());
+            Optional<Table> table = selectStatement.getTables().find(owner.get().getName());
             if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
                 // FIXME for QuoteCharacter.getQuoteCharacter(owner), if order by `xxx`.xx, has problem
-                selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndexOfOwner(), owner.get(), selectItemSegment.getOwnerQuoteCharacter()));
+                selectStatement.addSQLToken(
+                        new TableToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndexOfOwner(), owner.get().getName(), selectItemSegment.getOwnerQuoteCharacter()));
             }
         }
     }

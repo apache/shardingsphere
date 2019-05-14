@@ -31,12 +31,12 @@ public interface OwnerAvailable {
      *
      * @return owner
      */
-    Optional<String> getOwner();
+    Optional<? extends SQLSegment> getOwner();
     
     /**
      * Set owner.
      *
      * @param owner owner
      */
-    void setOwner(String owner);
+    void setOwner(SQLSegment owner);
 }

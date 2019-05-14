@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 
 import java.util.Map;
@@ -42,7 +43,8 @@ public final class ShorthandSelectItemExtractor implements OptionalSQLSegmentExt
         Optional<ParserRuleContext> qualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUALIFIED_SHORTHAND);
         if (qualifiedShorthandNode.isPresent()) {
             ShorthandSelectItemSegment result = new ShorthandSelectItemSegment(qualifiedShorthandNode.get().getStart().getStartIndex());
-            result.setOwner(qualifiedShorthandNode.get().getChild(0).getText());
+            ParserRuleContext ownerNode = (ParserRuleContext) qualifiedShorthandNode.get().getChild(0);
+            result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerNode.getText()));
             return Optional.of(result);
         }
         return Optional.absent();

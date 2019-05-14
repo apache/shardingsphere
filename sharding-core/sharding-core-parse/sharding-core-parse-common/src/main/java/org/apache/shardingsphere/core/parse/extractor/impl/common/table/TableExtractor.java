@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtr
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
+import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 
 import java.util.List;
@@ -45,11 +46,12 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
         }
         String nodeText = tableNameNode.get().getText();
         String tableName;
-        Optional<String> owner;
+        Optional<SchemaSegment> owner;
         if (nodeText.contains(Symbol.DOT.getLiterals())) {
             List<String> textValues = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
             tableName = textValues.get(textValues.size() - 1);
-            owner = Optional.of(textValues.get(textValues.size() - 2));
+            String schemaName = textValues.get(textValues.size() - 2);
+            owner = Optional.of(new SchemaSegment(tableNameNode.get().getStart().getStartIndex(), tableNameNode.get().getText().lastIndexOf(schemaName), schemaName));
         } else {
             tableName = nodeText;
             owner = Optional.absent();

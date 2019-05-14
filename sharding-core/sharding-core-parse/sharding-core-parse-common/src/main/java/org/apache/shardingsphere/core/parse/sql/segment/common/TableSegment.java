@@ -44,7 +44,7 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     
     private final QuoteCharacter quoteCharacter;
     
-    private String owner;
+    private SchemaSegment owner;
     
     private int ownerLength;
     
@@ -62,14 +62,15 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     }
     
     @Override
-    public final Optional<String> getOwner() {
+    public final Optional<SchemaSegment> getOwner() {
         return Optional.fromNullable(owner);
     }
     
     @Override
-    public final void setOwner(final String owner) {
-        this.owner = SQLUtil.getExactlyValue(owner);
-        ownerLength = null == owner ? 0 : owner.length() + Symbol.DOT.getLiterals().length();
+    public final void setOwner(final SQLSegment owner) {
+        this.owner = (SchemaSegment) owner;
+        ownerLength = null == owner ? 0 : this.owner.getName().length()
+                + this.owner.getQuoteCharacter().getStartDelimiter().length() + this.owner.getQuoteCharacter().getEndDelimiter().length() + Symbol.DOT.getLiterals().length();
     }
     
     @Override

@@ -24,7 +24,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 
 /**
  * Shorthand select item segment.
@@ -40,20 +41,20 @@ public final class ShorthandSelectItemSegment implements SelectItemSegment, Owne
     
     private int stopIndexOfOwner;
     
-    private String owner;
+    private TableSegment owner;
     
     @Setter(AccessLevel.PROTECTED)
     private QuoteCharacter ownerQuoteCharacter = QuoteCharacter.NONE;
     
     @Override
-    public Optional<String> getOwner() {
+    public Optional<TableSegment> getOwner() {
         return Optional.fromNullable(owner);
     }
     
     @Override
-    public void setOwner(final String owner) {
-        stopIndexOfOwner = startIndex + owner.length() - 1;
-        this.owner = SQLUtil.getExactlyValue(owner);
-        ownerQuoteCharacter = QuoteCharacter.getQuoteCharacter(owner);
+    public void setOwner(final SQLSegment owner) {
+        this.owner = (TableSegment) owner;
+        ownerQuoteCharacter = this.owner.getQuoteCharacter();
+        stopIndexOfOwner = startIndex + this.owner.getName().length() + this.owner.getQuoteCharacter().getStartDelimiter().length() + this.owner.getQuoteCharacter().getEndDelimiter().length() - 1;
     }
 }

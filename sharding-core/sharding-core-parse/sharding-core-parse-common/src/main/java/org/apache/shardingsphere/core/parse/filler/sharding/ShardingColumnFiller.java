@@ -44,7 +44,7 @@ public final class ShardingColumnFiller implements SQLSegmentFiller<ColumnSegmen
         if (!sqlSegment.getOwner().isPresent()) {
             return;
         }
-        Optional<Table> logicTable = sqlStatement.getTables().find(sqlSegment.getOwner().get());
+        Optional<Table> logicTable = sqlStatement.getTables().find(sqlSegment.getOwner().get().getName());
         if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
             sqlStatement.addSQLToken(new TableToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndexOfOwner(), logicTable.get().getName(), sqlSegment.getOwnerQuoteCharacter()));
         }
