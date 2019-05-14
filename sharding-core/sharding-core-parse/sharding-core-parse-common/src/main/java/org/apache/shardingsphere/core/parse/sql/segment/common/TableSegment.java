@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.common;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.sql.segment.AliasAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -46,19 +45,13 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     
     private SchemaSegment owner;
     
-    private int ownerLength;
-    
     private String alias;
     
     public TableSegment(final int startIndex, final int stopIndex, final String name) {
-        this(startIndex, stopIndex, name, QuoteCharacter.getQuoteCharacter(name));
-    }
-    
-    private TableSegment(final int startIndex, final int stopIndex, final String name, final QuoteCharacter quoteCharacter) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.name = SQLUtil.getExactlyValue(name);
-        this.quoteCharacter = quoteCharacter;
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
     
     @Override
@@ -69,8 +62,6 @@ public class TableSegment implements SQLSegment, OwnerAvailable, AliasAvailable 
     @Override
     public final void setOwner(final SQLSegment owner) {
         this.owner = (SchemaSegment) owner;
-        ownerLength = null == owner ? 0 : this.owner.getName().length()
-                + this.owner.getQuoteCharacter().getStartDelimiter().length() + this.owner.getQuoteCharacter().getEndDelimiter().length() + Symbol.DOT.getLiterals().length();
     }
     
     @Override
