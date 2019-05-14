@@ -89,7 +89,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * SQL rewrite engine.
+ * Sharding SQL rewrite engine.
  * 
  * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
  *
