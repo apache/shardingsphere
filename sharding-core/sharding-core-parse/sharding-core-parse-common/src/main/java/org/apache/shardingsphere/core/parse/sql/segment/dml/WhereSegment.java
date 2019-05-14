@@ -32,11 +32,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 @Setter
 public final class WhereSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final int parameterCount;
-    
-    private int whereStartIndex;
-    
-    private int whereStopIndex;
     
     private int whereParameterStartIndex;
     
