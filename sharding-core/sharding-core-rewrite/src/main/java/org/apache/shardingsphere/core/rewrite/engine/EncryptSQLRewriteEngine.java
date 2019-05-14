@@ -70,7 +70,7 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
+public final class EncryptSQLRewriteEngine implements BaseSQLRewriteEngine {
     
     private final EncryptRule encryptRule;
     
