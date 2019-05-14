@@ -41,7 +41,8 @@ public abstract class OrderByExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public final Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(findMainQueryNode(ancestorNode), RuleName.ORDER_BY_CLAUSE);
-        return orderByNode.isPresent() ? Optional.of(new OrderBySegment(orderByItemExtractor.extract(orderByNode.get(), parameterMarkerIndexes))) : Optional.<OrderBySegment>absent();
+        return orderByNode.isPresent() ? Optional.of(new OrderBySegment(orderByNode.get().getStart().getStartIndex(), orderByNode.get().getStop().getStopIndex(), 
+                orderByItemExtractor.extract(orderByNode.get(), parameterMarkerIndexes))) : Optional.<OrderBySegment>absent();
     }
     
     private ParserRuleContext findMainQueryNode(final ParserRuleContext ancestorNode) {
