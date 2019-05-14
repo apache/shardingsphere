@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.column;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -38,13 +39,19 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final int startIndex;
     
+    private final int stopIndex;
+    
     private final String name;
+    
+    private final QuoteCharacter quoteCharacter;
     
     private TableSegment owner;
     
-    public ColumnSegment(final int startIndex, final String name) {
+    public ColumnSegment(final int startIndex, final int stopIndex, final String name) {
         this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         this.name = SQLUtil.getExactlyValue(name);
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
     
     /**
