@@ -97,7 +97,7 @@ import java.util.Map.Entry;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingSQLRewriteEngine implements BaseSQLRewriteEngine {
+public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private final ShardingRule shardingRule;
     

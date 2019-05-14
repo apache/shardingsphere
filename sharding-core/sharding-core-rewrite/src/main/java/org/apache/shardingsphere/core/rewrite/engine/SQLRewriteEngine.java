@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.route.type.RoutingUnit;
  *
  * @author panjuan
  */
-public interface BaseSQLRewriteEngine {
+public interface SQLRewriteEngine {
     
     /**
      * rewrite SQL.

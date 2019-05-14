@@ -40,7 +40,7 @@ import java.util.Map;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class MasterSlaveSQLRewriteEngine implements BaseSQLRewriteEngine {
+public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
     
     private final MasterSlaveRule masterSlaveRule;
     
