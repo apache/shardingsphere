@@ -54,6 +54,15 @@ public final class TableSegment implements SQLSegment, OwnerAvailable, AliasAvai
         this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
     
+    /**
+     * Get start index.
+     * 
+     * @return start index
+     */
+    public int getStartIndex() {
+        return null == owner ? startIndex : owner.getStartIndex(); 
+    }
+    
     @Override
     public Optional<SchemaSegment> getOwner() {
         return Optional.fromNullable(owner);
