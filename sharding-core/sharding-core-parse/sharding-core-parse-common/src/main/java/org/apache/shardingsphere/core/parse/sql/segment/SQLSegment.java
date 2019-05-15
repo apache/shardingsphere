@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment;
 
 /**
- *  SQL segment.
+ * SQL segment.
  * 
  * @author zhangliang
  */
