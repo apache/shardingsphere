@@ -28,4 +28,15 @@
     <sql-case id="alter_user_passwd_without_equality" value="ALTER USER user_dev WITH PASSWORD 'passwd_dev'" db-types="PostgreSQL" />
     <sql-case id="alter_role_add_member" value="ALTER ROLE role_dev ADD MEMBER user_dev" db-types="SQLServer" />
     <sql-case id="alter_role_drop_member" value="ALTER ROLE role_dev DROP MEMBER user_dev" db-types="SQLServer" />
+    <sql-case id="alter_user" value="ALTER USER user1" db-types="MySQL" />
+    <sql-case id="alter_users" value="ALTER USER user1, user2" db-types="MySQL" />
+    <sql-case id="alter_user_if_exists" value="ALTER USER IF EXISTS user1" db-types="MySQL" />
+    <sql-case id="alter_local_user" value="ALTER USER 'user1'@'localhost'" db-types="MySQL" />
+    <sql-case id="alter_user_with_password" value="ALTER USER user1 IDENTIFIED BY 'password'" db-types="MySQL" />
+    <sql-case id="alter_user_with_resource_option" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="alter_user_with_resource_options" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_option" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_user_with_password_options" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_user_with_lock_option" value="ALTER USER user1 ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="alter_user_with_options" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
 </sql-cases>

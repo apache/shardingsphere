@@ -28,4 +28,15 @@
     <parser-result sql-case-id="alter_user_passwd_without_equality" />
     <parser-result sql-case-id="alter_role_add_member" />
     <parser-result sql-case-id="alter_role_drop_member" />
+    <parser-result sql-case-id="alter_user" />
+    <parser-result sql-case-id="alter_users" />
+    <parser-result sql-case-id="alter_user_if_exists" />
+    <parser-result sql-case-id="alter_local_user" />
+    <parser-result sql-case-id="alter_user_with_password" />
+    <parser-result sql-case-id="alter_user_with_resource_option" />
+    <parser-result sql-case-id="alter_user_with_resource_options" />
+    <parser-result sql-case-id="alter_user_with_password_option" />
+    <parser-result sql-case-id="alter_user_with_password_options" />
+    <parser-result sql-case-id="alter_user_with_lock_option" />
+    <parser-result sql-case-id="alter_user_with_options" />
 </parser-result-sets>
