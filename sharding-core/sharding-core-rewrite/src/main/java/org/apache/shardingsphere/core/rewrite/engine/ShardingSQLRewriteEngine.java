@@ -245,7 +245,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             encryptInsertOptimizeResultUnit(insertOptimizeResult.getColumnNames(), each);
         }
-        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertOptimizeResult.getColumnNames(), insertOptimizeResult.getUnits()));
+        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertOptimizeResult.getUnits()));
         appendRest(sqlBuilder, count, getStopIndex(insertValuesToken));
     }
     

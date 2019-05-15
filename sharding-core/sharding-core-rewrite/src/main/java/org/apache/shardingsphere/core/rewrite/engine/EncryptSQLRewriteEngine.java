@@ -155,7 +155,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
             encryptInsertOptimizeResult(insertOptimizeResult.getColumnNames(), each);
         }
         sqlBuilder.appendPlaceholder(
-                new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertOptimizeResult.getColumnNames(), insertOptimizeResult.getUnits()));
+                new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertOptimizeResult.getUnits()));
         appendRest(sqlBuilder, count, getStopIndex(insertValuesToken));
     }
     
