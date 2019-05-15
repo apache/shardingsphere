@@ -30,6 +30,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegme
 @Getter
 public final class TopSegment implements SelectItemSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final LimitValueSegment top;
     
     private final String rowNumberAlias;
