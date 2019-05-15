@@ -55,17 +55,19 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
             OrderDirection orderDirection = 2 == each.getChildCount() && OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(1).getText()) ? OrderDirection.DESC : OrderDirection.ASC;
             Optional<ParserRuleContext> indexNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER_LITERALS);
             if (indexNode.isPresent()) {
-                result.add(new IndexOrderByItemSegment(NumberUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, nullOrderDirection));
+                result.add(new IndexOrderByItemSegment(indexNode.get().getStart().getStartIndex(), indexNode.get().getStop().getStopIndex(), 
+                        NumberUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, nullOrderDirection));
                 continue;
             }
             Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(each, RuleName.EXPR);
             if (expressionNode.isPresent()) {
-                result.add(new ExpressionOrderByItemSegment(expressionNode.get().getText(), orderDirection, nullOrderDirection));
+                result.add(new ExpressionOrderByItemSegment(expressionNode.get().getStart().getStartIndex(), expressionNode.get().getStop().getStopIndex(),
+                        expressionNode.get().getText(), orderDirection, nullOrderDirection));
                 continue;
             }
             Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
             if (columnSegment.isPresent()) {
-                result.add(new ColumnOrderByItemSegment(columnSegment.get(), orderDirection, nullOrderDirection));
+                result.add(new ColumnOrderByItemSegment(columnSegment.get().getStartIndex(), columnSegment.get().getStopIndex(), columnSegment.get(), orderDirection, nullOrderDirection));
             }
         }
         return result;

@@ -33,5 +33,9 @@ import java.util.Collection;
 @Getter
 public final class OrderBySegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final Collection<OrderByItemSegment> orderByItems;
 }

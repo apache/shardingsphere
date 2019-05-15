@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.filler.common.dml.PredicateUtils;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
@@ -60,7 +60,7 @@ public final class EncryptOrPredicateFiller implements SQLSegmentFiller<OrPredic
     @Override
     public void fill(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         Collection<Integer> stopIndexes = new HashSet<>();
-        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
+        for (AndPredicate each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (stopIndexes.add(predicate.getStopIndex())) {
                     fill(predicate, sqlStatement);

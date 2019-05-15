@@ -32,11 +32,11 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Getter
 public final class ExpressionSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
-    private final String expression;
-    
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final String expression;
     
     private String alias;
     

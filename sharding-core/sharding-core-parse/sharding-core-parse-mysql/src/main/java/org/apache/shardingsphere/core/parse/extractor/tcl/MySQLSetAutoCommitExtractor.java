@@ -38,6 +38,7 @@ public final class MySQLSetAutoCommitExtractor implements OptionalSQLSegmentExtr
     public Optional<AutoCommitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
         return autoCommitValueNode.isPresent()
-                ? Optional.of(new AutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<AutoCommitSegment>absent();
+                ? Optional.of(new AutoCommitSegment(autoCommitValueNode.get().getStart().getStartIndex(), autoCommitValueNode.get().getStop().getStopIndex(), 
+                "1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<AutoCommitSegment>absent();
     }
 }

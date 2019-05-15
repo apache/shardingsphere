@@ -34,6 +34,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.Colu
 @Getter
 public final class ModifyColumnDefinitionSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final String oldColumnName;
     
     private final ColumnDefinitionSegment columnDefinition;

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
@@ -85,7 +85,7 @@ public final class ShardingOrPredicateFiller implements SQLSegmentFiller<OrPredi
     
     private ParseCondition createParseCondition(final OrPredicateSegment sqlSegment, final SQLStatement sqlStatement) {
         ParseCondition result = new ParseCondition();
-        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
+        for (AndPredicate each : sqlSegment.getAndPredicates()) {
             AndCondition andCondition = new AndCondition();
             for (PredicateSegment predicate : each.getPredicates()) {
                 Optional<String> tableName = PredicateUtils.findTableName(predicate, sqlStatement, shardingTableMetaData);

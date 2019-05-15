@@ -36,12 +36,12 @@ public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
         sqlStatement.setParametersIndex(sqlSegment.getParameterCount());
         if (sqlStatement instanceof DeleteStatement) {
             DeleteStatement deleteStatement = (DeleteStatement) sqlStatement;
-            deleteStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
-            deleteStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
+            deleteStatement.setWhereStartIndex(sqlSegment.getStartIndex());
+            deleteStatement.setWhereStopIndex(sqlSegment.getStopIndex());
         } else if (sqlStatement instanceof UpdateStatement) {
             UpdateStatement updateStatement = (UpdateStatement) sqlStatement;
-            updateStatement.setWhereStartIndex(sqlSegment.getWhereStartIndex());
-            updateStatement.setWhereStopIndex(sqlSegment.getWhereStopIndex());
+            updateStatement.setWhereStartIndex(sqlSegment.getStartIndex());
+            updateStatement.setWhereStopIndex(sqlSegment.getStopIndex());
             updateStatement.setWhereParameterStartIndex(sqlSegment.getWhereParameterStartIndex());
             updateStatement.setWhereParameterEndIndex(sqlSegment.getWhereParameterEndIndex());
         }

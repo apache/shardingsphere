@@ -53,6 +53,6 @@ public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
         Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0), parameterMarkerIndexes);
         Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(2), parameterMarkerIndexes);
         Preconditions.checkState(columnSegment.isPresent() && expressionSegment.isPresent());
-        return Optional.of(new AssignmentSegment(columnSegment.get(), expressionSegment.get()));
+        return Optional.of(new AssignmentSegment(assignmentNode.get().getStart().getStartIndex(), assignmentNode.get().getStop().getStopIndex(), columnSegment.get(), expressionSegment.get()));
     }
 }

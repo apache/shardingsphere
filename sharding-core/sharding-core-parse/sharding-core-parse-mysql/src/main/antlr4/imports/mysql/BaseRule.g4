@@ -101,11 +101,19 @@ schemaName
     ;
 
 tableName
-    : (identifier_ DOT_)? identifier_
+    : (owner DOT_)? name
     ;
 
 columnName
-    : (identifier_ DOT_)? identifier_
+    : (owner DOT_)? name
+    ;
+
+owner
+    : identifier_
+    ;
+
+name
+    : identifier_
     ;
 
 columnNames

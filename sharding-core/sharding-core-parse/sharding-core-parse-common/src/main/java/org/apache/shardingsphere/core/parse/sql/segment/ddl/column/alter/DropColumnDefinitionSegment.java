@@ -32,5 +32,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 @EqualsAndHashCode
 public final class DropColumnDefinitionSegment implements SQLSegment {
     
+    // TODO fix startIndex & stopIndex
+    private final int startIndex = 0;
+    
+    private final int stopIndex = 0;
+    
     private final String columnName;
 }

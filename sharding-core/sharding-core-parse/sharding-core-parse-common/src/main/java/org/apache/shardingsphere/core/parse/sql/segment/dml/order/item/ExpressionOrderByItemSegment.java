@@ -30,8 +30,8 @@ public final class ExpressionOrderByItemSegment extends OrderByItemSegment {
     
     private final String expression;
     
-    public ExpressionOrderByItemSegment(final String expression, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        super(orderDirection, nullOrderDirection);
+    public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+        super(startIndex, stopIndex, orderDirection, nullOrderDirection);
         this.expression = expression;
     }
 }

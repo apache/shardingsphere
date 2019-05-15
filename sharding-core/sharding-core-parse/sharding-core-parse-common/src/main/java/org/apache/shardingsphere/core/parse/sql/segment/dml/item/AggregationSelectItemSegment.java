@@ -33,13 +33,13 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 @Getter
 public class AggregationSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
-    private final AggregationType type;
-    
-    private final int innerExpressionStartIndex;
-    
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final AggregationType type;
+    
+    private final int innerExpressionStartIndex;
     
     private String alias;
     

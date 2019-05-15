@@ -24,7 +24,7 @@ package org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position;
  */
 public final class ColumnFirstPositionSegment extends ColumnPositionSegment {
     
-    public ColumnFirstPositionSegment(final String columnName, final int startIndex) {
-        super(columnName, startIndex);
+    public ColumnFirstPositionSegment(final int startIndex, final int stopIndex, final String columnName) {
+        super(startIndex, stopIndex, columnName);
     }
 }

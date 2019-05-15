@@ -24,10 +24,10 @@
     <sql-case id="drop_tables" value="DROP TABLE t_order_item, t_order" />
     <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_order" />
 
-    <sql-case id="drop_index" value="DROP INDEX idx_order_id" />
+    <sql-case id="drop_index" value="DROP INDEX order_index" />
     <sql-case id="drop_index_with_space" value="    DROP INDEX
-        idx_order_id    " />
-    <sql-case id="drop_index_with_double_quota" value="DROP INDEX &quot;idx_order_id&quot;" />
-    <sql-case id="drop_index_concurrently" value="DROP INDEX CONCURRENTLY idx_order_id" />
-    <sql-case id="drop_index_if_exists" value="DROP INDEX IF EXISTS idx_order_id" />
+        order_index    " />
+    <sql-case id="drop_index_with_double_quota" value="DROP INDEX &quot;order_index&quot;" />
+    <sql-case id="drop_index_concurrently" value="DROP INDEX CONCURRENTLY order_index" />
+    <sql-case id="drop_index_if_exists" value="DROP INDEX IF EXISTS order_index" />
 </sql-cases>

@@ -585,7 +585,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 22, "index_name", "table_x"));
+        selectStatement.addSQLToken(new IndexToken(13, 22, "index_name", QuoteCharacter.NONE, "table_x"));
         selectStatement.addSQLToken(new TableToken(27, 33, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -597,7 +597,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 23, "logic_index", "table_x"));
+        selectStatement.addSQLToken(new IndexToken(13, 23, "logic_index", QuoteCharacter.NONE, "table_x"));
         selectStatement.addSQLToken(new TableToken(28, 34, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());

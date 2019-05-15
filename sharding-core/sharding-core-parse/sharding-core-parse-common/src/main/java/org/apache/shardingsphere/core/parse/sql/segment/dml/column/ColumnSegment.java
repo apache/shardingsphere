@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.dml.column;
 
 import com.google.common.base.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.sql.segment.OwnerAvailable;
@@ -41,18 +39,19 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final int startIndex;
     
-    private int stopIndexOfOwner;
+    private final int stopIndex;
     
     private final String name;
     
+    private final QuoteCharacter quoteCharacter;
+    
     private TableSegment owner;
     
-    @Setter(AccessLevel.PROTECTED)
-    private QuoteCharacter ownerQuoteCharacter = QuoteCharacter.NONE;
-    
-    public ColumnSegment(final int startIndex, final String name) {
+    public ColumnSegment(final int startIndex, final int stopIndex, final String name) {
         this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         this.name = SQLUtil.getExactlyValue(name);
+        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
     }
     
     /**
@@ -72,7 +71,5 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     @Override
     public final void setOwner(final SQLSegment owner) {
         this.owner = (TableSegment) owner;
-        ownerQuoteCharacter = this.owner.getQuoteCharacter();
-        stopIndexOfOwner = startIndex + this.owner.getName().length() + this.owner.getQuoteCharacter().getStartDelimiter().length() + this.owner.getQuoteCharacter().getEndDelimiter().length() - 1;
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.limit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 
 /**
@@ -31,11 +30,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegme
 @Getter
 public final class TopSegment implements SelectItemSegment {
     
-    private final LimitValue top;
+    private final int startIndex;
     
-    private final int topStartIndex;
+    private final int stopIndex;
     
-    private final int topStopIndex;
+    private final LimitValueSegment top;
     
     private final String rowNumberAlias;
 }

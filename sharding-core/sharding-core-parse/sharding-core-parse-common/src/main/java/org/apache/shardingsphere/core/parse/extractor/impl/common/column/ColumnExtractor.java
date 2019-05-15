@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.extractor.impl.common.column;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
@@ -43,13 +42,12 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
-        if (1 == columnNode.getChildCount()) {
-            return new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getChild(0).getText());
+        ParserRuleContext nameNode = ExtractorUtils.getFirstChildNode(columnNode, RuleName.NAME);
+        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getStart().getStopIndex(), nameNode.getText());
+        Optional<ParserRuleContext> ownerNode = ExtractorUtils.findFirstChildNodeNoneRecursive(columnNode, RuleName.OWNER);
+        if (ownerNode.isPresent()) {
+            result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerNode.get().getText()));
         }
-        Preconditions.checkState(3 == columnNode.getChildCount());
-        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getChild(2).getText());
-        ParserRuleContext ownerNode = (ParserRuleContext) columnNode.getChild(0);
-        result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerNode.getText()));
         return result;
     }
 }

@@ -29,8 +29,8 @@ public final class ColumnAfterPositionSegment extends ColumnPositionSegment {
     
     private final String afterColumnName;
     
-    public ColumnAfterPositionSegment(final String columnName, final int startIndex, final String afterColumnName) {
-        super(columnName, startIndex);
+    public ColumnAfterPositionSegment(final int startIndex, final int stopIndex, final String columnName, final String afterColumnName) {
+        super(startIndex, stopIndex, columnName);
         this.afterColumnName = afterColumnName;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
@@ -87,7 +88,7 @@ public final class TableBroadcastRoutingEngineTest {
     private RoutingResult createDDLStatementRoutingResult() {
         DDLStatement ddlStatement = new DDLStatement();
         ddlStatement.setLogicSQL("CREATE INDEX t_order_index on t_order");
-        ddlStatement.addSQLToken(new IndexToken(13, 25, "t_order_index", "t_order"));
+        ddlStatement.addSQLToken(new IndexToken(13, 25, "t_order_index", QuoteCharacter.NONE, "t_order"));
         TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, ddlStatement);
         return tableBroadcastRoutingEngine.route();
     }

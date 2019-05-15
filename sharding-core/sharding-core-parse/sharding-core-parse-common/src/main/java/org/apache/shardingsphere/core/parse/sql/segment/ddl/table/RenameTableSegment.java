@@ -25,5 +25,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 @Getter
 public final class RenameTableSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final String newTableName;
 }

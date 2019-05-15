@@ -30,9 +30,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 @Getter
 public abstract class ColumnPositionSegment implements SQLSegment, Comparable<ColumnPositionSegment> {
     
-    private final String columnName;
-    
     private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String columnName;
     
     @Override
     public final int compareTo(final ColumnPositionSegment o) {

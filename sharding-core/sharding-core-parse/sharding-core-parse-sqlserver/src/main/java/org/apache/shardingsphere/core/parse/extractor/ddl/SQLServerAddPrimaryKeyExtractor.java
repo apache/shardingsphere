@@ -53,7 +53,7 @@ public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegment
         if (columnNameNodes.isEmpty()) {
             return Optional.absent();
         }
-        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment();
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(tableConstraintNode.get().getStart().getStartIndex(), tableConstraintNode.get().getStop().getStopIndex());
         for (ParseTree each : columnNameNodes) {
             result.getPrimaryKeyColumnNames().add(each.getText());
         }

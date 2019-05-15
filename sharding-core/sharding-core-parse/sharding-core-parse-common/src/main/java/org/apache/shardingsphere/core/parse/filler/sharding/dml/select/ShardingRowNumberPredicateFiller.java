@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.context.selectitem.SelectItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
@@ -75,7 +75,7 @@ public final class ShardingRowNumberPredicateFiller implements SQLSegmentFiller<
     
     private Collection<PredicateSegment> getRowNumberPredicates(final OrPredicateSegment sqlSegment, final String rowNumberAlias) {
         Collection<PredicateSegment> result = new LinkedList<>();
-        for (AndPredicateSegment each : sqlSegment.getAndPredicates()) {
+        for (AndPredicate each : sqlSegment.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (isRowNumberColumn(predicate, rowNumberAlias) && isCompareCondition(predicate)) {
                     result.add(predicate);

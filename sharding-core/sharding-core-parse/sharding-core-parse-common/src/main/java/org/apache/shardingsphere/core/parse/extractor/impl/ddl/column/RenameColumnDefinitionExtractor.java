@@ -46,6 +46,7 @@ public final class RenameColumnDefinitionExtractor implements OptionalSQLSegment
             return Optional.absent();
         }
         Iterator<ParserRuleContext> iterator = columnNodes.iterator();
-        return Optional.of(new RenameColumnSegment(iterator.next().getText(), iterator.next().getText()));
+        return Optional.of(new RenameColumnSegment(
+                modifyColumnNode.get().getStart().getStartIndex(), modifyColumnNode.get().getStop().getStopIndex(), iterator.next().getText(), iterator.next().getText()));
     }
 }

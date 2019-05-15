@@ -68,9 +68,8 @@ unicodeEscapes_
     : ('U' | 'u') AMPERSAND_
     ;
 
-// TODO need investigte, UESCAPE cannot work
 uescape_
-    : UESCAPE SQ_ . SQ_
+    : UESCAPE STRING_
     ;
     
 unreservedWord_
@@ -100,15 +99,23 @@ schemaName
     ;
 
 tableName
-    : (identifier_ DOT_)? identifier_
+    : (owner DOT_)? name
+    ;
+
+columnName
+    : (owner DOT_)? name
+    ;
+
+owner
+    : identifier_
+    ;
+
+name
+    : identifier_
     ;
 
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
-    ;
-
-columnName
-    : (identifier_ DOT_)? identifier_
     ;
 
 columnNames

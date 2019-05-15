@@ -46,19 +46,19 @@
     
     <parser-result sql-case-id="drop_index">
         <tokens>
-            <index-token start-index="11" stop-index="22" table-name=""/>
+            <index-token start-index="11" stop-index="21" table-name="t_order" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_space">
         <tokens>
-            <index-token start-index="23" stop-index="34" table-name=""/>
+            <index-token start-index="23" stop-index="33" table-name="t_order" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_quota">
         <tokens>
-            <index-token start-index="11" stop-index="24" table-name=""/>
+            <index-token start-index="11" stop-index="23" table-name="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>

@@ -32,10 +32,9 @@ public final class ColumnSelectItemSegment extends ColumnSegment implements Sele
     private String alias;
     
     public ColumnSelectItemSegment(final ColumnSegment columnSegment) {
-        super(columnSegment.getStartIndex(), columnSegment.getName());
+        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getName());
         if (columnSegment.getOwner().isPresent()) {
             setOwner(columnSegment.getOwner().get());
-            setOwnerQuoteCharacter(columnSegment.getOwnerQuoteCharacter());
         }
     }
     

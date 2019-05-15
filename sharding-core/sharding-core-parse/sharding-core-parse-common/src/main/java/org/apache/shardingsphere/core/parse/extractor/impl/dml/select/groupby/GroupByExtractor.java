@@ -43,7 +43,8 @@ public abstract class GroupByExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public final Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> groupByNode = ExtractorUtils.findFirstChildNode(findMainQueryNode(ancestorNode), RuleName.GROUP_BY_CLAUSE);
-        return groupByNode.isPresent() ? Optional.of(new GroupBySegment(groupByNode.get().getStop().getStopIndex(), orderByItemExtractor.extract(groupByNode.get(), parameterMarkerIndexes)))
+        return groupByNode.isPresent() ? Optional.of(
+                new GroupBySegment(groupByNode.get().getStart().getStartIndex(), groupByNode.get().getStop().getStopIndex(), orderByItemExtractor.extract(groupByNode.get(), parameterMarkerIndexes)))
                 : Optional.<GroupBySegment>absent();
     }
     

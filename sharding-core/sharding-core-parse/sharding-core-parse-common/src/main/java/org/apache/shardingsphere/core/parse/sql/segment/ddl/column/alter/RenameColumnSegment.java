@@ -28,10 +28,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
-public class RenameColumnSegment implements SQLSegment {
+public final class RenameColumnSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private final String oldColumnName;
     
     private final String columnName;
-    
 }

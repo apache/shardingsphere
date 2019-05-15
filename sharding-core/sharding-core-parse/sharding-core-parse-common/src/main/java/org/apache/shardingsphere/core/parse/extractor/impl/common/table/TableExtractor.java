@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.core.parse.extractor.impl.common.table;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 import org.apache.shardingsphere.core.parse.sql.segment.common.SchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,24 +41,19 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
         if (!tableNameNode.isPresent()) {
             return Optional.absent();
         }
-        String nodeText = tableNameNode.get().getText();
-        String tableName;
-        Optional<SchemaSegment> owner;
-        if (nodeText.contains(Symbol.DOT.getLiterals())) {
-            List<String> textValues = Splitter.on(Symbol.DOT.getLiterals()).splitToList(nodeText);
-            tableName = textValues.get(textValues.size() - 1);
-            String schemaName = textValues.get(textValues.size() - 2);
-            owner = Optional.of(new SchemaSegment(tableNameNode.get().getStart().getStartIndex(), tableNameNode.get().getText().lastIndexOf(schemaName), schemaName));
-        } else {
-            tableName = nodeText;
-            owner = Optional.absent();
-        }
-        TableSegment result = new TableSegment(tableNameNode.get().getStart().getStartIndex(), tableNameNode.get().getStop().getStopIndex(), tableName);
-        if (owner.isPresent()) {
-            result.setOwner(owner.get());
-        }
+        TableSegment result = getTableSegment(tableNameNode.get());
         setAlias(tableNameNode.get(), result);
         return Optional.of(result);
+    }
+    
+    private TableSegment getTableSegment(final ParserRuleContext tableNode) {
+        ParserRuleContext nameNode = ExtractorUtils.getFirstChildNode(tableNode, RuleName.NAME);
+        TableSegment result = new TableSegment(nameNode.getStart().getStartIndex(), nameNode.getStop().getStopIndex(), nameNode.getText());
+        Optional<ParserRuleContext> ownerNode = ExtractorUtils.findFirstChildNodeNoneRecursive(tableNode, RuleName.OWNER);
+        if (ownerNode.isPresent()) {
+            result.setOwner(new SchemaSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerNode.get().getText()));
+        }
+        return result;
     }
     
     private void setAlias(final ParserRuleContext tableNameNode, final TableSegment tableSegment) {
