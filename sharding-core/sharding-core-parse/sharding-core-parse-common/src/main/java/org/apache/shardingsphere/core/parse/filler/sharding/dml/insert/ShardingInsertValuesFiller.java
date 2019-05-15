@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.Complex
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
@@ -89,6 +90,18 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
             andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
+        }
+    }
+    
+    private void fillInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
+        if (insertValuesToken.isPresent()) {
+            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
+            int stopIndex = insertValuesToken.get().getStopIndex() < sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
+            insertStatement.getSQLTokens().remove(insertValuesToken.get());
+            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
+        } else {
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
     }
 }
