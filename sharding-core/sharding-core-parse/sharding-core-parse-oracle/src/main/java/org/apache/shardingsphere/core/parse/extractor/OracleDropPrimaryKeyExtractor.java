@@ -39,6 +39,8 @@ public final class OracleDropPrimaryKeyExtractor implements OptionalSQLSegmentEx
         if (!dropConstraintNode.isPresent()) {
             return Optional.absent();
         }
-        return ExtractorUtils.findFirstChildNode(dropConstraintNode.get(), RuleName.PRIMARY_KEY).isPresent() ? Optional.of(new DropPrimaryKeySegment()) : Optional.<DropPrimaryKeySegment>absent();
+        return ExtractorUtils.findFirstChildNode(dropConstraintNode.get(), RuleName.PRIMARY_KEY).isPresent()
+                ? Optional.of(new DropPrimaryKeySegment(dropConstraintNode.get().getStart().getStartIndex(), dropConstraintNode.get().getStop().getStopIndex()))
+                : Optional.<DropPrimaryKeySegment>absent();
     }
 }

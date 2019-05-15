@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.parse.sql.segment.ddl.constraint;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
@@ -24,5 +26,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
+@Getter
 public final class DropPrimaryKeySegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
 }

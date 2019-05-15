@@ -48,7 +48,7 @@ public final class OutlinePrimaryKeyExtractor implements OptionalSQLSegmentExtra
         if (columnNameNodes.isEmpty()) {
             return Optional.absent();
         }
-        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment();
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(primaryKeyNode.get().getStart().getStartIndex(), primaryKeyNode.get().getStop().getStopIndex());
         for (ParserRuleContext each : columnNameNodes) {
             result.getPrimaryKeyColumnNames().add(each.getText());
         }
