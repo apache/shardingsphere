@@ -50,8 +50,10 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {
                 fillFromMetaData(insertStatement);
+                insertStatement.getSQLTokens().add(createSelectItemsTokenFromMetaData(insertStatement, sqlSegment.getLastIndexOfColumnNames()));
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
+                insertStatement.getSQLTokens().add(createSelectItemsTokenFromSQL(insertStatement, sqlSegment.getLastIndexOfColumnNames()));
             }
             insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
