@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.common.dml;
+package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
  * @author panjuan
  */
 @Setter
-public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, ShardingTableMetaDataAwareFiller {
+public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, ShardingTableMetaDataAwareFiller {
     
     private ShardingTableMetaData shardingTableMetaData;
     
