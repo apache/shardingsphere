@@ -84,6 +84,7 @@
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
         <tomcat-dbcp.version>9.0.14</tomcat-dbcp.version>
         <commons-pool.version>1.6</commons-pool.version>
+        <commons-io.version>2.6</commons-io.version>
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <postgresql.version>42.2.5</postgresql.version>
@@ -328,6 +329,11 @@
                 <artifactId>druid</artifactId>
                 <version>${alibaba.druid.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-pool</groupId>
