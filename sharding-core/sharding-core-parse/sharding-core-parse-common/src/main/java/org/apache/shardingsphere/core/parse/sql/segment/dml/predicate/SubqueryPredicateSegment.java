@@ -34,7 +34,7 @@ import java.util.LinkedList;
 // TODO SubqueryPredicateSegment is a aggregation of all SubqueryPredicateSegments, should split them to multiple SubqueryPredicateSegment
 public final class SubqueryPredicateSegment implements SQLSegment {
     
-    private final int starIndex = 0;
+    private final int startIndex = 0;
     
     private final int stopIndex = 0;
     
