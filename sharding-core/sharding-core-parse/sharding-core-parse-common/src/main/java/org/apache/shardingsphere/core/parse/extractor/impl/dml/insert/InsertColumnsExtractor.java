@@ -57,4 +57,12 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
         }
         return result;
     }
+    
+    private int extractLastIndexOfColumnNames(final ParserRuleContext insertValuesClause) {
+        Optional<ParserRuleContext> columnNames = ExtractorUtils.findFirstChildNode(insertValuesClause, RuleName.COLUMN_NAMES);
+        if (columnNames.isPresent()) {
+            return columnNames.get().getStop().getStopIndex();
+        }
+        return insertValuesClause.getStart().getStartIndex() - 1;
+    }
 }
