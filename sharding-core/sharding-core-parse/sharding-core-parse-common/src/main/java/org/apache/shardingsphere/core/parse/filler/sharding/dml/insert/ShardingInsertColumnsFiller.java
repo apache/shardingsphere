@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -50,12 +49,11 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {
                 fillFromMetaData(insertStatement);
-                insertStatement.getSQLTokens().add(createSelectItemsTokenFromMetaData(insertStatement, sqlSegment.getLastIndexOfColumnNames()));
+                insertStatement.getSQLTokens().add(createSelectItemsTokenFromMetaData(insertStatement, sqlSegment.getStopIndex()));
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
-                insertStatement.getSQLTokens().add(createSelectItemsTokenFromSQL(insertStatement, sqlSegment.getLastIndexOfColumnNames()));
+                insertStatement.getSQLTokens().add(createSelectItemsTokenFromSQL(insertStatement, sqlSegment.getStopIndex()));
             }
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
     }
     

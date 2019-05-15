@@ -66,6 +66,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
+        fillInsertValuesToken(sqlSegment, insertStatement);
     }
     
     private Iterator<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
