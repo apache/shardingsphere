@@ -26,7 +26,6 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.DropColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.ddl.column.DropColumnDefinitionFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.constraint.DropPrimaryKeySegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.ddl.constraint.DropPrimaryKeyFiller" />
     
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.InsertColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.SelectItemsSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.SelectItemsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.WhereSegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.WhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment" filler-class="org.apache.shardingsphere.core.parse.filler.common.dml.GroupByFiller" />

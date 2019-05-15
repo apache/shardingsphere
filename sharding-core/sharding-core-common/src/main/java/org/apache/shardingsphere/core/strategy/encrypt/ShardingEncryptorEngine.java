@@ -102,6 +102,20 @@ public final class ShardingEncryptorEngine {
     }
     
     /**
+     * Get assisted query columns.
+     *
+     * @param logicTableName logic table name
+     * @return assisted query column
+     */
+    public Collection<String> getAssistedQueryColumns(final String logicTableName) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ShardingEncryptorStrategy each : shardingEncryptorStrategies.values()) {
+            result.addAll(each.getAssistedQueryColumns(logicTableName));
+        }
+        return result;
+    }
+    
+    /**
      * Get assisted query column count.
      * 
      * @param logicTableName logic table name

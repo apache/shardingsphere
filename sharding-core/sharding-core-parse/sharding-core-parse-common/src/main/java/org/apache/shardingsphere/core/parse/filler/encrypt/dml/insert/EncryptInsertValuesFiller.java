@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.Complex
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +45,7 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
         InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
+        fillInsertValuesToken(sqlSegment, insertStatement);
     }
     
     private InsertValue getInsertValue(final InsertValuesSegment sqlSegment, final String sql) {
@@ -52,5 +55,17 @@ public final class EncryptInsertValuesFiller implements SQLSegmentFiller<InsertV
             columnValues.add(sqlExpression);
         }
         return new InsertValue(columnValues);
+    }
+    
+    private void fillInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
+        if (insertValuesToken.isPresent()) {
+            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
+            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
+            insertStatement.getSQLTokens().remove(insertValuesToken.get());
+            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
+        } else {
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
+        }
     }
 }

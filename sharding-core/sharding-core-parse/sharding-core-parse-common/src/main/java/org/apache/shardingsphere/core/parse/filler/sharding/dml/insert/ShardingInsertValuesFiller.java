@@ -32,6 +32,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.Complex
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
@@ -65,15 +67,29 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
+        fillInsertValuesToken(sqlSegment, insertStatement);
     }
     
     private Iterator<String> getColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
+        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
         if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
             result.remove(generateKeyColumnName.get());
+            reviseInsertColumnsToken(insertStatement, generateKeyColumnName.get(), result);
         }
         return result.iterator();
+    }
+    
+    private void reviseInsertColumnsToken(final InsertStatement insertStatement, final String generateKeyColumnName, final Collection<String> columnNames) {
+        Optional<InsertColumnsToken> insertColumnsToken = insertStatement.findSQLToken(InsertColumnsToken.class);
+        Collection<String> assistedColumns = new LinkedList<>(insertColumnsToken.get().getColumns());
+        assistedColumns.removeAll(columnNames);
+        assistedColumns.remove(generateKeyColumnName);
+        insertColumnsToken.get().getColumns().clear();
+        insertColumnsToken.get().getColumns().addAll(columnNames);
+        insertColumnsToken.get().getColumns().add(generateKeyColumnName);
+        insertColumnsToken.get().getColumns().addAll(assistedColumns);
     }
     
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
@@ -89,6 +105,18 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
     private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(columnName, tableName)) {
             andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
+        }
+    }
+    
+    private void fillInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
+        if (insertValuesToken.isPresent()) {
+            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
+            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
+            insertStatement.getSQLTokens().remove(insertValuesToken.get());
+            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
+        } else {
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
     }
 }

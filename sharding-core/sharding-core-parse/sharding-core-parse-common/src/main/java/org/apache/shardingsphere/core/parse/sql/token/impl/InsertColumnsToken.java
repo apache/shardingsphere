@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.parse.sql.token.impl;
 
-import org.apache.shardingsphere.core.rewrite.SQLBuilder;
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Base SQL rewrite engine.
+ * Insert columns token.
  *
  * @author panjuan
  */
-public interface SQLRewriteEngine {
+@Getter
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public final class InsertColumnsToken extends SQLToken implements Attachable {
     
-    /**
-     * rewrite SQL.
-     *
-     * @return SQL builder
-     */
-    SQLBuilder rewrite();
+    private boolean isPartColumns;
     
-    /**
-     * Generate SQL string.
-     *
-     * @param routingUnit routing unit
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
-    SQLUnit generateSQL(RoutingUnit routingUnit, SQLBuilder sqlBuilder);
+    private final List<String> columns = new LinkedList<>();
+    
+    public InsertColumnsToken(final int startIndex, final boolean isPartColumns) {
+        super(startIndex);
+        this.isPartColumns = isPartColumns;
+    }
 }

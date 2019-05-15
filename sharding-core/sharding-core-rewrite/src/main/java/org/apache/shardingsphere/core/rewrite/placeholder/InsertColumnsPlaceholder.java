@@ -15,32 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import org.apache.shardingsphere.core.rewrite.SQLBuilder;
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import com.google.common.base.Joiner;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Base SQL rewrite engine.
+ * Insert columns placeholder for rewrite.
  *
  * @author panjuan
  */
-public interface SQLRewriteEngine {
+@RequiredArgsConstructor
+@Getter
+public final class InsertColumnsPlaceholder implements ShardingPlaceholder {
     
-    /**
-     * rewrite SQL.
-     *
-     * @return SQL builder
-     */
-    SQLBuilder rewrite();
+    private final boolean isPartColumns;
     
-    /**
-     * Generate SQL string.
-     *
-     * @param routingUnit routing unit
-     * @param sqlBuilder SQL builder
-     * @return SQL unit
-     */
-    SQLUnit generateSQL(RoutingUnit routingUnit, SQLBuilder sqlBuilder);
+    private final List<String> columns = new LinkedList<>();
+    
+    @Override
+    public String toString() {
+        if (columns.isEmpty()) {
+            return "";
+        }
+        if (isPartColumns) {
+            return String.format(", %s", Joiner.on(", ").join(columns));
+        }
+        return String.format("(%s)", Joiner.on(", ").join(columns));
+    }
 }
