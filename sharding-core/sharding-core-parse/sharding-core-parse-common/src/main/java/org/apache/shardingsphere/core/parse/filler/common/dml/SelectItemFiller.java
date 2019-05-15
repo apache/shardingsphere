@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.constant.DerivedColumn;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parse.sql.context.selectitem.CommonSelectItem;
@@ -36,6 +37,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSele
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.LimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.limit.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -129,11 +133,16 @@ public final class SelectItemFiller implements SQLSegmentFiller {
     
     private void fillTopSegment(final TopSegment topSegment, final SelectStatement selectStatement) {
         Limit limit = new Limit();
-        limit.setRowCount(topSegment.getTop());
+        limit.setRowCount(getTopValueSegment(topSegment.getTop()));
         selectStatement.setLimit(limit);
-        if (-1 != topSegment.getTop().getValue()) {
-            selectStatement.addSQLToken(new RowCountToken(topSegment.getTopStartIndex(), topSegment.getTopStopIndex(), topSegment.getTop().getValue()));
+        if (-1 != limit.getRowCount().getValue()) {
+            selectStatement.addSQLToken(new RowCountToken(topSegment.getTop().getStartIndex(), topSegment.getTop().getStopIndex(), limit.getRowCount().getValue()));
         }
         selectStatement.getItems().add(new CommonSelectItem("rownum", Optional.of(topSegment.getRowNumberAlias())));
+    }
+    
+    private LimitValue getTopValueSegment(final LimitValueSegment topValueSegment) {
+        return topValueSegment instanceof ParameterMarkerLimitValueSegment ? new LimitValue(-1, ((ParameterMarkerLimitValueSegment) topValueSegment).getParameterIndex(), false)
+                : new LimitValue(((NumberLiteralLimitValueSegment) topValueSegment).getValue(), -1, false);
     }
 }
