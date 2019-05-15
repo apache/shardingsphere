@@ -22,20 +22,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
- * Show tables segment.
- * 
+ * From schema segment.
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowTablesSegment implements SQLSegment {
+public final class FromSchemaSegment implements SQLSegment {
     
-    private final int fromTableStartIndex;
+    private final int startIndex;
     
-    private final int tableStopIndex;
-    
-    public ShowTablesSegment() {
-        fromTableStartIndex = -1;
-        tableStopIndex = -1;
-    }
+    private final int stopIndex;
 }

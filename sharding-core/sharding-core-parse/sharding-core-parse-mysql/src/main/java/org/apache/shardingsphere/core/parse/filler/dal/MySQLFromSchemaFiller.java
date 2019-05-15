@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dal;
+package org.apache.shardingsphere.core.parse.filler.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 
 /**
- * Show table status segment.
- * 
+ * From schema filler for MySQL.
+ *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowTableStatusSegment implements SQLSegment {
+public final class MySQLFromSchemaFiller implements SQLSegmentFiller<FromSchemaSegment> {
     
-    private final int fromTableStartIndex;
-    
-    private final int tableStopIndex;
-    
-    public ShowTableStatusSegment() {
-        fromTableStartIndex = -1;
-        tableStopIndex = -1;
+    @Override
+    public void fill(final FromSchemaSegment sqlSegment, final SQLStatement sqlStatement) {
+        sqlStatement.addSQLToken(new RemoveToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
     }
 }
