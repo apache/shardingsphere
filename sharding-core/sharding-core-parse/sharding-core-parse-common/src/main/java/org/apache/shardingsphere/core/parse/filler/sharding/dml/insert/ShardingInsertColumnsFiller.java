@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -49,10 +49,10 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {
                 fillFromMetaData(insertStatement);
-                insertStatement.getSQLTokens().add(createSelectItemsTokenFromMetaData(insertStatement, sqlSegment.getStopIndex()));
+                insertStatement.getSQLTokens().add(createInsertColumnsTokenFromMetaData(insertStatement, sqlSegment.getStopIndex()));
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
-                insertStatement.getSQLTokens().add(createSelectItemsTokenFromSQL(insertStatement, sqlSegment.getStopIndex()));
+                insertStatement.getSQLTokens().add(createInsertColumnsTokenFromSQL(insertStatement, sqlSegment.getStopIndex()));
             }
         }
     }
@@ -70,37 +70,35 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
         }
     }
     
-    private SelectItemsToken createSelectItemsTokenFromMetaData(final InsertStatement insertStatement, final int startIndex) {
-        SelectItemsToken result = new SelectItemsToken(startIndex);
-        result.getItems().add("(");
-        result.getItems().addAll(insertStatement.getColumnNames());
-        fillGeneratedKeyColumn(insertStatement, result);
-        fillQueryAssistedColumn(insertStatement, result);
-        result.getItems().add(")");
-        return result;
-    }
-    
-    private SelectItemsToken createSelectItemsTokenFromSQL(final InsertStatement insertStatement, final int startIndex) {
-        SelectItemsToken result = new SelectItemsToken(startIndex);
+    private InsertColumnsToken createInsertColumnsTokenFromMetaData(final InsertStatement insertStatement, final int startIndex) {
+        InsertColumnsToken result = new InsertColumnsToken(startIndex, true);
+        result.getColumns().addAll(insertStatement.getColumnNames());
         fillGeneratedKeyColumn(insertStatement, result);
         fillQueryAssistedColumn(insertStatement, result);
         return result;
     }
     
-    private void fillGeneratedKeyColumn(final InsertStatement insertStatement, final SelectItemsToken selectItemsToken) {
+    private InsertColumnsToken createInsertColumnsTokenFromSQL(final InsertStatement insertStatement, final int startIndex) {
+        InsertColumnsToken result = new InsertColumnsToken(startIndex, false);
+        fillGeneratedKeyColumn(insertStatement, result);
+        fillQueryAssistedColumn(insertStatement, result);
+        return result;
+    }
+    
+    private void fillGeneratedKeyColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
         Optional<String> generatedKeyColumn = generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
         if (generatedKeyColumn.isPresent()) {
-            selectItemsToken.getItems().add(generatedKeyColumn.get());
+            insertColumnsToken.getColumns().add(generatedKeyColumn.get());
         }
     }
     
-    private void fillQueryAssistedColumn(final InsertStatement insertStatement, final SelectItemsToken selectItemsToken) {
+    private void fillQueryAssistedColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
-                selectItemsToken.getItems().add(assistedColumnName.get());
+                insertColumnsToken.getColumns().add(assistedColumnName.get());
             }
         }
     }
