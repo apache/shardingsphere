@@ -7,29 +7,21 @@ chapter = true
 
 ## Background
 
-With increasing system TPS, database capacity has faced great bottleneck effect. 
-For the application system with massive concurrence read operations but less write operations in the same time, we can divide the database into a master database and a slave database. 
-The master database is responsible for the addition, deletion and modification operations of transactions, while the slave database is responsible for query operations. 
-It can significantly improve the query performance of the whole system by effectively avoiding line locks caused by data renewal.
+With increasing system TPS, database capacity has faced great bottleneck effect. For the application system with massive concurrence read operations but less write operations in the same time, we can divide the database into a master database and a slave database. The master database is responsible for the addition, deletion and modification of transactions, while the slave database is responsible for queries. It can significantly improve the query performance of the whole system by effectively avoiding line locks caused by data renewal.
 
-The configuration of one master database with multiple slave databases can further enhance system processing capacity by distributing queries evenly into multiple data replicas. 
-The configuration of multiple master databases with multiple slave databases can not only enhance system throughput but also the system availability. 
-As a result, under the circumstance that any database goes down, or even the disk is physically destroyed, the normal function of the system will still not be affected.
+One master database with multiple slave databases can further enhance system processing capacity by distributing queries evenly into multiple data replicas. Multiple master databases with multiple slave databases can enhance not only system throughput but also system availability. Therefore, the system can still function normally, even though any database is down or physical disk is destroyed.
 
-Different from the horizontal sharding that separates the data to all data nodes according to sharding keys, read-write split routes read operations and write operations separately to the master database and slave database according to SQL meaning analysis.
+Different from the horizontal sharding that separates data to all nodes according to sharding keys, read-write split routes read operations and write operations separately to the master database and the slave database according to SQL meaning analysis.
 
-[![Read-write split](https://shardingsphere.apache.org/document/current/img/read-write-split/read-write-split.png)
+![Read-write split](https://shardingsphere.apache.org/document/current/img/read-write-split/read-write-split.png)
 
-Data in read-write split nodes is consistent, whereas that in horizontal shards is not. 
-The combined use of horizontal sharding and read-write split will effectively enhance the system performance.
+Data in read-write split nodes is consistent, whereas that in horizontal shards is not. The combined use of horizontal sharding and read-write split will effectively enhance the system performance.
 
 ## Challenges
 
-Though enhancing system throughput and availability, read-write split also brings the problem of inconsistent data, including that between multiple master databases and between master databases and slave databases. 
-What's more, it also brings the problem similar as data sharding, making application development and operation staff's maintenance work more complex. 
-The following picture has shown the complex topological relations between application and database group when sharding table and database are used together with read-write split.
+Though read-write split can enhance system throughput and availability, it also brings inconsistent data, including that between multiple master databases and between master databases and slave databases. What's more, it also brings the same problem as data sharding, complicating app developer and operator's maintenance and operation. The following picture has shown the complex topological relations between applications and database groups when sharding table and database are used together with read-write split.
 
-[![Sharding + Read-write split](https://shardingsphere.apache.org/document/current/img/read-write-split/sharding-read-write-split.png)
+![Sharding + Read-write split](https://shardingsphere.apache.org/document/current/img/read-write-split/sharding-read-write-split.png)
 
 ## Goal
 
