@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
+import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
@@ -48,10 +49,11 @@ public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<Insert
             InsertStatement insertStatement = (InsertStatement) sqlStatement;
             if (sqlSegment.getColumns().isEmpty()) {
                 fillFromMetaData(insertStatement);
+                insertStatement.getSQLTokens().add(createInsertColumnsTokenFromMetaData(insertStatement, sqlSegment.getStopIndex()));
             } else {
                 fillFromSQL(sqlSegment, insertStatement);
+                insertStatement.getSQLTokens().add(createInsertColumnsTokenFromSQL(insertStatement, sqlSegment.getStopIndex()));
             }
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
     }
     
@@ -65,6 +67,29 @@ public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<Insert
     private void fillFromSQL(final InsertColumnsSegment sqlSegment, final InsertStatement insertStatement) {
         for (ColumnSegment each : sqlSegment.getColumns()) {
             insertStatement.getColumnNames().add(each.getName());
+        }
+    }
+    
+    private InsertColumnsToken createInsertColumnsTokenFromMetaData(final InsertStatement insertStatement, final int startIndex) {
+        InsertColumnsToken result = new InsertColumnsToken(startIndex, false);
+        result.getColumns().addAll(insertStatement.getColumnNames());
+        fillQueryAssistedColumn(insertStatement, result);
+        return result;
+    }
+    
+    private InsertColumnsToken createInsertColumnsTokenFromSQL(final InsertStatement insertStatement, final int startIndex) {
+        InsertColumnsToken result = new InsertColumnsToken(startIndex, true);
+        fillQueryAssistedColumn(insertStatement, result);
+        return result;
+    }
+    
+    private void fillQueryAssistedColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
+        for (String each : insertStatement.getColumnNames()) {
+            Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
+            if (assistedColumnName.isPresent()) {
+                insertColumnsToken.getColumns().remove(assistedColumnName.get());
+                insertColumnsToken.getColumns().add(assistedColumnName.get());
+            }
         }
     }
 }
