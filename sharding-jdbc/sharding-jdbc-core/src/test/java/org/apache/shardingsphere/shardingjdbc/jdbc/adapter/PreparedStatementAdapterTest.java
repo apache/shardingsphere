@@ -262,13 +262,12 @@ public final class PreparedStatementAdapterTest extends AbstractShardingJDBCData
     @Test
     public void assertSetCharacterStream() throws SQLException {
         for (PreparedStatement each : preparedStatements) {
-            Reader reader = new SerializableStringReader();
-            each.setCharacterStream(1, reader);
-            each.setCharacterStream(2, reader, 100);
-            each.setCharacterStream(3, reader, 100L);
-            assertParameter(each, 1, reader);
-            assertParameter(each, 2, reader);
-            assertParameter(each, 3, reader);
+            each.setCharacterStream(1, new SerializableStringReader());
+            each.setCharacterStream(2, new SerializableStringReader(), 100);
+            each.setCharacterStream(3, new SerializableStringReader(), 100L);
+            assertParameter(each, 1, "value");
+            assertParameter(each, 2, "value");
+            assertParameter(each, 3, "value");
         }
     }
     
