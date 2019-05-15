@@ -31,5 +31,5 @@ import java.util.LinkedList;
 @Getter
 public final class OrPredicateSegment implements SQLSegment {
     
-    private Collection<AndPredicateSegment> andPredicates = new LinkedList<>();
+    private Collection<AndPredicate> andPredicates = new LinkedList<>();
 }

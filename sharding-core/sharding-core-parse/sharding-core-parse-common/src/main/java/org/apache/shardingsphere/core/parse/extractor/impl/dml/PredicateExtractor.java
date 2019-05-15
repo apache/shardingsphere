@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
@@ -174,7 +174,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     private OrPredicateSegment getOrPredicateSegment(final PredicateSegment predicate) {
         OrPredicateSegment result = new OrPredicateSegment();
-        AndPredicateSegment andPredicate = new AndPredicateSegment();
+        AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(predicate);
         result.getAndPredicates().add(andPredicate);
         return result;
@@ -188,16 +188,16 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return leftPredicate;
         }
         OrPredicateSegment result = new OrPredicateSegment();
-        for (AndPredicateSegment eachLeftPredicate : leftPredicate.getAndPredicates()) {
-            for (AndPredicateSegment eachRightPredicate : rightPredicate.getAndPredicates()) {
-                result.getAndPredicates().add(getAndPredicateSegment(eachLeftPredicate, eachRightPredicate));
+        for (AndPredicate eachLeftPredicate : leftPredicate.getAndPredicates()) {
+            for (AndPredicate eachRightPredicate : rightPredicate.getAndPredicates()) {
+                result.getAndPredicates().add(getAndPredicate(eachLeftPredicate, eachRightPredicate));
             }
         }
         return result;
     }
     
-    private AndPredicateSegment getAndPredicateSegment(final AndPredicateSegment leftPredicate, final AndPredicateSegment rightPredicate) {
-        AndPredicateSegment result = new AndPredicateSegment();
+    private AndPredicate getAndPredicate(final AndPredicate leftPredicate, final AndPredicate rightPredicate) {
+        AndPredicate result = new AndPredicate();
         result.getPredicates().addAll(leftPredicate.getPredicates());
         result.getPredicates().addAll(rightPredicate.getPredicates());
         return result;

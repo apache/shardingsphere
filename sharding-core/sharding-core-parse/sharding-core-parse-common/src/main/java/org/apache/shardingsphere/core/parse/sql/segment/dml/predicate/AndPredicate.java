@@ -19,19 +19,18 @@ package org.apache.shardingsphere.core.parse.sql.segment.dml.predicate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * And predicate segment.
+ * And predicate.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class AndPredicateSegment implements SQLSegment {
+public final class AndPredicate {
     
     private final Collection<PredicateSegment> predicates = new LinkedList<>();
 }
