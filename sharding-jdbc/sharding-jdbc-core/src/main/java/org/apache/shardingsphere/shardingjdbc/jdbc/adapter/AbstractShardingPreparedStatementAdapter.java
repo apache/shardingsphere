@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
+import com.google.common.io.CharStreams;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.invocation.SetParameterMethodInvocation;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -209,17 +212,29 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x) {
-        setParameter(parameterIndex, x);
+        try {
+            setParameter(parameterIndex, CharStreams.toString(x));
+        } catch (final IOException ex) {
+            throw new ShardingException(ex);
+        }
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final int length) {
-        setParameter(parameterIndex, x);
+        try {
+            setParameter(parameterIndex, CharStreams.toString(x));
+        } catch (final IOException ex) {
+            throw new ShardingException(ex);
+        }
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final long length) {
-        setParameter(parameterIndex, x);
+        try {
+            setParameter(parameterIndex, CharStreams.toString(x));
+        } catch (final IOException ex) {
+            throw new ShardingException(ex);
+        }
     }
     
     @Override
