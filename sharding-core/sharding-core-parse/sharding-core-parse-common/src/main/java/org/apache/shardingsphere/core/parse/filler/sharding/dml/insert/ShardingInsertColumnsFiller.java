@@ -98,6 +98,7 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
+                insertColumnsToken.getColumns().remove(assistedColumnName.get());
                 insertColumnsToken.getColumns().add(assistedColumnName.get());
             }
         }
