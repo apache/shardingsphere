@@ -21,21 +21,21 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.GeneratedKey;
 import org.apache.shardingsphere.core.optimize.engine.sharding.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.antlr.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertSetToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.InsertValuesToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.SelectItemsToken;
-import org.apache.shardingsphere.core.parse.antlr.sql.token.TableToken;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parse.old.parser.context.table.Table;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLNumberExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLParameterMarkerExpression;
-import org.apache.shardingsphere.core.parse.old.parser.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
+import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
+import org.apache.shardingsphere.core.parse.sql.context.table.Table;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
@@ -122,10 +122,10 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithPlaceHolder.addSQLToken(new InsertValuesToken(21, 46));
         AndCondition andCondition1 = new AndCondition();
         andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLParameterMarkerExpression(0)));
-        insertValuesStatementWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition1);
+        insertValuesStatementWithPlaceHolder.getRouteCondition().getOrConditions().add(andCondition1);
         AndCondition andCondition2 = new AndCondition();
         andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLParameterMarkerExpression(2)));
-        insertValuesStatementWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
+        insertValuesStatementWithPlaceHolder.getRouteCondition().getOrConditions().add(andCondition2);
         insertValuesStatementWithPlaceHolder.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceHolder.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)));
@@ -141,10 +141,10 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithPlaceHolderWithEncrypt.addSQLToken(new InsertValuesToken(21, 46));
         AndCondition andCondition1 = new AndCondition();
         andCondition1.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), new SQLParameterMarkerExpression(0)));
-        insertValuesStatementWithPlaceHolderWithEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition1);
+        insertValuesStatementWithPlaceHolderWithEncrypt.getRouteCondition().getOrConditions().add(andCondition1);
         AndCondition andCondition2 = new AndCondition();
         andCondition2.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), new SQLParameterMarkerExpression(2)));
-        insertValuesStatementWithPlaceHolderWithEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
+        insertValuesStatementWithPlaceHolderWithEncrypt.getRouteCondition().getOrConditions().add(andCondition2);
         insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("user_id");
         insertValuesStatementWithPlaceHolderWithEncrypt.getColumnNames().add("status");
         InsertValue insertValue = new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)));
@@ -163,7 +163,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceHolder.addSQLToken(selectItemsToken);
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
-        insertValuesStatementWithoutPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertValuesStatementWithoutPlaceHolder.getRouteCondition().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertValuesWithoutPlaceHolderWithQueryEncrypt() {
@@ -177,7 +177,7 @@ public final class InsertOptimizeEngineTest {
         insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.addSQLToken(selectItemsToken);
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), new SQLNumberExpression(12)));
-        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertValuesStatementWithoutPlaceHolderWithQueryEncrypt.getRouteCondition().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithPlaceHolder() {
@@ -190,7 +190,7 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithPlaceHolder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
-        insertSetStatementWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertSetStatementWithPlaceHolder.getRouteCondition().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithPlaceHolderWithQueryEncrypt() {
@@ -203,7 +203,7 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithPlaceHolderWithQueryEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt_query"), new SQLNumberExpression(12)));
-        insertSetStatementWithPlaceHolderWithQueryEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertSetStatementWithPlaceHolderWithQueryEncrypt.getRouteCondition().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithoutPlaceHolder() {
@@ -216,7 +216,7 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceHolder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
-        insertSetStatementWithoutPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertSetStatementWithoutPlaceHolder.getRouteCondition().getOrConditions().add(andCondition);
     }
     
     private void initializeInsertSetWithoutPlaceHolderWithEncrypt() {
@@ -229,7 +229,7 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceHolderWithEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_encrypt"), new SQLNumberExpression(12)));
-        insertSetStatementWithoutPlaceHolderWithEncrypt.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertSetStatementWithoutPlaceHolderWithEncrypt.getRouteCondition().getOrConditions().add(andCondition);
     }
     
     @Test

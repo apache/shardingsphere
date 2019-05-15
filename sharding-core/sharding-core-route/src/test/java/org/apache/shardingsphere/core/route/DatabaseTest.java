@@ -26,8 +26,8 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -99,7 +99,7 @@ public final class DatabaseTest {
     @Test
     public void assertDatabasePrepareSelectSQLPagination() {
         String shardingPrefix = "user_db";
-        String shardingTable = "user";
+        String shardingTable = "t_user";
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put(shardingPrefix + "1", null);
         dataSourceMap.put(shardingPrefix + "2", null);
@@ -108,7 +108,7 @@ public final class DatabaseTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         ShardingRule rule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
-        String originSQL = "select city_id from user where city_id in (?,?) limit 5,10";
+        String originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         ShardingMetaData shardingMetaData = mock(ShardingMetaData.class);
         when(shardingMetaData.getTable()).thenReturn(mock(ShardingTableMetaData.class));
         SQLRouteResult actual = new PreparedStatementRoutingEngine(
@@ -117,7 +117,7 @@ public final class DatabaseTest {
         assertThat(selectStatement.getLimit().getOffsetValue(), is(5));
         assertThat(selectStatement.getLimit().getRowCountValue(), is(10));
         assertThat(actual.getRoutingResult().getRoutingUnits().size(), is(1));
-        originSQL = "select city_id from user where city_id in (?,?) limit 5,10";
+        originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         actual = new PreparedStatementRoutingEngine(originSQL, rule, shardingMetaData, DatabaseType.MySQL, new ParsingResultCache()).route(Lists.<Object>newArrayList(89, 84));
         selectStatement = (SelectStatement) actual.getSqlStatement();
         assertThat(selectStatement.getLimit().getOffsetValue(), is(5));

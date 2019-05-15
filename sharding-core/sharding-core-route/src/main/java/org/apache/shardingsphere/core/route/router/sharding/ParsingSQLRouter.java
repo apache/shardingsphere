@@ -29,14 +29,14 @@ import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.ShardingSQLParseEngine;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parse.hook.ParsingHook;
 import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
-import org.apache.shardingsphere.core.parse.old.parser.context.limit.Limit;
-import org.apache.shardingsphere.core.parse.old.parser.context.limit.LimitValue;
+import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
+import org.apache.shardingsphere.core.parse.sql.context.limit.LimitValue;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
@@ -122,7 +122,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private boolean isNeedMergeShardingValues(final SelectStatement selectStatement) {
-        return !selectStatement.getSubqueryConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(selectStatement.getTables().getTableNames()).isEmpty();
+        return !selectStatement.getSubqueryParseConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(selectStatement.getTables().getTableNames()).isEmpty();
     }
     
     private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {

@@ -26,10 +26,10 @@ import org.apache.shardingsphere.core.optimize.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimize.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Column;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.Condition;
-import org.apache.shardingsphere.core.parse.old.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
+import org.apache.shardingsphere.core.parse.sql.context.condition.Condition;
+import org.apache.shardingsphere.core.parse.sql.context.condition.ParseCondition;
 import org.apache.shardingsphere.core.strategy.route.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
@@ -48,14 +48,14 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class QueryOptimizeEngine implements OptimizeEngine {
     
-    private final OrCondition orCondition;
+    private final ParseCondition parseCondition;
     
     private final List<Object> parameters;
     
     @Override
     public OptimizeResult optimize() {
-        List<ShardingCondition> result = new ArrayList<>(orCondition.getAndConditions().size());
-        for (AndCondition each : orCondition.getAndConditions()) {
+        List<ShardingCondition> result = new ArrayList<>(parseCondition.getOrConditions().size());
+        for (AndCondition each : parseCondition.getOrConditions()) {
             result.add(optimize(each.getConditionsMap()));
         }
         return new OptimizeResult(new ShardingConditions(result));

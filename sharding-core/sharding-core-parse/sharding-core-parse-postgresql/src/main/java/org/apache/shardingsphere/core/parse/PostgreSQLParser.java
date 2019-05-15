@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.core.parse.antlr.autogen.PostgreSQLStatementParser;
-import org.apache.shardingsphere.core.parse.antlr.parser.advanced.AdvancedErrorStrategy;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.PostgreSQLStatementParser;
 
 /**
  * SQL parser for PostgreSQL.
@@ -31,6 +30,5 @@ public final class PostgreSQLParser extends PostgreSQLStatementParser implements
     
     public PostgreSQLParser(final TokenStream input) {
         super(input);
-        setErrorHandler(new AdvancedErrorStrategy(IDENTIFIER_));
     }
 }

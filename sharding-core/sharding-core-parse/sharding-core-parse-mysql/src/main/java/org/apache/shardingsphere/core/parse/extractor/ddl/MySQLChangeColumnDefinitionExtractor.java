@@ -19,13 +19,13 @@ package org.apache.shardingsphere.core.parse.extractor.ddl;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parse.antlr.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.ColumnDefinitionExtractor;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.core.parse.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.core.parse.antlr.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parse.extractor.impl.ddl.column.ColumnDefinitionExtractor;
+import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
+import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnPositionSegment;
 
 import java.util.Map;
 

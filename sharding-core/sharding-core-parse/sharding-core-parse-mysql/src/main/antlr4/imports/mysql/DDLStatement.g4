@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createTableSpecification_? TABLE tableNotExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
     ;
 
 createIndex
@@ -36,7 +36,7 @@ dropTable
     ;
 
 dropIndex
-    : DROP INDEX dropIndexSpecification_ indexName ON tableName
+    : DROP INDEX dropIndexSpecification_? indexName (ON tableName)?
     ;
 
 truncateTable
@@ -44,7 +44,7 @@ truncateTable
     ;
 
 createTableSpecification_
-    : TEMPORARY?
+    : TEMPORARY
     ;
 
 tableNotExistClause_

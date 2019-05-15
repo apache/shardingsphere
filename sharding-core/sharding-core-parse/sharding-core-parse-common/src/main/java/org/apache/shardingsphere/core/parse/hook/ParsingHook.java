@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.parse.hook;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
  * Parsing hook.

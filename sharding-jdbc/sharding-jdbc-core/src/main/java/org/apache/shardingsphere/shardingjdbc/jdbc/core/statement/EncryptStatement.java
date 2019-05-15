@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.EncryptSQLRewriteEngine;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rewrite.engine.EncryptSQLRewriteEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
@@ -80,7 +80,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         SQLStatement sqlStatement = connection.getEncryptSQLParseEngine().parse(false, sql);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
         EncryptSQLRewriteEngine encryptSQLRewriteEngine = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, new LinkedList<>(), optimizeResult);
-        return encryptSQLRewriteEngine.generateSQL(encryptSQLRewriteEngine.rewrite()).getSql();
+        return encryptSQLRewriteEngine.generateSQL(null, encryptSQLRewriteEngine.rewrite()).getSql();
     }
     
     @Override

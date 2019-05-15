@@ -17,10 +17,10 @@
   -->
 
 <extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.ddl.column.AddColumnDefinitionExtractor"/>
+    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.column.AddColumnDefinitionExtractor"/>
     <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.OracleModifyColumnDefinitionExtractor" />
     <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.OracleDropPrimaryKeyExtractor" />
     
-    <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.groupby.AscNullOrderDirectionGroupByExtractor" />
-    <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.antlr.extractor.impl.dml.select.orderby.AscNullOrderDirectionOrderByExtractor" />
+    <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.dml.select.groupby.AscNullOrderDirectionGroupByExtractor" />
+    <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.dml.select.orderby.AscNullOrderDirectionOrderByExtractor" />
 </extractor-rule-definition>

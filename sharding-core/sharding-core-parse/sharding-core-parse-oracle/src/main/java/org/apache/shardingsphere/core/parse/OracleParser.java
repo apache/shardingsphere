@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.core.parse.antlr.autogen.OracleStatementParser;
-import org.apache.shardingsphere.core.parse.antlr.parser.advanced.AdvancedErrorStrategy;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.OracleStatementParser;
 
 /**
  * SQL parser for Oracle.
@@ -31,6 +30,5 @@ public final class OracleParser extends OracleStatementParser implements SQLPars
     
     public OracleParser(final TokenStream input) {
         super(input);
-        setErrorHandler(new AdvancedErrorStrategy(IDENTIFIER_));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parse.cache;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceMap;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 import java.util.Map;
 

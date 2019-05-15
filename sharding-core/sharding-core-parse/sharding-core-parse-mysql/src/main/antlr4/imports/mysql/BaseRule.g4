@@ -93,7 +93,7 @@ unreservedWord_
     | BOOLEAN | MAX | MIN | SUM | COUNT | AVG | BIT_AND
     | BIT_OR | BIT_XOR | GROUP_CONCAT | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV
     | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE | EXTENDED | STATUS
-    | FIELDS | INDEXES
+    | FIELDS | INDEXES | USER | ROLE | OJ | AUTOCOMMIT
     ;
 
 schemaName
@@ -101,11 +101,19 @@ schemaName
     ;
 
 tableName
-    : (identifier_ DOT_)? identifier_
+    : (owner DOT_)? name
     ;
 
 columnName
-    : (identifier_ DOT_)? identifier_
+    : (owner DOT_)? name
+    ;
+
+owner
+    : identifier_
+    ;
+
+name
+    : identifier_
     ;
 
 columnNames

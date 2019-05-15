@@ -56,7 +56,7 @@ updateSpecification_
     ;
 
 assignment
-    : columnName EQ_ assignmentValue
+    : columnName EQ_ VALUES? LP_? assignmentValue RP_?
     ;
 
 setAssignmentsClause

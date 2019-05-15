@@ -23,17 +23,18 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.antlr.AntlrParsingEngine;
-import org.apache.shardingsphere.core.parse.antlr.parser.SQLParserFactory;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
 import org.apache.shardingsphere.core.parse.integrate.asserts.ParserResultSetLoader;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.core.parse.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
+import org.apache.shardingsphere.core.parse.parser.SQLParserFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegra
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         sqlCasesLoader.switchSQLCase("sql/ddl");
         parserResultSetLoader.switchResult("prior_parser_for_antlr");
@@ -83,7 +84,7 @@ public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegra
         if (DatabaseType.H2 == databaseType) {
             execDatabaseType = DatabaseType.MySQL;
         }
-        new SQLStatementAssert(new AntlrParsingEngine(
+        new SQLStatementAssert(new SQLParseEngine(
                 execDatabaseType, sql, AbstractBaseIntegrateSQLParsingTest.getShardingRule(), 
                 AbstractBaseIntegrateSQLParsingTest.getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader, execDatabaseType).assertSQLStatement();
     }

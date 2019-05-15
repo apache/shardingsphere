@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.core.parse;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.core.parse.antlr.autogen.SQLServerStatementParser;
-import org.apache.shardingsphere.core.parse.antlr.parser.advanced.AdvancedErrorStrategy;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.SQLServerStatementParser;
 
 /**
  * SQL parser for SQLServer.
@@ -31,6 +30,5 @@ public final class SQLServerParser extends SQLServerStatementParser implements S
     
     public SQLServerParser(final TokenStream input) {
         super(input);
-        setErrorHandler(new AdvancedErrorStrategy(IDENTIFIER_));
     }
 }

@@ -446,3 +446,243 @@ VIRTUAL
 ZONE
     : Z O N E
     ;
+
+PUBLIC
+    : P U B L I C
+    ;
+
+SESSION
+    : S E S S I O N
+    ;
+
+COMMENT
+    : C O M M E N T
+    ;
+
+LOCK
+    : L O C K
+    ;
+
+ADVISOR
+    : A D V I S O R
+    ;
+
+ADMINISTER
+    : A D M I N I S T E R
+    ;
+
+TUNING
+    : T U N I N G
+    ;
+
+MANAGE
+    : M A N A G E
+    ;
+
+MANAGEMENT
+    : M A N A G E M E N T
+    ;
+
+OBJECT
+    : O B J E C T
+    ;
+
+CLUSTER
+    : C L U S T E R
+    ;
+
+CONTEXT
+    : C O N T E X T
+    ;
+
+EXEMPT
+    : E X E M P T
+    ;
+
+REDACTION
+    : R E D A C T I O N
+    ;
+
+POLICY
+    : P O L I C Y
+    ;
+
+DATABASE
+    : D A T A B A S E
+    ;
+
+SYSTEM
+    : S Y S T E M
+    ;
+
+AUDIT
+    : A U D I T
+    ;
+
+LINK
+    : L I N K
+    ;
+
+ANALYZE
+    : A N A L Y Z E
+    ;
+
+DICTIONARY
+    : D I C T I O N A R Y
+    ;
+
+DIMENSION
+    : D I M E N S I O N
+    ;
+
+INDEXTYPE
+    : I N D E X T Y P E
+    ;
+
+EXTERNAL
+    : E X T E R N A L
+    ;
+
+JOB
+    : J O B
+    ;
+
+CLASS
+    : C L A S S
+    ;
+
+PROGRAM
+    : P R O G R A M
+    ;
+
+SCHEDULER
+    : S C H E D U L E R
+    ;
+
+LIBRARY
+    : L I B R A R Y
+    ;
+
+LOGMINING
+    : L O G M I N I N G
+    ;
+
+MATERIALIZED
+    : M A T E R I A L I Z E D
+    ;
+
+CUBE
+    : C U B E
+    ;
+
+MEASURE
+    : M E A S U R E
+    ;
+
+FOLDER
+    : F O L D E R
+    ;
+
+BUILD
+    : B U I L D
+    ;
+
+PROCESS
+    : P R O C E S S
+    ;
+
+OPERATOR
+    : O P E R A T O R
+    ;
+
+OUTLINE
+    : O U T L I N E
+    ;
+
+PLUGGABLE
+    : P L U G G A B L E
+    ;
+
+CONTAINER
+    : C O N T A I N E R
+    ;
+
+SEGMENT
+    : S E G M E N T
+    ;
+
+RESTRICTED
+    : R E S T R I C T E D
+    ;
+
+COST
+    : C O S T
+    ;
+
+SYNONYM
+    : S Y N O N Y M
+    ;
+
+BACKUP
+    : B A C K U P
+    ;
+
+UNLIMITED
+    : U N L I M I T E D
+    ;
+
+BECOME
+    : B E C O M E
+    ;
+
+CHANGE
+    : C H A N G E
+    ;
+
+NOTIFICATION
+    : N O T I F I C A T I O N
+    ;
+
+ACCESS
+    : A C C E S S
+    ;
+
+PRIVILEGE
+    : P R I V I L E G E
+    ;
+
+PURGE
+    : P U R G E
+    ;
+
+RESUMABLE
+    : R E S U M A B L E
+    ;
+
+SYSGUID
+    : S Y S G U I D
+    ;
+
+SYSBACKUP
+    : S Y S B A C K U P
+    ;
+
+SYSDBA
+    : S Y S D B A
+    ;
+
+SYSDG
+    : S Y S D G
+    ;
+
+SYSKM
+    : S Y S K M
+    ;
+
+SYSOPER
+    : S Y S O P E R
+    ;
+
+DBA_RECYCLEBIN
+    : D B A UL_ R E C Y C L E B I N
+    ;

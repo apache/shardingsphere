@@ -85,10 +85,10 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private List<Set<String>> getActualTableGroups(final String dataSource, final Set<String> logicTables) {
+    private List<Set<String>> getActualTableGroups(final String dataSourceName, final Set<String> logicTables) {
         List<Set<String>> result = new ArrayList<>(logicTables.size());
         for (RoutingResult each : routingResults) {
-            result.addAll(each.getActualTableNameGroups(dataSource, logicTables));
+            result.addAll(each.getActualTableNameGroups(dataSourceName, logicTables));
         }
         return result;
     }

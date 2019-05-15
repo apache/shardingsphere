@@ -22,13 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.ResetParamStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.postgresql.statement.SetParamStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.ResetParameterStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.postgresql.statement.SetStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.broadcast.DataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.DatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.InstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.route.type.broadcast.TableBroadcastRoutingEngine;
@@ -94,10 +95,13 @@ public final class RoutingEngineFactory {
         if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof UseStatement) {
             return new IgnoreRoutingEngine();
         }
-        if (sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement) {
+        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        return new UnicastRoutingEngine(shardingRule, tableNames);
+        if (!tableNames.isEmpty()) {
+            return new UnicastRoutingEngine(shardingRule, tableNames);
+        }
+        return new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
 
     private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
