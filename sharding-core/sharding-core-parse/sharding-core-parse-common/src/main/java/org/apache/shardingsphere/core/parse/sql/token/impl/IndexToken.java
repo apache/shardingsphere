@@ -40,7 +40,7 @@ public final class IndexToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
-    private String tableName;
+    private String tableName = "";
     
     private final QuoteCharacter quoteCharacter;
     
