@@ -31,5 +31,9 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 @Getter
 public final class IndexSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final IndexToken token;
 }
