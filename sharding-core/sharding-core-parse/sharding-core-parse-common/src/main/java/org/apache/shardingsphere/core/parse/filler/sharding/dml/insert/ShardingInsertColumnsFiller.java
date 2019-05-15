@@ -70,6 +70,13 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
         }
     }
     
+    private SelectItemsToken createSelectItemsTokenFromSQL(final InsertStatement insertStatement, final int startIndex) {
+        SelectItemsToken result = new SelectItemsToken(startIndex);
+        fillGeneratedKeyColumn(insertStatement, result);
+        fillQueryAssistedColumn(insertStatement, result);
+        return result;
+    }
+    
     private void fillGeneratedKeyColumn(final InsertStatement insertStatement, final SelectItemsToken selectItemsToken) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
@@ -79,7 +86,7 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
         }
     }
     
-    private void fillWithQueryAssistedColumn(final InsertStatement insertStatement, final SelectItemsToken selectItemsToken) {
+    private void fillQueryAssistedColumn(final InsertStatement insertStatement, final SelectItemsToken selectItemsToken) {
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {
