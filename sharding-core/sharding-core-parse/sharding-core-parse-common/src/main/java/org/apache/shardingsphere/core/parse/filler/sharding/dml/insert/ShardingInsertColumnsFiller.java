@@ -75,6 +75,7 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
     private SelectItemsToken createSelectItemsTokenFromMetaData(final InsertStatement insertStatement, final int startIndex) {
         SelectItemsToken result = new SelectItemsToken(startIndex);
         result.getItems().add("(");
+        result.getItems().addAll(insertStatement.getColumnNames());
         fillGeneratedKeyColumn(insertStatement, result);
         fillQueryAssistedColumn(insertStatement, result);
         result.getItems().add(")");
