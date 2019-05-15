@@ -35,12 +35,14 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
@@ -122,6 +124,8 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         for (SQLToken each : sqlTokens) {
             if (each instanceof SelectItemsToken) {
                 appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) each, count);
+            } else if (each instanceof InsertColumnsToken) {
+                appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) each, count);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof InsertSetToken) {
@@ -148,6 +152,13 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
             sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
         }
         appendRest(sqlBuilder, count, getStopIndex(selectItemsToken));
+    }
+    
+    private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken, final int count) {
+        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.isPartColumns());
+        columnsPlaceholder.getColumns().addAll(insertColumnsToken.getColumns());
+        sqlBuilder.appendPlaceholder(columnsPlaceholder);
+        appendRest(sqlBuilder, count, getStopIndex(insertColumnsToken));
     }
     
     private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
