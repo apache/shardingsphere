@@ -25,10 +25,10 @@
     <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_order" />
     <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_order" />
 
-    <sql-case id="drop_index" value="DROP INDEX idx_order_id ON t_order" />
+    <sql-case id="drop_index" value="DROP INDEX order_index ON t_order" />
     <sql-case id="drop_index_with_space" value="    DROP INDEX
-        idx_order_id
+        order_index
     ON
         t_order    " />
-    <sql-case id="drop_index_with_back_quota" value="DROP INDEX `idx_order_id` ON `t_order`" />
+    <sql-case id="drop_index_with_back_quota" value="DROP INDEX `order_index` ON `t_order`" />
 </sql-cases>

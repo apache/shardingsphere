@@ -48,11 +48,11 @@
     <sql-case id="alter_table_drop_foreign_key" value="ALTER TABLE t_order DROP FOREIGN KEY fk_order_id" />
     <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP PRIMARY KEY, DROP FOREIGN KEY fk_order_id" />
 
-    <sql-case id="alter_table_add_index" value="ALTER TABLE t_order ADD INDEX idx_order_id (order_id)" />
+    <sql-case id="alter_table_add_index" value="ALTER TABLE t_order ADD INDEX order_index (order_id)" />
     <sql-case id="alter_table_add_fulltext_index" value="ALTER TABLE t_order ADD FULLTEXT INDEX idx_column1 (column1)" />
-    <sql-case id="alter_table_add_composite_index" value="ALTER TABLE t_order ADD INDEX idx_order_id_user_id_status (order_id, user_id, status)" />
+    <sql-case id="alter_table_add_composite_index" value="ALTER TABLE t_order ADD INDEX order_index (order_id, user_id, status)" />
     <sql-case id="alter_table_add_indexes" value="ALTER TABLE t_order ADD INDEX idx_column1 (column1), ADD INDEX idx_column2 (column2), ADD INDEX idx_column3 (column3)" />
-    <sql-case id="alter_table_drop_index" value="ALTER TABLE t_order DROP INDEX idx_order_id" />
+    <sql-case id="alter_table_drop_index" value="ALTER TABLE t_order DROP INDEX order_index" />
     <sql-case id="alter_table_drop_indexes" value="ALTER TABLE t_order DROP INDEX idx_column1, DROP INDEX idx_column2, DROP INDEX idx_column3" />
     <sql-case id="alter_table_rename_index" value="ALTER TABLE t_order RENAME INDEX idx_column1_bak TO idx_column1" />
     <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" />

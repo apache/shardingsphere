@@ -257,7 +257,7 @@
         <!--</tables>-->
         <!--<tokens>-->
             <!--<table-token start-index="12" table-name="t_order" length="7" />-->
-            <!--<index-token begin-position="48" table-name="idx_order_id" />-->
+            <!--<index-token begin-position="48" table-name="order_index" />-->
         <!--</tokens>-->
         <!--<alter-table>-->
             <!--<update-columns>-->

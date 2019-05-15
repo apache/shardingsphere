@@ -38,17 +38,17 @@
     <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id) UNIQUE (order_id) CHECK (order_id > 0) FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE CHECK (order_id > 0)" />
     <sql-case id="alter_table_drop_primary_key" value="ALTER TABLE t_order DROP PRIMARY KEY" />
     <sql-case id="alter_table_drop_unique_key" value="ALTER TABLE t_order DROP UNIQUE (order_id)" />
-    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT idx_order_id" />
-    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP PRIMARY KEY DROP UNIQUE (order_id) DROP CONSTRAINT idx_order_id" />
-    <sql-case id="alter_table_rename_constraint" value="ALTER TABLE t_order RENAME CONSTRAINT idx_order_id_bak TO idx_order_id" />
+    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT order_index" />
+    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP PRIMARY KEY DROP UNIQUE (order_id) DROP CONSTRAINT order_index" />
+    <sql-case id="alter_table_rename_constraint" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" />
 
-    <sql-case id="alter_index" value="ALTER INDEX idx_order_id REBUILD PARALLEL" />
+    <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" />
     <sql-case id="alter_index_with_space" value="    ALTER INDEX
-        idx_order_id
+        order_index
     REBUILD PARALLEL    " />
-    <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;idx_order_id&quot; REBUILD PARALLEL" />
+    <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;order_index&quot; REBUILD PARALLEL" />
     
     <!--  
-    <sql-case id="alter_index_rename" value="ALTER INDEX idx_order_id_bak RENAME TO idx_order_id" />
+    <sql-case id="alter_index_rename" value="ALTER INDEX order_index_bak RENAME TO order_index" />
     -->
 </sql-cases>

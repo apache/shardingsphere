@@ -66,31 +66,31 @@
     
     <parser-result sql-case-id="drop_index">
         <tokens>
-            <index-token start-index="11" stop-index="22" table-name=""/>
+            <index-token start-index="11" stop-index="21" table-name="t_order" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_space">
         <tokens>
-            <index-token start-index="23" stop-index="34" table-name=""/>
+            <index-token start-index="23" stop-index="33" table-name="t_order" />
         </tokens>
     </parser-result>
 
     <parser-result sql-case-id="drop_index_with_double_quota">
         <tokens>
-            <index-token start-index="11" stop-index="24" table-name=""/>
+            <index-token start-index="11" stop-index="23" table-name="t_order" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_concurrently">
         <tokens>
-            <index-token start-index="24" stop-index="35" table-name=""/>
+            <index-token start-index="24" stop-index="34" table-name="t_order" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_if_exists">
         <tokens>
-            <index-token start-index="21" stop-index="32" table-name=""/>
+            <index-token start-index="21" stop-index="31" table-name="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>

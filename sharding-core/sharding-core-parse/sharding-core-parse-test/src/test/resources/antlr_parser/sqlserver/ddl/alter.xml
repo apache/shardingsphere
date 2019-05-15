@@ -206,8 +206,8 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token start-index="12" stop-index="23" table-name="t_order" />
-            <table-token start-index="28" table-name="t_order" length="7" />
+            <index-token start-index="12" stop-index="22" table-name="t_order" />
+            <table-token start-index="27" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -216,8 +216,8 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token start-index="24" stop-index="35" table-name="t_order"/>
-            <table-token start-index="52" table-name="t_order" length="7" />
+            <index-token start-index="24" stop-index="34" table-name="t_order"/>
+            <table-token start-index="51" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -226,8 +226,8 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token start-index="12" stop-index="25" table-name="t_order"/>
-            <table-token start-index="30" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
+            <index-token start-index="12" stop-index="24" table-name="t_order"/>
+            <table-token start-index="29" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
         </tokens>
     </parser-result>
 </parser-result-sets>

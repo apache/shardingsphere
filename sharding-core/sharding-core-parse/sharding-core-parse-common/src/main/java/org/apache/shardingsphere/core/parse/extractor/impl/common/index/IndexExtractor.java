@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtr
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 
 import java.util.Map;
 
@@ -38,10 +37,6 @@ public final class IndexExtractor implements OptionalSQLSegmentExtractor {
     public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> indexNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
         return indexNameNode.isPresent() ? Optional.of(
-                new IndexSegment(indexNameNode.get().getStart().getStartIndex(), indexNameNode.get().getStop().getStopIndex(), getIndexToken(indexNameNode.get()))) : Optional.<IndexSegment>absent();
-    }
-    
-    private IndexToken getIndexToken(final ParserRuleContext indexNameNode) {
-        return new IndexToken(indexNameNode.getStart().getStartIndex(), indexNameNode.getStop().getStopIndex(), indexNameNode.getText());
+                new IndexSegment(indexNameNode.get().getStart().getStartIndex(), indexNameNode.get().getStop().getStopIndex(), indexNameNode.get().getText())) : Optional.<IndexSegment>absent();
     }
 }

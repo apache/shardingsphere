@@ -43,7 +43,6 @@ final class IndexTokenAssert {
     
     void assertIndexToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         List<IndexToken> indexTokens = getIndexTokens(actual);
-        
         assertThat(assertMessage.getFullAssertMessage("Index tokens size error: "), indexTokens.size(), is(expected.getIndexTokens().size()));
         int count = 0;
         for (ExpectedIndexToken each : expected.getIndexTokens()) {
