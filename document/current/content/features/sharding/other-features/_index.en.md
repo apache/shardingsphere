@@ -10,7 +10,7 @@ chapter = true
 This chapter introduces other functions of sharding, including:
 
 * Inline expression
-* Distributed primary key
+* Distributed sequence
 * Sharding Hint
 
 Please see the introduction page of functions for more detail.
