@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parse.sql.segment.dml.predicate;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
@@ -28,8 +29,14 @@ import java.util.LinkedList;
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
+// TODO OrPredicateSegment is a aggregation of all AndPredicates, it should not be a SQLSegment
 public final class OrPredicateSegment implements SQLSegment {
+    
+    private final int starIndex = 0;
+    
+    private final int stopIndex = 0;
     
     private Collection<AndPredicate> andPredicates = new LinkedList<>();
 }
