@@ -39,6 +39,9 @@ public final class InsertColumnsPlaceholder implements ShardingPlaceholder {
     
     @Override
     public String toString() {
+        if (columns.isEmpty()) {
+            return "";
+        }
         if (isPartColumns) {
             return String.format(", %s", Joiner.on(", ").join(columns));
         }
