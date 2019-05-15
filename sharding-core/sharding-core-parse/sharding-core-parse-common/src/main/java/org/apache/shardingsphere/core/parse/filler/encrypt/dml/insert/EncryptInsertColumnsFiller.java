@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.parse.filler.encrypt.dml.insert;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.filler.api.ShardingTableMetaDataAwareFiller;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
  * Insert columns filler.
@@ -34,7 +36,9 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
  * @author panjuan
  */
 @Setter
-public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, ShardingTableMetaDataAwareFiller {
+public final class EncryptInsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment>, EncryptRuleAwareFiller, ShardingTableMetaDataAwareFiller {
+    
+    private EncryptRule encryptRule;
     
     private ShardingTableMetaData shardingTableMetaData;
     
