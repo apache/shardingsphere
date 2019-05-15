@@ -71,7 +71,7 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
     }
     
     private InsertColumnsToken createInsertColumnsTokenFromMetaData(final InsertStatement insertStatement, final int startIndex) {
-        InsertColumnsToken result = new InsertColumnsToken(startIndex, true);
+        InsertColumnsToken result = new InsertColumnsToken(startIndex, false);
         result.getColumns().addAll(insertStatement.getColumnNames());
         fillGeneratedKeyColumn(insertStatement, result);
         fillQueryAssistedColumn(insertStatement, result);
@@ -79,7 +79,7 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
     }
     
     private InsertColumnsToken createInsertColumnsTokenFromSQL(final InsertStatement insertStatement, final int startIndex) {
-        InsertColumnsToken result = new InsertColumnsToken(startIndex, false);
+        InsertColumnsToken result = new InsertColumnsToken(startIndex, true);
         fillGeneratedKeyColumn(insertStatement, result);
         fillQueryAssistedColumn(insertStatement, result);
         return result;

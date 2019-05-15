@@ -36,7 +36,6 @@ import org.apache.shardingsphere.core.parse.sql.context.limit.Limit;
 import org.apache.shardingsphere.core.parse.sql.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
@@ -57,6 +57,7 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
@@ -184,6 +185,8 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
                 appendIndexPlaceholder(sqlBuilder, (IndexToken) each, count);
             } else if (each instanceof SelectItemsToken) {
                 appendSelectItemsPlaceholder(sqlBuilder, (SelectItemsToken) each, count, isRewrite);
+            } else if (each instanceof InsertColumnsToken) {
+                appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) each, count);    
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
             } else if (each instanceof InsertSetToken) {
@@ -226,8 +229,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count, final boolean isRewrite) {
-        boolean isRewriteItem = isRewrite || sqlStatement instanceof InsertStatement;
-        if (isRewriteItem) {
+        if (isRewrite) {
             SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder(selectItemsToken.isFirstOfItemsSpecial());
             selectItemsPlaceholder.getItems().addAll(Lists.transform(selectItemsToken.getItems(), new Function<String, String>() {
                 
@@ -239,6 +241,13 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
             sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
         }
         appendRest(sqlBuilder, count, getStopIndex(selectItemsToken));
+    }
+    
+    private void appendInsertColumnsPlaceholder(final SQLBuilder sqlBuilder, final InsertColumnsToken insertColumnsToken, final int count) {
+        InsertColumnsPlaceholder columnsPlaceholder = new InsertColumnsPlaceholder(insertColumnsToken.isPartColumns());
+        columnsPlaceholder.getColumns().addAll(insertColumnsToken.getColumns());
+        sqlBuilder.appendPlaceholder(columnsPlaceholder);
+        appendRest(sqlBuilder, count, getStopIndex(insertColumnsToken));
     }
     
     private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
