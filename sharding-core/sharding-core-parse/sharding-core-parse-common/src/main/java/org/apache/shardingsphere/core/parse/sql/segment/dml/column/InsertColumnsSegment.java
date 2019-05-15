@@ -37,5 +37,7 @@ public final class InsertColumnsSegment implements SQLSegment {
     
     private final int stopIndex;
     
+    private final int lastIndexOfColumnNames;
+    
     private final Collection<ColumnSegment> columns;
 }
