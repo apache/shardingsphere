@@ -132,29 +132,30 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             Optional<ColumnSegment> leftColumn = columnExtractor.extract(leftColumnNode.get(), parameterMarkerIndexes);
             Optional<ColumnSegment> rightColumn = columnExtractor.extract(rightColumnNode.get(), parameterMarkerIndexes);
             Preconditions.checkState(leftColumn.isPresent() && rightColumn.isPresent());
-            return Optional.of(new PredicateSegment(leftColumn.get(), rightColumn.get(), booleanPrimaryNode.getStop().getStopIndex()));
+            return Optional.of(new PredicateSegment(booleanPrimaryNode.getStart().getStartIndex(), booleanPrimaryNode.getStop().getStopIndex(), leftColumn.get(), rightColumn.get()));
         }
         Optional<ColumnSegment> column = columnExtractor.extract(exprNode, parameterMarkerIndexes);
         Preconditions.checkState(column.isPresent());
         ParserRuleContext valueNode = leftColumnNode.isPresent()
                 ? (ParserRuleContext) comparisonOperatorNode.get().getParent().getChild(2) : (ParserRuleContext) comparisonOperatorNode.get().getParent().getChild(0);
         Optional<? extends ExpressionSegment> sqlExpression = expressionExtractor.extract(valueNode, parameterMarkerIndexes);
-        return sqlExpression.isPresent() ? Optional.of(new PredicateSegment(column.get(), 
-                new PredicateCompareRightValue(comparisonOperatorNode.get().getText(), sqlExpression.get()), booleanPrimaryNode.getStop().getStopIndex())) : Optional.<PredicateSegment>absent();
+        return sqlExpression.isPresent() ? Optional.of(new PredicateSegment(booleanPrimaryNode.getStart().getStartIndex(), booleanPrimaryNode.getStop().getStopIndex(), column.get(), 
+                new PredicateCompareRightValue(comparisonOperatorNode.get().getText(), sqlExpression.get()))) : Optional.<PredicateSegment>absent();
     }
     
     private Optional<PredicateSegment> extractBetweenPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
         Optional<? extends ExpressionSegment> betweenSQLExpression = expressionExtractor.extract((ParserRuleContext) predicateNode.getChild(2), parameterMarkerIndexes);
         Optional<? extends ExpressionSegment> andSQLExpression = expressionExtractor.extract((ParserRuleContext) predicateNode.getChild(4), parameterMarkerIndexes);
         return betweenSQLExpression.isPresent() && andSQLExpression.isPresent()
-                ? Optional.of(new PredicateSegment(column, new PredicateBetweenRightValue(betweenSQLExpression.get(), andSQLExpression.get()), predicateNode.getStop().getStopIndex()))
+                ? Optional.of(new PredicateSegment(
+                        predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column, new PredicateBetweenRightValue(betweenSQLExpression.get(), andSQLExpression.get())))
                 : Optional.<PredicateSegment>absent();
     }
     
     private Optional<PredicateSegment> extractInPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
         Collection<ExpressionSegment> sqlExpressions = extractInExpressionSegments(predicateNode, parameterMarkerIndexes);
         return sqlExpressions.isEmpty() ? Optional.<PredicateSegment>absent()
-                : Optional.of(new PredicateSegment(column, new PredicateInRightValue(sqlExpressions), predicateNode.getStop().getStopIndex()));
+                : Optional.of(new PredicateSegment(predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column, new PredicateInRightValue(sqlExpressions)));
     }
     
     private Collection<ExpressionSegment> extractInExpressionSegments(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
