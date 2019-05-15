@@ -7,10 +7,10 @@ chapter = true
 
 ## Navigation
 
-This chapter introduces other functions of data sharding, mainly including:
+This chapter introduces other functions of sharding, including:
 
 * Inline expression
 * Distributed sequence
 * Sharding Hint
 
-Please see the introduction page of relevant function points for detail.
+Please see the introduction page of functions for more detail.

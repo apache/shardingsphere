@@ -6,27 +6,21 @@ weight = 1
 
 ## Motivation
 
-Configuration simplicity and unity are two main problems that inline expression wants to solve.
+Configuration simplicity and unity are two main problems that inline expression intends to solve.
 
-In complex data sharding rules, with the increase of data nodes, a large number of repeated configurations make it difficult to maintain. 
-Inline expressions can simplify data node configuration work.
+In complex sharding rules, with more data nodes, a large number of configuration repetitions make configurations difficult to maintain. Inline expressions can simplify data node configuration work.
 
-Realizing common sharding algorithms with Java codes is not helpful to the unified management of configurations. 
-Writing sharding algorithms with inline expressions enables rule configurations to be stored together, making it easier to browse and store them.
+Java codes are not helpful in the unified management of common configurations. Writing sharding algorithms with inline expressions, users can stored rules together, making them easier to be browsed and stored.
 
 ## Syntax Explanation
 
-The use of inline expressions is really direct. 
-Users only need to use `${ expression }` or `$->{ expression }` to identify them. 
-The configurations of data nodes and sharding algorithms are available for now. 
-The content of inline expressions uses Groovy syntax, which can support all kinds of operations, including inline expression. For example:
+The use of inline expressions is really direct. Users only need to configure `${ expression }` or `$->{ expression }` to identify them. ShardingSphere currently supports the configurations of data nodes and sharding algorithms. Inline expressions use Groovy syntax, which can support all kinds of operations, including inline expressions. For example:
 
 `${begin..end}` means range
 
 `${[unit1, unit2, unit_x]}` means enumeration
 
-If there appears many continuous `${ expression }` or `$->{ expression }` in the inline expression, 
-according to each sub inline expression result, the ultimate result of the whole expression will be in cartesian combination.
+If there are many continuous `${ expression }` or `$->{ expression }` expressions, according to each sub-expression result, the ultimate result of the whole expression will be in cartesian combination.
 
 For example, the following inline expression:
 
@@ -138,7 +132,7 @@ db1
   └── t_order_20
 ```
 
-Users can use separate configuration method to configure data nodes with prefixes, then data nodes without prefixes, and automatically combine them with the cartesian product feature of inline expressions. 
+Users can configure separately, data nodes with prefixes first, those without prefixes later, and automatically combine them with the cartesian product feature of inline expressions. 
 The example above can be simplified by inline expression as:
 
 ```groovy
@@ -153,11 +147,11 @@ db->${0..1}.t_order_0$->{0..9}, db$->{0..1}.t_order_$->{10..20}
 
 ## Sharding Algorithm Configuration
 
-For single sharding SQL that uses `=` and `IN`, inline expression can be used to replace codes in configuration.
+For single sharding SQL that uses `=` and `IN`, inline expression can replace codes in configuration.
 
 Inline expression is a piece of Groovy code in essence, which can return the corresponding real data source or table name according to the computation method of sharding keys.
 
-For example, sharding keys with the last number 0 are routed to the data source with the suffix of 0, those with the last number 1 are routed to the data source with the suffix of 1, the rest goes on in a similar way. 
+For example, sharding keys with the last number 0 are routed to the data source with the suffix of 0, those with the last number 1 are routed to the data source with the suffix of 1, the rest goes on in the same way. 
 The inline expression used to indicate sharding algorithm is:
 
 ```groovy
