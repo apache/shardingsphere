@@ -98,7 +98,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         if (insertValuesToken.isPresent()) {
             int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
-            int stopIndex = insertValuesToken.get().getStopIndex() < sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
+            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
             insertStatement.getSQLTokens().remove(insertValuesToken.get());
             insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
         } else {
