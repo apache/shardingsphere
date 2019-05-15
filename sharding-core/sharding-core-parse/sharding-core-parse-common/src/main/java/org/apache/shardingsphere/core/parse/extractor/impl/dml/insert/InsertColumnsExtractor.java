@@ -42,8 +42,8 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
     @Override
     public Optional<InsertColumnsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> insertValuesClause = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INSERT_VALUES_CLAUSE);
-        return insertValuesClause.isPresent() ? Optional.of(new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(), insertValuesClause.get().getStop().getStopIndex(),
-                extractLastIndexOfColumnNames(insertValuesClause.get()), extractColumns(insertValuesClause.get(), parameterMarkerIndexes))) : Optional.<InsertColumnsSegment>absent();
+        return insertValuesClause.isPresent() ? Optional.of(new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(),
+                extractStopIndex(insertValuesClause.get()), extractColumns(insertValuesClause.get(), parameterMarkerIndexes))) : Optional.<InsertColumnsSegment>absent();
     }
     
     private Collection<ColumnSegment> extractColumns(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
@@ -57,7 +57,7 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
         return result;
     }
     
-    private int extractLastIndexOfColumnNames(final ParserRuleContext insertValuesClause) {
+    private int extractStopIndex(final ParserRuleContext insertValuesClause) {
         Optional<ParserRuleContext> columnNames = ExtractorUtils.findFirstChildNode(insertValuesClause, RuleName.COLUMN_NAMES);
         if (columnNames.isPresent()) {
             return columnNames.get().getStop().getStopIndex();
