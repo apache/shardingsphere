@@ -201,7 +201,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private void setParametersForStatements() {
         for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
-            replaySetParameter((PreparedStatement) preparedStatementExecutor.getStatements().get(i));
+            replaySetParameter((PreparedStatement) preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
         }
     }
     
@@ -243,7 +243,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         for (Statement each : batchPreparedStatementExecutor.getStatements()) {
             List<List<Object>> parameterSet = batchPreparedStatementExecutor.getParameterSet(each);
             for (List<Object> parameters : parameterSet) {
-                replaySetParameter((PreparedStatement) each);
+                replaySetParameter((PreparedStatement) each, parameters);
                 ((PreparedStatement) each).addBatch();
             }
         }

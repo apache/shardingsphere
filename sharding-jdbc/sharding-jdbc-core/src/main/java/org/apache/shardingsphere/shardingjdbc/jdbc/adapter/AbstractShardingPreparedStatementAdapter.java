@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.invocation.SetParameterMethodInvocation;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
@@ -30,6 +31,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -312,13 +314,25 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
         }
     }
     
-    protected final void replaySetParameter(final PreparedStatement preparedStatement) {
+    protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> parameters) {
+        addParameters(parameters);
         for (SetParameterMethodInvocation each : setParameterMethodInvocations) {
             each.invoke(preparedStatement);
         }
         setParameterMethodInvocations.clear();
     }
     
+    private void addParameters(final List<Object> parameters) {
+        for (int i = setParameterMethodInvocations.size(); i < parameters.size(); i++) {
+            setParameter(new Class[]{int.class, Object.class}, i + 1, parameters.get(i));
+        }
+    }
+    
+    @SneakyThrows
+    private void setParameter(final Class[] argumentTypes, final Object... arguments) {
+        setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setObject", argumentTypes), arguments, arguments[1]));
+    }
+
     @Override
     public final void clearParameters() {
         parameters.clear();
