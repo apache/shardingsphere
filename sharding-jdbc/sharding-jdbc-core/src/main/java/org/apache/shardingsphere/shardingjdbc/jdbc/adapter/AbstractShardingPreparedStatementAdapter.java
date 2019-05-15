@@ -31,7 +31,6 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -215,6 +214,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
         recordSetParameter("setAsciiStream", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
         setParameter(parameterIndex, x);
@@ -332,7 +332,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     private void setParameter(final Class[] argumentTypes, final Object... arguments) {
         setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setObject", argumentTypes), arguments, arguments[1]));
     }
-
+    
     @Override
     public final void clearParameters() {
         parameters.clear();
