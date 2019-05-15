@@ -48,8 +48,8 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> limitNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         return limitNode.isPresent()
-                ? Optional.of(new LimitSegment(extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull(), extractOffset(limitNode.get(), parameterMarkerIndexes).orNull()))
-                : Optional.<LimitSegment>absent();
+                ? Optional.of(new LimitSegment(limitNode.get().getStart().getStartIndex(), limitNode.get().getStop().getStopIndex(),
+                        extractRowCount(limitNode.get(), parameterMarkerIndexes).orNull(), extractOffset(limitNode.get(), parameterMarkerIndexes).orNull())) : Optional.<LimitSegment>absent();
     }
     
     private Optional<LimitValueSegment> extractRowCount(final ParserRuleContext limitNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
