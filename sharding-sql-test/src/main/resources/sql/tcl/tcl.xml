@@ -26,4 +26,7 @@
     <sql-case id="setAutoCommitOff" value="SET AUTOCOMMIT = 0" db-types="MySQL" />
     <sql-case id="setImplicitTransactionsON" value="SET IMPLICIT_TRANSACTIONS ON" db-types="SQLServer" />
     <sql-case id="setImplicitTransactionsOff" value="IF @@TRANCOUNT > 0 COMMIT TRAN SET IMPLICIT_TRANSACTIONS OFF" db-types="SQLServer" />
+    <sql-case id="rollbackToSavepoint" value="ROLLBACK TO savepoint1" />
+    <sql-case id="setGlobalTransaction" value="SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ" />
+    <sql-case id="setTransactionReadOnly" value="SET TRANSACTION READ ONLY" />
 </sql-cases>
