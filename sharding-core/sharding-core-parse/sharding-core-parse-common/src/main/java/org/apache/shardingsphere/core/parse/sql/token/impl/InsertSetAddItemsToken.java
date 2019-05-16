@@ -18,24 +18,23 @@
 package org.apache.shardingsphere.core.parse.sql.token.impl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
+
+import java.util.Collection;
 
 /**
- * Insert set encrypt value token.
+ * Insert set add item token.
  *
  * @author panjuan
  */
 @Getter
-public final class InsertSetEncryptValueToken extends SQLToken implements Substitutable {
+public final class InsertSetAddItemsToken extends SQLToken implements Attachable {
     
-    private final int stopIndex;
+    private final Collection<String> columnNames;
     
-    private final String columnName;
-    
-    public InsertSetEncryptValueToken(final int startIndex, final int stopIndex, final String columnName) {
+    public InsertSetAddItemsToken(final int startIndex, final Collection<String> columnNames) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.columnName = columnName;
+        this.columnNames = columnNames;
     }
 }
