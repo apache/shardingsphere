@@ -25,18 +25,4 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
  * @author duhongjun
  */
 public interface ExpressionSegment extends SQLSegment {
-    
-    /**
-     * Get start index.
-     *
-     * @return start index
-     */
-    int getStartIndex();
-    
-    /**
-     * Get stop index.
-     *
-     * @return stop index
-     */
-    int getStopIndex();
 }

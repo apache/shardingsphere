@@ -42,9 +42,6 @@ public final class ExpectedAlterTable {
     @XmlAttribute(name = "drop-primary-key")
     private boolean dropPrimaryKey;
     
-    @XmlAttribute(name = "new-table-name")
-    private String newTableName;
-    
     @XmlElementWrapper(name = "add-columns")
     @XmlElement(name = "add-column")
     private List<ExpectedColumnDefinition> addColumns = new ArrayList<>();

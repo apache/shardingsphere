@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.common.ddl.table;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.table.RenameTableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Rename table filler.
- *
- * @author duhongjun
- */
-public final class RenameTableFiller implements SQLSegmentFiller<RenameTableSegment> {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedRemoveToken {
     
-    @Override
-    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((AlterTableStatement) sqlStatement).setNewTableName(sqlSegment.getNewTableName());
-    }
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
+    
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
 }
