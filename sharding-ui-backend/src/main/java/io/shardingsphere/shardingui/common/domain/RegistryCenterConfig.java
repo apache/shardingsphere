@@ -20,6 +20,8 @@ package io.shardingsphere.shardingui.common.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Properties;
+
 /**
  * Registry center config.
  *
@@ -42,4 +44,6 @@ public class RegistryCenterConfig {
     private String digest;
     
     private boolean activated;
+
+    private Properties props = new Properties();
 }

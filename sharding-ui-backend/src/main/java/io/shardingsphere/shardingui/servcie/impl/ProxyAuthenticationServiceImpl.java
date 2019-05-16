@@ -19,10 +19,10 @@ package io.shardingsphere.shardingui.servcie.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 import io.shardingsphere.shardingui.servcie.ProxyAuthenticationService;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;
+import io.shardingsphere.shardingui.util.ConfigurationYamlConverter;
+import org.apache.shardingsphere.core.rule.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -17,19 +17,23 @@
 
 package io.shardingsphere.shardingui.servcie.impl;
 
-import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 import io.shardingsphere.shardingui.servcie.ConfigMapService;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;
+import io.shardingsphere.shardingui.util.ConfigurationYamlConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Implementation of config map service.
  *
+ * 4.0.0-RC1 has removed this directory.
+ *
  * @author chenqingyang
  */
+@Deprecated
 @Service
 public final class ConfigMapServiceImpl implements ConfigMapService {
     
@@ -38,13 +42,14 @@ public final class ConfigMapServiceImpl implements ConfigMapService {
     
     @Override
     public Map<String, Object> loadConfigMap() {
-        String configData = registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getConfigMapPath());
-        return ConfigurationYamlConverter.loadConfigMap(configData);
+//        String configData = registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getConfigMapPath());
+//        return ConfigurationYamlConverter.loadConfigMap(configData);
+        return new HashMap<>();
     }
     
     @Override
     public void updateConfigMap(final Map<String, Object> configMap) {
         String configData = ConfigurationYamlConverter.dumpConfigMap(configMap);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getConfigMapPath(), configData);
+//        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getConfigMapPath(), configData);
     }
 }

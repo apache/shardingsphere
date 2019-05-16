@@ -17,10 +17,10 @@
 
 package io.shardingsphere.shardingui.web.controller;
 
-import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.shardingui.servcie.ProxyAuthenticationService;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
+import org.apache.shardingsphere.core.rule.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

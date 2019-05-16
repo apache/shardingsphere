@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingui.servcie;
 
-import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
-import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
+import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 /**
  * Registry center service.
