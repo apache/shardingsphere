@@ -42,5 +42,5 @@ public @interface ShardingTransactionType {
      * @return Sharding transaction type
      */
     TransactionType value() default TransactionType.LOCAL;
-    
 }
+
