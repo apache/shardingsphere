@@ -140,4 +140,14 @@ public abstract class InsertOptimizeResultUnit {
             return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
         }
     }
+    
+    /**
+     * Get column sql expression.
+     *
+     * @param columnName column name
+     * @return column sql expression
+     */
+    public final SQLExpression getColumnSQLExpression(final String columnName) {
+        return values[getColumnIndex(columnName)];
+    }
 }
