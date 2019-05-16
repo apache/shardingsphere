@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import io.seata.tm.api.GlobalTransactionContext;
+import io.seata.tm.api.GlobalTransaction;
 
 /**
  * Seata transaction holder.
@@ -26,28 +26,28 @@ import io.seata.tm.api.GlobalTransactionContext;
  */
 public final class SeataTransactionHolder {
     
-    private static final ThreadLocal<GlobalTransactionContext> CONTEXT = new ThreadLocal<>();
+    private static final ThreadLocal<GlobalTransaction> CONTEXT = new ThreadLocal<>();
     
     /**
-     * Set seata global transaction context.
+     * Set seata global transaction.
      *
-     * @param transactionContext global transaction context
+     * @param transaction global transaction context
      */
-    public static void set(final GlobalTransactionContext transactionContext) {
-        CONTEXT.set(transactionContext);
+    public static void set(final GlobalTransaction transaction) {
+        CONTEXT.set(transaction);
     }
     
     /**
-     * Get seata global transaction context.
+     * Get seata global transaction.
      *
-     * @return global transaction context
+     * @return global transaction
      */
-    public static GlobalTransactionContext get() {
+    public static GlobalTransaction get() {
         return CONTEXT.get();
     }
     
     /**
-     * Clear global transaction context.
+     * Clear global transaction.
      */
     public static void clear() {
         CONTEXT.remove();
