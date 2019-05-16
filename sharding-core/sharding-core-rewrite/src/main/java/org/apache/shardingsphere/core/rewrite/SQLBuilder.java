@@ -105,14 +105,16 @@ public final class SQLBuilder {
      */
     public SQLUnit toSQL() {
         StringBuilder result = new StringBuilder();
-        List<Object> insertParameters = new LinkedList<>();
+        List<Object> insertParameters = Collections.emptyList();
         for (Object each : segments) {
             if (each instanceof Alterable) {
                 result.append(((Alterable) each).toString(null, Collections.<String, String>emptyMap()));
             } else {
                 result.append(each);
             }
-            insertParameters.addAll(getInsertParameters(each, null));
+            if (each instanceof InsertSetPlaceholder || each instanceof InsertValuesPlaceholder) {
+                insertParameters = getInsertParameters(each);
+            }
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
@@ -126,7 +128,7 @@ public final class SQLBuilder {
      */
     public SQLUnit toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
-        List<Object> insertParameters = new LinkedList<>();
+        List<Object> insertParameters = Collections.emptyList();
         for (Object each : segments) {
             if (each instanceof Alterable) {
                 result.append(((Alterable) each).toString(routingUnit, logicAndActualTables));
@@ -134,33 +136,33 @@ public final class SQLBuilder {
                 result.append(each);
             }
             if (each instanceof InsertSetPlaceholder || each instanceof InsertValuesPlaceholder) {
-                insertParameters.addAll(getInsertParameters(each, routingUnit));    
+                insertParameters = getInsertParameters(each, routingUnit);
             }
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
     
-    private List<Object> getInsertParameters(final Object target, final RoutingUnit routingUnit) {
+    private List<Object> getInsertParameters(final Object segment) {
         List<Object> result = new LinkedList<>();
-        List<InsertOptimizeResultUnit> units = target instanceof InsertSetPlaceholder ? ((InsertSetPlaceholder) target).getUnits() : ((InsertValuesPlaceholder) target).getUnits();
-        result.addAll(getInsertParameters(routingUnit, units));
+        List<InsertOptimizeResultUnit> units = segment instanceof InsertSetPlaceholder ? ((InsertSetPlaceholder) segment).getUnits() : ((InsertValuesPlaceholder) segment).getUnits();
+        for (InsertOptimizeResultUnit each : units) {
+            result.addAll(Arrays.asList(each.getParameters()));
+        }
         return result;
     }
     
-    private List<Object> getInsertParameters(final RoutingUnit routingUnit, final List<InsertOptimizeResultUnit> units) {
+    private List<Object> getInsertParameters(final Object segment, final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
+        List<InsertOptimizeResultUnit> units = segment instanceof InsertSetPlaceholder ? ((InsertSetPlaceholder) segment).getUnits() : ((InsertValuesPlaceholder) segment).getUnits();
         for (InsertOptimizeResultUnit each : units) {
-            if (isToAppendInsertOptimizeResult(routingUnit, each)) {
+            if (isAppendInsertParameter(each, routingUnit)) {
                 result.addAll(Arrays.asList(each.getParameters()));
             }
         }
         return result;
     }
     
-    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertOptimizeResultUnit unit) {
-        if (null == routingUnit || unit.getDataNodes().isEmpty()) {
-            return true;
-        }
+    private boolean isAppendInsertParameter(final InsertOptimizeResultUnit unit, final RoutingUnit routingUnit) {
         for (DataNode each : unit.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
