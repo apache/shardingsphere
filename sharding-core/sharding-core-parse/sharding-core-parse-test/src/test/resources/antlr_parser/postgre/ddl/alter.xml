@@ -233,8 +233,6 @@
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
-        <alter-table new-table-name="t_order1">
-        </alter-table>
     </parser-result>
     
     <parser-result sql-case-id="alter_table_rename_column">
