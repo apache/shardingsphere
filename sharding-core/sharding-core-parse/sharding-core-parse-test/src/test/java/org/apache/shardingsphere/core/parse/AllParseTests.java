@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.apache.shardingsphere.core.parse.ddl.IntegrateDDLParsingCompatibleTest;
 import org.apache.shardingsphere.core.parse.integrate.AllParsingIntegrateTests;
 import org.apache.shardingsphere.core.parse.rule.AllRuleTests;
 import org.junit.runner.RunWith;
@@ -28,7 +27,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllRuleTests.class,
         SQLParseEngineTest.class,
-        IntegrateDDLParsingCompatibleTest.class,
         AllParsingIntegrateTests.class,
         EncryptIntegrateParsingTest.class
 })
