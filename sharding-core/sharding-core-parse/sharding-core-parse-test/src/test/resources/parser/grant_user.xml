@@ -63,4 +63,27 @@
             <table-token start-index="24" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
+    <parser-result sql-case-id="grant_select" />
+    <parser-result sql-case-id="grant_select_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="27" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="grant_select_to_local_user" />
+    <parser-result sql-case-id="grant_crud" />
+    <parser-result sql-case-id="grant_all" />
+    <parser-result sql-case-id="grant_all_on_schema" />
+    <parser-result sql-case-id="grant_all_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="24" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="grant_role_to_user" />
+    <parser-result sql-case-id="grant_roles_to_users" />
 </parser-result-sets>
