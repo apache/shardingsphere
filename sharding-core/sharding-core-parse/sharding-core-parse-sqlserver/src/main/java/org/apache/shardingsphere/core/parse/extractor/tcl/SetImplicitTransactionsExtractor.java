@@ -38,6 +38,7 @@ public final class SetImplicitTransactionsExtractor implements OptionalSQLSegmen
     public Optional<ImplicitTransactionsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.IMPLICIT_TRANSACTIONS_VALUE);
         return autoCommitValueNode.isPresent()
-                ? Optional.of(new ImplicitTransactionsSegment("ON".equalsIgnoreCase(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<ImplicitTransactionsSegment>absent();
+                ? Optional.of(new ImplicitTransactionsSegment(autoCommitValueNode.get().getStart().getStartIndex(), autoCommitValueNode.get().getStop().getStopIndex(), 
+                        "ON".equalsIgnoreCase(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<ImplicitTransactionsSegment>absent();
     }
 }

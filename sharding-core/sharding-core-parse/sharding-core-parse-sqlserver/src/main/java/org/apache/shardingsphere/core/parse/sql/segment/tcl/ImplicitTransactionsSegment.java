@@ -30,5 +30,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 @Getter
 public final class ImplicitTransactionsSegment implements SQLSegment {
     
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
     private final boolean on;
 }
