@@ -47,8 +47,8 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
         // TODO need read applicationId & transactionServiceGroup from config file.
-        TMClient.init("default", "default");
-        RMClient.init("default", "default");
+        TMClient.init("my_test_tx_group", "my_test_tx_group");
+        RMClient.init("my_test_tx_group", "my_test_tx_group");
         for (ResourceDataSource each : resourceDataSources) {
             dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource()));
         }
