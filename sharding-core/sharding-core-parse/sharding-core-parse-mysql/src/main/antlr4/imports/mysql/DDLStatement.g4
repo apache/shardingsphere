@@ -261,7 +261,6 @@ modifyColumnSpecification
     : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
 
-// TODO hongjun: parse renameColumnSpecification and refresh meta, but throw exception if is sharding column
 renameColumnSpecification
     : RENAME COLUMN columnName TO columnName
     ;
@@ -271,13 +270,8 @@ renameIndexSpecification
     : RENAME (INDEX | KEY) indexName TO indexName
     ;
 
-// TODO hongjun: parse renameTableSpecification_ and refresh meta, but throw exception if is sharding table
 renameTableSpecification_
-    : RENAME (TO | AS)? newTableName
-    ;
-
-newTableName
-    : identifier_
+    : RENAME (TO | AS)? identifier_
     ;
 
 partitionDefinitions_
@@ -322,5 +316,5 @@ tableExistClause_
     ;
 
 dropIndexSpecification_
-    : (ONLINE | OFFLINE)?
+    : ONLINE | OFFLINE
     ;
