@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
+import io.seata.core.context.RootContext;
+import io.seata.rm.datasource.DataSourceProxy;
+import io.seata.tm.api.GlobalTransactionContext;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -24,6 +28,7 @@ import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +44,9 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
-    
+        for (ResourceDataSource each : resourceDataSources) {
+            dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource()));
+        }
     }
     
     @Override
@@ -49,31 +56,44 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     
     @Override
     public boolean isInTransaction() {
-        return false;
+        return null != RootContext.getXID();
     }
     
     @Override
-    public Connection getConnection(final String dataSourceName) {
-        return null;
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
     
     @Override
+    @SneakyThrows
     public void begin() {
-    
+        SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
+        SeataTransactionHolder.get().begin();
     }
     
     @Override
+    @SneakyThrows
     public void commit() {
-    
+        try {
+            SeataTransactionHolder.get().commit();
+        } finally {
+            SeataTransactionHolder.clear();
+        }
     }
     
     @Override
+    @SneakyThrows
     public void rollback() {
-    
+        try {
+            SeataTransactionHolder.get().rollback();
+        } finally {
+            SeataTransactionHolder.clear();
+        }
     }
     
     @Override
     public void close() {
-    
+        dataSourceMap.clear();
     }
 }
+
