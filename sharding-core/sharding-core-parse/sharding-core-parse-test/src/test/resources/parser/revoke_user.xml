@@ -48,4 +48,27 @@
             <table-token start-index="25" table-name="t_order" length="19" />
         </tokens>
     </parser-result>
+    <parser-result sql-case-id="revoke_select" />
+    <parser-result sql-case-id="revoke_select_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="28" table-name="t_order" length="12" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_select_from_local_user" />
+    <parser-result sql-case-id="revoke_crud" />
+    <parser-result sql-case-id="revoke_all" />
+    <parser-result sql-case-id="revoke_all_on_schema" />
+    <parser-result sql-case-id="revoke_all_on_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="25" table-name="t_order" length="7" />
+        </tokens>
+    </parser-result>
+    <parser-result sql-case-id="revoke_role_to_user" />
+    <parser-result sql-case-id="revoke_roles_to_users"/>
 </parser-result-sets>
