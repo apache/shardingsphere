@@ -7,12 +7,11 @@ weight = 2
 
 ## Motivation
 
-Registry center provides the ability to disable the access of application to database and the access to slave database. 
-Orchestration still has many functions to be developed.
+Registry center can disable the access to slave database and the access of application. Orchestration still has many functions to be developed.
 
 ## Data Structure in Registry Center
 
-Registry center creates running node of database access object under `state` in defined name space, to distinguish different database access instances, including instances and datasources nodes.
+The registry center can create running node of database access object under `state` in defined name space, to distinguish different database access instances, including `instances` and `datasources` nodes.
 
 ```
 instances
@@ -25,7 +24,7 @@ datasources
     ├──....
 ```
 
-Sharding-Proxy can support multiple logical data sources, so datasources sub-nodes are named in the form of `schema_name.data_source_name`.
+Sharding-Proxy can support multiple logical data sources, so `datasources` sub-nodes are named `schema_name.data_source_name`.
 
 ```
 instances
@@ -40,19 +39,17 @@ datasources
 
 ### state/instances
 
-It includes running instance information of database access object, with sub-node as identifiers of currently running instance, which consists of IP address and PID. 
-Those identifiers are temporary nodes registered when instances are on-line and cleared when instances are off-line. 
-Registry center monitors the change of those nodes to govern the database access of running instances and other things.
+It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PID. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
-### state/datasource
+### state/datasources
 
-Able to govern read-write split slave database; able to add, delete or disable data dynamically.
+It is able to orchestrate read-write split slave database, delete or disable data dynamically.
 
-## Operation guide
+## Operation Guide
 
-### Circuit breaker
+### Circuit Breaker
 
-Write `DISABLED` (case insensitive) to @-@PID node in IP address to indicate disabling that instance; delete `DISABLED` to indicate enabling the instance.
+Write `DISABLED` (case insensitive) to @-@PID in IP to disable that instance; delete `DISABLED` to enable the instance.
 
 Zookeeper command is as follow:
 
@@ -68,8 +65,7 @@ etcdctl set /your_app_name/state/instances/your_instance_ip_a@-@your_instance_pi
 
 ### Disable Slave Database
 
-Under read-write split scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to indicate disabling slave database resource. 
-Delete `DISABLED` or the node to indicate enabling the instance.
+Under read-write split (or shardinng + read-write split) scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable slave database sources. Delete `DISABLED` or the node to enable it.
 
 Zookeeper command is as follow:
 
