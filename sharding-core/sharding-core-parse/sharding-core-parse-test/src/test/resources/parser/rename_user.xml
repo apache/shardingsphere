@@ -18,4 +18,5 @@
 
 <parser-result-sets>
     <parser-result sql-case-id="rename_user" />
+    <parser-result sql-case-id="rename_users" />
 </parser-result-sets>
