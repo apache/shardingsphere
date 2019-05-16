@@ -36,8 +36,6 @@ import java.util.Map;
 @Getter
 public final class InsertValuesPlaceholder implements ShardingPlaceholder, Alterable {
     
-    private final String logicTableName;
-    
     private final List<InsertOptimizeResultUnit> units;
     
     @Override
