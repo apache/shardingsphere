@@ -15,27 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dal;
+package org.apache.shardingsphere.core.rewrite.placeholder;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Show table status segment.
- * 
- * @author zhangliang
+ * Insert columns placeholder for rewrite.
+ *
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowTableStatusSegment implements SQLSegment {
+public final class InsertColumnsPlaceholder implements ShardingPlaceholder {
     
-    private final int fromTableStartIndex;
+    private final boolean isPartColumns;
     
-    private final int tableStopIndex;
+    private final List<String> columns = new LinkedList<>();
     
-    public ShowTableStatusSegment() {
-        fromTableStartIndex = -1;
-        tableStopIndex = -1;
+    @Override
+    public String toString() {
+        if (columns.isEmpty()) {
+            return "";
+        }
+        if (isPartColumns) {
+            return String.format(", %s", Joiner.on(", ").join(columns));
+        }
+        return String.format("(%s)", Joiner.on(", ").join(columns));
     }
 }

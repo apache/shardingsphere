@@ -15,24 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.filler.dal;
+package org.apache.shardingsphere.core.parse.sql.token.impl;
 
-import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTablesSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Show tables filler for MySQL.
+ * Insert columns token.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class MySQLShowTablesFiller implements SQLSegmentFiller<ShowTablesSegment> {
+@Getter
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public final class InsertColumnsToken extends SQLToken implements Attachable {
     
-    @Override
-    public void fill(final ShowTablesSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (-1 != sqlSegment.getFromTableStartIndex()) {
-            sqlStatement.addSQLToken(new RemoveToken(sqlSegment.getFromTableStartIndex(), sqlSegment.getTableStopIndex()));
-        }
+    private boolean isPartColumns;
+    
+    private final List<String> columns = new LinkedList<>();
+    
+    public InsertColumnsToken(final int startIndex, final boolean isPartColumns) {
+        super(startIndex);
+        this.isPartColumns = isPartColumns;
     }
 }

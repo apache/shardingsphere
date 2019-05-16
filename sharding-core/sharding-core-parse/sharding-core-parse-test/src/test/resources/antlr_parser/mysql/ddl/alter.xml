@@ -349,7 +349,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <index-token start-index="30" stop-index="41" table-name="t_order"/>
+            <index-token start-index="30" stop-index="40" table-name="t_order"/>
         </tokens>
     </parser-result>
     
@@ -375,7 +375,7 @@
         </tokens>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <index-token start-index="30" stop-index="56" table-name="t_order"/>
+            <index-token start-index="30" stop-index="40" table-name="t_order"/>
         </tokens>
     </parser-result>
     
@@ -397,7 +397,7 @@
         </tables>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
-            <index-token start-index="31" stop-index="42" table-name="t_order"/>
+            <index-token start-index="31" stop-index="41" table-name="t_order"/>
         </tokens>
     </parser-result>
     

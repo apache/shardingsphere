@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.core.parse.sql.token.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 /**
  * Index token.
@@ -32,36 +30,22 @@ import org.apache.shardingsphere.core.parse.util.SQLUtil;
  * @author panjuan
  */
 @Getter
-@Setter
 @ToString
 public final class IndexToken extends SQLToken implements Substitutable {
     
-    private final String indexName;
-    
     private final int stopIndex;
     
-    private String tableName = "";
+    private final String indexName;
     
     private final QuoteCharacter quoteCharacter;
     
-    public IndexToken(final int startIndex, final int stopIndex, final String indexName) {
+    private final String tableName;
+    
+    public IndexToken(final int startIndex, final int stopIndex, final String indexName, final QuoteCharacter quoteCharacter, final String tableName) {
         super(startIndex);
-        this.indexName = SQLUtil.getExactlyValue(indexName);
         this.stopIndex = stopIndex;
-        quoteCharacter = QuoteCharacter.getQuoteCharacter(indexName);
-    }
-    
-    public IndexToken(final int startIndex, final int stopIndex, final String indexName, final String tableName) {
-        this(startIndex, stopIndex, indexName);
+        this.indexName = indexName;
+        this.quoteCharacter = quoteCharacter;
         this.tableName = tableName;
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @return table name
-     */
-    public String getTableName() {
-        return SQLUtil.getExactlyValue(tableName);
     }
 }

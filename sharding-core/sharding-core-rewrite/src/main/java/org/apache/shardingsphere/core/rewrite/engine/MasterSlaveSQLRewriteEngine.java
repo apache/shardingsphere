@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL rewrite engine for master slave rule.
+ * Master slave SQL rewrite engine.
  * 
  * <p>should rewrite schema name.</p>
  * 

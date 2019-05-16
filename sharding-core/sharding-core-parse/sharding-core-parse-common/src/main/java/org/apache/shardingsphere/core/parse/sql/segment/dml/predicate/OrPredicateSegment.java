@@ -34,7 +34,7 @@ import java.util.LinkedList;
 // TODO OrPredicateSegment is a aggregation of all AndPredicates, it should not be a SQLSegment
 public final class OrPredicateSegment implements SQLSegment {
     
-    private final int starIndex = 0;
+    private final int startIndex = 0;
     
     private final int stopIndex = 0;
     

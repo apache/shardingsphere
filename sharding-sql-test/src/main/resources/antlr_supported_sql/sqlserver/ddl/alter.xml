@@ -37,13 +37,13 @@
     
     <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id), UNIQUE (order_id), CHECK (order_id > 0), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" />
     <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id" />
-    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, idx_order_id" />
+    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, order_index" />
      
-    <sql-case id="alter_index" value="ALTER INDEX idx_order_id ON t_order REBUILD" />
+    <sql-case id="alter_index" value="ALTER INDEX order_index ON t_order REBUILD" />
     <sql-case id="alter_index_with_space" value="    ALTER INDEX
-        idx_order_id
+        order_index
     ON
         t_order
     REBUILD    " />
-    <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [idx_order_id] ON [t_order] REBUILD" />
+    <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" />
 </sql-cases>

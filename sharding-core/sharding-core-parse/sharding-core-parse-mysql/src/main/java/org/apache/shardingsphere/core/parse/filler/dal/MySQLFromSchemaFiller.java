@@ -18,21 +18,19 @@
 package org.apache.shardingsphere.core.parse.filler.dal;
 
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTableStatusSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 
 /**
- * Show table status filler for MySQL.
+ * From schema filler for MySQL.
  *
  * @author zhangliang
  */
-public final class MySQLShowTableStatusFiller implements SQLSegmentFiller<ShowTableStatusSegment> {
+public final class MySQLFromSchemaFiller implements SQLSegmentFiller<FromSchemaSegment> {
     
     @Override
-    public void fill(final ShowTableStatusSegment sqlSegment, final SQLStatement sqlStatement) {
-        if (-1 != sqlSegment.getFromTableStartIndex()) {
-            sqlStatement.addSQLToken(new RemoveToken(sqlSegment.getFromTableStartIndex(), sqlSegment.getTableStopIndex()));
-        }
+    public void fill(final FromSchemaSegment sqlSegment, final SQLStatement sqlStatement) {
+        sqlStatement.addSQLToken(new RemoveToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
     }
 }

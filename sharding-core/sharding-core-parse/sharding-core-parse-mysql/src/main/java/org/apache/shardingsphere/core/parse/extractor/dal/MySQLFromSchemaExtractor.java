@@ -22,21 +22,21 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parse.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parse.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.ShowTablesSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
 
 import java.util.Map;
 
 /**
- * Show tables extractor for MySQL.
- * 
+ * From schema extractor for MySQL.
+ *
  * @author zhangliang
  */
-public final class MySQLShowTablesExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLFromSchemaExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ShowTablesSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<FromSchemaSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> fromSchemaNode = ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.FROM_SCHEMA);
-        return Optional.of(fromSchemaNode.isPresent()
-                ? new ShowTablesSegment(fromSchemaNode.get().getStart().getStartIndex(), fromSchemaNode.get().getStop().getStopIndex()) : new ShowTablesSegment());
+        return fromSchemaNode.isPresent() ? Optional.of(new FromSchemaSegment(fromSchemaNode.get().getStart().getStartIndex(), fromSchemaNode.get().getStop().getStopIndex()))
+                : Optional.<FromSchemaSegment>absent();
     }
 }

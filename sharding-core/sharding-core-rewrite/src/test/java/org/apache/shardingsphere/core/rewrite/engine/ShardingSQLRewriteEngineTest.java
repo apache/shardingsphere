@@ -42,6 +42,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
@@ -190,7 +191,10 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.setParametersIndex(2);
         insertStatement.addSQLToken(new TableToken(12, 18, "table_x", QuoteCharacter.NONE));
-        insertStatement.addSQLToken(new InsertValuesToken(19, 44));
+        insertStatement.addSQLToken(new InsertValuesToken(39, 44));
+        InsertColumnsToken insertColumnsToken = new InsertColumnsToken(30, true);
+        insertColumnsToken.getColumns().add("id");
+        insertStatement.addSQLToken(insertColumnsToken);
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1), new SQLParameterMarkerExpression(2)};
@@ -213,7 +217,11 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.setParametersIndex(1);
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(21, 31));
+        insertStatement.addSQLToken(new InsertValuesToken(29, 31));
+        InsertColumnsToken insertColumnsToken = new InsertColumnsToken(21, false);
+        insertColumnsToken.getColumns().add("name");
+        insertColumnsToken.getColumns().add("id");
+        insertStatement.addSQLToken(insertColumnsToken);
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
@@ -226,7 +234,7 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, 
                 "INSERT INTO `table_x` VALUES (?)", DatabaseType.MySQL, routeResult, Arrays.asList(parameters), shardingDataSourceMetaData);
-        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (?, ?)"));
+        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1`(name, id) VALUES (?, ?)"));
     }
     
     @Test
@@ -235,7 +243,11 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(21, 32));
+        insertStatement.addSQLToken(new InsertValuesToken(29, 32));
+        InsertColumnsToken insertColumnsToken = new InsertColumnsToken(21, false);
+        insertColumnsToken.getColumns().add("name");
+        insertColumnsToken.getColumns().add("id");
+        insertStatement.addSQLToken(insertColumnsToken);
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
@@ -247,7 +259,7 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "INSERT INTO `table_x` VALUES (10)", 
                 DatabaseType.MySQL, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
-        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (10, 1)"));
+        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1`(name, id) VALUES (10, 1)"));
     }
     
     @Test
@@ -256,7 +268,11 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(21, 32));
+        insertStatement.addSQLToken(new InsertValuesToken(29, 32));
+        InsertColumnsToken insertColumnsToken = new InsertColumnsToken(21, false);
+        insertColumnsToken.getColumns().add("name");
+        insertColumnsToken.getColumns().add("id");
+        insertStatement.addSQLToken(insertColumnsToken);
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
@@ -269,7 +285,7 @@ public final class ShardingSQLRewriteEngineTest {
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "INSERT INTO `table_x` VALUES (10) ON DUPLICATE KEY UPDATE name = VALUES(name)",
                 DatabaseType.MySQL, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
         assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(),
-                is("INSERT INTO `table_1` (name, id) VALUES (10, 1) ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+                is("INSERT INTO `table_1`(name, id) VALUES (10, 1) ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
     
     @Test
@@ -303,7 +319,11 @@ public final class ShardingSQLRewriteEngineTest {
         parameters.add("x");
         parameters.add(1);
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(21, 35));
+        insertStatement.addSQLToken(new InsertValuesToken(29, 35));
+        InsertColumnsToken insertColumnsToken = new InsertColumnsToken(21, false);
+        insertColumnsToken.getColumns().add("name");
+        insertColumnsToken.getColumns().add("id");
+        insertStatement.addSQLToken(insertColumnsToken);
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
@@ -315,7 +335,7 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult.setRoutingResult(new RoutingResult());
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, 
                 "INSERT INTO `table_x` VALUES (10, 1)", DatabaseType.MySQL, routeResult, parameters, shardingDataSourceMetaData);
-        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (10, 1)"));
+        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1`(name, id) VALUES (10, 1)"));
     }
     
     @Test
@@ -324,7 +344,11 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertValuesToken(21, 34));
+        insertStatement.addSQLToken(new InsertValuesToken(29, 34));
+        InsertColumnsToken insertColumnsToken = new InsertColumnsToken(21, false);
+        insertColumnsToken.getColumns().add("name");
+        insertColumnsToken.getColumns().add("id");
+        insertStatement.addSQLToken(insertColumnsToken);
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
         Object[] parameters = {"x", 1};
@@ -337,7 +361,7 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult.setRoutingResult(new RoutingResult());
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, 
                 "INSERT INTO `table_x` VALUES (?, ?)", DatabaseType.MySQL, routeResult, Arrays.asList(parameters), shardingDataSourceMetaData);
-        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1` (name, id) VALUES (?, ?)"));
+        assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(), is("INSERT INTO `table_1`(name, id) VALUES (?, ?)"));
     }
     
     @Test
@@ -561,7 +585,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 22, "index_name", "table_x"));
+        selectStatement.addSQLToken(new IndexToken(13, 22, "index_name", QuoteCharacter.NONE, "table_x"));
         selectStatement.addSQLToken(new TableToken(27, 33, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());
@@ -573,7 +597,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, 23, "logic_index", "table_x"));
+        selectStatement.addSQLToken(new IndexToken(13, 23, "logic_index", QuoteCharacter.NONE, "table_x"));
         selectStatement.addSQLToken(new TableToken(28, 34, "table_x", QuoteCharacter.NONE));
         routeResult = new SQLRouteResult(selectStatement);
         routeResult.setLimit(selectStatement.getLimit());

@@ -83,13 +83,13 @@
     
     <parser-result sql-case-id="drop_index_without_on">
         <tokens>
-            <index-token start-index="11" stop-index="21" table-name="" />
+            <index-token start-index="11" stop-index="21" table-name="t_order" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_if_exists">
         <tokens>
-            <index-token start-index="21" stop-index="31" table-name="" />
+            <index-token start-index="21" stop-index="31" table-name="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>
