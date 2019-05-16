@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
+import io.seata.rm.RMClient;
 import io.seata.rm.datasource.DataSourceProxy;
+import io.seata.tm.TMClient;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -44,6 +46,9 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+        // TODO need read applicationId & transactionServiceGroup from config file.
+        TMClient.init("default", "default");
+        RMClient.init("default", "default");
         for (ResourceDataSource each : resourceDataSources) {
             dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource()));
         }
