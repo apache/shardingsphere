@@ -27,13 +27,13 @@ import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
  * @author panjuan
  */
 @Getter
-public final class InsertSetEncryptItemToken extends SQLToken implements Substitutable {
+public final class InsertSetEncryptValueToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
     private final String columnName;
     
-    public InsertSetEncryptItemToken(final int startIndex, final int stopIndex, final String columnName) {
+    public InsertSetEncryptValueToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.columnName = columnName;

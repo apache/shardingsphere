@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpres
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertSetEncryptItemPlaceholder implements ShardingPlaceholder {
+public final class InsertSetEncryptValuePlaceholder implements ShardingPlaceholder {
     
     private final SQLExpression encryptColumnValue;
     
