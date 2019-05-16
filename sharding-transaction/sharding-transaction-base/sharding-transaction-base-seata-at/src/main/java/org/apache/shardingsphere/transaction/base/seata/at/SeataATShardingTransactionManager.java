@@ -22,8 +22,11 @@ import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Seata AT sharding transaction manager.
@@ -31,6 +34,8 @@ import java.util.Collection;
  * @author zhaojun
  */
 public final class SeataATShardingTransactionManager implements ShardingTransactionManager {
+    
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
