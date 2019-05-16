@@ -48,4 +48,4 @@ It refers to tables that exist in all sharding database sources. Their structure
 
 ## Logic Index
 
-Some databases (such as PostgreSQL) do not allow indexes with an identical name existing in the same database; other databases (such as MySQL), however, only forbid indexes with an identical name existing in the same table. Logic index is used in the former situation where it requires to rewrite index names in the same database but not in the same table as `index name + table name`, and the previous index name becomes logic index.
+Some databases (such as PostgreSQL/Oracle) do not allow indexes with an identical name existing in the same database; other databases (such as MySQL/SQLServer), however, only forbid indexes with an identical name existing in the same table. Logic index is used in the former situation where it requires to rewrite index names in the same database but not in the same table as `index name + table name`, and the previous index name becomes logic index.
