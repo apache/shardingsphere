@@ -133,34 +133,32 @@ public final class SQLBuilder {
             } else {
                 result.append(each);
             }
-            insertParameters.addAll(getInsertParameters(each, routingUnit));
+            if (each instanceof InsertSetPlaceholder || each instanceof InsertValuesPlaceholder) {
+                insertParameters.addAll(getInsertParameters(each, routingUnit));    
+            }
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
     
     private List<Object> getInsertParameters(final Object target, final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
-        if (target instanceof InsertSetPlaceholder) {
-            InsertSetPlaceholder setPlaceholder = (InsertSetPlaceholder) target;
-            addInsertParameters(routingUnit, setPlaceholder.getUnits(), result);
-        }
-        if (target instanceof InsertValuesPlaceholder) {
-            InsertValuesPlaceholder valuesPlaceholder = (InsertValuesPlaceholder) target;
-            addInsertParameters(routingUnit, valuesPlaceholder.getUnits(), result);
+        List<InsertOptimizeResultUnit> units = target instanceof InsertSetPlaceholder ? ((InsertSetPlaceholder) target).getUnits() : ((InsertValuesPlaceholder) target).getUnits();
+        result.addAll(getInsertParameters(routingUnit, units));
+        return result;
+    }
+    
+    private List<Object> getInsertParameters(final RoutingUnit routingUnit, final List<InsertOptimizeResultUnit> units) {
+        List<Object> result = new LinkedList<>();
+        for (InsertOptimizeResultUnit each : units) {
+            if (isToAppendInsertOptimizeResult(routingUnit, each)) {
+                result.addAll(Arrays.asList(each.getParameters()));
+            }
         }
         return result;
     }
     
-    private void addInsertParameters(final RoutingUnit routingUnit, final List<InsertOptimizeResultUnit> units, final List<Object> insertParameters) {
-        for (InsertOptimizeResultUnit each : units) {
-            if (isToAppendInsertOptimizeResult(routingUnit, each)) {
-                insertParameters.addAll(Arrays.asList(each.getParameters()));
-            }
-        }
-    }
-    
     private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertOptimizeResultUnit unit) {
-        if (unit.getDataNodes().isEmpty() || null == routingUnit) {
+        if (null == routingUnit || unit.getDataNodes().isEmpty()) {
             return true;
         }
         for (DataNode each : unit.getDataNodes()) {
