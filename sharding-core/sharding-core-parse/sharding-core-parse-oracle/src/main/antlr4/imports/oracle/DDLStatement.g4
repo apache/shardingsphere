@@ -221,11 +221,7 @@ alterTableProperties
     ;
 
 renameTableSpecification_
-    : RENAME TO newTableName
-    ;
-
-newTableName
-    : IDENTIFIER_
+    : RENAME TO identifier_
     ;
 
 columnClauses

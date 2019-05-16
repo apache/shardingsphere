@@ -25,7 +25,6 @@
     <extractor-rule id="columns" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.common.column.ColumnsExtractor" />
     <extractor-rule id="columnDefinitions" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.column.ColumnDefinitionsExtractor" />
     <extractor-rule id="outlinePrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.constraint.OutlinePrimaryKeyExtractor" />
-    <extractor-rule id="renameTable" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.table.RenameTableExtractor" />
     <extractor-rule id="renameColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.column.RenameColumnDefinitionExtractor" />
     <extractor-rule id="dropColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.ddl.column.DropColumnDefinitionExtractor" />
     <extractor-rule id="insertColumns" extractor-class="org.apache.shardingsphere.core.parse.extractor.impl.dml.insert.InsertColumnsExtractor" />

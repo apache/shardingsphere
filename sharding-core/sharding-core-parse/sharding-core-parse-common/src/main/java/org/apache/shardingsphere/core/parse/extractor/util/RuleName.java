@@ -63,8 +63,6 @@ public enum RuleName {
     
     DROP_PRIMARY_KEY_SPECIFICATION("DropPrimaryKeySpecification"),
     
-    NEW_TABLE_NAME("NewTableName"),
-    
     // TODO hongjun: parse AddIndex
     ADD_INDEX_SPECIFICATION("AddIndexSpecification"),
     
