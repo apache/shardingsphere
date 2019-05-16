@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dal;
+package org.apache.shardingsphere.core.parse.integrate.jaxb.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import lombok.Setter;
 
-/**
- * Show table status segment.
- * 
- * @author zhangliang
- */
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 @Getter
-public final class ShowTableStatusSegment implements SQLSegment {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedRemoveToken {
     
-    private final int fromTableStartIndex;
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
     
-    private final int tableStopIndex;
-    
-    public ShowTableStatusSegment() {
-        fromTableStartIndex = -1;
-        tableStopIndex = -1;
-    }
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
 }

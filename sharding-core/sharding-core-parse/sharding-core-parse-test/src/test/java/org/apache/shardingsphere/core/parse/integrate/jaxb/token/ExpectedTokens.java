@@ -69,4 +69,7 @@ public final class ExpectedTokens {
     
     @XmlElement(name = "encrypt-column-token")
     private List<ExpectedEncryptColumnToken> encryptColumnTokens = new LinkedList<>();
+    
+    @XmlElement(name = "remove-token")
+    private List<ExpectedRemoveToken> removeTokens = new LinkedList<>();
 }

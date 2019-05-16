@@ -51,10 +51,10 @@
     <sql-statement-rule context="use" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.UseStatement" extractor-rule-refs="schema" />
     <sql-statement-rule context="desc" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.DescribeStatement" extractor-rule-refs="table" />
     <sql-statement-rule context="showDatabases" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowDatabasesStatement" />
-    <sql-statement-rule context="showTables" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowTablesStatement" extractor-rule-refs="showTables, showLike" />
-    <sql-statement-rule context="showTableStatus" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowTableStatusStatement" extractor-rule-refs="showTableStatus, showLike" />
-    <sql-statement-rule context="showColumns" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowColumnsStatement" extractor-rule-refs="table, schema, showLike" />
-    <sql-statement-rule context="showIndex" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowIndexStatement" extractor-rule-refs="table, schema" />
+    <sql-statement-rule context="showTables" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowTablesStatement" extractor-rule-refs="fromSchema, showLike" />
+    <sql-statement-rule context="showTableStatus" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowTableStatusStatement" extractor-rule-refs="fromSchema, showLike" />
+    <sql-statement-rule context="showColumns" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowColumnsStatement" extractor-rule-refs="table, fromSchema, showLike" />
+    <sql-statement-rule context="showIndex" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowIndexStatement" extractor-rule-refs="table, fromSchema" />
     <sql-statement-rule context="showCreateTable" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowCreateTableStatement" extractor-rule-refs="table" />
     <sql-statement-rule context="showOther" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.statement.ShowOtherStatement" />
     <sql-statement-rule context="setVariable" sql-statement-class="org.apache.shardingsphere.core.parse.sql.statement.dal.SetStatement" />
