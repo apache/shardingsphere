@@ -150,7 +150,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void fillWithGeneratedKeyName(final InsertOptimizeResult insertOptimizeResult) {
         String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName()).get();
-        insertOptimizeResult.getColumnNames().remove(generateKeyColumnName);
         insertOptimizeResult.getColumnNames().add(generateKeyColumnName);
     }
     
