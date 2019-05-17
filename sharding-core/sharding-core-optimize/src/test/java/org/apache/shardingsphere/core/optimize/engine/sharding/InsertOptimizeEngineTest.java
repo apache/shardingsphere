@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpres
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
@@ -185,7 +184,6 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithPlaceHolder.getTables().add(new Table("t_order", null));
         insertSetStatementWithPlaceHolder.setParametersIndex(0);
         insertSetStatementWithPlaceHolder.addSQLToken(new TableToken(12, 18, "t_order", QuoteCharacter.NONE));
-        insertSetStatementWithPlaceHolder.addSQLToken(new InsertSetToken(12, 20));
         insertSetStatementWithPlaceHolder.getColumnNames().add("user_id");
         insertSetStatementWithPlaceHolder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
@@ -198,7 +196,6 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithPlaceHolderWithQueryEncrypt.getTables().add(new Table("t_encrypt_query", null));
         insertSetStatementWithPlaceHolderWithQueryEncrypt.setParametersIndex(0);
         insertSetStatementWithPlaceHolderWithQueryEncrypt.addSQLToken(new TableToken(12, 26, "t_encrypt_query", QuoteCharacter.NONE));
-        insertSetStatementWithPlaceHolderWithQueryEncrypt.addSQLToken(new InsertSetToken(12, 20));
         insertSetStatementWithPlaceHolderWithQueryEncrypt.getColumnNames().add("user_id");
         insertSetStatementWithPlaceHolderWithQueryEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
@@ -211,7 +208,6 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceHolder.getTables().add(new Table("t_order", null));
         insertSetStatementWithoutPlaceHolder.setParametersIndex(0);
         insertSetStatementWithoutPlaceHolder.addSQLToken(new TableToken(12, 18, "t_order", QuoteCharacter.NONE));
-        insertSetStatementWithoutPlaceHolder.addSQLToken(new InsertSetToken(12, 20));
         insertSetStatementWithoutPlaceHolder.getColumnNames().add("user_id");
         insertSetStatementWithoutPlaceHolder.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
@@ -224,7 +220,6 @@ public final class InsertOptimizeEngineTest {
         insertSetStatementWithoutPlaceHolderWithEncrypt.getTables().add(new Table("t_encrypt", null));
         insertSetStatementWithoutPlaceHolderWithEncrypt.setParametersIndex(0);
         insertSetStatementWithoutPlaceHolderWithEncrypt.addSQLToken(new TableToken(12, 20, "t_encrypt", QuoteCharacter.NONE));
-        insertSetStatementWithoutPlaceHolderWithEncrypt.addSQLToken(new InsertSetToken(12, 20));
         insertSetStatementWithoutPlaceHolderWithEncrypt.getColumnNames().add("user_id");
         insertSetStatementWithoutPlaceHolderWithEncrypt.getColumnNames().add("status");
         AndCondition andCondition = new AndCondition();
