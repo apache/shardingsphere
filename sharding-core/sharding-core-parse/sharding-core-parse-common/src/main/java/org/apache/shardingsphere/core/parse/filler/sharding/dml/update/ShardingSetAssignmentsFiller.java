@@ -83,10 +83,9 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         Iterator<String> columnNames = insertStatement.getColumnNames().iterator();
         List<SQLExpression> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
-            String columnName = columnNames.next();
-            SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnName, each.getValue());
+            SQLExpression columnValue = getColumnValue(insertStatement, andCondition, columnNames.next(), each.getValue());
             columnValues.add(columnValue);
-            fillWithInsertSetEncryptValueToken(insertStatement, each, columnName, columnValue);
+            fillWithInsertSetEncryptValueToken(insertStatement, each, columnValue);
         }
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
@@ -95,10 +94,10 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         fillWithInsertSetAddItemsToken(insertStatement, sqlSegment);
     }
     
-    private void fillWithInsertSetEncryptValueToken(final InsertStatement insertStatement, final AssignmentSegment segment, final String columnName, final SQLExpression columnValue) {
-        Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), columnName);
+    private void fillWithInsertSetEncryptValueToken(final InsertStatement insertStatement, final AssignmentSegment segment, final SQLExpression columnValue) {
+        Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), segment.getColumn().getName());
         if (shardingEncryptor.isPresent() && !(columnValue instanceof SQLParameterMarkerExpression)) {
-            insertStatement.getSQLTokens().add(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), columnName));
+            insertStatement.getSQLTokens().add(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), segment.getColumn().getName()));
         }
     }
     

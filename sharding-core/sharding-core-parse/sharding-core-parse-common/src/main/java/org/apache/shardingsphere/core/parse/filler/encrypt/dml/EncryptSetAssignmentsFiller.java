@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.core.parse.filler.encrypt.dml;
 
+import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.filler.api.EncryptRuleAwareFiller;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -31,8 +33,10 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -60,20 +64,28 @@ public final class EncryptSetAssignmentsFiller implements SQLSegmentFiller<SetAs
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             insertStatement.getColumnNames().add(each.getColumn().getName());
         }
-        InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL());
+        InsertValue insertValue = getInsertValue(sqlSegment, insertStatement.getLogicSQL(), insertStatement);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
         insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
     }
     
-    private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final String sql) {
+    private InsertValue getInsertValue(final SetAssignmentsSegment sqlSegment, final String sql, final InsertStatement insertStatement) {
         List<SQLExpression> columnValues = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.getAssignments()) {
             SQLExpression sqlExpression = each.getValue() instanceof SimpleExpressionSegment
                     ? ((SimpleExpressionSegment) each.getValue()).getSQLExpression() : ((ComplexExpressionSegment) each.getValue()).getSQLExpression(sql);
             columnValues.add(sqlExpression);
+            fillWithInsertSetEncryptValueToken(insertStatement, each, sqlExpression);
         }
         return new InsertValue(columnValues);
+    }
+    
+    private void fillWithInsertSetEncryptValueToken(final InsertStatement insertStatement, final AssignmentSegment segment, final SQLExpression columnValue) {
+        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.getEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), segment.getColumn().getName());
+        if (shardingEncryptor.isPresent() && !(columnValue instanceof SQLParameterMarkerExpression)) {
+            insertStatement.getSQLTokens().add(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), segment.getColumn().getName()));
+        }
     }
     
     private void fillUpdate(final SetAssignmentsSegment sqlSegment, final UpdateStatement updateStatement) {
