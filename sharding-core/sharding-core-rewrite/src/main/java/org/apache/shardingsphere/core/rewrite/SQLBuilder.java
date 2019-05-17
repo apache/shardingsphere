@@ -48,14 +48,17 @@ public final class SQLBuilder {
     
     private StringBuilder currentSegment;
     
+    private final InsertOptimizeResult insertOptimizeResult;
+    
     public SQLBuilder() {
-        this(Collections.emptyList());
+        this(Collections.emptyList(), null);
     }
     
-    public SQLBuilder(final List<Object> parameters) {
+    public SQLBuilder(final List<Object> parameters, final InsertOptimizeResult insertOptimizeResult) {
         segments = new LinkedList<>();
         this.parameters = parameters;
         currentSegment = new StringBuilder();
+        this.insertOptimizeResult = insertOptimizeResult;
         segments.add(currentSegment);
     }
     
@@ -100,10 +103,9 @@ public final class SQLBuilder {
     /**
      * Convert to SQL unit.
      *
-     * @param insertOptimizeResult insert optimize result
      * @return SQL unit
      */
-    public SQLUnit toSQL(final InsertOptimizeResult insertOptimizeResult) {
+    public SQLUnit toSQL() {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = getInsertParameters(insertOptimizeResult);
         for (Object each : segments) {
@@ -121,10 +123,9 @@ public final class SQLBuilder {
      *
      * @param routingUnit routing unit
      * @param logicAndActualTables logic and actual map
-     * @param insertOptimizeResult insert optimize result
      * @return SQL unit
      */
-    public SQLUnit toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables, final InsertOptimizeResult insertOptimizeResult) {
+    public SQLUnit toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = getInsertParameters(insertOptimizeResult, routingUnit);
         for (Object each : segments) {

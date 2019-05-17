@@ -164,7 +164,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLBuilder rewrite() {
-        SQLBuilder result = new SQLBuilder(parameters);
+        SQLBuilder result = new SQLBuilder(parameters, insertOptimizeResult);
         Map<Integer, Object> appendedIndexAndParameters = new LinkedHashMap<>();
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);
@@ -457,7 +457,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit), insertOptimizeResult);
+        return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
     }
    
     private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {

@@ -136,7 +136,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLBuilder rewrite() {
-        SQLBuilder result = new SQLBuilder(parameters);
+        SQLBuilder result = new SQLBuilder(parameters, insertOptimizeResult);
         Map<Integer, Object> appendedIndexAndParameters = new LinkedHashMap<>();
         if (sqlTokens.isEmpty()) {
             return appendOriginalLiterals(result);
@@ -327,6 +327,6 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(insertOptimizeResult);
+        return sqlBuilder.toSQL();
     }
 }
