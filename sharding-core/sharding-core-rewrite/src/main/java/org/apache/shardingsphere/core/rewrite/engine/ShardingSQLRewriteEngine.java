@@ -46,7 +46,6 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
@@ -62,7 +61,6 @@ import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetAddItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetEncryptValuePlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlaceholder;
@@ -220,8 +218,6 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
                 appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) each, count);    
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, insertOptimizeResult);
-            } else if (each instanceof InsertSetToken) {
-                appendInsertSetPlaceholder(sqlBuilder, (InsertSetToken) each, count, insertOptimizeResult);
             } else if (each instanceof InsertSetEncryptValueToken) {
                 appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) each, count, insertOptimizeResult);
             } else if (each instanceof InsertSetAddItemsToken) {
@@ -304,11 +300,6 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         }
         sqlBuilder.appendPlaceholder(new InsertSetAddItemsPlaceholder(new LinkedList<>(insertSetAddItemsToken.getColumnNames()), columnValues));
         appendRest(sqlBuilder, count, getStopIndex(insertSetAddItemsToken));
-    }
-    
-    private void appendInsertSetPlaceholder(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
-        sqlBuilder.appendPlaceholder(new InsertSetPlaceholder(insertOptimizeResult.getUnits()));
-        appendRest(sqlBuilder, count, getStopIndex(insertSetToken));
     }
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
