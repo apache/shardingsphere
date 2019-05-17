@@ -46,6 +46,7 @@ import java.util.List;
  * Insert values filler for sharding.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Setter
 public final class ShardingInsertValuesFiller implements SQLSegmentFiller<InsertValuesSegment>, ShardingRuleAwareFiller {
