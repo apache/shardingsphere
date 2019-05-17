@@ -327,6 +327,6 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL();
+        return sqlBuilder.toSQL(insertOptimizeResult);
     }
 }

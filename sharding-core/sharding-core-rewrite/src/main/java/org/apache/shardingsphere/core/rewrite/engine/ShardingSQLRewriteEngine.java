@@ -457,7 +457,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
-        return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
+        return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit), insertOptimizeResult);
     }
    
     private Map<String, String> getTableTokens(final RoutingUnit routingUnit) {
