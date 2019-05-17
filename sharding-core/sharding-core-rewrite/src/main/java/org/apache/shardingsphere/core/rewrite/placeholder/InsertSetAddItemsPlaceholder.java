@@ -17,32 +17,46 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 
+import java.util.List;
+
 /**
- * Insert set encrypt value placeholder for rewrite.
+ * Insert set add items placeholder for rewrite.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
-@Getter
-public final class InsertSetEncryptValuePlaceholder implements ShardingPlaceholder {
+public final class InsertSetAddItemsPlaceholder implements ShardingPlaceholder {
     
-    private final SQLExpression encryptColumnValue;
+    private final List<String> columnNames;
+    
+    private final List<SQLExpression> columnValues;
     
     @Override
     public String toString() {
-        if (encryptColumnValue instanceof SQLTextExpression) {
-            return String.format("'%s'", ((SQLTextExpression) encryptColumnValue).getText());
-        } else if (encryptColumnValue instanceof SQLIgnoreExpression) {
-            return ((SQLIgnoreExpression) encryptColumnValue).getExpression();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < columnNames.size(); i++) {
+            result.append(String.format(", %s = %s", columnNames.get(i), getColumnValue(i)));
+        }
+        return result.toString();
+    }
+    
+    private String getColumnValue(final int index) {
+        SQLExpression columnValue = columnValues.get(index);
+        if (columnValue instanceof SQLParameterMarkerExpression) {
+            return "?";
+        } else if (columnValue instanceof SQLTextExpression) {
+            return String.format("'%s'", ((SQLTextExpression) columnValue).getText());
+        } else if (columnValue instanceof SQLIgnoreExpression) {
+            return ((SQLIgnoreExpression) columnValue).getExpression();
         } else {
-            return String.valueOf(((SQLNumberExpression) encryptColumnValue).getNumber());
+            return String.valueOf(((SQLNumberExpression) columnValue).getNumber());
         }
     }
 }
