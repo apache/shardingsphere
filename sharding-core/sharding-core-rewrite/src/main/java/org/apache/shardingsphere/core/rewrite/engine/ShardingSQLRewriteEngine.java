@@ -44,6 +44,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctTo
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
@@ -59,6 +60,7 @@ import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetAddItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetEncryptValuePlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
@@ -87,6 +89,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -114,7 +117,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private final List<Object> parameters;
     
-    private final OptimizeResult optimizeResult;
+    private final InsertOptimizeResult insertOptimizeResult;
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
@@ -126,8 +129,36 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         this.sqlRouteResult = sqlRouteResult;
         sqlStatement = sqlRouteResult.getSqlStatement();
         this.parameters = parameters;
-        this.optimizeResult = sqlRouteResult.getOptimizeResult();
+        this.insertOptimizeResult = getInsertOptimizeResult(sqlRouteResult.getOptimizeResult());
         this.dataSourceMetaData = dataSourceMetaData;
+    }
+    
+    private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
+        Optional<InsertOptimizeResult> insertOptimizeResult = optimizeResult.getInsertOptimizeResult();
+        if (insertOptimizeResult.isPresent()) {
+            for (InsertOptimizeResultUnit each : insertOptimizeResult.get().getUnits()) {
+                encryptInsertOptimizeResultUnit(insertOptimizeResult.get().getColumnNames(), each);
+            }
+            return insertOptimizeResult.get();
+        }
+        return null;
+    }
+    
+    private void encryptInsertOptimizeResultUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
+        for (String each : columnNames) {
+            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(sqlStatement.getTables().getSingleTableName(), each);
+            if (shardingEncryptor.isPresent()) {
+                encryptInsertOptimizeResultUnit(unit, each, shardingEncryptor.get());
+            }
+        }
+    }
+    
+    private void encryptInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final String columnName, final ShardingEncryptor shardingEncryptor) {
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(sqlStatement.getTables().getSingleTableName(), columnName).get();
+            unit.setColumnValue(assistedColumnName, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
+        }
+        unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
     @Override
@@ -188,11 +219,13 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
             } else if (each instanceof InsertColumnsToken) {
                 appendInsertColumnsPlaceholder(sqlBuilder, (InsertColumnsToken) each, count);    
             } else if (each instanceof InsertValuesToken) {
-                appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, optimizeResult.getInsertOptimizeResult().get());
+                appendInsertValuesPlaceholder(sqlBuilder, (InsertValuesToken) each, count, insertOptimizeResult);
             } else if (each instanceof InsertSetToken) {
-                appendInsertSetPlaceholder(sqlBuilder, (InsertSetToken) each, count, optimizeResult.getInsertOptimizeResult().get());
+                appendInsertSetPlaceholder(sqlBuilder, (InsertSetToken) each, count, insertOptimizeResult);
             } else if (each instanceof InsertSetEncryptValueToken) {
-                appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) each, count, optimizeResult.getInsertOptimizeResult().get());    
+                appendInsertSetEncryptValuePlaceholder(sqlBuilder, (InsertSetEncryptValueToken) each, count, insertOptimizeResult);
+            } else if (each instanceof InsertSetAddItemsToken) {
+                appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddItemsToken) each, count, insertOptimizeResult);
             } else if (each instanceof RowCountToken) {
                 appendLimitRowCountPlaceholder(sqlBuilder, (RowCountToken) each, count, isRewrite);
             } else if (each instanceof OffsetToken) {
@@ -253,9 +286,6 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
-        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
-            encryptInsertOptimizeResultUnit(insertOptimizeResult.getColumnNames(), each);
-        }
         sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(insertOptimizeResult.getUnits()));
         appendRest(sqlBuilder, count, getStopIndex(insertValuesToken));
     }
@@ -266,29 +296,19 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         appendRest(sqlBuilder, count, getStopIndex(insertSetEncryptValueToken));
     }
     
-    private void appendInsertSetPlaceholder(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
-        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
-            encryptInsertOptimizeResultUnit(insertOptimizeResult.getColumnNames(), each);
+    private void appendInsertSetAddItemsPlaceholder(final SQLBuilder sqlBuilder,
+                                                        final InsertSetAddItemsToken insertSetAddItemsToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
+        List<SQLExpression> columnValues = new LinkedList<>();
+        for (String each : insertSetAddItemsToken.getColumnNames()) {
+            columnValues.add(insertOptimizeResult.getUnits().get(0).getColumnSQLExpression(each));
         }
+        sqlBuilder.appendPlaceholder(new InsertSetAddItemsPlaceholder(new LinkedList<>(insertSetAddItemsToken.getColumnNames()), columnValues));
+        appendRest(sqlBuilder, count, getStopIndex(insertSetAddItemsToken));
+    }
+    
+    private void appendInsertSetPlaceholder(final SQLBuilder sqlBuilder, final InsertSetToken insertSetToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
         sqlBuilder.appendPlaceholder(new InsertSetPlaceholder(insertOptimizeResult.getUnits()));
         appendRest(sqlBuilder, count, getStopIndex(insertSetToken));
-    }
-    
-    private void encryptInsertOptimizeResultUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
-        for (String each : columnNames) {
-            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(sqlStatement.getTables().getSingleTableName(), each);
-            if (shardingEncryptor.isPresent()) {
-                encryptInsertOptimizeResultUnit(unit, each, shardingEncryptor.get());
-            }
-        }
-    }
-    
-    private void encryptInsertOptimizeResultUnit(final InsertOptimizeResultUnit unit, final String columnName, final ShardingEncryptor shardingEncryptor) {
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            String assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(sqlStatement.getTables().getSingleTableName(), columnName).get();
-            unit.setColumnValue(assistedColumnName, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(unit.getColumnValue(columnName).toString()));
-        }
-        unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
     private void appendLimitRowCountPlaceholder(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final boolean isRewrite) {
