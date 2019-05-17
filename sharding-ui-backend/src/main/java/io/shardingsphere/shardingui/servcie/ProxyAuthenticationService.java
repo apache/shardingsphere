@@ -17,7 +17,8 @@
 
 package io.shardingsphere.shardingui.servcie;
 
-import io.shardingsphere.core.rule.Authentication;
+
+import org.apache.shardingsphere.core.rule.Authentication;
 
 /**
  * Sharding proxy Authentication service.

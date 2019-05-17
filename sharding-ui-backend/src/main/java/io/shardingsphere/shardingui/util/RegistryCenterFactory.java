@@ -17,14 +17,14 @@
 
 package io.shardingsphere.shardingui.util;
 
-import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.etcd.EtcdRegistryCenter;
-import io.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperRegistryCenter;
 import io.shardingsphere.shardingui.common.constant.RegistryCenterType;
 import io.shardingsphere.shardingui.common.domain.RegistryCenterConfig;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperRegistryCenter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -66,7 +66,7 @@ public final class RegistryCenterFactory {
     }
     
     private static RegistryCenterConfiguration convert(final RegistryCenterConfig config) {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration();
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration(config.getRegistryCenterType());
         result.setServerLists(config.getServerLists());
         result.setNamespace(config.getNamespace());
         result.setDigest(config.getDigest());

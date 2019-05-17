@@ -17,18 +17,17 @@
 
 package io.shardingsphere.shardingui.servcie.impl;
 
-import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
-import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 import io.shardingsphere.shardingui.common.dto.InstanceDTO;
 import io.shardingsphere.shardingui.common.dto.SlaveDataSourceDTO;
 import io.shardingsphere.shardingui.servcie.OrchestrationService;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;
 import io.shardingsphere.shardingui.servcie.ShardingSchemaService;
+import io.shardingsphere.shardingui.util.ConfigurationYamlConverter;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
