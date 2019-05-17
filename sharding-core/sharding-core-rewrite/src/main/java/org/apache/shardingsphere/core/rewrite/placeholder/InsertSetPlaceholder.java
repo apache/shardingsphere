@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResul
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -35,10 +34,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class InsertSetPlaceholder implements ShardingPlaceholder, Alterable {
-    
-    private final String logicTableName;
-    
-    private final Collection<String> columnNames;
     
     private final List<InsertOptimizeResultUnit> units;
     

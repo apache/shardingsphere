@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterM
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.context.table.Table;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -139,7 +138,6 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_encrypt", null));
         result.addSQLToken(new TableToken(12, 20, "t_encrypt", QuoteCharacter.NONE));
-        result.addSQLToken(new InsertSetToken(12, 20));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
         result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2))));
@@ -167,7 +165,6 @@ public final class EncryptInsertOptimizeEngineTest {
         InsertStatement result = new InsertStatement();
         result.getTables().add(new Table("t_query_encrypt", null));
         result.addSQLToken(new TableToken(12, 26, "t_query_encrypt", QuoteCharacter.NONE));
-        result.addSQLToken(new InsertSetToken(12, 27));
         result.getColumnNames().add("col1");
         result.getColumnNames().add("col2");
         result.getValues().add(new InsertValue(Arrays.<SQLExpression>asList(new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1))));

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
-import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -49,14 +48,17 @@ public final class SQLBuilder {
     
     private StringBuilder currentSegment;
     
+    private final InsertOptimizeResult insertOptimizeResult;
+    
     public SQLBuilder() {
-        this(Collections.emptyList());
+        this(Collections.emptyList(), null);
     }
     
-    public SQLBuilder(final List<Object> parameters) {
+    public SQLBuilder(final List<Object> parameters, final InsertOptimizeResult insertOptimizeResult) {
         segments = new LinkedList<>();
         this.parameters = parameters;
         currentSegment = new StringBuilder();
+        this.insertOptimizeResult = insertOptimizeResult;
         segments.add(currentSegment);
     }
     
@@ -105,15 +107,12 @@ public final class SQLBuilder {
      */
     public SQLUnit toSQL() {
         StringBuilder result = new StringBuilder();
-        List<Object> insertParameters = Collections.emptyList();
+        List<Object> insertParameters = getInsertParameters(insertOptimizeResult);
         for (Object each : segments) {
             if (each instanceof Alterable) {
                 result.append(((Alterable) each).toString(null, Collections.<String, String>emptyMap()));
             } else {
                 result.append(each);
-            }
-            if (each instanceof InsertSetPlaceholder || each instanceof InsertValuesPlaceholder) {
-                insertParameters = getInsertParameters(each);
             }
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
@@ -128,33 +127,34 @@ public final class SQLBuilder {
      */
     public SQLUnit toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
-        List<Object> insertParameters = Collections.emptyList();
+        List<Object> insertParameters = getInsertParameters(insertOptimizeResult, routingUnit);
         for (Object each : segments) {
             if (each instanceof Alterable) {
                 result.append(((Alterable) each).toString(routingUnit, logicAndActualTables));
             } else {
                 result.append(each);
             }
-            if (each instanceof InsertSetPlaceholder || each instanceof InsertValuesPlaceholder) {
-                insertParameters = getInsertParameters(each, routingUnit);
-            }
         }
         return insertParameters.isEmpty() ? new SQLUnit(result.toString(), new ArrayList<>(parameters)) : new SQLUnit(result.toString(), insertParameters);
     }
     
-    private List<Object> getInsertParameters(final Object segment) {
+    private List<Object> getInsertParameters(final InsertOptimizeResult insertOptimizeResult) {
         List<Object> result = new LinkedList<>();
-        List<InsertOptimizeResultUnit> units = segment instanceof InsertSetPlaceholder ? ((InsertSetPlaceholder) segment).getUnits() : ((InsertValuesPlaceholder) segment).getUnits();
-        for (InsertOptimizeResultUnit each : units) {
+        if (null == insertOptimizeResult) {
+            return result;
+        }
+        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             result.addAll(Arrays.asList(each.getParameters()));
         }
         return result;
     }
     
-    private List<Object> getInsertParameters(final Object segment, final RoutingUnit routingUnit) {
+    private List<Object> getInsertParameters(final InsertOptimizeResult insertOptimizeResult, final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
-        List<InsertOptimizeResultUnit> units = segment instanceof InsertSetPlaceholder ? ((InsertSetPlaceholder) segment).getUnits() : ((InsertValuesPlaceholder) segment).getUnits();
-        for (InsertOptimizeResultUnit each : units) {
+        if (null == insertOptimizeResult) {
+            return result;
+        }
+        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             if (isAppendInsertParameter(each, routingUnit)) {
                 result.addAll(Arrays.asList(each.getParameters()));
             }

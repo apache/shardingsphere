@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.sql.segment.dml.expr;
+package org.apache.shardingsphere.core.parse.sql.token.impl;
 
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import lombok.Getter;
+import org.apache.shardingsphere.core.parse.sql.token.Attachable;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+
+import java.util.Collection;
 
 /**
- * Expression segment.
+ * Insert set add item token.
  *
- * @author duhongjun
  * @author panjuan
  */
-public interface ExpressionSegment extends SQLSegment {
+@Getter
+public final class InsertSetAddItemsToken extends SQLToken implements Attachable {
     
-    /**
-     * Get start index.
-     *
-     * @return start index
-     */
-    int getStartIndex();
+    private final Collection<String> columnNames;
     
-    /**
-     * Get stop index.
-     *
-     * @return stop index
-     */
-    int getStopIndex();
+    public InsertSetAddItemsToken(final int startIndex, final Collection<String> columnNames) {
+        super(startIndex);
+        this.columnNames = columnNames;
+    }
 }

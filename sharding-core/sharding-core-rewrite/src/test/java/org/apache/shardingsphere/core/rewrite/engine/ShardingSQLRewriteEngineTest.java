@@ -43,7 +43,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.IndexToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertColumnsToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
@@ -294,7 +293,6 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        insertStatement.addSQLToken(new InsertSetToken(22, 43));
         InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.SET, Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
@@ -304,10 +302,10 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult = new SQLRouteResult(insertStatement);
         routeResult.setOptimizeResult(new OptimizeResult(insertOptimizeResult));
         routeResult.setRoutingResult(new RoutingResult());
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "INSERT INTO `table_x` set name = 'a', id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)",
+        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, "INSERT INTO `table_x` set name = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)",
                 DatabaseType.MySQL, routeResult, Collections.emptyList(), shardingDataSourceMetaData);
         assertThat(rewriteEngine.rewrite().toSQL(routingUnit, tableTokens).getSql(),
-                is("INSERT INTO `table_1` SET name = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+                is("INSERT INTO `table_1` set name = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
     
     @Test
