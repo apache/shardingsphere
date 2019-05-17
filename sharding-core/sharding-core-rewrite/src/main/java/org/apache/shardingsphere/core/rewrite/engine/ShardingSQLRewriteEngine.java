@@ -132,14 +132,17 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
-        Optional<InsertOptimizeResult> insertOptimizeResult = optimizeResult.getInsertOptimizeResult();
-        if (insertOptimizeResult.isPresent()) {
-            for (InsertOptimizeResultUnit each : insertOptimizeResult.get().getUnits()) {
-                encryptInsertOptimizeResultUnit(insertOptimizeResult.get().getColumnNames(), each);
-            }
-            return insertOptimizeResult.get();
+        if (null == optimizeResult) {
+            return null;
         }
-        return null;
+        Optional<InsertOptimizeResult> insertOptimizeResult = optimizeResult.getInsertOptimizeResult();
+        if (!insertOptimizeResult.isPresent()) {
+            return null;
+        }
+        for (InsertOptimizeResultUnit each : insertOptimizeResult.get().getUnits()) {
+            encryptInsertOptimizeResultUnit(insertOptimizeResult.get().getColumnNames(), each);
+        }
+        return insertOptimizeResult.get();
     }
     
     private void encryptInsertOptimizeResultUnit(final Collection<String> columnNames, final InsertOptimizeResultUnit unit) {
