@@ -41,7 +41,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.parse.sql.token.impl.EncryptColumnToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetAddItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValueToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
@@ -93,14 +92,13 @@ public final class ShardingSetAssignmentsFiller implements SQLSegmentFiller<SetA
         insertStatement.getValues().add(insertValue);
         insertStatement.getRouteCondition().getOrConditions().add(andCondition);
         insertStatement.setParametersIndex(insertValue.getParametersCount());
-        insertStatement.getSQLTokens().add(new InsertSetToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         fillWithInsertSetAddItemsToken(insertStatement, sqlSegment);
     }
     
     private void fillWithInsertSetEncryptValueToken(final InsertStatement insertStatement, final AssignmentSegment segment, final String columnName, final SQLExpression columnValue) {
         Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), columnName);
         if (shardingEncryptor.isPresent() && !(columnValue instanceof SQLParameterMarkerExpression)) {
-            insertStatement.getSQLTokens().add(new InsertSetEncryptValueToken(segment.getStartIndex(), segment.getStopIndex(), columnName));
+            insertStatement.getSQLTokens().add(new InsertSetEncryptValueToken(segment.getValue().getStartIndex(), segment.getValue().getStopIndex(), columnName));
         }
     }
     
