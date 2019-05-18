@@ -138,7 +138,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             return accumulate();
         } else {
             Collection<? extends Statement> statements = getRoutedStatements();
-            if (0 == statements.size()) {
+            if (statements.isEmpty()) {
                 return -1;
             }
             return getRoutedStatements().iterator().next().getUpdateCount();
