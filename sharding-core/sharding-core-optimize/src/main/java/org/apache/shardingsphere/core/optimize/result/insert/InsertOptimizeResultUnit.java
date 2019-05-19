@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
-import org.apache.shardingsphere.core.parse.sql.context.expression.SQLIgnoreExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
@@ -40,7 +39,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class InsertOptimizeResultUnit {
+public final class InsertOptimizeResultUnit {
     
     private final Collection<String> columnNames;
     
@@ -57,7 +56,7 @@ public abstract class InsertOptimizeResultUnit {
      *
      * @param sqlExpression SQL expression
      */
-    public final void addColumnValue(final SQLExpression sqlExpression) {
+    public void addColumnValue(final SQLExpression sqlExpression) {
         values[getCurrentIndex(values, 0)] = sqlExpression;
     }
     
@@ -66,7 +65,7 @@ public abstract class InsertOptimizeResultUnit {
      *
      * @param parameter parameter
      */
-    public final void addColumnParameter(final Object parameter) {
+    public void addColumnParameter(final Object parameter) {
         parameters[getCurrentIndex(parameters, startIndexOfAppendedParameters)] = parameter;
     }
     
@@ -85,7 +84,7 @@ public abstract class InsertOptimizeResultUnit {
      * @param columnName column name
      * @param columnValue column value
      */
-    public final void setColumnValue(final String columnName, final Object columnValue) {
+    public void setColumnValue(final String columnName, final Object columnValue) {
         SQLExpression sqlExpression = values[getColumnIndex(columnName)];
         if (sqlExpression instanceof SQLParameterMarkerExpression) {
             parameters[getParameterIndex(sqlExpression)] = columnValue;
@@ -117,7 +116,7 @@ public abstract class InsertOptimizeResultUnit {
      * @param columnName column name
      * @return column value
      */
-    public final Object getColumnValue(final String columnName) {
+    public Object getColumnValue(final String columnName) {
         SQLExpression sqlExpression = values[getColumnIndex(columnName)];
         if (sqlExpression instanceof SQLParameterMarkerExpression) {
             return parameters[getParameterIndex(sqlExpression)];
@@ -128,26 +127,13 @@ public abstract class InsertOptimizeResultUnit {
         }
     }
     
-    protected final String getColumnSQLExpressionValue(final int columnValueIndex) {
-        SQLExpression sqlExpression = values[columnValueIndex];
-        if (sqlExpression instanceof SQLParameterMarkerExpression) {
-            return "?";
-        } else if (sqlExpression instanceof SQLTextExpression) {
-            return String.format("'%s'", ((SQLTextExpression) sqlExpression).getText());
-        } else if (sqlExpression instanceof SQLIgnoreExpression) {
-            return ((SQLIgnoreExpression) sqlExpression).getExpression();
-        } else {
-            return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
-        }
-    }
-    
     /**
      * Get column sql expression.
      *
      * @param columnName column name
      * @return column sql expression
      */
-    public final SQLExpression getColumnSQLExpression(final String columnName) {
+    public SQLExpression getColumnSQLExpression(final String columnName) {
         return values[getColumnIndex(columnName)];
     }
 }
