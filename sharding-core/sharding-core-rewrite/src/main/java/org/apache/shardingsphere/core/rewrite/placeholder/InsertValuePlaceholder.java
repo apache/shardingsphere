@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterM
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ public final class InsertValuePlaceholder implements ShardingPlaceholder {
     private final List<SQLExpression> columnValues;
     
     @Getter
-    private final List<DataNode> dataNodes = new LinkedList<>();
+    private final List<DataNode> dataNodes;
     
     @Override
     public String toString() {

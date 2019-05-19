@@ -61,6 +61,7 @@ import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetAddItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetEncryptValuePlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuePlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlaceholder;
@@ -83,6 +84,8 @@ import org.apache.shardingsphere.core.strategy.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -285,7 +288,11 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private void appendInsertValuesPlaceholder(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count, final InsertOptimizeResult insertOptimizeResult) {
-        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(insertOptimizeResult.getUnits()));
+        List<InsertValuePlaceholder> insertValues = new LinkedList<>();
+        for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
+            insertValues.add(new InsertValuePlaceholder(new ArrayList<>(each.getColumnNames()), Arrays.asList(each.getValues()), each.getDataNodes()));
+        }
+        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(insertValues));
         appendRest(sqlBuilder, count, getStopIndex(insertValuesToken));
     }
     
