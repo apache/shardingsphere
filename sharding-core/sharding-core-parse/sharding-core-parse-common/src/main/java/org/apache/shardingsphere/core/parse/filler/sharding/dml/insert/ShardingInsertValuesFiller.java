@@ -68,7 +68,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-        fillInsertValuesToken(sqlSegment, insertStatement);
+        fillWithInsertValuesToken(sqlSegment, insertStatement);
         reviseInsertColumnNames(sqlSegment, insertStatement);
     }
     
@@ -98,7 +98,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         }
     }
     
-    private void fillInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+    private void fillWithInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
         Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
         if (insertValuesToken.isPresent()) {
             int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
