@@ -82,29 +82,6 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         return result.iterator();
     }
     
-    private void reviseInsertColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
-        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
-        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
-        if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
-            result.remove(generateKeyColumnName.get());
-            reviseInsertColumnsToken(insertStatement, generateKeyColumnName.get(), result);
-        }
-        insertStatement.getColumnNames().clear();
-        insertStatement.getColumnNames().addAll(result);
-    }
-    
-    private void reviseInsertColumnsToken(final InsertStatement insertStatement, final String generateKeyColumnName, final Collection<String> columnNames) {
-        Optional<InsertColumnsToken> insertColumnsToken = insertStatement.findSQLToken(InsertColumnsToken.class);
-        Collection<String> assistedColumns = new LinkedList<>(insertColumnsToken.get().getColumns());
-        assistedColumns.removeAll(columnNames);
-        assistedColumns.remove(generateKeyColumnName);
-        insertColumnsToken.get().getColumns().clear();
-        insertColumnsToken.get().getColumns().addAll(columnNames);
-        insertColumnsToken.get().getColumns().add(generateKeyColumnName);
-        insertColumnsToken.get().getColumns().addAll(assistedColumns);
-    }
-    
     private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ComplexExpressionSegment) {
             return ((ComplexExpressionSegment) expressionSegment).getSQLExpression(insertStatement.getLogicSQL());
@@ -131,5 +108,28 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         } else {
             insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
         }
+    }
+    
+    private void reviseInsertColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Collection<String> result = new ArrayList<>(insertStatement.getColumnNames());
+        result.removeAll(shardingRule.getShardingEncryptorEngine().getAssistedQueryColumns(insertStatement.getTables().getSingleTableName()));
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTables().getSingleTableName());
+        if (insertStatement.getColumnNames().size() != sqlSegment.getValues().size() && generateKeyColumnName.isPresent()) {
+            result.remove(generateKeyColumnName.get());
+            reviseInsertColumnsToken(insertStatement, generateKeyColumnName.get(), result);
+        }
+        insertStatement.getColumnNames().clear();
+        insertStatement.getColumnNames().addAll(result);
+    }
+    
+    private void reviseInsertColumnsToken(final InsertStatement insertStatement, final String generateKeyColumnName, final Collection<String> columnNames) {
+        Optional<InsertColumnsToken> insertColumnsToken = insertStatement.findSQLToken(InsertColumnsToken.class);
+        Collection<String> assistedColumns = new LinkedList<>(insertColumnsToken.get().getColumns());
+        assistedColumns.removeAll(columnNames);
+        assistedColumns.remove(generateKeyColumnName);
+        insertColumnsToken.get().getColumns().clear();
+        insertColumnsToken.get().getColumns().addAll(columnNames);
+        insertColumnsToken.get().getColumns().add(generateKeyColumnName);
+        insertColumnsToken.get().getColumns().addAll(assistedColumns);
     }
 }
