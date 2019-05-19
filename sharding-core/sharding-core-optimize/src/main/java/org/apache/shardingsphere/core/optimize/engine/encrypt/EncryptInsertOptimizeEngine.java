@@ -23,14 +23,12 @@ import org.apache.shardingsphere.core.optimize.engine.OptimizeEngine;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parse.sql.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -54,7 +52,7 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
     @Override
     public OptimizeResult optimize() {
         List<InsertValue> insertValues = insertStatement.getValues();
-        InsertOptimizeResult insertOptimizeResult = createInsertOptimizeResult();
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(insertStatement.getColumnNames());
         int parametersCount = 0;
         int insertOptimizeResultIndex = 0;
         for (InsertValue each : insertValues) {
@@ -68,11 +66,6 @@ public final class EncryptInsertOptimizeEngine implements OptimizeEngine {
             insertOptimizeResultIndex++;
         }
         return new OptimizeResult(insertOptimizeResult);
-    }
-    
-    private InsertOptimizeResult createInsertOptimizeResult() {
-        InsertType type = insertStatement.findSQLToken(InsertValuesToken.class).isPresent() ? InsertType.VALUES : InsertType.SET;
-        return new InsertOptimizeResult(type, insertStatement.getColumnNames());
     }
     
     private SQLExpression[] createCurrentColumnValues(final InsertValue insertValue) {

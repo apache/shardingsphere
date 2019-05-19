@@ -68,7 +68,7 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         InsertValue insertValue = new InsertValue(columnValues);
         insertStatement.getValues().add(insertValue);
         insertStatement.setParametersIndex(insertStatement.getParametersIndex() + insertValue.getParametersCount());
-        fillInsertValuesToken(sqlSegment, insertStatement);
+        fillWithInsertValuesToken(sqlSegment, insertStatement);
         reviseInsertColumnNames(sqlSegment, insertStatement);
     }
     
@@ -80,6 +80,34 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
             result.remove(generateKeyColumnName.get());
         }
         return result.iterator();
+    }
+    
+    private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
+        if (expressionSegment instanceof ComplexExpressionSegment) {
+            return ((ComplexExpressionSegment) expressionSegment).getSQLExpression(insertStatement.getLogicSQL());
+        }
+        SQLExpression result = ((SimpleExpressionSegment) expressionSegment).getSQLExpression();
+        String tableName = insertStatement.getTables().getSingleTableName();
+        fillShardingCondition(andCondition, tableName, columnName, result);
+        return result;
+    }
+    
+    private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SQLExpression sqlExpression) {
+        if (shardingRule.isShardingColumn(columnName, tableName)) {
+            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
+        }
+    }
+    
+    private void fillWithInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
+        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
+        if (insertValuesToken.isPresent()) {
+            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
+            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
+            insertStatement.getSQLTokens().remove(insertValuesToken.get());
+            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
+        } else {
+            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
+        }
     }
     
     private void reviseInsertColumnNames(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
@@ -103,33 +131,5 @@ public final class ShardingInsertValuesFiller implements SQLSegmentFiller<Insert
         insertColumnsToken.get().getColumns().addAll(columnNames);
         insertColumnsToken.get().getColumns().add(generateKeyColumnName);
         insertColumnsToken.get().getColumns().addAll(assistedColumns);
-    }
-    
-    private SQLExpression getColumnValue(final InsertStatement insertStatement, final AndCondition andCondition, final String columnName, final ExpressionSegment expressionSegment) {
-        if (expressionSegment instanceof ComplexExpressionSegment) {
-            return ((ComplexExpressionSegment) expressionSegment).getSQLExpression(insertStatement.getLogicSQL());
-        }
-        SQLExpression result = ((SimpleExpressionSegment) expressionSegment).getSQLExpression();
-        String tableName = insertStatement.getTables().getSingleTableName();
-        fillShardingCondition(andCondition, tableName, columnName, result);
-        return result;
-    }
-    
-    private void fillShardingCondition(final AndCondition andCondition, final String tableName, final String columnName, final SQLExpression sqlExpression) {
-        if (shardingRule.isShardingColumn(columnName, tableName)) {
-            andCondition.getConditions().add(new Condition(new Column(columnName, tableName), sqlExpression));
-        }
-    }
-    
-    private void fillInsertValuesToken(final InsertValuesSegment sqlSegment, final InsertStatement insertStatement) {
-        Optional<InsertValuesToken> insertValuesToken = insertStatement.findSQLToken(InsertValuesToken.class);
-        if (insertValuesToken.isPresent()) {
-            int startIndex = insertValuesToken.get().getStartIndex() < sqlSegment.getStartIndex() ? insertValuesToken.get().getStartIndex() : sqlSegment.getStartIndex();
-            int stopIndex = insertValuesToken.get().getStopIndex() > sqlSegment.getStopIndex() ? insertValuesToken.get().getStopIndex() : sqlSegment.getStopIndex();
-            insertStatement.getSQLTokens().remove(insertValuesToken.get());
-            insertStatement.getSQLTokens().add(new InsertValuesToken(startIndex, stopIndex));
-        } else {
-            insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getStartIndex(), sqlSegment.getStopIndex()));
-        }
     }
 }

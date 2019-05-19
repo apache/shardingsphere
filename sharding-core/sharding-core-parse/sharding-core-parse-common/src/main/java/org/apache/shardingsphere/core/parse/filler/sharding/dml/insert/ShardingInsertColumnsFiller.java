@@ -73,19 +73,19 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
     private InsertColumnsToken createInsertColumnsTokenFromMetaData(final InsertStatement insertStatement, final int startIndex) {
         InsertColumnsToken result = new InsertColumnsToken(startIndex, false);
         result.getColumns().addAll(insertStatement.getColumnNames());
-        fillGeneratedKeyColumn(insertStatement, result);
-        fillQueryAssistedColumn(insertStatement, result);
+        fillWithGeneratedKeyColumn(insertStatement, result);
+        fillWithQueryAssistedColumn(insertStatement, result);
         return result;
     }
     
     private InsertColumnsToken createInsertColumnsTokenFromSQL(final InsertStatement insertStatement, final int startIndex) {
         InsertColumnsToken result = new InsertColumnsToken(startIndex, true);
-        fillGeneratedKeyColumn(insertStatement, result);
-        fillQueryAssistedColumn(insertStatement, result);
+        fillWithGeneratedKeyColumn(insertStatement, result);
+        fillWithQueryAssistedColumn(insertStatement, result);
         return result;
     }
     
-    private void fillGeneratedKeyColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
+    private void fillWithGeneratedKeyColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
         String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(tableName);
         Optional<String> generatedKeyColumn = generateKeyColumn.isPresent() && !insertStatement.getColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
@@ -94,7 +94,7 @@ public final class ShardingInsertColumnsFiller implements SQLSegmentFiller<Inser
         }
     }
     
-    private void fillQueryAssistedColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
+    private void fillWithQueryAssistedColumn(final InsertStatement insertStatement, final InsertColumnsToken insertColumnsToken) {
         for (String each : insertStatement.getColumnNames()) {
             Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(insertStatement.getTables().getSingleTableName(), each);
             if (assistedColumnName.isPresent()) {

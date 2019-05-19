@@ -76,7 +76,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(2));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[0], is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("(?, ?)"));
     
     }
     
@@ -104,7 +103,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("col2"), is((Object) 2));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("query1"), is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("query2"), is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("(1, 2, 1, 2)"));
         
     }
     
@@ -130,7 +128,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters().length, is(0));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("col1"), is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getColumnValue("col2"), is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("col1 = 1, col2 = 2"));
         
     }
     
@@ -157,7 +154,6 @@ public final class EncryptInsertOptimizeEngineTest {
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[1], is((Object) 2));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[2], is((Object) 1));
         assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).getParameters()[3], is((Object) 2));
-        assertThat(actual.getInsertOptimizeResult().get().getUnits().get(0).toString(), is("col1 = ?, col2 = ?, query1 = ?, query2 = ?"));
         
     }
     

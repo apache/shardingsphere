@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
@@ -36,7 +35,7 @@ import java.util.Map;
 @Getter
 public final class InsertValuesPlaceholder implements ShardingPlaceholder, Alterable {
     
-    private final List<InsertOptimizeResultUnit> units;
+    private final List<InsertValuePlaceholder> insertValues;
     
     @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
@@ -47,14 +46,14 @@ public final class InsertValuesPlaceholder implements ShardingPlaceholder, Alter
     }
     
     private void appendUnits(final RoutingUnit routingUnit, final StringBuilder result) {
-        for (InsertOptimizeResultUnit each : units) {
+        for (InsertValuePlaceholder each : insertValues) {
             if (isToAppendInsertOptimizeResult(routingUnit, each)) {
                 result.append(each).append(", ");
             }
         }
     }
     
-    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertOptimizeResultUnit unit) {
+    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertValuePlaceholder unit) {
         if (unit.getDataNodes().isEmpty() || null == routingUnit) {
             return true;
         }
