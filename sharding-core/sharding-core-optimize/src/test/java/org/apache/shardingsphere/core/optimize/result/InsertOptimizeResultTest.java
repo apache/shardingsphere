@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.optimize.result;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parse.sql.context.expression.SQLParameterMarkerExpression;
@@ -31,9 +30,9 @@ import static org.junit.Assert.assertThat;
 
 public final class InsertOptimizeResultTest {
     
-    private InsertOptimizeResult setInsertOptimizeResult = new InsertOptimizeResult(InsertType.SET, Lists.newArrayList("id", "value", "status"));
+    private InsertOptimizeResult setInsertOptimizeResult = new InsertOptimizeResult(Lists.newArrayList("id", "value", "status"));
     
-    private InsertOptimizeResult valuesInsertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Lists.newArrayList("id", "value", "status"));
+    private InsertOptimizeResult valuesInsertOptimizeResult = new InsertOptimizeResult(Lists.newArrayList("id", "value", "status"));
     
     @Test
     public void assertAddUnitWithSet() {
@@ -41,7 +40,6 @@ public final class InsertOptimizeResultTest {
         Object[] parameters = {"parameter"};
         setInsertOptimizeResult.addUnit(expressions, parameters, 1);
         assertThat(setInsertOptimizeResult.getColumnNames().size(), is(3));
-        assertThat(setInsertOptimizeResult.getType(), is(InsertType.SET));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getValues(), is(expressions));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getParameters()[0], is((Object) "parameter"));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getDataNodes().size(), is(0));

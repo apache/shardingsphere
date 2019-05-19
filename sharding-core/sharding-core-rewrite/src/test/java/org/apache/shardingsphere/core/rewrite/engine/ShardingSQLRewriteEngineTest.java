@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
-import org.apache.shardingsphere.core.optimize.result.insert.InsertType;
 import org.apache.shardingsphere.core.parse.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parse.sql.context.condition.Column;
@@ -194,7 +193,7 @@ public final class ShardingSQLRewriteEngineTest {
         InsertColumnsToken insertColumnsToken = new InsertColumnsToken(30, true);
         insertColumnsToken.getColumns().add("id");
         insertStatement.addSQLToken(insertColumnsToken);
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "age", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "age", "id"));
         Object[] parameters = {"x", 1, 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1), new SQLParameterMarkerExpression(2)};
         insertOptimizeResult.addUnit(sqlExpressions, parameters, 3);
@@ -221,7 +220,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertColumnsToken.getColumns().add("name");
         insertColumnsToken.getColumns().add("id");
         insertStatement.addSQLToken(insertColumnsToken);
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         Object[] parameters = {"Bill", 1};
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, parameters, 2);
@@ -247,7 +246,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertColumnsToken.getColumns().add("name");
         insertColumnsToken.getColumns().add("id");
         insertStatement.addSQLToken(insertColumnsToken);
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -272,7 +271,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertColumnsToken.getColumns().add("name");
         insertColumnsToken.getColumns().add("id");
         insertStatement.addSQLToken(insertColumnsToken);
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -293,7 +292,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertStatement.getColumnNames().add("id");
         insertStatement.getTables().add(new Table("table_x", null));
         insertStatement.addSQLToken(new TableToken(12, 20, "`table_x`", QuoteCharacter.BACK_QUOTE));
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.SET, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -322,7 +321,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertColumnsToken.getColumns().add("name");
         insertColumnsToken.getColumns().add("id");
         insertStatement.addSQLToken(insertColumnsToken);
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLNumberExpression(10), new SQLNumberExpression(1)};
         insertOptimizeResult.addUnit(sqlExpressions, new Object[0], 0);
         insertOptimizeResult.getUnits().get(0).getDataNodes().add(new DataNode("db0.table_1"));
@@ -347,7 +346,7 @@ public final class ShardingSQLRewriteEngineTest {
         insertColumnsToken.getColumns().add("name");
         insertColumnsToken.getColumns().add("id");
         insertStatement.addSQLToken(insertColumnsToken);
-        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(InsertType.VALUES, Arrays.asList("name", "id"));
+        InsertOptimizeResult insertOptimizeResult = new InsertOptimizeResult(Arrays.asList("name", "id"));
         SQLExpression[] sqlExpressions = {new SQLParameterMarkerExpression(0), new SQLParameterMarkerExpression(1)};
         Object[] parameters = {"x", 1};
         insertOptimizeResult.addUnit(sqlExpressions, parameters, 2);
