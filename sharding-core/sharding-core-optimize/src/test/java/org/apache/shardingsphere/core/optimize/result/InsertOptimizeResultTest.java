@@ -45,18 +45,9 @@ public final class InsertOptimizeResultTest {
         assertThat(setInsertOptimizeResult.getUnits().get(0).getDataNodes().size(), is(0));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("value"), is((Object) "parameter"));
         assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("status"), is((Object) "test"));
-        assertThat(setInsertOptimizeResult.getUnits().get(0).toString(), is("id = 1, value = ?, status = 'test'"));
         setInsertOptimizeResult.getUnits().get(0).setColumnValue("id", 2);
         assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("id"), is((Object) 2));
         setInsertOptimizeResult.getUnits().get(0).setColumnValue("value", "parameter1");
         assertThat(setInsertOptimizeResult.getUnits().get(0).getColumnValue("value"), is((Object) "parameter1"));
-    }
-    
-    @Test
-    public void assertAddUnitWithValues() {
-        SQLExpression[] expressions = {new SQLNumberExpression(1), new SQLParameterMarkerExpression(1), new SQLTextExpression("test")};
-        Object[] parameters = {"parameter"};
-        valuesInsertOptimizeResult.addUnit(expressions, parameters, 1);
-        assertThat(valuesInsertOptimizeResult.getUnits().get(0).toString(), is("(1, ?, 'test')"));
     }
 }
