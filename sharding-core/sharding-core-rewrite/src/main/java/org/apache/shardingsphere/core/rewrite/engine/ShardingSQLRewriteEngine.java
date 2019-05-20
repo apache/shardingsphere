@@ -116,7 +116,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    private final ParameterBuilder parametersBuilder;
+    private final ParameterBuilder parameterBuilder;
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
@@ -130,7 +130,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         this.sqlRouteResult = sqlRouteResult;
         sqlStatement = sqlRouteResult.getSqlStatement();
         this.insertOptimizeResult = getInsertOptimizeResult(sqlRouteResult.getOptimizeResult());
-        parametersBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
+        parameterBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
         this.dataSourceMetaData = dataSourceMetaData;
         sqlBuilder = rewrite();
     }
@@ -167,7 +167,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private SQLBuilder rewrite() {
-        SQLBuilder result = new SQLBuilder(parametersBuilder);
+        SQLBuilder result = new SQLBuilder(parameterBuilder);
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);
         }
@@ -363,7 +363,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private WhereEncryptColumnPlaceholder getEncryptColumnPlaceholderFromConditions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parametersBuilder.getOriginalParameters()));
+        List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parameterBuilder.getOriginalParameters()));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
         Optional<String> assistedColumnName = shardingRule.getShardingEncryptorEngine().getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
         return new WhereEncryptColumnPlaceholder(assistedColumnName.isPresent() ? assistedColumnName.get() : columnNode.getColumnName(),
@@ -379,7 +379,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                parametersBuilder.getOriginalParameters().set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
+                parameterBuilder.getOriginalParameters().set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
             }
         }
     }
@@ -395,7 +395,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     private ShardingPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         ShardingEncryptorEngine shardingEncryptorEngine = shardingRule.getShardingEncryptorEngine();
-        Comparable<?> originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(encryptColumnToken.getColumn(), parametersBuilder.getOriginalParameters());
+        Comparable<?> originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(encryptColumnToken.getColumn(), parameterBuilder.getOriginalParameters());
         List<Comparable<?>> encryptColumnValues = shardingEncryptorEngine.getEncryptColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
         Optional<String> assistedColumnName = shardingEncryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
@@ -403,7 +403,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
             return getUpdateEncryptItemPlaceholder(encryptColumnToken, encryptColumnValues);
         }
         List<Comparable<?>> encryptAssistedColumnValues = shardingEncryptorEngine.getEncryptAssistedColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
-        parametersBuilder.getAssistedIndexAndParametersForUpdate().putAll(getIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues));
+        parameterBuilder.getAssistedIndexAndParametersForUpdate().putAll(getIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues));
         return getUpdateEncryptAssistedItemPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues);
     }
     
