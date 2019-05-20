@@ -30,13 +30,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleDefinitionFileConstant {
     
-    public static final String ROOT_PATH = "META-INF/parsing-rule-definition";
-    
-    public static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
-    
-    public static final String MASTER_SALVE_ROOT_PATH = ROOT_PATH + "/masterslave";
-    
-    public static final String ENCRYPT_ROOT_PATH = ROOT_PATH + "/encrypt";
+    private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
     
     private static final String GENERAL = "general";
     
@@ -45,6 +39,12 @@ public final class RuleDefinitionFileConstant {
     private static final String FILLER_RULE_DEFINITION_FILE_NAME = "filler-rule-definition.xml";
     
     private static final String SQL_STATEMENT_RULE_DEFINITION_FILE_NAME = "sql-statement-rule-definition.xml";
+    
+    public static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
+    
+    public static final String MASTER_SALVE_ROOT_PATH = ROOT_PATH + "/masterslave";
+    
+    public static final String ENCRYPT_ROOT_PATH = ROOT_PATH + "/encrypt";
     
     /**
      * Get general extractor rule definition file name.
