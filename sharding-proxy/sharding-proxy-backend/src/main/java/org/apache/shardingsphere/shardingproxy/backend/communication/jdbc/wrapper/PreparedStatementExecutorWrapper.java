@@ -56,16 +56,16 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     @Override
     public SQLRouteResult route(final String sql, final DatabaseType databaseType) {
-        return logicSchema instanceof MasterSlaveSchema ? doMasterSlaveRoute(sql) : doShardingRoute(sql, databaseType);
+        return logicSchema instanceof MasterSlaveSchema ? doMasterSlaveRoute(databaseType, sql) : doShardingRoute(sql, databaseType);
     }
     
-    private SQLRouteResult doMasterSlaveRoute(final String sql) {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+    private SQLRouteResult doMasterSlaveRoute(final DatabaseType databaseType, final String sql) {
+        SQLStatement sqlStatement = new SQLJudgeEngine(databaseType, sql).judge();
         MasterSlaveSQLRewriteEngine sqlRewriteEngine = 
                 new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData().getDataSource());
         String rewriteSQL = sqlRewriteEngine.generateSQL(null, sqlRewriteEngine.rewrite()).getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(
+        for (String each : new MasterSlaveRouter(databaseType, 
                 ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, parameters)));
         }

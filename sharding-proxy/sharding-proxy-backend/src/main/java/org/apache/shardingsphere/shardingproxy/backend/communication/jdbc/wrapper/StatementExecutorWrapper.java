@@ -56,26 +56,26 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         if (logicSchema instanceof ShardingSchema) {
             result = doShardingRoute(sql, databaseType);
         } else if (logicSchema instanceof MasterSlaveSchema) {
-            result = doMasterSlaveRoute(sql);
+            result = doMasterSlaveRoute(databaseType, sql);
         } else {
-            result = doTransparentRoute(sql);
+            result = doTransparentRoute(databaseType, sql);
         }
         return result;
     }
     
-    private SQLRouteResult doTransparentRoute(final String sql) {
-        SQLRouteResult result = new SQLRouteResult(new SQLJudgeEngine(sql).judge());
+    private SQLRouteResult doTransparentRoute(final DatabaseType databaseType, final String sql) {
+        SQLRouteResult result = new SQLRouteResult(new SQLJudgeEngine(databaseType, sql).judge());
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;
     }
     
-    private SQLRouteResult doMasterSlaveRoute(final String sql) {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+    private SQLRouteResult doMasterSlaveRoute(final DatabaseType databaseType, final String sql) {
+        SQLStatement sqlStatement = new SQLJudgeEngine(databaseType, sql).judge();
         MasterSlaveSQLRewriteEngine sqlRewriteEngine = 
                 new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData().getDataSource());
         String rewriteSQL = sqlRewriteEngine.generateSQL(null, sqlRewriteEngine.rewrite()).getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        for (String each : new MasterSlaveRouter(
+        for (String each : new MasterSlaveRouter(databaseType, 
                 ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.emptyList())));
         }

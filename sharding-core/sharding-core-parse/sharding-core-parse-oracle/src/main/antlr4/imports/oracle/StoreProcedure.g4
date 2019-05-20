@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse;
+grammar StoreProcedure;
 
-import org.apache.shardingsphere.core.parse.constant.AllConstantTests;
-import org.apache.shardingsphere.core.parse.hook.SPIParsingHookTest;
-import org.apache.shardingsphere.core.parse.old.lexer.AllLexerTests;
-import org.apache.shardingsphere.core.parse.sql.AllSQLTests;
-import org.apache.shardingsphere.core.parse.util.SQLUtilTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import Keyword;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConstantTests.class,
-        AllLexerTests.class,
-        SQLUtilTest.class,
-        AllSQLTests.class,
-        SPIParsingHookTest.class
-})
-public final class AllParseTests {
-}
+call
+    : CALL 
+    ;

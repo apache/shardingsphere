@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend;
 
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStateHandler;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
@@ -62,16 +63,16 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewTransactionInstance() {
         String sql = "BEGIN";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
         sql = "START TRANSACTION";
-        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
         sql = "SET AUTOCOMMIT=0";
-        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
         sql = "SET @@SESSION.AUTOCOMMIT = OFF";
-        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
@@ -81,10 +82,10 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
         when(stateHandler.isInTransaction()).thenReturn(true);
         String sql = "SET AUTOCOMMIT=1";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
         sql = "SET @@SESSION.AUTOCOMMIT = ON";
-        actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
@@ -94,42 +95,42 @@ public final class TextProtocolBackendHandlerFactoryTest {
         ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
         when(stateHandler.isInTransaction()).thenReturn(false);
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
     
     @Test
     public void assertNewShardingCTLBackendHandlerInstance() {
         String sql = "sctl:set transaction_type=XA";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
     }
     
     @Test
     public void assertNewSchemaBroadcastBackendHandlerInstance() {
         String sql = "set @num=1";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(BroadcastBackendHandler.class));
     }
     
     @Test
     public void assertNewUseSchemaBackendHandlerInstance() {
         String sql = "use sharding_db";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(UseDatabaseBackendHandler.class));
     }
     
     @Test
     public void assertNewShowDatabasesBackendHandlerInstance() {
         String sql = "show databases;";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(ShowDatabasesBackendHandler.class));
     }
     
     @Test
     public void assertNewDefaultInstance() {
         String sql = "select * from t_order limit 1";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(sql, backendConnection);
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(DatabaseType.MySQL, sql, backendConnection);
         assertThat(actual, instanceOf(QueryBackendHandler.class));
     }
 }

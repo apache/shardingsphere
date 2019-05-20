@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
 
 execute
     : (select
@@ -43,5 +43,6 @@ execute
     | createRole
     | dropRole
     | alterRole
+    | call
     ) SEMI_?
     ;
