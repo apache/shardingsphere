@@ -39,10 +39,14 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class SQLBuilderTest {
     
     private ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
+    private ParameterBuilder parameterBuilder;
     
     @Before
     public void setUp() {
@@ -50,11 +54,13 @@ public final class SQLBuilderTest {
         shardingDataSourceURLs.put("ds0", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceURLs.put("ds1", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseType.MySQL);
+        parameterBuilder = mock(ParameterBuilder.class);
+        when(parameterBuilder.getParameters(null)).thenReturn(Collections.emptyList());
     }
     
     @Test
     public void assertAppendLiteralsOnly() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
         sqlBuilder.appendLiterals("table_x");
         sqlBuilder.appendLiterals(".id");
@@ -65,7 +71,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertAppendTableWithoutTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(".id");
@@ -76,7 +82,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertAppendTableWithTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(".id");
@@ -89,7 +95,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertIndexPlaceholderAppendTableWithoutTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
@@ -100,7 +106,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertIndexPlaceholderAppendTableWithTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
@@ -113,7 +119,7 @@ public final class SQLBuilderTest {
     
     @Test(expected = ShardingException.class)
     public void assertSchemaPlaceholderAppendTableWithoutTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.NONE));
@@ -124,7 +130,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertSchemaPlaceholderAppendTableWithTableToken() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.NONE));
@@ -139,7 +145,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertAppendTableWithoutTableTokenWithBackQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.BACK_QUOTE));
         sqlBuilder.appendLiterals(".id");
@@ -150,7 +156,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertAppendTableWithTableTokenWithBackQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.BACK_QUOTE));
         sqlBuilder.appendLiterals(".id");
@@ -163,7 +169,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertIndexPlaceholderAppendTableWithoutTableTokenWithBackQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
@@ -174,7 +180,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertIndexPlaceholderAppendTableWithTableTokenWithBackQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
@@ -187,7 +193,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertSchemaPlaceholderAppendTableWithTableTokenWithBackQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.BACK_QUOTE));
@@ -200,7 +206,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertAppendTableWithoutTableTokenWithDoubleQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.QUOTE));
         sqlBuilder.appendLiterals(".id");
@@ -211,7 +217,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertAppendTableWithTableTokenWithDoubleQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SELECT ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", QuoteCharacter.QUOTE));
         sqlBuilder.appendLiterals(".id");
@@ -224,7 +230,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertIndexPlaceholderAppendTableWithoutTableTokenWithDoubleQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
@@ -235,7 +241,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertIndexPlaceholderAppendTableWithTableTokenWithDoubleQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x", QuoteCharacter.NONE));
         sqlBuilder.appendLiterals(" ON ");
@@ -248,7 +254,7 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertSchemaPlaceholderAppendTableWithTableTokenWithDoubleQuotes() {
-        SQLBuilder sqlBuilder = new SQLBuilder();
+        SQLBuilder sqlBuilder = new SQLBuilder(parameterBuilder);
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
         sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", QuoteCharacter.QUOTE));

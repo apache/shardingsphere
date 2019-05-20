@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite;
 
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rule.DataNode;
+
+import java.util.List;
 
 /**
- * Base SQL rewrite engine.
+ * Insert parameter unit.
  *
  * @author panjuan
  */
-public interface SQLRewriteEngine {
+@RequiredArgsConstructor
+@Getter
+public final class InsertParameterUnit {
     
-    /**
-     * Generate SQL string.
-     *
-     * @param routingUnit routing unit
-     * @return SQL unit
-     */
-    SQLUnit generateSQL(RoutingUnit routingUnit);
+    private final List<Object> parameters;
+    
+    private final List<DataNode> dataNodes;
 }
