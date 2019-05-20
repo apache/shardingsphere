@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.DataNode;
 
@@ -28,6 +29,7 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@Getter
 public final class InsertParameterUnit {
     
     private final List<Object> parameters;
