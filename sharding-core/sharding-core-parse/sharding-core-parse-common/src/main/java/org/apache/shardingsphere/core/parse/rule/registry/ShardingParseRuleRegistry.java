@@ -52,13 +52,13 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected void fillRuleFilePaths(final DatabaseType databaseType, 
-                                     final Collection<String> fillerFilePaths, final Collection<String> extractorFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
+    protected void fillRuleFilePaths(final DatabaseType databaseType,
+                                     final Collection<String> extractorFilePaths, final Collection<String> fillerFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
+        extractorFilePaths.add(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
         fillerFilePaths.add(RuleDefinitionFileConstant.getShardingCommonFillerRuleDefinitionFileName());
         if (DatabaseType.MySQL == databaseType) {
             fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
         }
-        extractorFilePaths.add(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
         sqlStatementRuleFilePaths.add(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
     }
 }

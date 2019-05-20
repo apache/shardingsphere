@@ -52,10 +52,10 @@ public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected void fillRuleFilePaths(final DatabaseType databaseType, 
-                                     final Collection<String> fillerFilePaths, final Collection<String> extractorFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
-        fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
+    protected void fillRuleFilePaths(final DatabaseType databaseType,
+                                     final Collection<String> extractorFilePaths, final Collection<String> fillerFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
         extractorFilePaths.add(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
+        fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
         sqlStatementRuleFilePaths.add(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
     }
 }
