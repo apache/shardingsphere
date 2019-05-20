@@ -62,18 +62,16 @@ public abstract class ParseRuleRegistry {
     
     private void initDialectParseRuleDefinition() {
         for (DatabaseType each : DatabaseType.values()) {
-            if (DatabaseType.H2 != each) {
-                if (!needParse(each)) {
-                    continue;
-                }
-                Collection<String> extractorFilePaths = new LinkedList<>();
-                Collection<String> fillerFilePaths = new LinkedList<>();
-                Collection<String> sqlStatementRuleFilePaths = new LinkedList<>();
-                fillRuleFilePaths(each, extractorFilePaths, fillerFilePaths, sqlStatementRuleFilePaths);
-                ParseRuleDefinition shardingRuleDefinition = new ParseRuleDefinition();
-                initParseRuleDefinitionFromCommon(shardingRuleDefinition, extractorFilePaths, fillerFilePaths, sqlStatementRuleFilePaths);
-                parseRuleDefinitions.put(each, shardingRuleDefinition);
+            if (DatabaseType.H2 == each || !needParse(each)) {
+                continue;
             }
+            Collection<String> extractorFilePaths = new LinkedList<>();
+            Collection<String> fillerFilePaths = new LinkedList<>();
+            Collection<String> sqlStatementRuleFilePaths = new LinkedList<>();
+            fillRuleFilePaths(each, extractorFilePaths, fillerFilePaths, sqlStatementRuleFilePaths);
+            ParseRuleDefinition shardingRuleDefinition = new ParseRuleDefinition();
+            initParseRuleDefinitionFromCommon(shardingRuleDefinition, extractorFilePaths, fillerFilePaths, sqlStatementRuleFilePaths);
+            parseRuleDefinitions.put(each, shardingRuleDefinition);
         }
     }
     
