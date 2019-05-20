@@ -65,17 +65,6 @@ public final class RuleDefinitionFileConstant {
     }
     
     /**
-     * Get SQL statement rule definition file name.
-     * 
-     * @param rootDir root dir
-     * @param databaseType database type
-     * @return SQL statement rule definition file name
-     */
-    public static String getSQLStatementRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
-        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
-    }
-    
-    /**
      * Get extractor rule definition file name.
      *
      * @param rootDir root dir
@@ -104,5 +93,16 @@ public final class RuleDefinitionFileConstant {
      */
     public static String getShardingGeneralFillerRuleDefinitionFileName() {
         return Joiner.on('/').join(SHARDING_ROOT_PATH, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
+    }
+    
+    /**
+     * Get SQL statement rule definition file name.
+     *
+     * @param rootDir root dir
+     * @param databaseType database type
+     * @return SQL statement rule definition file name
+     */
+    public static String getSQLStatementRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
+        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
     }
 }
