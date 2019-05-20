@@ -52,8 +52,8 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected void fillExtractorFilePaths(final DatabaseType databaseType, final Collection<String> extractorFilePaths) {
-        extractorFilePaths.add(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
+    protected String getExtractorFile(final DatabaseType databaseType) {
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType);
     }
     
     @Override
