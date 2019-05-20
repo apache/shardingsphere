@@ -168,7 +168,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLBuilder rewrite() {
-        SQLBuilder result = new SQLBuilder(parametersBuilder, insertOptimizeResult);
+        SQLBuilder result = new SQLBuilder(parametersBuilder);
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);
         }
