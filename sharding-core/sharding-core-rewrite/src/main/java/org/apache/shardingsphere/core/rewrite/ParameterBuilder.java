@@ -63,6 +63,16 @@ public final class ParameterBuilder {
     
     /**
      * Get parameters.
+     *
+     * @return parameters
+     */
+    public List<Object> getParameters() {
+        List<Object> result = getInsertParameters();
+        return result.isEmpty() ? getRevisedParameters() : result;
+    }
+    
+    /**
+     * Get parameters.
      * 
      * @param routingUnit routing unit
      * @return parameters
@@ -70,6 +80,14 @@ public final class ParameterBuilder {
     public List<Object> getParameters(final RoutingUnit routingUnit) {
         List<Object> result = getInsertParameters(routingUnit);
         return result.isEmpty() ? getRevisedParameters() : result;
+    }
+    
+    private List<Object> getInsertParameters() {
+        List<Object> result = new LinkedList<>();
+        for (InsertParameterUnit each : insertParameterUnits) {
+            result.addAll(each.getParameters());
+        }
+        return result;
     }
     
     private List<Object> getInsertParameters(final RoutingUnit routingUnit) {
