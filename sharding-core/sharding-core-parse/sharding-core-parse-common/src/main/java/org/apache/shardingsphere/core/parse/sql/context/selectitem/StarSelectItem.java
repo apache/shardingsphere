@@ -24,7 +24,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Symbol;
 
 /**
  * Select all item.
@@ -42,7 +41,7 @@ public final class StarSelectItem implements SelectItem {
     
     @Override
     public String getExpression() {
-        return Strings.isNullOrEmpty(owner) ? Symbol.STAR.getLiterals() : owner + "." + Symbol.STAR.getLiterals();
+        return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
     }
     
     /**

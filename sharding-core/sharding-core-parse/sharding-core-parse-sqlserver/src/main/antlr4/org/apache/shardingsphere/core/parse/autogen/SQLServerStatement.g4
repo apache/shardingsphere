@@ -17,7 +17,7 @@
 
 grammar SQLServerStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
 
 execute
     : (select
@@ -49,5 +49,6 @@ execute
     | createLogin
     | dropLogin
     | alterLogin
+    | call
     ) SEMI_?
     ;

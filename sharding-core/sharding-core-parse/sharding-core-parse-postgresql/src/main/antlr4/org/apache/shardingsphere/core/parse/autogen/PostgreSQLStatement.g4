@@ -17,7 +17,7 @@
 
 grammar PostgreSQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
@@ -47,5 +47,6 @@ execute
     | show
     | set
     | resetParameter
+    | call
     ) SEMI_?
     ;

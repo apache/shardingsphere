@@ -21,7 +21,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
 
 import java.util.Collection;
@@ -43,8 +42,8 @@ public final class DistinctSelectItem implements SelectItem {
     
     @Override
     public String getExpression() {
-        return isSingleColumnWithAlias() ? SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.iterator().next() + "AS" + alias.get()) 
-                : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
+        return isSingleColumnWithAlias()
+                ? SQLUtil.getExactlyValue("DISTINCT " + distinctColumnNames.iterator().next() + "AS" + alias.get()) : SQLUtil.getExactlyValue("DISTINCT " + Joiner.on(", ").join(distinctColumnNames));
     }
     
     /**

@@ -34,6 +34,8 @@ public final class RuleDefinitionFileConstant {
     
     public static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
     
+    public static final String MASTER_SALVE_ROOT_PATH = ROOT_PATH + "/masterslave";
+    
     public static final String ENCRYPT_ROOT_PATH = ROOT_PATH + "/encrypt";
     
     private static final String COMMON = "common";

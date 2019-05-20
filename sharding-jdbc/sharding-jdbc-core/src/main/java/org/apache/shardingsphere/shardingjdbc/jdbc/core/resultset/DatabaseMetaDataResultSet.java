@@ -98,7 +98,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
                 Collection<String> logicTableNames = shardingRule.getLogicTableNames(tableName);
-                result.addObject(0 == logicTableNames.size() ? tableName : logicTableNames.iterator().next());
+                result.addObject(logicTableNames.isEmpty() ? tableName : logicTableNames.iterator().next());
             } else {
                 result.addObject(resultSet.getObject(i));
             }

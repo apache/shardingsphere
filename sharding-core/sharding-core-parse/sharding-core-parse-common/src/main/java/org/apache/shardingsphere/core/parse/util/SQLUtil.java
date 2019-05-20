@@ -20,9 +20,6 @@ package org.apache.shardingsphere.core.parse.util;
 import com.google.common.base.CharMatcher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
 
 /**
  * SQL utility class.
@@ -55,33 +52,5 @@ public final class SQLUtil {
      */
     public static String getExactlyExpression(final String value) {
         return null == value ? null : CharMatcher.anyOf(" ").removeFrom(value);
-    }
-    
-    /**
-     * Get original value for SQL expression.
-     * 
-     * @param value SQL expression
-     * @param databaseType database type
-     * @return original SQL expression
-     */
-    public static String getOriginalValue(final String value, final DatabaseType databaseType) {
-        if (DatabaseType.MySQL != databaseType) {
-            return value;
-        }
-        try {
-            DefaultKeyword.valueOf(value.toUpperCase());
-            return String.format("`%s`", value);
-        } catch (final IllegalArgumentException ex) {
-            return getOriginalValueForMySQLKeyword(value);
-        }
-    }
-    
-    private static String getOriginalValueForMySQLKeyword(final String value) {
-        try {
-            MySQLKeyword.valueOf(value.toUpperCase());
-            return String.format("`%s`", value);
-        } catch (final IllegalArgumentException ex) {
-            return value;
-        }
     }
 }

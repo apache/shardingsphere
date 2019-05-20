@@ -25,13 +25,14 @@ import org.apache.shardingsphere.core.parse.optimizer.SQLStatementOptimizerEngin
 import org.apache.shardingsphere.core.parse.parser.SQLAST;
 import org.apache.shardingsphere.core.parse.parser.SQLParserEngine;
 import org.apache.shardingsphere.core.parse.rule.registry.EncryptParsingRuleRegistry;
+import org.apache.shardingsphere.core.parse.rule.registry.MasterSlaveParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.ShardingParsingRuleRegistry;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.GeneralSQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 
@@ -54,11 +55,21 @@ public final class SQLParseEngine {
     private final SQLStatementOptimizerEngine optimizerEngine;
     
     public SQLParseEngine(final DatabaseType databaseType, final String sql, final BaseRule rule, final ShardingTableMetaData shardingTableMetaData) {
-        parsingRuleRegistry = rule instanceof EncryptRule ? EncryptParsingRuleRegistry.getInstance() : ShardingParsingRuleRegistry.getInstance();
+        parsingRuleRegistry = getParsingRuleRegistry(rule);
         parserEngine = new SQLParserEngine(parsingRuleRegistry, databaseType, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parsingRuleRegistry, databaseType, sql, rule, shardingTableMetaData);
         optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
+    }
+    
+    private ParsingRuleRegistry getParsingRuleRegistry(final BaseRule rule) {
+        if (null == rule) {
+            return MasterSlaveParsingRuleRegistry.getInstance();
+        }
+        if (rule instanceof ShardingRule) {
+            return ShardingParsingRuleRegistry.getInstance();
+        }
+        return EncryptParsingRuleRegistry.getInstance();
     }
     
     /**

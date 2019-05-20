@@ -19,15 +19,7 @@ package org.apache.shardingsphere.core.parse.sql.statement.dal;
 
 import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.old.lexer.dialect.mysql.MySQLKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.dialect.postgresql.PostgreSQLKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.Keyword;
-import org.apache.shardingsphere.core.parse.old.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parse.sql.statement.AbstractSQLStatement;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * DAL statement.
@@ -37,20 +29,7 @@ import java.util.Collection;
 @ToString(callSuper = true)
 public class DALStatement extends AbstractSQLStatement {
     
-    private static final Collection<Keyword> SINGLE_TOKEN_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.USE, DefaultKeyword.DESC, MySQLKeyword.DESCRIBE, MySQLKeyword.SHOW, 
-            PostgreSQLKeyword.SHOW, PostgreSQLKeyword.RESET);
-    
     public DALStatement() {
         super(SQLType.DAL);
-    }
-    
-    /**
-     * Is DAL statement.
-     * 
-     * @param tokenType token type
-     * @return is DAL or not
-     */
-    public static boolean isDAL(final TokenType tokenType) {
-        return SINGLE_TOKEN_STATEMENT_PREFIX.contains(tokenType);
     }
 }
