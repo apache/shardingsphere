@@ -62,8 +62,8 @@ public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected void fillStatementRuleFilePaths(final DatabaseType databaseType, final Collection<String> sqlStatementRuleFilePaths) {
-        sqlStatementRuleFilePaths.add(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
+    protected String getStatementRuleFile(final DatabaseType databaseType) {
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType);
     }
 }
 
