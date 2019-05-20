@@ -38,8 +38,8 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.InsertSetEncryptValue
 import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
-import org.apache.shardingsphere.core.rewrite.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetAddItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetEncryptValuePlaceholder;
