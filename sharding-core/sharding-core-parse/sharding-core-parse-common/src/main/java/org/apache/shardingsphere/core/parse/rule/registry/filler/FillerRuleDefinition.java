@@ -40,12 +40,12 @@ public final class FillerRuleDefinition {
     /**
      * Initialize filler rule definition.
      * 
-     * @param fillerRuleDefinitionEntity filler rule definition entity
+     * @param entity filler rule definition entity
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public void init(final FillerRuleDefinitionEntity fillerRuleDefinitionEntity) {
-        for (FillerRuleEntity each : fillerRuleDefinitionEntity.getRules()) {
+    public void init(final FillerRuleDefinitionEntity entity) {
+        for (FillerRuleEntity each : entity.getRules()) {
             rules.put((Class<? extends SQLSegment>) Class.forName(each.getSqlSegmentClass()), (SQLSegmentFiller) Class.forName(each.getFillerClass()).newInstance());
         }
     }

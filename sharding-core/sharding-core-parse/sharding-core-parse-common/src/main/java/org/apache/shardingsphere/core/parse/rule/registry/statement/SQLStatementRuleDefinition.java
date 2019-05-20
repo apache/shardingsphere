@@ -47,16 +47,15 @@ public final class SQLStatementRuleDefinition {
     /**
      * Initialize SQL statement rule definition.
      * 
-     * @param dialectRuleDefinitionEntity SQL dialect statement rule definition entity
+     * @param entity SQL dialect statement rule definition entity
      * @param extractorRuleDefinition extractor rule definition
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public void init(final SQLStatementRuleDefinitionEntity dialectRuleDefinitionEntity, final ExtractorRuleDefinition extractorRuleDefinition) {
-        for (SQLStatementRuleEntity each : dialectRuleDefinitionEntity.getRules()) {
-            SQLStatementRule sqlStatementRule = new SQLStatementRule(each.getContext(), 
-                    (Class<? extends SQLStatement>) Class.forName(each.getSqlStatementClass()),
-                    (SQLStatementOptimizer) newClassInstance(each.getOptimizerClass()));
+    public void init(final SQLStatementRuleDefinitionEntity entity, final ExtractorRuleDefinition extractorRuleDefinition) {
+        for (SQLStatementRuleEntity each : entity.getRules()) {
+            SQLStatementRule sqlStatementRule = new SQLStatementRule(
+                    each.getContext(), (Class<? extends SQLStatement>) Class.forName(each.getSqlStatementClass()), (SQLStatementOptimizer) newClassInstance(each.getOptimizerClass()));
             sqlStatementRule.getExtractors().addAll(createExtractors(each.getExtractorRuleRefs(), extractorRuleDefinition));
             rules.put(getContextClassName(each.getContext()), sqlStatementRule);
         }

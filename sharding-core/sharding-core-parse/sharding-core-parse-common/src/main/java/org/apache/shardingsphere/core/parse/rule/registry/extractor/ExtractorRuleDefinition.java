@@ -40,11 +40,11 @@ public final class ExtractorRuleDefinition {
     /**
      * Initialize SQL extractor rule definition.
      * 
-     * @param ruleDefinitionEntity extractor rule definition entity
+     * @param entity extractor rule definition entity
      */
     @SneakyThrows
-    public void init(final ExtractorRuleDefinitionEntity ruleDefinitionEntity) {
-        for (ExtractorRuleEntity each : ruleDefinitionEntity.getRules()) {
+    public void init(final ExtractorRuleDefinitionEntity entity) {
+        for (ExtractorRuleEntity each : entity.getRules()) {
             rules.put(each.getId(), (SQLSegmentExtractor) Class.forName(each.getExtractorClass()).newInstance());
         }
     }
