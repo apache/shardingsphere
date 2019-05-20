@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.engine;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
@@ -54,7 +52,6 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SchemaToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
@@ -268,13 +265,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     private void appendSelectItemsPlaceholder(final SQLBuilder sqlBuilder, final SelectItemsToken selectItemsToken, final int count, final boolean isRewrite) {
         if (isRewrite) {
             SelectItemsPlaceholder selectItemsPlaceholder = new SelectItemsPlaceholder(selectItemsToken.isFirstOfItemsSpecial());
-            selectItemsPlaceholder.getItems().addAll(Lists.transform(selectItemsToken.getItems(), new Function<String, String>() {
-                
-                @Override
-                public String apply(final String input) {
-                    return SQLUtil.getOriginalValue(input, databaseType);
-                }
-            }));
+            selectItemsPlaceholder.getItems().addAll(selectItemsToken.getItems());
             sqlBuilder.appendPlaceholder(selectItemsPlaceholder);
         }
         appendRest(sqlBuilder, count, getStopIndex(selectItemsToken));
@@ -342,7 +333,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         OrderByPlaceholder orderByPlaceholder = new OrderByPlaceholder();
         if (isRewrite) {
             for (OrderItem each : selectStatement.getOrderByItems()) {
-                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
+                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : each.getColumnLabel();
                 orderByPlaceholder.getColumnLabels().add(columnLabel);
                 orderByPlaceholder.getOrderDirections().add(each.getOrderDirection());
             }
