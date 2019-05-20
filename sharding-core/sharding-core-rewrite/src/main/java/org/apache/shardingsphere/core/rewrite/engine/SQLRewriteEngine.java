@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.engine;
 
+import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
@@ -25,7 +26,9 @@ import org.apache.shardingsphere.core.route.type.RoutingUnit;
  *
  * @author panjuan
  */
-public interface SQLRewriteEngine {
+public abstract class SQLRewriteEngine {
+    
+    protected abstract SQLBuilder pattern();
     
     /**
      * Generate SQL string.
@@ -33,5 +36,5 @@ public interface SQLRewriteEngine {
      * @param routingUnit routing unit
      * @return SQL unit
      */
-    SQLUnit generateSQL(RoutingUnit routingUnit);
+    public abstract SQLUnit generateSQL(RoutingUnit routingUnit);
 }

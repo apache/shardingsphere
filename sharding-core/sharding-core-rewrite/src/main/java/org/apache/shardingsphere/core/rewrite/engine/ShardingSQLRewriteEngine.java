@@ -94,7 +94,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Sharding SQL rewrite engine.
+ * Sharding SQL pattern engine.
  * 
  * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
  *
@@ -102,7 +102,7 @@ import java.util.Map.Entry;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
+public final class ShardingSQLRewriteEngine extends SQLRewriteEngine {
     
     private final ShardingRule shardingRule;
     
@@ -132,7 +132,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         this.insertOptimizeResult = getInsertOptimizeResult(sqlRouteResult.getOptimizeResult());
         parameterBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
         this.dataSourceMetaData = dataSourceMetaData;
-        sqlBuilder = rewrite();
+        sqlBuilder = pattern();
     }
     
     private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
@@ -166,7 +166,8 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
-    private SQLBuilder rewrite() {
+    @Override
+    protected SQLBuilder pattern() {
         SQLBuilder result = new SQLBuilder(parameterBuilder);
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);

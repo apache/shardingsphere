@@ -69,13 +69,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Encrypt SQL rewrite engine.
+ * Encrypt SQL pattern engine.
  * 
  * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
  *
  * @author panjuan
  */
-public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
+public final class EncryptSQLRewriteEngine extends SQLRewriteEngine {
     
     private final EncryptRule encryptRule;
     
@@ -98,7 +98,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         sqlTokens = sqlStatement.getSQLTokens();
         this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
         this.parameterBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
-        sqlBuilder = rewrite();
+        sqlBuilder = pattern();
     }
     
     private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
@@ -133,7 +133,8 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
-    private SQLBuilder rewrite() {
+    @Override
+    protected SQLBuilder pattern() {
         SQLBuilder result = new SQLBuilder(parameterBuilder);
         if (sqlTokens.isEmpty()) {
             return appendOriginalLiterals(result);

@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Master slave SQL rewrite engine.
+ * Master slave SQL pattern engine.
  * 
  * <p>should rewrite schema name.</p>
  * 
@@ -40,7 +40,7 @@ import java.util.Map;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
+public final class MasterSlaveSQLRewriteEngine extends SQLRewriteEngine {
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -57,10 +57,11 @@ public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
         this.originalSQL = originalSQL;
         this.sqlStatement = sqlStatement;
         this.dataSourceMetaData = dataSourceMetaData;
-        sqlBuilder = rewrite();
+        sqlBuilder = pattern();
     }
     
-    private SQLBuilder rewrite() {
+    @Override
+    protected SQLBuilder pattern() {
         SQLBuilder result = new SQLBuilder();
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);
