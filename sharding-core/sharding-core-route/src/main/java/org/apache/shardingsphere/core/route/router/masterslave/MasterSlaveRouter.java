@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
-import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
@@ -52,7 +52,7 @@ public final class MasterSlaveRouter {
      */
     // TODO for multiple masters may return more than one data source
     public Collection<String> route(final String sql) {
-        Collection<String> result = route(new SQLJudgeEngine(databaseType, sql).judge().getType());
+        Collection<String> result = route(new SQLParseEngine(databaseType, sql, null, null).parse().getType());
         if (showSQL) {
             SQLLogger.logSQL(sql, result);
         }

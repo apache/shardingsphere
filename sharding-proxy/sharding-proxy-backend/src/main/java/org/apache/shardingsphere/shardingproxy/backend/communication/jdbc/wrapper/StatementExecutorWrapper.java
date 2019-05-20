@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.parse.SQLJudgeEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.engine.MasterSlaveSQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
@@ -64,13 +64,13 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private SQLRouteResult doTransparentRoute(final DatabaseType databaseType, final String sql) {
-        SQLRouteResult result = new SQLRouteResult(new SQLJudgeEngine(databaseType, sql).judge());
+        SQLRouteResult result = new SQLRouteResult(new SQLParseEngine(databaseType, sql, null, null).parse());
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;
     }
     
     private SQLRouteResult doMasterSlaveRoute(final DatabaseType databaseType, final String sql) {
-        SQLStatement sqlStatement = new SQLJudgeEngine(databaseType, sql).judge();
+        SQLStatement sqlStatement = new SQLParseEngine(databaseType, sql, null, null).parse();
         MasterSlaveSQLRewriteEngine sqlRewriteEngine = 
                 new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData().getDataSource());
         String rewriteSQL = sqlRewriteEngine.generateSQL(null, sqlRewriteEngine.rewrite()).getSql();
