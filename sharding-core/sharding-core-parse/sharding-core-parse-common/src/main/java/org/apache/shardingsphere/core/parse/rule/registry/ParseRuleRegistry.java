@@ -45,29 +45,29 @@ public abstract class ParseRuleRegistry {
     
     private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
     
-    private final ParseRuleDefinition generalRuleDefinition = new ParseRuleDefinition();
-    
     private final Map<DatabaseType, ParseRuleDefinition> dialectRuleDefinitions = new HashMap<>();
     
     protected final void init() {
-        initGeneralParseRuleDefinition();
-        initDialectParseRuleDefinition();
+        initDialectParseRuleDefinition(createGeneralParseRuleDefinition());
     }
     
-    private void initGeneralParseRuleDefinition() {
-        generalRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()));
-        generalRuleDefinition.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName()));
+    private ParseRuleDefinition createGeneralParseRuleDefinition() {
+        ParseRuleDefinition result = new ParseRuleDefinition();
+        result.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()));
+        result.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName()));
+        return result;
     }
     
-    private void initDialectParseRuleDefinition() {
+    private void initDialectParseRuleDefinition(final ParseRuleDefinition generalRuleDefinition) {
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
-                dialectRuleDefinitions.put(each, createParseRuleDefinition(getExtractorFile(each), getFillerFiles(each), getStatementRuleFile(each)));
+                dialectRuleDefinitions.put(each, createParseRuleDefinition(generalRuleDefinition, getExtractorFile(each), getFillerFiles(each), getStatementRuleFile(each)));
             }
         }
     }
     
-    private ParseRuleDefinition createParseRuleDefinition(final String extractorFile, final Collection<String> fillerFilePaths, final String statementRuleFile) {
+    private ParseRuleDefinition createParseRuleDefinition(
+            final ParseRuleDefinition generalRuleDefinition, final String extractorFile, final Collection<String> fillerFilePaths, final String statementRuleFile) {
         ParseRuleDefinition result = new ParseRuleDefinition();
         result.getExtractorRuleDefinition().getRules().putAll(generalRuleDefinition.getExtractorRuleDefinition().getRules());
         result.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(extractorFile));
