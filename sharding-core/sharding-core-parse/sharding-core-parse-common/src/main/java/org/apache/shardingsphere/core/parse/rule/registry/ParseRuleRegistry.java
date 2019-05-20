@@ -27,9 +27,7 @@ import org.apache.shardingsphere.core.parse.rule.jaxb.loader.statement.SQLStatem
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -58,9 +56,8 @@ public abstract class ParseRuleRegistry {
     }
     
     private void initGeneralParseRuleDefinition() {
-        Collection<String> extractorFilePaths = Collections.singletonList(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName());
-        Collection<String> fillerFilePaths = Collections.singletonList(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName());
-        initParseRuleDefinition(commonRuleDefinition, extractorFilePaths, fillerFilePaths, new ArrayList<String>());
+        commonRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()));
+        commonRuleDefinition.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName()));
     }
     
     private void initDialectParseRuleDefinition() {
