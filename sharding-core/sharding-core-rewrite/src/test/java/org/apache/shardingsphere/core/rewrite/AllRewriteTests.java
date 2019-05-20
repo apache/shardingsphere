@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import org.apache.shardingsphere.core.rewrite.builder.SQLBuilderTest;
 import org.apache.shardingsphere.core.rewrite.engine.ShardingSQLRewriteEngineTest;
 import org.apache.shardingsphere.core.rewrite.placeholder.AllPlaceholderTests;
 import org.junit.runner.RunWith;

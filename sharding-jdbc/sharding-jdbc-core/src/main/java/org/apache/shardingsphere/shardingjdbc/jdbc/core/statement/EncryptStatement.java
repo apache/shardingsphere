@@ -79,7 +79,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getEncryptSQLParseEngine().parse(false, sql);
         OptimizeResult optimizeResult = OptimizeEngineFactory.newInstance(connection.getEncryptRule(), sqlStatement, new LinkedList<>()).optimize();
-        EncryptSQLRewriteEngine encryptSQLRewriteEngine = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, connection.getDatabaseType(), sqlStatement, new LinkedList<>(), optimizeResult);
+        EncryptSQLRewriteEngine encryptSQLRewriteEngine = new EncryptSQLRewriteEngine(connection.getEncryptRule(), sql, sqlStatement, new LinkedList<>(), optimizeResult);
         return encryptSQLRewriteEngine.generateSQL(null).getSql();
     }
     

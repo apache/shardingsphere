@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite;
+package org.apache.shardingsphere.core.rewrite.builder;
 
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;

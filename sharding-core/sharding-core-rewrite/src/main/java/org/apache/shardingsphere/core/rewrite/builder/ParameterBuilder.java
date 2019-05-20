@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite;
+package org.apache.shardingsphere.core.rewrite.builder;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;

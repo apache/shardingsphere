@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SchemaToken;
-import org.apache.shardingsphere.core.rewrite.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Master slave SQL rewrite engine.
+ * Master slave SQL pattern engine.
  * 
  * <p>should rewrite schema name.</p>
  * 
@@ -40,7 +40,7 @@ import java.util.Map;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
+public final class MasterSlaveSQLRewriteEngine extends SQLRewriteEngine {
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -57,10 +57,11 @@ public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
         this.originalSQL = originalSQL;
         this.sqlStatement = sqlStatement;
         this.dataSourceMetaData = dataSourceMetaData;
-        sqlBuilder = rewrite();
+        sqlBuilder = pattern();
     }
     
-    private SQLBuilder rewrite() {
+    @Override
+    protected SQLBuilder pattern() {
         SQLBuilder result = new SQLBuilder();
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);
