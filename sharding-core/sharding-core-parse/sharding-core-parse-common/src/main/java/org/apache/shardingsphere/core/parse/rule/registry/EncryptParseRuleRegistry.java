@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstant;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Parse rule registry for encrypt.
@@ -57,8 +58,8 @@ public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected void fillFillerFilePaths(final DatabaseType databaseType, final Collection<String> fillerFilePaths) {
-        fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
+    protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
+        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
     }
     
     @Override

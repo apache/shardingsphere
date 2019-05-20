@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -65,17 +64,15 @@ public abstract class ParseRuleRegistry {
             if (DatabaseType.H2 == each) {
                 continue;
             }
-            Collection<String> fillerFilePaths = new LinkedList<>();
-            fillFillerFilePaths(each, fillerFilePaths);
             ParseRuleDefinition shardingRuleDefinition = new ParseRuleDefinition();
-            initParseRuleDefinitionFromCommon(shardingRuleDefinition, getExtractorFile(each), fillerFilePaths, getStatementRuleFile(each));
+            initParseRuleDefinitionFromCommon(shardingRuleDefinition, getExtractorFile(each), getFillerFiles(each), getStatementRuleFile(each));
             parseRuleDefinitions.put(each, shardingRuleDefinition);
         }
     }
     
     protected abstract String getExtractorFile(DatabaseType databaseType);
     
-    protected abstract void fillFillerFilePaths(DatabaseType databaseType, Collection<String> fillerFilePaths);
+    protected abstract Collection<String> getFillerFiles(DatabaseType databaseType);
     
     protected abstract String getStatementRuleFile(DatabaseType databaseType);
     

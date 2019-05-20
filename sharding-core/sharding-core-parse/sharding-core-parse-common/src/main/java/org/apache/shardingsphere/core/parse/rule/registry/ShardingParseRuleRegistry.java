@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstant;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Parse rule registry for sharding.
@@ -57,11 +58,13 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected void fillFillerFilePaths(final DatabaseType databaseType, final Collection<String> fillerFilePaths) {
-        fillerFilePaths.add(RuleDefinitionFileConstant.getShardingCommonFillerRuleDefinitionFileName());
+    protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
+        Collection<String> result = new LinkedList<>();
+        result.add(RuleDefinitionFileConstant.getShardingCommonFillerRuleDefinitionFileName());
         if (DatabaseType.MySQL == databaseType) {
-            fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
+            result.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
         }
+        return result;
     }
     
     @Override
