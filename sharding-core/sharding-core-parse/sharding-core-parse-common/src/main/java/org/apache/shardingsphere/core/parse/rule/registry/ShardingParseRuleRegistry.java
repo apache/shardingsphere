@@ -25,25 +25,25 @@ import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileC
 import java.util.Collection;
 
 /**
- * Sharding parsing rule registry.
+ * Parse rule registry for sharding.
  *
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
+public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParsingRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance;
     
     /**
      * Get singleton instance of parsing rule registry.
      *
      * @return instance of parsing rule registry
      */
-    public static ParsingRuleRegistry getInstance() {
+    public static ParseRuleRegistry getInstance() {
         if (null == instance) {
-            synchronized (EncryptParsingRuleRegistry.class) {
+            synchronized (ShardingParseRuleRegistry.class) {
                 if (null == instance) {
-                    instance = new EncryptParsingRuleRegistry();
+                    instance = new ShardingParseRuleRegistry();
                     instance.init();
                 }
             }
@@ -52,16 +52,20 @@ public final class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
     }
     
     @Override
-    protected void fillRuleFilePaths(final DatabaseType databaseType, 
-                                     final Collection<String> fillerFilePaths, final Collection<String> extractorFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
-        fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
-        extractorFilePaths.add(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
-        sqlStatementRuleFilePaths.add(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
+    protected String getExtractorFile(final DatabaseType databaseType) {
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType);
     }
     
     @Override
-    protected boolean needParse(final DatabaseType databaseType) {
-        return DatabaseType.MySQL == databaseType;
+    protected void fillFillerFilePaths(final DatabaseType databaseType, final Collection<String> fillerFilePaths) {
+        fillerFilePaths.add(RuleDefinitionFileConstant.getShardingCommonFillerRuleDefinitionFileName());
+        if (DatabaseType.MySQL == databaseType) {
+            fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
+        }
+    }
+    
+    @Override
+    protected String getStatementRuleFile(final DatabaseType databaseType) {
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType);
     }
 }
-

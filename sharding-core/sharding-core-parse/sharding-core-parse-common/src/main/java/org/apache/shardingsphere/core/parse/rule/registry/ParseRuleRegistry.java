@@ -27,83 +27,72 @@ import org.apache.shardingsphere.core.parse.rule.jaxb.loader.statement.SQLStatem
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Parsing rule registry.
+ * Parse rule registry.
  *
  * @author zhangliang
  * @author duhongjun
  */
-public abstract class ParsingRuleRegistry {
+public abstract class ParseRuleRegistry {
     
-    private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
+    private final ParseRuleDefinition commonRuleDefinition = new ParseRuleDefinition();
     
     private final ExtractorRuleDefinitionEntityLoader extractorRuleDefinitionLoader = new ExtractorRuleDefinitionEntityLoader();
     
     private final FillerRuleDefinitionEntityLoader fillerRuleDefinitionLoader = new FillerRuleDefinitionEntityLoader();
     
-    private final ParseRuleDefinition commonRuleDefinition = new ParseRuleDefinition();
+    private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
     
     private final Map<DatabaseType, ParseRuleDefinition> parseRuleDefinitions = new HashMap<>(4, 1);
     
     protected final void init() {
-        initCommonParseRuleDefinition();
-        initParseRuleDefinition();
+        initGeneralParseRuleDefinition();
+        initDialectParseRuleDefinition();
     }
     
-    private void initCommonParseRuleDefinition() {
-        Collection<String> fillerFilePaths = Collections.singletonList(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName());
-        Collection<String> extractorFilePaths = Collections.singletonList(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName());
-        initParseRuleDefinition(commonRuleDefinition, fillerFilePaths, extractorFilePaths, new ArrayList<String>());
+    private void initGeneralParseRuleDefinition() {
+        commonRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()));
+        commonRuleDefinition.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName()));
     }
     
-    private void initParseRuleDefinition() {
+    private void initDialectParseRuleDefinition() {
         for (DatabaseType each : DatabaseType.values()) {
-            if (DatabaseType.H2 != each) {
-                if (!needParse(each)) {
-                    continue;
-                }
-                Collection<String> fillerFilePaths = new LinkedList<>();
-                Collection<String> extractorFilePaths = new LinkedList<>();
-                Collection<String> sqlStatementRuleFilePaths = new LinkedList<>();
-                fillRuleFilePaths(each, fillerFilePaths, extractorFilePaths, sqlStatementRuleFilePaths);
-                ParseRuleDefinition shardingRuleDefinition = new ParseRuleDefinition();
-                initParseRuleDefinitionFromCommon(shardingRuleDefinition, fillerFilePaths, extractorFilePaths, sqlStatementRuleFilePaths);
-                parseRuleDefinitions.put(each, shardingRuleDefinition);
+            if (DatabaseType.H2 == each) {
+                continue;
             }
+            Collection<String> fillerFilePaths = new LinkedList<>();
+            fillFillerFilePaths(each, fillerFilePaths);
+            ParseRuleDefinition shardingRuleDefinition = new ParseRuleDefinition();
+            initParseRuleDefinitionFromCommon(shardingRuleDefinition, getExtractorFile(each), fillerFilePaths, getStatementRuleFile(each));
+            parseRuleDefinitions.put(each, shardingRuleDefinition);
         }
     }
     
-    protected boolean needParse(final DatabaseType databaseType) { 
-        return true;
-    }
+    protected abstract String getExtractorFile(DatabaseType databaseType);
     
-    protected abstract void fillRuleFilePaths(DatabaseType databaseType, Collection<String> fillerFilePaths, Collection<String> extractorFilePaths, Collection<String> sqlStatementRuleFilePaths);
+    protected abstract void fillFillerFilePaths(DatabaseType databaseType, Collection<String> fillerFilePaths);
     
-    private void initParseRuleDefinitionFromCommon(final ParseRuleDefinition parseRuleDefinition,
-                                                   final Collection<String> fillerFilePaths, final Collection<String> extractorFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
+    protected abstract String getStatementRuleFile(DatabaseType databaseType);
+    
+    private void initParseRuleDefinitionFromCommon(final ParseRuleDefinition parseRuleDefinition, 
+                                                   final String extractorFile, final Collection<String> fillerFilePaths, final String statementRuleFile) {
         parseRuleDefinition.getExtractorRuleDefinition().getRules().putAll(commonRuleDefinition.getExtractorRuleDefinition().getRules());
         parseRuleDefinition.getFillerRuleDefinition().getRules().putAll(commonRuleDefinition.getFillerRuleDefinition().getRules());
-        initParseRuleDefinition(parseRuleDefinition, fillerFilePaths, extractorFilePaths, sqlStatementRuleFilePaths);
+        initParseRuleDefinition(parseRuleDefinition, extractorFile, fillerFilePaths, statementRuleFile);
     }
     
-    private void initParseRuleDefinition(final ParseRuleDefinition parseRuleDefinition,
-                                         final Collection<String> fillerFilePaths, final Collection<String> extractorFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
+    private void initParseRuleDefinition(final ParseRuleDefinition parseRuleDefinition, 
+                                         final String extractorFile, final Collection<String> fillerFilePaths, final String statementRuleFile) {
+        parseRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(extractorFile));
         for (String each : fillerFilePaths) {
             parseRuleDefinition.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(each));
         }
-        for (String each : extractorFilePaths) {
-            parseRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(each));
-        }
-        for (String each : sqlStatementRuleFilePaths) {
-            parseRuleDefinition.getSqlStatementRuleDefinition().init(statementRuleDefinitionLoader.load(each), parseRuleDefinition.getExtractorRuleDefinition());
-        }
+        parseRuleDefinition.getSqlStatementRuleDefinition().init(statementRuleDefinitionLoader.load(statementRuleFile), parseRuleDefinition.getExtractorRuleDefinition());
     }
     
     /**

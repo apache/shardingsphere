@@ -25,25 +25,25 @@ import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileC
 import java.util.Collection;
 
 /**
- * Master-slave parsing rule registry.
+ * Parse rule registry for encrypt.
  *
- * @author zhangliang
+ * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterSlaveParsingRuleRegistry extends ParsingRuleRegistry {
+public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParsingRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance;
     
     /**
      * Get singleton instance of parsing rule registry.
      *
      * @return instance of parsing rule registry
      */
-    public static ParsingRuleRegistry getInstance() {
+    public static ParseRuleRegistry getInstance() {
         if (null == instance) {
-            synchronized (MasterSlaveParsingRuleRegistry.class) {
+            synchronized (EncryptParseRuleRegistry.class) {
                 if (null == instance) {
-                    instance = new MasterSlaveParsingRuleRegistry();
+                    instance = new EncryptParseRuleRegistry();
                     instance.init();
                 }
             }
@@ -52,11 +52,18 @@ public final class MasterSlaveParsingRuleRegistry extends ParsingRuleRegistry {
     }
     
     @Override
-    protected void fillRuleFilePaths(final DatabaseType databaseType, 
-                                     final Collection<String> fillerFilePaths, final Collection<String> extractorFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
-        fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
-        extractorFilePaths.add(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
-        sqlStatementRuleFilePaths.add(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
+    protected String getExtractorFile(final DatabaseType databaseType) {
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType);
+    }
+    
+    @Override
+    protected void fillFillerFilePaths(final DatabaseType databaseType, final Collection<String> fillerFilePaths) {
+        fillerFilePaths.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
+    }
+    
+    @Override
+    protected String getStatementRuleFile(final DatabaseType databaseType) {
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType);
     }
 }
 

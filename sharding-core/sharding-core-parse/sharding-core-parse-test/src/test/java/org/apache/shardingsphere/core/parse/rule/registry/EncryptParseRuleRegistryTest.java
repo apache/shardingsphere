@@ -17,38 +17,33 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry;
 
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
-import org.junit.Test;
-
-/**
- * Sharding parsing rule registry test.
- *
- * @author duhongjun
- */
-public class ShardingParsingRuleRegistryTest {
+public final class EncryptParseRuleRegistryTest {
     
     @Test
     public void assertFindSQLStatementRule() {
-        assertTrue(ShardingParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
+        assertTrue(EncryptParseRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
     }
     
     @Test
     public void assertFindNotSupportedSQLStatementRule() {
-        assertFalse(ShardingParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
+        assertFalse(EncryptParseRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "CreateTable").isPresent());
     }
     
     @Test
     public void assertFindSQLStatementFiller() {
-        assertTrue(ShardingParsingRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, TableSegment.class).isPresent());
+        assertTrue(EncryptParseRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, TableSegment.class).isPresent());
     }
     
     @Test
     public void assertFindNotSupportedSQLStatementFiller() {
-        assertFalse(ShardingParsingRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.Oracle, SQLSegment.class).isPresent());
+        assertFalse(EncryptParseRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, ColumnPositionSegment.class).isPresent());
     }
 }
