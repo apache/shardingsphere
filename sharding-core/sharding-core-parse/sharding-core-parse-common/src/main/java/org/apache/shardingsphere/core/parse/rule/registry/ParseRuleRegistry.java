@@ -39,15 +39,15 @@ import java.util.Map;
  */
 public abstract class ParseRuleRegistry {
     
-    private final ParseRuleDefinition commonRuleDefinition = new ParseRuleDefinition();
-    
     private final ExtractorRuleDefinitionEntityLoader extractorRuleDefinitionLoader = new ExtractorRuleDefinitionEntityLoader();
     
     private final FillerRuleDefinitionEntityLoader fillerRuleDefinitionLoader = new FillerRuleDefinitionEntityLoader();
     
     private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
     
-    private final Map<DatabaseType, ParseRuleDefinition> parseRuleDefinitions = new HashMap<>(4, 1);
+    private final ParseRuleDefinition generalRuleDefinition = new ParseRuleDefinition();
+    
+    private final Map<DatabaseType, ParseRuleDefinition> parseRuleDefinitions = new HashMap<>();
     
     protected final void init() {
         initGeneralParseRuleDefinition();
@@ -55,8 +55,8 @@ public abstract class ParseRuleRegistry {
     }
     
     private void initGeneralParseRuleDefinition() {
-        commonRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()));
-        commonRuleDefinition.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName()));
+        generalRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()));
+        generalRuleDefinition.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName()));
     }
     
     private void initDialectParseRuleDefinition() {
@@ -78,8 +78,8 @@ public abstract class ParseRuleRegistry {
     
     private void initParseRuleDefinitionFromCommon(final ParseRuleDefinition parseRuleDefinition, 
                                                    final String extractorFile, final Collection<String> fillerFilePaths, final String statementRuleFile) {
-        parseRuleDefinition.getExtractorRuleDefinition().getRules().putAll(commonRuleDefinition.getExtractorRuleDefinition().getRules());
-        parseRuleDefinition.getFillerRuleDefinition().getRules().putAll(commonRuleDefinition.getFillerRuleDefinition().getRules());
+        parseRuleDefinition.getExtractorRuleDefinition().getRules().putAll(generalRuleDefinition.getExtractorRuleDefinition().getRules());
+        parseRuleDefinition.getFillerRuleDefinition().getRules().putAll(generalRuleDefinition.getFillerRuleDefinition().getRules());
         initParseRuleDefinition(parseRuleDefinition, extractorFile, fillerFilePaths, statementRuleFile);
     }
     
