@@ -17,20 +17,25 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Parameter builder.
  *
  * @author panjuan
  */
+@Getter
 public final class ParameterBuilder {
     
     private final List<Object> originalParameters;
@@ -40,7 +45,7 @@ public final class ParameterBuilder {
     private final List<InsertParameterUnit> insertParameterUnits;
     
     public ParameterBuilder(final List<Object> parameters, final InsertOptimizeResult insertOptimizeResult) {
-        originalParameters = parameters;
+        originalParameters = new LinkedList<>(parameters);
         assistedIndexAndParametersForUpdate = new HashMap<>();
         insertParameterUnits = createInsertParameterUnits(insertOptimizeResult);
     }
@@ -52,6 +57,44 @@ public final class ParameterBuilder {
         }
         for (InsertOptimizeResultUnit each : insertOptimizeResult.getUnits()) {
             result.add(new InsertParameterUnit(Arrays.asList(each.getParameters()), each.getDataNodes()));
+        }
+        return result;
+    }
+    
+    /**
+     * Get parameters.
+     * 
+     * @param routingUnit routing unit
+     * @return parameters
+     */
+    public List<Object> getParameters(final RoutingUnit routingUnit) {
+        List<Object> result = getInsertParameters(routingUnit);
+        return result.isEmpty() ? getRevisedParameters() : result;
+    }
+    
+    private List<Object> getInsertParameters(final RoutingUnit routingUnit) {
+        List<Object> result = new LinkedList<>();
+        for (InsertParameterUnit each : insertParameterUnits) {
+            if (isAppendInsertParameter(each, routingUnit)) {
+                result.addAll(each.getParameters());
+            }
+        }
+        return result;
+    }
+    
+    private boolean isAppendInsertParameter(final InsertParameterUnit unit, final RoutingUnit routingUnit) {
+        for (DataNode each : unit.getDataNodes()) {
+            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private List<Object> getRevisedParameters() {
+        List<Object> result = new LinkedList<>(originalParameters);
+        for (Entry<Integer, Object> entry : assistedIndexAndParametersForUpdate.entrySet()) {
+            result.add(entry.getKey(), entry.getValue());
         }
         return result;
     }
