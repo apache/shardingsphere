@@ -39,8 +39,7 @@ public interface SQLRewriteEngine {
      * Generate SQL string.
      *
      * @param routingUnit routing unit
-     * @param sqlBuilder SQL builder
      * @return SQL unit
      */
-    SQLUnit generateSQL(RoutingUnit routingUnit, SQLBuilder sqlBuilder);
+    SQLUnit generateSQL(RoutingUnit routingUnit);
 }
