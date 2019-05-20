@@ -23,12 +23,12 @@ import org.apache.shardingsphere.core.parse.rule.registry.filler.FillerRuleDefin
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRuleDefinition;
 
 /**
- * Parser Rule Definition.
+ * Parse rule definition.
  *
  * @author duhongjun
  */
 @Getter
-public class ParserRuleDefinition {
+public final class ParseRuleDefinition {
     
     private final ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition();
     

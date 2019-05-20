@@ -60,7 +60,7 @@ public final class EncryptParsingRuleRegistry extends ParsingRuleRegistry {
     }
     
     @Override
-    protected boolean needParser(final DatabaseType databaseType) {
+    protected boolean needParse(final DatabaseType databaseType) {
         return DatabaseType.MySQL == databaseType;
     }
 }
