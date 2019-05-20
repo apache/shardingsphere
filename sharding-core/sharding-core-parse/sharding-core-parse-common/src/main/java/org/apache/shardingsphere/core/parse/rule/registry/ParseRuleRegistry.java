@@ -47,15 +47,8 @@ public abstract class ParseRuleRegistry {
     
     private final Map<DatabaseType, ParseRuleDefinition> dialectRuleDefinitions = new HashMap<>();
     
-    protected final void init() {
+    public ParseRuleRegistry() {
         initDialectParseRuleDefinition(createGeneralParseRuleDefinition());
-    }
-    
-    private ParseRuleDefinition createGeneralParseRuleDefinition() {
-        ParseRuleDefinition result = new ParseRuleDefinition();
-        result.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralExtractorRuleDefinitionFileName()));
-        result.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName()));
-        return result;
     }
     
     private void initDialectParseRuleDefinition(final ParseRuleDefinition generalRuleDefinition) {
@@ -84,6 +77,13 @@ public abstract class ParseRuleRegistry {
     protected abstract Collection<String> getFillerFiles(DatabaseType databaseType);
     
     protected abstract String getStatementRuleFile(DatabaseType databaseType);
+    
+    private ParseRuleDefinition createGeneralParseRuleDefinition() {
+        ParseRuleDefinition result = new ParseRuleDefinition();
+        result.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralExtractorRuleDefinitionFileName()));
+        result.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName()));
+        return result;
+    }
     
     /**
      * Find SQL statement rule.

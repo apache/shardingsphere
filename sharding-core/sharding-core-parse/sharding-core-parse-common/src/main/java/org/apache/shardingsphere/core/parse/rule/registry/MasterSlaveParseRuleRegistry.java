@@ -45,7 +45,6 @@ public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
             synchronized (MasterSlaveParseRuleRegistry.class) {
                 if (null == instance) {
                     instance = new MasterSlaveParseRuleRegistry();
-                    instance.init();
                 }
             }
         }

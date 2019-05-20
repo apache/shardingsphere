@@ -45,7 +45,6 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
             synchronized (ShardingParseRuleRegistry.class) {
                 if (null == instance) {
                     instance = new ShardingParseRuleRegistry();
-                    instance.init();
                 }
             }
         }

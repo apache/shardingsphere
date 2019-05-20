@@ -45,7 +45,6 @@ public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
             synchronized (EncryptParseRuleRegistry.class) {
                 if (null == instance) {
                     instance = new EncryptParseRuleRegistry();
-                    instance.init();
                 }
             }
         }
