@@ -60,8 +60,7 @@ public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
         sqlBuilder = rewrite();
     }
     
-    @Override
-    public SQLBuilder rewrite() {
+    private SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder();
         if (sqlStatement.getSQLTokens().isEmpty()) {
             return appendOriginalLiterals(result);

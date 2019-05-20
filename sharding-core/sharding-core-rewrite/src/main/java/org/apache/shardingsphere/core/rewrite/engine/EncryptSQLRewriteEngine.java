@@ -141,8 +141,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
-    @Override
-    public SQLBuilder rewrite() {
+    private SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder(parametersBuilder);
         if (sqlTokens.isEmpty()) {
             return appendOriginalLiterals(result);
