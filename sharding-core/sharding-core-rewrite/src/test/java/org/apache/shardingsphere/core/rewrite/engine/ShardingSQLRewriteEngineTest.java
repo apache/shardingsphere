@@ -51,6 +51,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -788,8 +789,9 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult.setRoutingResult(new RoutingResult());
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id=? AND name=?", DatabaseType.MySQL, routeResult, parameters, null);
-        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
-        assertThat(parameters.get(0), is((Object) "encryptValue"));
+        SQLUnit sqlUnit = rewriteEngine.rewrite().toSQL(null, tableTokens);
+        assertThat(sqlUnit.getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
+        assertThat(sqlUnit.getParameters().get(0), is((Object) "encryptValue"));
     }
     
     @Test
@@ -832,9 +834,10 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult.setRoutingResult(new RoutingResult());
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", DatabaseType.MySQL, routeResult, parameters, null);
-        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = 'encryptValue'"));
-        assertThat(parameters.get(0), is((Object) "encryptValue"));
-        assertThat(parameters.get(1), is((Object) "encryptValue"));
+        SQLUnit sqlUnit = rewriteEngine.rewrite().toSQL(null, tableTokens);
+        assertThat(sqlUnit.getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = 'encryptValue'"));
+        assertThat(sqlUnit.getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(sqlUnit.getParameters().get(1), is((Object) "encryptValue"));
     }
     
     @Test
@@ -852,8 +855,9 @@ public final class ShardingSQLRewriteEngineTest {
         routeResult.setRoutingResult(new RoutingResult());
         ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_k WHERE id=? AND name=?", DatabaseType.MySQL, routeResult, parameters, null);
-        assertThat(rewriteEngine.rewrite().toSQL(null, tableTokens).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
-        assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
+        SQLUnit sqlUnit = rewriteEngine.rewrite().toSQL(null, tableTokens);
+        assertThat(sqlUnit.getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
+        assertThat(sqlUnit.getParameters().get(0), is((Object) "assistedEncryptValue"));
     }
     
     @Test
