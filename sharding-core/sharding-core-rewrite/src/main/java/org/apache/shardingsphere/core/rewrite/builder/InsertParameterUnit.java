@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite;
+package org.apache.shardingsphere.core.rewrite.builder;
 
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilderTest;
-import org.apache.shardingsphere.core.rewrite.engine.ShardingSQLRewriteEngineTest;
-import org.apache.shardingsphere.core.rewrite.placeholder.AllPlaceholderTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rule.DataNode;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        SQLBuilderTest.class, 
-        ShardingSQLRewriteEngineTest.class,
-        AllPlaceholderTests.class
-    })
-public final class AllRewriteTests {
+import java.util.List;
+
+/**
+ * Insert parameter unit.
+ *
+ * @author panjuan
+ */
+@RequiredArgsConstructor
+@Getter
+public final class InsertParameterUnit {
+    
+    private final List<Object> parameters;
+    
+    private final List<DataNode> dataNodes;
 }
