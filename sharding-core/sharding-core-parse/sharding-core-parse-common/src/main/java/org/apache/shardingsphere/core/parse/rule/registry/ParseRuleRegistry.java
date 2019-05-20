@@ -53,17 +53,17 @@ public abstract class ParseRuleRegistry {
     private final Map<DatabaseType, ParseRuleDefinition> parseRuleDefinitions = new HashMap<>(4, 1);
     
     protected final void init() {
-        initCommonParseRuleDefinition();
-        initParseRuleDefinition();
+        initGeneralParseRuleDefinition();
+        initDialectParseRuleDefinition();
     }
     
-    private void initCommonParseRuleDefinition() {
+    private void initGeneralParseRuleDefinition() {
         Collection<String> extractorFilePaths = Collections.singletonList(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName());
         Collection<String> fillerFilePaths = Collections.singletonList(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName());
         initParseRuleDefinition(commonRuleDefinition, extractorFilePaths, fillerFilePaths, new ArrayList<String>());
     }
     
-    private void initParseRuleDefinition() {
+    private void initDialectParseRuleDefinition() {
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
                 if (!needParse(each)) {
