@@ -123,6 +123,8 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
+    private final SQLBuilder sqlBuilder;
+    
     public ShardingSQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL,
                                     final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingDataSourceMetaData dataSourceMetaData) {
         this.shardingRule = shardingRule;
@@ -133,6 +135,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         this.insertOptimizeResult = getInsertOptimizeResult(sqlRouteResult.getOptimizeResult());
         parametersBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
         this.dataSourceMetaData = dataSourceMetaData;
+        sqlBuilder = rewrite();
     }
     
     private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
@@ -462,7 +465,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     @Override
-    public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
+    public SQLUnit generateSQL(final RoutingUnit routingUnit) {
         return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
     }
    

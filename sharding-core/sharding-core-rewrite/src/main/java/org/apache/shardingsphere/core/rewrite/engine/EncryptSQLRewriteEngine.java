@@ -95,6 +95,8 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     private final ParameterBuilder parametersBuilder;
     
+    private final SQLBuilder sqlBuilder;
+    
     public EncryptSQLRewriteEngine(final EncryptRule encryptRule, 
                                    final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
         this.encryptRule = encryptRule;
@@ -104,6 +106,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         sqlTokens = sqlStatement.getSQLTokens();
         this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
         this.parametersBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
+        sqlBuilder = rewrite();
     }
     
     private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
@@ -326,7 +329,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     @Override
-    public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
+    public SQLUnit generateSQL(final RoutingUnit routingUnit) {
         return sqlBuilder.toSQL();
     }
 }

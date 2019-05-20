@@ -50,6 +50,16 @@ public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
     
     private final ShardingDataSourceMetaData dataSourceMetaData;
     
+    private final SQLBuilder sqlBuilder;
+    
+    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingDataSourceMetaData dataSourceMetaData) {
+        this.masterSlaveRule = masterSlaveRule;
+        this.originalSQL = originalSQL;
+        this.sqlStatement = sqlStatement;
+        this.dataSourceMetaData = dataSourceMetaData;
+        sqlBuilder = rewrite();
+    }
+    
     @Override
     public SQLBuilder rewrite() {
         SQLBuilder result = new SQLBuilder();
@@ -86,7 +96,7 @@ public final class MasterSlaveSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     @Override
-    public SQLUnit generateSQL(final RoutingUnit routingUnit, final SQLBuilder sqlBuilder) {
+    public SQLUnit generateSQL(final RoutingUnit routingUnit) {
         return sqlBuilder.toSQL(getTableTokens());
     }
     
