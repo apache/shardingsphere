@@ -70,18 +70,13 @@ public abstract class ParseRuleRegistry {
     private ParseRuleDefinition createParseRuleDefinition(final String extractorFile, final Collection<String> fillerFilePaths, final String statementRuleFile) {
         ParseRuleDefinition result = new ParseRuleDefinition();
         result.getExtractorRuleDefinition().getRules().putAll(generalRuleDefinition.getExtractorRuleDefinition().getRules());
+        result.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(extractorFile));
         result.getFillerRuleDefinition().getRules().putAll(generalRuleDefinition.getFillerRuleDefinition().getRules());
-        initParseRuleDefinition(result, extractorFile, fillerFilePaths, statementRuleFile);
-        return result;
-    }
-    
-    private void initParseRuleDefinition(final ParseRuleDefinition parseRuleDefinition,
-                                         final String extractorFile, final Collection<String> fillerFilePaths, final String statementRuleFile) {
-        parseRuleDefinition.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(extractorFile));
         for (String each : fillerFilePaths) {
-            parseRuleDefinition.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(each));
+            result.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(each));
         }
-        parseRuleDefinition.getSqlStatementRuleDefinition().init(statementRuleDefinitionLoader.load(statementRuleFile), parseRuleDefinition.getExtractorRuleDefinition());
+        result.getSqlStatementRuleDefinition().init(statementRuleDefinitionLoader.load(statementRuleFile), result.getExtractorRuleDefinition());
+        return result;
     }
     
     protected abstract String getExtractorFile(DatabaseType databaseType);
