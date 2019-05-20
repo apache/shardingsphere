@@ -30,15 +30,15 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleDefinitionFileConstant {
     
-    private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
-    
-    private static final String GENERAL = "general";
-    
     private static final String EXTRACTOR_RULE_DEFINITION_FILE_NAME = "extractor-rule-definition.xml";
     
     private static final String FILLER_RULE_DEFINITION_FILE_NAME = "filler-rule-definition.xml";
     
     private static final String SQL_STATEMENT_RULE_DEFINITION_FILE_NAME = "sql-statement-rule-definition.xml";
+    
+    private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
+    
+    private static final String GENERAL = "general";
     
     public static final String SHARDING_ROOT_PATH = ROOT_PATH + "/sharding";
     
