@@ -60,7 +60,7 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     @Override
     protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        result.add(RuleDefinitionFileConstant.getShardingCommonFillerRuleDefinitionFileName());
+        result.add(RuleDefinitionFileConstant.getShardingGeneralFillerRuleDefinitionFileName());
         if (DatabaseType.MySQL == databaseType) {
             result.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, databaseType));
         }

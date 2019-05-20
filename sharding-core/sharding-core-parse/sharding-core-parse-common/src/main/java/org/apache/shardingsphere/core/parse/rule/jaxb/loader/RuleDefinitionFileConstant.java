@@ -42,7 +42,7 @@ public final class RuleDefinitionFileConstant {
     
     private static final String EXTRACTOR_RULE_DEFINITION_FILE_NAME = "extractor-rule-definition.xml";
     
-    private static final String FILLER_DEFINITION_FILE_NAME = "filler-rule-definition.xml";
+    private static final String FILLER_RULE_DEFINITION_FILE_NAME = "filler-rule-definition.xml";
     
     private static final String SQL_STATEMENT_RULE_DEFINITION_FILE_NAME = "sql-statement-rule-definition.xml";
     
@@ -61,7 +61,7 @@ public final class RuleDefinitionFileConstant {
      * @return general filler rule definition file name
      */
     public static String getGeneralFillerRuleDefinitionFileName() {
-        return Joiner.on('/').join(ROOT_PATH, GENERAL, FILLER_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(ROOT_PATH, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -94,7 +94,7 @@ public final class RuleDefinitionFileConstant {
      * @return extractor rule definition file name
      */
     public static String getFillerRuleDefinitionFileName(final String rootDir, final DatabaseType databaseType) {
-        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), FILLER_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(rootDir, databaseType.name().toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -102,7 +102,7 @@ public final class RuleDefinitionFileConstant {
      *
      * @return filler rule definition file name
      */
-    public static String getShardingCommonFillerRuleDefinitionFileName() {
-        return Joiner.on('/').join(SHARDING_ROOT_PATH, GENERAL, FILLER_DEFINITION_FILE_NAME);
+    public static String getShardingGeneralFillerRuleDefinitionFileName() {
+        return Joiner.on('/').join(SHARDING_ROOT_PATH, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
     }
 }
