@@ -47,7 +47,7 @@ public abstract class ParseRuleRegistry {
     
     private final ParseRuleDefinition generalRuleDefinition = new ParseRuleDefinition();
     
-    private final Map<DatabaseType, ParseRuleDefinition> parseRuleDefinitions = new HashMap<>();
+    private final Map<DatabaseType, ParseRuleDefinition> dialectRuleDefinitions = new HashMap<>();
     
     protected final void init() {
         initGeneralParseRuleDefinition();
@@ -66,7 +66,7 @@ public abstract class ParseRuleRegistry {
             }
             ParseRuleDefinition shardingRuleDefinition = new ParseRuleDefinition();
             initParseRuleDefinitionFromCommon(shardingRuleDefinition, getExtractorFile(each), getFillerFiles(each), getStatementRuleFile(each));
-            parseRuleDefinitions.put(each, shardingRuleDefinition);
+            dialectRuleDefinitions.put(each, shardingRuleDefinition);
         }
     }
     
@@ -100,7 +100,7 @@ public abstract class ParseRuleRegistry {
      * @return SQL statement rule
      */
     public Optional<SQLStatementRule> findSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
-        return Optional.fromNullable(parseRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getSqlStatementRuleDefinition().getRules().get(contextClassName));
+        return Optional.fromNullable(dialectRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getSqlStatementRuleDefinition().getRules().get(contextClassName));
     }
     
     /**
@@ -111,6 +111,6 @@ public abstract class ParseRuleRegistry {
      * @return SQL segment rule
      */
     public Optional<SQLSegmentFiller> findSQLSegmentFiller(final DatabaseType databaseType, final Class<? extends SQLSegment> sqlSegmentClass) {
-        return Optional.fromNullable(parseRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getFillerRuleDefinition().getRules().get(sqlSegmentClass));
+        return Optional.fromNullable(dialectRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getFillerRuleDefinition().getRules().get(sqlSegmentClass));
     }
 }
