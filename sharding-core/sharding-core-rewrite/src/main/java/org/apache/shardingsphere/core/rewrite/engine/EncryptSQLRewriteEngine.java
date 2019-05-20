@@ -42,6 +42,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.core.rewrite.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertColumnsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertSetAddItemsPlaceholder;
@@ -90,9 +91,9 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     private final List<SQLToken> sqlTokens;
     
-    private final List<Object> parameters;
-    
     private final InsertOptimizeResult insertOptimizeResult;
+    
+    private final ParameterBuilder parametersBuilder;
     
     public EncryptSQLRewriteEngine(final EncryptRule encryptRule, 
                                    final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters, final OptimizeResult optimizeResult) {
@@ -101,8 +102,8 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
-        this.parameters = parameters;
         this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
+        this.parametersBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
     }
     
     private InsertOptimizeResult getInsertOptimizeResult(final OptimizeResult optimizeResult) {
@@ -139,13 +140,11 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLBuilder rewrite() {
-        SQLBuilder result = new SQLBuilder(parameters, insertOptimizeResult);
-        Map<Integer, Object> appendedIndexAndParameters = new LinkedHashMap<>();
+        SQLBuilder result = new SQLBuilder(parametersBuilder);
         if (sqlTokens.isEmpty()) {
             return appendOriginalLiterals(result);
         }
-        appendTokensAndPlaceholders(result, appendedIndexAndParameters);
-        reviseParameters(appendedIndexAndParameters);
+        appendTokensAndPlaceholders(result);
         return result;
     }
     
@@ -154,7 +153,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         return sqlBuilder;
     }
     
-    private void appendTokensAndPlaceholders(final SQLBuilder sqlBuilder, final Map<Integer, Object> appendedIndexAndParameters) {
+    private void appendTokensAndPlaceholders(final SQLBuilder sqlBuilder) {
         int count = 0;
         sqlBuilder.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
@@ -169,7 +168,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
             } else if (each instanceof InsertSetAddItemsToken) {
                 appendInsertSetAddItemsPlaceholder(sqlBuilder, (InsertSetAddItemsToken) each, count, insertOptimizeResult);
             } else if (each instanceof EncryptColumnToken) {
-                appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count, appendedIndexAndParameters);
+                appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
                 appendRest(sqlBuilder, count, getStopIndex(each));
             }
@@ -224,18 +223,18 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         appendRest(sqlBuilder, count, getStopIndex(insertSetAddItemsToken));
     }
     
-    private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count, final Map<Integer, Object> appendedIndexAndParameters) {
+    private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         Optional<Condition> encryptCondition = ((AbstractSQLStatement) sqlStatement).getEncryptCondition(encryptColumnToken);
         Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
         ShardingPlaceholder result = encryptColumnToken.isInWhere()
-                ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get()) : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken, appendedIndexAndParameters);
+                ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get()) : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken);
         sqlBuilder.appendPlaceholder(result);
         appendRest(sqlBuilder, count, getStopIndex(encryptColumnToken));
     }
     
     private WhereEncryptColumnPlaceholder getEncryptColumnPlaceholderFromConditions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
-        List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parameters));
+        List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parametersBuilder.getOriginalParameters()));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues);
         Optional<String> assistedColumnName = encryptRule.getEncryptorEngine().getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
         return new WhereEncryptColumnPlaceholder(assistedColumnName.isPresent() ? assistedColumnName.get() : columnNode.getColumnName(),
@@ -251,7 +250,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
+                parametersBuilder.getOriginalParameters().set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
             }
         }
     }
@@ -264,10 +263,10 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
         return result;
     }
     
-    private ShardingPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken, final Map<Integer, Object> appendedIndexAndParameters) {
+    private ShardingPlaceholder getEncryptColumnPlaceholderFromUpdateItem(final EncryptColumnToken encryptColumnToken) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         ShardingEncryptorEngine encryptorEngine = encryptRule.getEncryptorEngine();
-        Comparable<?> originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(encryptColumnToken.getColumn(), parameters);
+        Comparable<?> originalColumnValue = ((UpdateStatement) sqlStatement).getColumnValue(encryptColumnToken.getColumn(), parametersBuilder.getOriginalParameters());
         List<Comparable<?>> encryptColumnValues = encryptorEngine.getEncryptColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
         encryptParameters(getPositionIndexesFromUpdateItem(encryptColumnToken), encryptColumnValues);
         Optional<String> assistedColumnName = encryptorEngine.getAssistedQueryColumn(columnNode.getTableName(), columnNode.getColumnName());
@@ -275,7 +274,7 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
             return getUpdateEncryptItemPlaceholder(encryptColumnToken, encryptColumnValues);
         }
         List<Comparable<?>> encryptAssistedColumnValues = encryptorEngine.getEncryptAssistedColumnValues(columnNode, Collections.<Comparable<?>>singletonList(originalColumnValue));
-        appendedIndexAndParameters.putAll(getIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues));
+        parametersBuilder.getAssistedIndexAndParametersForUpdate().putAll(getIndexAndParameters(encryptColumnToken, encryptAssistedColumnValues));
         return getUpdateEncryptAssistedItemPlaceholder(encryptColumnToken, encryptColumnValues, encryptAssistedColumnValues);
     }
     
@@ -324,12 +323,6 @@ public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
         int stopPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getStartIndex();
         sqlBuilder.appendLiterals(originalSQL.substring(startIndex, stopPosition));
-    }
-    
-    private void reviseParameters(final Map<Integer, Object> appendedIndexAndParameters) {
-        for (Entry<Integer, Object> entry : appendedIndexAndParameters.entrySet()) {
-            parameters.add(entry.getKey(), entry.getValue());
-        }
     }
     
     @Override
