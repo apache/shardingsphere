@@ -35,12 +35,12 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Parsing rule registry.
+ * Parse rule registry.
  *
  * @author zhangliang
  * @author duhongjun
  */
-public abstract class ParsingRuleRegistry {
+public abstract class ParseRuleRegistry {
     
     private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
     

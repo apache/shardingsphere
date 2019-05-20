@@ -25,25 +25,25 @@ import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileC
 import java.util.Collection;
 
 /**
- * Sharding parsing rule registry.
+ * Parse rule registry for sharding.
  *
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingParsingRuleRegistry extends ParsingRuleRegistry {
+public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     
-    private static volatile ParsingRuleRegistry instance;
+    private static volatile ParseRuleRegistry instance;
     
     /**
      * Get singleton instance of parsing rule registry.
      *
      * @return instance of parsing rule registry
      */
-    public static ParsingRuleRegistry getInstance() {
+    public static ParseRuleRegistry getInstance() {
         if (null == instance) {
-            synchronized (ShardingParsingRuleRegistry.class) {
+            synchronized (ShardingParseRuleRegistry.class) {
                 if (null == instance) {
-                    instance = new ShardingParsingRuleRegistry();
+                    instance = new ShardingParseRuleRegistry();
                     instance.init();
                 }
             }

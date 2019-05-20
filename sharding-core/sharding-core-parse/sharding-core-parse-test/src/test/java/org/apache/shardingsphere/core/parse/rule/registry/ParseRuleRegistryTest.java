@@ -25,29 +25,29 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class ParsingRuleRegistryTest {
+public final class ParseRuleRegistryTest {
     @Test
     public void assertFindSQLStatementRule() {
-        assertTrue(ShardingParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "CreateTableContext").isPresent());
+        assertTrue(ShardingParseRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "CreateTableContext").isPresent());
     }
     
     @Test
     public void assertNotFindSQLStatementRule() {
-        assertFalse(ShardingParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
+        assertFalse(ShardingParseRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
     }
     
     @Test
     public void assertFindSQLStatementRuleWithH2() {
-        assertTrue(ShardingParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.H2, "CreateTableContext").isPresent());
+        assertTrue(ShardingParseRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.H2, "CreateTableContext").isPresent());
     }
     
     @Test
     public void assertFindSQLStatementFiller() {
-        assertTrue(ShardingParsingRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, TableSegment.class).isPresent());
+        assertTrue(ShardingParseRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, TableSegment.class).isPresent());
     }
     
     @Test
     public void assertNotFindSQLStatementFiller() {
-        assertFalse(ShardingParsingRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, SQLSegment.class).isPresent());
+        assertFalse(ShardingParseRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, SQLSegment.class).isPresent());
     }
 }

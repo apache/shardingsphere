@@ -24,8 +24,8 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.exception.SQLParsingException;
-import org.apache.shardingsphere.core.parse.rule.registry.EncryptParsingRuleRegistry;
-import org.apache.shardingsphere.core.parse.rule.registry.ParsingRuleRegistry;
+import org.apache.shardingsphere.core.parse.rule.registry.EncryptParseRuleRegistry;
+import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatementRule;
 
 /**
@@ -36,7 +36,7 @@ import org.apache.shardingsphere.core.parse.rule.registry.statement.SQLStatement
 @RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private final ParsingRuleRegistry parsingRuleRegistry;
+    private final ParseRuleRegistry parseRuleRegistry;
     
     private final DatabaseType databaseType;
     
@@ -52,11 +52,11 @@ public final class SQLParserEngine {
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        Optional<SQLStatementRule> sqlStatementRule = parsingRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
+        Optional<SQLStatementRule> sqlStatementRule = parseRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
         if (sqlStatementRule.isPresent()) {
             return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule.get());
         }
-        if (parsingRuleRegistry instanceof EncryptParsingRuleRegistry) {
+        if (parseRuleRegistry instanceof EncryptParseRuleRegistry) {
             return new SQLAST((ParserRuleContext) parseTree);
         }
         throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));

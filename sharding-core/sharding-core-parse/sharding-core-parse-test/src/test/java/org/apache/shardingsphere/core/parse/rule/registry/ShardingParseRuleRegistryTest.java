@@ -17,33 +17,33 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry;
 
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.sql.segment.common.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.column.position.ColumnPositionSegment;
-import org.junit.Test;
-
-public class EncryptParsingRuleRegistryTest {
+public final class ShardingParseRuleRegistryTest {
     
     @Test
     public void assertFindSQLStatementRule() {
-        assertTrue(EncryptParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
+        assertTrue(ShardingParseRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "SelectContext").isPresent());
     }
     
     @Test
     public void assertFindNotSupportedSQLStatementRule() {
-        assertFalse(EncryptParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "CreateTable").isPresent());
+        assertFalse(ShardingParseRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
     }
     
     @Test
     public void assertFindSQLStatementFiller() {
-        assertTrue(EncryptParsingRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, TableSegment.class).isPresent());
+        assertTrue(ShardingParseRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, TableSegment.class).isPresent());
     }
     
     @Test
     public void assertFindNotSupportedSQLStatementFiller() {
-        assertFalse(EncryptParsingRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.MySQL, ColumnPositionSegment.class).isPresent());
+        assertFalse(ShardingParseRuleRegistry.getInstance().findSQLSegmentFiller(DatabaseType.Oracle, SQLSegment.class).isPresent());
     }
 }
