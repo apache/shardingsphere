@@ -27,7 +27,7 @@ public final class ExtractorRuleDefinitionEntityLoaderTest {
     
     @Test
     public void assertLoadForCommon() {
-        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/common/extractor-rule-definition.xml");
+        ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/general/extractor-rule-definition.xml");
         assertFalse(actual.getRules().isEmpty());
     }
     

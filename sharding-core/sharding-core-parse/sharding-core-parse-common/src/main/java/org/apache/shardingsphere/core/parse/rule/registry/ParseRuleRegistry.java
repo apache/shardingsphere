@@ -53,8 +53,8 @@ public abstract class ParseRuleRegistry {
     
     private ParseRuleDefinition createGeneralParseRuleDefinition() {
         ParseRuleDefinition result = new ParseRuleDefinition();
-        result.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()));
-        result.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonFillerRuleDefinitionFileName()));
+        result.getExtractorRuleDefinition().init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralExtractorRuleDefinitionFileName()));
+        result.getFillerRuleDefinition().init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName()));
         return result;
     }
     

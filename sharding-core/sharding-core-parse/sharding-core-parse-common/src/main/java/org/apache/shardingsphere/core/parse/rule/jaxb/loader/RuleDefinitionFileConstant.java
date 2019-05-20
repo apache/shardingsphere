@@ -38,13 +38,31 @@ public final class RuleDefinitionFileConstant {
     
     public static final String ENCRYPT_ROOT_PATH = ROOT_PATH + "/encrypt";
     
-    private static final String COMMON = "common";
-    
-    private static final String SQL_STATEMENT_RULE_DEFINITION_FILE_NAME = "sql-statement-rule-definition.xml";
+    private static final String GENERAL = "general";
     
     private static final String EXTRACTOR_RULE_DEFINITION_FILE_NAME = "extractor-rule-definition.xml";
     
     private static final String FILLER_DEFINITION_FILE_NAME = "filler-rule-definition.xml";
+    
+    private static final String SQL_STATEMENT_RULE_DEFINITION_FILE_NAME = "sql-statement-rule-definition.xml";
+    
+    /**
+     * Get general extractor rule definition file name.
+     *
+     * @return general extractor rule definition file name
+     */
+    public static String getGeneralExtractorRuleDefinitionFileName() {
+        return Joiner.on('/').join(ROOT_PATH, GENERAL, EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+    }
+    
+    /**
+     * Get general filler rule definition file name.
+     *
+     * @return general filler rule definition file name
+     */
+    public static String getGeneralFillerRuleDefinitionFileName() {
+        return Joiner.on('/').join(ROOT_PATH, GENERAL, FILLER_DEFINITION_FILE_NAME);
+    }
     
     /**
      * Get SQL statement rule definition file name.
@@ -80,29 +98,11 @@ public final class RuleDefinitionFileConstant {
     }
     
     /**
-     * Get sharding common filler rule definition file name.
+     * Get sharding general filler rule definition file name.
      *
      * @return filler rule definition file name
      */
     public static String getShardingCommonFillerRuleDefinitionFileName() {
-        return Joiner.on('/').join(SHARDING_ROOT_PATH, COMMON, FILLER_DEFINITION_FILE_NAME);
-    }
-    
-    /**
-     * Get common extractor rule definition file name.
-     * 
-     * @return common extractor rule definition file name
-     */
-    public static String getCommonExtractorRuleDefinitionFileName() {
-        return Joiner.on('/').join(ROOT_PATH, COMMON, EXTRACTOR_RULE_DEFINITION_FILE_NAME);
-    }
-    
-    /**
-     * Get filler rule definition file name.
-     * 
-     * @return filler rule definition file name
-     */
-    public static String getCommonFillerRuleDefinitionFileName() {
-        return Joiner.on('/').join(ROOT_PATH, COMMON, FILLER_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(SHARDING_ROOT_PATH, GENERAL, FILLER_DEFINITION_FILE_NAME);
     }
 }
