@@ -68,14 +68,20 @@ public abstract class ParseRuleRegistry {
             Collection<String> extractorFilePaths = new LinkedList<>();
             Collection<String> fillerFilePaths = new LinkedList<>();
             Collection<String> sqlStatementRuleFilePaths = new LinkedList<>();
-            fillRuleFilePaths(each, extractorFilePaths, fillerFilePaths, sqlStatementRuleFilePaths);
+            fillExtractorFilePaths(each, extractorFilePaths);
+            fillFillerFilePaths(each, fillerFilePaths);
+            fillStatementRuleFilePaths(each, sqlStatementRuleFilePaths);
             ParseRuleDefinition shardingRuleDefinition = new ParseRuleDefinition();
             initParseRuleDefinitionFromCommon(shardingRuleDefinition, extractorFilePaths, fillerFilePaths, sqlStatementRuleFilePaths);
             parseRuleDefinitions.put(each, shardingRuleDefinition);
         }
     }
     
-    protected abstract void fillRuleFilePaths(DatabaseType databaseType, Collection<String> extractorFilePaths, Collection<String> fillerFilePaths, Collection<String> sqlStatementRuleFilePaths);
+    protected abstract void fillExtractorFilePaths(DatabaseType databaseType, Collection<String> extractorFilePaths);
+    
+    protected abstract void fillFillerFilePaths(DatabaseType databaseType, Collection<String> fillerFilePaths);
+    
+    protected abstract void fillStatementRuleFilePaths(DatabaseType databaseType, Collection<String> sqlStatementRuleFilePaths);
     
     private void initParseRuleDefinitionFromCommon(final ParseRuleDefinition parseRuleDefinition, 
                                                    final Collection<String> extractorFilePaths, final Collection<String> fillerFilePaths, final Collection<String> sqlStatementRuleFilePaths) {
