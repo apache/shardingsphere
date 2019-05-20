@@ -36,7 +36,7 @@ public final class ExtractorRuleDefinitionEntityLoader implements RuleDefinition
     @SneakyThrows
     public ExtractorRuleDefinitionEntity load(final String extractorRuleDefinitionFile) {
         InputStream inputStream = ExtractorRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(extractorRuleDefinitionFile);
-        Preconditions.checkNotNull(inputStream, "Cannot load extractor rule definition file :%s, ", extractorRuleDefinitionFile);
+        Preconditions.checkNotNull(inputStream, "Cannot load extractor rule definition file: %s, ", extractorRuleDefinitionFile);
         return (ExtractorRuleDefinitionEntity) JAXBContext.newInstance(ExtractorRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }

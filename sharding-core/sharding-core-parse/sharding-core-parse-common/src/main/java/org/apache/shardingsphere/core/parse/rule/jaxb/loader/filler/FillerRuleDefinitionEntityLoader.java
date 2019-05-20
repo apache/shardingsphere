@@ -36,7 +36,7 @@ public final class FillerRuleDefinitionEntityLoader implements RuleDefinitionEnt
     @SneakyThrows
     public FillerRuleDefinitionEntity load(final String fillerRuleDefinitionFile) {
         InputStream inputStream = FillerRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(fillerRuleDefinitionFile);
-        Preconditions.checkNotNull(inputStream, "Cannot load SQL filler rule definition file :%s, ", fillerRuleDefinitionFile);
+        Preconditions.checkNotNull(inputStream, "Cannot load SQL filler rule definition file: %s, ", fillerRuleDefinitionFile);
         return (FillerRuleDefinitionEntity) JAXBContext.newInstance(FillerRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }
