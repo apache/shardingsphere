@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
+import com.google.common.base.Preconditions;
 import io.seata.config.FileConfiguration;
 import io.seata.core.context.RootContext;
 import io.seata.rm.RMClient;
@@ -56,8 +57,9 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     private void initSeataRPCClient() {
-        String applicationId = configuration.getConfig("applicationId");
-        String transactionServiceGroup = configuration.getConfig("transactionServiceGroup");
+        String applicationId = configuration.getConfig("client.application.id");
+        Preconditions.checkNotNull(applicationId, "please config application id within seata.conf file");
+        String transactionServiceGroup = configuration.getConfig("client.transaction.service.group", "default");
         TMClient.init(applicationId, transactionServiceGroup);
         RMClient.init(applicationId, transactionServiceGroup);
     }
