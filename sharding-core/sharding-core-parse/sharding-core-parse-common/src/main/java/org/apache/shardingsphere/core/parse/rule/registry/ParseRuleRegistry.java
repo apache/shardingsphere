@@ -62,7 +62,7 @@ public abstract class ParseRuleRegistry {
     
     private void initDialectParseRuleDefinition() {
         for (DatabaseType each : DatabaseType.values()) {
-            if (DatabaseType.H2 == each || !needParse(each)) {
+            if (DatabaseType.H2 == each) {
                 continue;
             }
             Collection<String> extractorFilePaths = new LinkedList<>();
@@ -73,10 +73,6 @@ public abstract class ParseRuleRegistry {
             initParseRuleDefinitionFromCommon(shardingRuleDefinition, extractorFilePaths, fillerFilePaths, sqlStatementRuleFilePaths);
             parseRuleDefinitions.put(each, shardingRuleDefinition);
         }
-    }
-    
-    protected boolean needParse(final DatabaseType databaseType) { 
-        return true;
     }
     
     protected abstract void fillRuleFilePaths(DatabaseType databaseType, Collection<String> extractorFilePaths, Collection<String> fillerFilePaths, Collection<String> sqlStatementRuleFilePaths);
