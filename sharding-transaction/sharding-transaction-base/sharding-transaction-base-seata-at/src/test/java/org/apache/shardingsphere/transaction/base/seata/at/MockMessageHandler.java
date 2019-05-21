@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.seata.common.XID;
 import io.seata.core.model.GlobalStatus;
@@ -56,7 +57,8 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author zhaojun
  */
-public final class MockCommandHandler extends ChannelDuplexHandler {
+@Sharable
+public final class MockMessageHandler extends ChannelDuplexHandler {
     
     private final AtomicLong id = new AtomicLong();
     

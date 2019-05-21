@@ -73,7 +73,7 @@ public final class MockSeataServer {
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(final SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new MessageCodecHandler()).addLast(new MockCommandHandler());
+                    socketChannel.pipeline().addLast(new MessageCodecHandler()).addLast(new MockMessageHandler());
                 }
             });
         ChannelFuture future = bootstrap.bind(port).sync();

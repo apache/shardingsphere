@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
+import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -32,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -96,6 +98,13 @@ public class SeataATShardingTransactionManagerTest {
         assertThat(actual.get("demo_ds"), instanceOf(DataSourceProxy.class));
         assertThat(seataATShardingTransactionManager.getTransactionType(), is(TransactionType.BASE));
         assertFalse(seataATShardingTransactionManager.isInTransaction());
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetConnection() {
+        Connection actual = seataATShardingTransactionManager.getConnection("demo_ds");
+        assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
     @SneakyThrows
