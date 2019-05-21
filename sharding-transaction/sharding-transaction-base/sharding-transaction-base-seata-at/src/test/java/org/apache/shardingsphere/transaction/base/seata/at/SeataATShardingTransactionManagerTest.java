@@ -126,14 +126,6 @@ public class SeataATShardingTransactionManagerTest {
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    private Map<String, DataSource> getShardingDataSourceMap() {
-        Field field = seataATShardingTransactionManager.getClass().getDeclaredField("dataSourceMap");
-        field.setAccessible(true);
-        return (Map<String, DataSource>) field.get(seataATShardingTransactionManager);
-    }
-    
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
@@ -154,6 +146,20 @@ public class SeataATShardingTransactionManagerTest {
         assertThat(responseQueue.size(), is(1));
         assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
         assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertCommitWithoutBegin() {
+        SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
+        seataATShardingTransactionManager.commit();
+    }
+    
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    private Map<String, DataSource> getShardingDataSourceMap() {
+        Field field = seataATShardingTransactionManager.getClass().getDeclaredField("dataSourceMap");
+        field.setAccessible(true);
+        return (Map<String, DataSource>) field.get(seataATShardingTransactionManager);
     }
     
     @SneakyThrows
