@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.builder;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.placeholder.Alterable;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -39,13 +40,10 @@ public final class SQLBuilder {
     
     private final List<Object> segments;
     
+    @Getter
     private final ParameterBuilder parameterBuilder;
     
     private StringBuilder currentSegment;
-    
-    public SQLBuilder() {
-        this(null);
-    }
     
     public SQLBuilder(final ParameterBuilder parameterBuilder) {
         segments = new LinkedList<>();
@@ -72,24 +70,6 @@ public final class SQLBuilder {
         segments.add(shardingPlaceholder);
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
-    }
-    
-    /**
-     * Convert to SQL unit.
-     *
-     * @param logicAndActualTables logic and actual tables
-     * @return SQL unit
-     */
-    public SQLUnit toSQL(final Map<String, String> logicAndActualTables) {
-        StringBuilder result = new StringBuilder();
-        for (Object each : segments) {
-            if (each instanceof Alterable) {
-                result.append(((Alterable) each).toString(null, logicAndActualTables));
-            } else {
-                result.append(each);
-            }
-        }
-        return new SQLUnit(result.toString(), Collections.emptyList());
     }
     
     /**
