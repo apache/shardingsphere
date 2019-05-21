@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import org.apache.shardingsphere.api.config.encryptor.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorRuleConfiguration;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.optimize.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.parse.EncryptSQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
@@ -43,7 +44,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptSQLRewriteEngineTest {
+public final class EncryptSQLRewriterTest {
     
     private final DatabaseType databaseType = DatabaseType.MySQL;
     

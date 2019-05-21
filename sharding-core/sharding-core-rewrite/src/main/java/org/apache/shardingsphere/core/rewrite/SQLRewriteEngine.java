@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -30,6 +30,8 @@ import org.apache.shardingsphere.core.parse.sql.token.Substitutable;
 import org.apache.shardingsphere.core.parse.sql.token.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.rewriter.EncryptSQLRewriter;
+import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriter;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -87,31 +89,30 @@ public final class SQLRewriteEngine {
             sqlBuilder.appendLiterals(originalSQL);
             return;
         }
-        appendInitialLiterals();
-        appendTokensAndPlaceholders(optimizeResult);
+        rewrite(optimizeResult);
     }
     
-    private ShardingEncryptorEngine getShardingEncryptorEngine() {
-        if (null == baseRule) {
-            return null;
+    private void rewrite(final OptimizeResult optimizeResult) {
+        rewriteInitialLiteral();
+        int count = 0;
+        for (SQLToken each : sqlStatement.getSQLTokens()) {
+            new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult).rewrite(sqlBuilder, each);
+            new ShardingSQLRewriter(getShardingRule(), originalSQL, databaseType, sqlStatement, sqlRouteResult).rewrite(sqlBuilder, each);
+            rewriteRestLiteral(sqlBuilder, each, count);
+            count++;
         }
-        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getShardingEncryptorEngine() : ((EncryptRule) baseRule).getEncryptorEngine();
     }
     
-    private ShardingRule getShardingRule() {
-        return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
-    }
-    
-    private void appendInitialLiterals() {
-        if (isRewrite() && isContainsAggregationDistinctToken()) {
+    private void rewriteInitialLiteral() {
+        if (isRewriteDistinctLiteral()) {
             appendAggregationDistinctLiteral(sqlBuilder);
         } else {
             sqlBuilder.appendLiterals(originalSQL.substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         }
     }
     
-    private boolean isRewrite() {
-        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting();
+    private boolean isRewriteDistinctLiteral() {
+        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting() && isContainsAggregationDistinctToken();
     }
     
     private boolean isContainsAggregationDistinctToken() {
@@ -132,25 +133,24 @@ public final class SQLRewriteEngine {
         sqlBuilder.appendLiterals(stringBuilder.toString());
     }
     
-    private void appendTokensAndPlaceholders(final OptimizeResult optimizeResult) {
-        EncryptSQLRewriteEngine encryptSQLRewriteEngine = new EncryptSQLRewriteEngine(getShardingEncryptorEngine(), sqlStatement, optimizeResult);
-        ShardingSQLRewriteEngine shardingSQLRewriteEngine = new ShardingSQLRewriteEngine(getShardingRule(), originalSQL, databaseType, sqlStatement, sqlRouteResult);
-        int count = 0;
-        for (SQLToken each : sqlStatement.getSQLTokens()) {
-            shardingSQLRewriteEngine.pattern(sqlBuilder, each);
-            encryptSQLRewriteEngine.pattern(sqlBuilder, each);
-            appendRest(sqlBuilder, count, getStopIndex(each));
-            count++;
+    private ShardingEncryptorEngine getShardingEncryptorEngine() {
+        if (null == baseRule) {
+            return null;
         }
+        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getShardingEncryptorEngine() : ((EncryptRule) baseRule).getEncryptorEngine();
     }
     
-    private int getStopIndex(final SQLToken sqlToken) {
-        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
+    private ShardingRule getShardingRule() {
+        return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
     }
     
-    private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
+    private void rewriteRestLiteral(final SQLBuilder sqlBuilder, final SQLToken sqlToken, final int count) {
         int stopPosition = sqlStatement.getSQLTokens().size() - 1 == count ? originalSQL.length() : sqlStatement.getSQLTokens().get(count + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
+        sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopPosition));
+    }
+    
+    private int getStartIndex(final SQLToken sqlToken) {
+        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
     }
     
     /**

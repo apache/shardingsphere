@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -46,15 +46,13 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding SQL rewrite engine.
+ * Sharding SQL rewriter.
  * 
- * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
- *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingSQLRewriteEngine {
+public final class ShardingSQLRewriter implements SQLRewriter {
     
     private final ShardingRule shardingRule;
     
@@ -66,7 +64,7 @@ public final class ShardingSQLRewriteEngine {
     
     private final SQLStatement sqlStatement;
     
-    public ShardingSQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final SQLRouteResult sqlRouteResult) {
+    public ShardingSQLRewriter(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final SQLRouteResult sqlRouteResult) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -74,13 +72,8 @@ public final class ShardingSQLRewriteEngine {
         this.sqlStatement = sqlStatement;
     }
     
-    /**
-     * Pattern.
-     *
-     * @param sqlBuilder sql builder
-     * @param sqlToken sql token
-     */
-    public void pattern(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
+    @Override
+    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         } else if (sqlToken instanceof IndexToken) {

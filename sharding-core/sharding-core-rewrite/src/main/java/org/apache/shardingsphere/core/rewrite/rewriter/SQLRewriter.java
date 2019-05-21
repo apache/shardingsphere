@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite;
+package org.apache.shardingsphere.core.rewrite.rewriter;
 
-import org.apache.shardingsphere.core.rewrite.builder.SQLBuilderTest;
-import org.apache.shardingsphere.core.rewrite.rewriter.ShardingSQLRewriterTest;
-import org.apache.shardingsphere.core.rewrite.placeholder.AllPlaceholderTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
+import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        SQLBuilderTest.class, 
-        ShardingSQLRewriterTest.class,
-        AllPlaceholderTests.class
-    })
-public final class AllRewriteTests {
+/**
+ * SQL rewriter.
+ *
+ * @author panjuan
+ */
+public interface SQLRewriter {
+    
+    /**
+     * Pattern.
+     *
+     * @param sqlBuilder sql builder
+     * @param sqlToken sql token
+     */
+    void rewrite(SQLBuilder sqlBuilder, SQLToken sqlToken);
 }

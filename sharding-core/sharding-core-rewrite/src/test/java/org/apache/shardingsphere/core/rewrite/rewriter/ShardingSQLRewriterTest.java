@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
@@ -49,6 +49,7 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -83,7 +84,7 @@ import java.util.Map.Entry;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSQLRewriteEngineTest {
+public final class ShardingSQLRewriterTest {
     
     private ShardingRule shardingRule;
     
@@ -103,7 +104,7 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Before
     public void setUp() throws IOException {
-        URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
+        URL url = ShardingSQLRewriterTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
         shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());

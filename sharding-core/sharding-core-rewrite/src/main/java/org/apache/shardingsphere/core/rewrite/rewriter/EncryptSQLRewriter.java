@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite.rewriter;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -59,13 +59,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Encrypt SQL rewrite engine.
+ * Encrypt SQL rewriter.
  * 
- * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
- *
  * @author panjuan
  */
-public final class EncryptSQLRewriteEngine {
+public final class EncryptSQLRewriter implements SQLRewriter {
     
     private final ShardingEncryptorEngine encryptorEngine;
     
@@ -73,7 +71,7 @@ public final class EncryptSQLRewriteEngine {
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public EncryptSQLRewriteEngine(final ShardingEncryptorEngine encryptorEngine, final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
+    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
         this.encryptorEngine = encryptorEngine;
         this.sqlStatement = sqlStatement;
         this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
@@ -111,13 +109,8 @@ public final class EncryptSQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
-    /**
-     * Pattern.
-     * 
-     * @param sqlBuilder sql builder
-     * @param sqlToken sql token
-     */
-    public void pattern(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
+    @Override
+    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
         sqlBuilder.getParameterBuilder().setInsertParameterUnits(insertOptimizeResult);
         if (sqlToken instanceof InsertValuesToken) {
             appendInsertValuesPlaceholder(sqlBuilder, insertOptimizeResult);
