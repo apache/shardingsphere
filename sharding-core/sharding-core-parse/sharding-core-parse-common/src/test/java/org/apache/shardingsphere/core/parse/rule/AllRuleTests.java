@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parse.rule;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstantTest;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoaderTest;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoaderTest;
+import org.apache.shardingsphere.core.parse.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         RuleDefinitionFileConstantTest.class,
         ExtractorRuleDefinitionEntityLoaderTest.class,
-        FillerRuleDefinitionEntityLoaderTest.class
+        FillerRuleDefinitionEntityLoaderTest.class,
+        SQLStatementRuleDefinitionEntityLoaderTest.class
 })
 public final class AllRuleTests {
 }
