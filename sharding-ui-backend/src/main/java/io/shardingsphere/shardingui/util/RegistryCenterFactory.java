@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingui.util;
 
-import io.shardingsphere.orchestration.reg.etcd.EtcdRegistryCenter;
 import io.shardingsphere.shardingui.common.constant.RegistryCenterType;
 import io.shardingsphere.shardingui.common.domain.RegistryCenterConfig;
 import lombok.AccessLevel;
@@ -53,9 +52,6 @@ public final class RegistryCenterFactory {
         switch (registryCenterType) {
             case ZOOKEEPER:
                 result = new CuratorZookeeperRegistryCenter();
-                break;
-            case ETCD:
-                result = new EtcdRegistryCenter();
                 break;
             default:
                 throw new UnsupportedOperationException(config.getName());
