@@ -15,33 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.rule.registry;
+package org.apache.shardingsphere.core.parse.rule;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstantTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Parse rule registry for master-slave.
- *
- * @author zhangliang
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
-    
-    private static volatile ParseRuleRegistry instance = new MasterSlaveParseRuleRegistry();
-    
-    /**
-     * Get singleton instance of parsing rule registry.
-     *
-     * @return instance of parsing rule registry
-     */
-    public static ParseRuleRegistry getInstance() {
-        return instance;
-    }
-    
-    @Override
-    protected String getType() {
-        return "masterslave";
-    }
+@RunWith(Suite.class)
+@SuiteClasses(RuleDefinitionFileConstantTest.class)
+public final class AllRuleTests {
 }
-

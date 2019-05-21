@@ -19,11 +19,6 @@ package org.apache.shardingsphere.core.parse.rule.registry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstant;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Parse rule registry for sharding.
@@ -45,22 +40,7 @@ public final class ShardingParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected String getExtractorFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("sharding", databaseType);
-    }
-    
-    @Override
-    protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
-        Collection<String> result = new LinkedList<>();
-        result.add(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName("sharding"));
-        if (DatabaseType.MySQL == databaseType) {
-            result.add(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName("sharding", databaseType));
-        }
-        return result;
-    }
-    
-    @Override
-    protected String getStatementRuleFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("sharding", databaseType);
+    protected String getType() {
+        return "sharding";
     }
 }

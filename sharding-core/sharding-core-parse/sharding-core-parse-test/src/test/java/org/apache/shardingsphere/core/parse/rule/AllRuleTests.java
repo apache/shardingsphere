@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.rule;
 
-import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstantTest;
 import org.apache.shardingsphere.core.parse.rule.jaxb.segment.ExtractorRuleDefinitionEntityLoaderTest;
 import org.apache.shardingsphere.core.parse.rule.jaxb.statement.SQLStatementRuleDefinitionEntityLoaderTest;
 import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistryTest;
@@ -27,7 +26,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        RuleDefinitionFileConstantTest.class, 
         SQLStatementRuleDefinitionEntityLoaderTest.class, 
         ExtractorRuleDefinitionEntityLoaderTest.class,
         ParseRuleRegistryTest.class
