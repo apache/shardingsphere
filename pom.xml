@@ -199,11 +199,13 @@
                 <groupId>io.seata</groupId>
                 <artifactId>seata-rm-datasource</artifactId>
                 <version>${seata.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>io.seata</groupId>
                 <artifactId>seata-tm</artifactId>
                 <version>${seata.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
