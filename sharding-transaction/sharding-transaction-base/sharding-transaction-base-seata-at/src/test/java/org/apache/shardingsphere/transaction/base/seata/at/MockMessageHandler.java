@@ -49,7 +49,10 @@ import io.seata.core.protocol.transaction.GlobalRollbackRequest;
 import io.seata.core.protocol.transaction.GlobalRollbackResponse;
 import io.seata.core.protocol.transaction.GlobalStatusRequest;
 import io.seata.core.protocol.transaction.GlobalStatusResponse;
+import lombok.Getter;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -62,6 +65,12 @@ public final class MockMessageHandler extends ChannelDuplexHandler {
     
     private final AtomicLong id = new AtomicLong();
     
+    @Getter
+    private final Queue<Object> requestQueue = new ConcurrentLinkedQueue<>();
+    
+    @Getter
+    private final Queue<Object> responseQueue = new ConcurrentLinkedQueue<>();
+    
     static {
         XID.setIpAddress("127.0.0.1");
         XID.setPort(8091);
@@ -71,14 +80,19 @@ public final class MockMessageHandler extends ChannelDuplexHandler {
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         RpcMessage request = (RpcMessage) msg;
         RpcMessage response = newRpcMessage(request);
-        if (request.getBody() instanceof RegisterTMRequest) {
+        Object requestBody = request.getBody();
+        if (requestBody instanceof RegisterTMRequest) {
             response.setBody(new RegisterTMResponse(true));
-        } else if (request.getBody() instanceof RegisterRMRequest) {
+        } else if (requestBody instanceof RegisterRMRequest) {
             response.setBody(new RegisterRMResponse(true));
-        } else if (request.getBody() == HeartbeatMessage.PING) {
+        } else if (requestBody == HeartbeatMessage.PING) {
             response.setBody(HeartbeatMessage.PONG);
-        } else if (request.getBody() instanceof MergedWarpMessage) {
+        } else if (requestBody instanceof MergedWarpMessage) {
             setMergeResultMessage(request, response);
+        }
+        if (requestBody != HeartbeatMessage.PING) {
+            requestQueue.offer(requestBody);
+            responseQueue.offer(response.getBody());
         }
         ctx.writeAndFlush(response);
     }

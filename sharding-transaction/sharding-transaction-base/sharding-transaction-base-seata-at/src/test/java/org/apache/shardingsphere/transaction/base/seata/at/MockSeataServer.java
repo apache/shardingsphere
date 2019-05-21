@@ -50,6 +50,9 @@ public final class MockSeataServer {
     private int port;
     
     @Getter
+    private MockMessageHandler messageHandler = new MockMessageHandler();
+    
+    @Getter
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     
     public MockSeataServer() {
@@ -73,7 +76,7 @@ public final class MockSeataServer {
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(final SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new MessageCodecHandler()).addLast(new MockMessageHandler());
+                    socketChannel.pipeline().addLast(new MessageCodecHandler()).addLast(messageHandler);
                 }
             });
         ChannelFuture future = bootstrap.bind(port).sync();
