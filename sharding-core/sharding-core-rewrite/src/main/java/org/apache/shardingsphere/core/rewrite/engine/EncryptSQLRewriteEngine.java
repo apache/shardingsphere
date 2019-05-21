@@ -111,6 +111,12 @@ public final class EncryptSQLRewriteEngine {
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
+    /**
+     * Pattern.
+     * 
+     * @param sqlBuilder sql builder
+     * @param sqlToken sql token
+     */
     public void pattern(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
         sqlBuilder.getParameterBuilder().setInsertParameterUnits(insertOptimizeResult);
         if (sqlToken instanceof InsertValuesToken) {
@@ -147,12 +153,13 @@ public final class EncryptSQLRewriteEngine {
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final ParameterBuilder parameterBuilder) {
         Optional<Condition> encryptCondition = ((AbstractSQLStatement) sqlStatement).getEncryptCondition(encryptColumnToken);
         Preconditions.checkArgument(!encryptColumnToken.isInWhere() || encryptCondition.isPresent(), "Can not find encrypt condition");
-        ShardingPlaceholder result = encryptColumnToken.isInWhere()
-                ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get(), parameterBuilder) : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken, parameterBuilder);
+        ShardingPlaceholder result = encryptColumnToken.isInWhere() ? getEncryptColumnPlaceholderFromConditions(encryptColumnToken, encryptCondition.get(), parameterBuilder) 
+                : getEncryptColumnPlaceholderFromUpdateItem(encryptColumnToken, parameterBuilder);
         sqlBuilder.appendPlaceholder(result);
     }
     
-    private WhereEncryptColumnPlaceholder getEncryptColumnPlaceholderFromConditions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition, final ParameterBuilder parameterBuilder) {
+    private WhereEncryptColumnPlaceholder getEncryptColumnPlaceholderFromConditions(
+            final EncryptColumnToken encryptColumnToken, final Condition encryptCondition, final ParameterBuilder parameterBuilder) {
         ColumnNode columnNode = new ColumnNode(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName());
         List<Comparable<?>> encryptColumnValues = encryptValues(columnNode, encryptCondition.getConditionValues(parameterBuilder.getOriginalParameters()));
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptColumnValues, parameterBuilder);
