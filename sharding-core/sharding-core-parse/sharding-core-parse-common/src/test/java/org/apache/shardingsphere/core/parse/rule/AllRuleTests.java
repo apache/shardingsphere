@@ -18,11 +18,15 @@
 package org.apache.shardingsphere.core.parse.rule;
 
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstantTest;
+import org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(RuleDefinitionFileConstantTest.class)
+@SuiteClasses({
+        RuleDefinitionFileConstantTest.class,
+        ExtractorRuleDefinitionEntityLoaderTest.class
+})
 public final class AllRuleTests {
 }

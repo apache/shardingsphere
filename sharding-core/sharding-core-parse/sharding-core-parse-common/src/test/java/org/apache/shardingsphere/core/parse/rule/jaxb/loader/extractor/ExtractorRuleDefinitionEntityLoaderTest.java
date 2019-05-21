@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.rule;
+package org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor;
 
-import org.apache.shardingsphere.core.parse.rule.jaxb.statement.SQLStatementRuleDefinitionEntityLoaderTest;
-import org.apache.shardingsphere.core.parse.rule.registry.ParseRuleRegistryTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        SQLStatementRuleDefinitionEntityLoaderTest.class, 
-        ParseRuleRegistryTest.class
-})
-public final class AllRuleTests {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class ExtractorRuleDefinitionEntityLoaderTest {
+    
+    @Test
+    public void assertLoad() {
+        assertFalse(new ExtractorRuleDefinitionEntityLoader().load("META-INF/parsing-rule-definition/extractor-rule-definition.xml").getRules().isEmpty());
+    }
+    
+    @Test
+    public void assertLoadWithNotExistedPath() {
+        assertTrue(new ExtractorRuleDefinitionEntityLoader().load("not-existed.xml").getRules().isEmpty());
+    }
 }
