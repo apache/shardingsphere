@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.core.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.token.SQLToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SchemaToken;
+import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.rewrite.builder.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,21 +39,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MasterSlaveSQLRewriteEngine extends SQLRewriteEngine {
     
-    private final MasterSlaveRule masterSlaveRule;
-    
     private final String originalSQL;
     
     private final SQLStatement sqlStatement;
     
-    private final ShardingDataSourceMetaData dataSourceMetaData;
-    
     private final SQLBuilder sqlBuilder;
     
-    public MasterSlaveSQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final String originalSQL, final SQLStatement sqlStatement, final ShardingDataSourceMetaData dataSourceMetaData) {
-        this.masterSlaveRule = masterSlaveRule;
+    public MasterSlaveSQLRewriteEngine(final String originalSQL, final SQLStatement sqlStatement) {
         this.originalSQL = originalSQL;
         this.sqlStatement = sqlStatement;
-        this.dataSourceMetaData = dataSourceMetaData;
         sqlBuilder = pattern();
     }
     
@@ -71,8 +62,8 @@ public final class MasterSlaveSQLRewriteEngine extends SQLRewriteEngine {
             if (0 == count) {
                 result.appendLiterals(originalSQL.substring(0, each.getStartIndex()));
             }
-            if (each instanceof SchemaToken) {
-                appendSchemaPlaceholder(result, (SchemaToken) each, count);
+            if (each instanceof RemoveToken) {
+                appendRest(sqlBuilder, count, ((RemoveToken) each).getStopIndex() + 1);
             }
             count++;
         }
@@ -82,12 +73,6 @@ public final class MasterSlaveSQLRewriteEngine extends SQLRewriteEngine {
     private SQLBuilder appendOriginalLiterals(final SQLBuilder sqlBuilder) {
         sqlBuilder.appendLiterals(originalSQL);
         return sqlBuilder;
-    }
-    
-    private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        sqlBuilder.appendPlaceholder(
-                new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName().toLowerCase(), schemaToken.getQuoteCharacter(), masterSlaveRule, dataSourceMetaData));
-        appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {

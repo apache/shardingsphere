@@ -71,8 +71,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private SQLRouteResult doMasterSlaveRoute(final DatabaseType databaseType, final String sql) {
         SQLStatement sqlStatement = new SQLParseEngine(databaseType, sql, null, null).parse();
-        MasterSlaveSQLRewriteEngine sqlRewriteEngine = 
-                new MasterSlaveSQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sql, sqlStatement, logicSchema.getMetaData().getDataSource());
+        MasterSlaveSQLRewriteEngine sqlRewriteEngine = new MasterSlaveSQLRewriteEngine(sql, sqlStatement);
         String rewriteSQL = sqlRewriteEngine.generateSQL(null).getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         for (String each : new MasterSlaveRouter(databaseType, 

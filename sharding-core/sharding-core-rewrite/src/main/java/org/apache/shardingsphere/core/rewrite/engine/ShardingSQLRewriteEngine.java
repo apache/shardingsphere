@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimize.result.OptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResult;
 import org.apache.shardingsphere.core.optimize.result.insert.InsertOptimizeResultUnit;
@@ -49,7 +48,6 @@ import org.apache.shardingsphere.core.parse.sql.token.impl.OffsetToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.OrderByToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RemoveToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.RowCountToken;
-import org.apache.shardingsphere.core.parse.sql.token.impl.SchemaToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.SelectItemsToken;
 import org.apache.shardingsphere.core.parse.sql.token.impl.TableToken;
 import org.apache.shardingsphere.core.rewrite.builder.ParameterBuilder;
@@ -64,7 +62,6 @@ import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholde
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitOffsetPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.LimitRowCountPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.OrderByPlaceholder;
-import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SelectItemsPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.ShardingPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
@@ -118,12 +115,9 @@ public final class ShardingSQLRewriteEngine extends SQLRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    private final ShardingDataSourceMetaData dataSourceMetaData;
-    
     private final SQLBuilder sqlBuilder;
     
-    public ShardingSQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL,
-                                    final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final ShardingDataSourceMetaData dataSourceMetaData) {
+    public ShardingSQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
@@ -131,7 +125,6 @@ public final class ShardingSQLRewriteEngine extends SQLRewriteEngine {
         sqlStatement = sqlRouteResult.getSqlStatement();
         this.insertOptimizeResult = getInsertOptimizeResult(sqlRouteResult.getOptimizeResult());
         parameterBuilder = new ParameterBuilder(parameters, insertOptimizeResult);
-        this.dataSourceMetaData = dataSourceMetaData;
         sqlBuilder = pattern();
     }
     
@@ -213,8 +206,6 @@ public final class ShardingSQLRewriteEngine extends SQLRewriteEngine {
         for (SQLToken each : sqlStatement.getSQLTokens()) {
             if (each instanceof TableToken) {
                 appendTablePlaceholder(sqlBuilder, (TableToken) each, count);
-            } else if (each instanceof SchemaToken) {
-                appendSchemaPlaceholder(sqlBuilder, (SchemaToken) each, count);
             } else if (each instanceof IndexToken) {
                 appendIndexPlaceholder(sqlBuilder, (IndexToken) each, count);
             } else if (each instanceof SelectItemsToken) {
@@ -247,12 +238,6 @@ public final class ShardingSQLRewriteEngine extends SQLRewriteEngine {
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count) {
         sqlBuilder.appendPlaceholder(new TablePlaceholder(tableToken.getTableName().toLowerCase(), tableToken.getQuoteCharacter()));
         appendRest(sqlBuilder, count, tableToken.getStopIndex() + 1);
-    }
-    
-    private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        sqlBuilder.appendPlaceholder(
-                new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName().toLowerCase(), schemaToken.getQuoteCharacter(), shardingRule, dataSourceMetaData));
-        appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {
