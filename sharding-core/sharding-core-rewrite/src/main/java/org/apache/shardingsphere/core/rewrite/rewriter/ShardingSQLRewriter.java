@@ -46,10 +46,8 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding SQL rewrite engine.
+ * Sharding SQL rewriter.
  * 
- * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
- *
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan

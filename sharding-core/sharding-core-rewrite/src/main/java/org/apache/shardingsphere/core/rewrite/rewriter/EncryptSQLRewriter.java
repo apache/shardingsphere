@@ -59,10 +59,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Encrypt SQL rewrite engine.
+ * Encrypt SQL rewriter.
  * 
- * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
- *
  * @author panjuan
  */
 public final class EncryptSQLRewriter {
