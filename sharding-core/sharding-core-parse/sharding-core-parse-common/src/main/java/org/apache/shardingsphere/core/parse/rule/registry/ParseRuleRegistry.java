@@ -52,8 +52,6 @@ public abstract class ParseRuleRegistry {
     
     private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
     
-    private final Map<DatabaseType, ExtractorRuleDefinition> extractorRuleDefinitions = new HashMap<>();
-    
     private final Map<DatabaseType, FillerRuleDefinition> fillerRuleDefinitions = new HashMap<>();
     
     private final Map<DatabaseType, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>();
@@ -69,9 +67,10 @@ public abstract class ParseRuleRegistry {
             if (DatabaseType.H2 == each) {
                 continue;
             }
-            extractorRuleDefinitions.put(each, new ExtractorRuleDefinition(generalExtractorRuleDefinitionEntity, extractorRuleDefinitionLoader.load(getExtractorFile(each))));
             initFillerRuleDefinition(generalFillerRuleDefinitionEntity, each);
-            sqlStatementRuleDefinitions.put(each, new SQLStatementRuleDefinition(statementRuleDefinitionLoader.load(getStatementRuleFile(each)), extractorRuleDefinitions.get(each)));
+            sqlStatementRuleDefinitions.put(each, new SQLStatementRuleDefinition(
+                    statementRuleDefinitionLoader.load(getStatementRuleFile(each)), new ExtractorRuleDefinition(generalExtractorRuleDefinitionEntity, 
+                    extractorRuleDefinitionLoader.load(getExtractorFile(each)))));
         }
     }
     
