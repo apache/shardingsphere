@@ -27,13 +27,13 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetSQLStatementRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, DatabaseType.MySQL),
+        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("sharding", DatabaseType.MySQL),
                 CoreMatchers.is("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml"));
     }
     
     @Test
     public void assertGetExtractorRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.SHARDING_ROOT_PATH, DatabaseType.MySQL),
+        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("sharding", DatabaseType.MySQL),
                 CoreMatchers.is("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml"));
     }
     

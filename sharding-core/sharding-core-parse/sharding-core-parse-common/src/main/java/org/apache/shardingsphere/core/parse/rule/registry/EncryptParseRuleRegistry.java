@@ -46,17 +46,17 @@ public final class EncryptParseRuleRegistry extends ParseRuleRegistry {
     
     @Override
     protected String getExtractorFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("encrypt", databaseType);
     }
     
     @Override
     protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
-        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType));
+        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName("encrypt", databaseType));
     }
     
     @Override
     protected String getStatementRuleFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.ENCRYPT_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("encrypt", databaseType);
     }
 }
 

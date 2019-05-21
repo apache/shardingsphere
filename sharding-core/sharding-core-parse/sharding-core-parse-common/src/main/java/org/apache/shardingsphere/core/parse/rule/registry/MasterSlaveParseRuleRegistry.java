@@ -46,17 +46,17 @@ public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
     
     @Override
     protected String getExtractorFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("masterslave", databaseType);
     }
     
     @Override
     protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
-        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType));
+        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName("masterslave", databaseType));
     }
     
     @Override
     protected String getStatementRuleFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(RuleDefinitionFileConstant.MASTER_SALVE_ROOT_PATH, databaseType);
+        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("masterslave", databaseType);
     }
 }
 
