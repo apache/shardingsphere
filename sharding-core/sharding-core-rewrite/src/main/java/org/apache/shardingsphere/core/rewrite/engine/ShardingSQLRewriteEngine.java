@@ -46,7 +46,7 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Sharding SQL pattern engine.
+ * Sharding SQL rewrite engine.
  * 
  * <p>Rewrite logic SQL to actual SQL, should rewrite table name and optimize something.</p>
  *
@@ -98,6 +98,7 @@ public final class ShardingSQLRewriteEngine {
         } else if (sqlToken instanceof AggregationDistinctToken) {
             appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) sqlToken);
         } else if (sqlToken instanceof RemoveToken) {
+            return;
         }
     }
     
