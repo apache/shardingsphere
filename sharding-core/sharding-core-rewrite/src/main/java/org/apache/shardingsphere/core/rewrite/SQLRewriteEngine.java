@@ -104,11 +104,15 @@ public final class SQLRewriteEngine {
     }
     
     private void appendInitialLiterals() {
-        if (isRewrite() && isContainsAggregationDistinctToken()) {
+        if (isRewrite()) {
             appendAggregationDistinctLiteral(sqlBuilder);
         } else {
             sqlBuilder.appendLiterals(originalSQL.substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         }
+    }
+    
+    private boolean isRewrite() {
+        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting() && isContainsAggregationDistinctToken();
     }
     
     private boolean isContainsAggregationDistinctToken() {
@@ -138,15 +142,6 @@ public final class SQLRewriteEngine {
     
     private ShardingRule getShardingRule() {
         return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
-    }
-    
-    
-    
-    
-    
-    
-    private boolean isRewrite() {
-        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken, final int count) {
