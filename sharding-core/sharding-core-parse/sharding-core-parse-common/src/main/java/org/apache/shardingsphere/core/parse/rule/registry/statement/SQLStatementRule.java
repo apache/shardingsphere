@@ -63,7 +63,7 @@ public final class SQLStatementRule {
         }
         Collection<SQLSegmentExtractor> result = new LinkedList<>();
         for (String each : Splitter.on(',').trimResults().splitToList(extractorRuleRefs)) {
-            result.add(extractorRuleDefinition.getRules().get(each));
+            result.add(extractorRuleDefinition.getExtractor(each));
         }
         return result;
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parse.rule.registry.extractor;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.extractor.api.SQLSegmentExtractor;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
@@ -32,7 +31,6 @@ import java.util.Map;
  * @author zhangliang
  * @author duhongjun
  */
-@Getter
 public final class ExtractorRuleDefinition {
     
     private final Map<String, SQLSegmentExtractor> rules;
@@ -49,5 +47,15 @@ public final class ExtractorRuleDefinition {
         for (ExtractorRuleEntity each : entity.getRules()) {
             rules.put(each.getId(), (SQLSegmentExtractor) Class.forName(each.getExtractorClass()).newInstance());
         }
+    }
+    
+    /**
+     * Get SQL segment extractor.
+     * 
+     * @param name extractor name
+     * @return SQL segment extractor
+     */
+    public SQLSegmentExtractor getExtractor(final String name) {
+        return rules.get(name);
     }
 }
