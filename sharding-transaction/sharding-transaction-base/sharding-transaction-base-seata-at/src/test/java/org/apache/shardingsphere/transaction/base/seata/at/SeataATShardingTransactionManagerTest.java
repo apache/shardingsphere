@@ -23,6 +23,7 @@ import io.seata.core.protocol.RegisterTMRequest;
 import io.seata.core.protocol.RegisterTMResponse;
 import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
+import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -133,5 +134,11 @@ public class SeataATShardingTransactionManagerTest {
         assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
         assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
         assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertCommitWithoutBegin() {
+        SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
+        seataATShardingTransactionManager.commit();
     }
 }
