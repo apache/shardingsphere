@@ -89,19 +89,18 @@ public final class SQLRewriteEngine {
             sqlBuilder.appendLiterals(originalSQL);
             return;
         }
+        rewrite(optimizeResult);
+    }
+    
+    private void rewrite(final OptimizeResult optimizeResult) {
         appendInitialLiterals();
-        appendTokensAndPlaceholders(optimizeResult);
-    }
-    
-    private ShardingEncryptorEngine getShardingEncryptorEngine() {
-        if (null == baseRule) {
-            return null;
+        int count = 0;
+        for (SQLToken each : sqlStatement.getSQLTokens()) {
+            new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult).rewrite(sqlBuilder, each);
+            new ShardingSQLRewriter(getShardingRule(), originalSQL, databaseType, sqlStatement, sqlRouteResult).rewrite(sqlBuilder, each);
+            rewrite(sqlBuilder, each, count);
+            count++;
         }
-        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getShardingEncryptorEngine() : ((EncryptRule) baseRule).getEncryptorEngine();
-    }
-    
-    private ShardingRule getShardingRule() {
-        return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
     }
     
     private void appendInitialLiterals() {
@@ -110,10 +109,6 @@ public final class SQLRewriteEngine {
         } else {
             sqlBuilder.appendLiterals(originalSQL.substring(0, sqlStatement.getSQLTokens().get(0).getStartIndex()));
         }
-    }
-    
-    private boolean isRewrite() {
-        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private boolean isContainsAggregationDistinctToken() {
@@ -134,25 +129,33 @@ public final class SQLRewriteEngine {
         sqlBuilder.appendLiterals(stringBuilder.toString());
     }
     
-    private void appendTokensAndPlaceholders(final OptimizeResult optimizeResult) {
-        EncryptSQLRewriter encryptSQLRewriter = new EncryptSQLRewriter(getShardingEncryptorEngine(), sqlStatement, optimizeResult);
-        ShardingSQLRewriter shardingSQLRewriter = new ShardingSQLRewriter(getShardingRule(), originalSQL, databaseType, sqlStatement, sqlRouteResult);
-        int count = 0;
-        for (SQLToken each : sqlStatement.getSQLTokens()) {
-            shardingSQLRewriter.rewrite(sqlBuilder, each);
-            encryptSQLRewriter.rewrite(sqlBuilder, each);
-            appendRest(sqlBuilder, count, getStopIndex(each));
-            count++;
+    private ShardingEncryptorEngine getShardingEncryptorEngine() {
+        if (null == baseRule) {
+            return null;
         }
+        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getShardingEncryptorEngine() : ((EncryptRule) baseRule).getEncryptorEngine();
     }
     
-    private int getStopIndex(final SQLToken sqlToken) {
-        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
+    private ShardingRule getShardingRule() {
+        return baseRule instanceof ShardingRule ? (ShardingRule) baseRule : null;
     }
     
-    private void appendRest(final SQLBuilder sqlBuilder, final int count, final int startIndex) {
+    
+    
+    
+    
+    
+    private boolean isRewrite() {
+        return null != sqlRouteResult && !sqlRouteResult.getRoutingResult().isSingleRouting();
+    }
+    
+    private void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken, final int count) {
         int stopPosition = sqlStatement.getSQLTokens().size() - 1 == count ? originalSQL.length() : sqlStatement.getSQLTokens().get(count + 1).getStartIndex();
-        sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
+        sqlBuilder.appendLiterals(originalSQL.substring(getStartIndex(sqlToken) > originalSQL.length() ? originalSQL.length() : getStartIndex(sqlToken), stopPosition));
+    }
+    
+    private int getStartIndex(final SQLToken sqlToken) {
+        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
     }
     
     /**
