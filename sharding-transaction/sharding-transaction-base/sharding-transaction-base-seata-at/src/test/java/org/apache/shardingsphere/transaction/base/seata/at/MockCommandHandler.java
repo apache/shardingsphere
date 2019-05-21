@@ -20,6 +20,8 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.seata.common.XID;
+import io.seata.core.model.GlobalStatus;
+import io.seata.core.protocol.AbstractMessage;
 import io.seata.core.protocol.AbstractResultMessage;
 import io.seata.core.protocol.HeartbeatMessage;
 import io.seata.core.protocol.MergeResultMessage;
@@ -40,7 +42,10 @@ import io.seata.core.protocol.transaction.BranchRollbackRequest;
 import io.seata.core.protocol.transaction.BranchRollbackResponse;
 import io.seata.core.protocol.transaction.GlobalBeginRequest;
 import io.seata.core.protocol.transaction.GlobalBeginResponse;
-import io.seata.core.protocol.transaction.GlobalLockQueryRequest;
+import io.seata.core.protocol.transaction.GlobalCommitRequest;
+import io.seata.core.protocol.transaction.GlobalCommitResponse;
+import io.seata.core.protocol.transaction.GlobalRollbackRequest;
+import io.seata.core.protocol.transaction.GlobalRollbackResponse;
 import io.seata.core.protocol.transaction.GlobalStatusRequest;
 import io.seata.core.protocol.transaction.GlobalStatusResponse;
 
@@ -80,27 +85,36 @@ public final class MockCommandHandler extends ChannelDuplexHandler {
         MergedWarpMessage warpMessage = (MergedWarpMessage) request.getBody();
         AbstractResultMessage[] resultMessages = new AbstractResultMessage[warpMessage.msgs.size()];
         for (int i = 0; i < warpMessage.msgs.size(); i++) {
-            if (warpMessage.msgs.get(i) instanceof GlobalBeginRequest) {
+            AbstractMessage each = warpMessage.msgs.get(i);
+            if (each instanceof GlobalBeginRequest) {
                 GlobalBeginResponse globalBeginResponse = new GlobalBeginResponse();
                 globalBeginResponse.setXid(XID.generateXID(id.incrementAndGet()));
                 globalBeginResponse.setResultCode(ResultCode.Success);
                 resultMessages[i] = globalBeginResponse;
-            } else if (warpMessage.msgs.get(i) instanceof BranchRegisterRequest) {
+            } else if (each instanceof GlobalCommitRequest) {
+                GlobalCommitResponse globalCommitResponse = new GlobalCommitResponse();
+                globalCommitResponse.setResultCode(ResultCode.Success);
+                globalCommitResponse.setGlobalStatus(GlobalStatus.Committing);
+                resultMessages[i] = globalCommitResponse;
+            } else if (each instanceof GlobalRollbackRequest) {
+                GlobalRollbackResponse globalRollbackResponse = new GlobalRollbackResponse();
+                globalRollbackResponse.setResultCode(ResultCode.Success);
+                globalRollbackResponse.setGlobalStatus(GlobalStatus.Rollbacking);
+                resultMessages[i] = globalRollbackResponse;
+            } else if (each instanceof BranchRegisterRequest) {
                 BranchRegisterResponse branchRegisterResponse = new BranchRegisterResponse();
                 branchRegisterResponse.setBranchId(id.incrementAndGet());
                 branchRegisterResponse.setResultCode(ResultCode.Success);
                 resultMessages[i] = branchRegisterResponse;
-            } else if (warpMessage.msgs.get(i) instanceof BranchReportRequest) {
+            } else if (each instanceof BranchReportRequest) {
                 BranchReportResponse reportResponse = new BranchReportResponse();
                 reportResponse.setResultCode(ResultCode.Success);
                 resultMessages[i] = reportResponse;
-            } else if (warpMessage.msgs.get(i) instanceof BranchCommitRequest) {
+            } else if (each instanceof BranchCommitRequest) {
                 resultMessages[i] = new BranchCommitResponse();
-            } else if (warpMessage.msgs.get(i) instanceof BranchRollbackRequest) {
+            } else if (each instanceof BranchRollbackRequest) {
                 resultMessages[i] = new BranchRollbackResponse();
-            } else if (warpMessage.msgs.get(i) instanceof GlobalLockQueryRequest) {
-                resultMessages[i] = new GlobalBeginResponse();
-            } else if (warpMessage.msgs.get(i) instanceof GlobalStatusRequest) {
+            } else if (each instanceof GlobalStatusRequest) {
                 resultMessages[i] = new GlobalStatusResponse();
             }
         }
