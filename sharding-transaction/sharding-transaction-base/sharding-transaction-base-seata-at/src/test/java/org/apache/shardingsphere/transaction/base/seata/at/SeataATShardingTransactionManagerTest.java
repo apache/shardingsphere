@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
+import io.seata.core.context.RootContext;
 import io.seata.core.protocol.MergeResultMessage;
 import io.seata.core.protocol.MergedWarpMessage;
 import io.seata.core.protocol.RegisterTMRequest;
@@ -29,11 +30,14 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -44,14 +48,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.LockSupport;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SeataATShardingTransactionManagerTest {
     
     private static MockSeataServer mockSeataServer = new MockSeataServer();
@@ -59,6 +62,10 @@ public class SeataATShardingTransactionManagerTest {
     private final DataSource dataSource = getDataSource();
     
     private final SeataATShardingTransactionManager seataATShardingTransactionManager = new SeataATShardingTransactionManager();
+    
+    private Queue<Object> requestQueue = mockSeataServer.getMessageHandler().getRequestQueue();
+    
+    private Queue<Object> responseQueue = mockSeataServer.getMessageHandler().getResponseQueue();
     
     @BeforeClass
     @SneakyThrows
@@ -84,7 +91,12 @@ public class SeataATShardingTransactionManagerTest {
     @Before
     public void setUp() {
         seataATShardingTransactionManager.init(DatabaseType.MySQL, getResourceDataSources());
-        LockSupport.parkUntil(System.currentTimeMillis() + 1000);
+    }
+    
+    @After
+    public void tearDown() {
+        RootContext.unbind();
+        SeataTransactionHolder.clear();
     }
     
     private DataSource getDataSource() {
@@ -105,7 +117,6 @@ public class SeataATShardingTransactionManagerTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get("demo_ds"), instanceOf(DataSourceProxy.class));
         assertThat(seataATShardingTransactionManager.getTransactionType(), is(TransactionType.BASE));
-        assertFalse(seataATShardingTransactionManager.isInTransaction());
     }
     
     @Test
@@ -126,8 +137,6 @@ public class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
-        Queue<Object> requestQueue = mockSeataServer.getMessageHandler().getRequestQueue();
-        Queue<Object> responseQueue = mockSeataServer.getMessageHandler().getResponseQueue();
         assertThat(requestQueue.size(), is(2));
         assertThat(responseQueue.size(), is(2));
         assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
@@ -136,9 +145,22 @@ public class SeataATShardingTransactionManagerTest {
         assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertCommitWithoutBegin() {
+    @Test
+    public void assertCommit() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
+        setXID("testXID");
         seataATShardingTransactionManager.commit();
+        assertThat(requestQueue.size(), is(1));
+        assertThat(responseQueue.size(), is(1));
+        assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
+        assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+    }
+    
+    @SneakyThrows
+    private void setXID(final String xid) {
+        Field field = SeataTransactionHolder.get().getClass().getDeclaredField("xid");
+        field.setAccessible(true);
+        field.set(SeataTransactionHolder.get(), xid);
+        RootContext.bind(xid);
     }
 }
