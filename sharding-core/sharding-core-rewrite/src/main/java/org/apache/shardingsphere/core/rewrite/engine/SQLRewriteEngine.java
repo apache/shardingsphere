@@ -153,10 +153,21 @@ public final class SQLRewriteEngine {
         sqlBuilder.appendLiterals(originalSQL.substring(startIndex > originalSQL.length() ? originalSQL.length() : startIndex, stopPosition));
     }
     
+    /**
+     * Generate SQL.
+     * 
+     * @return sql unit
+     */
     public SQLUnit generateSQL() {
         return sqlBuilder.toSQL();
     }
     
+    /**
+     * Generate SQL.
+     * 
+     * @param routingUnit routing unit
+     * @return sql unit
+     */
     public SQLUnit generateSQL(final RoutingUnit routingUnit) {
         return sqlBuilder.toSQL(routingUnit, getTableTokens(routingUnit));
     }
