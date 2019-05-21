@@ -139,8 +139,8 @@ public final class SQLRewriteEngine {
         ShardingSQLRewriter shardingSQLRewriter = new ShardingSQLRewriter(getShardingRule(), originalSQL, databaseType, sqlStatement, sqlRouteResult);
         int count = 0;
         for (SQLToken each : sqlStatement.getSQLTokens()) {
-            shardingSQLRewriter.pattern(sqlBuilder, each);
-            encryptSQLRewriter.pattern(sqlBuilder, each);
+            shardingSQLRewriter.rewrite(sqlBuilder, each);
+            encryptSQLRewriter.rewrite(sqlBuilder, each);
             appendRest(sqlBuilder, count, getStopIndex(each));
             count++;
         }

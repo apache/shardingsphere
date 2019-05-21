@@ -52,7 +52,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author maxiaoguang
  * @author panjuan
  */
-public final class ShardingSQLRewriter {
+public final class ShardingSQLRewriter implements SQLRewriter {
     
     private final ShardingRule shardingRule;
     
@@ -72,13 +72,8 @@ public final class ShardingSQLRewriter {
         this.sqlStatement = sqlStatement;
     }
     
-    /**
-     * Pattern.
-     *
-     * @param sqlBuilder sql builder
-     * @param sqlToken sql token
-     */
-    public void pattern(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
+    @Override
+    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
         if (sqlToken instanceof TableToken) {
             appendTablePlaceholder(sqlBuilder, (TableToken) sqlToken);
         } else if (sqlToken instanceof IndexToken) {

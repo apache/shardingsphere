@@ -63,7 +63,7 @@ import java.util.Map.Entry;
  * 
  * @author panjuan
  */
-public final class EncryptSQLRewriter {
+public final class EncryptSQLRewriter implements SQLRewriter {
     
     private final ShardingEncryptorEngine encryptorEngine;
     
@@ -109,13 +109,8 @@ public final class EncryptSQLRewriter {
         unit.setColumnValue(columnName, shardingEncryptor.encrypt(unit.getColumnValue(columnName)));
     }
     
-    /**
-     * Pattern.
-     * 
-     * @param sqlBuilder sql builder
-     * @param sqlToken sql token
-     */
-    public void pattern(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
+    @Override
+    public void rewrite(final SQLBuilder sqlBuilder, final SQLToken sqlToken) {
         sqlBuilder.getParameterBuilder().setInsertParameterUnits(insertOptimizeResult);
         if (sqlToken instanceof InsertValuesToken) {
             appendInsertValuesPlaceholder(sqlBuilder, insertOptimizeResult);
