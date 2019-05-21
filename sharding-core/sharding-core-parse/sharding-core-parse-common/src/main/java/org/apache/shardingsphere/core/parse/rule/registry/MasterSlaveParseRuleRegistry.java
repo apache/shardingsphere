@@ -19,11 +19,6 @@ package org.apache.shardingsphere.core.parse.rule.registry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstant;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Parse rule registry for master-slave.
@@ -45,18 +40,8 @@ public final class MasterSlaveParseRuleRegistry extends ParseRuleRegistry {
     }
     
     @Override
-    protected String getExtractorFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("masterslave", databaseType);
-    }
-    
-    @Override
-    protected Collection<String> getFillerFiles(final DatabaseType databaseType) {
-        return Collections.singletonList(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName("masterslave", databaseType));
-    }
-    
-    @Override
-    protected String getStatementRuleFile(final DatabaseType databaseType) {
-        return RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("masterslave", databaseType);
+    protected String getType() {
+        return "masterslave";
     }
 }
 

@@ -27,23 +27,23 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetSQLStatementRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName("sharding", DatabaseType.MySQL),
+        assertThat(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFile("sharding", DatabaseType.MySQL),
                 CoreMatchers.is("META-INF/parsing-rule-definition/sharding/mysql/sql-statement-rule-definition.xml"));
     }
     
     @Test
     public void assertGetExtractorRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName("sharding", DatabaseType.MySQL),
+        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile("sharding", DatabaseType.MySQL),
                 CoreMatchers.is("META-INF/parsing-rule-definition/sharding/mysql/extractor-rule-definition.xml"));
     }
     
     @Test
     public void assertGetCommonExtractorRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getGeneralExtractorRuleDefinitionFileName(), CoreMatchers.is("META-INF/parsing-rule-definition/general/extractor-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile(), CoreMatchers.is("META-INF/parsing-rule-definition/general/extractor-rule-definition.xml"));
     }
     
     @Test
     public void assertGetFillerRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName(), CoreMatchers.is("META-INF/parsing-rule-definition/general/filler-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(), CoreMatchers.is("META-INF/parsing-rule-definition/general/filler-rule-definition.xml"));
     }
 }

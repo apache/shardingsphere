@@ -45,7 +45,7 @@ public final class RuleDefinitionFileConstant {
      *
      * @return general extractor rule definition file name
      */
-    public static String getGeneralExtractorRuleDefinitionFileName() {
+    public static String getExtractorRuleDefinitionFile() {
         return Joiner.on('/').join(ROOT_PATH, GENERAL, EXTRACTOR_RULE_DEFINITION_FILE_NAME);
     }
     
@@ -56,7 +56,7 @@ public final class RuleDefinitionFileConstant {
      * @param databaseType database type
      * @return extractor rule definition file name
      */
-    public static String getExtractorRuleDefinitionFileName(final String featureType, final DatabaseType databaseType) {
+    public static String getExtractorRuleDefinitionFile(final String featureType, final DatabaseType databaseType) {
         return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.name().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
     }
     
@@ -65,7 +65,7 @@ public final class RuleDefinitionFileConstant {
      *
      * @return general filler rule definition file name
      */
-    public static String getGeneralFillerRuleDefinitionFileName() {
+    public static String getFillerRuleDefinitionFile() {
         return Joiner.on('/').join(ROOT_PATH, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
@@ -75,7 +75,7 @@ public final class RuleDefinitionFileConstant {
      * @param featureType feature type
      * @return filler rule definition file name
      */
-    public static String getGeneralFillerRuleDefinitionFileName(final String featureType) {
+    public static String getFillerRuleDefinitionFile(final String featureType) {
         return Joiner.on('/').join(ROOT_PATH, featureType, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
@@ -86,7 +86,7 @@ public final class RuleDefinitionFileConstant {
      * @param databaseType database type
      * @return filler rule definition file name
      */
-    public static String getFillerRuleDefinitionFileName(final String featureType, final DatabaseType databaseType) {
+    public static String getFillerRuleDefinitionFile(final String featureType, final DatabaseType databaseType) {
         return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.name().toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
@@ -97,7 +97,7 @@ public final class RuleDefinitionFileConstant {
      * @param databaseType database type
      * @return SQL statement rule definition file name
      */
-    public static String getSQLStatementRuleDefinitionFileName(final String featureType, final DatabaseType databaseType) {
+    public static String getSQLStatementRuleDefinitionFile(final String featureType, final DatabaseType databaseType) {
         return Joiner.on('/').join(ROOT_PATH, featureType, databaseType.name().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
     }
 }
