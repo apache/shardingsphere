@@ -32,8 +32,6 @@ public final class RuleDefinitionFileConstant {
     
     private static final String ROOT_PATH = "META-INF/parsing-rule-definition";
     
-    private static final String GENERAL = "general";
-    
     private static final String EXTRACTOR_RULE_DEFINITION_FILE_NAME = "extractor-rule-definition.xml";
     
     private static final String FILLER_RULE_DEFINITION_FILE_NAME = "filler-rule-definition.xml";
@@ -46,7 +44,7 @@ public final class RuleDefinitionFileConstant {
      * @return general extractor rule definition file name
      */
     public static String getExtractorRuleDefinitionFile() {
-        return Joiner.on('/').join(ROOT_PATH, GENERAL, EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(ROOT_PATH, EXTRACTOR_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -66,7 +64,7 @@ public final class RuleDefinitionFileConstant {
      * @return general filler rule definition file name
      */
     public static String getFillerRuleDefinitionFile() {
-        return Joiner.on('/').join(ROOT_PATH, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(ROOT_PATH, FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -76,7 +74,7 @@ public final class RuleDefinitionFileConstant {
      * @return filler rule definition file name
      */
     public static String getFillerRuleDefinitionFile(final String featureType) {
-        return Joiner.on('/').join(ROOT_PATH, featureType, GENERAL, FILLER_RULE_DEFINITION_FILE_NAME);
+        return Joiner.on('/').join(ROOT_PATH, featureType, FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
     /**

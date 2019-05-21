@@ -39,11 +39,11 @@ public final class RuleDefinitionFileConstantTest {
     
     @Test
     public void assertGetCommonExtractorRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile(), CoreMatchers.is("META-INF/parsing-rule-definition/general/extractor-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile(), CoreMatchers.is("META-INF/parsing-rule-definition/extractor-rule-definition.xml"));
     }
     
     @Test
     public void assertGetFillerRuleDefinitionFileName() {
-        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(), CoreMatchers.is("META-INF/parsing-rule-definition/general/filler-rule-definition.xml"));
+        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(), CoreMatchers.is("META-INF/parsing-rule-definition/filler-rule-definition.xml"));
     }
 }
