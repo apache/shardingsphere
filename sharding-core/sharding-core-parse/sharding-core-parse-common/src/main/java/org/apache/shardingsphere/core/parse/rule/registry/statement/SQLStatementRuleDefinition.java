@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parse.rule.registry.statement;
 
 import com.google.common.base.CaseFormat;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.entity.statement.SQLStatementRuleEntity;
@@ -32,7 +31,6 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-@Getter
 public final class SQLStatementRuleDefinition {
     
     private final Map<String, SQLStatementRule> rules = new LinkedHashMap<>();
@@ -47,5 +45,15 @@ public final class SQLStatementRuleDefinition {
     
     private String getContextClassName(final String context) {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, context + "Context");
+    }
+    
+    /**
+     * Get SQL statement rule.
+     *
+     * @param contextClassName context class name
+     * @return SQL statement rule
+     */
+    public SQLStatementRule getSQLStatementRule(final String contextClassName) {
+        return rules.get(contextClassName);
     }
 }
