@@ -23,7 +23,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-button type="primary" icon="el-icon-plus" @click="add" />
+      <el-button type="primary" icon="el-icon-plus" @click="add"/>
     </el-row>
     <el-dialog :visible.sync="centerDialogVisible" :title="type" width="80%" top="3vh">
       <el-row :gutter="20">
@@ -137,7 +137,7 @@ export default {
   computed: {
     textarea2() {
       const dsYamlType = new yaml.Type(
-        'tag:yaml.org,2002:io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration',
+        'tag:yaml.org,2002:org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration',
         {
           kind: 'mapping',
           construct(data) {
@@ -311,7 +311,7 @@ export default {
     cursor: pointer;
   }
   .el-dialog__body {
-    padding: 10px 20px
+    padding: 10px 20px;
   }
   .el-input {
     width: 30%;
