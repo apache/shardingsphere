@@ -35,15 +35,17 @@ import java.util.Map;
 @Getter
 public final class ExtractorRuleDefinition {
     
-    private final Map<String, SQLSegmentExtractor> rules = new LinkedHashMap<>();
+    private final Map<String, SQLSegmentExtractor> rules;
     
-    /**
-     * Initialize SQL extractor rule definition.
-     * 
-     * @param entity extractor rule definition entity
-     */
+    public ExtractorRuleDefinition(final ExtractorRuleDefinitionEntity... entities) {
+        rules = new LinkedHashMap<>();
+        for (ExtractorRuleDefinitionEntity each : entities) {
+            put(each);
+        }
+    }
+    
     @SneakyThrows
-    public void init(final ExtractorRuleDefinitionEntity entity) {
+    private void put(final ExtractorRuleDefinitionEntity entity) {
         for (ExtractorRuleEntity each : entity.getRules()) {
             rules.put(each.getId(), (SQLSegmentExtractor) Class.forName(each.getExtractorClass()).newInstance());
         }

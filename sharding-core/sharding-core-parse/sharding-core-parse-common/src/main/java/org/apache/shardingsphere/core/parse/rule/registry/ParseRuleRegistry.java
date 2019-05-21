@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.parse.rule.registry;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parse.filler.api.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
+import org.apache.shardingsphere.core.parse.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.RuleDefinitionFileConstant;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
 import org.apache.shardingsphere.core.parse.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoader;
@@ -32,6 +34,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,33 +63,24 @@ public abstract class ParseRuleRegistry {
     }
     
     private void initParseRuleDefinition() {
-        ExtractorRuleDefinition generalExtractorRuleDefinition = new ExtractorRuleDefinition();
-        generalExtractorRuleDefinition.init(extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralExtractorRuleDefinitionFileName()));
-        FillerRuleDefinition generalFillerRuleDefinition = new FillerRuleDefinition();
-        generalFillerRuleDefinition.init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName()));
+        ExtractorRuleDefinitionEntity generalExtractorRuleDefinitionEntity = extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralExtractorRuleDefinitionFileName());
+        FillerRuleDefinitionEntity generalFillerRuleDefinitionEntity = fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getGeneralFillerRuleDefinitionFileName());
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
-                initExtractorRuleDefinition(each, generalExtractorRuleDefinition);
-                initFillerRuleDefinition(each, generalFillerRuleDefinition);
+                extractorRuleDefinitions.put(each, new ExtractorRuleDefinition(generalExtractorRuleDefinitionEntity, extractorRuleDefinitionLoader.load(getExtractorFile(each))));
+                initFillerRuleDefinition(generalFillerRuleDefinitionEntity, each);
                 initSQLStatementRuleDefinition(each);
             }
         }
     }
     
-    private void initExtractorRuleDefinition(final DatabaseType databaseType, final ExtractorRuleDefinition generalExtractorRuleDefinition) {
-        ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition();
-        extractorRuleDefinition.getRules().putAll(generalExtractorRuleDefinition.getRules());
-        extractorRuleDefinition.init(extractorRuleDefinitionLoader.load(getExtractorFile(databaseType)));
-        extractorRuleDefinitions.put(databaseType, extractorRuleDefinition);
-    }
-    
-    private void initFillerRuleDefinition(final DatabaseType databaseType, final FillerRuleDefinition generalFillerRuleDefinition) {
-        FillerRuleDefinition fillerRuleDefinition = new FillerRuleDefinition();
-        fillerRuleDefinition.getRules().putAll(generalFillerRuleDefinition.getRules());
+    private void initFillerRuleDefinition(final FillerRuleDefinitionEntity generalFillerRuleDefinitionEntity, final DatabaseType databaseType) {
+        List<FillerRuleDefinitionEntity> entities = new LinkedList<>();
+        entities.add(generalFillerRuleDefinitionEntity);
         for (String each : getFillerFiles(databaseType)) {
-            fillerRuleDefinition.init(fillerRuleDefinitionLoader.load(each));
+            entities.add(fillerRuleDefinitionLoader.load(each));
         }
-        fillerRuleDefinitions.put(databaseType, fillerRuleDefinition);
+        fillerRuleDefinitions.put(databaseType, new FillerRuleDefinition(entities.toArray(new FillerRuleDefinitionEntity[entities.size()])));
     }
     
     private void initSQLStatementRuleDefinition(final DatabaseType databaseType) {
