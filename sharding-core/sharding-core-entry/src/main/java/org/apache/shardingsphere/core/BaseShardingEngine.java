@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.rewrite.engine.ShardingSQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -100,7 +100,7 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        ShardingSQLRewriteEngine rewriteEngine = new ShardingSQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, sql, databaseType, sqlRouteResult, parameters);
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each)));

@@ -44,10 +44,21 @@ public final class ParameterBuilder {
     
     private final List<InsertParameterUnit> insertParameterUnits;
     
-    public ParameterBuilder(final List<Object> parameters, final InsertOptimizeResult insertOptimizeResult) {
+    public ParameterBuilder(final List<Object> parameters) {
         originalParameters = new LinkedList<>(parameters);
         assistedIndexAndParametersForUpdate = new HashMap<>();
-        insertParameterUnits = createInsertParameterUnits(insertOptimizeResult);
+        insertParameterUnits = new LinkedList<>();
+    }
+    
+    /**
+     * Set insert parameter units.
+     * 
+     * @param insertOptimizeResult insert optimize result
+     */
+    public void setInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {
+        if (insertParameterUnits.isEmpty() && null != insertOptimizeResult) {
+            insertParameterUnits.addAll(createInsertParameterUnits(insertOptimizeResult));
+        }
     }
     
     private List<InsertParameterUnit> createInsertParameterUnits(final InsertOptimizeResult insertOptimizeResult) {

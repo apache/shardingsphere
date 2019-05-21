@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.engine.MasterSlaveSQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -71,8 +71,8 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private SQLRouteResult doMasterSlaveRoute(final DatabaseType databaseType, final String sql) {
         SQLStatement sqlStatement = new SQLParseEngine(databaseType, sql, null, null).parse();
-        MasterSlaveSQLRewriteEngine sqlRewriteEngine = new MasterSlaveSQLRewriteEngine(sql, sqlStatement);
-        String rewriteSQL = sqlRewriteEngine.generateSQL(null).getSql();
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sql, sqlStatement);
+        String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         for (String each : new MasterSlaveRouter(databaseType, 
                 ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL)) {
