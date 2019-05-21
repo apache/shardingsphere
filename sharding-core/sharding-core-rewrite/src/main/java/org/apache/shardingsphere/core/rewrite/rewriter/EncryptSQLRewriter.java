@@ -65,7 +65,7 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public final class EncryptSQLRewriteEngine {
+public final class EncryptSQLRewriter {
     
     private final ShardingEncryptorEngine encryptorEngine;
     
@@ -73,7 +73,7 @@ public final class EncryptSQLRewriteEngine {
     
     private final InsertOptimizeResult insertOptimizeResult;
     
-    public EncryptSQLRewriteEngine(final ShardingEncryptorEngine encryptorEngine, final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
+    public EncryptSQLRewriter(final ShardingEncryptorEngine encryptorEngine, final SQLStatement sqlStatement, final OptimizeResult optimizeResult) {
         this.encryptorEngine = encryptorEngine;
         this.sqlStatement = sqlStatement;
         this.insertOptimizeResult = getInsertOptimizeResult(optimizeResult);
