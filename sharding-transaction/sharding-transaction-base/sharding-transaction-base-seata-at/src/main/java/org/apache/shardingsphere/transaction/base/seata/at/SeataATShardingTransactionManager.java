@@ -20,6 +20,8 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 import com.google.common.base.Preconditions;
 import io.seata.config.FileConfiguration;
 import io.seata.core.context.RootContext;
+import io.seata.core.rpc.netty.RmRpcClient;
+import io.seata.core.rpc.netty.TmRpcClient;
 import io.seata.rm.RMClient;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.TMClient;
@@ -109,6 +111,9 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     @Override
     public void close() {
         dataSourceMap.clear();
+        SeataTransactionHolder.clear();
+        TmRpcClient.getInstance().destroy();
+        RmRpcClient.getInstance().destroy();
     }
 }
 

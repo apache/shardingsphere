@@ -22,6 +22,8 @@ import io.seata.core.protocol.MergeResultMessage;
 import io.seata.core.protocol.MergedWarpMessage;
 import io.seata.core.protocol.RegisterTMRequest;
 import io.seata.core.protocol.RegisterTMResponse;
+import io.seata.core.rpc.netty.RmRpcClient;
+import io.seata.core.rpc.netty.TmRpcClient;
 import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
@@ -34,10 +36,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -48,13 +48,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SeataATShardingTransactionManagerTest {
     
     private static MockSeataServer mockSeataServer = new MockSeataServer();
@@ -97,6 +97,8 @@ public class SeataATShardingTransactionManagerTest {
     public void tearDown() {
         RootContext.unbind();
         SeataTransactionHolder.clear();
+        seataATShardingTransactionManager.close();
+        releaseRpcClient();
     }
     
     private DataSource getDataSource() {
@@ -129,12 +131,7 @@ public class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
-        assertThat(requestQueue.size(), is(2));
-        assertThat(responseQueue.size(), is(2));
-        assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
-        assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
-        assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
-        assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+        assertResult();
     }
     
     @Test
@@ -142,16 +139,30 @@ public class SeataATShardingTransactionManagerTest {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
         seataATShardingTransactionManager.commit();
-        assertThat(requestQueue.size(), is(1));
-        assertThat(responseQueue.size(), is(1));
-        assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
-        assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
+        assertResult();
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         seataATShardingTransactionManager.commit();
+    }
+    
+    @Test
+    public void assertRollback() {
+        SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
+        setXID("testXID");
+        seataATShardingTransactionManager.rollback();
+        assertResult();
+    }
+    
+    private void assertResult() {
+        assertThat(requestQueue.size(), is(2));
+        assertThat(responseQueue.size(), is(2));
+        assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
+        assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
+        assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
+        assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
     }
     
     @SneakyThrows
@@ -168,5 +179,21 @@ public class SeataATShardingTransactionManagerTest {
         field.setAccessible(true);
         field.set(SeataTransactionHolder.get(), xid);
         RootContext.bind(xid);
+    }
+    
+    @SneakyThrows
+    private void releaseRpcClient() {
+        Field field = TmRpcClient.getInstance().getClass().getDeclaredField("initialized");
+        field.setAccessible(true);
+        field.set(TmRpcClient.getInstance(), new AtomicBoolean(false));
+        field = TmRpcClient.getInstance().getClass().getDeclaredField("instance");
+        field.setAccessible(true);
+        field.set(TmRpcClient.getInstance(), null);
+        field = RmRpcClient.getInstance().getClass().getDeclaredField("initialized");
+        field.setAccessible(true);
+        field.set(RmRpcClient.getInstance(), new AtomicBoolean(false));
+        field = RmRpcClient.getInstance().getClass().getDeclaredField("instance");
+        field.setAccessible(true);
+        field.set(RmRpcClient.getInstance(), null);
     }
 }
